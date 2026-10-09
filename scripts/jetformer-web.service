@@ -1,0 +1,20 @@
+[Unit]
+Description=JetFormer data collection web UI (port 8080)
+After=network-online.target nvargus-daemon.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jetson
+Group=jetson
+SupplementaryGroups=video i2c dialout gpio
+WorkingDirectory=/home/jetson/jetformer
+ExecStart=/home/jetson/jetformer/scripts/run_web.sh
+Restart=on-failure
+RestartSec=3
+# 停止時は収集中の最後のシーンを保存してから終了する
+KillSignal=SIGINT
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
