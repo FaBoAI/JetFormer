@@ -13,15 +13,19 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from jetformer.model import IMU_STEPS, TOF_SHAPE, JetFormer  # noqa: E402
+from jetformer.model import IMU_STEPS, TOF_SHAPE, JetFormer, mode_onehot  # noqa: E402
 from jetformer.trt_runtime import TRTRunner, build_engine  # noqa: E402
+
+NUM_MODES = 8
+
 
 def dummy_inputs(device, dtype):
     torch.manual_seed(0)
     return (torch.randn(1, 3, 224, 224, device=device, dtype=dtype),
             torch.rand(1, 1, *TOF_SHAPE, device=device, dtype=dtype),
             torch.randn(1, IMU_STEPS, 6, device=device, dtype=dtype) * 0.1,
-            torch.randn(1, 3, device=device, dtype=dtype) * 0.3)
+            torch.randn(1, 3, device=device, dtype=dtype) * 0.3,
+            mode_onehot([1], NUM_MODES).to(device, dtype))
 
 
 def bench(fn, n=300, warmup=30):
@@ -43,7 +47,7 @@ def main():
     ap.add_argument('--out', default='data/models/jetformer_fp16.engine')
     args = ap.parse_args()
 
-    model = JetFormer().eval()
+    model = JetFormer(num_modes=NUM_MODES).eval()
     if args.weights:
         model.load_state_dict(torch.load(args.weights, map_location='cpu', weights_only=True))
     n_params = sum(p.numel() for p in model.parameters()) / 1e6
@@ -64,7 +68,7 @@ def main():
     x32 = dummy_inputs('cuda', torch.float32)
     torch.backends.mha.set_fastpath_enabled(False)      # ONNXに無い融合カーネルを使わせない
     with torch.no_grad():
-        torch.onnx.export(m32, x32, onnx_path, input_names=['image', 'tof', 'imu', 'state'],
+        torch.onnx.export(m32, x32, onnx_path, input_names=['image', 'tof', 'imu', 'state', 'mode'],
                           output_names=['actions'], opset_version=17, dynamo=False)
     print('ONNX書き出し:', onnx_path, '%.1fMB' % (os.path.getsize(onnx_path) / 1e6))
     # 走行プログラムと同じPython版TensorRTでエンジンを作る(trtexecは版が違い読み込めないことがある)
@@ -74,7 +78,7 @@ def main():
 
     # ---- TensorRTの出力がPyTorchと一致するか ----
     runner = TRTRunner(args.out)
-    feed = dict(zip(['image', 'tof', 'imu', 'state'], x32))
+    feed = dict(zip(['image', 'tof', 'imu', 'state', 'mode'], x32))
     out = runner(**feed)['actions']
     with torch.no_grad():
         ref32 = m32(*x32).cpu().numpy()

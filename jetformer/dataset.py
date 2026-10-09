@@ -23,7 +23,7 @@ import uuid
 import cv2
 import numpy as np
 
-from . import config
+from . import config, modes
 
 SENSORS = [
     ('CAM_FRONT', 'camera'),
@@ -57,6 +57,18 @@ def _write_json(path, obj, indent=None):
 
 
 # ---------------------------------------------------------------- シーン管理
+def _with_modes(s):
+    """ジャンル情報の無い古いシーンは「未設定」とし、名前はジャンル表から引き直す"""
+    if 'mode_id' not in s:
+        s['mode_id'] = modes.UNSET
+        s['mode_segments'] = [{'start_s': 0.0, 'end_s': s.get('duration_s', 0.0), 'mode_id': modes.UNSET}]
+    s['mode_name'] = modes.name_of(s['mode_id'])
+    for sg in s.get('mode_segments', []):
+        sg['mode_name'] = modes.name_of(sg['mode_id'])
+    s['mode_mixed'] = len({sg['mode_id'] for sg in s.get('mode_segments', [])}) > 1
+    return s
+
+
 def list_scenes():
     scenes = []
     if not config.RAW_DIR.exists():
@@ -72,7 +84,7 @@ def list_scenes():
                 except ValueError:
                     continue
                 s['path'] = str(scene_dir)
-                scenes.append(s)
+                scenes.append(_with_modes(s))
     return scenes
 
 
@@ -88,18 +100,26 @@ def load_scene_meta(name):
     p = scene_path(name)
     s = json.loads((p / 'scene.json').read_text(encoding='utf-8'))
     s['path'] = str(p)
-    return s
+    return _with_modes(s)
 
 
-def update_scene(name, description=None, tags=None):
+def update_scene(name, description=None, tags=None, mode_id=None):
     p = scene_path(name)
     s = json.loads((p / 'scene.json').read_text(encoding='utf-8'))
+    if mode_id is not None:
+        mode_id = modes.validate(mode_id)
+        s['mode_id'] = mode_id
+        s['mode_segments'] = [{'start_s': 0.0, 'end_s': s.get('duration_s', 0.0), 'mode_id': mode_id}]
     if description is not None:
         s['description'] = description
     if tags is not None:
         s['tags'] = [t for t in tags if t]
+    for sg in s.get('mode_segments', []):
+        sg.pop('mode_name', None)
+    s.pop('mode_name', None)
+    s.pop('mode_mixed', None)
     _write_json(p / 'scene.json', s, indent=1)
-    return s
+    return _with_modes(s)
 
 
 def delete_scene(name):
@@ -163,6 +183,15 @@ def scene_frame(name, index):
 def _latest_index(src_t, query_t):
     """各query_tに対し、src_t <= query_t となる最新のインデックス(無ければ-1)"""
     return np.searchsorted(src_t, query_t, side='right') - 1
+
+
+def _frame_modes(meta, cam_t):
+    """シーンのジャンル区間から、各カメラフレームのジャンルIDを求める"""
+    rel = (cam_t - cam_t[0]) / 1e6
+    out = np.full(len(cam_t), meta.get('mode_id', modes.UNSET), dtype=np.int16)
+    for sg in meta.get('mode_segments', []):
+        out[(rel >= sg['start_s'] - 1e-3) & (rel <= sg['end_s'] + 1e-3)] = sg['mode_id']
+    return out
 
 
 def _aligned_arrays(cam_t, tof, imu, veh):
@@ -239,6 +268,7 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     logs_done = {}
     calib_tok = {}
     totals = {'frames': 0, 'tof_frames': 0, 'seconds': 0.0}
+    mode_frames = {}
 
     for n_done, meta in enumerate(metas):
         p = scene_path(meta['name'])
@@ -327,6 +357,8 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
                            'first_sample_token': sample_toks[0], 'last_sample_token': sample_toks[-1],
                            'name': sname, 'description': meta.get('description', ''),
                            'tags': meta.get('tags', []), 'duration_s': meta['duration_s'],
+                           'mode_id': meta['mode_id'], 'mode_name': meta['mode_name'],
+                           'mode_segments': meta['mode_segments'],
                            'vehicle_quality': meta.get('vehicle_quality')})
 
         # CAN bus風の時系列
@@ -344,6 +376,9 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
         # 学習用にカメラフレームへ揃えた配列
         aligned = _aligned_arrays(cam_t, tof, imu, veh)
         aligned['cam_files'] = np.array(['samples/CAM_FRONT/%s/%d.jpg' % (sname, int(t)) for t in cam_t])
+        aligned['mode'] = _frame_modes(meta, cam_t)
+        for m, c in zip(*np.unique(aligned['mode'], return_counts=True)):
+            mode_frames[int(m)] = mode_frames.get(int(m), 0) + int(c)
         np.savez_compressed(root / 'aligned' / ('%s.npz' % sname), **aligned)
 
         totals['frames'] += len(cam_t)
@@ -389,8 +424,11 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
             'vehicle_age_ms': '[N] 使った操作値の古さ',
             'future_actions': '[N,%d,2] 1〜%dフレーム先の steering_us, throttle_us' % (FUTURE_STEPS, FUTURE_STEPS),
             'future_valid': '[N] 未来の操作値が全て有効(100ms以内)でシーン内に収まるか',
+            'mode': '[N] int16 フレームごとの走行ジャンルID(modes参照、0=未設定)',
         },
         'vehicle_quality': sorted({str(m.get('vehicle_quality')) for m in metas}),
+        'modes': modes.load(),                    # ジャンル表(IDはモデルの出力ヘッド番号)
+        'mode_frames': {str(k): v for k, v in sorted(mode_frames.items())},
         'ego_pose': '位置は未推定(原点)。向きはIMUジャイロのヨー積分',
         'source_scenes': names,
     }

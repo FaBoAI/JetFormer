@@ -12,6 +12,7 @@
   <nav>
     <button class="tab active" data-tab="live">ライブ・収集</button>
     <button class="tab" data-tab="scenes">シーン <span id="scene-count" class="pill">0</span></button>
+    <button class="tab" data-tab="modes">ジャンル</button>
     <button class="tab" data-tab="datasets">データセット</button>
   </nav>
   <div class="header-status">
@@ -43,7 +44,9 @@
           <div id="rec-state" class="rec-state">待機中</div>
           <div class="progress"><div id="scene-progress" class="bar"></div></div>
           <div id="rec-detail" class="muted small"></div>
-          <label>説明<input id="rec-desc" placeholder="例: 室内コース 時計回り"></label>
+          <label>走行ジャンル <span class="muted">(収集中に変えると、その瞬間から切り替わります)</span>
+            <select id="rec-mode"></select></label>
+          <label>走行の説明<input id="rec-desc" placeholder="例: 白線の駐車枠に後退で入れる"></label>
           <label>タグ(カンマ区切り)<input id="rec-tags" placeholder="例: indoor, cw, daylight"></label>
           <label>場所<input id="rec-location" placeholder="例: GClue lab"></label>
           <div class="row">
@@ -80,16 +83,37 @@
   <section id="tab-scenes" class="tab-page">
     <div class="toolbar">
       <input id="scene-filter" placeholder="名前・説明・タグで絞り込み">
+      <select id="scene-mode-filter" class="compact"></select>
       <label class="inline"><input type="checkbox" id="only-complete"> 20秒完全のみ</label>
       <button id="btn-select-all" class="small">表示中を全選択</button>
       <button id="btn-select-none" class="small">選択解除</button>
       <span id="selection-info" class="muted"></span>
       <span class="spacer"></span>
+      <select id="bulk-mode" class="compact"></select>
+      <button id="btn-bulk-mode">選択にジャンルを設定</button>
       <button id="btn-to-dataset" class="primary">選択からデータセット作成 →</button>
       <button id="btn-delete-selected" class="danger">選択を削除</button>
     </div>
     <div id="scene-summary" class="muted small"></div>
     <div id="scene-grid" class="scene-grid"></div>
+  </section>
+
+  <!-- ======================= ジャンル ======================= -->
+  <section id="tab-modes" class="tab-page">
+    <div class="ds-grid">
+      <div class="card">
+        <div class="card-title">ジャンルを追加</div>
+        <p class="muted small">走行ジャンルは、モデルが走り方を切り替えるための指示(ID)です。
+          IDはモデルの出力の番号に直結するため、一度付けたIDは変わりません(名前と説明は後から変えられます)。</p>
+        <label>名前<input id="mode-new-name" placeholder="例: 駐車(4)"></label>
+        <label>説明<input id="mode-new-desc" placeholder="例: 縦列駐車"></label>
+        <div class="row buttons"><button id="btn-mode-add" class="primary">追加</button></div>
+      </div>
+      <div>
+        <div class="card-title section-title">ジャンル一覧</div>
+        <table class="mode-table" id="mode-table"></table>
+      </div>
+    </div>
   </section>
 
   <!-- ======================= データセット ======================= -->
@@ -137,7 +161,9 @@
         <div class="card">
           <div class="card-title">情報</div>
           <div id="m-info" class="small"></div>
-          <label>説明<input id="m-desc"></label>
+          <label>走行ジャンル<select id="m-mode"></select></label>
+          <div id="m-segments" class="small"></div>
+          <label>走行の説明<input id="m-desc"></label>
           <label>タグ(カンマ区切り)<input id="m-tags"></label>
           <div class="row buttons">
             <button id="m-save" class="primary">保存</button>

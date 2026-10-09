@@ -1,7 +1,7 @@
 'use strict';
 
 const $ = (s) => document.querySelector(s);
-const state = { tab: 'live', scenes: [], selected: new Set(), status: null, modal: null, playing: false };
+const state = { tab: 'live', scenes: [], selected: new Set(), status: null, modal: null, playing: false, modes: [] };
 const COLORS = { steering: '#2563eb', throttle: '#dc2626', aux: '#9ca3af', motor: '#16a34a',
                  accel: '#7c3aed', ax: '#0891b2', ay: '#f59e0b', gyro: '#db2777', min: '#dc2626', median: '#2563eb' };
 
@@ -27,6 +27,63 @@ function toast(msg, error = false) {
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmtTime = (us) => new Date(us / 1000).toLocaleString('ja-JP', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 const parseTags = (s) => s.split(',').map((x) => x.trim()).filter(Boolean);
+
+// ------------------------------------------------------------ 走行ジャンル
+const MODE_COLORS = ['#9ca3af', '#2563eb', '#7c3aed', '#db2777', '#dc2626', '#16a34a', '#d97706', '#0891b2', '#4f46e5', '#65a30d'];
+const modeColor = (id) => MODE_COLORS[id % MODE_COLORS.length];
+const modeName = (id) => (state.modes.find((m) => m.id === id) || { name: `ID ${id}` }).name;
+const modeBadge = (id, mixed) =>
+  `<span class="badge mode" style="background:${modeColor(id)}">${id}: ${esc(modeName(id))}${mixed ? ' ほか' : ''}</span>`;
+
+function fillModeSelect(sel, firstOption) {
+  const cur = sel.value;
+  sel.innerHTML = (firstOption ? `<option value="">${firstOption}</option>` : '') +
+    state.modes.map((m) => `<option value="${m.id}">${m.id}: ${esc(m.name)}</option>`).join('');
+  if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
+}
+async function loadModes() {
+  try { state.modes = await api('GET', '/api/modes'); } catch (e) { toast(e.message, true); return; }
+  const rec = $('#rec-mode');
+  const recDefault = !rec.value;
+  fillModeSelect(rec);
+  if (recDefault && state.modes.length > 1) rec.value = String(state.modes[1].id);
+  fillModeSelect($('#scene-mode-filter'), 'すべてのジャンル');
+  fillModeSelect($('#bulk-mode'));
+  fillModeSelect($('#m-mode'));
+  if (state.tab === 'modes') renderModes();
+  if (state.tab === 'scenes') renderScenes();
+}
+function renderModes() {
+  $('#mode-table').innerHTML = '<tr><th>ID</th><th>名前</th><th>説明</th><th>シーン</th><th>時間</th><th></th></tr>' +
+    state.modes.map((m) => `
+      <tr data-id="${m.id}">
+        <td><span class="mode-id" style="background:${modeColor(m.id)}">${m.id}</span></td>
+        <td>${m.id === 0 ? esc(m.name) : `<input class="mode-name" value="${esc(m.name)}">`}</td>
+        <td>${m.id === 0 ? `<span class="muted">${esc(m.description)}</span>` : `<input class="mode-desc" value="${esc(m.description)}">`}</td>
+        <td>${m.scenes}</td><td>${m.minutes} 分</td>
+        <td>${m.id === 0 ? '' : '<button class="small" data-save-mode="1">保存</button>'}</td>
+      </tr>`).join('');
+}
+$('#mode-table').addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-save-mode]');
+  if (!btn) return;
+  const tr = btn.closest('tr');
+  try {
+    await api('PATCH', `/api/modes/${tr.dataset.id}`, { name: tr.querySelector('.mode-name').value, description: tr.querySelector('.mode-desc').value });
+    toast('保存しました'); loadModes();
+  } catch (err) { toast(err.message, true); }
+});
+$('#btn-mode-add').addEventListener('click', async () => {
+  try {
+    const m = await api('POST', '/api/modes', { name: $('#mode-new-name').value, description: $('#mode-new-desc').value });
+    toast(`追加しました(ID ${m.id}: ${m.name})`); $('#mode-new-name').value = ''; $('#mode-new-desc').value = ''; loadModes();
+  } catch (err) { toast(err.message, true); }
+});
+$('#rec-mode').addEventListener('change', async () => {
+  if (!(state.status && state.status.recorder.recording)) return;
+  try { const r = await api('POST', '/api/record/mode', { mode_id: +$('#rec-mode').value }); toast(`ジャンルを「${r.mode_name}」に切り替えました`); }
+  catch (err) { toast(err.message, true); }
+});
 
 // ------------------------------------------------------------ グラフ(自前の軽量描画)
 function drawChart(canvas, series, opt = {}) {
@@ -90,6 +147,7 @@ function showTab(name) {
   if (name === 'live') { if (!video.src.includes('live.mjpg')) video.src = '/api/live.mjpg?fps=15&_=' + Date.now(); }
   else video.removeAttribute('src');                      // 見ていない時は映像を止めて帯域を節約
   if (name === 'scenes') loadScenes();
+  if (name === 'modes') loadModes();
   if (name === 'datasets') { loadDatasets(); loadJobs(); updateDsSelected(); }
 }
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -114,7 +172,7 @@ function renderStatus(st) {
   state.status = st;
   const rec = st.recorder;
   const ind = $('#rec-indicator');
-  ind.textContent = rec.recording ? `● 収集中 ${rec.log}` : '待機中';
+  ind.textContent = rec.recording ? `● 収集中 ${rec.log} ・ ${rec.mode_name}` : '待機中';
   ind.className = rec.recording ? 'rec-on' : 'rec-off';
   $('#disk').textContent = `空き ${st.disk.free_gb} GB`;
 
@@ -132,7 +190,7 @@ function renderStatus(st) {
 
   const recState = $('#rec-state');
   if (rec.recording) {
-    recState.textContent = `収集中: シーン ${rec.scene_index}${rec.max_scenes ? ' / ' + rec.max_scenes : ''}`;
+    recState.innerHTML = `収集中: シーン ${rec.scene_index}${rec.max_scenes ? ' / ' + rec.max_scenes : ''} ${modeBadge(rec.mode_id)}`;
     recState.className = 'rec-state on';
     $('#scene-progress').style.width = `${Math.min(100, rec.scene_elapsed_s / rec.scene_seconds * 100)}%`;
     const c = rec.current_counts || {};
@@ -200,7 +258,7 @@ async function pollValues() {
 // ------------------------------------------------------------ 収集の操作
 $('#btn-rec-start').addEventListener('click', async () => {
   const mode = document.querySelector('input[name=rec-mode]:checked').value;
-  const body = { description: $('#rec-desc').value, tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
+  const body = { mode_id: +$('#rec-mode').value, description: $('#rec-desc').value, tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
                  max_scenes: mode === 'count' ? parseInt($('#rec-count').value, 10) || 1 : null };
   try { const r = await api('POST', '/api/record/start', body); toast(`収集を開始しました (${r.log})`); }
   catch (e) { toast('開始できません: ' + e.message, true); }
@@ -225,12 +283,14 @@ function filteredScenes() {
   const onlyComplete = $('#only-complete').checked;
   return state.scenes.filter((s) => {
     if (onlyComplete && !s.complete) return false;
+    const mf = $('#scene-mode-filter').value;
+    if (mf !== '' && s.mode_id !== +mf && !(s.mode_segments || []).some((sg) => sg.mode_id === +mf)) return false;
     if (!q) return true;
     return [s.name, s.description, (s.tags || []).join(' ')].join(' ').toLowerCase().includes(q);
   }).slice().reverse();
 }
 function sceneBadges(s) {
-  const b = [];
+  const b = [modeBadge(s.mode_id, s.mode_mixed)];
   b.push(s.complete ? '<span class="badge ok">20秒</span>' : `<span class="badge warn">${s.duration_s}秒</span>`);
   if (s.vehicle_quality === 'legacy') b.push('<span class="badge warn">PWM:legacy</span>');
   else if (s.vehicle_quality) b.push(`<span class="badge ok">PWM:${esc(s.vehicle_quality)}</span>`);
@@ -268,6 +328,15 @@ $('#scene-grid').addEventListener('click', (ev) => {
 });
 $('#scene-filter').addEventListener('input', renderScenes);
 $('#only-complete').addEventListener('change', renderScenes);
+$('#scene-mode-filter').addEventListener('change', renderScenes);
+$('#btn-bulk-mode').addEventListener('click', async () => {
+  const names = [...state.selected];
+  if (!names.length) { toast('シーンを選択してください(カード左上のチェック)', true); return; }
+  const id = +$('#bulk-mode').value;
+  if (!confirm(`${names.length} シーンのジャンルを「${modeName(id)}」にします(途中の切り替えは上書きされます)。`)) return;
+  try { const r = await api('POST', '/api/scenes/bulk', { names, mode_id: id }); toast(`${r.updated} シーンを更新しました`); loadScenes(); }
+  catch (e) { toast(e.message, true); }
+});
 $('#btn-select-all').addEventListener('click', () => { filteredScenes().forEach((s) => state.selected.add(s.name)); renderScenes(); });
 $('#btn-select-none').addEventListener('click', () => { state.selected.clear(); renderScenes(); });
 $('#btn-to-dataset').addEventListener('click', () => {
@@ -302,6 +371,11 @@ async function openScene(name) {
     ['加速度ピーク', st.accel_peak_ms2 !== undefined ? `${st.accel_peak_ms2} m/s²` : '-'],
     ['映像の最大間隔', `${st.camera_max_gap_ms} ms`], ['車両データ', s.vehicle_quality || '-'],
   ].map(([k, v]) => `<div><span class="muted">${k}:</span> ${esc(v)}</div>`).join('');
+  $('#m-mode').value = String(s.mode_id);
+  $('#m-segments').innerHTML = s.mode_mixed
+    ? '<div class="muted">途中でジャンルを切り替えています(ここで変更するとシーン全体が1つのジャンルになります)</div><div class="segments">' +
+      s.mode_segments.map((sg) => `<div>${sg.start_s.toFixed(1)}〜${sg.end_s.toFixed(1)} 秒: ${modeBadge(sg.mode_id)}</div>`).join('') + '</div>'
+    : '';
   $('#m-desc').value = s.description || '';
   $('#m-tags').value = (s.tags || []).join(', ');
   const slider = $('#m-slider');
@@ -360,7 +434,13 @@ document.addEventListener('keydown', (e) => {
 function closeModal() { state.playing = false; state.modal = null; $('#modal').classList.add('hidden'); }
 $('#m-save').addEventListener('click', async () => {
   try {
-    await api('PATCH', `/api/scenes/${encodeURIComponent(state.modal.name)}`, { description: $('#m-desc').value, tags: parseTags($('#m-tags').value) });
+    const body = { description: $('#m-desc').value, tags: parseTags($('#m-tags').value) };
+    if (+$('#m-mode').value !== state.modal.mode_id || state.modal.mode_mixed) {
+      if (+$('#m-mode').value !== state.modal.mode_id || confirm('シーン全体を1つのジャンルにまとめますか?')) body.mode_id = +$('#m-mode').value;
+    }
+    const updated = await api('PATCH', `/api/scenes/${encodeURIComponent(state.modal.name)}`, body);
+    Object.assign(state.modal, { mode_id: updated.mode_id, mode_mixed: updated.mode_mixed, mode_segments: updated.mode_segments });
+    $('#m-badges').innerHTML = sceneBadges(Object.assign({}, state.modal, updated));
     toast('保存しました'); loadScenes();
   } catch (e) { toast(e.message, true); }
 });
@@ -375,8 +455,14 @@ $('#m-delete').addEventListener('click', async () => {
 function updateDsSelected() {
   const sel = state.scenes.filter((s) => state.selected.has(s.name));
   const secs = sel.reduce((a, s) => a + s.duration_s, 0);
+  const byMode = {};
+  for (const s of sel) { const k = s.mode_id; byMode[k] = byMode[k] || { n: 0, secs: 0 }; byMode[k].n++; byMode[k].secs += s.duration_s; }
+  const rows = Object.entries(byMode).sort((a, b) => a[0] - b[0])
+    .map(([id, v]) => `<div>${modeBadge(+id)} ${v.n} シーン / ${(v.secs / 60).toFixed(1)} 分</div>`).join('');
+  const note = sel.some((s) => s.mode_mixed) ? '<div class="muted small">途中で切り替えたシーンは主なジャンルで集計しています(学習はフレームごとのジャンルで行います)</div>' : '';
+  const unset = byMode[0] ? '<div class="warn-text small">「未設定」のシーンは学習に使われません</div>' : '';
   $('#ds-selected').innerHTML = sel.length
-    ? `選択中: <b>${sel.length}</b> シーン / ${(secs / 60).toFixed(1)} 分 / 約 ${sel.reduce((a, s) => a + s.counts.CAM_FRONT, 0)} フレーム`
+    ? `選択中: <b>${sel.length}</b> シーン / ${(secs / 60).toFixed(1)} 分 / 約 ${sel.reduce((a, s) => a + s.counts.CAM_FRONT, 0)} フレーム${rows}${note}${unset}`
     : '<span class="warn-text">シーンタブでシーンを選択してください</span>';
 }
 $('#btn-ds-create').addEventListener('click', async () => {
@@ -415,6 +501,10 @@ async function loadDatasets() {
         <span>時間 <b>${(d.hours * 60).toFixed(1)}</b> 分</span>
         <span>車両データ <b>${esc(d.vehicle_quality.join(', '))}</b></span>
       </div>
+      <div class="stats">${Object.entries(d.mode_frames || {}).map(([id, n]) => {
+        const m = (d.modes || []).find((x) => x.id === +id);
+        return `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(m ? m.name : 'ID ' + id)}</span> ${n} フレーム</span>`;
+      }).join('')}</div>
       <div class="row">
         ${d.export ? `<a href="/api/exports/${encodeURIComponent(d.export.file)}" download><button class="primary small">⬇ ダウンロード (${(d.export.bytes / 1e6).toFixed(1)} MB)</button></a>
                       <span class="muted small">data/exports/${esc(d.export.file)}(.sha256付き)</span>`
@@ -438,10 +528,11 @@ $('#dataset-list').addEventListener('click', async (e) => {
 });
 
 // ------------------------------------------------------------ 起動
+loadModes();
 showTab('live');
 pollStatus();
 pollValues();
 loadScenes();
 
 // デバッグ・自動テスト用(ブラウザのコンソールから操作できるように)
-window.jetformer = { state, showTab, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs };
+window.jetformer = { state, showTab, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes };

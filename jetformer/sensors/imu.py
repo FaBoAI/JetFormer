@@ -37,6 +37,7 @@ class ImuSensor(SensorThread):
         self.mag_ok = False
         self._mag = [float('nan')] * 3
         self._mag_div = 0
+        self._discard = 0
 
     def _w(self, reg, val):
         self.bus.write_byte_data(self.addr, reg, val)
@@ -79,6 +80,7 @@ class ImuSensor(SensorThread):
             except OSError:
                 self.mag_ok = False
         self._next = time.monotonic()
+        self._discard = 20       # リセット直後(0.2秒)の値はフィルタが落ち着いておらず乱れるので捨てる
 
     def _close(self):
         if self.bus is not None:
@@ -106,6 +108,9 @@ class ImuSensor(SensorThread):
         self.bus.i2c_rdwr(msg_w, msg_r)
         t_ns = clock.now_ns()
         ax, ay, az, gx, gy, gz, temp = struct.unpack('>hhhhhhh', bytes(msg_r))
+        if self._discard > 0:
+            self._discard -= 1
+            return []
         if self.mag_ok:
             self._mag_div = (self._mag_div + 1) % 2          # 地磁気は50Hzで十分
             if self._mag_div == 0:

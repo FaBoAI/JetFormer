@@ -17,6 +17,15 @@ RCカー(Jetson Orin Nano 8GB / Super mode)で、カメラ・ToF(VL53L9)・IMU�
 JupyterLab(8888番)とは別ポートです。カメラは同時に1つのプロセスしか使えないので、
 JetRacerのノートブックでカメラを使っている間は収集できません。
 
+## 走行ジャンル(モデルの走り方の切り替え)
+
+駐車(1)〜(3)・高速走行・低速走行などの**走行ジャンルID**をデータに付け、モデルは入力されたIDで
+走り方を切り替えます(条件付き模倣学習)。
+
+- ジャンル表は `data/modes.json`(画面の「ジャンル」タブで追加・名前変更)。**IDはモデルの出力ヘッド番号なので変えない**。0=未設定は学習に使わない
+- 収集時にジャンルと「走行の説明」を選ぶ。**収集中に切り替えるとその瞬間から**新しいジャンルとして記録(シーン内の区間として保存)
+- シーン一覧ではジャンルで絞り込み・まとめて設定ができる。データセットには、フレームごとのジャンル(`aligned/*.npz` の `mode`)とジャンル表のスナップショットが入る
+
 ## センサー
 
 | チャネル | デバイス | 接続 | レート | 備考 |
@@ -45,8 +54,8 @@ data/exports/<name>.tar(.sha256)              クラウド学習用
 
 ## モデル(TransFuser風センサーフュージョン)
 
-`jetformer/model.py`:カメラ49+ToF 42+IMU+操作値のトークンをTransformerで融合し、
-約0.33秒先までの操作値を予測。**Orin Nano(MAXN_SUPER)のTensorRT FP16で約1.9ms**。
+`jetformer/model.py`:カメラ49+ToF 42+IMU+操作値+走行ジャンルのトークンをTransformerで融合し、
+ジャンル別の出力ヘッドで約0.33秒先までの操作値を予測。**Orin Nano(MAXN_SUPER)のTensorRT FP16で約1.9ms**。
 学習(`tools/train.py`、クラウド)→ ONNX → Jetsonで `tools/build_engine.py`。詳細は docs/model_design.md。
 
 ## 設定

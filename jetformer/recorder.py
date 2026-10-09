@@ -25,7 +25,7 @@ import uuid
 import cv2
 import numpy as np
 
-from . import clock, config
+from . import clock, config, modes
 from .sensors import SENSOR_CHANNELS
 
 
@@ -49,6 +49,24 @@ def depth_colormap(depth, width=None, height=None, vmin=None, vmax=None):
     if width and height:
         color = cv2.resize(color, (width, height), interpolation=cv2.INTER_NEAREST)
     return color
+
+
+def mode_segments(events, t_start, t_end):
+    """ジャンル切り替え履歴 [(t_ns, mode_id)] から、[t_start, t_end] の区間リストを作る"""
+    segs = []
+    current = events[0][1]
+    for t, m in events:
+        if t <= t_start:
+            current = m
+    cursor = t_start
+    for t, m in events:
+        if t_start < t < t_end and m != current:
+            segs.append({'start_s': cursor, 'end_s': t, 'mode_id': current})
+            cursor, current = t, m
+    segs.append({'start_s': cursor, 'end_s': t_end, 'mode_id': current})
+    for sg in segs:
+        sg['mode_name'] = modes.name_of(sg['mode_id'])
+    return segs
 
 
 class _SceneBuffer(object):
@@ -86,11 +104,14 @@ class Recorder(object):
         self.dropped_writes = 0
 
     # ------------------------------------------------------------------ 制御
-    def start(self, description='', tags=None, location='', max_scenes=None):
+    def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET):
+        mode_id = modes.validate(mode_id)
+        if self.recording:
+            raise RuntimeError('すでに収集中です')
+        self._warm_up()
         with self.lock:
             if self.recording:
                 raise RuntimeError('すでに収集中です')
-            self.hub.start()
             now = clock.now_ns()
             stamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
             log_dir = config.RAW_DIR / stamp
@@ -98,11 +119,13 @@ class Recorder(object):
             self.log = {
                 'token': new_token(), 'name': stamp, 'path': log_dir, 'start_ns': now,
                 'description': description, 'tags': list(tags or []), 'location': location,
+                'mode_events': [(now, mode_id)],     # (時刻, ジャンルID) 収集中の切り替えを記録
             }
             write_json(log_dir / 'log.json', {
                 'token': self.log['token'], 'logfile': stamp, 'vehicle': config.VEHICLE_NAME,
                 'date_captured': datetime.date.today().isoformat(), 'location': location,
                 'description': description, 'tags': list(tags or []),
+                'mode_id': mode_id, 'mode_name': modes.name_of(mode_id),
                 'scene_seconds': config.SCENE_SECONDS,
                 'sensors': {'CAM_FRONT': config.CAMERA, 'TOF_FRONT': config.TOF, 'IMU': config.IMU,
                             'VEHICLE': {k: v for k, v in config.VEHICLE.items()}},
@@ -133,6 +156,33 @@ class Recorder(object):
             self._finalize(idx, partial=True)
         self.log = None
 
+    WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15}   # カメラは自動露出の収束も待つ(1.5秒)
+
+    def _warm_up(self, timeout=8.0):
+        """センサーが止まっていたら起動し、全センサーが安定して値を出すまで待つ。
+        立ち上がり直後のデータ(IMUのリセット直後の値、カメラのストリーム開始時の
+        間隔の乱れ・自動露出の収束前の画像)がシーンの先頭に混ざらないようにする。"""
+        self.hub.start()
+        start = {name: self.hub[name].count for name in SENSOR_CHANNELS}
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if all(self.hub[n].count - start[n] >= self.WARMUP_SAMPLES[n] for n in SENSOR_CHANNELS
+                   if self.hub[n].connected or n != 'VEHICLE'):
+                return
+            time.sleep(0.1)
+        missing = [n for n in SENSOR_CHANNELS if self.hub[n].count - start[n] < self.WARMUP_SAMPLES[n]]
+        self.last_error = 'センサーの立ち上がりを待ちきれませんでした: %s' % ', '.join(missing)
+
+    def set_mode(self, mode_id):
+        """収集中にジャンルを切り替える(この瞬間から新しいジャンルとして記録)"""
+        mode_id = modes.validate(mode_id)
+        with self.lock:
+            if not self.recording:
+                raise RuntimeError('収集中ではありません')
+            if self.log['mode_events'][-1][1] != mode_id:
+                self.log['mode_events'].append((clock.now_ns(), mode_id))
+        return mode_id
+
     def status(self):
         with self.lock:
             if not self.recording or self.log is None:
@@ -146,6 +196,7 @@ class Recorder(object):
                 'scene_seconds': config.SCENE_SECONDS, 'max_scenes': self.max_scenes,
                 'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof),
                                    'IMU': len(buf.imu), 'VEHICLE': len(buf.veh)} if buf else {},
+                'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
                 'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
                 'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
             }
@@ -225,7 +276,7 @@ class Recorder(object):
     def _finalize(self, idx, partial):
         with self.lock:
             buf = self.scenes.pop(idx, None)
-            log = self.log
+            log = dict(self.log, mode_events=list(self.log['mode_events'])) if self.log else None
         if buf is None or log is None:
             return
         if not buf.cam:
@@ -291,11 +342,17 @@ class Recorder(object):
         if buf.imu:
             acc = np.stack([s[1] for s in buf.imu])
             stats['accel_peak_ms2'] = round(float(np.abs(np.linalg.norm(acc, axis=1) - 9.80665).max()), 2)
+        segments = mode_segments(log['mode_events'], cam_ts[0], cam_ts[-1])
+        main_mode = max(segments, key=lambda sg: sg['end_s'] - sg['start_s'])['mode_id']
+        for sg in segments:
+            sg['start_s'] = round((sg['start_s'] - cam_ts[0]) / 1e9, 3)
+            sg['end_s'] = round((sg['end_s'] - cam_ts[0]) / 1e9, 3)
         gaps = np.diff(np.array(cam_ts)) / 1e6 if len(cam_ts) > 1 else np.array([0.0])
         stats['camera_max_gap_ms'] = round(float(gaps.max()), 1)
         write_json(buf.path / 'scene.json', {
             'token': buf.token, 'name': buf.name, 'log_token': log['token'], 'log': log['name'],
             'description': log['description'], 'tags': log['tags'],
+            'mode_id': main_mode, 'mode_name': modes.name_of(main_mode), 'mode_segments': segments,
             'start_us': start_us, 'end_us': clock.to_epoch_us(cam_ts[-1]),
             'duration_s': round(duration, 2), 'complete': not partial and duration >= config.SCENE_SECONDS * 0.95,
             'counts': counts, 'rates': rates, 'stats': stats,

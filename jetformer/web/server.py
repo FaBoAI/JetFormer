@@ -16,7 +16,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import config, dataset
+from .. import config, dataset, modes
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 
@@ -180,10 +180,25 @@ def api_record_start(body: dict = Body(default={})):
         max_scenes = body.get('max_scenes')
         name = recorder.start(description=body.get('description', ''), tags=body.get('tags', []),
                               location=body.get('location', ''),
-                              max_scenes=int(max_scenes) if max_scenes else None)
+                              max_scenes=int(max_scenes) if max_scenes else None,
+                              mode_id=int(body.get('mode_id', modes.UNSET)))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
     except RuntimeError as e:
         raise HTTPException(409, str(e))
     return {'ok': True, 'log': name}
+
+
+@app.post('/api/record/mode')
+def api_record_mode(body: dict = Body(...)):
+    """収集中に走行ジャンルを切り替える(この瞬間から新しいジャンルとして記録)"""
+    try:
+        mode_id = recorder.set_mode(int(body.get('mode_id')))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True, 'mode_id': mode_id, 'mode_name': modes.name_of(mode_id)}
 
 
 @app.post('/api/record/stop')
@@ -276,9 +291,61 @@ def api_scene_frame(name: str, index: int):
 @app.patch('/api/scenes/{name}')
 def api_scene_update(name: str, body: dict = Body(...)):
     try:
-        return dataset.update_scene(name, body.get('description'), body.get('tags'))
+        return dataset.update_scene(name, body.get('description'), body.get('tags'), body.get('mode_id'))
     except KeyError:
         raise HTTPException(404)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post('/api/scenes/bulk')
+def api_scenes_bulk(body: dict = Body(...)):
+    """複数シーンのジャンルをまとめて設定する"""
+    names = body.get('names') or []
+    mode_id = body.get('mode_id')
+    if not names or mode_id is None:
+        raise HTTPException(400, 'シーンとジャンルを指定してください')
+    try:
+        mode_id = modes.validate(mode_id)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    done = []
+    for n in names:
+        try:
+            dataset.update_scene(n, mode_id=mode_id)
+            done.append(n)
+        except KeyError:
+            pass
+    return {'ok': True, 'updated': len(done)}
+
+
+# ---------------------------------------------------------------- API: 走行ジャンル
+@app.get('/api/modes')
+def api_modes():
+    scenes = dataset.list_scenes()
+    out = []
+    for m in modes.load():
+        sc = [s for s in scenes if s['mode_id'] == m['id']]
+        out.append(dict(m, scenes=len(sc), minutes=round(sum(s['duration_s'] for s in sc) / 60, 1)))
+    return out
+
+
+@app.post('/api/modes')
+def api_mode_add(body: dict = Body(...)):
+    try:
+        return modes.add(body.get('name'), body.get('description', ''))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.patch('/api/modes/{mode_id}')
+def api_mode_update(mode_id: int, body: dict = Body(...)):
+    try:
+        return modes.update(mode_id, body.get('name'), body.get('description'))
+    except KeyError:
+        raise HTTPException(404)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @app.delete('/api/scenes/{name}')
