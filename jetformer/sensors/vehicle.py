@@ -1,27 +1,20 @@
-"""車両データ: JetFormerコントロール基板(ESP32-S3, I2Cスレーブ 0x28)
+"""車両データ: JetFormer/FaBoJetRacer コントローラ基板(XIAO ESP32-S3, I2C 0x28)
 
-プロポ受信機のPWM(ステアリング/スロットル/補助)とモーター回転数を読む。
-3つの読み出し方式に対応する(docs/firmware_protocol.md 参照):
+プロポ受信機の CH1(ステアリング)/ CH2(スロットル)/ CH3(モード切替)のパルス幅と、
+ブラシレスモーターのホールセンサーから求めた回転数を読む。
 
-usb    (推奨・修正版ファーム)
-    ToFと同じUSBストリームに 'JFVH' パケットを流してもらい、ToFスレッドから受け取る。
-    ToFと操作値が同じ基板の時計で刻まれ、I2Cバスも使わない。
+snapshot (ファーム leracer_ctrl v2、既定)
+    レジスタ 0x20 から28バイトのスナップショットを読む(基板は読まれた瞬間の値を詰めて返す)。
+    struct "<BBHIHHHBBiiHBB":
+      magic 0xA5 | version 1 | seq u16 | t_us u32 | ch1 u16 | ch2 u16 | ch3 u16 | flags u8 | hall_state u8
+      | erpm i32 | hall_count i32 | hall_errors u16 | reserved u8 | CRC-8(poly 0x07, init 0, byte 0..26)
+    flags: bit0-2 = CH1-3 受信中(100ms以内にパルスあり), bit3 = SELECT(1=AI走行側), bit4 = モーター回転中
+    erpm: 電気角rpm(符号=回転方向)。モーター軸rpm = erpm / 極対数
 
-frame  (推奨・修正版ファーム)
-    基板は24バイトのスナップショットフレームをTX FIFOに詰め続ける:
-      'JF' | seq u16 | t_ms u32 | pwm1 u16 | pwm2 u16 | pwm3 u16 | m1_us u16 | m1_pct u16
-           | flags u16 | reserved u16 | checksum u16 (=先頭22バイトの和 & 0xFFFF)
-    Jetsonは48バイト読み、チェックサムの合う最も新しいフレームを採用する。
-    FIFOに古いデータが残っていても壊れない。
-
-legacy (現行ファーム main/leracer.c)
-    レジスタIDを1バイトwrite → int32(LE)を4バイトread。
-    ファームが「最後に選択したレジスタの値」を詰め続けるため、レジスタを切り替えると
-    前のレジスタの値がFIFOに残り、バイト位置もずれる。妥当な値の範囲から位置ずれを
-    補正するが、値の取り違えは防げないため quality='legacy' として記録する。
+legacy (量産ファーム v1)
+    レジスタ毎に write→read。v1は古い値がFIFOに残りチャネルが混ざるため、学習には使えない。
 """
 
-import queue
 import struct
 import time
 
@@ -30,10 +23,14 @@ from smbus2 import SMBus, i2c_msg
 from .. import clock
 from .base import Sample, SensorThread
 
-FRAME_LEN = 24
-FRAME_MAGIC = b'JF'
-FRAME_REGISTER = 0x20
-FRAME = struct.Struct('<2sHIHHHHHHHH')     # 22バイト + checksum u16
+SNAP_REG = 0x20
+SNAP_LEN = 28
+SNAP_MAGIC = 0xA5
+SNAP_VERSION = 1
+SNAP = struct.Struct('<BBHIHHHBBiiHBB')
+
+FLAG_SELECT = 0x08
+FLAG_MOVING = 0x10
 
 PLAUSIBLE = {
     'pwm': lambda v: v == 0 or 500 <= v <= 2600,
@@ -41,39 +38,47 @@ PLAUSIBLE = {
 }
 
 
-def parse_frames(data):
-    """bytes中の正しいフレームを全て返す [(seq, t_ms, values_dict), ...]"""
-    frames = []
-    i = data.find(FRAME_MAGIC)
-    while 0 <= i <= len(data) - FRAME_LEN:
-        chunk = data[i:i + FRAME_LEN]
-        checksum, = struct.unpack_from('<H', chunk, 22)
-        if sum(chunk[:22]) & 0xFFFF == checksum:
-            (_, seq, t_ms, p1, p2, p3, m1_us, m1_pct, flags, _r) = FRAME.unpack_from(chunk)
-            frames.append((seq, t_ms, {'pwm': [p1, p2, p3], 'motor_us': m1_us,
-                                       'motor_pct': m1_pct, 'flags': flags}))
-        i = data.find(FRAME_MAGIC, i + 1)
-    return frames
+def crc8(data):
+    c = 0
+    for b in data:
+        c ^= b
+        for _ in range(8):
+            c = ((c << 1) ^ 0x07) & 0xFF if c & 0x80 else (c << 1) & 0xFF
+    return c
+
+
+def decode_snapshot(data):
+    """28バイト → dict。形式違い・CRC不一致は ValueError"""
+    data = bytes(data)
+    if len(data) != SNAP_LEN:
+        raise ValueError('長さ %d != %d' % (len(data), SNAP_LEN))
+    (magic, ver, seq, t_us, ch1, ch2, ch3, flags, hall_state,
+     erpm, hall_count, hall_errors, _rsv, crc) = SNAP.unpack(data)
+    if magic != SNAP_MAGIC or ver != SNAP_VERSION:
+        raise ValueError('magic/version 不一致 0x%02x/%d' % (magic, ver))
+    if crc8(data[:-1]) != crc:
+        raise ValueError('CRC 不一致')
+    return {
+        'pwm': [ch1, ch2, ch3],                         # [steering, throttle, mode] µs
+        'valid': [bool(flags & (1 << k)) for k in range(3)],
+        'select': bool(flags & FLAG_SELECT),            # True = AI走行側(人の操縦データではない)
+        'moving': bool(flags & FLAG_MOVING),
+        'hall_state': hall_state, 'erpm': erpm, 'hall_count': hall_count, 'hall_errors': hall_errors,
+        'seq': seq, 'board_t_us': t_us, 'quality': 'snapshot',
+    }
 
 
 def decode_legacy(raw, kind):
-    """位置がずれた繰り返しint32列から、妥当な値を復元する。復元できなければNone"""
-    if len(raw) < 4:
-        return None
-    ok = PLAUSIBLE[kind]
+    """v1: 位置がずれた繰り返しint32列から、妥当な値を復元する。復元できなければNone"""
     candidates = []
-    for p in range(4):
-        word = raw[p:p + 4] if p + 4 <= len(raw) else None
-        if word is None or len(word) < 4:
-            continue
+    for p in range(max(len(raw) - 3, 0)):
+        word = raw[p:p + 4]
         for rot in range(4):
-            b = word[rot:] + word[:rot]
-            v = struct.unpack('<i', b)[0]
-            if ok(v):
+            v = struct.unpack('<i', word[rot:] + word[:rot])[0]
+            if PLAUSIBLE[kind](v):
                 candidates.append(v)
     if not candidates:
         return None
-    # 0は「データ無し」とも区別できないので、0以外の候補があればそちらを優先
     nonzero = [v for v in candidates if v != 0]
     return max(set(nonzero), key=nonzero.count) if nonzero else 0
 
@@ -90,25 +95,24 @@ class VehicleSensor(SensorThread):
         self.protocol = cfg['protocol']
         self._next = 0.0
         self._last_seq = None
+        self.read_errors = 0       # CRC不一致・形式違い(読み直し前の回数)
         self.stale = 0
-        self.invalid = 0
-        self._fed = queue.Queue(maxsize=1000)
-
-    def feed(self, t_ns, data):
-        """protocol='usb': ToFと同じUSBストリームで届いた車両パケットを受け取る"""
-        try:
-            self._fed.put_nowait(Sample(t_ns, data))
-        except queue.Full:
-            pass
 
     def _open(self):
-        if self.protocol == 'usb':
-            return
         self.bus = SMBus(self.cfg['bus'])
-        # 応答確認(0x28が居ること)
-        self.bus.i2c_rdwr(i2c_msg.read(self.addr, 1))
-        if self.protocol == 'frame':
-            self.bus.i2c_rdwr(i2c_msg.write(self.addr, [FRAME_REGISTER]))
+        if self.protocol == 'snapshot':
+            last = None
+            for _ in range(5):     # 書き込み直後などに1バイトずれて届くことがあるので読み直す
+                try:
+                    decode_snapshot(self.bus.read_i2c_block_data(self.addr, SNAP_REG, SNAP_LEN))
+                    break
+                except ValueError as e:
+                    last = e
+            else:
+                raise RuntimeError('0x%02x がスナップショット形式で応答しません(ファームv2を書き込んでください): %s'
+                                   % (self.addr, last))
+        else:
+            self.bus.i2c_rdwr(i2c_msg.read(self.addr, 1))
         self._next = time.monotonic()
 
     def _close(self):
@@ -116,69 +120,49 @@ class VehicleSensor(SensorThread):
             self.bus.close()
             self.bus = None
 
-    def _read(self, n):
-        msg = i2c_msg.read(self.addr, n)
-        self.bus.i2c_rdwr(msg)
-        return bytes(msg)
-
-    def _poll_frame(self):
-        data = self._read(FRAME_LEN * 2)
-        t_ns = clock.now_ns()
-        frames = parse_frames(data)
-        if not frames:
-            self.invalid += 1
-            return []
-        seq, t_ms, values = max(frames, key=lambda f: f[0])
-        if seq == self._last_seq:
+    def _poll_snapshot(self):
+        last = None
+        for _ in range(3):
+            try:
+                data = self.bus.read_i2c_block_data(self.addr, SNAP_REG, SNAP_LEN)
+                t_ns = clock.now_ns()
+                values = decode_snapshot(data)
+                break
+            except ValueError as e:
+                self.read_errors += 1
+                last = e
+        else:
+            raise RuntimeError('スナップショットを3回続けて読めません: %s' % last)
+        if values['seq'] == self._last_seq:
             self.stale += 1
             return []
-        self._last_seq = seq
-        flags = values['flags']
-        values.update(seq=seq, board_t_ms=t_ms, quality='frame',
-                      valid=[bool(flags & (1 << k)) for k in range(4)])
+        self._last_seq = values['seq']
         return [Sample(t_ns, values)]
 
     def _poll_legacy(self):
-        ch = self.cfg['channels']
-        pwm = []
-        valid = []
-        for name in ('steering', 'throttle', 'aux'):
-            self.bus.i2c_rdwr(i2c_msg.write(self.addr, [ch[name]]))
-            v = decode_legacy(self._read(8), 'pwm')
+        pwm, valid = [], []
+        for reg in (0x00, 0x01, 0x02):
+            self.bus.i2c_rdwr(i2c_msg.write(self.addr, [reg]))
+            msg = i2c_msg.read(self.addr, 8)
+            self.bus.i2c_rdwr(msg)
+            v = decode_legacy(bytes(msg), 'pwm')
             pwm.append(v or 0)
             valid.append(bool(v))
-        self.bus.i2c_rdwr(i2c_msg.write(self.addr, [ch['motor_pct']]))
-        m = decode_legacy(self._read(8), 'pct')
-        valid.append(m is not None)
-        t_ns = clock.now_ns()
-        if not any(valid):
-            self.invalid += 1
-        return [Sample(t_ns, {'pwm': pwm, 'motor_us': 0, 'motor_pct': m or 0, 'flags': 0,
-                              'seq': self.count, 'board_t_ms': 0, 'quality': 'legacy', 'valid': valid})]
-
-    def _poll_usb(self):
-        try:
-            samples = [self._fed.get(timeout=0.2)]
-        except queue.Empty:
-            return []
-        while not self._fed.empty():
-            samples.append(self._fed.get_nowait())
-        return samples
+        return [Sample(clock.now_ns(), {
+            'pwm': pwm, 'valid': valid, 'select': False, 'moving': False, 'hall_state': 0, 'erpm': 0,
+            'hall_count': 0, 'hall_errors': 0, 'seq': self.count, 'board_t_us': 0, 'quality': 'legacy'})]
 
     def _poll(self):
-        if self.protocol == 'usb':
-            return self._poll_usb()
         now = time.monotonic()
         if now < self._next:
             time.sleep(min(self._next - now, 0.2))
         self._next = max(self._next + self.period, time.monotonic() - self.period)
-        return self._poll_frame() if self.protocol == 'frame' else self._poll_legacy()
+        return self._poll_snapshot() if self.protocol == 'snapshot' else self._poll_legacy()
 
     def status(self):
         st = super(VehicleSensor, self).status()
-        st.update(protocol=self.protocol, stale=self.stale, invalid=self.invalid)
+        st.update(protocol=self.protocol, read_errors=self.read_errors, stale=self.stale)
         if self.latest is not None:
             d = self.latest.data
-            st['pwm'] = d['pwm']
-            st['motor_pct'] = d['motor_pct']
+            st.update(pwm=d['pwm'], erpm=d['erpm'], select=d['select'], valid=d['valid'])
         return st

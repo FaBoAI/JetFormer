@@ -7,7 +7,9 @@
                          CAM_FRONT.npz   timestamps_us, seq, files
                          TOF_FRONT.npz   timestamps_us, seq, depth[N,H,W] uint16
                          IMU.npz         timestamps_us, accel[N,3] m/s^2, gyro[N,3] deg/s, mag[N,3] µT, temp[N]
-                         VEHICLE.npz     timestamps_us, pwm[N,3] µs, motor_pct[N], motor_us[N], valid[N,4], seq[N], board_t_ms[N]
+                         VEHICLE.npz     timestamps_us, pwm[N,3] µs, valid[N,3], select[N], erpm[N], ...
+                         AI_CMD.npz      (AI走行中のみ)timestamps_us(=推論に使ったカメラ時刻), pred[N,10,2] µs,
+                                         raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...
                          thumb.jpg
 
 サンプルは計測時刻で「どのシーンに属するか」を決めるので、センサー間でシーン境界がずれない。
@@ -25,7 +27,7 @@ import uuid
 import cv2
 import numpy as np
 
-from . import clock, config, modes
+from . import clock, config, modes, tof_format
 from .sensors import SENSOR_CHANNELS
 
 
@@ -40,12 +42,16 @@ def write_json(path, obj):
     os.replace(tmp, path)
 
 
-def depth_colormap(depth, width=None, height=None, vmin=None, vmax=None):
-    d = depth.astype(np.float32)
-    lo = float(np.percentile(d, 2)) if vmin is None else vmin
-    hi = float(np.percentile(d, 98)) if vmax is None else vmax
+def depth_colormap(raw, width=None, height=None, vmin=None, vmax=None):
+    """ToFの生の値 → カラー画像(近い=赤, 遠い=青, 無効=黒)"""
+    d = tof_format.distance_mm(raw)
+    ok = d > 0
+    vals = d[ok] if ok.any() else np.array([0.0, 1.0])
+    lo = float(np.percentile(vals, 2)) if vmin is None else vmin
+    hi = float(np.percentile(vals, 98)) if vmax is None else vmax
     norm = np.clip((d - lo) / max(hi - lo, 1.0) * 255.0, 0, 255).astype(np.uint8)
-    color = cv2.applyColorMap(255 - norm, cv2.COLORMAP_TURBO)   # 近い=赤, 遠い=青
+    color = cv2.applyColorMap(255 - norm, cv2.COLORMAP_TURBO)
+    color[~ok] = 0
     if width and height:
         color = cv2.resize(color, (width, height), interpolation=cv2.INTER_NEAREST)
     return color
@@ -81,6 +87,7 @@ class _SceneBuffer(object):
         self.tof = []        # (t_ns, seq, depth)
         self.imu = []        # (t_ns, accel, gyro, mag, temp)
         self.veh = []        # (t_ns, data)
+        self.ai = []         # (t_ns, data) AI走行の指令
         self.thumb = None
         self.last_depth = None
         (path / 'CAM_FRONT').mkdir(parents=True, exist_ok=True)
@@ -102,9 +109,11 @@ class Recorder(object):
         self._finalizer = None
         self.last_error = ''
         self.dropped_writes = 0
+        self._closed = set()       # 保存済みシーン番号(遅れて届いた値で作り直さない)
+        self.late_dropped = 0
 
     # ------------------------------------------------------------------ 制御
-    def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET):
+    def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET, drive=None):
         mode_id = modes.validate(mode_id)
         if self.recording:
             raise RuntimeError('すでに収集中です')
@@ -120,6 +129,7 @@ class Recorder(object):
                 'token': new_token(), 'name': stamp, 'path': log_dir, 'start_ns': now,
                 'description': description, 'tags': list(tags or []), 'location': location,
                 'mode_events': [(now, mode_id)],     # (時刻, ジャンルID) 収集中の切り替えを記録
+                'drive': drive,                      # AI走行中の収集なら、そのモデル・設定
             }
             write_json(log_dir / 'log.json', {
                 'token': self.log['token'], 'logfile': stamp, 'vehicle': config.VEHICLE_NAME,
@@ -130,10 +140,12 @@ class Recorder(object):
                 'sensors': {'CAM_FRONT': config.CAMERA, 'TOF_FRONT': config.TOF, 'IMU': config.IMU,
                             'VEHICLE': {k: v for k, v in config.VEHICLE.items()}},
                 'calibration': config.CALIBRATION,
+                'drive': drive,
                 'software': 'jetformer',
             })
             self.scenes = {}
             self.saved = []
+            self._closed = set()
             self.max_scenes = max_scenes
             self.recording = True
             for name in SENSOR_CHANNELS:
@@ -142,10 +154,11 @@ class Recorder(object):
             self._finalizer.start()
             return self.log['name']
 
-    def stop(self):
+    def stop(self, only_log=None):
+        """収集を止めて残りのシーンを保存する。only_log を渡すと、そのログの収集のときだけ止める。止めたら True"""
         with self.lock:
-            if not self.recording:
-                return
+            if not self.recording or (only_log is not None and self.log['name'] != only_log):
+                return False
             self.recording = False
             for name in SENSOR_CHANNELS:
                 self.hub[name].unsubscribe(self._on_sample)
@@ -155,6 +168,7 @@ class Recorder(object):
         for idx in pending:
             self._finalize(idx, partial=True)
         self.log = None
+        return True
 
     WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15}   # カメラは自動露出の収束も待つ(1.5秒)
 
@@ -195,13 +209,22 @@ class Recorder(object):
                 'scene_index': cur + 1, 'scene_elapsed_s': round(elapsed - cur * config.SCENE_SECONDS, 1),
                 'scene_seconds': config.SCENE_SECONDS, 'max_scenes': self.max_scenes,
                 'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof),
-                                   'IMU': len(buf.imu), 'VEHICLE': len(buf.veh)} if buf else {},
+                                   'IMU': len(buf.imu), 'VEHICLE': len(buf.veh), 'AI_CMD': len(buf.ai)} if buf else {},
                 'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
                 'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
                 'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
             }
 
     # ------------------------------------------------------------------ 受信
+    def add_ai(self, t_ns, data):
+        """AI走行の指令を記録する(収集中でなければ何もしない)。t_ns は推論に使ったカメラ画像の時刻"""
+        with self.lock:
+            if not self.recording:
+                return
+            buf = self._scene_for(t_ns)
+            if buf is not None:
+                buf.ai.append((t_ns, data))
+
     def _scene_for(self, t_ns):
         start = self.log['start_ns']
         if t_ns < start:
@@ -209,6 +232,9 @@ class Recorder(object):
         period = int(config.SCENE_SECONDS * 1e9)
         idx = (t_ns - start) // period
         if self.max_scenes is not None and idx >= self.max_scenes:
+            return None
+        if idx in self._closed:            # 保存済みのシーンに遅れて届いた値は捨てる
+            self.late_dropped += 1
             return None
         buf = self.scenes.get(idx)
         if buf is None:
@@ -276,11 +302,13 @@ class Recorder(object):
     def _finalize(self, idx, partial):
         with self.lock:
             buf = self.scenes.pop(idx, None)
+            self._closed.add(idx)
             log = dict(self.log, mode_events=list(self.log['mode_events'])) if self.log else None
         if buf is None or log is None:
             return
         if not buf.cam:
-            shutil.rmtree(buf.path, ignore_errors=True)
+            if not (buf.path / 'scene.json').exists():     # 保存済みのシーンは消さない
+                shutil.rmtree(buf.path, ignore_errors=True)
             return
         try:
             self._save_scene(buf, log, partial)
@@ -312,13 +340,33 @@ class Recorder(object):
             v = [s[1] for s in buf.veh]
             np.savez(buf.path / 'VEHICLE.npz',
                      timestamps_us=ts([s[0] for s in buf.veh]),
-                     pwm=np.array([x['pwm'] for x in v], dtype=np.int32),
-                     motor_pct=np.array([x['motor_pct'] for x in v], dtype=np.int32),
-                     motor_us=np.array([x['motor_us'] for x in v], dtype=np.int32),
-                     valid=np.array([x['valid'] for x in v], dtype=bool),
+                     pwm=np.array([x['pwm'] for x in v], dtype=np.int32),          # [steering, throttle, mode] µs
+                     valid=np.array([x['valid'] for x in v], dtype=bool),          # CH1-3 受信中
+                     select=np.array([x['select'] for x in v], dtype=bool),        # True = AI走行側
+                     moving=np.array([x['moving'] for x in v], dtype=bool),
+                     erpm=np.array([x['erpm'] for x in v], dtype=np.int32),        # 電気角rpm(符号=向き)
+                     hall_count=np.array([x['hall_count'] for x in v], dtype=np.int64),
+                     hall_errors=np.array([x['hall_errors'] for x in v], dtype=np.int32),
+                     hall_state=np.array([x['hall_state'] for x in v], dtype=np.uint8),
                      seq=np.array([x['seq'] for x in v], dtype=np.int64),
-                     board_t_ms=np.array([x['board_t_ms'] for x in v], dtype=np.int64),
+                     board_t_us=np.array([x['board_t_us'] for x in v], dtype=np.int64),
                      quality=np.array(v[0]['quality']))
+        if buf.ai:
+            a = [s[1] for s in buf.ai]
+            np.savez(buf.path / 'AI_CMD.npz',
+                     timestamps_us=ts([s[0] for s in buf.ai]),
+                     pred=np.stack([x['pred'] for x in a]).astype(np.float32),        # [N,10,2] 未来の [ステア, スロットル] µs
+                     raw=np.array([x['raw'] for x in a], dtype=np.float32),           # 採用した予測(ゲイン適用前)
+                     out=np.array([x['out'] for x in a], dtype=np.float32),           # PCA9685へ出した値
+                     gains=np.array([x['gains'] for x in a], dtype=np.float32),       # [ステア, 速度]
+                     trim=np.array([x['trim'] for x in a], dtype=np.float32),
+                     lookahead=np.array([x['lookahead'] for x in a], dtype=np.int16),
+                     mode_id=np.array([x['mode_id'] for x in a], dtype=np.int16),
+                     hold=np.array([x['hold'] for x in a], dtype=bool),               # センサー途切れ等で中立を出した
+                     select=np.array([x['select'] for x in a], dtype=bool),           # True = 車にAIの出力が届いていた
+                     latency_ms=np.array([x['latency_ms'] for x in a], dtype=np.float32),   # 撮像 → 出力
+                     infer_ms=np.array([x['infer_ms'] for x in a], dtype=np.float32),
+                     dry_run=np.array([x['dry_run'] for x in a], dtype=bool))
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:
@@ -329,16 +377,30 @@ class Recorder(object):
         cam_ts = [c[0] for c in buf.cam]
         duration = (cam_ts[-1] - cam_ts[0]) / 1e9 if len(cam_ts) > 1 else 0.0
         counts = {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof), 'IMU': len(buf.imu), 'VEHICLE': len(buf.veh)}
+        if buf.ai:
+            counts['AI_CMD'] = len(buf.ai)
         rates = {k: round(n / duration, 1) if duration > 0 else 0.0 for k, n in counts.items()}
         stats = {}
         if buf.veh:
-            pwm = np.array([s[1]['pwm'] for s in buf.veh], dtype=np.float32)
-            mp = np.array([s[1]['motor_pct'] for s in buf.veh], dtype=np.float32)
-            for k, name in enumerate(('steering', 'throttle', 'aux')):
-                col = pwm[:, k][pwm[:, k] > 0]
+            vd = [s[1] for s in buf.veh]
+            pwm = np.array([x['pwm'] for x in vd], dtype=np.float32)
+            valid = np.array([x['valid'] for x in vd], dtype=bool)
+            erpm = np.array([x['erpm'] for x in vd], dtype=np.float32)
+            for k, name in enumerate(('steering', 'throttle', 'mode')):
+                col = pwm[:, k][valid[:, k] & (pwm[:, k] > 0)]
                 if col.size:
                     stats[name + '_us'] = {'min': int(col.min()), 'max': int(col.max()), 'mean': round(float(col.mean()), 1)}
-            stats['motor_pct'] = {'min': int(mp.min()), 'max': int(mp.max()), 'mean': round(float(mp.mean()), 1)}
+            stats['erpm'] = {'min': int(erpm.min()), 'max': int(erpm.max()), 'mean': round(float(erpm.mean()), 1)}
+            stats['ai_driving_ratio'] = round(float(np.mean([x['select'] for x in vd])), 3)
+            stats['rc_lost_ratio'] = round(float(1.0 - np.mean(valid[:, 0] & valid[:, 1])), 3)
+        if buf.ai:
+            a = [s[1] for s in buf.ai]
+            lat = np.array([x['latency_ms'] for x in a if not x['hold']] or [0.0])
+            inf = np.array([x['infer_ms'] for x in a if not x['hold']] or [0.0])
+            stats['ai'] = {'latency_ms_mean': round(float(lat.mean()), 1), 'latency_ms_max': round(float(lat.max()), 1),
+                           'infer_ms_mean': round(float(inf.mean()), 2),
+                           'hold_ratio': round(float(np.mean([x['hold'] for x in a])), 3),
+                           'applied_ratio': round(float(np.mean([x['select'] and not x['dry_run'] for x in a])), 3)}
         if buf.imu:
             acc = np.stack([s[1] for s in buf.imu])
             stats['accel_peak_ms2'] = round(float(np.abs(np.linalg.norm(acc, axis=1) - 9.80665).max()), 2)
@@ -357,5 +419,6 @@ class Recorder(object):
             'duration_s': round(duration, 2), 'complete': not partial and duration >= config.SCENE_SECONDS * 0.95,
             'counts': counts, 'rates': rates, 'stats': stats,
             'vehicle_quality': buf.veh[0][1]['quality'] if buf.veh else None,
+            'drive': log.get('drive'),
             'created_at': datetime.datetime.now().isoformat(timespec='seconds'),
         })

@@ -17,8 +17,6 @@ class SensorHub(object):
             'IMU': ImuSensor(config.IMU),
             'VEHICLE': VehicleSensor(config.VEHICLE),
         }
-        if config.VEHICLE['protocol'] == 'usb':
-            self.sensors['TOF_FRONT'].vehicle_feed = self.sensors['VEHICLE'].feed
 
     def __getitem__(self, name):
         return self.sensors[name]

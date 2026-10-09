@@ -14,6 +14,8 @@
     <button class="tab" data-tab="scenes">シーン <span id="scene-count" class="pill">0</span></button>
     <button class="tab" data-tab="modes">ジャンル</button>
     <button class="tab" data-tab="datasets">データセット</button>
+    <button class="tab" data-tab="train">学習</button>
+    <button class="tab" data-tab="drive">走行</button>
   </nav>
   <div class="header-status">
     <span id="rec-indicator" class="rec-off">待機中</span>
@@ -32,7 +34,7 @@
         </div>
         <div class="charts">
           <div class="card"><div class="card-title">操作値 PWM [µs]</div><canvas id="chart-pwm" height="140"></canvas></div>
-          <div class="card"><div class="card-title">モーター回転 [%]</div><canvas id="chart-motor" height="140"></canvas></div>
+          <div class="card"><div class="card-title">モーター回転 [eRPM]</div><canvas id="chart-motor" height="140"></canvas></div>
           <div class="card"><div class="card-title">加速度 [m/s²]</div><canvas id="chart-accel" height="140"></canvas></div>
           <div class="card"><div class="card-title">ヨーレート [deg/s]</div><canvas id="chart-gyro" height="140"></canvas></div>
         </div>
@@ -136,6 +138,135 @@
       </div>
     </div>
   </section>
+  <!-- ======================= 学習 ======================= -->
+  <section id="tab-train" class="tab-page">
+    <div class="ds-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">新しい学習</div>
+          <p class="muted small">このJetson(Orin Nano)のGPUで学習します。学習中は収集できません。</p>
+          <label>データセット<select id="tr-dataset"></select></label>
+          <div id="tr-ds-info" class="small"></div>
+          <label>間引き率(30fpsの連続フレームは似ているので、間引いても精度はあまり落ちません)
+            <select id="tr-stride">
+              <option value="1">1/1 全フレーム(30fps相当)</option>
+              <option value="2">1/2(15fps相当)</option>
+              <option value="3" selected>1/3(10fps相当)おすすめ</option>
+              <option value="5">1/5(6fps相当)</option>
+              <option value="10">1/10(3fps相当)</option>
+            </select></label>
+          <label>エポック数<input id="tr-epochs" type="number" value="30" min="1" max="500"></label>
+          <div class="row">
+            <label class="inline">バッチ<input id="tr-batch" type="number" value="64" min="4" max="256" class="num"></label>
+            <label class="inline">学習率<input id="tr-lr" type="number" value="0.0003" step="0.0001" min="0.00001" class="num wide"></label>
+          </div>
+          <label class="inline"><input type="checkbox" id="tr-pretrained" checked> ImageNet事前学習の重みを使う(初回のみネット接続が必要)</label>
+          <label class="inline"><input type="checkbox" id="tr-engine" checked> 学習後にTensorRTエンジンを作る(走行用)</label>
+          <div id="tr-estimate" class="estimate"></div>
+          <div class="row buttons"><button id="btn-tr-start" class="primary">学習を開始</button></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">実行中の学習
+            <span class="title-actions"><button id="btn-tr-stop" class="small danger" disabled>停止</button></span></div>
+          <div id="tr-current" class="small muted">実行中の学習はありません</div>
+          <div class="progress blue"><div id="tr-progress" class="bar"></div></div>
+          <div id="tr-progress-text" class="small muted"></div>
+          <canvas id="tr-chart" height="170"></canvas>
+          <div id="tr-modes" class="small"></div>
+          <details><summary class="small">ログ</summary><pre id="tr-log" class="log"></pre></details>
+        </div>
+        <div class="card-title section-title">学習結果</div>
+        <div id="run-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= AI走行 ======================= -->
+  <section id="tab-drive" class="tab-page">
+    <div class="ds-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">AI走行</div>
+          <p class="muted small">学習結果のモデル(TensorRT)で車を操作します。プロポの<b>CH3をAI側(LED紫)</b>にすると、
+            この出力がサーボ・ESCに届きます。<b>CH3を戻せば、いつでも人の操縦に戻ります。</b></p>
+          <label>モデル(学習結果)<select id="dr-model"></select></label>
+          <div id="dr-model-info" class="small muted"></div>
+          <label>走行ジャンル <span class="muted">(走行中に変えると、すぐ切り替わります)</span><select id="dr-mode"></select></label>
+
+          <div class="gain">
+            <div class="gain-head"><span>ステアリング ゲイン</span><b id="dr-steer-gain-v">1.00</b></div>
+            <input type="range" id="dr-steer-gain" min="0" max="2" step="0.05" value="1">
+            <div class="gain-scale"><span>0(直進)</span><span>1(学習どおり)</span><span>2</span></div>
+          </div>
+          <div class="gain">
+            <div class="gain-head"><span>速度 ゲイン</span><b id="dr-throttle-gain-v">1.00</b></div>
+            <input type="range" id="dr-throttle-gain" min="0" max="2" step="0.05" value="1">
+            <div class="gain-scale"><span>0(停止)</span><span>1(学習どおり)</span><span>2</span></div>
+          </div>
+          <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
+
+          <label class="inline check-line"><input type="checkbox" id="dr-record"> 走行中のデータを収集する(評価用)</label>
+          <div id="dr-record-opts" class="hidden indent">
+            <label>走行の説明<input id="dr-desc" placeholder="例: AI走行の評価 1周目"></label>
+            <label>タグ(カンマ区切り)<input id="dr-tags" value="ai-drive"></label>
+            <div class="muted small">20秒ごとのシーンとして保存され、シーンタブで予測・出力と映像を見返せます。
+              人が介入した区間(CH3が人側)は、そのまま学習データにも使えます。</div>
+          </div>
+          <label class="inline check-line"><input type="checkbox" id="dr-dry"> モーターに出力しない(中立のまま推論だけ確認)</label>
+
+          <details class="adv"><summary class="small">詳細設定</summary>
+            <div class="gain">
+              <div class="gain-head"><span>ステアリング トリム</span><b id="dr-trim-v">0 µs</b></div>
+              <input type="range" id="dr-trim" min="-200" max="200" step="5" value="0">
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>先読み(何フレーム先の予測を使うか)</span><b id="dr-look-v">1</b></div>
+              <input type="range" id="dr-look" min="1" max="10" step="1" value="1">
+              <div class="muted small">遅れて曲がり始めるときは大きく。1フレーム = 約33ms</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>PCA9685 時計補正</span><b id="dr-osc-v">0.0 %</b></div>
+              <input type="range" id="dr-osc" min="-10" max="10" step="0.1" value="0">
+              <div class="muted small">PCA9685は個体ごとにパルス幅が数%ずれます。停止中にCH3をAI側へ切り替えて、
+                モーターが回り出す・ステアリングが動くときに合わせます。</div>
+            </div>
+            <div id="dr-ref" class="muted small"></div>
+          </details>
+
+          <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button></div>
+          <button id="btn-dr-stop" class="stop-big" disabled>■ 停止(スペースキー)</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">状態 <span id="dr-phase" class="badge">停止中</span>
+            <span id="dr-who" class="who"></span></div>
+          <div id="dr-message" class="small"></div>
+          <div class="gauges">
+            <div class="gauge-row"><span class="gauge-label">ステアリング</span>
+              <div class="gauge"><div id="dr-g-steer-ref" class="g-ref"></div><div id="dr-g-steer-raw" class="g-needle raw"></div><div id="dr-g-steer-out" class="g-needle out"></div></div>
+              <span id="dr-v-steer" class="gauge-val"></span></div>
+            <div class="gauge-row"><span class="gauge-label">スロットル</span>
+              <div class="gauge"><div id="dr-g-thr-ref" class="g-ref"></div><div id="dr-g-thr-raw" class="g-needle raw"></div><div id="dr-g-thr-out" class="g-needle out"></div></div>
+              <span id="dr-v-thr" class="gauge-val"></span></div>
+            <div class="muted small"><span class="key raw"></span>モデルの予測 <span class="key out"></span><span id="dr-out-key">出力(ゲイン後)</span> <span class="key ref"></span>中心・中立 ・ 範囲 1000〜2000µs</div>
+          </div>
+          <div class="values" id="dr-stats"></div>
+        </div>
+        <div class="charts">
+          <div class="card"><div class="card-title">ステアリング [µs]</div><canvas id="dr-chart-steer" height="140"></canvas></div>
+          <div class="card"><div class="card-title">スロットル [µs]</div><canvas id="dr-chart-thr" height="140"></canvas></div>
+        </div>
+        <div class="card video-card">
+          <div class="card-title">カメラ | ToF距離</div>
+          <img id="drive-video" alt="drive">
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <!-- シーン詳細 -->
@@ -153,9 +284,10 @@
           <input id="m-slider" type="range" min="0" value="0">
           <span id="m-pos" class="muted small"></span>
         </div>
-        <div class="card"><div class="card-title">操作値 PWM [µs] / モーター [%]</div><canvas id="m-chart-veh" height="150"></canvas></div>
+        <div class="card"><div class="card-title">操作値 PWM [µs](人の操縦中のみ)</div><canvas id="m-chart-veh" height="150"></canvas></div>
         <div class="card"><div class="card-title">加速度 [m/s²] / ヨーレート [deg/s]</div><canvas id="m-chart-imu" height="150"></canvas></div>
         <div class="card"><div class="card-title">ToF 距離(最小・中央値)</div><canvas id="m-chart-tof" height="120"></canvas></div>
+        <div class="card hidden" id="m-ai-card"><div class="card-title">AI走行の指令 [µs](予測・出力)</div><canvas id="m-chart-ai" height="150"></canvas></div>
       </div>
       <div>
         <div class="card">
@@ -174,6 +306,7 @@
     </div>
   </div>
 </div>
+<button id="btn-float-stop" class="float-stop hidden">■ AI走行を停止(スペースキー)</button>
 <div id="toast" class="toast hidden"></div>
 <script src="/static/app.js"></script>
 </body>

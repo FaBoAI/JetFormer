@@ -3,6 +3,7 @@
     python -m jetformer.web.server          # http://<jetson>:8080/
 """
 
+import atexit
 import collections
 import contextlib
 import shutil
@@ -12,27 +13,61 @@ import uuid
 
 import cv2
 import numpy as np
-from fastapi import Body, FastAPI, HTTPException
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import config, dataset, modes
+from .. import actuator, config, dataset, drive, modes, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
+from ..training import TrainingManager
 
 STATIC = config.ROOT / 'jetformer' / 'web' / 'static'
 
 hub = SensorHub()
 recorder = Recorder(hub)
+trainer = TrainingManager()
+driver = drive.Driver(hub, recorder)
+SHUTDOWN = threading.Event()        # 終了の合図(映像配信などの終わらない応答を閉じる)
+
+
+def _release_outputs():
+    """走行していなければ、PCA9685のステアリング・スロットルをパルスなしにする(前のプロセスが残した出力を止める)"""
+    if driver.running:
+        return
+    try:
+        actuator.outputs_off(config.PCA9685)
+    except Exception:
+        pass
+
+
+@atexit.register
+def _on_exit():
+    # 通常の終了処理を通らなかった場合の後始末: 走行を止め、止まりきらなければ出力を切る
+    if driver.running:
+        driver.shutdown(1.5)
+        if driver.running:
+            try:
+                actuator.outputs_off(config.PCA9685)
+            except Exception:
+                pass
 
 
 @contextlib.asynccontextmanager
 async def lifespan(_app):
+    _release_outputs()
     yield
-    # 終了時: 収集中なら最後のシーンを保存してからセンサーを止める
+    # 終了時: 走行中なら中立を出して止め、収集中なら最後のシーンを保存してからセンサーを止め、学習中なら停止を指示する
+    driver.shutdown()
     if recorder.recording:
         recorder.stop()
     hub.stop()
+    if trainer.running:
+        try:
+            trainer.stop()
+        except RuntimeError:
+            pass
+    print('JetFormer: 終了処理が完了しました(走行停止・収集の保存・センサー停止)', flush=True)
 
 
 app = FastAPI(title='JetFormer', lifespan=lifespan)
@@ -58,7 +93,8 @@ class LiveHistory(object):
             self.imu.append((now, float(np.linalg.norm(a)), float(a[0]), float(a[1]), float(g[2])))
         else:
             d = sample.data
-            self.veh.append((now, d['pwm'][0], d['pwm'][1], d['pwm'][2], d['motor_pct']))
+            ok = d['valid'][0] and d['valid'][1]
+            self.veh.append((now, d['pwm'][0] if ok else 0, d['pwm'][1] if ok else 0, d['pwm'][2], d['erpm']))
 
     def snapshot(self):
         now = time.monotonic()
@@ -68,7 +104,7 @@ class LiveHistory(object):
                     'accel_x': [round(r[2], 2) for r in imu], 'accel_y': [round(r[3], 2) for r in imu],
                     'gyro_z': [round(r[4], 1) for r in imu]},
             'vehicle': {'t': [round(r[0] - now, 2) for r in veh], 'steering': [r[1] for r in veh],
-                        'throttle': [r[2] for r in veh], 'aux': [r[3] for r in veh], 'motor_pct': [r[4] for r in veh]},
+                        'throttle': [r[2] for r in veh], 'mode': [r[3] for r in veh], 'erpm': [r[4] for r in veh]},
         }
 
 
@@ -138,9 +174,10 @@ def _compose(image, depth, scale=2):
         cv2.putText(tof, 'ToF: no data', (20, h // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (180, 180, 180), 2)
     else:
         tof = depth_colormap(depth, w, h)
-        lo, hi = int(np.percentile(depth, 2)), int(np.percentile(depth, 98))
-        cv2.putText(tof, '%d-%d %s' % (lo, hi, config.TOF.get('unit', '')), (8, h - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+        mm = tof_format.distance_mm(depth)
+        if (mm > 0).any():
+            lo, hi = int(np.percentile(mm[mm > 0], 2)), int(np.percentile(mm[mm > 0], 98))
+            cv2.putText(tof, '%d-%d mm' % (lo, hi), (8, h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
     return np.hstack([cam, np.full((h, 4, 3), 255, np.uint8), tof])
 
 
@@ -154,6 +191,8 @@ def api_status():
         'sensors': hub.status(),
         'recorder': recorder.status(),
         'disk': {'free_gb': round(du.free / 1e9, 1), 'total_gb': round(du.total / 1e9, 1)},
+        'training': trainer.running,
+        'driving': driver.running,
         'config': {'scene_seconds': config.SCENE_SECONDS, 'vehicle_protocol': config.VEHICLE['protocol'],
                    'tof_unit': config.TOF.get('unit', ''), 'camera': '%dx%d@%d' % (
                        config.CAMERA['width'], config.CAMERA['height'], config.CAMERA['fps'])},
@@ -168,14 +207,16 @@ def api_sensors_start():
 
 @app.post('/api/sensors/stop')
 def api_sensors_stop():
-    if recorder.recording:
-        raise HTTPException(409, '収集中はセンサーを停止できません')
+    if recorder.recording or driver.running:
+        raise HTTPException(409, '収集中・走行中はセンサーを停止できません')
     hub.stop()
     return {'ok': True}
 
 
 @app.post('/api/record/start')
 def api_record_start(body: dict = Body(default={})):
+    if trainer.running:
+        raise HTTPException(409, '学習中は収集できません(GPU・CPUを奪い合い、30fpsの収集が乱れるため)')
     try:
         max_scenes = body.get('max_scenes')
         name = recorder.start(description=body.get('description', ''), tags=body.get('tags', []),
@@ -212,16 +253,18 @@ def api_live_values():
     out = history.snapshot()
     tof = hub['TOF_FRONT'].latest
     if tof is not None:
-        d = tof.data['depth']
-        out['tof'] = {'min': int(d.min()), 'center': int(d[d.shape[0] // 2, d.shape[1] // 2]),
-                      'median': int(np.median(d)), 'max': int(d.max())}
+        mm = tof_format.distance_mm(tof.data['depth'])
+        v = mm[mm > 0]
+        out['tof'] = {'min': int(v.min()) if v.size else 0, 'center': int(mm[mm.shape[0] // 2, mm.shape[1] // 2]),
+                      'median': int(np.median(v)) if v.size else 0, 'invalid': int((mm == 0).sum()),
+                      'confidence': round(float(tof_format.confidence(tof.data['depth']).mean()), 2)}
     imu = hub['IMU'].latest
     if imu is not None:
         out['imu_now'] = {'accel': [round(float(x), 2) for x in imu.data['accel']],
                           'gyro': [round(float(x), 1) for x in imu.data['gyro']], 'temp': round(imu.data['temp'], 1)}
     veh = hub['VEHICLE'].latest
     if veh is not None:
-        out['vehicle_now'] = {k: veh.data[k] for k in ('pwm', 'motor_pct', 'valid', 'quality')}
+        out['vehicle_now'] = {k: veh.data[k] for k in ('pwm', 'erpm', 'valid', 'select', 'moving', 'quality')}
     return out
 
 
@@ -231,7 +274,7 @@ def api_live_mjpeg(fps: float = 15.0):
 
     def gen():
         period = 1.0 / max(min(fps, 30.0), 1.0)
-        while True:
+        while not SHUTDOWN.is_set():
             t0 = time.monotonic()
             cam, tof = hub['CAM_FRONT'].latest, hub['TOF_FRONT'].latest
             if not hub.running or cam is None:
@@ -407,6 +450,113 @@ def api_export_download(filename: str):
     return FileResponse(p, filename=filename)
 
 
+# ---------------------------------------------------------------- API: 学習
+@app.post('/api/train/start')
+def api_train_start(body: dict = Body(...)):
+    if recorder.recording:
+        raise HTTPException(409, '収集中は学習できません(収集を止めてから開始してください)')
+    if driver.running:
+        raise HTTPException(409, 'AI走行中は学習できません(GPUを奪い合い、30fpsの走行が乱れるため)')
+    try:
+        name = trainer.start(body.get('dataset', ''), stride=body.get('stride', 3), epochs=body.get('epochs', 30),
+                             batch=body.get('batch', 64), lr=body.get('lr', 3e-4),
+                             pretrained=body.get('pretrained', True), build_engine=body.get('build_engine', True))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True, 'run': name}
+
+
+@app.post('/api/train/stop')
+def api_train_stop():
+    try:
+        trainer.stop()
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True}
+
+
+@app.get('/api/train/status')
+def api_train_status():
+    return trainer.status()
+
+
+@app.get('/api/runs')
+def api_runs():
+    return trainer.list_runs()
+
+
+@app.delete('/api/runs/{name}')
+def api_run_delete(name: str):
+    if driver.running and driver.st.get('run') == name:
+        raise HTTPException(409, '走行に使っているモデルは削除できません')
+    try:
+        trainer.delete_run(name)
+    except KeyError:
+        raise HTTPException(404)
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True}
+
+
+@app.get('/api/runs/{name}/files/{filename}')
+def api_run_file(name: str, filename: str):
+    try:
+        return FileResponse(trainer.artifact_path(name, filename), filename='%s_%s' % (name, filename))
+    except KeyError:
+        raise HTTPException(404)
+
+
+# ---------------------------------------------------------------- API: AI走行
+@app.get('/api/drive/models')
+def api_drive_models():
+    return drive.list_models()
+
+
+@app.get('/api/drive/status')
+def api_drive_status(token: str = Query(default='')):
+    """走行画面が0.25秒ごとに呼ぶ。走行を始めたページの token 付きの問い合わせが途絶えると走行を止める
+    (画面を閉じた・スマホがスリープした・通信断)。token なしの問い合わせは表示用で、生存確認にならない"""
+    alive = driver.heartbeat(token)
+    st = driver.status()
+    st['controller'] = alive
+    return st
+
+
+@app.post('/api/drive/start')
+def api_drive_start(body: dict = Body(...)):
+    if trainer.running:
+        raise HTTPException(409, '学習中は走行できません(GPUを奪い合い、30fpsを守れないため)')
+    try:
+        run, token = driver.start(body.get('run', ''), body.get('mode_id', -1), record=bool(body.get('record')),
+                                  description=body.get('description', ''), tags=body.get('tags') or [],
+                                  dry_run=bool(body.get('dry_run')), params=body.get('params') or {})
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True, 'run': run, 'token': token}
+
+
+@app.post('/api/drive/stop')
+def api_drive_stop(body: dict = Body(default={})):
+    try:
+        driver.stop(body.get('reason') or '停止ボタン')
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True}
+
+
+@app.post('/api/drive/params')
+def api_drive_params(body: dict = Body(...)):
+    """ゲイン・トリム・先読み・時計補正・ジャンルを変える(走行中もすぐ反映)"""
+    try:
+        return driver.set_params(body)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
+
+
 # ---------------------------------------------------------------- 画面
 app.mount('/static', StaticFiles(directory=str(STATIC)), name='static')
 
@@ -418,8 +568,24 @@ def index():
 
 def main():
     import uvicorn
+
+    class Server(uvicorn.Server):
+        def handle_exit(self, sig, frame):
+            # 終了の合図を受けたらすぐ走行を止める(uvicornは開いている接続が閉じるまで終了処理を待つため、
+            # lifespan を待っていると走行が続いてしまう)
+            SHUTDOWN.set()
+            try:
+                driver.stop('サーバー終了')
+            except RuntimeError:
+                pass
+            super().handle_exit(sig, frame)
+
     config.RAW_DIR.mkdir(parents=True, exist_ok=True)
-    uvicorn.run(app, host=config.WEB_HOST, port=config.WEB_PORT, log_level='warning')
+    try:
+        Server(uvicorn.Config(app, host=config.WEB_HOST, port=config.WEB_PORT, log_level='warning',
+                              timeout_graceful_shutdown=2)).run()
+    except KeyboardInterrupt:          # uvicornが終了後に受けたSIGINTを投げ直すため(終了処理は済んでいる)
+        pass
 
 
 if __name__ == '__main__':

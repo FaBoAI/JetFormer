@@ -113,8 +113,10 @@ function drawChart(canvas, series, opt = {}) {
     ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
     ctx.fillText(Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1), 2, y + 3);
   }
-  ctx.fillText(`${x0.toFixed(1)}s`, pad.l, h - 4);
-  ctx.fillText(`${x1.toFixed(1)}s`, w - pad.r - 30, h - 4);
+  const xLabel = opt.xLabel || ((v) => `${v.toFixed(1)}s`);
+  ctx.fillText(xLabel(x0), pad.l, h - 4);
+  const right = xLabel(x1);
+  ctx.fillText(right, w - pad.r - ctx.measureText(right).width, h - 4);
   for (const s of series) {
     ctx.strokeStyle = s.color; ctx.lineWidth = 1.5; ctx.beginPath();
     let started = false;
@@ -143,17 +145,21 @@ function showTab(name) {
   state.tab = name;
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab-page').forEach((p) => p.classList.toggle('active', p.id === 'tab-' + name));
-  const video = $('#live-video');
-  if (name === 'live') { if (!video.src.includes('live.mjpg')) video.src = '/api/live.mjpg?fps=15&_=' + Date.now(); }
-  else video.removeAttribute('src');                      // 見ていない時は映像を止めて帯域を節約
+  for (const [tab, id] of [['live', '#live-video'], ['drive', '#drive-video']]) {
+    const video = $(id);
+    if (name === tab) { if (!video.src.includes('live.mjpg')) video.src = '/api/live.mjpg?fps=15&_=' + Date.now(); }
+    else video.removeAttribute('src');                    // 見ていない時は映像を止めて帯域を節約
+  }
   if (name === 'scenes') loadScenes();
   if (name === 'modes') loadModes();
+  if (name === 'train') loadTrain();
+  if (name === 'drive') loadDrive();
   if (name === 'datasets') { loadDatasets(); loadJobs(); updateDsSelected(); }
 }
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
 
 // ------------------------------------------------------------ 状態(1秒ごと)
-const SENSOR_LABEL = { CAM_FRONT: 'カメラ', TOF_FRONT: 'ToF', IMU: 'IMU', VEHICLE: '車両(PWM)' };
+const SENSOR_LABEL = { CAM_FRONT: 'カメラ', TOF_FRONT: 'ToF', IMU: 'IMU', VEHICLE: '車両(PWM)', AI_CMD: 'AI指令' };
 const EXPECTED_HZ = { CAM_FRONT: 30, TOF_FRONT: 30, IMU: 100, VEHICLE: 50 };
 
 function sensorExtra(name, s) {
@@ -162,8 +168,9 @@ function sensorExtra(name, s) {
   if (name === 'TOF_FRONT') { parts.push(`破損 ${s.bad_frames}`, `欠落 ${s.skipped}`); }
   if (name === 'IMU') parts.push(s.mag ? '地磁気あり' : '地磁気なし');
   if (name === 'VEHICLE') {
-    parts.push(`方式 ${s.protocol}`);
-    if (s.protocol === 'legacy') parts.push('<span class="warn-text">値の取り違えあり</span>');
+    if (s.protocol === 'legacy') parts.push('<span class="warn-text">v1ファーム(値の取り違えあり)</span>');
+    else parts.push(`v2 / 読み直し ${s.read_errors || 0}`);
+    if (s.select !== undefined) parts.push(s.select ? '<span class="warn-text">AI走行中</span>' : '人が操縦中');
   }
   return parts.filter(Boolean).join(' / ');
 }
@@ -172,8 +179,10 @@ function renderStatus(st) {
   state.status = st;
   const rec = st.recorder;
   const ind = $('#rec-indicator');
-  ind.textContent = rec.recording ? `● 収集中 ${rec.log} ・ ${rec.mode_name}` : '待機中';
-  ind.className = rec.recording ? 'rec-on' : 'rec-off';
+  ind.textContent = (st.driving ? 'AI走行中 ' : '') + (rec.recording ? `● 収集中 ${rec.log} ・ ${rec.mode_name}` : st.training ? '学習中' : st.driving ? '' : '待機中');
+  ind.className = st.driving ? 'rec-drive' : rec.recording ? 'rec-on' : st.training ? 'rec-train' : 'rec-off';
+  if (st.training && !trainTimer) pollTrain();
+  if (st.driving && !driveTimer) pollDrive();
   $('#disk').textContent = `空き ${st.disk.free_gb} GB`;
 
   const rows = Object.entries(st.sensors).map(([name, s]) => {
@@ -202,9 +211,9 @@ function renderStatus(st) {
     $('#scene-progress').style.width = '0';
     $('#rec-detail').textContent = rec.last_error ? '⚠ ' + rec.last_error : `1シーン = ${st.config.scene_seconds} 秒`;
   }
-  $('#btn-rec-start').disabled = rec.recording;
+  $('#btn-rec-start').disabled = rec.recording || st.training;
   $('#btn-rec-stop').disabled = !rec.recording;
-  $('#btn-sensors-stop').disabled = rec.recording || !st.sensors_running;
+  $('#btn-sensors-stop').disabled = rec.recording || st.driving || !st.sensors_running;
   $('#btn-sensors-start').disabled = st.sensors_running;
   const saved = rec.saved_scenes || [];
   $('#session-scenes').innerHTML = saved.length
@@ -225,8 +234,8 @@ function renderValues(v) {
     { x: veh.t || [], y: (veh.steering || []).map((x) => x || null), color: COLORS.steering, label: 'ステア' },
     { x: veh.t || [], y: (veh.throttle || []).map((x) => x || null), color: COLORS.throttle, label: 'スロットル' },
   ], { xMin: -10, xMax: 0, minSpan: 100 });
-  drawChart($('#chart-motor'), [{ x: veh.t || [], y: veh.motor_pct || [], color: COLORS.motor, label: 'モーター' }],
-    { xMin: -10, xMax: 0, yMin: 0, yMax: 100 });
+  drawChart($('#chart-motor'), [{ x: veh.t || [], y: veh.erpm || [], color: COLORS.motor, label: 'eRPM' }],
+    { xMin: -10, xMax: 0, minSpan: 1000 });
   drawChart($('#chart-accel'), [
     { x: imu.t || [], y: imu.accel_norm || [], color: COLORS.accel, label: '|a|' },
     { x: imu.t || [], y: imu.accel_x || [], color: COLORS.ax, label: 'x(前後)' },
@@ -236,11 +245,13 @@ function renderValues(v) {
     { xMin: -10, xMax: 0, minSpan: 20 });
   const rows = [];
   if (v.vehicle_now) {
-    const p = v.vehicle_now.pwm;
-    rows.push(['ステアリング', `${p[0]} µs`], ['スロットル', `${p[1]} µs`], ['補助', `${p[2]} µs`],
-              ['モーター', `${v.vehicle_now.motor_pct} %`]);
+    const n = v.vehicle_now, p = n.pwm, ok = n.valid || [];
+    const ch = (i, label) => [label, ok[i] === false ? '<span class="warn-text">受信なし</span>' : `${p[i]} µs`];
+    rows.push(ch(0, 'ステアリング(CH1)'), ch(1, 'スロットル(CH2)'), ch(2, 'モード(CH3)'),
+              ['モーター', `${n.erpm} eRPM${n.moving ? '(回転中)' : ''}`],
+              ['操縦', n.select ? '<span class="warn-text">AI(学習には使わない)</span>' : '人(プロポ)']);
   }
-  if (v.tof) rows.push(['ToF 最小/中央', `${v.tof.min} / ${v.tof.center} ${state.status ? state.status.config.tof_unit : ''}`]);
+  if (v.tof) rows.push(['ToF 最小/中央', `${v.tof.min} / ${v.tof.center} mm`], ['ToF 無効ゾーン', `${v.tof.invalid} / 2268`]);
   if (v.imu_now) {
     rows.push(['加速度', v.imu_now.accel.map((x) => x.toFixed(2)).join(', ') + ' m/s²'],
               ['角速度', v.imu_now.gyro.map((x) => x.toFixed(1)).join(', ') + ' °/s'], ['IMU温度', `${v.imu_now.temp} ℃`]);
@@ -292,8 +303,10 @@ function filteredScenes() {
 function sceneBadges(s) {
   const b = [modeBadge(s.mode_id, s.mode_mixed)];
   b.push(s.complete ? '<span class="badge ok">20秒</span>' : `<span class="badge warn">${s.duration_s}秒</span>`);
-  if (s.vehicle_quality === 'legacy') b.push('<span class="badge warn">PWM:legacy</span>');
-  else if (s.vehicle_quality) b.push(`<span class="badge ok">PWM:${esc(s.vehicle_quality)}</span>`);
+  if (s.vehicle_quality === 'legacy') b.push('<span class="badge warn">PWM:v1(学習不可)</span>');
+  else if (s.vehicle_quality) b.push('<span class="badge ok">PWM:v2</span>');
+  if (s.drive) b.push(`<span class="badge ai">AIモデル${s.drive.dry_run ? '(出力なし)' : ''}</span>`);
+  if (s.stats && s.stats.ai_driving_ratio > 0) b.push(`<span class="badge warn">AI走行 ${Math.round(s.stats.ai_driving_ratio * 100)}%</span>`);
   if (s.stats && s.stats.camera_max_gap_ms > 70) b.push(`<span class="badge warn">映像途切れ ${s.stats.camera_max_gap_ms}ms</span>`);
   for (const t of s.tags || []) b.push(`<span class="badge tag">${esc(t)}</span>`);
   return b.join('');
@@ -367,9 +380,16 @@ async function openScene(name) {
     ['開始', fmtTime(s.start_us)], ['長さ', `${s.duration_s} 秒`],
     ['件数', `カメラ ${s.counts.CAM_FRONT} / ToF ${s.counts.TOF_FRONT} / IMU ${s.counts.IMU} / 車両 ${s.counts.VEHICLE}`],
     ['レート', Object.entries(s.rates).map(([k, v]) => `${SENSOR_LABEL[k] || k} ${v}Hz`).join(', ')],
-    ['ステアリング', fmt(st.steering_us)], ['スロットル', fmt(st.throttle_us)], ['モーター', fmt(st.motor_pct)],
+    ['ステアリング', fmt(st.steering_us)], ['スロットル', fmt(st.throttle_us)], ['モード(CH3)', fmt(st.mode_us)],
+    ['モーター eRPM', fmt(st.erpm)],
+    ['AI走行の割合', st.ai_driving_ratio !== undefined ? `${Math.round(st.ai_driving_ratio * 100)} %(学習には使わない)` : '-'],
+    ['受信断の割合', st.rc_lost_ratio !== undefined ? `${Math.round(st.rc_lost_ratio * 100)} %` : '-'],
     ['加速度ピーク', st.accel_peak_ms2 !== undefined ? `${st.accel_peak_ms2} m/s²` : '-'],
     ['映像の最大間隔', `${st.camera_max_gap_ms} ms`], ['車両データ', s.vehicle_quality || '-'],
+    ...(s.drive ? [['AIモデル', `${s.drive.run}${s.drive.dry_run ? '(出力なし)' : ''}`],
+                   ['走行設定', `ステアリング×${(s.drive.params || {}).steer_gain} / 速度×${(s.drive.params || {}).throttle_gain}(開始時)`]] : []),
+    ...(st.ai ? [['AIの遅延', `平均 ${st.ai.latency_ms_mean} ms / 最大 ${st.ai.latency_ms_max} ms(推論 ${st.ai.infer_ms_mean} ms)`],
+                 ['AIが車を操作', `${Math.round(st.ai.applied_ratio * 100)} % / 中立で停止 ${Math.round(st.ai.hold_ratio * 100)} %`]] : []),
   ].map(([k, v]) => `<div><span class="muted">${k}:</span> ${esc(v)}</div>`).join('');
   $('#m-mode').value = String(s.mode_id);
   $('#m-segments').innerHTML = s.mode_mixed
@@ -400,6 +420,14 @@ function drawSceneCharts(cursor) {
     { x: tof.t, y: tof.min, color: COLORS.min, label: '最小' },
     { x: tof.t, y: tof.median, color: COLORS.median, label: '中央値' },
   ] : [], { cursor, xMin: 0, xMax });
+  const ai = ser.ai;
+  $('#m-ai-card').classList.toggle('hidden', !ai);
+  if (ai) drawChart($('#m-chart-ai'), [
+    { x: ai.t, y: ai.raw_steer, color: '#93c5fd', label: 'ステア予測' },
+    { x: ai.t, y: ai.out_steer, color: COLORS.steering, label: 'ステア出力' },
+    { x: ai.t, y: ai.raw_throttle, color: '#fca5a5', label: 'スロットル予測' },
+    { x: ai.t, y: ai.out_throttle, color: COLORS.throttle, label: 'スロットル出力' },
+  ], { cursor, xMin: 0, xMax, minSpan: 100 });
 }
 function showFrame(i) {
   const s = state.modal;
@@ -527,6 +555,312 @@ $('#dataset-list').addEventListener('click', async (e) => {
   }
 });
 
+
+// ------------------------------------------------------------ 学習
+const TRAIN_RATE = 200, VAL_RATE = 650;     // Orin Nano実測: 学習 約200枚/秒、検証 約650枚/秒
+const fmtDur = (s) => (s === null || s === undefined) ? '-' : s >= 3600 ? `${Math.floor(s / 3600)}時間${Math.round(s % 3600 / 60)}分`
+  : s >= 60 ? `${Math.floor(s / 60)}分${Math.round(s % 60)}秒` : `${Math.round(s)}秒`;
+state.datasets = [];
+async function loadTrain() {
+  try { state.datasets = await api('GET', '/api/datasets'); } catch (e) { return; }
+  const sel = $('#tr-dataset'), cur = sel.value;
+  sel.innerHTML = state.datasets.slice().reverse().map((d) => `<option value="${esc(d.name)}">${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム)</option>`).join('')
+    || '<option value="">データセットがありません</option>';
+  if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
+  updateEstimate(); loadRuns(); pollTrain();
+}
+function updateEstimate() {
+  const d = state.datasets.find((x) => x.name === $('#tr-dataset').value);
+  if (!d) { $('#tr-estimate').textContent = 'データセットを作成してください(データセットタブ)'; $('#tr-ds-info').innerHTML = ''; return; }
+  const mf = d.mode_frames || {};
+  $('#tr-ds-info').innerHTML = Object.entries(mf).map(([id, n]) =>
+    `<span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(((d.modes || []).find((m) => m.id === +id) || {}).name || id)}</span> ${n}`).join(' ')
+    + (mf['0'] ? '<div class="warn-text">「未設定」のフレームは学習に使いません</div>' : '');
+  const stride = +$('#tr-stride').value, epochs = +$('#tr-epochs').value || 1;
+  const usable = d.frames - (mf['0'] || 0);
+  const trFrac = d.scenes ? d.train_scenes / d.scenes : 1;
+  const nTrain = Math.round(usable * trFrac / stride), nVal = Math.round(usable * (1 - trFrac) / stride);
+  const perEpoch = nTrain / TRAIN_RATE + nVal / VAL_RATE + 3;
+  const total = perEpoch * epochs + 30 + ($('#tr-engine').checked ? 70 : 0);
+  $('#tr-estimate').innerHTML = `学習 最大 <b>${nTrain}</b> 枚 / 検証 最大 <b>${nVal}</b> 枚<br>1エポック 約 <b>${fmtDur(perEpoch)}</b> → 合計 約 <b>${fmtDur(total)}</b>`
+    + '<div class="muted small">操作値が無効・AI走行中のフレームは除外されるため、実際はこれより少し短くなります</div>';
+}
+['#tr-dataset', '#tr-stride', '#tr-epochs', '#tr-engine'].forEach((s) => $(s).addEventListener('change', updateEstimate));
+$('#tr-epochs').addEventListener('input', updateEstimate);
+$('#btn-tr-start').addEventListener('click', async () => {
+  const body = { dataset: $('#tr-dataset').value, stride: +$('#tr-stride').value, epochs: +$('#tr-epochs').value,
+                 batch: +$('#tr-batch').value, lr: +$('#tr-lr').value, pretrained: $('#tr-pretrained').checked,
+                 build_engine: $('#tr-engine').checked };
+  if (!body.dataset) { toast('データセットを選んでください', true); return; }
+  try { const r = await api('POST', '/api/train/start', body); toast(`学習を開始しました (${r.run})`); pollTrain(); }
+  catch (e) { toast(e.message, true); }
+});
+$('#btn-tr-stop').addEventListener('click', async () => {
+  if (!confirm('学習を停止します。ここまでで最良のモデルを保存して終了します。')) return;
+  try { await api('POST', '/api/train/stop'); toast('停止を指示しました'); } catch (e) { toast(e.message, true); }
+});
+let trainTimer = null, lastRunState = null;
+async function pollTrain() {
+  clearTimeout(trainTimer); trainTimer = null;
+  let st;
+  try { st = await api('GET', '/api/train/status'); }
+  catch (e) { if (state.tab === 'train' || lastRunState) trainTimer = setTimeout(pollTrain, 2000); return; }
+  renderTrain(st);
+  if (st.running || state.tab === 'train') trainTimer = setTimeout(pollTrain, st.running ? 1000 : 4000);
+  const key = st.name ? `${st.name}:${st.phase}` : null;
+  if (key !== lastRunState) { lastRunState = key; loadRuns(); }
+}
+function renderTrain(st) {
+  $('#btn-tr-stop').disabled = !(st.running && st.phase === 'training');
+  $('#btn-tr-start').disabled = !!st.running;
+  if (!st.name) { $('#tr-current').textContent = '実行中の学習はありません'; return; }
+  const info = st.info || {};
+  const names = Object.fromEntries((info.modes || []).map((m) => [m.id, m.name]));
+  $('#tr-current').innerHTML = `<b>${esc(st.name)}</b> ・ ${esc(st.message || '')}`
+    + (info.train ? `<div class="muted">学習 ${info.train} 枚 / 検証 ${info.val} 枚 / 間引き 1/${info.stride}</div>` : '')
+    + (st.error ? `<div class="warn-text">${esc(st.error)}</div>` : '');
+  const ep = st.epochs || 1, stepsEp = (info.steps_train || 0) + (info.steps_val || 0);
+  const inEpoch = stepsEp ? ((st.step_phase === 'val' ? info.steps_train : 0) + st.step) / stepsEp : 0;
+  const frac = st.phase === 'done' ? 1 : Math.min(1, ((Math.max(st.epoch, 1) - 1) + inEpoch) / ep);
+  $('#tr-progress').style.width = `${Math.round(frac * 100)}%`;
+  $('#tr-progress-text').textContent = st.phase === 'training'
+    ? `エポック ${st.epoch} / ${ep}(${st.step_phase === 'val' ? '検証' : '学習'} ${st.step}/${st.steps})・経過 ${fmtDur(st.elapsed_s)}・残り 約 ${fmtDur(st.eta_s)}`
+    : `経過 ${fmtDur(st.elapsed_s)}`;
+  const h = st.history || [];
+  drawChart($('#tr-chart'), [
+    { x: h.map((r) => r.epoch), y: h.map((r) => r.train_us), color: COLORS.steering, label: '学習誤差 [µs]' },
+    { x: h.map((r) => r.epoch), y: h.map((r) => r.val_us), color: COLORS.throttle, label: '検証誤差 [µs]' },
+  ], { minSpan: 10, xLabel: (v) => `エポック ${Math.round(v)}` });
+  const last = h[h.length - 1];
+  $('#tr-modes').innerHTML = last ? '<div class="muted">ジャンル別の検証誤差(最新エポック)</div><div class="mode-loss">' +
+    Object.entries(last.val_per_mode_us || {}).map(([id, v]) =>
+      `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('') + '</div>' : '';
+  $('#tr-log').textContent = (st.log || []).join('\n');
+}
+async function loadRuns() {
+  let runs = [];
+  try { runs = await api('GET', '/api/runs'); } catch (e) { return; }
+  const label = { done: ['ok', '完了'], stopped: ['warn', '途中停止'], stopped_no_model: ['warn', 'モデルなし'], running: ['', '実行中'], error: ['warn', 'エラー'] };
+  $('#run-list').innerHTML = runs.map((r) => {
+    const [cls, txt] = label[r.state] || ['warn', r.state];
+    const names = Object.fromEntries((r.modes || []).map((m) => [m.id, m.name]));
+    const files = (r.files || []).filter((f) => f !== 'run.json').map((f) =>
+      `<a href="/api/runs/${encodeURIComponent(r.name)}/files/${f}" download><button class="small">⬇ ${f}</button></a>`).join(' ');
+    return `<div class="ds">
+      <h3>${esc(r.name)} <span class="badge ${cls}">${txt}</span></h3>
+      <div class="stats">
+        <span>データセット <b>${esc(r.params.dataset)}</b></span><span>間引き <b>1/${r.params.stride}</b></span>
+        <span>エポック <b>${r.epochs_done ?? '-'}</b> / ${r.params.epochs}</span>
+        <span>最良の検証誤差 <b>${r.best_val_us ?? '-'}</b> µs${r.best_epoch ? `(${r.best_epoch}エポック目)` : ''}</span>
+        <span>時間 <b>${fmtDur(r.duration_s)}</b></span><span>学習 ${r.train_samples ?? '-'} 枚</span>
+      </div>
+      <div class="mode-loss">${Object.entries(r.best_val_per_mode_us || {}).map(([id, v]) =>
+        `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>
+      <div class="row">${files}<span class="spacer"></span>
+        ${r.state === 'running' ? '' : `<button class="small danger" data-del-run="${esc(r.name)}">削除</button>`}</div>
+    </div>`;
+  }).join('') || '<div class="muted">まだありません</div>';
+}
+$('#run-list').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-del-run]');
+  if (!b || !confirm(`学習結果 ${b.dataset.delRun} を削除します。`)) return;
+  try { await api('DELETE', `/api/runs/${encodeURIComponent(b.dataset.delRun)}`); loadRuns(); } catch (err) { toast(err.message, true); }
+});
+
+
+// ------------------------------------------------------------ AI走行
+state.drive = { models: [], st: null, paramsLoaded: false };
+const DR_PARAMS = [
+  ['#dr-steer-gain', 'steer_gain', (v) => (+v).toFixed(2)],
+  ['#dr-throttle-gain', 'throttle_gain', (v) => (+v).toFixed(2)],
+  ['#dr-trim', 'steer_trim_us', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(0)} µs`],
+  ['#dr-look', 'lookahead', (v) => `${v}(約${Math.round(v * 33)}ms先)`],
+  ['#dr-osc', 'osc_percent', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(1)} %`],
+];
+const drModel = () => state.drive.models.find((m) => m.name === $('#dr-model').value);
+async function loadDrive() {
+  try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { toast(e.message, true); return; }
+  if (!state.drive.st) { try { state.drive.st = await api('GET', '/api/drive/status'); } catch (e) { /* 後で */ } }
+  const sel = $('#dr-model'), cur = sel.value;
+  sel.innerHTML = state.drive.models.map((m) =>
+    `<option value="${esc(m.name)}">${esc(m.name)}${m.best_val_us != null ? `(検証誤差 ${m.best_val_us}µs)` : ''}</option>`).join('')
+    || '<option value="">走行できるモデルがありません(学習タブで「TensorRTエンジンを作る」)</option>';
+  const st = state.drive.st;
+  const last = !state.drive.restored && st && st.last ? st.last.run : null;     // 初回は前回使ったモデル
+  for (const want of [st && st.running && st.run, last, cur]) {
+    if (want && [...sel.options].some((o) => o.value === want)) { sel.value = want; break; }
+  }
+  renderDriveModel();
+  state.drive.restored = true;
+  pollDrive();
+}
+function renderDriveModel() {
+  const m = drModel();
+  const modeSel = $('#dr-mode'), cur = modeSel.value;
+  if (!m) { $('#dr-model-info').textContent = ''; modeSel.innerHTML = ''; return; }
+  const names = Object.fromEntries((m.modes || []).map((x) => [x.id, x.name]));
+  $('#dr-model-info').innerHTML = `データセット ${esc(m.dataset)} ・ 間引き 1/${m.stride ?? '-'} ・ ${esc(m.created_at || '')}`
+    + `<div class="mode-loss">${Object.entries(m.best_val_per_mode_us || {}).map(([id, v]) =>
+      `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>`;
+  modeSel.innerHTML = (m.modes || []).filter((x) => x.id !== 0).map((x) => {
+    const ok = m.trained_modes.includes(x.id);
+    return `<option value="${x.id}" ${ok ? '' : 'disabled'}>${x.id}: ${esc(x.name)}${ok ? '' : '(学習データなし)'}</option>`;
+  }).join('');
+  const st = state.drive.st;
+  const running = st && st.running ? String(st.mode_id) : '';
+  const last = !state.drive.restored && st && st.last && st.last.mode_id != null ? String(st.last.mode_id) : '';
+  for (const v of [running, last, cur]) {
+    if (v && [...modeSel.options].some((o) => o.value === v && !o.disabled)) { modeSel.value = v; return; }
+  }
+  const first = [...modeSel.options].find((o) => !o.disabled);
+  if (first) modeSel.value = first.value;
+}
+$('#dr-model').addEventListener('change', renderDriveModel);
+$('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
+function readDriveParams() {
+  const p = {};
+  for (const [sel, key] of DR_PARAMS) p[key] = +$(sel).value;
+  return p;
+}
+// スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
+const drBusy = {}, drTimers = {};
+for (const [sel, key, fmt] of DR_PARAMS) {
+  const el = $(sel);
+  el.addEventListener('pointerdown', () => { drBusy[key] = (drBusy[key] || 0) | 1; });
+  for (const ev of ['pointerup', 'pointercancel', 'change']) el.addEventListener(ev, () => { drBusy[key] = (drBusy[key] || 0) & ~1; });
+  el.addEventListener('input', () => {
+    $(sel + '-v').textContent = fmt(el.value);
+    drBusy[key] = (drBusy[key] || 0) | 2;
+    clearTimeout(drTimers[key]);
+    drTimers[key] = setTimeout(async () => {
+      try { await api('POST', '/api/drive/params', { [key]: +el.value }); } catch (e) { toast(e.message, true); }
+      drBusy[key] &= ~2;
+    }, 120);
+  });
+}
+function setDriveParams(p) {
+  for (const [sel, key, fmt] of DR_PARAMS) {
+    if (p[key] === undefined || drBusy[key]) continue;
+    if (+$(sel).value !== +p[key]) $(sel).value = p[key];
+    $(sel + '-v').textContent = fmt(p[key]);
+  }
+}
+$('#dr-mode').addEventListener('change', async () => {
+  const st = state.drive.st;
+  if (!(st && st.running)) return;
+  try { await api('POST', '/api/drive/params', { mode_id: +$('#dr-mode').value }); toast(`ジャンルを「${modeName(+$('#dr-mode').value)}」に切り替えました`); }
+  catch (e) { toast(e.message, true); }
+});
+$('#btn-dr-start').addEventListener('click', async () => {
+  const m = drModel();
+  if (!m) { toast('モデルを選んでください', true); return; }
+  const dry = $('#dr-dry').checked;
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は表示したままにしてください(閉じる・隠れると3秒で止まります)。`)) return;
+  const body = { run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
+                 description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
+  try {
+    const r = await api('POST', '/api/drive/start', body);
+    setDriveToken(r.token);
+    toast(dry ? '推論の確認を開始しました(出力は中立)' : '走行を開始しました'); pollDrive();
+  } catch (e) { toast(e.message, true); }
+});
+async function stopDrive(reason) {
+  try { await api('POST', '/api/drive/stop', { reason }); toast('停止しました'); } catch (e) { toast(e.message, true); }
+  pollDrive();
+}
+$('#btn-dr-stop').addEventListener('click', () => stopDrive('停止ボタン'));
+$('#btn-float-stop').addEventListener('click', () => stopDrive('停止ボタン'));
+// 停止キー: Escape はいつでも、スペースは文字入力中以外ならどこでも(ジャンルの選択直後でも)止める。
+// シーン詳細を開いているときの Escape は詳細を閉じるだけ(捕捉フェーズで先に判定する)
+document.addEventListener('keydown', (e) => {
+  const st = state.drive.st;
+  if (!(st && st.running) || e.repeat) return;
+  if (e.key === 'Escape' && state.modal) return;
+  if (e.key !== 'Escape' && e.target.matches('textarea, input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button])')) return;
+  if (e.code === 'Space' || e.key === 'Escape') { e.preventDefault(); stopDrive('キー操作'); }
+}, true);
+// 生存確認: 走行を始めたページだけが token を持ち、画面が表示されている間だけ送る
+// (閉じた・隠れた・通信が切れたら3秒で止まる。ほかのページは表示だけ)
+function setDriveToken(t) {
+  state.drive.token = t || null;
+  try { t ? sessionStorage.setItem('jf-drive-token', t) : sessionStorage.removeItem('jf-drive-token'); } catch (e) { /* 無視 */ }
+}
+try { state.drive.token = sessionStorage.getItem('jf-drive-token'); } catch (e) { state.drive.token = null; }
+let driveTimer = null;
+async function pollDrive() {
+  clearTimeout(driveTimer); driveTimer = null;
+  let st;
+  const tok = state.drive.token && document.visibilityState === 'visible' ? `?token=${encodeURIComponent(state.drive.token)}` : '';
+  try { st = await api('GET', '/api/drive/status' + tok); } catch (e) { st = null; }
+  if (st && !st.running && state.drive.token) setDriveToken(null);
+  if (st) renderDrive(st);
+  const running = st ? st.running : (state.drive.st && state.drive.st.running);
+  if (running || state.tab === 'drive') driveTimer = setTimeout(pollDrive, running ? 250 : 1000);
+}
+const PHASE = { idle: ['', '停止中'], starting: ['warn', '準備中'], driving: ['ok', '走行中'], error: ['warn', 'エラー'] };
+function gaugePos(us) { return `${Math.max(0, Math.min(100, (us - 1000) / 10))}%`; }
+function renderDrive(st) {
+  const prev = state.drive.st;
+  state.drive.st = st;
+  if (st.params) setDriveParams(st.params);
+  if (prev && prev.running && !st.running && state.tab === 'scenes') loadScenes();
+  const [cls, txt] = PHASE[st.phase] || ['', st.phase];
+  const ph = $('#dr-phase');
+  ph.className = 'badge ' + cls;
+  ph.textContent = st.phase === 'driving' && st.dry_run ? '推論の確認中' : txt;
+  $('#dr-message').innerHTML = esc(st.message || '') + (st.error ? `<div class="warn-text">${esc(st.error)}</div>` : '')
+    + (st.recording_note ? `<div class="muted">${esc(st.recording_note)}</div>` : '')
+    + (st.running && st.recording ? '<div><span class="badge warn">● 収集中</span></div>' : '')
+    + (st.running && !st.controller ? '<div class="warn-text">別の画面(またはこの画面の以前の表示)が走行を操作しています。この画面を閉じても走行は止まりません。止めるときは停止ボタンを押してください。</div>' : '');
+  const now = st.running ? st.now : null;
+  const who = $('#dr-who');
+  if (now) {
+    if (now.hold) who.textContent = now.select ? 'CH3: AI側 ・ 中立で停止中' : 'CH3: 人側 ・ 中立で待機中';
+    else who.textContent = now.select ? (st.dry_run ? 'CH3: AI側(出力は中立)' : 'CH3: AI側 ・ 車はAIが操作中') : 'CH3: 人側 ・ プロポで操作中';
+    who.className = 'who ' + (now.hold ? 'hold' : now.select && !st.dry_run ? 'ai' : 'human');
+  } else { who.textContent = ''; who.className = 'who'; }
+  const ref = st.ref || {};
+  const setG = (id, us) => { const el = $(id); if (us === null || us === undefined) el.style.display = 'none'; else { el.style.display = ''; el.style.left = gaugePos(us); } };
+  setG('#dr-g-steer-ref', ref.steer_center_us); setG('#dr-g-thr-ref', ref.throttle_neutral_us);
+  setG('#dr-g-steer-raw', now && now.raw ? now.raw[0] : null); setG('#dr-g-thr-raw', now && now.raw ? now.raw[1] : null);
+  setG('#dr-g-steer-out', now ? now.out[0] : null); setG('#dr-g-thr-out', now ? now.out[1] : null);
+  $('#dr-out-key').textContent = st.dry_run && st.running ? '出力(ゲイン後の予定値。確認中は車へは中立)' : '出力(ゲイン後)';
+  $('#dr-v-steer').textContent = now ? `${now.raw ? Math.round(now.raw[0]) : '-'} → ${Math.round(now.out[0])}` : '';
+  $('#dr-v-thr').textContent = now ? `${now.raw ? Math.round(now.raw[1]) : '-'} → ${Math.round(now.out[1])}` : '';
+  $('#dr-ref').textContent = st.ref ? `ゲインの中心: ステアリング ${st.ref.steer_center_us} µs / スロットル中立 ${st.ref.throttle_neutral_us} µs(学習データで停止中の操作値)。`
+    + `出力: PCA9685 0x${st.pca9685.address.toString(16)} CH${st.pca9685.steering_ch}=ステアリング CH${st.pca9685.throttle_ch}=スロットル ${st.pca9685.freq_hz}Hz` : '';
+  const s = st.stats || {};
+  const rows = [];
+  if (st.running || s.frames) {
+    rows.push(['処理速度', `${s.fps ?? '-'} fps(カメラ30fpsに対して)`],
+              ['遅延(撮像→出力)', `平均 ${s.latency_ms ?? '-'} ms / 最大 ${s.latency_ms_max ?? '-'} ms`],
+              ['推論(TensorRT)', `${s.infer_ms ?? '-'} ms`],
+              ['処理したフレーム', `${s.frames ?? 0}(取りこぼし ${s.skipped ?? 0})`],
+              ['中立で止めた回数', `${s.holds ?? 0}${st.hold_reason ? ` ・ <span class="warn-text">${esc(st.hold_reason)}</span>` : ''}`],
+              ['走行時間', fmtDur(st.elapsed_s)]);
+    if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
+    if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);
+  }
+  $('#dr-stats').innerHTML = rows.map(([k, v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
+  const h = st.history || { t: [] };
+  drawChart($('#dr-chart-steer'), [
+    { x: h.t, y: h.raw_steer || [], color: COLORS.aux, label: '予測' },
+    { x: h.t, y: h.out_steer || [], color: COLORS.steering, label: '出力' },
+  ], { xMin: -10, xMax: 0, minSpan: 100 });
+  drawChart($('#dr-chart-thr'), [
+    { x: h.t, y: h.raw_throttle || [], color: COLORS.aux, label: '予測' },
+    { x: h.t, y: h.out_throttle || [], color: COLORS.throttle, label: '出力' },
+  ], { xMin: -10, xMax: 0, minSpan: 100 });
+  const training = state.status && state.status.training;
+  $('#btn-dr-start').disabled = st.running || !drModel() || !!training;
+  $('#btn-dr-start').title = training ? '学習中は走行できません' : '';
+  $('#btn-dr-stop').disabled = !st.running;
+  $('#btn-float-stop').classList.toggle('hidden', !st.running);
+  document.body.classList.toggle('driving', !!st.running);
+  $('#dr-model').disabled = st.running;
+  $('#dr-dry').disabled = st.running; $('#dr-record').disabled = st.running;
+}
+
 // ------------------------------------------------------------ 起動
 loadModes();
 showTab('live');
@@ -535,4 +869,5 @@ pollValues();
 loadScenes();
 
 // デバッグ・自動テスト用(ブラウザのコンソールから操作できるように)
-window.jetformer = { state, showTab, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes };
+window.jetformer = { state, showTab, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes, loadTrain, pollTrain,
+                     loadDrive, pollDrive, stopDrive };

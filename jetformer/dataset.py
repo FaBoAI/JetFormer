@@ -18,12 +18,11 @@ import json
 import os
 import shutil
 import tarfile
-import uuid
 
 import cv2
 import numpy as np
 
-from . import config, modes
+from . import config, modes, tof_format
 
 SENSORS = [
     ('CAM_FRONT', 'camera'),
@@ -150,18 +149,33 @@ def scene_timeseries(name, max_points=600):
 
     veh = _load(p, 'VEHICLE')
     if veh is not None:
-        t, (pwm, mp) = thin(veh['timestamps_us'], [veh['pwm'], veh['motor_pct']])
-        out['vehicle'] = {'t': t, 'steering': pwm[:, 0].tolist(), 'throttle': pwm[:, 1].tolist(),
-                          'aux': pwm[:, 2].tolist(), 'motor_pct': mp.tolist()}
+        n = len(veh['timestamps_us'])
+        erpm = veh['erpm'] if 'erpm' in veh else np.zeros(n, np.int32)
+        select = veh['select'] if 'select' in veh else np.zeros(n, bool)
+        t, (pwm, er, sel, val) = thin(veh['timestamps_us'], [veh['pwm'], erpm, select, veh['valid']])
+        ok = val[:, 0] & val[:, 1]
+        out['vehicle'] = {'t': t, 'steering': np.where(ok, pwm[:, 0], 0).tolist(),
+                          'throttle': np.where(ok, pwm[:, 1], 0).tolist(), 'mode': pwm[:, 2].tolist(),
+                          'erpm': er.tolist(), 'select': sel.astype(int).tolist()}
     imu = _load(p, 'IMU')
     if imu is not None:
         t, (acc, gyr) = thin(imu['timestamps_us'], [imu['accel'], imu['gyro']])
         out['imu'] = {'t': t, 'accel': acc.round(3).tolist(), 'gyro': gyr.round(2).tolist()}
     tof = _load(p, 'TOF_FRONT')
     if tof is not None:
-        d = tof['depth'].reshape(len(tof['depth']), -1).astype(np.float32)
-        t, (mn, md) = thin(tof['timestamps_us'], [d.min(axis=1), np.median(d, axis=1)])
+        d = tof_format.distance_mm(tof['depth'].reshape(len(tof['depth']), -1))
+        d[d == 0] = np.nan
+        with np.errstate(all='ignore'):
+            mn, md = np.nan_to_num(np.nanmin(d, axis=1)), np.nan_to_num(np.nanmedian(d, axis=1))
+        t, (mn, md) = thin(tof['timestamps_us'], [mn, md])
         out['tof'] = {'t': t, 'min': mn.tolist(), 'median': md.tolist()}
+    ai = _load(p, 'AI_CMD')
+    if ai is not None and len(ai['timestamps_us']):
+        t, (raw, outv, hold, sel) = thin(ai['timestamps_us'], [ai['raw'], ai['out'], ai['hold'], ai['select']])
+        nan_none = lambda a: [None if not np.isfinite(x) else round(float(x), 1) for x in a]    # JSONはNaN不可
+        out['ai'] = {'t': t, 'raw_steer': nan_none(raw[:, 0]), 'raw_throttle': nan_none(raw[:, 1]),
+                     'out_steer': nan_none(outv[:, 0]), 'out_throttle': nan_none(outv[:, 1]),
+                     'hold': hold.astype(int).tolist(), 'select': sel.astype(int).tolist()}
     return out
 
 
@@ -210,21 +224,25 @@ def _aligned_arrays(cam_t, tof, imu, veh):
             hist[:, k] = feats[idx]
         out['imu'] = hist
     if veh is not None:
-        # ステア・スロットルとも有効なサンプルだけを使う(信号断・読み取り失敗の0を学習に混ぜない)
-        ok = veh['valid'][:, 0] & veh['valid'][:, 1]
-        state_all = np.concatenate([veh['pwm'].astype(np.float32),
-                                    veh['motor_pct'][:, None].astype(np.float32)], axis=1)
+        # 人が操縦しているサンプルだけを使う: ステア・スロットルとも受信中で、SELECTがAI側でないこと
+        # (信号断の0や、AI走行中のプロポの値を学習に混ぜない)
+        nv = len(veh['timestamps_us'])
+        select = veh['select'] if 'select' in veh else np.zeros(nv, bool)
+        erpm = veh['erpm'] if 'erpm' in veh else np.zeros(nv, np.int32)
+        ok = veh['valid'][:, 0] & veh['valid'][:, 1] & ~select
+        state_all = np.concatenate([veh['pwm'][:, :3].astype(np.float32), erpm[:, None].astype(np.float32)], axis=1)
         vt, state = veh['timestamps_us'][ok], state_all[ok]
         max_age_us = VEHICLE_MAX_AGE_MS * 1000
         if len(vt) == 0:
             out['vehicle'] = np.zeros((n, 4), dtype=np.float32)
+            out['erpm_valid'] = np.zeros(n, dtype=bool)
             out['vehicle_valid'] = np.zeros(n, dtype=bool)
             out['future_actions'] = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
             out['future_valid'] = np.zeros(n, dtype=bool)
         else:
             j = _latest_index(vt, cam_t)
             jc = np.clip(j, 0, len(vt) - 1)
-            out['vehicle'] = state[jc]                                   # 現在の [steering_us, throttle_us, aux_us, motor_pct]
+            out['vehicle'] = state[jc]                                   # 現在の [steering_us, throttle_us, mode_us, erpm]
             out['vehicle_age_ms'] = ((cam_t - vt[jc]) / 1000.0).astype(np.float32)
             out['vehicle_valid'] = (j >= 0) & (cam_t - vt[jc] <= max_age_us)
             fut = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
@@ -239,6 +257,7 @@ def _aligned_arrays(cam_t, tof, imu, veh):
             out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
             horizon = cam_t + int(FUTURE_STEPS * frame_us)
             out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
+            out['erpm_valid'] = np.full(n, 'erpm' in veh)              # 旧ファームには回転数が無い(0で埋めている)
     return out
 
 
@@ -249,13 +268,16 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     root = config.DATASET_DIR / name
     if root.exists():
         raise ValueError('同名のデータセットがあります: %s' % name)
-    metas = []
+    metas, skipped_legacy = [], []
     for sn in scene_names:
         m = load_scene_meta(sn)
-        if m['duration_s'] >= min_duration:
+        if m.get('vehicle_quality') == 'legacy':      # 旧ファームv1の操作値はチャネルが混ざるので使わない
+            skipped_legacy.append(sn)
+        elif m['duration_s'] >= min_duration:
             metas.append(m)
     if not metas:
-        raise ValueError('条件を満たすシーンがありません(最短 %.1f 秒)' % min_duration)
+        raise ValueError('条件を満たすシーンがありません(最短 %.1f 秒%s)' % (
+            min_duration, '、旧ファームv1のシーン %d 件は使えません' % len(skipped_legacy) if skipped_legacy else ''))
 
     version = 'v1.0-%s' % name
     tables_dir = root / version
@@ -363,10 +385,13 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
 
         # CAN bus風の時系列
         if veh is not None:
+            nv = len(veh['timestamps_us'])
+            erpm = veh['erpm'] if 'erpm' in veh else np.zeros(nv, np.int32)
+            select = veh['select'] if 'select' in veh else np.zeros(nv, bool)
             _write_json(root / 'can_bus' / ('%s_vehicle_monitor.json' % sname), [
-                {'utime': int(t), 'steering_us': int(pw[0]), 'throttle_us': int(pw[1]), 'aux_us': int(pw[2]),
-                 'motor_pct': int(m), 'valid': [bool(x) for x in v]}
-                for t, pw, m, v in zip(veh['timestamps_us'], veh['pwm'], veh['motor_pct'], veh['valid'])])
+                {'utime': int(t), 'steering_us': int(pw[0]), 'throttle_us': int(pw[1]), 'mode_us': int(pw[2]),
+                 'erpm': int(e), 'ai_driving': bool(sel), 'valid': [bool(x) for x in v[:3]]}
+                for t, pw, e, sel, v in zip(veh['timestamps_us'], veh['pwm'], erpm, select, veh['valid'])])
         if imu is not None:
             _write_json(root / 'can_bus' / ('%s_ms_imu.json' % sname), [
                 {'utime': int(t), 'linear_accel': [round(float(x), 4) for x in a],
@@ -410,27 +435,31 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
         'sensors': {
             'CAM_FRONT': {'width': config.CAMERA['width'], 'height': config.CAMERA['height'], 'fps': config.CAMERA['fps'],
                           'format': 'jpg BGR', 'pipeline': 'V4L2 RAW + 簡易ISP(v4l2_camera.py)'},
-            'TOF_FRONT': {'model': 'VL53L9', 'zones': '54x42 (binning 2)', 'unit': config.TOF.get('unit', ''),
-                          'format': '16bit PNG'},
+            'TOF_FRONT': {'model': 'VL53L9', 'zones': '54x42 (binning 2)',
+                          'format': '16bit PNG(生の値: 下位13bit=距離mm、0x1FFF=無効、上位3bit=信頼度0-7)'},
             'IMU': {'model': 'ICM-20948', 'rate_hz': config.IMU['rate_hz'], 'accel': 'm/s^2', 'gyro': 'rad/s (can_bus, aligned)'},
-            'VEHICLE': {'board': 'JetFormer (ESP32-S3)', 'pwm': 'µs [steering, throttle, aux]', 'motor': '% (0-100)'},
+            'VEHICLE': {'board': 'コントローラ基板 XIAO ESP32-S3 (leracer_ctrl v2)',
+                        'pwm': 'µs [CH1 steering, CH2 throttle, CH3 mode]', 'erpm': '電気角rpm(符号=回転方向)',
+                        'ai_driving': 'SELECT=AI走行側のサンプルは学習の操作値に使わない'},
         },
         'aligned_npz': {
             'timestamps_us': '[N] カメラ時刻', 'cam_files': '[N] 画像の相対パス',
-            'tof': '[N,42,54] uint16 直前のToF', 'tof_age_ms': '[N]',
+            'tof': '[N,42,54] uint16 直前のToF(生の値。jetformer.tof_format で距離mm・信頼度に分解)', 'tof_age_ms': '[N]',
             'imu': '[N,%d,6] 直前%dサンプルの accel(m/s^2) + gyro(rad/s)' % (IMU_HISTORY, IMU_HISTORY),
-            'vehicle': '[N,4] 現在の steering_us, throttle_us, aux_us, motor_pct',
+            'vehicle': '[N,4] 現在の steering_us, throttle_us, mode_us(CH3), erpm',
             'vehicle_valid': '[N] 100ms以内に有効な操作値(ステア・スロットル)があるか',
             'vehicle_age_ms': '[N] 使った操作値の古さ',
             'future_actions': '[N,%d,2] 1〜%dフレーム先の steering_us, throttle_us' % (FUTURE_STEPS, FUTURE_STEPS),
             'future_valid': '[N] 未来の操作値が全て有効(100ms以内)でシーン内に収まるか',
             'mode': '[N] int16 フレームごとの走行ジャンルID(modes参照、0=未設定)',
+            'erpm_valid': '[N] 回転数が計測されているか(旧ファームは無いので偽)',
         },
         'vehicle_quality': sorted({str(m.get('vehicle_quality')) for m in metas}),
         'modes': modes.load(),                    # ジャンル表(IDはモデルの出力ヘッド番号)
         'mode_frames': {str(k): v for k, v in sorted(mode_frames.items())},
         'ego_pose': '位置は未推定(原点)。向きはIMUジャイロのヨー積分',
         'source_scenes': names,
+        'skipped_legacy_scenes': skipped_legacy,
     }
     _write_json(root / 'dataset_card.json', card, indent=1)
     return card

@@ -26,7 +26,7 @@ CAMERA = {
 TOF = {
     'port': os.environ.get('JETFORMER_TOF_PORT', '/dev/ttyACM0'),
     'baudrate': 115200,            # USB CDCなので実際の速度には影響しない
-    'unit': 'mm',                  # 要確認(L9FRの距離値の単位)
+    'unit': 'mm',                  # 下位13bit=距離mm、上位3bit=信頼度(tof_format.py)
 }
 IMU = {
     'bus': 7, 'address': 0x68,     # ICM-20948
@@ -36,13 +36,29 @@ IMU = {
     'mag': False,                  # AK09916(バイパス経由 0x0C)。現状バス上に現れないため無効
 }
 VEHICLE = {
-    'bus': 7, 'address': 0x28,     # JetFormerコントロール基板(ESP32 I2Cスレーブ)
-    'rate_hz': 50,
-    # 'usb'   : 推奨。ToFと同じUSBストリームの 'JFVH' パケット(修正版ファーム)
-    # 'frame' : I2Cでスナップショットフレームを読む(修正版ファーム)
-    # 'legacy': 現行ファーム。レジスタ毎にwrite→read(チャネルの取り違えが頻発し学習には使えない)
-    'protocol': os.environ.get('JETFORMER_VEHICLE_PROTOCOL', 'legacy'),
-    'channels': {'steering': 0x00, 'throttle': 0x01, 'aux': 0x02, 'motor_pct': 0x10},
+    'bus': 7, 'address': 0x28,     # コントローラ基板(XIAO ESP32-S3)。CH1=ステアリング, CH2=スロットル, CH3=モード切替
+    'rate_hz': 100,
+    # 'snapshot': ファーム leracer_ctrl v2(レジスタ0x20のスナップショット、CRC-8付き)
+    # 'legacy'  : 量産ファーム v1(チャネルの取り違えが起き、学習には使えない)
+    'protocol': os.environ.get('JETFORMER_VEHICLE_PROTOCOL', 'snapshot'),
+}
+
+# ---- AI走行の出力 ----
+# PCA9685 → コントローラ基板のセレクタ → サーボ/ESC。プロポのCH3がAI側(1500〜2500µs、LED紫)のときだけ
+# PCA9685の出力が車に届く(それ以外はプロポの信号がそのまま届く)。JetRacerと同じ CH0=ステアリング、CH1=スロットル。
+PCA9685 = {
+    'bus': 7, 'address': 0x40,
+    'freq_hz': 60,
+    # PCA9685の内部発振器は個体差が数%ある。出力のµsがずれる(中立で進む・まっすぐ走らない)ときは
+    # 管理画面の「時計補正」で合わせる。ここは補正0%のときの値
+    'osc_hz': float(os.environ.get('JETFORMER_PCA9685_OSC', '25000000')),
+    'steering_ch': 0, 'throttle_ch': 1,
+}
+DRIVE = {
+    'min_us': 1000, 'max_us': 2000,   # 出力の上下限
+    'max_sensor_age_ms': 150,         # カメラ・ToF・車両の値がこれより古ければ止める(中立を出す)
+    'imu_max_age_ms': 100,
+    'heartbeat_s': 3.0,               # 管理画面からの問い合わせがこれだけ途絶えたら走行を止める
 }
 
 # 取り付け位置(車体座標: x前方, y左, z上 [m])。カメラとToFは5cm以内に近接設置。

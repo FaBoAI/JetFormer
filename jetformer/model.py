@@ -4,7 +4,7 @@ TransFuserと同じく、各センサーを別々にトークン化してTransfo
 Orin Nano(30fps)向けに、マルチスケール融合ではなく最終段のトークン融合1回に絞った軽量版。
 
     画像   3x224x224 → ResNet-18 → 512x7x7 → 1x1conv → 49トークン
-    ToF    1x42x54   → 小CNN(stride 8)   → 6x7       → 42トークン
+    ToF    2x42x54(距離・信頼度)+有効マスク → 小CNN(stride 8) → 6x7 → 42トークン
     IMU    10x6(100ms履歴)               → MLP       → 1トークン
     操作値 [steer, throttle, motor]       → MLP       → 1トークン
     走行ジャンル(one-hot)                 → 線形      → 1トークン
@@ -29,6 +29,8 @@ FUTURE_STEPS = 10
 # 正規化(PWMはµs、ToFはmm)
 PWM_CENTER, PWM_SCALE = 1500.0, 500.0
 TOF_MAX_MM = 4000.0
+TOF_CHANNELS = 2          # 距離(mm/TOF_MAX_MM)、信頼度(0-7 → 0-1)
+ERPM_SCALE = 20000.0      # モーターの電気角rpmの正規化(±3でクリップ)
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
@@ -39,11 +41,11 @@ class ToFEncoder(nn.Module):
 
         def block(cin, cout, stride):
             return nn.Sequential(nn.Conv2d(cin, cout, 3, stride, 1, bias=False), nn.BatchNorm2d(cout), nn.ReLU(inplace=True))
-        self.net = nn.Sequential(block(2, 32, 1), block(32, 64, 2), block(64, 128, 2), block(128, dim, 2))
+        self.net = nn.Sequential(block(TOF_CHANNELS + 1, 32, 1), block(32, 64, 2), block(64, 128, 2), block(128, dim, 2))
 
-    def forward(self, depth):                # depth: [B,1,42,54] 正規化済み(0〜1)
-        valid = (depth > 0).to(depth.dtype)   # 0 = 無効ゾーン
-        return self.net(torch.cat([depth, valid], dim=1))   # [B,dim,6,7]
+    def forward(self, tof):                  # tof: [B,2,42,54] 距離(0〜1)・信頼度(0〜1)
+        valid = (tof[:, :1] > 0).to(tof.dtype)   # 距離0 = 無効ゾーン
+        return self.net(torch.cat([tof, valid], dim=1))     # [B,dim,6,7]
 
 
 class JetFormer(nn.Module):
@@ -76,9 +78,9 @@ class JetFormer(nn.Module):
     def forward(self, image, tof, imu, state, mode):
         """
         image: [B,3,224,224] ImageNet正規化済みRGB
-        tof:   [B,1,42,54]   距離/TOF_MAX_MM(0=無効)
+        tof:   [B,2,42,54]   [距離/TOF_MAX_MM(0=無効), 信頼度/7]
         imu:   [B,10,6]      accel(m/s^2)/9.8, gyro(rad/s)
-        state: [B,3]         (steer_us-1500)/500, (throttle_us-1500)/500, motor_pct/100
+        state: [B,3]         (steer_us-1500)/500, (throttle_us-1500)/500, erpm/ERPM_SCALE
         mode:  [B,num_modes] 走行ジャンルのone-hot
         戻り値: [B,FUTURE_STEPS,2] 正規化した未来の [steering, throttle]
         """

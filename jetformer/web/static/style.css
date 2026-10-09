@@ -37,6 +37,11 @@ select.compact { width: auto; margin: 0; padding: 5px 8px; font-size: 13px; }
 .mode-id { display: inline-block; min-width: 26px; text-align: center; border-radius: 6px; color: #fff; font-weight: 700; padding: 1px 6px; }
 .badge.mode { color: #fff; font-weight: 600; }
 .segments div { padding: 1px 0; }
+.estimate { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 8px 10px; margin-top: 12px; font-size: 13px; }
+.log { background: #111827; color: #d1d5db; font-size: 11px; padding: 8px; border-radius: 6px; max-height: 220px; overflow: auto; white-space: pre-wrap; }
+input.num.wide { width: 96px !important; }
+.mode-loss { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
+.rec-train { color: #fff; background: var(--accent); padding: 2px 10px; border-radius: 12px; }
 input.num { width: 64px !important; margin: 0 0 0 4px !important; padding: 3px 6px !important; }
 button { border: 1px solid #cfd4dc; background: #fff; color: var(--text); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
 button:hover:not(:disabled) { border-color: #9ca3af; }
@@ -99,9 +104,43 @@ canvas { width: 100%; display: block; }
 .modal-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
 #m-frame { width: 100%; background: #222; border-radius: 6px; display: block; aspect-ratio: 2.02 / 1; object-fit: contain; }
 .player input[type=range] { flex: 1; }
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 18px; border-radius: 8px; z-index: 50; font-size: 13px; max-width: 90%; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 18px; border-radius: 8px; z-index: 50; font-size: 13px; max-width: 90%; pointer-events: none; }
+body.driving .toast { bottom: 96px; }
 .toast.error { background: var(--danger); }
 .hidden { display: none; }
+
+/* AI走行 */
+.rec-drive { color: #fff; background: #7c3aed; padding: 2px 10px; border-radius: 12px; }
+.badge.ai { background: #ede9fe; color: #5b21b6; }
+.gain { margin-top: 12px; }
+.gain-head { display: flex; justify-content: space-between; font-size: 13px; }
+.gain-head b { font-variant-numeric: tabular-nums; }
+.gain input[type=range] { width: 100%; margin: 4px 0 0; accent-color: var(--accent); height: 28px; }
+.gain-scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+label.check-line { display: flex; margin-top: 12px; }
+.indent { margin-left: 22px; }
+details.adv { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 6px; }
+details.adv summary { cursor: pointer; color: var(--muted); }
+.stop-big { width: 100%; margin-top: 10px; padding: 16px; font-size: 20px; font-weight: 700; background: var(--danger); border-color: var(--danger); color: #fff; }
+.stop-big:disabled { background: #fff; color: var(--danger); }
+.who { margin-left: auto; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 10px; }
+.who.ai { background: #7c3aed; color: #fff; }
+.who.human { background: #e5e7eb; color: #374151; }
+.who.hold { background: #fef3c7; color: #92400e; }
+.gauges { margin: 10px 0; }
+.gauge-row { display: grid; grid-template-columns: 84px minmax(0, 1fr) 110px; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+.gauge { position: relative; height: 22px; background: #f3f4f6; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.g-ref, .g-needle { position: absolute; top: 0; bottom: 0; width: 3px; margin-left: -1px; }
+.g-ref { background: #9ca3af; width: 1px; }
+.g-needle.raw { background: #93c5fd; width: 6px; margin-left: -3px; opacity: .9; }
+.g-needle.out { background: var(--accent); }
+.gauge-val { font-variant-numeric: tabular-nums; text-align: right; }
+.key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 3px 0 8px; vertical-align: -1px; }
+.key.raw { background: #93c5fd; } .key.out { background: var(--accent); } .key.ref { background: #9ca3af; }
+#drive-video { max-width: 640px; }
+.float-stop { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 40; padding: 14px 40px; font-size: 20px;
+  font-weight: 700; background: var(--danger); border-color: var(--danger); color: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+body.driving main { padding-bottom: 96px; }
 
 @media (max-width: 980px) {
   .live-grid, .ds-grid, .modal-grid { grid-template-columns: 1fr; }

@@ -13,7 +13,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-from jetformer.model import IMU_STEPS, TOF_SHAPE, JetFormer, mode_onehot  # noqa: E402
+from jetformer.model import IMU_STEPS, TOF_CHANNELS, TOF_SHAPE, JetFormer, mode_onehot  # noqa: E402
 from jetformer.trt_runtime import TRTRunner, build_engine  # noqa: E402
 
 NUM_MODES = 8
@@ -22,7 +22,7 @@ NUM_MODES = 8
 def dummy_inputs(device, dtype):
     torch.manual_seed(0)
     return (torch.randn(1, 3, 224, 224, device=device, dtype=dtype),
-            torch.rand(1, 1, *TOF_SHAPE, device=device, dtype=dtype),
+            torch.rand(1, TOF_CHANNELS, *TOF_SHAPE, device=device, dtype=dtype),
             torch.randn(1, IMU_STEPS, 6, device=device, dtype=dtype) * 0.1,
             torch.randn(1, 3, device=device, dtype=dtype) * 0.3,
             mode_onehot([1], NUM_MODES).to(device, dtype))

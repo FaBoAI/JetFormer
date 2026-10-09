@@ -1,108 +1,70 @@
-# JetFormer基板 ファームウェア通信仕様(修正提案)
+# JetFormer基板との通信仕様(Jetson側の受け方)
 
-## 1. 現行ファーム(main/leracer.c)のI2C読み出しの問題
+ファームの正式な仕様はファーム側のREADMEが正です。ここでは、JetFormerがそれをどう読んでいるかをまとめます。
 
-現行仕様:I2Cスレーブ 0x28、レジスタIDを1バイトwrite → int32(LE)を4バイトread。
-ファームは「最後に選択されたレジスタの値」をTX FIFOに詰め続ける。
+- コントローラ基板(XIAO ESP32-S3):`~/jetformer_board/firmware/leracer_ctrl/README.md`(ファーム v2)
+- ToF(ESP32-P4 + VL53L9):`~/jetformer_board/firmware/csi_ranging/`(`tools/l9proto.py`)
 
-Jetson実機(2026-10-10)で確認した現象:
+## 車両データ:I2C bus 7 / 0x28、スナップショット(ファーム v2)
 
-| 操作 | 読めたバイト列 | 解釈 |
-|---|---|---|
-| 0x00(PWM1)選択 → 24バイト読み | `… a2 05 00 00 a2 05 00 00` | 1442µs(正) |
-| 続けて 0x10(モーター%)選択 → 24バイト読み | `05 00 00 a5 05 00 00 a5 …` | **PWM1の値が3バイトずれて出続け、モーター%が出てこない** |
-| 4レジスタを順に8バイトずつ読む(15周) | PWM1 = 1444, 1499, 975, 768, … | **他チャネルの値が混入** |
-| FIFOが空のとき | `00 00 00 …` | 本物の値0と区別できない |
+`jetformer/sensors/vehicle.py`。100Hzでレジスタ0x20から28バイトを読む(`read_i2c_block_data(0x28, 0x20, 28)`)。
+基板はマスタが読みに来た瞬間にSCLをストレッチして、その時点の値を詰めて返す。
 
-原因:レジスタ切り替え時に、前のレジスタの値がFIFO(リングバッファ)に大量に残るため。
-**Jetson側の工夫では各チャネルを正しく読み分けられない**(読み捨て量を増やすと今度はFIFOが空になりゴミを読む)。
+`struct "<BBHIHHHBBiiHBB"`:magic 0xA5 / version 1 / seq / t_us / CH1 / CH2 / CH3 / flags / hall_state /
+erpm / hall_count / hall_errors / 予約 / CRC-8(多項式0x07、初期値0、byte 0..26)
 
-## 2. 推奨:USBストリームに車両パケット `JFVH` を追加する
+| 項目 | 使い方 |
+|---|---|
+| CH1 / CH2 / CH3 [µs] | ステアリング / スロットル / モード切替。保存は `VEHICLE.npz` の `pwm[N,3]` |
+| flags bit0-2 | CH1-3を受信中(100ms以内にパルスあり)→ `valid[N,3]`。偽の値は学習に使わない |
+| flags bit3 SELECT | 1 = AI走行側。**人が操縦していないので学習の教師から除外**(`select`) |
+| flags bit4 | モーター回転中(`moving`) |
+| erpm | 電気角rpm(符号=回転方向)。モーター軸rpm = erpm / 極対数。モデルには erpm/20000 で入力 |
+| hall_count / hall_errors | ホールのステップ累積(電気角1回転=6)/ 不正遷移の累積。品質確認用 |
+| seq / t_us | 前回と同じseqは読み捨て。基板の時刻は `board_t_us` として保存 |
 
-ToF(`L9FR`)を送っているUSB CDCのストリームに、同じ書き込み関数で以下のパケットを
-**100Hz程度**で混ぜて送る。JetsonのJetFormerはすでに受信・検証に対応済み
-(`config.VEHICLE['protocol'] = 'usb'` に切り替えるだけ)。
+読み取りの扱い:
+- 開始時に5回まで読み直してスナップショット形式を確認する。応答しなければ「ファームv2を書き込んでください」で止める
+- CRC不一致・形式違いは3回まで読み直す(回数は画面の「読み直し」に出る)。3回続けて失敗したら再接続
+- 2026-10-10 の確認:100Hz・500回連続で CRC エラー 0、seq は毎回 +1、基板時刻の間隔 10.00ms
 
-利点:
-- ToFと操作値が**同じ基板の時計**で刻まれる(センサーフュージョンの時刻同期が正確になる)
-- I2Cバス7(PCA9685・IMU・OLEDと共用)の帯域を使わない
-- マジック+連番+チェックサムで、取りこぼし・破損を確実に検出できる
+### ファームへの改善提案:CH3の信号断でSELECTを人側へ
 
-### パケット形式(リトルエンディアン、28バイト、パディングなし)
-
-| オフセット | 型 | 内容 |
-|---|---|---|
-| 0 | char[4] | `'J' 'F' 'V' 'H'` |
-| 4 | u32 | seq(パケット毎に+1) |
-| 8 | u32 | t_us(`esp_timer_get_time()` の下位32bit) |
-| 12 | u16 | PWM1 パルス幅 [µs](GPIO1) |
-| 14 | u16 | PWM2 パルス幅 [µs](GPIO2) |
-| 16 | u16 | PWM3 パルス幅 [µs](GPIO3) |
-| 18 | u16 | モーター1 パルス幅 [µs](GPIO43、生値) |
-| 20 | u16 | モーター1 回転 [%](0〜100) |
-| 22 | u16 | flags: bit0〜2 = PWM1〜3の信号あり、bit3 = モーター1の信号あり(直近100ms以内にエッジがあれば1) |
-| 24 | u32 | checksum = (seq + t_us + オフセット12〜22の各u16の和) & 0xFFFFFFFF |
-
-`L9FR` と同じく「連番+データの和」のチェックサムです。
-
-### 実装例(ESP-IDF)
+現在のファーム(leracer.c の main ループ)は、SELECTを「最後に測ったCH3のパルス幅」だけで決めている。
+送信機の電源断・圏外で受信機がパルスを止めると、SELECTはAI側のまま残り、プロポで取り戻せない
+(flags の受信中ビットだけが落ちる)。Jetson側はこの状態(SELECT=1かつCH3が受信なし)を検出して中立を出すが、
+基板側でも次のようにするのが確実:
 
 ```c
-typedef struct __attribute__((packed)) {
-    char     magic[4];      // "JFVH"
-    uint32_t seq;
-    uint32_t t_us;
-    uint16_t pwm_us[3];
-    uint16_t m1_us;
-    uint16_t m1_pct;
-    uint16_t flags;
-    uint32_t checksum;
-} jf_vehicle_packet_t;      // sizeof == 28
-
-static void send_vehicle_packet(void)
-{
-    static uint32_t seq = 0;
-    jf_vehicle_packet_t p;
-    memcpy(p.magic, "JFVH", 4);
-    p.seq    = seq++;
-    p.t_us   = (uint32_t)esp_timer_get_time();
-    p.pwm_us[0] = pwm_width_us[0];          // 既存のPWM計測値
-    p.pwm_us[1] = pwm_width_us[1];
-    p.pwm_us[2] = pwm_width_us[2];
-    p.m1_us  = motor_width_us[0];
-    p.m1_pct = motor_pct(motor_width_us[0]); // 既存の換算(10000µs=0%, 2600µs=100%)
-    p.flags  = signal_valid_bits();          // 直近100ms以内にエッジがあったチャネル
-    p.checksum = p.seq + p.t_us + p.pwm_us[0] + p.pwm_us[1] + p.pwm_us[2]
-               + p.m1_us + p.m1_pct + p.flags;
-    usb_stream_write(&p, sizeof(p));         // L9FRを送っているのと同じ関数で
+int64_t now = esp_timer_get_time();
+if (s_rc[2].fall == 0 || now - s_rc[2].fall > RC_TIMEOUT_US) {
+    pwm3 = 0;                 /* CH3が来ていない → 人側(SELECT=0、LED青) */
 }
-// 10ms周期のタスク/タイマから send_vehicle_packet() を呼ぶ
 ```
 
-注意:`L9FR` フレームの途中に割り込まないこと(フレーム単位で書き込むか、同じ送信キューに積む)。
+あわせて、受信機のフェイルセーフでCH3を人側(1500µs未満)にしておくこと。
 
-## 3. 代替:I2Cのまま直す場合(スナップショットフレーム)
+### 旧ファーム v1(`JETFORMER_VEHICLE_PROTOCOL=legacy`)
 
-USBを使えない場合は、I2Cで「全値を1つのフレームにまとめて詰め続ける」方式にする。
-レジスタ切り替えをやめるので、FIFOに古いデータが残っても壊れない。
-Jetson側は `protocol = 'frame'` で対応済み(48バイト読み、チェックサムの合う最新フレームを採用)。
+レジスタ0x00〜0x02を4バイトずつ読む方式。v1はTXバッファに古い値が溜まるため、レジスタを切り替えても
+前のチャネルの値が出てくることがあり、**学習データには使えない**。互換のため読み出しだけ残してあり、
+画面には「PWM:v1(学習不可)」と出る。データセットを作るときは自動的に除外される。
 
-| オフセット | 型 | 内容 |
-|---|---|---|
-| 0 | char[2] | `'J' 'F'` |
-| 2 | u16 | seq |
-| 4 | u32 | t_ms(基板時刻) |
-| 8 | u16 ×3 | PWM1〜3 [µs] |
-| 14 | u16 | モーター1 [µs] |
-| 16 | u16 | モーター1 [%] |
-| 18 | u16 | flags(上と同じ) |
-| 20 | u16 | 予約(0) |
-| 22 | u16 | checksum = 先頭22バイトの和 & 0xFFFF |
+## ToF:USB CDC `/dev/ttyACM0`(csi_ranging ファーム)
 
-ファームは値が更新されるたびに(または空きができるたびに)この24バイトをTX FIFOへ詰める。
+`jetformer/sensors/tof.py`。解析はファーム公式の `l9proto.py` をそのまま取り込んだ
+`jetformer/sensors/l9proto.py` を使う(自前実装しない)。
 
-## 4. 確認したい点
+- フレーム:`L9FR`(生)/ `L9FE`(バイトスタッフィング:0xFF,0x0F,0x16,0x14,0x7D → 0x7D, 値^0x20)
+- 中身:seq u32 | width u16 | height u16 | ゾーン u16 × (w×h) | checksum u32(= seq + **ペイロードの全バイトの和**)
+- 54×42 ゾーン、約32fps。フレームの間に `#ST rx=.. center=.. drops=..` のステータス行が混ざる
 
-- ToF距離(`L9FR`)の単位(現在は mm と仮定)
-- PWM1/PWM2/PWM3 のどれがステアリング/スロットルか(現在は PWM1=ステアリング、PWM2=スロットルと仮定)
-- `#ST rx= center= drops=` の `drops` の意味(USB側が読んでいない間の破棄数?)
+ゾーン値(`jetformer/tof_format.py`):
+
+| ビット | 意味 |
+|---|---|
+| 下位13bit | 距離 [mm]。0x1FFF = 範囲外(無効) |
+| 上位3bit | 信頼度 0〜7 |
+
+収集データ(`TOF_FRONT.npz`、データセットの16bit PNG、`aligned` の `tof`)は**生の値のまま**保存し、
+使う側で `tof_format.distance_mm()` / `confidence()` を通して解釈する。

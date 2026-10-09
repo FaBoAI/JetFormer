@@ -58,17 +58,40 @@ python tools/train.py --data datasets/indoor_v1 --epochs 30 --out runs/indoor_v1
 
 ## Jetsonへのデプロイ
 
+管理画面で学習した場合はエンジンまで自動で作られる。クラウドで学習した場合は:
+
 ```bash
-python tools/build_engine.py runs/indoor_v1/jetformer.onnx data/models/indoor_v1_fp16.engine
+mkdir -p data/runs/indoor_v1 && cp runs/indoor_v1/* data/runs/indoor_v1/     # best.pth・onnx・model_config.json・result.json
+python tools/build_engine.py data/runs/indoor_v1/jetformer.onnx data/runs/indoor_v1/jetformer_fp16.engine
 ```
+
+(`data/runs/<名前>/` に `jetformer_fp16.engine` と `model_config.json` があれば、走行タブのモデル一覧に出る。
+`run.json` が無いと学習タブの一覧には出ないが、走行には使える。)
 
 推論は `jetformer.trt_runtime.TRTRunner`。エンジンは必ずJetson上のPython版TensorRTで作る
 (JetPack同梱のtrtexecはバージョンが異なり、Pythonから読み込めない)。
 
+## 走行ループ(jetformer/drive.py)
+
+カメラの新しいフレームごとに、**データセット作成(dataset._aligned_arrays)と同じ規則**で入力を集める:
+撮像時刻以前の最新ToF、直近10個のIMU、最新の車両値。画像は学習データと同じ画質(JPEG q92)を一度通してから
+`normalize_inputs()`(学習と共通)に渡す。収録シーンをこの組み立て関数に流すと、学習データの入力と完全に一致する
+(2シーン1175フレームで確認)。
+
+- 採用する予測:`future_actions[k]` は撮像から (k+1) フレーム後の操作値。「先読み」= k+1(既定1、約33ms先)
+- モデルへの「現在の操作値」:人が操縦中はプロポの値、AI側(SELECT=1)のときは前フレームのモデルの予測(ゲイン前)、
+  中立で止めている間は中心・中立。ゲイン後の値を戻すと、ゲイン>1で自分の出力を真似て際限なく大きくなるため
+- ゲインの基準:`model_config.json` の `steer_center_us` / `throttle_neutral_us`
+  (学習データで eRPM=0 のときの人の操作値の中央値。古い学習結果はデータセットから計算)
+- 学習で見ていないジャンルは選べない(`trained_modes`)
+
+注意:学習データは人の操作値を「現在の操作値」として入力しているため、モデルが現在値を真似るだけになる
+(停止中は止まり続ける、など)傾向が出ることがある。評価用の収集で確認し、必要なら現在の操作値の入力を弱める
+(ドロップアウト)などを検討する。
+
 ## 次の検討事項
 
-- ファーム修正後のデータで、行動予測の精度(µs誤差)を評価する
-- 走行ループ(カメラ・ToF・IMU・操作値・ジャンル → 推論 → PCA9685)を30fpsで回す実装。
-  走行中のジャンル指定は、プロポの補助チャネル(PWM3)のスイッチや管理画面から切り替える案
+- 実車の走行データで、行動予測の精度(µs誤差)と、AI走行時の介入率を評価する
+- 走行中のジャンル指定は現在は管理画面から。プロポに補助チャネルがあれば、そのスイッチで切り替える案
 - カメラ・ToFの外部パラメータを使った幾何的な融合(ToF点群を画像座標へ投影)
 - TransFuser同様の多段融合や、補助タスク(ToFからの深度推定など)
