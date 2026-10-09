@@ -43,6 +43,12 @@ data/exports/<name>.tar(.sha256)              クラウド学習用
 `aligned/<scene>.npz` は学習用に、カメラ各フレームへToF・IMU履歴(100ms)・現在の操作値・
 1〜10フレーム先の操作値を揃えた配列です(内容は dataset_card.json に記載)。
 
+## モデル(TransFuser風センサーフュージョン)
+
+`jetformer/model.py`:カメラ49+ToF 42+IMU+操作値のトークンをTransformerで融合し、
+約0.33秒先までの操作値を予測。**Orin Nano(MAXN_SUPER)のTensorRT FP16で約1.9ms**。
+学習(`tools/train.py`、クラウド)→ ONNX → Jetsonで `tools/build_engine.py`。詳細は docs/model_design.md。
+
 ## 設定
 
 `jetformer/config.py`(環境変数で上書き可):`JETFORMER_PORT`、`JETFORMER_DATA`、

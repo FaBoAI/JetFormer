@@ -33,6 +33,7 @@ SENSORS = [
 ]
 IMU_HISTORY = 10          # 学習用: 各フレームの直前10サンプル(100ms)のIMU
 FUTURE_STEPS = 10         # 学習用: 各フレームから先の操作値(33ms刻み=約0.33秒先まで)
+VEHICLE_MAX_AGE_MS = 100  # 学習用: これより古い操作値しか無いフレームは無効にする
 
 
 def _token(*parts):
@@ -180,19 +181,35 @@ def _aligned_arrays(cam_t, tof, imu, veh):
             hist[:, k] = feats[idx]
         out['imu'] = hist
     if veh is not None:
-        vt = veh['timestamps_us']
-        state = np.concatenate([veh['pwm'].astype(np.float32), veh['motor_pct'][:, None].astype(np.float32)], axis=1)
-        j = np.clip(_latest_index(vt, cam_t), 0, len(vt) - 1)
-        out['vehicle'] = state[j]                               # 現在の [steering_us, throttle_us, aux_us, motor_pct]
-        out['vehicle_valid'] = veh['valid'][j]
-        fut = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
-        frame_us = 1e6 / config.CAMERA['fps']
-        for k in range(FUTURE_STEPS):
-            jk = np.clip(_latest_index(vt, cam_t + int((k + 1) * frame_us)), 0, len(vt) - 1)
-            fut[:, k] = state[jk, :2]
-        out['future_actions'] = fut                             # 未来の [steering_us, throttle_us]
-        horizon = cam_t + int(FUTURE_STEPS * frame_us)
-        out['future_valid'] = horizon <= vt[-1]
+        # ステア・スロットルとも有効なサンプルだけを使う(信号断・読み取り失敗の0を学習に混ぜない)
+        ok = veh['valid'][:, 0] & veh['valid'][:, 1]
+        state_all = np.concatenate([veh['pwm'].astype(np.float32),
+                                    veh['motor_pct'][:, None].astype(np.float32)], axis=1)
+        vt, state = veh['timestamps_us'][ok], state_all[ok]
+        max_age_us = VEHICLE_MAX_AGE_MS * 1000
+        if len(vt) == 0:
+            out['vehicle'] = np.zeros((n, 4), dtype=np.float32)
+            out['vehicle_valid'] = np.zeros(n, dtype=bool)
+            out['future_actions'] = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
+            out['future_valid'] = np.zeros(n, dtype=bool)
+        else:
+            j = _latest_index(vt, cam_t)
+            jc = np.clip(j, 0, len(vt) - 1)
+            out['vehicle'] = state[jc]                                   # 現在の [steering_us, throttle_us, aux_us, motor_pct]
+            out['vehicle_age_ms'] = ((cam_t - vt[jc]) / 1000.0).astype(np.float32)
+            out['vehicle_valid'] = (j >= 0) & (cam_t - vt[jc] <= max_age_us)
+            fut = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
+            fut_ok = np.ones(n, dtype=bool)
+            frame_us = 1e6 / config.CAMERA['fps']
+            for k in range(FUTURE_STEPS):
+                tk = cam_t + int((k + 1) * frame_us)
+                jk = _latest_index(vt, tk)
+                jkc = np.clip(jk, 0, len(vt) - 1)
+                fut[:, k] = state[jkc, :2]
+                fut_ok &= (jk >= 0) & (tk - vt[jkc] <= max_age_us)
+            out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
+            horizon = cam_t + int(FUTURE_STEPS * frame_us)
+            out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
     return out
 
 
@@ -368,9 +385,10 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
             'tof': '[N,42,54] uint16 直前のToF', 'tof_age_ms': '[N]',
             'imu': '[N,%d,6] 直前%dサンプルの accel(m/s^2) + gyro(rad/s)' % (IMU_HISTORY, IMU_HISTORY),
             'vehicle': '[N,4] 現在の steering_us, throttle_us, aux_us, motor_pct',
-            'vehicle_valid': '[N,4]',
+            'vehicle_valid': '[N] 100ms以内に有効な操作値(ステア・スロットル)があるか',
+            'vehicle_age_ms': '[N] 使った操作値の古さ',
             'future_actions': '[N,%d,2] 1〜%dフレーム先の steering_us, throttle_us' % (FUTURE_STEPS, FUTURE_STEPS),
-            'future_valid': '[N] 未来の操作値がシーン内に収まるか',
+            'future_valid': '[N] 未来の操作値が全て有効(100ms以内)でシーン内に収まるか',
         },
         'vehicle_quality': sorted({str(m.get('vehicle_quality')) for m in metas}),
         'ego_pose': '位置は未推定(原点)。向きはIMUジャイロのヨー積分',
