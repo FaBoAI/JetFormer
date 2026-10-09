@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JetFormer 収集管理</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">JetFormer <span>データ収集管理</span></div>
+  <nav>
+    <button class="tab active" data-tab="live">ライブ・収集</button>
+    <button class="tab" data-tab="scenes">シーン <span id="scene-count" class="pill">0</span></button>
+    <button class="tab" data-tab="datasets">データセット</button>
+  </nav>
+  <div class="header-status">
+    <span id="rec-indicator" class="rec-off">待機中</span>
+    <span id="disk"></span>
+  </div>
+</header>
+
+<main>
+  <!-- ======================= ライブ・収集 ======================= -->
+  <section id="tab-live" class="tab-page active">
+    <div class="live-grid">
+      <div class="live-left">
+        <div class="card video-card">
+          <div class="card-title">カメラ | ToF距離 <small>(近い=赤 / 遠い=青)</small></div>
+          <img id="live-video" alt="live">
+        </div>
+        <div class="charts">
+          <div class="card"><div class="card-title">操作値 PWM [µs]</div><canvas id="chart-pwm" height="140"></canvas></div>
+          <div class="card"><div class="card-title">モーター回転 [%]</div><canvas id="chart-motor" height="140"></canvas></div>
+          <div class="card"><div class="card-title">加速度 [m/s²]</div><canvas id="chart-accel" height="140"></canvas></div>
+          <div class="card"><div class="card-title">ヨーレート [deg/s]</div><canvas id="chart-gyro" height="140"></canvas></div>
+        </div>
+      </div>
+
+      <div class="live-right">
+        <div class="card">
+          <div class="card-title">収集</div>
+          <div id="rec-state" class="rec-state">待機中</div>
+          <div class="progress"><div id="scene-progress" class="bar"></div></div>
+          <div id="rec-detail" class="muted small"></div>
+          <label>説明<input id="rec-desc" placeholder="例: 室内コース 時計回り"></label>
+          <label>タグ(カンマ区切り)<input id="rec-tags" placeholder="例: indoor, cw, daylight"></label>
+          <label>場所<input id="rec-location" placeholder="例: GClue lab"></label>
+          <div class="row">
+            <label class="inline"><input type="radio" name="rec-mode" value="continuous" checked> 停止まで連続</label>
+            <label class="inline"><input type="radio" name="rec-mode" value="count"> シーン数
+              <input id="rec-count" type="number" min="1" value="3" class="num"></label>
+          </div>
+          <div class="row buttons">
+            <button id="btn-rec-start" class="primary">● 収集開始</button>
+            <button id="btn-rec-stop" class="danger" disabled>■ 停止</button>
+          </div>
+          <div id="session-scenes" class="session-scenes"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">センサー
+            <span class="title-actions">
+              <button id="btn-sensors-start" class="small">開始</button>
+              <button id="btn-sensors-stop" class="small">停止</button>
+            </span>
+          </div>
+          <table class="sensor-table" id="sensor-table"></table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">現在値</div>
+          <div class="values" id="values"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= シーン ======================= -->
+  <section id="tab-scenes" class="tab-page">
+    <div class="toolbar">
+      <input id="scene-filter" placeholder="名前・説明・タグで絞り込み">
+      <label class="inline"><input type="checkbox" id="only-complete"> 20秒完全のみ</label>
+      <button id="btn-select-all" class="small">表示中を全選択</button>
+      <button id="btn-select-none" class="small">選択解除</button>
+      <span id="selection-info" class="muted"></span>
+      <span class="spacer"></span>
+      <button id="btn-to-dataset" class="primary">選択からデータセット作成 →</button>
+      <button id="btn-delete-selected" class="danger">選択を削除</button>
+    </div>
+    <div id="scene-summary" class="muted small"></div>
+    <div id="scene-grid" class="scene-grid"></div>
+  </section>
+
+  <!-- ======================= データセット ======================= -->
+  <section id="tab-datasets" class="tab-page">
+    <div class="ds-grid">
+      <div class="card">
+        <div class="card-title">新しいデータセット</div>
+        <p class="muted small">シーンタブで選んだシーンから、nuScenes形式のデータセットを作ります。学習/検証はシーン単位で分割します。</p>
+        <label>データセット名<input id="ds-name" placeholder="例: indoor_v1(英数字と_ -)"></label>
+        <div id="ds-selected" class="muted"></div>
+        <label>検証用の割合<input id="ds-val" type="number" step="0.05" min="0" max="0.9" value="0.2"></label>
+        <label>最短シーン長 [秒]<input id="ds-min" type="number" step="1" min="0" value="5"></label>
+        <div class="row buttons"><button id="btn-ds-create" class="primary">作成</button></div>
+        <div class="card-title" style="margin-top:16px">処理状況</div>
+        <div id="jobs"></div>
+      </div>
+      <div>
+        <div class="card-title section-title">データセット一覧</div>
+        <div id="dataset-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- シーン詳細 -->
+<div id="modal" class="modal hidden">
+  <div class="modal-body">
+    <div class="modal-head">
+      <div><b id="m-name"></b> <span id="m-badges"></span></div>
+      <button id="m-close" class="small">閉じる ✕</button>
+    </div>
+    <div class="modal-grid">
+      <div>
+        <img id="m-frame" alt="frame">
+        <div class="row player">
+          <button id="m-play" class="small">▶ 再生</button>
+          <input id="m-slider" type="range" min="0" value="0">
+          <span id="m-pos" class="muted small"></span>
+        </div>
+        <div class="card"><div class="card-title">操作値 PWM [µs] / モーター [%]</div><canvas id="m-chart-veh" height="150"></canvas></div>
+        <div class="card"><div class="card-title">加速度 [m/s²] / ヨーレート [deg/s]</div><canvas id="m-chart-imu" height="150"></canvas></div>
+        <div class="card"><div class="card-title">ToF 距離(最小・中央値)</div><canvas id="m-chart-tof" height="120"></canvas></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">情報</div>
+          <div id="m-info" class="small"></div>
+          <label>説明<input id="m-desc"></label>
+          <label>タグ(カンマ区切り)<input id="m-tags"></label>
+          <div class="row buttons">
+            <button id="m-save" class="primary">保存</button>
+            <button id="m-delete" class="danger">このシーンを削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

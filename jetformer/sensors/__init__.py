@@ -1,0 +1,39 @@
+"""センサー群の起動・停止・状態取得"""
+
+from .. import config
+from .camera import CameraSensor
+from .imu import ImuSensor
+from .tof import TofSensor
+from .vehicle import VehicleSensor
+
+SENSOR_CHANNELS = ('CAM_FRONT', 'TOF_FRONT', 'IMU', 'VEHICLE')
+
+
+class SensorHub(object):
+    def __init__(self):
+        self.sensors = {
+            'CAM_FRONT': CameraSensor(config.CAMERA),
+            'TOF_FRONT': TofSensor(config.TOF),
+            'IMU': ImuSensor(config.IMU),
+            'VEHICLE': VehicleSensor(config.VEHICLE),
+        }
+        if config.VEHICLE['protocol'] == 'usb':
+            self.sensors['TOF_FRONT'].vehicle_feed = self.sensors['VEHICLE'].feed
+
+    def __getitem__(self, name):
+        return self.sensors[name]
+
+    def start(self):
+        for s in self.sensors.values():
+            s.start()
+
+    def stop(self):
+        for s in self.sensors.values():
+            s.stop()
+
+    @property
+    def running(self):
+        return any(s.running for s in self.sensors.values())
+
+    def status(self):
+        return {name: s.status() for name, s in self.sensors.items()}
