@@ -118,6 +118,7 @@ class Recorder(object):
         self._closed = set()       # 保存済みシーン番号(遅れて届いた値で作り直さない)
         self.late_dropped = 0
         self.runs_mode = False     # 走行ごとに区切る収集か
+        self.runs_complete = 0
         self.run_count = 0
         self.active_run = None
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
@@ -141,6 +142,7 @@ class Recorder(object):
         mode_id = modes.validate(mode_id)
         if self.recording:
             raise RuntimeError('すでに収集中です')
+        clock.resync()                                 # 起動直後のNTP同期などで壁時計が飛んでいたら合わせ直す
         self._warm_up()
         with self.lock:
             if self.recording:
@@ -171,6 +173,7 @@ class Recorder(object):
             self.saved = []
             self._closed = set()
             self.runs_mode = bool(runs_mode)
+            self.runs_complete = 0
             self.run_count = 0
             self.active_run = None
             self.max_scenes = None if runs_mode else max_scenes
@@ -229,7 +232,8 @@ class Recorder(object):
         for idx in pending:
             self._finalize(idx, partial=True)
         self.log = None
-        self._emit('record_stop', scenes=len(self.saved), runs=self.runs_mode)
+        n = self.runs_complete if self.runs_mode else len(self.saved)     # 走行ごと: 最後まで走った回数
+        self._emit('record_stop', scenes=n, runs=self.runs_mode)
         return True
 
     WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15, 'AUDIO': 10}   # カメラは自動露出の収束も待つ(1.5秒)
@@ -401,6 +405,8 @@ class Recorder(object):
         try:
             self._save_scene(buf, log, partial)
             self.saved.append(buf.name)
+            if buf.run and buf.run_complete:
+                self.runs_complete += 1
             self._emit('scene_saved', name=buf.name)
             if self.on_scene_saved:
                 self.on_scene_saved(buf.name)

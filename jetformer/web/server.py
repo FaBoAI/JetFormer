@@ -240,6 +240,7 @@ def api_record_start(body: dict = Body(default={})):
     common = dict(description=body.get('description', ''), tags=body.get('tags', []), location=body.get('location', ''),
                   mode_id=int(body.get('mode_id', modes.UNSET)))
     try:
+        modes.validate(common['mode_id'])
         if body.get('method', 'runs') == 'runs':
             # 走行ごと: 「n回目の走行をスタート、3、2、1、ピ」〜「ピ、n回目の走行終了」を回数分(間は pause_s 秒停止)
             collect.start(runs=body.get('runs', 1), run_seconds=body.get('run_seconds', config.SCENE_SECONDS),
@@ -278,7 +279,7 @@ def api_record_end_run():
 def api_record_mode(body: dict = Body(...)):
     """収集中に走行ジャンルを切り替える(この瞬間から新しいジャンルとして記録)"""
     try:
-        mode_id = recorder.set_mode(int(body.get('mode_id')))
+        mode_id = collect.set_mode(int(body.get('mode_id'))) if collect.active else recorder.set_mode(int(body.get('mode_id')))
     except ValueError as e:
         raise HTTPException(400, str(e))
     except RuntimeError as e:

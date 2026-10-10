@@ -183,3 +183,56 @@ def test_countdown_clip_layout():
     assert len(tail) / sound.RATE == pytest.approx(0.5, abs=0.01) and np.abs(tail).max() > 0.3     # 「ピー」
     assert sound.phrase('record_start') == ('データセット収集を開始します', 'start')
     assert sound.phrase('record_stop', scenes=2, runs=True)[0] == 'データセット収集を終了します。2回の走行を保存しました'
+
+
+def test_clock_resync_only_on_jump(monkeypatch):
+    from jetformer import clock as ck
+    base = ck._OFFSET_NS
+    monkeypatch.setattr(ck.time, 'time_ns', lambda: base + ck.time.monotonic_ns() + 70_000_000_000)   # NTPで70秒進んだ
+    assert ck.resync() == pytest.approx(70e9, abs=1e6) and ck._OFFSET_NS - base == pytest.approx(70e9, abs=1e6)
+    monkeypatch.setattr(ck.time, 'time_ns', lambda: ck._OFFSET_NS + ck.time.monotonic_ns() + 200_000_000)
+    assert ck.resync() == 0                                            # 1秒未満(NTPの微調整)は合わせ直さない
+    monkeypatch.setattr(ck, '_OFFSET_NS', base)
+
+
+def test_stop_announcement_counts_only_completed_runs(rec):
+    p = FakePlayer()
+    s = session.CollectSession(rec, p)
+    s.start(runs=3, run_seconds=0.4, pause_s=0)
+    while s.status()['run'] != 2 or s.status()['phase'] != 'running':
+        time.sleep(0.02)
+    time.sleep(0.1)
+    s.stop()                                                           # 2回目の途中で止める
+    wait_done(s)
+    assert len(rec.saved) == 2
+    assert [kw for e, kw in rec.events if e == 'record_stop'][0]['scenes'] == 1
+
+
+def test_runs_must_be_integer_and_genre_change_while_starting(rec, monkeypatch):
+    s = session.CollectSession(rec, FakePlayer())
+    with pytest.raises(ValueError, match='整数'):
+        s.start(runs=2.5)
+    gate = threading.Event()
+    orig = rec._warm_up
+    rec._warm_up = lambda: gate.wait(2)                                # センサーの準備に時間がかかる
+    s.start(runs=1, run_seconds=0.3, pause_s=0, mode_id=4)
+    time.sleep(0.1)
+    assert s.status()['phase'] == 'starting'
+    s.set_mode(5)                                                      # 準備中に変えた
+    gate.set()
+    wait_done(s)
+    rec._warm_up = orig
+    assert dataset.load_scene_meta(rec.saved[0])['mode_id'] == 5
+
+
+def test_stop_while_starting_plays_no_countdown(rec):
+    p = FakePlayer()
+    s = session.CollectSession(rec, p)
+    gate = threading.Event()
+    rec._warm_up = lambda: gate.wait(2)
+    s.start(runs=2, run_seconds=0.3, pause_s=0)
+    time.sleep(0.1)
+    s.stop()
+    gate.set()
+    wait_done(s)
+    assert p.clips == [] and rec.saved == []

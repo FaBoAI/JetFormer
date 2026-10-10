@@ -80,7 +80,8 @@ $('#btn-mode-add').addEventListener('click', async () => {
   } catch (err) { toast(err.message, true); }
 });
 $('#rec-mode').addEventListener('change', async () => {
-  if (!(state.status && state.status.recorder.recording)) return;
+  const st = state.status;
+  if (!(st && (st.recorder.recording || (st.session && st.session.active)))) return;
   try { const r = await api('POST', '/api/record/mode', { mode_id: +$('#rec-mode').value }); toast(`ジャンルを「${r.mode_name}」に切り替えました`); }
   catch (err) { toast(err.message, true); }
 });
@@ -215,9 +216,12 @@ function renderStatus(st) {
       `(カメラ ${c.CAM_FRONT || 0} / ToF ${c.TOF_FRONT || 0} / IMU ${c.IMU || 0} / 車両 ${c.VEHICLE || 0})` +
       (rec.dropped_writes ? `  保存遅れ ${rec.dropped_writes}` : '');
   } else {
-    recState.textContent = '待機中'; recState.className = 'rec-state';
+    const last = ses.phase === 'idle' && ses.log ? ses : {};      // 直前の「走行ごとの収集」の結果
+    recState.textContent = last.error ? '止まりました(エラー)' : '待機中';
+    recState.className = 'rec-state';
     $('#scene-progress').style.width = '0';
-    $('#rec-detail').textContent = rec.last_error ? '⚠ ' + rec.last_error : `1シーン = ${st.config.scene_seconds} 秒`;
+    $('#rec-detail').textContent = last.error ? '⚠ ' + last.error : rec.last_error ? '⚠ ' + rec.last_error
+      : last.message ? `前回: ${last.message}` : `1シーン = ${st.config.scene_seconds} 秒`;
   }
   $('#btn-rec-start').disabled = rec.recording || ses.active || st.training;
   $('#btn-rec-stop').disabled = !(rec.recording || ses.active);
@@ -253,7 +257,8 @@ function renderRunSession(ses, rec) {
   recState.innerHTML = `収集中(走行ごと) ${rec.mode_id !== undefined ? modeBadge(rec.mode_id) : ''}`;
   recState.className = 'rec-state on';
   $('#scene-progress').style.width = `${width}%`;
-  $('#rec-detail').textContent = detail + (ses.error ? ` ⚠ ${ses.error}` : '');
+  $('#rec-detail').textContent = detail + (ses.error ? ` ⚠ ${ses.error}` : '') + (rec.last_error ? ` ⚠ ${rec.last_error}` : '')
+    + (ses.sound_error ? '(音声を作れないため音なしで数えています)' : '');
   $('#btn-run-end').disabled = ses.phase !== 'running';
   $('#btn-run-next').disabled = ses.phase !== 'pause';
 }
@@ -396,16 +401,19 @@ async function pollValues() {
 
 // ------------------------------------------------------------ 収集の操作
 const recMethod = () => document.querySelector('input[name=rec-method]:checked').value;
-document.querySelectorAll('input[name=rec-method]').forEach((r) => r.addEventListener('change', () => {
+function syncRecMethod() {        // ブラウザが前回の選択を復元しても、表示と合うように
   $('#rec-runs-opts').classList.toggle('hidden', recMethod() !== 'runs');
   $('#rec-cont-opts').classList.toggle('hidden', recMethod() === 'runs');
-}));
+}
+document.querySelectorAll('input[name=rec-method]').forEach((r) => r.addEventListener('change', syncRecMethod));
+window.addEventListener('pageshow', syncRecMethod);
+syncRecMethod();
 $('#btn-rec-start').addEventListener('click', async () => {
   const mode = document.querySelector('input[name=rec-mode]:checked').value;
   const body = { method: recMethod(), mode_id: +$('#rec-mode').value, description: $('#rec-desc').value,
                  tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
                  max_scenes: mode === 'count' ? parseInt($('#rec-count').value, 10) || 1 : null,
-                 runs: +$('#rec-runs').value || 1, run_seconds: +$('#rec-run-seconds').value || 20, pause_s: +$('#rec-pause').value };
+                 runs: $('#rec-runs').value, run_seconds: $('#rec-run-seconds').value, pause_s: $('#rec-pause').value };
   try {
     const r = await api('POST', '/api/record/start', body);
     toast(r.method === 'runs' ? `走行ごとの収集を始めます(${body.runs}回)` : `収集を開始しました (${r.log})`);
@@ -442,7 +450,8 @@ function filteredScenes() {
 }
 function sceneBadges(s) {
   const b = [modeBadge(s.mode_id, s.mode_mixed)];
-  b.push(s.complete ? '<span class="badge ok">20秒</span>' : `<span class="badge warn">${s.duration_s}秒</span>`);
+  if (s.run_index) b.push(`<span class="badge ${s.complete ? 'ok' : 'warn'}">${s.run_index}回目 ${Math.round(s.duration_s)}秒${s.complete ? '' : '(途中で停止)'}</span>`);
+  else b.push(s.complete ? '<span class="badge ok">20秒</span>' : `<span class="badge warn">${s.duration_s}秒</span>`);
   if (s.vehicle_quality === 'legacy') b.push('<span class="badge warn">PWM:v1(学習不可)</span>');
   else if (s.vehicle_quality) b.push('<span class="badge ok">PWM:v2</span>');
   if (s.drive) b.push(`<span class="badge ai">AIモデル${s.drive.dry_run ? '(出力なし)' : ''}</span>`);

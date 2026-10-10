@@ -17,7 +17,7 @@ import threading
 import time
 import traceback
 
-from . import sound
+from . import modes, sound
 
 LIMITS = {'runs': (1, 200), 'run_seconds': (3, 300), 'pause_s': (0, 600)}
 SILENT_COUNTDOWN_S = 3.0      # 音を消しているときのカウントダウンの長さ
@@ -54,6 +54,8 @@ class CollectSession(object):
                 raise ValueError('%sが数値ではありません' % LABELS[k])
             if not lo <= v <= hi:
                 raise ValueError('%sは %g〜%g で指定してください' % (LABELS[k], lo, hi))
+            if k == 'runs' and v != int(v):
+                raise ValueError('回数は整数で指定してください')
             vals[k] = v
         self._stop.clear()
         self._skip.clear()
@@ -72,7 +74,7 @@ class CollectSession(object):
 
     def set_mode(self, mode_id):
         """走行ジャンルを変える(準備中なら、収集が始まった時点で反映する)"""
-        self._mode_id = int(mode_id)
+        self._mode_id = modes.validate(int(mode_id))
         if self.recorder.recording:
             return self.recorder.set_mode(self._mode_id)
         return self._mode_id
@@ -103,6 +105,8 @@ class CollectSession(object):
                 record_kwargs['mode_id'] = self._mode_id
             log = self.recorder.start(runs_mode=True, **record_kwargs)      # 「データセット収集を開始します」
             st['log'] = log
+            if self._stop.is_set():                                       # 準備中に止められた
+                return
             if self._mode_id is not None and self._mode_id != record_kwargs.get('mode_id'):
                 self.recorder.set_mode(self._mode_id)                     # センサーの準備中に変えられた
             for n in range(1, runs + 1):
