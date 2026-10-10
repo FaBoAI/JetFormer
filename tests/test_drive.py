@@ -97,7 +97,7 @@ def run_loop(d, runner, pca, veh_data, frames=12, lookahead=1, dry_run=False):
         t = clock.now_ns()
         tof_buf.append((t - 5_000_000, np.full((42, 54), 1000, np.uint16)))
         imu_buf.append((t - 2_000_000, np.zeros(6, np.float32)))
-        veh_buf.append((t - 3_000_000, dict(veh_data)))
+        veh_buf.append((t - 3_000_000, dict(veh_data(i) if callable(veh_data) else veh_data)))
         cam_slot[0] = Sample(t, {'image': np.zeros((224, 224, 3), np.uint8), 'seq': i})
         cam_evt.set()
         d.heartbeat('tok')

@@ -1,14 +1,15 @@
 /*
- * JetFormer基板のI2S MEMSマイク: 40ピンヘッダのI2S2を有効にする(Jetson Orin Nano 開発キット p3768)
- *   pin12 = SCLK(soc_gpio41_ph7, Jetsonが出力) / pin35 = FS・LRCLK(soc_gpio44_pi2, 出力) / pin38 = DIN(soc_gpio43_pi1, 入力)
- * NVIDIA純正の tegra234-p3737-...-audio-adafruit-sph0645lm4h.dtbo と同じピン設定を p3768 向けにしたもの。
+ * JetFormer基板のI2S(スピーカーアンプ・マイク): 40ピンヘッダのI2S2を有効にする(Jetson Orin Nano 開発キット p3768)
+ *   pin12 = SCLK(soc_gpio41_ph7, Jetsonが出力) / pin35 = FS・LRCLK(soc_gpio44_pi2, 出力)
+ *   pin38 = DIN(soc_gpio43_pi1, 入力: マイク) / pin40 = DOUT(soc_gpio42_pi0, 出力: スピーカーアンプ)
+ * ピン設定は NVIDIA純正の I2S オーディオ用オーバーレイ(tegra234-p3737-...-audio-*.dtbo)と同じ。
  * 作り方: dtc -@ -I dts -O dtb -o jetformer-i2s2-mic.dtbo jetformer-i2s2-mic.dts
  */
 /dts-v1/;
 /plugin/;
 
 / {
-	overlay-name = "JetFormer I2S MEMS mic (40pin I2S2)";
+	overlay-name = "JetFormer I2S audio (40pin I2S2: speaker + mic)";
 	jetson-header-name = "Jetson 40pin Header";
 	compatible = "nvidia,p3768-0000+p3767-0005-super", "nvidia,p3768-0000+p3767-0005",
 		     "nvidia,p3768-0000+p3767-0004", "nvidia,p3768-0000+p3767-0003",
@@ -40,6 +41,13 @@
 					nvidia,pull = <1>;
 					nvidia,tristate = <1>;
 					nvidia,enable-input = <1>;
+				};
+				hdr40-pin40 {
+					nvidia,pins = "soc_gpio42_pi0";
+					nvidia,function = "i2s2";
+					nvidia,pull = <1>;
+					nvidia,tristate = <0>;
+					nvidia,enable-input = <0>;
 				};
 			};
 		};

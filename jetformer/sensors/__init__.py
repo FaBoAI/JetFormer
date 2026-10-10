@@ -18,8 +18,10 @@ class SensorHub(object):
             'TOF_FRONT': TofSensor(config.TOF),
             'IMU': ImuSensor(config.IMU),
             'VEHICLE': VehicleSensor(config.VEHICLE),
-            'AUDIO': AudioSensor(config.AUDIO),
         }
+        if config.AUDIO.get('enabled'):
+            self.sensors['AUDIO'] = AudioSensor(config.AUDIO)
+        self.channels = tuple(self.sensors)
 
     def __getitem__(self, name):
         return self.sensors[name]

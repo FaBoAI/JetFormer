@@ -36,7 +36,9 @@ IMU = {
     'mag': False,                  # AK09916(バイパス経由 0x0C)。現状バス上に現れないため無効
 }
 AUDIO = {
-    # JetFormer基板のI2S MEMSマイク(40ピンヘッダのI2S2)。ピンの有効化は scripts/i2s_mic/enable.sh(要再起動)
+    # I2S MEMSマイク(40ピンヘッダのI2S2、pin38=DIN)。2026-10-10の確認では信号が来ていないため既定は無効。
+    # マイクをつないだら JETFORMER_MIC=1 で有効にする。ピンの有効化は scripts/i2s_mic/enable.sh(要再起動)
+    'enabled': os.environ.get('JETFORMER_MIC', '0') == '1',
     'card': 'APE', 'device': 'hw:APE,0',          # ADMAIF1
     # Jetsonがマスター、48kHz・32bit×2ch(BCLK 3.072MHz: I2S MEMSマイクの多くは2〜4MHzが必要)
     'mixer': [('ADMAIF1 Mux', 'I2S2'), ('I2S2 codec master mode', 'cbs-cfs'), ('I2S2 codec frame mode', 'i2s'),
@@ -45,6 +47,13 @@ AUDIO = {
     'capture_rate': 48000, 'rate': 16000,        # 48kHzで受けて16kHzに間引いて保存・配信
     'chunk_ms': 20,
     'channel': os.environ.get('JETFORMER_MIC_CHANNEL', 'auto'),   # 'auto' / 'left' / 'right'(マイクのL/R選択ピン)
+}
+SPEAKER = {
+    # JetFormer基板のI2Sスピーカーアンプ(40ピンヘッダのI2S2、pin40=DOUT)。ピンの有効化は scripts/i2s_mic/enable.sh
+    'card': 'APE', 'device': 'hw:APE,1',          # ADMAIF2 → I2S2
+    'mixer': [('I2S2 Mux', 'ADMAIF2'), ('I2S2 codec master mode', 'cbs-cfs'), ('I2S2 codec frame mode', 'i2s'),
+              ('I2S2 Sample Rate', '48000'), ('I2S2 Sample Channels', '2'), ('I2S2 Sample Bits', '32'),
+              ('I2S2 Loopback', 'off')],
 }
 VEHICLE = {
     'bus': 7, 'address': 0x28,     # コントローラ基板(XIAO ESP32-S3)。CH1=ステアリング, CH2=スロットル, CH3=モード切替

@@ -74,6 +74,21 @@
         </div>
 
         <div class="card">
+          <div class="card-title">サウンド <small>(車のスピーカー)</small>
+            <span class="title-actions"><button id="btn-snd-test" class="small">テスト</button></span></div>
+          <div class="row">
+            <label class="inline"><input type="checkbox" id="snd-enabled"> 音で知らせる</label>
+            <label class="inline small">音量 <input type="range" id="snd-volume" min="0" max="100" step="5"> <span id="snd-volume-v"></span></label>
+          </div>
+          <div id="snd-events" class="snd-events"></div>
+          <div class="row">
+            <input id="snd-text" class="snd-text" maxlength="100" placeholder="話す内容(例: 出発します)">
+            <button id="btn-snd-say" class="small">話す</button>
+          </div>
+          <div id="snd-status" class="small muted"></div>
+        </div>
+
+        <div class="card hidden" id="mic-card">
           <div class="card-title">マイク
             <span class="title-actions"><button id="btn-mic-listen" class="small">🔊 聞く</button></span></div>
           <div class="mic-meter"><div id="mic-bar" class="mic-bar"></div></div>

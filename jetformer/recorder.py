@@ -23,13 +23,14 @@ import queue
 import shutil
 import threading
 import time
+import traceback
 import uuid
 
 import cv2
 import numpy as np
 
 from . import clock, config, modes, tof_format
-from .sensors import OPTIONAL_CHANNELS, SENSOR_CHANNELS
+from .sensors import OPTIONAL_CHANNELS
 
 
 def new_token():
@@ -113,6 +114,18 @@ class Recorder(object):
         self.dropped_writes = 0
         self._closed = set()       # 保存済みシーン番号(遅れて届いた値で作り直さない)
         self.late_dropped = 0
+        self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
+
+    def _emit(self, event, **info):
+        for cb in list(self.listeners):
+            try:
+                cb(event, **info)
+            except Exception:
+                traceback.print_exc()
+
+    @property
+    def channels(self):
+        return getattr(self.hub, 'channels', ('CAM_FRONT', 'TOF_FRONT', 'IMU', 'VEHICLE'))
 
     # ------------------------------------------------------------------ 制御
     def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET, drive=None):
@@ -150,11 +163,13 @@ class Recorder(object):
             self._closed = set()
             self.max_scenes = max_scenes
             self.recording = True
-            for name in SENSOR_CHANNELS:
+            for name in self.channels:
                 self.hub[name].subscribe(self._on_sample)
             self._finalizer = threading.Thread(target=self._finalize_loop, name='rec-final', daemon=True)
             self._finalizer.start()
-            return self.log['name']
+            name = self.log['name']
+        self._emit('record_start', log=name, mode_id=mode_id, mode_name=modes.name_of(mode_id))
+        return name
 
     def stop(self, only_log=None):
         """収集を止めて残りのシーンを保存する。only_log を渡すと、そのログの収集のときだけ止める。止めたら True"""
@@ -162,7 +177,7 @@ class Recorder(object):
             if not self.recording or (only_log is not None and self.log['name'] != only_log):
                 return False
             self.recording = False
-            for name in SENSOR_CHANNELS:
+            for name in self.channels:
                 self.hub[name].unsubscribe(self._on_sample)
         self._io.join()
         with self.lock:
@@ -170,6 +185,7 @@ class Recorder(object):
         for idx in pending:
             self._finalize(idx, partial=True)
         self.log = None
+        self._emit('record_stop', scenes=len(self.saved))
         return True
 
     WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15, 'AUDIO': 10}   # カメラは自動露出の収束も待つ(1.5秒)
@@ -179,14 +195,14 @@ class Recorder(object):
         立ち上がり直後のデータ(IMUのリセット直後の値、カメラのストリーム開始時の
         間隔の乱れ・自動露出の収束前の画像)がシーンの先頭に混ざらないようにする。"""
         self.hub.start()
-        start = {name: self.hub[name].count for name in SENSOR_CHANNELS}
+        start = {name: self.hub[name].count for name in self.channels}
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            if all(self.hub[n].count - start[n] >= self.WARMUP_SAMPLES[n] for n in SENSOR_CHANNELS
+            if all(self.hub[n].count - start[n] >= self.WARMUP_SAMPLES[n] for n in self.channels
                    if self.hub[n].connected or n not in OPTIONAL_CHANNELS):
                 return
             time.sleep(0.1)
-        missing = [n for n in SENSOR_CHANNELS if self.hub[n].count - start[n] < self.WARMUP_SAMPLES[n]
+        missing = [n for n in self.channels if self.hub[n].count - start[n] < self.WARMUP_SAMPLES[n]
                    and (self.hub[n].connected or n not in OPTIONAL_CHANNELS)]
         self.last_error = 'センサーの立ち上がりを待ちきれませんでした: %s' % ', '.join(missing)
 
@@ -196,8 +212,11 @@ class Recorder(object):
         with self.lock:
             if not self.recording:
                 raise RuntimeError('収集中ではありません')
-            if self.log['mode_events'][-1][1] != mode_id:
+            changed = self.log['mode_events'][-1][1] != mode_id
+            if changed:
                 self.log['mode_events'].append((clock.now_ns(), mode_id))
+        if changed:
+            self._emit('mode', mode_id=mode_id, mode_name=modes.name_of(mode_id))
         return mode_id
 
     def status(self):
@@ -319,6 +338,7 @@ class Recorder(object):
         try:
             self._save_scene(buf, log, partial)
             self.saved.append(buf.name)
+            self._emit('scene_saved', name=buf.name)
             if self.on_scene_saved:
                 self.on_scene_saved(buf.name)
         except Exception as e:

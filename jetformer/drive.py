@@ -230,6 +230,14 @@ class Driver(object):
         self.hb_token = None
         self.history = collections.deque(maxlen=300)
         self.st = {'phase': 'idle', 'message': '停止中', 'error': None}
+        self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)。走行ループから呼ぶので待たせないこと
+
+    def _emit(self, event, **info):
+        for cb in list(self.listeners):
+            try:
+                cb(event, **info)
+            except Exception:
+                traceback.print_exc()
 
     # ------------------------------------------------------------ 操作
     @property
@@ -432,6 +440,8 @@ class Driver(object):
                                                           '・収集したシーンを保存しました' if stopped else '')
                 except Exception:
                     traceback.print_exc()
+            if st.get('announced'):
+                self._emit('drive_stop', reason=st.get('stop_reason', ''), error=st['phase'] == 'error')
             if runner is not None:
                 try:
                     runner = None              # GPUメモリを返す(学習に必要な空きを残す)
@@ -455,6 +465,9 @@ class Driver(object):
         st['stats'] = stats
         st['phase'] = 'driving'
         st['message'] = '走行中' if not dry_run else '推論の確認中(出力は中立のまま)'
+        st['announced'] = True
+        self._emit('drive_start', dry_run=dry_run)
+        last_select, rc_lost = None, False
         prev_pred, prev_cam_t, applied = None, None, False
         last_seq = None
         mode_cache = {}
@@ -511,11 +524,18 @@ class Driver(object):
                 hold(reason, cam)
                 applied = False
                 continue
+            if last_select is not None and bool(veh['select']) != last_select:
+                self._emit('handover', select=bool(veh['select']))       # CH3で操縦が切り替わった
+            last_select = bool(veh['select'])
             if veh['select'] and not veh['valid'][2]:
                 # 送信機の電源断・圏外: 基板はSELECTをAI側のまま保つので、人が取り戻せない。中立で止める
+                if not rc_lost:
+                    self._emit('rc_lost')
+                rc_lost = True
                 hold('AI側のままプロポの信号(CH3)が届いていません', cam, True)
                 applied = False
                 continue
+            rc_lost = False
             mode_id = st['mode_id']
             prev_cmd = predicted_now(prev_pred, prev_cam_t, cam.t_ns, fps) if prev_pred is not None else None
             vehicle = vehicle_state(veh, prev_cmd, ref, applied)

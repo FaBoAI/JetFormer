@@ -18,7 +18,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, modes, tof_format
+from .. import actuator, config, dataset, drive, modes, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
@@ -30,6 +30,15 @@ recorder = Recorder(hub)
 trainer = TrainingManager()
 driver = drive.Driver(hub, recorder)
 SHUTDOWN = threading.Event()        # 終了の合図(映像配信などの終わらない応答を閉じる)
+player = sound.SoundPlayer()        # 車のスピーカー(収集・走行・学習の開始と終了などを音声で知らせる)
+
+
+def _announce(event, **info):
+    sound.announce(player, event, **info)
+
+
+for _src in (recorder, driver, trainer):
+    _src.listeners.append(_announce)
 
 
 def _release_outputs():
@@ -57,6 +66,9 @@ def _on_exit():
 @contextlib.asynccontextmanager
 async def lifespan(_app):
     _release_outputs()
+    names = [m['name'] for m in modes.load() if m['id'] != modes.UNSET]
+    player.prepare(sound.COMMON_TEXTS + ['データ収集を開始します。%s' % n for n in names] + ['ジャンル、%s' % n for n in names])
+    _announce('startup')
     yield
     # 終了時: 走行中なら中立を出して止め、収集中なら最後のシーンを保存してからセンサーを止め、学習中なら停止を指示する
     driver.shutdown()
@@ -266,7 +278,7 @@ def api_live_values():
     veh = hub['VEHICLE'].latest
     if veh is not None:
         out['vehicle_now'] = {k: veh.data[k] for k in ('pwm', 'erpm', 'valid', 'select', 'moving', 'quality')}
-    aud = hub['AUDIO'].latest
+    aud = hub['AUDIO'].latest if 'AUDIO' in hub.sensors else None
     if aud is not None and hub['AUDIO'].connected:
         out['audio_now'] = {k: aud.data[k] for k in ('rms_dbfs', 'peak_dbfs', 'channel', 'zero')}
     return out
@@ -275,6 +287,8 @@ def api_live_values():
 @app.get('/api/live/audio.f32')
 def api_live_audio():
     """マイクの音を流し続ける(float32 リトルエンディアン、16kHz、モノラル)。管理画面の「聞く」で再生する"""
+    if 'AUDIO' not in hub.sensors:
+        raise HTTPException(404, 'マイクは無効です(JETFORMER_MIC=1 で有効)')
     q = queue.Queue(maxsize=100)
 
     def on_sample(_ch, sample):
@@ -594,6 +608,36 @@ def api_drive_params(body: dict = Body(...)):
         return driver.set_params(body)
     except (ValueError, TypeError) as e:
         raise HTTPException(400, str(e))
+
+
+# ---------------------------------------------------------------- API: サウンド(車のスピーカー)
+@app.get('/api/sound')
+def api_sound():
+    return player.status()
+
+
+@app.post('/api/sound')
+def api_sound_update(body: dict = Body(...)):
+    try:
+        return player.update(body)
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post('/api/sound/test')
+def api_sound_test():
+    player.enqueue('スピーカーのテストです。音量 %d' % player.settings['volume'], 'start')
+    return {'ok': True}
+
+
+@app.post('/api/sound/say')
+def api_sound_say(body: dict = Body(...)):
+    text = str(body.get('text', '')).strip()[:100]
+    if not text:
+        raise HTTPException(400, '話す内容を入れてください')
+    if not player.enqueue(text, 'info'):
+        raise HTTPException(409, '再生待ちが多すぎます')
+    return {'ok': True}
 
 
 # ---------------------------------------------------------------- 画面

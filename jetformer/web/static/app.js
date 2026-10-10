@@ -186,6 +186,7 @@ function renderStatus(st) {
   ind.textContent = (st.driving ? 'AI走行中 ' : '') + (rec.recording ? `● 収集中 ${rec.log} ・ ${rec.mode_name}` : st.training ? '学習中' : st.driving ? '' : '待機中');
   ind.className = st.driving ? 'rec-drive' : rec.recording ? 'rec-on' : st.training ? 'rec-train' : 'rec-off';
   if (st.training && !trainTimer) pollTrain();
+  $('#mic-card').classList.toggle('hidden', !st.sensors.AUDIO);
   if (st.driving && !driveTimer) pollDrive();
   $('#disk').textContent = `空き ${st.disk.free_gb} GB`;
 
@@ -268,6 +269,46 @@ function renderValues(v) {
     : a.zero ? '<span class="warn-text">信号なし: 40ピンヘッダのI2S(pin12/35/38)が無効です。scripts/i2s_mic/enable.sh で有効にしてください</span>'
     : `${a.rms_dbfs} dBFS(ピーク ${a.peak_dbfs} dBFS)・${a.channel === 1 ? 'R' : 'L'}チャネル`;
 }
+
+// ------------------------------------------------------------ サウンド(車のスピーカーで収集・走行の開始/終了などを知らせる)
+async function loadSound() {
+  let s;
+  try { s = await api('GET', '/api/sound'); } catch (e) { return; }
+  $('#snd-enabled').checked = s.enabled;
+  $('#snd-volume').value = s.volume;
+  $('#snd-volume-v').textContent = s.volume;
+  $('#snd-events').innerHTML = Object.entries(s.labels).map(([k, label]) =>
+    `<label class="inline small"><input type="checkbox" data-snd-event="${k}" ${s.events[k] ? 'checked' : ''}> ${esc(label)}</label>`).join('');
+  $('#snd-status').innerHTML = (!s.tts ? '<div class="warn-text">音声合成(Open JTalk)が使えません。チャイムだけ鳴らします</div>' : '')
+    + (s.last_error ? `<div class="warn-text">鳴らせませんでした: ${esc(s.last_error)}</div>`
+       : s.last_text ? `<div>最後に鳴らした音: ${esc(s.last_text)}</div>` : '');
+}
+async function saveSound(values) {
+  try { await api('POST', '/api/sound', values); } catch (e) { toast(e.message, true); }
+}
+$('#snd-enabled').addEventListener('change', () => saveSound({ enabled: $('#snd-enabled').checked }));
+let sndTimer = null;
+$('#snd-volume').addEventListener('input', () => {
+  $('#snd-volume-v').textContent = $('#snd-volume').value;
+  clearTimeout(sndTimer);
+  sndTimer = setTimeout(() => saveSound({ volume: +$('#snd-volume').value }), 200);
+});
+$('#snd-events').addEventListener('change', (e) => {
+  const k = e.target.dataset.sndEvent;
+  if (k) saveSound({ events: { [k]: e.target.checked } });
+});
+$('#btn-snd-test').addEventListener('click', async () => {
+  try { await api('POST', '/api/sound/test'); toast('テストの音を鳴らします'); setTimeout(loadSound, 4000); }
+  catch (e) { toast(e.message, true); }
+});
+async function saySound() {
+  const text = $('#snd-text').value.trim();
+  if (!text) return;
+  try { await api('POST', '/api/sound/say', { text }); $('#snd-text').value = ''; setTimeout(loadSound, 4000); }
+  catch (e) { toast(e.message, true); }
+}
+$('#btn-snd-say').addEventListener('click', saySound);
+$('#snd-text').addEventListener('keydown', (e) => { if (e.key === 'Enter') saySound(); });
 
 // ------------------------------------------------------------ マイクを聞く(16kHz float32 を受け取り Web Audio で鳴らす)
 const micGain = () => Math.pow(10, +$('#mic-gain').value);
@@ -922,11 +963,12 @@ function renderDrive(st) {
 
 // ------------------------------------------------------------ 起動
 loadModes();
+loadSound();
 showTab('live');
 pollStatus();
 pollValues();
 loadScenes();
 
 // デバッグ・自動テスト用(ブラウザのコンソールから操作できるように)
-window.jetformer = { state, showTab, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes, loadTrain, pollTrain,
+window.jetformer = { state, showTab, loadSound, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes, loadTrain, pollTrain,
                      loadDrive, pollDrive, stopDrive };

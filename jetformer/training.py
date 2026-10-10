@@ -39,6 +39,7 @@ class TrainingManager(object):
         self.lock = threading.Lock()
         self.proc = None
         self.state = None          # 実行中/直近の学習の状態(dict)
+        self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
 
     @property
     def running(self):
@@ -151,6 +152,11 @@ class TrainingManager(object):
         st['finished'] = time.time()
         with self.lock:
             self.proc = None
+        for cb in list(self.listeners):
+            try:
+                cb('train_done', phase=st['phase'], name=st['name'])
+            except Exception:
+                pass
 
     @staticmethod
     def _global_step(st):

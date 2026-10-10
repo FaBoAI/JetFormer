@@ -100,33 +100,51 @@ cd ~/jetformer && /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q t
 | TOF_FRONT | VL53L9(54x42ゾーン) | ESP32-P4基板 USB CDC `/dev/ttyACM0`(`L9FR`/`L9FE`) | 30Hz | 生の値を保存。下位13bit=距離mm、上位3bit=信頼度 |
 | IMU | ICM-20948 | I2C bus7 0x68 | 100Hz | ±8g / ±1000dps。地磁気は現在無効 |
 | VEHICLE | コントローラ基板(XIAO ESP32-S3、ファームv2) | I2C bus7 0x28 スナップショット | 100Hz | CH1=ステアリング、CH2=スロットル、CH3=モード切替、eRPM、受信中フラグ、SELECT |
-| AUDIO | JetFormer基板のI2S MEMSマイク | 40ピンのI2S2(pin12/35/38) | 50Hz(20ms) | 16kHz・モノラル・24bit精度。下記の有効化が必要 |
+| AUDIO | I2S MEMSマイク(既定は無効) | 40ピンのI2S2(pin12/35/38) | 50Hz(20ms) | 16kHz・モノラル・24bit精度。下記参照 |
 
 全センサーの時刻はCLOCK_MONOTONICに揃え、保存時にUNIXエポックのµs(nuScenesと同じ)に変換します。
 通信の詳細は docs/firmware_protocol.md。学習の教師には、**CH1・CH2を受信中で、かつ人が操縦している
 (SELECT=人側)**フレームだけを使います(AI走行中・プロポ途絶のフレームは除外)。
 
-## マイク(JetFormer基板のI2S MEMSマイク)
+## スピーカー(音声で知らせる)とマイク:40ピンのI2S
 
-40ピンヘッダのI2S2(pin12=SCLK、pin35=LRCLK、pin38=DIN)につながっています。Jetsonがクロックを出し(マスター)、
-48kHz・32bitで受けて、16kHz・モノラルに間引いて使います(L/Rどちらのチャネルに出るかは自動で判定)。
+JetFormer基板のI2Sスピーカーアンプ(とマイク)は、40ピンヘッダのI2S2につながっています。
+pin12=BCLK、pin35=LRCLK(Jetsonがクロックを出す)、pin40=DOUT(スピーカーへ)、pin38=DIN(マイクから)。
 
-**最初に1回、40ピンのI2Sを有効にする**(標準ではGPIOのままでクロックが出ず、音は全て0になります):
+**最初に1回、40ピンのI2Sを有効にする**(標準ではGPIOのままで、音が出ません):
 
 ```bash
-sudo ~/jetformer/scripts/i2s_mic/enable.sh     # 起動設定に「I2S2有効」のエントリを追加して既定にする
+sudo ~/jetformer/scripts/i2s_mic/enable.sh     # 起動設定に「I2S2有効」のエントリを追加(追加済みならデバイスツリーを更新)
 sudo reboot
 ```
 
 今の起動エントリはそのまま残り、`/boot/extlinux/extlinux.conf` はバックアップされます。元に戻すときは
 `sudo ~/jetformer/scripts/i2s_mic/disable.sh` → 再起動。(デバイスツリーのオーバーレイは
-`scripts/i2s_mic/jetformer-i2s2-mic.dts`。NVIDIA純正のI2Sマイク用オーバーレイと同じピン設定です。)
+`scripts/i2s_mic/jetformer-i2s2-mic.dts`。NVIDIA純正のI2Sオーディオ用オーバーレイと同じピン設定です。)
 
-- **ライブ・収集**タブの「マイク」:音量メーター、「🔊 聞く」でブラウザから音を聞ける(音量スライダーあり)
-- 収集したシーンには `AUDIO.npz`(16kHz、int32)が入り、シーン詳細で再生できる
-- ALSAの設定(`ADMAIF1 Mux`=I2S2、Jetsonがマスター)はマイクを開くたびに自動で行う。`hw:APE,0` を使うので、
-  管理画面のセンサーが動いている間は他のプログラムから録音できない
-- チャネルを固定したいときは環境変数 `JETFORMER_MIC_CHANNEL=left` / `right`
+### 音声案内(ライブ・収集タブの「サウンド」)
+
+車のスピーカーから、チャイムと音声(Open JTalk)で知らせます。出来事ごとにON/OFF、音量、テスト、任意の文を話させることもできます。
+
+| 出来事 | 例 |
+|---|---|
+| 起動 | 「JetFormer を起動しました」 |
+| 収集の開始・終了 | 「データ収集を開始します。高速走行」/「データ収集を終了しました。3 シーンを保存しました」 |
+| ジャンルの切り替え | 「ジャンル、低速走行」 |
+| シーン保存の合図(既定OFF) | 20秒ごとに短い「ピッ」 |
+| AI走行の開始・終了 | 「AI走行を開始します」/「AI走行を終了しました」/「画面との通信が途絶えたため、AI走行を止めました」 |
+| 操縦の切り替え(CH3) | 「AIが操縦します」/「人の操縦に戻りました」(走行中、CH3を切り替えた瞬間) |
+| 警告 | 「プロポの信号が届きません。停止します」(AI側のまま送信機の信号が途絶えたとき) |
+| 学習の終了 | 「学習が完了しました」 |
+
+音声は `data/sounds` にキャッシュし(初回のみ合成)、再生は ADMAIF2 → I2S2(48kHz・32bit・2ch)。
+設定は `data/sound_settings.json`。走行ループなどは再生を待たない(キューに入れて別スレッドで鳴らす)。
+
+### マイク(既定は無効)
+
+2026-10-10の確認では pin38 にマイクの信号が来ていない(全て0)ため、既定では使いません。マイクをつないだら
+`JETFORMER_MIC=1` で有効にすると、ライブ画面の「マイク」(音量メーター・🔊 聞く)とシーンへの録音(`AUDIO.npz`、
+16kHz)が使えます。チャネルを固定したいときは `JETFORMER_MIC_CHANNEL=left` / `right`。
 
 ## データ
 
