@@ -36,6 +36,7 @@ EVENTS = {      # キー: (画面の表示名, 既定でON)
     'drive': ('AI走行の開始・終了', True),
     'handover': ('操縦の切り替え(CH3)', True),
     'recovery': ('AI走行の自動リカバリー(ぶつかって止まったとき)', True),
+    'lap': ('AI走行の1周のタイム', True),
     'warning': ('警告(信号断・異常停止)', True),
     'train': ('学習の終了', True),
 }
@@ -323,6 +324,11 @@ def phrase(event, **kw):
         return 'プロポの信号が届きません。停止します', 'warn'
     if event == 'recovery':
         return 'リカバリー', 'info'
+    if event == 'lap':
+        t = '%.1f秒' % kw.get('time_s', 0)
+        if kw.get('best'):
+            return 'ベスト、' + t, 'info'
+        return (t, None) if kw.get('ai_only') else ('', None)      # 人が運転した周は読み上げない
     if event == 'recovery_giveup':
         return 'リカバリーできません。交代してください', 'warn'
     if event == 'train_done':
@@ -335,7 +341,7 @@ def phrase(event, **kw):
 
 EVENT_GROUP = {'record_start': 'record', 'record_stop': 'record', 'mode': 'mode', 'scene_saved': 'scene',
                'drive_start': 'drive', 'drive_stop': 'drive', 'handover': 'handover', 'rc_lost': 'warning',
-               'recovery': 'recovery', 'recovery_giveup': 'warning',
+               'recovery': 'recovery', 'recovery_giveup': 'warning', 'lap': 'lap',
                'train_done': 'train', 'startup': 'startup'}
 URGENT = ('rc_lost', 'handover', 'recovery', 'recovery_giveup')
 
@@ -351,6 +357,8 @@ COMMON_TEXTS += ['AIが操縦します', '人の操縦に戻りました', 'AI�
 def announce(player, event, **kw):
     """出来事 → 案内を鳴らす(設定でOFFなら鳴らさない)"""
     text, chime = phrase(event, **kw)
+    if not text and not chime:
+        return False
     return player.notify(EVENT_GROUP.get(event), text, chime, urgent=event in URGENT)
 
 

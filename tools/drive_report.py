@@ -16,6 +16,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from jetformer import config  # noqa: E402
+from jetformer.laps import LapCounter  # noqa: E402
 
 G = 9.80665
 
@@ -119,6 +120,16 @@ def analyze(log):
                            'impact_before_s': next((round(float(x - i['t_s']), 1) for i in reversed(r['impacts'])
                                                     if 0 <= x - i['t_s'] <= 3), None)} for x in tk]
         r['accel_peak_g'] = round(float(acc.max() / G), 1)
+    # 周回(ジャイロで360度ごと)と1周のタイム
+    lc = LapCounter()
+    vsel = veh['select'].astype(bool) if len(veh['timestamps_us']) else np.zeros(0, bool)
+    for ti, g in zip(imu['timestamps_us'] / 1e6, imu['gyro'][:, 2]):
+        k = max(int(np.searchsorted(veh['timestamps_us'] / 1e6, ti, side='right')) - 1, 0)
+        lap = lc.add(float(ti), float(g), float(veh['erpm'][k]), bool(vsel[k]))
+    s = lc.summary()
+    r['laps'] = {k: s[k] for k in ('laps', 'direction', 'best_ai_s', 'median_ai_s', 'clean_laps')}
+    r['lap_times'] = [{k: x[k] for k in ('n', 'time_s', 'ai_only', 'takeovers', 'first')} for x in lc.laps]
+    del lap
     return r, (t, ai, veh, imu, center)
 
 

@@ -140,3 +140,9 @@ def test_drive_emits_start_handover_and_rc_lost(monkeypatch, tmp_path):
     assert test_drive.run_loop(d, runner, pca, veh, frames=24) is None
     seq = [(e, kw.get('select')) for e, kw in events]
     assert seq == [('drive_start', None), ('handover', True), ('rc_lost', None), ('handover', False)]
+
+
+def test_lap_phrases():
+    assert sound.phrase('lap', time_s=8.24, ai_only=True, best=True) == ('ベスト、8.2秒', 'info')
+    assert sound.phrase('lap', time_s=9.66, ai_only=True, best=False) == ('9.7秒', None)
+    assert sound.phrase('lap', time_s=12.0, ai_only=False) == ('', None)

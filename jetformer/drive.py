@@ -30,6 +30,7 @@ import numpy as np
 
 from . import assist as assist_mod
 from . import clock, config, modes
+from .laps import LapCounter
 
 SETTINGS_PATH = config.DATA_DIR / 'drive_settings.json'
 RUNS_DIR = config.DATA_DIR / 'runs'
@@ -475,6 +476,22 @@ class Driver(object):
                  'recoveries': 0, 'esc_assists': 0, 'giveups': 0}
         helper = assist_mod.Assist(ref)
         last_kind = assist_mod.ASSIST_NONE
+        laps = LapCounter()                 # ジャイロで周回を数え、1周のタイムを測る
+        st['laps'] = laps.summary()
+        imu_done = [0]
+
+        def count_laps(veh_now):
+            """前のフレームから届いたIMUのサンプルを周回の計測へ"""
+            if veh_now is None:
+                return
+            for t_ns, x in list(imu_buf):
+                if t_ns <= imu_done[0]:
+                    continue
+                imu_done[0] = t_ns
+                lap = laps.add(t_ns / 1e9, float(np.degrees(x[5])), float(veh_now['erpm']), bool(veh_now['select']))
+                if lap:
+                    st['laps'] = laps.summary()
+                    self._emit('lap', **lap)
         st['stats'] = stats
         st['phase'] = 'driving'
         st['message'] = '走行中' if not dry_run else '推論の確認中(出力は中立のまま)'
@@ -542,6 +559,7 @@ class Driver(object):
                 hold(reason, cam)
                 applied = False
                 continue
+            count_laps(veh)
             if last_select is not None and bool(veh['select']) != last_select:
                 self._emit('handover', select=bool(veh['select']))       # CH3で操縦が切り替わった
             last_select = bool(veh['select'])
@@ -586,12 +604,15 @@ class Driver(object):
             out_us = (float(np.clip(out_us[0], lo, hi)), float(np.clip(out_us[1], lo, hi)))
             if kind != last_kind:
                 if kind == assist_mod.ASSIST_RECOVERY:
+                    laps.note('recovery')
                     self._emit('recovery')
                 elif kind == assist_mod.ASSIST_GIVEUP:
                     stats['giveups'] += 1
                     self._emit('recovery_giveup')
                 last_kind = kind
             stats['recoveries'] = helper.recoveries
+            if stats['frames'] % 15 == 0:
+                st['laps'] = laps.summary()
             stats['esc_assists'] = helper.esc_count
             written = out.neutral() if dry_run else out.write(*out_us)
             stats['i2c_errors'] = out.errors

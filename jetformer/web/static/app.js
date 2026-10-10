@@ -1057,6 +1057,13 @@ function renderDrive(st) {
                 + (s.giveups ? ` ・ <span class="warn-text">中止 ${s.giveups}回</span>` : '')
                 + (now && now.assist ? ` ・ <b class="warn-text">${esc(now.assist)}中</b>` : '')],
               ['走行時間', fmtDur(st.elapsed_s)]);
+    const L = st.laps || {};
+    if (L.laps !== undefined) {
+      rows.push(['周回(ジャイロ)', `${L.laps}周${L.direction ? `(${L.direction})` : ''} ・ 今の周 ${Math.min(359, L.progress_deg || 0)}°`],
+                ['ベスト(AIだけの周)', L.best_ai_s != null ? `<b>${L.best_ai_s.toFixed(2)} 秒</b> ・ 中央値 ${L.median_ai_s.toFixed(2)} 秒(${L.clean_laps}周)` : '-'],
+                ['最近の周', (L.recent || []).slice().reverse().map((x) =>
+                  `<span class="lap ${x.best ? 'best' : ''} ${x.ai_only && !x.recoveries ? '' : 'muted'}">${x.time_s.toFixed(1)}${x.first ? '(発進)' : ''}${x.ai_only ? '' : '(人)'}${x.recoveries ? '(R)' : ''}</span>`).join(' ') || '-']);
+    }
     if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);
   }
