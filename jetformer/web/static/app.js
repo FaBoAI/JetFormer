@@ -959,8 +959,8 @@ $('#btn-dr-start').addEventListener('click', async () => {
   const m = drModel();
   if (!m) { toast('モデルを選んでください', true); return; }
   const dry = $('#dr-dry').checked;
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は表示したままにしてください(閉じる・隠れると3秒で止まります)。`)) return;
-  const body = { run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
+  const body = { client: 3, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);
@@ -984,7 +984,7 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'Space' || e.key === 'Escape') { e.preventDefault(); stopDrive('キー操作'); }
 }, true);
 // 生存確認: 走行を始めたページだけが token を持ち、画面が表示されている間だけ送る
-// (閉じた・隠れた・通信が切れたら3秒で止まる。ほかのページは表示だけ)
+// (閉じた・スリープした・通信が切れて5秒たつと止まる。ほかのページは表示だけ)
 function setDriveToken(t) {
   state.drive.token = t || null;
   try { t ? sessionStorage.setItem('jf-drive-token', t) : sessionStorage.removeItem('jf-drive-token'); } catch (e) { /* 無視 */ }
@@ -994,7 +994,8 @@ let driveTimer = null;
 async function pollDrive() {
   clearTimeout(driveTimer); driveTimer = null;
   let st;
-  const tok = state.drive.token && document.visibilityState === 'visible' ? `?token=${encodeURIComponent(state.drive.token)}` : '';
+  // 生存確認: 走行を始めたこの画面から token を送り続ける(タブが裏に回っても、ブラウザが動かしている間は送る)
+  const tok = state.drive.token ? `?token=${encodeURIComponent(state.drive.token)}` : '';
   try { st = await api('GET', '/api/drive/status' + tok); } catch (e) { st = null; }
   if (st && !st.running && state.drive.token) setDriveToken(null);
   if (st) renderDrive(st);

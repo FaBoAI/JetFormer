@@ -650,8 +650,13 @@ def api_drive_status(token: str = Query(default='')):
     return st
 
 
+DRIVE_CLIENT_VERSION = 3        # 生存確認(token)を送る画面の版。これより古い画面(キャッシュ)からは走行を始めない
+
+
 @app.post('/api/drive/start')
 def api_drive_start(body: dict = Body(...)):
+    if int(body.get('client') or 0) < DRIVE_CLIENT_VERSION:
+        raise HTTPException(409, '管理画面が古いままです。ページを再読み込み(更新)してから走行を開始してください')
     if trainer.running:
         raise HTTPException(409, '学習中は走行できません(GPUを奪い合い、30fpsを守れないため)')
     try:
@@ -714,12 +719,24 @@ def api_sound_say(body: dict = Body(...)):
 
 
 # ---------------------------------------------------------------- 画面
-app.mount('/static', StaticFiles(directory=str(STATIC)), name='static')
+class _NoCacheStatic(StaticFiles):
+    """画面のファイルは毎回更新を確かめさせる(古い app.js のまま動かないように)"""
+    async def get_response(self, path, scope):
+        resp = await super().get_response(path, scope)
+        resp.headers['Cache-Control'] = 'no-cache'
+        return resp
+
+
+app.mount('/static', _NoCacheStatic(directory=str(STATIC)), name='static')
 
 
 @app.get('/')
 def index():
-    return FileResponse(STATIC / 'index.html', headers={'Cache-Control': 'no-cache'})
+    # app.js・style.css に更新時刻を付けて、更新したら必ず読み直させる
+    html = (STATIC / 'index.html').read_text(encoding='utf-8')
+    for name in ('app.js', 'style.css'):
+        html = html.replace('/static/%s"' % name, '/static/%s?v=%d"' % (name, int((STATIC / name).stat().st_mtime)))
+    return Response(html, media_type='text/html', headers={'Cache-Control': 'no-cache'})
 
 
 def main():

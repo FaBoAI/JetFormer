@@ -229,6 +229,7 @@ class Driver(object):
         self.last = {'run': saved.get('run'), 'mode_id': saved.get('mode_id')}
         self.heartbeat_t = time.monotonic()
         self.hb_token = None
+        self.hb_count = 0
         self.history = collections.deque(maxlen=300)
         self.st = {'phase': 'idle', 'message': '停止中', 'error': None}
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)。走行ループから呼ぶので待たせないこと
@@ -250,6 +251,7 @@ class Driver(object):
         閉じた・通信が切れたら止まるように)"""
         if token and token == self.hb_token:
             self.heartbeat_t = time.monotonic()
+            self.hb_count += 1
             return True
         return False
 
@@ -314,6 +316,7 @@ class Driver(object):
             self.history.clear()
             self.hb_token = uuid.uuid4().hex
             self.heartbeat_t = time.monotonic()
+            self.hb_count = 0
             self.st = {'phase': 'starting', 'message': 'モデルとセンサーを準備中…', 'error': None, 'run': run,
                        'model': info, 'mode_id': mode_id, 'dry_run': bool(dry_run), 'record': bool(record),
                        'recording_note': '', 'ref': None, 'started': time.time(), 'stop_reason': '',
@@ -497,7 +500,9 @@ class Driver(object):
         while not self._stop.is_set():
             p = self.params
             if time.monotonic() - self.heartbeat_t > dcfg['heartbeat_s']:
-                st['stop_reason'] = '走行を始めた画面との通信が %.0f 秒途絶えたため' % dcfg['heartbeat_s']
+                st['stop_reason'] = ('走行を始めた画面からの応答が一度もありませんでした。画面を再読み込みしてから開始してください'
+                                     if self.hb_count == 0 else
+                                     '走行を始めた画面との通信が %.0f 秒途絶えたため' % dcfg['heartbeat_s'])
                 break
             if pca is not None and p['osc_percent'] != osc_pct:
                 osc_pct = p['osc_percent']
