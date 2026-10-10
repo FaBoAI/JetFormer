@@ -794,7 +794,8 @@ $('#tr-epochs').addEventListener('input', updateEstimate);
 $('#btn-tr-start').addEventListener('click', async () => {
   const body = { dataset: $('#tr-dataset').value, stride: +$('#tr-stride').value, epochs: +$('#tr-epochs').value,
                  batch: +$('#tr-batch').value, lr: +$('#tr-lr').value, pretrained: $('#tr-pretrained').checked,
-                 build_engine: $('#tr-engine').checked, command_input: !$('#tr-nocmd').checked };
+                 build_engine: $('#tr-engine').checked, command_input: !$('#tr-nocmd').checked,
+                 mask_impacts: $('#tr-mask-impacts').checked };
   if (!body.dataset) { toast('データセットを選んでください', true); return; }
   try { const r = await api('POST', '/api/train/start', body); toast(`学習を開始しました (${r.run})`); pollTrain(); }
   catch (e) { toast(e.message, true); }

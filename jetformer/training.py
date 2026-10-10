@@ -45,7 +45,8 @@ class TrainingManager(object):
     def running(self):
         return self.proc is not None and self.proc.poll() is None or bool(self.state and self.state['phase'] == 'engine')
 
-    def start(self, dataset, stride=3, epochs=30, batch=64, lr=3e-4, pretrained=True, build_engine=True, command_input=True):
+    def start(self, dataset, stride=3, epochs=30, batch=64, lr=3e-4, pretrained=True, build_engine=True, command_input=True,
+              mask_impacts=True):
         with self.lock:
             if self.running:
                 raise RuntimeError('すでに学習中です')
@@ -63,7 +64,8 @@ class TrainingManager(object):
             out = RUNS_DIR / name
             out.mkdir(parents=True)
             params = {'dataset': dataset, 'stride': stride, 'epochs': epochs, 'batch': batch, 'lr': float(lr),
-                      'pretrained': bool(pretrained), 'build_engine': bool(build_engine), 'command_input': bool(command_input)}
+                      'pretrained': bool(pretrained), 'build_engine': bool(build_engine), 'command_input': bool(command_input),
+                      'mask_impacts': bool(mask_impacts)}
             with open(out / 'run.json', 'w', encoding='utf-8') as f:
                 json.dump(dict(params, name=name, created_at=datetime.datetime.now().isoformat(timespec='seconds')),
                           f, ensure_ascii=False, indent=1)
@@ -74,6 +76,8 @@ class TrainingManager(object):
                 cmd.append('--no-pretrained')
             if not command_input:
                 cmd.append('--no-command-input')
+            if not mask_impacts:
+                cmd.append('--keep-impacts')
             self.state = {'name': name, 'params': params, 'phase': 'starting', 'started': time.time(),
                           'epoch': 0, 'epochs': epochs, 'step': 0, 'steps': 0, 'step_phase': '',
                           'history': [], 'info': {}, 'eta_s': None, 'message': '起動中…', 'error': None,
@@ -213,7 +217,8 @@ class TrainingManager(object):
             active = self.state is not None and self.state['name'] == d.name and self.running
             runs.append({
                 'name': d.name, 'params': {k: meta.get(k, True if k == 'command_input' else None)
-                                           for k in ('dataset', 'stride', 'epochs', 'batch', 'lr', 'pretrained', 'command_input')},
+                                           for k in ('dataset', 'stride', 'epochs', 'batch', 'lr', 'pretrained', 'command_input',
+                                                     'mask_impacts')},
                 'created_at': meta.get('created_at'), 'state': 'running' if active else res.get('state', 'error'),
                 'epochs_done': res.get('epochs_done'), 'best_val_us': res.get('best_val_us'), 'best_epoch': res.get('best_epoch'),
                 'best_val_per_mode_us': res.get('best_val_per_mode_us', {}), 'modes': res.get('modes', []),

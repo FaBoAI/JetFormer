@@ -491,3 +491,18 @@ def test_tof_guard_slows_down_when_enabled(monkeypatch, tmp_path):
     runner2, pca2 = FakeRunner(np.tile([[1443.0, 1350.0]], (10, 1))), FakePCA()
     assert run_loop(d2, runner2, pca2, veh(True, erpm=-5000), tof=_wall_tof(1500)) is None
     assert all(t == pytest.approx(1350.0) for _, t in pca2.pairs[2:])
+
+
+def test_impact_mask_excludes_frames_around_crashes():
+    from jetformer.train_data import impact_mask
+    n = 300                                                   # 30fps で10秒
+    t_us = (np.arange(n) * 1e6 / 30).astype(np.int64)
+    imu = np.zeros((n, 10, 6), np.float32)
+    imu[:, :, 2] = 9.8                                        # 重力(上下)は数えない
+    imu[150, 4, 1] = -6 * 9.80665                             # 5秒目に前から6G
+    m = impact_mask(t_us, imu)
+    assert m[150] and m[120] and m[210]                      # 1秒前〜2秒後
+    assert not m[115] and not m[215] and m.sum() == 91
+    imu2 = np.zeros((n, 10, 6), np.float32)
+    imu2[:, :, 2] = 3 * 9.8                                   # 上下の揺れだけなら外さない
+    assert not impact_mask(t_us, imu2).any()

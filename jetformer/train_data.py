@@ -17,6 +17,21 @@ from .model import ERPM_SCALE, IMAGENET_MEAN, IMAGENET_STD, IMAGE_SIZE, PWM_CENT
 UNSET_MODE = 0
 
 GRAVITY = 9.80665
+IMPACT_G = 4.0                     # 水平の加速度(重力を除く)がこれ以上 = 衝突
+IMPACT_BEFORE_S, IMPACT_AFTER_S = 1.0, 2.0
+
+
+def impact_mask(timestamps_us, imu, impact_g=IMPACT_G, before_s=IMPACT_BEFORE_S, after_s=IMPACT_AFTER_S):
+    """衝突の前後(before_s 前 〜 after_s 後)のフレームを True にする。AIは学習データの衝突もまねるので学習から外す
+    (2026-10-10: 人の学習データに衝突が33回あり、AIも同じ場所でぶつかっていた)。
+    imu: [N,10,6] 各フレームの直前10サンプル(加速度 m/s^2 が先頭3つ)。IMUは +x=右・+y=前 なので水平は x,y"""
+    t = np.asarray(timestamps_us, np.float64) / 1e6
+    acc = np.asarray(imu, np.float32)[:, :, :2]
+    hg = np.hypot(acc[..., 0], acc[..., 1]).max(axis=1) / GRAVITY
+    mask = np.zeros(len(t), bool)
+    for ti in t[hg >= impact_g]:
+        mask |= (t >= ti - before_s) & (t <= ti + after_s)
+    return mask
 
 
 def normalize_inputs(image_bgr, tof_raw, imu, vehicle, use_command=True):
@@ -42,10 +57,12 @@ def normalize_inputs(image_bgr, tof_raw, imu, vehicle, use_command=True):
 
 
 class JetFormerDataset(torch.utils.data.Dataset):
-    def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True):
+    def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True,
+                 mask_impacts=False):
         self.root = root
         self.color_jitter = color_jitter
         self.use_command = use_command
+        self.impact_masked = 0             # 衝突の前後として外したフレーム数(間引きの前)
         with open(os.path.join(root, 'dataset_card.json'), encoding='utf-8') as f:
             card = json.load(f)
         self.modes = card.get('modes', [{'id': 0, 'name': '未設定'}])
@@ -63,6 +80,10 @@ class JetFormerDataset(torch.utils.data.Dataset):
                 a['mode'] = np.zeros(len(ok), dtype=np.int16)
             if not include_unset:
                 ok &= a['mode'] != UNSET_MODE          # ジャンル未設定のフレームは学習に使わない
+            if mask_impacts:
+                m = impact_mask(a['timestamps_us'], a['imu'])
+                self.impact_masked += int((ok & m).sum())
+                ok &= ~m
             if stride > 1:                              # 間引き: 30fpsの連続フレームは似ているので N枚に1枚
                 ok &= (np.arange(len(ok)) % stride) == 0
             k = len(self.scenes)

@@ -213,6 +213,7 @@
           <label class="inline"><input type="checkbox" id="tr-pretrained" checked> ImageNet事前学習の重みを使う(初回のみネット接続が必要)</label>
           <label class="inline"><input type="checkbox" id="tr-engine" checked> 学習後にTensorRTエンジンを作る(走行用)</label>
           <label class="inline"><input type="checkbox" id="tr-nocmd"> 今の操作値を入力に使わない(AI走行と学習の条件をそろえる)</label>
+          <label class="inline"><input type="checkbox" id="tr-mask-impacts" checked> ぶつかった前後(水平4G以上の1秒前〜2秒後)を学習に使わない(AIが衝突をまねないように)</label>
           <div id="tr-estimate" class="estimate"></div>
           <div class="row buttons"><button id="btn-tr-start" class="primary">学習を開始</button></div>
         </div>

@@ -586,7 +586,8 @@ def api_train_start(body: dict = Body(...)):
         name = trainer.start(body.get('dataset', ''), stride=body.get('stride', 3), epochs=body.get('epochs', 30),
                              batch=body.get('batch', 64), lr=body.get('lr', 3e-4),
                              pretrained=body.get('pretrained', True), build_engine=body.get('build_engine', True),
-                             command_input=body.get('command_input', True))
+                             command_input=body.get('command_input', True),
+                             mask_impacts=body.get('mask_impacts', True))
     except ValueError as e:
         raise HTTPException(400, str(e))
     except RuntimeError as e:
