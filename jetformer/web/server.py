@@ -505,7 +505,8 @@ def api_dataset_create(body: dict = Body(...)):
     val_ratio = float(body.get('val_ratio', 0.2))
     min_duration = float(body.get('min_duration', 5.0))
     job = jobs.submit('build', 'データセット作成: %s' % name,
-                      lambda progress: dataset.build_dataset(name, scenes, val_ratio, min_duration, progress=progress))
+                      lambda progress: dataset.build_dataset(name, scenes, val_ratio, min_duration, progress=progress,
+                                                             val_scenes=body.get('val_scenes')))
     return job
 
 

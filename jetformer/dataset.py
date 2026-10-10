@@ -288,8 +288,9 @@ def _aligned_arrays(cam_t, tof, imu, veh):
     return out
 
 
-def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, progress=None):
-    """選んだシーンからnuScenes形式のデータセットを作る。dataset_card(dict)を返す"""
+def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, progress=None, val_scenes=None):
+    """選んだシーンからnuScenes形式のデータセットを作る。dataset_card(dict)を返す。
+    val_scenes を渡すと、そのシーンを検証用にする(別のデータセットと同じ検証シーンで比べたいとき)"""
     if not name or any(c in name for c in '/\\.') or ' ' in name:
         raise ValueError('データセット名に使えない文字が含まれています')
     root = config.DATASET_DIR / name
@@ -452,6 +453,9 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     n_val = int(round(len(names) * val_ratio)) if len(names) > 1 else 0
     val = sorted(names[i] for i in order[:n_val])
     train = sorted(names[i] for i in order[n_val:])
+    if val_scenes:
+        val = sorted(n for n in names if n in set(val_scenes))
+        train = sorted(n for n in names if n not in set(val_scenes))
     _write_json(root / 'splits.json', {'train': train, 'val': val}, indent=1)
 
     card = {
