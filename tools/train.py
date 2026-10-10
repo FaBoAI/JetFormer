@@ -92,6 +92,8 @@ def main():
     ap.add_argument('--workers', type=int, default=4)
     ap.add_argument('--no-pretrained', action='store_true', help='ImageNet事前学習の重みを使わない')
     ap.add_argument('--max-steps', type=int, default=0, help='動作確認用: 1エポックの最大ステップ数')
+    ap.add_argument('--no-command-input', action='store_true',
+                    help='今の操作値(ステアリング・スロットル)をモデルに入れない(AI走行時と学習時の条件をそろえる)')
     ap.add_argument('--progress-json', action='store_true')
     args = ap.parse_args()
     PROGRESS['enabled'] = args.progress_json
@@ -101,8 +103,9 @@ def main():
     t_start = time.time()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     os.makedirs(args.out, exist_ok=True)
-    train_ds = JetFormerDataset(args.data, 'train', color_jitter=True, stride=args.stride)
-    val_ds = JetFormerDataset(args.data, 'val', stride=args.stride)
+    use_command = not args.no_command_input
+    train_ds = JetFormerDataset(args.data, 'train', color_jitter=True, stride=args.stride, use_command=use_command)
+    val_ds = JetFormerDataset(args.data, 'val', stride=args.stride, use_command=use_command)
     names = {m['id']: m['name'] for m in train_ds.modes}
     if args.max_steps:      # 動作確認用: ジャンルが偏らないようランダムに抜き出す
         rng = random.Random(0)
@@ -157,7 +160,7 @@ def main():
               'pretrained': not args.no_pretrained, 'train_samples': len(train_ds), 'val_samples': len(val_ds),
               'best_val_us': round(best * jm.PWM_SCALE, 1) if best_epoch else None, 'best_epoch': best_epoch,
               'best_val_per_mode_us': {str(m): round(l * jm.PWM_SCALE, 1) for m, l in sorted(best_modes.items())},
-              'modes': train_ds.modes, 'train_mode_counts': train_mode_counts,
+              'modes': train_ds.modes, 'train_mode_counts': train_mode_counts, 'command_input': use_command,
               'steer_center_us': steer_center, 'throttle_neutral_us': throttle_neutral, 'history': history}
     if best_epoch:
         model.load_state_dict(torch.load(os.path.join(args.out, 'best.pth'), map_location='cpu', weights_only=True))
@@ -169,7 +172,8 @@ def main():
                        'erpm_scale': jm.ERPM_SCALE, 'dataset': result['dataset'], 'stride': args.stride,
                        # 走行時: 学習データがあるジャンルだけ選べる。ゲインはこの中心・中立の周りに掛ける
                        'trained_modes': [int(m) for m in train_mode_counts], 'train_mode_counts': train_mode_counts,
-                       'steer_center_us': steer_center, 'throttle_neutral_us': throttle_neutral},
+                       'steer_center_us': steer_center, 'throttle_neutral_us': throttle_neutral,
+                       'command_input': use_command},
                       f, ensure_ascii=False, indent=1)
         print('保存: %s/best.pth, jetformer.onnx, model_config.json' % args.out, flush=True)
     else:

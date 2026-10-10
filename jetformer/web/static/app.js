@@ -793,7 +793,7 @@ $('#tr-epochs').addEventListener('input', updateEstimate);
 $('#btn-tr-start').addEventListener('click', async () => {
   const body = { dataset: $('#tr-dataset').value, stride: +$('#tr-stride').value, epochs: +$('#tr-epochs').value,
                  batch: +$('#tr-batch').value, lr: +$('#tr-lr').value, pretrained: $('#tr-pretrained').checked,
-                 build_engine: $('#tr-engine').checked };
+                 build_engine: $('#tr-engine').checked, command_input: !$('#tr-nocmd').checked };
   if (!body.dataset) { toast('データセットを選んでください', true); return; }
   try { const r = await api('POST', '/api/train/start', body); toast(`学習を開始しました (${r.run})`); pollTrain(); }
   catch (e) { toast(e.message, true); }
@@ -856,6 +856,7 @@ async function loadRuns() {
         <span>エポック <b>${r.epochs_done ?? '-'}</b> / ${r.params.epochs}</span>
         <span>最良の検証誤差 <b>${r.best_val_us ?? '-'}</b> µs${r.best_epoch ? `(${r.best_epoch}エポック目)` : ''}</span>
         <span>時間 <b>${fmtDur(r.duration_s)}</b></span><span>学習 ${r.train_samples ?? '-'} 枚</span>
+        ${r.params.command_input === false ? '<span class="badge tag">今の操作値なし</span>' : ''}
       </div>
       <div class="mode-loss">${Object.entries(r.best_val_per_mode_us || {}).map(([id, v]) =>
         `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>

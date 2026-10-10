@@ -94,6 +94,7 @@ def model_info(name):
         'num_modes': cfg['num_modes'], 'modes': cfg.get('modes', []), 'trained_modes': trained,
         'steer_center_us': cfg.get('steer_center_us'), 'throttle_neutral_us': cfg.get('throttle_neutral_us'),
         'stride': cfg.get('stride'), 'future_steps': cfg.get('future_steps', 10),
+        'command_input': cfg.get('command_input', True),
     }
 
 
@@ -469,6 +470,7 @@ class Driver(object):
         self._emit('drive_start', dry_run=dry_run)
         last_select, rc_lost = None, False
         prev_pred, prev_cam_t, applied = None, None, False
+        use_command = (st.get('model') or {}).get('command_input', True)   # 学習と同じく、今の操作値を入れるか
         last_seq = None
         mode_cache = {}
         times = collections.deque(maxlen=30)
@@ -541,7 +543,7 @@ class Driver(object):
             vehicle = vehicle_state(veh, prev_cmd, ref, applied)
             ok, enc = cv2.imencode('.jpg', cam.data['image'], jpeg)     # 学習データ(JPEG保存)と同じ画質にそろえる
             image = cv2.imdecode(enc, cv2.IMREAD_COLOR) if ok else cam.data['image']
-            img, tof, imu_n, state = normalize_inputs(image, tof_raw, imu, vehicle)
+            img, tof, imu_n, state = normalize_inputs(image, tof_raw, imu, vehicle, use_command)
             if mode_id not in mode_cache:
                 oh = np.zeros((1, num_modes), np.float32)
                 oh[0, mode_id] = 1.0

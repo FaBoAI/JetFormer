@@ -321,3 +321,25 @@ def test_training_eta_with_few_steps_per_epoch():
                 t_steps.append((g * 0.5, g))
     eta = TrainingManager._eta(st, t_steps)
     assert eta == pytest.approx(6 * 10 * 0.5, abs=1)          # 残り6エポック × 10ステップ × 0.5秒
+
+
+def test_normalize_inputs_without_command():
+    img = np.zeros((224, 224, 3), np.uint8)
+    tof = np.full((42, 54), 500, np.uint16)
+    imu = np.zeros((10, 6), np.float32)
+    veh = np.array([1800, 1300, 1000, 5000], np.float32)
+    _, _, _, with_cmd = normalize_inputs(img, tof, imu, veh)
+    _, _, _, no_cmd = normalize_inputs(img, tof, imu, veh, use_command=False)
+    assert with_cmd[0] == pytest.approx(0.6) and with_cmd[1] == pytest.approx(-0.4)
+    assert no_cmd[0] == 0 and no_cmd[1] == 0 and no_cmd[2] == with_cmd[2]          # 回転数は残す
+
+
+def test_model_info_reports_command_input(monkeypatch, tmp_path):
+    runs = tmp_path / 'runs'
+    for name, cfg in (('old', {}), ('nocmd', {'command_input': False})):
+        (runs / name).mkdir(parents=True)
+        (runs / name / drive.ENGINE_FILE).write_bytes(b'x')
+        (runs / name / 'model_config.json').write_text(json.dumps(dict(cfg, num_modes=6, trained_modes=[5])))
+    monkeypatch.setattr(drive, 'RUNS_DIR', runs)
+    assert drive.model_info('old')['command_input'] is True                       # 古い学習結果は今まで通り
+    assert drive.model_info('nocmd')['command_input'] is False

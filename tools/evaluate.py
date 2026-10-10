@@ -116,6 +116,7 @@ def model_report(name, run, arrays, out_dir):
     cfg = json.load(open(rdir / 'model_config.json'))
     model = JetFormer(num_modes=cfg['num_modes']).cuda().eval()
     model.load_state_dict(torch.load(rdir / 'best.pth', map_location='cuda', weights_only=True))
+    use_command = cfg.get('command_input', True)
     root = config.DATASET_DIR / name
     splits = json.load(open(root / 'splits.json'))
     train_actions = np.concatenate([arrays[s]['future_actions'][arrays[s]['vehicle_valid'] & arrays[s]['future_valid']]
@@ -138,7 +139,7 @@ def model_report(name, run, arrays, out_dir):
                     veh = a['vehicle'][i].copy()
                     if kind == 'sf' and prev is not None:          # 自己入力: 前フレームの予測(次の時刻に当たる値)
                         veh[0], veh[1] = prev
-                    im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh)
+                    im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh, use_command)
                     out = model(torch.from_numpy(im)[None].cuda(), torch.from_numpy(tof)[None].cuda(),
                                 torch.from_numpy(imu)[None].cuda(), torch.from_numpy(st)[None].cuda(), mode.cuda())
                     p = out[0].float().cpu().numpy() * PWM_SCALE + PWM_CENTER

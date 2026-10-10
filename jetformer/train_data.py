@@ -19,10 +19,12 @@ UNSET_MODE = 0
 GRAVITY = 9.80665
 
 
-def normalize_inputs(image_bgr, tof_raw, imu, vehicle):
+def normalize_inputs(image_bgr, tof_raw, imu, vehicle, use_command=True):
     """推論時(Jetson)と学習時で共通の正規化。numpy配列 → モデル入力(float32)
 
-    tof_raw: ToFの生の値 [42,54] / vehicle: [steering_us, throttle_us, mode_us, erpm]"""
+    tof_raw: ToFの生の値 [42,54] / vehicle: [steering_us, throttle_us, mode_us, erpm]
+    use_command=False: 今の操作値(ステアリング・スロットル)を入れない(0にする)。学習時は人の操作、AI走行時は
+    自分の前の予測になって条件が変わるため、カメラ・ToF・IMU・回転数だけから操作を決めさせたいときに使う"""
     img = cv2.cvtColor(image_bgr[:, :, :3], cv2.COLOR_BGR2RGB)
     if img.shape[0] != IMAGE_SIZE or img.shape[1] != IMAGE_SIZE:
         img = cv2.resize(img, (IMAGE_SIZE, IMAGE_SIZE), interpolation=cv2.INTER_AREA)
@@ -34,13 +36,16 @@ def normalize_inputs(image_bgr, tof_raw, imu, vehicle):
     imu_n[:, :3] /= GRAVITY
     state = np.array([(vehicle[0] - PWM_CENTER) / PWM_SCALE, (vehicle[1] - PWM_CENTER) / PWM_SCALE,
                       np.clip(vehicle[3] / ERPM_SCALE, -3.0, 3.0)], dtype=np.float32)
+    if not use_command:
+        state[:2] = 0.0
     return img.astype(np.float32), tof, imu_n, state
 
 
 class JetFormerDataset(torch.utils.data.Dataset):
-    def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1):
+    def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True):
         self.root = root
         self.color_jitter = color_jitter
+        self.use_command = use_command
         with open(os.path.join(root, 'dataset_card.json'), encoding='utf-8') as f:
             card = json.load(f)
         self.modes = card.get('modes', [{'id': 0, 'name': '未設定'}])
@@ -74,7 +79,7 @@ class JetFormerDataset(torch.utils.data.Dataset):
         if self.color_jitter:
             gain = np.random.uniform(0.8, 1.2, size=3)
             image = np.clip(image.astype(np.float32) * gain, 0, 255).astype(np.uint8)
-        img, tof, imu, state = normalize_inputs(image, a['tof'][i], a['imu'][i], a['vehicle'][i])
+        img, tof, imu, state = normalize_inputs(image, a['tof'][i], a['imu'][i], a['vehicle'][i], self.use_command)
         target = (a['future_actions'][i] - PWM_CENTER) / PWM_SCALE
         mode = np.zeros(self.num_modes, dtype=np.float32)
         mode[int(a['mode'][i])] = 1.0
