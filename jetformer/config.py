@@ -38,7 +38,10 @@ IMU = {
 AUDIO = {
     # JetFormer基板のI2S MEMSマイク(40ピンヘッダのI2S2)。ピンの有効化は scripts/i2s_mic/enable.sh(要再起動)
     'card': 'APE', 'device': 'hw:APE,0',          # ADMAIF1
-    'mixer': [('ADMAIF1 Mux', 'I2S2'), ('I2S2 codec master mode', 'cbs-cfs'), ('I2S2 codec frame mode', 'i2s')],
+    # Jetsonがマスター、48kHz・32bit×2ch(BCLK 3.072MHz: I2S MEMSマイクの多くは2〜4MHzが必要)
+    'mixer': [('ADMAIF1 Mux', 'I2S2'), ('I2S2 codec master mode', 'cbs-cfs'), ('I2S2 codec frame mode', 'i2s'),
+              ('I2S2 Sample Rate', '48000'), ('I2S2 Sample Channels', '2'), ('I2S2 Sample Bits', '32'),
+              ('I2S2 Loopback', 'off')],
     'capture_rate': 48000, 'rate': 16000,        # 48kHzで受けて16kHzに間引いて保存・配信
     'chunk_ms': 20,
     'channel': os.environ.get('JETFORMER_MIC_CHANNEL', 'auto'),   # 'auto' / 'left' / 'right'(マイクのL/R選択ピン)
