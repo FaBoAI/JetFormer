@@ -58,7 +58,7 @@ def normalize_inputs(image_bgr, tof_raw, imu, vehicle, use_command=True):
 
 class JetFormerDataset(torch.utils.data.Dataset):
     def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True,
-                 mask_impacts=False):
+                 mask_impacts=False, impact_g=IMPACT_G):
         self.root = root
         self.color_jitter = color_jitter
         self.use_command = use_command
@@ -81,7 +81,7 @@ class JetFormerDataset(torch.utils.data.Dataset):
             if not include_unset:
                 ok &= a['mode'] != UNSET_MODE          # ジャンル未設定のフレームは学習に使わない
             if mask_impacts:
-                m = impact_mask(a['timestamps_us'], a['imu'])
+                m = impact_mask(a['timestamps_us'], a['imu'], impact_g)
                 self.impact_masked += int((ok & m).sum())
                 ok &= ~m
             if stride > 1:                              # 間引き: 30fpsの連続フレームは似ているので N枚に1枚
