@@ -258,6 +258,10 @@
           </div>
           <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
 
+          <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
+          <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
+          <div class="muted small indent">リカバリーは3回続けて(10秒以内)失敗すると中立で止まります。CH3を人側へ戻して助けてください。</div>
+
           <label class="inline check-line"><input type="checkbox" id="dr-record"> 走行中のデータを収集する(評価用)</label>
           <div id="dr-record-opts" class="hidden indent">
             <label>走行の説明<input id="dr-desc" placeholder="例: AI走行の評価 1周目"></label>

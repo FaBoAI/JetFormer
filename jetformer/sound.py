@@ -35,6 +35,7 @@ EVENTS = {      # キー: (画面の表示名, 既定でON)
     'scene': ('シーン保存の合図(20秒ごと)', False),
     'drive': ('AI走行の開始・終了', True),
     'handover': ('操縦の切り替え(CH3)', True),
+    'recovery': ('AI走行の自動リカバリー(ぶつかって止まったとき)', True),
     'warning': ('警告(信号断・異常停止)', True),
     'train': ('学習の終了', True),
 }
@@ -320,6 +321,10 @@ def phrase(event, **kw):
         return ('AIが操縦します', 'ai') if kw.get('select') else ('人の操縦に戻りました', 'human')
     if event == 'rc_lost':
         return 'プロポの信号が届きません。停止します', 'warn'
+    if event == 'recovery':
+        return 'リカバリー', 'info'
+    if event == 'recovery_giveup':
+        return 'リカバリーできません。交代してください', 'warn'
     if event == 'train_done':
         return {'done': '学習が完了しました', 'stopped': '学習を停止しました'}.get(kw.get('phase'), '学習でエラーが出ました'), \
             ('info' if kw.get('phase') in ('done', 'stopped') else 'warn')
@@ -330,11 +335,13 @@ def phrase(event, **kw):
 
 EVENT_GROUP = {'record_start': 'record', 'record_stop': 'record', 'mode': 'mode', 'scene_saved': 'scene',
                'drive_start': 'drive', 'drive_stop': 'drive', 'handover': 'handover', 'rc_lost': 'warning',
+               'recovery': 'recovery', 'recovery_giveup': 'warning',
                'train_done': 'train', 'startup': 'startup'}
-URGENT = ('rc_lost', 'handover')
+URGENT = ('rc_lost', 'handover', 'recovery', 'recovery_giveup')
 
 COMMON_TEXTS = ['データセット収集を開始します', 'データセット収集を終了します', '3', '2', '1']
 COMMON_TEXTS += ['%d回目の走行をスタート' % n for n in range(1, 11)] + ['%d回目の走行終了' % n for n in range(1, 11)]
+COMMON_TEXTS += ['リカバリー', 'リカバリーできません。交代してください']
 COMMON_TEXTS += ['AIが操縦します', '人の操縦に戻りました', 'AI走行を開始します',
                 'AI走行を終了しました', '推論の確認を開始します', 'プロポの信号が届きません。停止します',
                 '画面との通信が途絶えたため、AI走行を止めました', 'エラーのため、AI走行を止めました',

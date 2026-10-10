@@ -921,9 +921,17 @@ function renderDriveModel() {
 }
 $('#dr-model').addEventListener('change', renderDriveModel);
 $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
+// 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
+const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery']];
+for (const [sel, key] of DR_FLAGS) {
+  $(sel).addEventListener('change', async () => {
+    try { await api('POST', '/api/drive/params', { [key]: $(sel).checked ? 1 : 0 }); } catch (e) { toast(e.message, true); }
+  });
+}
 function readDriveParams() {
   const p = {};
   for (const [sel, key] of DR_PARAMS) p[key] = +$(sel).value;
+  for (const [sel, key] of DR_FLAGS) p[key] = $(sel).checked ? 1 : 0;
   return p;
 }
 // スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
@@ -943,6 +951,7 @@ for (const [sel, key, fmt] of DR_PARAMS) {
   });
 }
 function setDriveParams(p) {
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) $(sel).checked = !!+p[key];
   for (const [sel, key, fmt] of DR_PARAMS) {
     if (p[key] === undefined || drBusy[key]) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
@@ -960,7 +969,7 @@ $('#btn-dr-start').addEventListener('click', async () => {
   if (!m) { toast('モデルを選んでください', true); return; }
   const dry = $('#dr-dry').checked;
   if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
-  const body = { client: 3, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
+  const body = { client: 4, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);
@@ -1021,6 +1030,8 @@ function renderDrive(st) {
   const who = $('#dr-who');
   if (now) {
     if (now.hold) who.textContent = now.select ? 'CH3: AI側 ・ 中立で停止中' : 'CH3: 人側 ・ 中立で待機中';
+    else if (now.assist === 'リカバリー中止') who.textContent = 'CH3: AI側 ・ リカバリーをやめて中立(CH3を人側へ戻して助けてください)';
+    else if (now.assist === 'リカバリー') who.textContent = 'CH3: AI側 ・ ぶつかったので自動で下がっています';
     else who.textContent = now.select ? (st.dry_run ? 'CH3: AI側(出力は中立)' : 'CH3: AI側 ・ 車はAIが操作中') : 'CH3: 人側 ・ プロポで操作中';
     who.className = 'who ' + (now.hold ? 'hold' : now.select && !st.dry_run ? 'ai' : 'human');
   } else { who.textContent = ''; who.className = 'who'; }
@@ -1042,6 +1053,9 @@ function renderDrive(st) {
               ['推論(TensorRT)', `${s.infer_ms ?? '-'} ms`],
               ['処理したフレーム', `${s.frames ?? 0}(取りこぼし ${s.skipped ?? 0})`],
               ['中立で止めた回数', `${s.holds ?? 0}${st.hold_reason ? ` ・ <span class="warn-text">${esc(st.hold_reason)}</span>` : ''}`],
+              ['補助', `リカバリー ${s.recoveries ?? 0}回 ・ 後退の受け付け ${s.esc_assists ?? 0}回`
+                + (s.giveups ? ` ・ <span class="warn-text">中止 ${s.giveups}回</span>` : '')
+                + (now && now.assist ? ` ・ <b class="warn-text">${esc(now.assist)}中</b>` : '')],
               ['走行時間', fmtDur(st.elapsed_s)]);
     if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);

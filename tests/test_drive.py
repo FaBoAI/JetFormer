@@ -397,3 +397,31 @@ def test_imu_sensor_rides_through_i2c_noise():
     with pytest.raises(RuntimeError):
         for _ in range(im.ImuSensor.MAX_FAIL_STREAK + 1):
             s._poll()
+
+
+def test_loop_recovers_when_stuck_against_wall(monkeypatch, tmp_path):
+    """走っていて止まった(壁に当たった)→ 自動でブレーキ・中立・後退を出し、AI_CMD に補助の種類を残す"""
+    d = make_driver(monkeypatch, tmp_path)
+    pred = np.tile([[1443.0, 1400.0]], (10, 1))                     # モデルは前進を出し続ける
+    runner, pca = FakeRunner(pred), FakePCA()
+    d.recorder.recording = True
+    # 0.5秒走ってから止まる(eRPM 0)
+    assert run_loop(d, runner, pca, lambda i: veh(True, erpm=-5000 if i < 15 else 0), frames=75) is None
+    kinds = [row['assist'] for _, row in d.recorder.rows]
+    assert 2 in kinds                                               # リカバリーした
+    thr = [t for _, t in pca.pairs]
+    assert max(thr) > REF[1] + 100                                  # 後退を出した
+    assert d.st['stats']['recoveries'] >= 1
+    rows = [row for _, row in d.recorder.rows if row['assist'] == 2]
+    assert all(r['model_out'][1] == pytest.approx(1400.0, abs=60) for r in rows)   # 補助の前のモデルの値も残す
+
+
+def test_loop_without_recovery_keeps_model_output(monkeypatch, tmp_path):
+    d = make_driver(monkeypatch, tmp_path)
+    pred = np.tile([[1443.0, 1400.0]], (10, 1))
+    runner, pca = FakeRunner(pred), FakePCA()
+    d.recorder.recording = True
+    monkeypatch.setitem(PARAMS, 'recovery', 0)                     # run_loop は PARAMS から設定を作る
+    assert run_loop(d, runner, pca, lambda i: veh(True, erpm=-5000 if i < 15 else 0), frames=60) is None
+    assert all(row['assist'] == 0 for _, row in d.recorder.rows)
+    assert all(t == pytest.approx(1400.0, abs=1) for _, t in pca.pairs[2:])

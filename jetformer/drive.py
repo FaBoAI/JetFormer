@@ -28,6 +28,7 @@ import uuid
 import cv2
 import numpy as np
 
+from . import assist as assist_mod
 from . import clock, config, modes
 
 SETTINGS_PATH = config.DATA_DIR / 'drive_settings.json'
@@ -42,8 +43,11 @@ PARAM_LIMITS = {
     'steer_trim_us': (-200.0, 200.0),
     'lookahead': (1, 10),          # 何フレーム先の予測を使うか(1 = 約33ms先)
     'osc_percent': (-10.0, 10.0),  # PCA9685の時計補正 [%]
+    'esc_reverse': (0, 1),         # 1 = 後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)
+    'recovery': (0, 1),            # 1 = ぶつかって止まったら自動で少し下がってからモデルへ戻す
 }
-DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0}
+DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
+                  'esc_reverse': 1, 'recovery': 1}
 
 
 def _read_json(path):
@@ -264,6 +268,8 @@ class Driver(object):
                     raise ValueError('%s が数値ではありません' % k)
                 p[k] = min(max(v, lo), hi)
         p['lookahead'] = int(round(p['lookahead']))
+        for k in ('esc_reverse', 'recovery'):         # 古い設定ファイル・古い画面には無い項目
+            p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         return p
 
     def _save_settings(self):
@@ -465,7 +471,10 @@ class Driver(object):
         imu_age = int(dcfg['imu_max_age_ms'] * 1e6)
         jpeg = [cv2.IMWRITE_JPEG_QUALITY, config.CAMERA['jpeg_quality']]
         lo, hi = dcfg['min_us'], dcfg['max_us']
-        stats = {'frames': 0, 'skipped': 0, 'holds': 0, 'fps': 0.0, 'latency_ms': 0.0, 'infer_ms': 0.0, 'i2c_errors': 0}
+        stats = {'frames': 0, 'skipped': 0, 'holds': 0, 'fps': 0.0, 'latency_ms': 0.0, 'infer_ms': 0.0, 'i2c_errors': 0,
+                 'recoveries': 0, 'esc_assists': 0, 'giveups': 0}
+        helper = assist_mod.Assist(ref)
+        last_kind = assist_mod.ASSIST_NONE
         st['stats'] = stats
         st['phase'] = 'driving'
         st['message'] = '走行中' if not dry_run else '推論の確認中(出力は中立のまま)'
@@ -495,7 +504,9 @@ class Driver(object):
                     'pred': np.full((10, 2), np.nan, np.float32), 'raw': (np.nan, np.nan), 'out': (n_s, n_t),
                     'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                     'mode_id': st['mode_id'], 'hold': True, 'select': veh_select, 'latency_ms': np.nan,
-                    'infer_ms': infer_ms, 'dry_run': dry_run})
+                    'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': assist_mod.ASSIST_NONE,
+                    'model_out': (np.nan, np.nan)})
+            helper.reset()                  # 中立で止めた後は、補助の手順を最初から
 
         while not self._stop.is_set():
             p = self.params
@@ -564,14 +575,33 @@ class Driver(object):
                 continue
             k = min(max(p['lookahead'], 1), len(pred)) - 1
             raw = (float(pred[k, 0]), float(pred[k, 1]))
-            out_us = apply_gains(raw, ref, p, lo, hi)
+            model_us = apply_gains(raw, ref, p, lo, hi)
+            # 補助: 後退の受け付け(中立を挟む)・ぶつかって止まったときの自動リカバリー
+            recent = [x[1] for x in list(imu_buf)[-10:] if x[0] > cam.t_ns - 150_000_000]
+            impact_g = max((float(np.hypot(a[0], a[1])) / 9.80665 for a in recent), default=0.0)
+            out_us, kind = helper.step(model_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
+                                       time.monotonic(), esc_on=p.get('esc_reverse', 1) == 1,
+                                       rec_on=p.get('recovery', 1) == 1,
+                                       impact_g=impact_g)
+            out_us = (float(np.clip(out_us[0], lo, hi)), float(np.clip(out_us[1], lo, hi)))
+            if kind != last_kind:
+                if kind == assist_mod.ASSIST_RECOVERY:
+                    self._emit('recovery')
+                elif kind == assist_mod.ASSIST_GIVEUP:
+                    stats['giveups'] += 1
+                    self._emit('recovery_giveup')
+                last_kind = kind
+            stats['recoveries'] = helper.recoveries
+            stats['esc_assists'] = helper.esc_count
             written = out.neutral() if dry_run else out.write(*out_us)
             stats['i2c_errors'] = out.errors
             if not written:
                 hold('PCA9685への書き込みに失敗しました(読み直します)', cam, bool(veh['select']), infer_ms)
                 applied = False
                 continue
-            prev_pred, prev_cam_t, applied = pred, cam.t_ns, not dry_run
+            # リカバリー中はモデルの出力を車に出していないので、次のフレームの「今の操作値」は中立にする
+            prev_pred, prev_cam_t = pred, cam.t_ns
+            applied = not dry_run and kind in (assist_mod.ASSIST_NONE, assist_mod.ASSIST_ESC)
             latency = (clock.now_ns() - cam.t_ns) / 1e6
             now_m = time.monotonic()
             times.append(now_m)
@@ -587,13 +617,14 @@ class Driver(object):
             st['now'] = {'raw': [round(raw[0], 1), round(raw[1], 1)], 'out': [round(out_us[0], 1), round(out_us[1], 1)],
                          'select': bool(veh['select']), 'hold': False, 'erpm': int(veh['erpm']),
                          'human': [int(veh['pwm'][0]), int(veh['pwm'][1])] if veh['valid'][0] and veh['valid'][1] else None,
-                         'pred': pred.round(1).tolist()}
+                         'pred': pred.round(1).tolist(), 'assist': assist_mod.ASSIST_NAMES[kind],
+                         'model_out': [round(model_us[0], 1), round(model_us[1], 1)]}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
                 'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                 'mode_id': mode_id, 'hold': False, 'select': bool(veh['select']), 'latency_ms': latency,
-                'infer_ms': infer_ms, 'dry_run': dry_run})
+                'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': kind, 'model_out': model_us})
 
     # ------------------------------------------------------------ 状態
     def status(self):
