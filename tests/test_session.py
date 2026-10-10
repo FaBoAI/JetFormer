@@ -32,6 +32,12 @@ class FakePlayer(object):
         self.tts = None
         self.start_times = []
 
+    def wants(self, event):
+        return self.enabled
+
+    def cancel_clips(self):
+        pass
+
     def play_clip(self, event, mono, on_start=None):
         if not self.enabled:
             return False
