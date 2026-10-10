@@ -89,6 +89,9 @@ class VehicleSensor(SensorThread):
     # 走行が中立で止まった)。1回の失敗はその周期(10ms)を飛ばすだけにし、続いたときだけ開き直す
     MAX_FAIL_STREAK = 30         # 約0.3秒続けて読めなければ開き直す
     error_backoff = 0.05
+    # 基板が再起動したとき(2026-10-10 ai_run_008 で12回。強く加速したときの電圧低下とみられる)、基板は約0.07秒で
+    # 戻るのに、開き直しを2秒待っていたため走行が2.4秒止まった。すぐ開き直す
+    reconnect_interval = 0.25
 
     def __init__(self, cfg):
         super(VehicleSensor, self).__init__()
@@ -105,6 +108,9 @@ class VehicleSensor(SensorThread):
         self.fail_streak = 0
         self.last_read_error = ''
         self.stale = 0
+        self.board_resets = 0      # 基板の再起動(基板の時計が巻き戻った回数)。電源・バッテリーの電圧低下の目安
+        self.last_board_reset = None
+        self._last_board_t = None
 
     def _open(self):
         self.bus = SMBus(self.cfg['bus'])
@@ -154,6 +160,11 @@ class VehicleSensor(SensorThread):
             self.stale += 1
             return []
         self._last_seq = values['seq']
+        bt = values['board_t_us']
+        if self._last_board_t is not None and bt + 1_000_000 < self._last_board_t and self._last_board_t < 4_000_000_000:
+            self.board_resets += 1                     # 時計が戻った(32bit µs の一周 約71分 は除く)
+            self.last_board_reset = time.time()
+        self._last_board_t = bt
         return [Sample(t_ns, values)]
 
     def _poll_legacy(self):
@@ -179,7 +190,9 @@ class VehicleSensor(SensorThread):
     def status(self):
         st = super(VehicleSensor, self).status()
         st.update(protocol=self.protocol, read_errors=self.read_errors, bus_errors=self.bus_errors,
-                  skipped_polls=self.skipped_polls, last_read_error=self.last_read_error, stale=self.stale)
+                  skipped_polls=self.skipped_polls, last_read_error=self.last_read_error, stale=self.stale,
+                  board_resets=self.board_resets,
+                  board_reset_ago_s=round(time.time() - self.last_board_reset, 1) if self.last_board_reset else None)
         if self.latest is not None:
             d = self.latest.data
             st.update(pwm=d['pwm'], erpm=d['erpm'], select=d['select'], valid=d['valid'])

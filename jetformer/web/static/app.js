@@ -174,7 +174,8 @@ function sensorExtra(name, s) {
   }
   if (name === 'VEHICLE') {
     if (s.protocol === 'legacy') parts.push('<span class="warn-text">v1ファーム(値の取り違えあり)</span>');
-    else parts.push(`v2 / 読み直し ${(s.read_errors || 0) + (s.bus_errors || 0)}${s.skipped_polls ? ` / 飛ばし ${s.skipped_polls}` : ''}`);
+    else parts.push(`v2 / 読み直し ${(s.read_errors || 0) + (s.bus_errors || 0)}${s.skipped_polls ? ` / 飛ばし ${s.skipped_polls}` : ''}`
+      + (s.board_resets ? ` / <span class="warn-text">基板の再起動 ${s.board_resets}回(${s.board_reset_ago_s}秒前。バッテリー・電源を確認)</span>` : ''));
     if (s.select !== undefined) parts.push(s.select ? '<span class="warn-text">AI走行中</span>' : '人が操縦中');
   }
   return parts.filter(Boolean).join(' / ');

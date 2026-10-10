@@ -427,3 +427,26 @@ def test_loop_without_recovery_keeps_model_output(monkeypatch, tmp_path):
     assert run_loop(d, runner, pca, lambda i: veh(True, erpm=-5000 if i < 15 else 0), frames=60) is None
     assert all(row['assist'] == 0 for _, row in d.recorder.rows)
     assert all(t == pytest.approx(1400.0, abs=1) for _, t in pca.pairs[2:])
+
+
+def test_vehicle_sensor_counts_board_resets():
+    """基板の時計が巻き戻ったら(再起動)数える。32bitの一周は数えない"""
+    from jetformer.sensors import vehicle as vs
+
+    def frame(seq, bt):
+        d = bytearray(vs.SNAP.pack(vs.SNAP_MAGIC, vs.SNAP_VERSION, seq & 0xFFFF, bt, 1500, 1500, 2000, 7, 0, 0, 0, 0, 0, 0))
+        d[-1] = vs.crc8(bytes(d[:-1]))
+        return list(d)
+
+    class Bus(object):
+        def __init__(self, frames):
+            self.frames = iter(frames)
+
+        def read_i2c_block_data(self, addr, reg, n):
+            return next(self.frames)
+    s = vs.VehicleSensor({'bus': 7, 'address': 0x28, 'rate_hz': 100, 'protocol': 'snapshot'})
+    s.bus = Bus([frame(10, 5_000_000), frame(11, 5_010_000), frame(2, 70_000),        # 再起動
+                 frame(3, 4_294_000_000), frame(4, 20_000)])                         # 一周(数えない)
+    for _ in range(5):
+        s._poll_snapshot()
+    assert s.board_resets == 1 and s.status()['board_resets'] == 1
