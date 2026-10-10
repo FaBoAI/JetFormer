@@ -203,7 +203,10 @@ function renderStatus(st) {
   $('#sensor-table').innerHTML = rows.join('');
 
   const recState = $('#rec-state');
-  if (rec.recording) {
+  const ses = st.session || {};
+  $('#run-panel').classList.toggle('hidden', !ses.active);
+  if (ses.active) renderRunSession(ses, rec);
+  else if (rec.recording) {
     recState.innerHTML = `収集中: シーン ${rec.scene_index}${rec.max_scenes ? ' / ' + rec.max_scenes : ''} ${modeBadge(rec.mode_id)}`;
     recState.className = 'rec-state on';
     $('#scene-progress').style.width = `${Math.min(100, rec.scene_elapsed_s / rec.scene_seconds * 100)}%`;
@@ -216,9 +219,9 @@ function renderStatus(st) {
     $('#scene-progress').style.width = '0';
     $('#rec-detail').textContent = rec.last_error ? '⚠ ' + rec.last_error : `1シーン = ${st.config.scene_seconds} 秒`;
   }
-  $('#btn-rec-start').disabled = rec.recording || st.training;
-  $('#btn-rec-stop').disabled = !rec.recording;
-  $('#btn-sensors-stop').disabled = rec.recording || st.driving || !st.sensors_running;
+  $('#btn-rec-start').disabled = rec.recording || ses.active || st.training;
+  $('#btn-rec-stop').disabled = !(rec.recording || ses.active);
+  $('#btn-sensors-stop').disabled = rec.recording || ses.active || st.driving || !st.sensors_running;
   $('#btn-sensors-start').disabled = st.sensors_running;
   const saved = rec.saved_scenes || [];
   $('#session-scenes').innerHTML = saved.length
@@ -227,9 +230,39 @@ function renderStatus(st) {
   if (saved.length !== state._savedCount) { state._savedCount = saved.length; if (state.tab === 'scenes') loadScenes(); }
 }
 
+// 走行ごとの収集: カウントダウン(3・2・1)/走行中の経過/次の走行までの停止 を大きく出す
+function renderRunSession(ses, rec) {
+  const recState = $('#rec-state');
+  const n = ses.run || 1, of = ses.runs > 1 ? ` / ${ses.runs}` : '';
+  let big = '', detail = '', width = 0;
+  if (ses.phase === 'starting') { big = '準備中…'; detail = 'センサーの立ち上がりを待っています'; }
+  else if (ses.phase === 'countdown') {
+    big = ses.countdown_s === null ? `${n}回目の走行をスタート` : ses.countdown_s > 0 ? String(ses.countdown_s) : 'ピ';
+    detail = `${n}回目${of} の走行の準備`;
+  } else if (ses.phase === 'running') {
+    big = `${n}回目${of} 走行中`;
+    detail = `${(ses.run_elapsed_s ?? 0).toFixed(1)} / ${ses.run_seconds} 秒`;
+    width = Math.min(100, (ses.run_elapsed_s ?? 0) / ses.run_seconds * 100);
+  } else if (ses.phase === 'pause') {
+    big = `次の走行まで ${Math.ceil(ses.pause_left_s ?? 0)} 秒`;
+    detail = `${ses.done}回の走行を記録済み${of ? '(全' + ses.runs + '回)' : ''}`;
+    width = Math.min(100, (1 - (ses.pause_left_s ?? 0) / Math.max(ses.pause_s, 0.1)) * 100);
+  } else { big = '保存中…'; }
+  $('#run-big').textContent = big;
+  $('#run-big').className = 'run-big ' + ses.phase;
+  recState.innerHTML = `収集中(走行ごと) ${rec.mode_id !== undefined ? modeBadge(rec.mode_id) : ''}`;
+  recState.className = 'rec-state on';
+  $('#scene-progress').style.width = `${width}%`;
+  $('#rec-detail').textContent = detail + (ses.error ? ` ⚠ ${ses.error}` : '');
+  $('#btn-run-end').disabled = ses.phase !== 'running';
+  $('#btn-run-next').disabled = ses.phase !== 'pause';
+}
+
 async function pollStatus() {
-  try { renderStatus(await api('GET', '/api/status')); } catch (e) { /* 再接続待ち */ }
-  setTimeout(pollStatus, 1000);
+  let fast = false;
+  try { const st = await api('GET', '/api/status'); renderStatus(st); fast = st.session && st.session.active; } catch (e) { /* 再接続待ち */ }
+  clearTimeout(state._statusTimer);
+  state._statusTimer = setTimeout(pollStatus, fast ? 250 : 1000);
 }
 
 // ------------------------------------------------------------ ライブ値(0.3秒ごと)
@@ -362,17 +395,29 @@ async function pollValues() {
 }
 
 // ------------------------------------------------------------ 収集の操作
+const recMethod = () => document.querySelector('input[name=rec-method]:checked').value;
+document.querySelectorAll('input[name=rec-method]').forEach((r) => r.addEventListener('change', () => {
+  $('#rec-runs-opts').classList.toggle('hidden', recMethod() !== 'runs');
+  $('#rec-cont-opts').classList.toggle('hidden', recMethod() === 'runs');
+}));
 $('#btn-rec-start').addEventListener('click', async () => {
   const mode = document.querySelector('input[name=rec-mode]:checked').value;
-  const body = { mode_id: +$('#rec-mode').value, description: $('#rec-desc').value, tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
-                 max_scenes: mode === 'count' ? parseInt($('#rec-count').value, 10) || 1 : null };
-  try { const r = await api('POST', '/api/record/start', body); toast(`収集を開始しました (${r.log})`); }
-  catch (e) { toast('開始できません: ' + e.message, true); }
+  const body = { method: recMethod(), mode_id: +$('#rec-mode').value, description: $('#rec-desc').value,
+                 tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
+                 max_scenes: mode === 'count' ? parseInt($('#rec-count').value, 10) || 1 : null,
+                 runs: +$('#rec-runs').value || 1, run_seconds: +$('#rec-run-seconds').value || 20, pause_s: +$('#rec-pause').value };
+  try {
+    const r = await api('POST', '/api/record/start', body);
+    toast(r.method === 'runs' ? `走行ごとの収集を始めます(${body.runs}回)` : `収集を開始しました (${r.log})`);
+    pollStatus();
+  } catch (e) { toast('開始できません: ' + e.message, true); }
 });
 $('#btn-rec-stop').addEventListener('click', async () => {
   try { await api('POST', '/api/record/stop'); toast('停止しました。最後のシーンを保存しています…'); }
   catch (e) { toast(e.message, true); }
 });
+$('#btn-run-end').addEventListener('click', () => api('POST', '/api/record/end_run').catch((e) => toast(e.message, true)));
+$('#btn-run-next').addEventListener('click', () => api('POST', '/api/record/next').catch((e) => toast(e.message, true)));
 $('#btn-sensors-start').addEventListener('click', () => api('POST', '/api/sensors/start').catch((e) => toast(e.message, true)));
 $('#btn-sensors-stop').addEventListener('click', () => api('POST', '/api/sensors/stop').catch((e) => toast(e.message, true)));
 

@@ -23,12 +23,14 @@ import numpy as np
 from . import config
 
 RATE = 48000
+LEAD_S = 0.15            # 再生の頭に入れる無音 [秒]
 SETTINGS_PATH = config.DATA_DIR / 'sound_settings.json'
 CACHE_DIR = config.DATA_DIR / 'sounds'
 
 EVENTS = {      # キー: (画面の表示名, 既定でON)
     'startup': ('起動したとき', True),
     'record': ('収集の開始・終了', True),
+    'run': ('走行ごとのカウントダウン・終了の合図', True),
     'mode': ('ジャンルの切り替え', True),
     'scene': ('シーン保存の合図(20秒ごと)', False),
     'drive': ('AI走行の開始・終了', True),
@@ -57,6 +59,7 @@ CHIMES = {
     'info': lambda: _tone([880], 0.15),
     'tick': lambda: _tone([1500], 0.06, amp=0.35),
     'warn': lambda: np.concatenate([_tone([1200], 0.1), _gap(0.06)] * 3),
+    'pi': lambda: _tone([1000], 0.5, amp=0.6),                      # 走行の開始・終了の「ピー」
     'ai': lambda: np.concatenate([_tone([523, 784], 0.12), _gap(0.03), _tone([659, 988], 0.2)]),
     'human': lambda: np.concatenate([_tone([659, 988], 0.12), _gap(0.03), _tone([523, 784], 0.2)]),
 }
@@ -92,7 +95,10 @@ class TTS(object):
         key = hashlib.sha1(('%s|%s|%s' % (self.voice, self.speed, text)).encode('utf-8')).hexdigest()[:16]
         path = self.cache_dir / ('%s.npy' % key)
         if path.exists():
-            return np.load(path)
+            try:
+                return np.load(path)
+            except (OSError, ValueError):
+                path.unlink(missing_ok=True)                 # 壊れたキャッシュは作り直す
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory() as d:
             txt, wav = os.path.join(d, 'in.txt'), os.path.join(d, 'out.wav')
@@ -108,14 +114,16 @@ class TTS(object):
         peak = float(np.abs(x).max()) if len(x) else 0.0
         if peak > 0:
             x = x / peak * 0.8
-        np.save(path, x)
+        tmp = path.with_name(path.name + '.%d.tmp.npy' % threading.get_ident())
+        np.save(tmp, x)
+        os.replace(tmp, path)                                # 途中まで書いたファイルを読まないように
         return x
 
 
 def write_wav(path, mono, volume):
     """float32 モノラル → 48kHz・32bit・2ch のWAV(I2S2の設定と同じ形式)。volume: 0〜100"""
     gain = (max(0, min(100, volume)) / 100.0) ** 2           # 耳の感じ方に合わせて2乗
-    lead = _gap(0.15)                                         # アンプが起きるまでの間(頭が欠けないように)
+    lead = _gap(LEAD_S)                                       # アンプが起きるまでの間(頭が欠けないように)
     x = np.concatenate([lead, mono.astype(np.float32) * gain, _gap(0.1)])
     pcm = (np.clip(x, -1, 1) * (2 ** 31 - 1)).astype('<i4')
     with wave.open(str(path), 'wb') as w:
@@ -171,24 +179,60 @@ class SoundPlayer(object):
                     device=self.cfg['device'])
 
     # ------------------------------------------------------------ 鳴らす
+    def wants(self, event):
+        return bool(self.settings['enabled'] and self.settings['events'].get(event, False))
+
     def notify(self, event, text='', chime='info', urgent=False):
         """event の設定がONなら鳴らす(鳴らす文・音はキューへ。すぐ戻る)"""
-        if not self.settings['enabled'] or not self.settings['events'].get(event, False):
+        if not self.wants(event):
             return False
         return self.enqueue(text, chime, urgent)
 
-    def enqueue(self, text='', chime='info', urgent=False):
-        if urgent:                                    # 警告は、たまっている案内より先に
-            try:
-                while True:
-                    self.q.get_nowait()
-            except queue.Empty:
-                pass
+    def play_clip(self, event, mono, on_start=None):
+        """作った音(48kHz モノラル)を鳴らす。on_start(t) は再生を始める直前に呼ぶ(t=time.monotonic()、
+        先頭の無音 LEAD_S のあとに音が出る)。event の設定がOFFなら鳴らさず False"""
+        if not self.wants(event):
+            return False
         try:
-            self.q.put_nowait((text, chime))
+            self.q.put_nowait(('', None, mono, on_start))
             return True
         except queue.Full:
             return False
+
+    def _drain(self, keep):
+        """キューを空にし、keep(item) が真のものだけ順に戻す"""
+        items = []
+        try:
+            while True:
+                items.append(self.q.get_nowait())
+        except queue.Empty:
+            pass
+        kept = [it for it in items if keep(it)]
+        return kept
+
+    def enqueue(self, text='', chime='info', urgent=False):
+        if urgent:                                    # 警告は、たまっている案内より先に(走行の合図は消さない)
+            kept = self._drain(lambda it: it[2] is not None)
+            try:
+                self.q.put_nowait((text, chime, None, None))
+                for it in kept:
+                    self.q.put_nowait(it)
+                return True
+            except queue.Full:
+                return False
+        try:
+            self.q.put_nowait((text, chime, None, None))
+            return True
+        except queue.Full:
+            return False
+
+    def cancel_clips(self):
+        """まだ鳴っていない走行の合図(play_clip で入れたもの)を取り消す"""
+        for it in self._drain(lambda it: it[2] is None):
+            try:
+                self.q.put_nowait(it)
+            except queue.Full:
+                break
 
     def prepare(self, texts):
         """よく使う文を先に音声にしておく(初回の遅れをなくす)"""
@@ -210,20 +254,23 @@ class SoundPlayer(object):
 
     def _worker(self):
         while True:
-            text, chime = self.q.get()
+            text, chime, mono, on_start = self.q.get()
             self.busy = True
             try:
-                mono = self.render(text, chime)
+                if mono is None:
+                    mono = self.render(text, chime)
                 if len(mono):
                     with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
                         path = f.name
                     try:
                         write_wav(path, mono, self.settings['volume'])
+                        if on_start is not None:
+                            on_start(time.monotonic())
                         self._play(path)
                     finally:
                         os.unlink(path)
                     self.played += 1
-                    self.last_text = text or '(%s)' % chime
+                    self.last_text = text or ('(%s)' % chime if chime else '(合図)')
                     self.last_error = ''
             except Exception as e:
                 traceback.print_exc()
@@ -250,10 +297,12 @@ class SoundPlayer(object):
 def phrase(event, **kw):
     """(文, 音) を返す。event は収集・走行・学習などの出来事"""
     if event == 'record_start':
-        return 'データ収集を開始します。%s' % kw.get('mode_name', ''), 'start'
+        return 'データセット収集を開始します', 'start'
     if event == 'record_stop':
         n = kw.get('scenes', 0)
-        return ('データ収集を終了しました。%d シーンを保存しました' % n) if n else 'データ収集を終了しました', 'stop'
+        if kw.get('runs'):
+            return ('データセット収集を終了します。%d回の走行を保存しました' % n) if n else 'データセット収集を終了します', 'stop'
+        return ('データセット収集を終了します。%d シーンを保存しました' % n) if n else 'データセット収集を終了します', 'stop'
     if event == 'mode':
         return 'ジャンル、%s' % kw.get('mode_name', ''), 'info'
     if event == 'scene_saved':
@@ -284,7 +333,9 @@ EVENT_GROUP = {'record_start': 'record', 'record_stop': 'record', 'mode': 'mode'
                'train_done': 'train', 'startup': 'startup'}
 URGENT = ('rc_lost', 'handover')
 
-COMMON_TEXTS = ['データ収集を終了しました', 'AIが操縦します', '人の操縦に戻りました', 'AI走行を開始します',
+COMMON_TEXTS = ['データセット収集を開始します', 'データセット収集を終了します', '3', '2', '1']
+COMMON_TEXTS += ['%d回目の走行をスタート' % n for n in range(1, 11)] + ['%d回目の走行終了' % n for n in range(1, 11)]
+COMMON_TEXTS += ['AIが操縦します', '人の操縦に戻りました', 'AI走行を開始します',
                 'AI走行を終了しました', '推論の確認を開始します', 'プロポの信号が届きません。停止します',
                 '画面との通信が途絶えたため、AI走行を止めました', 'エラーのため、AI走行を止めました',
                 '学習が完了しました', 'JetFormer を起動しました']
@@ -306,3 +357,20 @@ def wait_idle(player, timeout=30.0):
                 return True
         time.sleep(0.05)
     return False
+
+
+# ------------------------------------------------------------ 走行ごとの合図
+def countdown_clip(tts, n):
+    """「n回目の走行をスタート、3、2、1、ピ」を1つの音にする。戻り値 (音, 先頭からピまでの秒数)。
+    数字は1秒ごと。ピの瞬間に記録を始めるため、1つの音として鳴らしてずれをなくす"""
+    parts = [tts.speech('%d回目の走行をスタート' % n), _gap(0.35)]
+    for word in ('3', '2', '1'):
+        x = tts.speech(word)[:RATE]
+        parts.append(np.concatenate([x, _gap(1.0 - len(x) / RATE)]))
+    head = np.concatenate(parts)
+    return np.concatenate([head, CHIMES['pi']()]), len(head) / RATE
+
+
+def end_clip(tts, n):
+    """「ピー、n回目の走行終了」(先頭がピー)"""
+    return np.concatenate([CHIMES['pi'](), _gap(0.25), tts.speech('%d回目の走行終了' % n)])

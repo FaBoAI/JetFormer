@@ -51,10 +51,36 @@
           <label>走行の説明<input id="rec-desc" placeholder="例: 白線の駐車枠に後退で入れる"></label>
           <label>タグ(カンマ区切り)<input id="rec-tags" placeholder="例: indoor, cw, daylight"></label>
           <label>場所<input id="rec-location" placeholder="例: GClue lab"></label>
-          <div class="row">
-            <label class="inline"><input type="radio" name="rec-mode" value="continuous" checked> 停止まで連続</label>
-            <label class="inline"><input type="radio" name="rec-mode" value="count"> シーン数
-              <input id="rec-count" type="number" min="1" value="3" class="num"></label>
+          <label>収集のしかた</label>
+          <div class="row tight">
+            <label class="inline"><input type="radio" name="rec-method" value="runs" checked> 走行ごと(カウントダウン)</label>
+            <label class="inline"><input type="radio" name="rec-method" value="continuous"> 区切らずに連続</label>
+          </div>
+          <div id="rec-runs-opts" class="opts">
+            <div class="row tight">
+              <label class="inline">回数 <input id="rec-runs" type="number" min="1" max="200" value="1" class="num"> 回</label>
+              <label class="inline">1回の走行 <input id="rec-run-seconds" type="number" min="3" max="300" value="20" class="num"> 秒</label>
+            </div>
+            <div class="row tight">
+              <label class="inline">走行の間 <input id="rec-pause" type="number" min="0" max="600" value="10" class="num"> 秒停止</label>
+            </div>
+            <div class="muted small">「n回目の走行をスタート、3、2、1、ピ」で記録を始め、「ピ、n回目の走行終了」で止めます。
+              回数を2以上にすると、指定秒数停止して次の走行をくり返します(連続収集)。1回の走行が1シーンになります。</div>
+          </div>
+          <div id="rec-cont-opts" class="opts hidden">
+            <div class="row tight">
+              <label class="inline"><input type="radio" name="rec-mode" value="continuous" checked> 停止まで</label>
+              <label class="inline"><input type="radio" name="rec-mode" value="count"> シーン数
+                <input id="rec-count" type="number" min="1" value="3" class="num"></label>
+            </div>
+            <div class="muted small">開始から20秒ごとにシーンを区切って記録し続けます(カウントダウンなし)。</div>
+          </div>
+          <div id="run-panel" class="run-panel hidden">
+            <div id="run-big" class="run-big"></div>
+            <div class="row buttons">
+              <button id="btn-run-end" class="small">この走行を終える</button>
+              <button id="btn-run-next" class="small">次の走行を始める</button>
+            </div>
           </div>
           <div class="row buttons">
             <button id="btn-rec-start" class="primary">● 収集開始</button>

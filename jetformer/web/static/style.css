@@ -142,6 +142,15 @@ details.adv summary { cursor: pointer; color: var(--muted); }
   font-weight: 700; background: var(--danger); border-color: var(--danger); color: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
 body.driving main { padding-bottom: 96px; }
 
+/* 走行ごとの収集 */
+.row.tight { margin-top: 4px; }
+.opts { margin-top: 4px; }
+.run-panel { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: #f9fafb; }
+.run-big { font-size: 30px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; min-height: 44px; }
+.run-big.countdown { color: var(--danger); font-size: 40px; }
+.run-big.running { color: var(--ok); }
+.run-big.pause { color: var(--accent); font-size: 24px; }
+
 /* サウンド */
 .snd-events { display: flex; flex-wrap: wrap; gap: 2px 0; margin-top: 6px; }
 .snd-events label.inline { margin-right: 12px; }

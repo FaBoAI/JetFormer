@@ -30,8 +30,9 @@ def make_player(monkeypatch, tmp_path, **settings):
 
 
 def test_phrases():
-    assert sound.phrase('record_start', mode_name='高速走行') == ('データ収集を開始します。高速走行', 'start')
+    assert sound.phrase('record_start', mode_name='高速走行') == ('データセット収集を開始します', 'start')
     assert '3 シーン' in sound.phrase('record_stop', scenes=3)[0]
+    assert sound.phrase('record_stop', scenes=3, runs=True)[0] == 'データセット収集を終了します。3回の走行を保存しました'
     assert sound.phrase('handover', select=True) == ('AIが操縦します', 'ai')
     assert sound.phrase('handover', select=False)[1] == 'human'
     assert sound.phrase('drive_stop', reason='走行を始めた画面との通信が 3 秒途絶えたため')[1] == 'warn'

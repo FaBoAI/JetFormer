@@ -18,7 +18,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, modes, sound, tof_format
+from .. import actuator, config, dataset, drive, modes, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
@@ -39,6 +39,7 @@ def _announce(event, **info):
 
 for _src in (recorder, driver, trainer):
     _src.listeners.append(_announce)
+collect = session.CollectSession(recorder, player)     # 走行ごとに区切る収集(カウントダウンと終了の合図つき)
 
 
 def _release_outputs():
@@ -72,6 +73,9 @@ async def lifespan(_app):
     yield
     # 終了時: 走行中なら中立を出して止め、収集中なら最後のシーンを保存してからセンサーを止め、学習中なら停止を指示する
     driver.shutdown()
+    if collect.active:
+        collect.stop()
+        collect.thread.join(10)
     if recorder.recording:
         recorder.stop()
     hub.stop()
@@ -203,6 +207,7 @@ def api_status():
         'sensors_running': hub.running,
         'sensors': hub.status(),
         'recorder': recorder.status(),
+        'session': collect.status(),
         'disk': {'free_gb': round(du.free / 1e9, 1), 'total_gb': round(du.total / 1e9, 1)},
         'training': trainer.running,
         'driving': driver.running,
@@ -220,7 +225,7 @@ def api_sensors_start():
 
 @app.post('/api/sensors/stop')
 def api_sensors_stop():
-    if recorder.recording or driver.running:
+    if recorder.recording or collect.active or driver.running:
         raise HTTPException(409, '収集中・走行中はセンサーを停止できません')
     hub.stop()
     return {'ok': True}
@@ -230,17 +235,43 @@ def api_sensors_stop():
 def api_record_start(body: dict = Body(default={})):
     if trainer.running:
         raise HTTPException(409, '学習中は収集できません(GPU・CPUを奪い合い、30fpsの収集が乱れるため)')
+    if collect.active:
+        raise HTTPException(409, 'すでに収集中です')
+    common = dict(description=body.get('description', ''), tags=body.get('tags', []), location=body.get('location', ''),
+                  mode_id=int(body.get('mode_id', modes.UNSET)))
     try:
+        if body.get('method', 'runs') == 'runs':
+            # 走行ごと: 「n回目の走行をスタート、3、2、1、ピ」〜「ピ、n回目の走行終了」を回数分(間は pause_s 秒停止)
+            collect.start(runs=body.get('runs', 1), run_seconds=body.get('run_seconds', config.SCENE_SECONDS),
+                          pause_s=body.get('pause_s', 10), **common)
+            return {'ok': True, 'method': 'runs'}
         max_scenes = body.get('max_scenes')
-        name = recorder.start(description=body.get('description', ''), tags=body.get('tags', []),
-                              location=body.get('location', ''),
-                              max_scenes=int(max_scenes) if max_scenes else None,
-                              mode_id=int(body.get('mode_id', modes.UNSET)))
-    except ValueError as e:
+        name = recorder.start(max_scenes=int(max_scenes) if max_scenes else None, **common)
+    except (ValueError, TypeError) as e:
         raise HTTPException(400, str(e))
     except RuntimeError as e:
         raise HTTPException(409, str(e))
-    return {'ok': True, 'log': name}
+    return {'ok': True, 'method': 'continuous', 'log': name}
+
+
+@app.post('/api/record/next')
+def api_record_next():
+    """走行ごとの収集で、停止中の待ちを飛ばして次の走行を始める"""
+    try:
+        collect.next_run()
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True}
+
+
+@app.post('/api/record/end_run')
+def api_record_end_run():
+    """走行ごとの収集で、今の走行を(時間前でも)終える"""
+    try:
+        collect.end_run()
+    except RuntimeError as e:
+        raise HTTPException(409, str(e))
+    return {'ok': True}
 
 
 @app.post('/api/record/mode')
@@ -257,7 +288,10 @@ def api_record_mode(body: dict = Body(...)):
 
 @app.post('/api/record/stop')
 def api_record_stop():
-    threading.Thread(target=recorder.stop, daemon=True).start()
+    if collect.active:
+        collect.stop()
+    else:
+        threading.Thread(target=recorder.stop, daemon=True).start()
     return {'ok': True}
 
 
@@ -506,7 +540,7 @@ def api_export_download(filename: str):
 # ---------------------------------------------------------------- API: 学習
 @app.post('/api/train/start')
 def api_train_start(body: dict = Body(...)):
-    if recorder.recording:
+    if recorder.recording or collect.active:
         raise HTTPException(409, '収集中は学習できません(収集を止めてから開始してください)')
     if driver.running:
         raise HTTPException(409, 'AI走行中は学習できません(GPUを奪い合い、30fpsの走行が乱れるため)')

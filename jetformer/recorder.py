@@ -93,6 +93,9 @@ class _SceneBuffer(object):
         self.audio = []      # (t_ns, pcm int32[320]) マイク
         self.thumb = None
         self.last_depth = None
+        self.run = None          # 走行ごとに区切る収集: 何回目の走行か
+        self.planned_s = None
+        self.run_complete = False
         (path / 'CAM_FRONT').mkdir(parents=True, exist_ok=True)
 
 
@@ -114,6 +117,9 @@ class Recorder(object):
         self.dropped_writes = 0
         self._closed = set()       # 保存済みシーン番号(遅れて届いた値で作り直さない)
         self.late_dropped = 0
+        self.runs_mode = False     # 走行ごとに区切る収集か
+        self.run_count = 0
+        self.active_run = None
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
 
     def _emit(self, event, **info):
@@ -128,7 +134,10 @@ class Recorder(object):
         return getattr(self.hub, 'channels', ('CAM_FRONT', 'TOF_FRONT', 'IMU', 'VEHICLE'))
 
     # ------------------------------------------------------------------ 制御
-    def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET, drive=None):
+    def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET, drive=None,
+              runs_mode=False):
+        """runs_mode=True: 走行ごとに区切る(begin_run〜end_run の間だけ記録し、1回の走行を1シーンにする)。
+        False: 開始から20秒ごとに区切って記録し続ける"""
         mode_id = modes.validate(mode_id)
         if self.recording:
             raise RuntimeError('すでに収集中です')
@@ -161,18 +170,53 @@ class Recorder(object):
             self.scenes = {}
             self.saved = []
             self._closed = set()
-            self.max_scenes = max_scenes
+            self.runs_mode = bool(runs_mode)
+            self.run_count = 0
+            self.active_run = None
+            self.max_scenes = None if runs_mode else max_scenes
             self.recording = True
             for name in self.channels:
                 self.hub[name].subscribe(self._on_sample)
             self._finalizer = threading.Thread(target=self._finalize_loop, name='rec-final', daemon=True)
             self._finalizer.start()
             name = self.log['name']
-        self._emit('record_start', log=name, mode_id=mode_id, mode_name=modes.name_of(mode_id))
+        self._emit('record_start', log=name, mode_id=mode_id, mode_name=modes.name_of(mode_id), runs=self.runs_mode)
         return name
+
+    # ------------------------------------------------------------ 走行ごとの区切り
+    def begin_run(self, planned_s):
+        """走行を始める(この瞬間から記録)。戻り値 (何回目か, シーン名)"""
+        with self.lock:
+            if not self.recording or not self.runs_mode:
+                raise RuntimeError('走行ごとの収集をしていません')
+            if self.active_run is not None:
+                raise RuntimeError('前の走行が終わっていません')
+            idx = self.run_count
+            self.run_count += 1
+            now = clock.now_ns()
+            name = '%s-%04d' % (self.log['name'], idx + 1)
+            buf = _SceneBuffer(idx, name, self.log['path'] / name, now, now + int(planned_s * 1e9))
+            buf.run, buf.planned_s = idx + 1, float(planned_s)
+            self.scenes[idx] = buf
+            self.active_run = idx
+            return idx + 1, name
+
+    def end_run(self, complete=True):
+        """走行を終える(この瞬間までを記録)。complete=False は途中で打ち切った走行。戻り値: 何回目か(走行中でなければ None)"""
+        with self.lock:
+            idx, self.active_run = self.active_run, None
+            buf = self.scenes.get(idx) if idx is not None else None
+            if buf is None:
+                return None
+            buf.end_ns = min(buf.end_ns, clock.now_ns())
+            buf.run_complete = complete
+            return idx + 1
 
     def stop(self, only_log=None):
         """収集を止めて残りのシーンを保存する。only_log を渡すと、そのログの収集のときだけ止める。止めたら True"""
+        if self.recording and getattr(self, 'active_run', None) is not None and \
+                (only_log is None or (self.log and self.log['name'] == only_log)):
+            self.end_run(complete=False)             # 走行の途中で止めた
         with self.lock:
             if not self.recording or (only_log is not None and self.log['name'] != only_log):
                 return False
@@ -185,7 +229,7 @@ class Recorder(object):
         for idx in pending:
             self._finalize(idx, partial=True)
         self.log = None
-        self._emit('record_stop', scenes=len(self.saved))
+        self._emit('record_stop', scenes=len(self.saved), runs=self.runs_mode)
         return True
 
     WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15, 'AUDIO': 10}   # カメラは自動露出の収束も待つ(1.5秒)
@@ -226,6 +270,19 @@ class Recorder(object):
             elapsed = (clock.now_ns() - self.log['start_ns']) / 1e9
             cur = int(elapsed // config.SCENE_SECONDS)
             buf = self.scenes.get(cur)
+            if self.runs_mode:
+                buf = self.scenes.get(self.active_run) if self.active_run is not None else None
+                return {
+                    'recording': True, 'runs_mode': True, 'log': self.log['name'], 'elapsed_s': round(elapsed, 1),
+                    'run_index': buf.run if buf else None, 'runs_started': self.run_count,
+                    'run_elapsed_s': round((clock.now_ns() - buf.start_ns) / 1e9, 1) if buf else None,
+                    'run_planned_s': buf.planned_s if buf else None,
+                    'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof), 'IMU': len(buf.imu),
+                                       'VEHICLE': len(buf.veh)} if buf else {},
+                    'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
+                    'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
+                    'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
+                }
             return {
                 'recording': True, 'log': self.log['name'], 'elapsed_s': round(elapsed, 1),
                 'scene_index': cur + 1, 'scene_elapsed_s': round(elapsed - cur * config.SCENE_SECONDS, 1),
@@ -249,6 +306,11 @@ class Recorder(object):
                 buf.ai.append((t_ns, data))
 
     def _scene_for(self, t_ns):
+        if self.runs_mode:                 # 走行ごと: 走行中(と終わったばかりの走行)の時間内だけ記録する
+            for buf in self.scenes.values():
+                if buf.start_ns <= t_ns < buf.end_ns:
+                    return buf
+            return None
         start = self.log['start_ns']
         if t_ns < start:
             return None
@@ -314,7 +376,8 @@ class Recorder(object):
                 if not self.recording:
                     return
                 now = clock.now_ns()
-                done = [i for i, b in self.scenes.items() if now > b.end_ns + 1_000_000_000]
+                done = [i for i, b in self.scenes.items()
+                        if now > b.end_ns + 1_000_000_000 and i != self.active_run]   # 走行中のシーンは終わるまで保存しない
                 reached_max = self.max_scenes is not None and \
                     now > self.log['start_ns'] + int(self.max_scenes * config.SCENE_SECONDS * 1e9) + 1_000_000_000
             for idx in done:
@@ -455,7 +518,9 @@ class Recorder(object):
             'description': log['description'], 'tags': log['tags'],
             'mode_id': main_mode, 'mode_name': modes.name_of(main_mode), 'mode_segments': segments,
             'start_us': start_us, 'end_us': clock.to_epoch_us(cam_ts[-1]),
-            'duration_s': round(duration, 2), 'complete': not partial and duration >= config.SCENE_SECONDS * 0.95,
+            'duration_s': round(duration, 2),
+            'complete': buf.run_complete if buf.run else (not partial and duration >= config.SCENE_SECONDS * 0.95),
+            'run_index': buf.run, 'planned_s': buf.planned_s,
             'counts': counts, 'rates': rates, 'stats': stats,
             'vehicle_quality': buf.veh[0][1]['quality'] if buf.veh else None,
             'drive': log.get('drive'),
