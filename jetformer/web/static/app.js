@@ -880,6 +880,8 @@ const DR_PARAMS = [
   ['#dr-trim', 'steer_trim_us', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(0)} µs`],
   ['#dr-look', 'lookahead', (v) => `${v}(約${Math.round(v * 33)}ms先)`],
   ['#dr-osc', 'osc_percent', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(1)} %`],
+  ['#dr-rev-us', 'rev_us', (v) => `中立+${(+v).toFixed(0)} µs`],
+  ['#dr-rev-s', 'rev_s', (v) => `${(+v).toFixed(2)} 秒`],
 ];
 const drModel = () => state.drive.models.find((m) => m.name === $('#dr-model').value);
 async function loadDrive() {
@@ -969,7 +971,7 @@ $('#btn-dr-start').addEventListener('click', async () => {
   if (!m) { toast('モデルを選んでください', true); return; }
   const dry = $('#dr-dry').checked;
   if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
-  const body = { client: 4, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
+  const body = { client: 5, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);

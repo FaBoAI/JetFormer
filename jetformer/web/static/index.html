@@ -260,7 +260,19 @@
 
           <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
-          <div class="muted small indent">リカバリーは3回続けて(10秒以内)失敗すると中立で止まります。CH3を人側へ戻して助けてください。</div>
+          <div class="indent">
+            <div class="gain">
+              <div class="gain-head"><span>リカバリーの後退の強さ</span><b id="dr-rev-us-v">中立+300 µs</b></div>
+              <input type="range" id="dr-rev-us" min="150" max="500" step="10" value="300">
+              <div class="gain-scale"><span>弱い</span><span>人は約+210</span><span>強い</span></div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>リカバリーで下がる時間(下がり始めてから)</span><b id="dr-rev-s-v">0.40 秒</b></div>
+              <input type="range" id="dr-rev-s" min="0.2" max="1.2" step="0.05" value="0.4">
+            </div>
+            <div class="muted small">ぶつかって止まると: ブレーキ → 止まるのを待つ → 中立 → 後退 → 惰性 → 曲がっていた向きへハンドルを切って前進 → AIへ。
+              下がり始めなければ中立を長くしてやり直します。20秒以内に3回続いたら中立で止まるので、CH3を人側へ戻して助けてください。</div>
+          </div>
 
           <label class="inline check-line"><input type="checkbox" id="dr-record"> 走行中のデータを収集する(評価用)</label>
           <div id="dr-record-opts" class="hidden indent">

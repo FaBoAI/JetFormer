@@ -157,9 +157,9 @@ def test_dry_run_writes_only_neutral(monkeypatch, tmp_path):
 
 def test_transient_i2c_errors_are_retried(monkeypatch, tmp_path):
     d = make_driver(monkeypatch, tmp_path)
-    runner, pca = FakeRunner(np.tile([[1600.0, 1550.0]], (10, 1))), FakePCA(fail=2)
+    runner, pca = FakeRunner(np.tile([[1600.0, 1450.0]], (10, 1))), FakePCA(fail=2)
     assert run_loop(d, runner, pca, veh(True)) is None
-    assert pca.pairs[-1] == (1600.0, 1550.0)
+    assert pca.pairs[-1] == (1600.0, 1450.0)
     assert d.st['stats']['i2c_errors'] >= 1
 
 
@@ -203,7 +203,9 @@ def test_params_are_partial_and_clamped(monkeypatch, tmp_path):
 
 
 def test_apply_gains():
-    assert drive.apply_gains((1550, 1600), REF, dict(PARAMS, steer_gain=2, throttle_gain=0.5), 1000, 2000) == (1650.0, 1550.0)
+    assert drive.apply_gains((1550, 1400), REF, dict(PARAMS, steer_gain=2, throttle_gain=0.5), 1000, 2000) == (1650.0, 1450.0)
+    # ブレーキ・後退側には速度のゲインを掛けない
+    assert drive.apply_gains((1550, 1600), REF, dict(PARAMS, steer_gain=2, throttle_gain=2.0), 1000, 2000) == (1650.0, 1600.0)
     assert drive.apply_gains((1950, 1000), REF, dict(PARAMS, steer_gain=2, throttle_gain=2), 1000, 2000) == (2000.0, 1000.0)
 
 

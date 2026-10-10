@@ -46,9 +46,11 @@ PARAM_LIMITS = {
     'osc_percent': (-10.0, 10.0),  # PCA9685の時計補正 [%]
     'esc_reverse': (0, 1),         # 1 = 後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)
     'recovery': (0, 1),            # 1 = ぶつかって止まったら自動で少し下がってからモデルへ戻す
+    'rev_us': (150.0, 500.0),      # リカバリーで下がる強さ(中立からのµs)
+    'rev_s': (0.2, 1.2),           # リカバリーで後退を出し続ける時間(下がり始めてから)
 }
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
-                  'esc_reverse': 1, 'recovery': 1}
+                  'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S}
 
 
 def _read_json(path):
@@ -166,9 +168,11 @@ def predicted_now(prev_pred, prev_cam_t, cam_t, fps):
 
 
 def apply_gains(raw, ref, p, lo, hi):
-    """採用した予測 raw=(steer, throttle) µs → 出力 µs。ゲインは中心/中立の周りに掛ける"""
+    """採用した予測 raw=(steer, throttle) µs → 出力 µs。ゲインは中心/中立の周りに掛ける。
+    速度のゲインは前進側だけ(ブレーキ・後退側はモデルのまま。ゲイン2.0でブレーキが2000µsに張り付いたため)"""
     steer = ref[0] + p['steer_trim_us'] + p['steer_gain'] * (raw[0] - ref[0])
-    throttle = ref[1] + p['throttle_gain'] * (raw[1] - ref[1])
+    dt = raw[1] - ref[1]
+    throttle = ref[1] + (p['throttle_gain'] * dt if dt < 0 else dt)
     return float(np.clip(steer, lo, hi)), float(np.clip(throttle, lo, hi))
 
 
@@ -600,7 +604,8 @@ class Driver(object):
             out_us, kind = helper.step(model_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
                                        time.monotonic(), esc_on=p.get('esc_reverse', 1) == 1,
                                        rec_on=p.get('recovery', 1) == 1,
-                                       impact_g=impact_g)
+                                       impact_g=impact_g, rev_us=float(p.get('rev_us', assist_mod.DEFAULT_REV_US)),
+                                       rev_s=float(p.get('rev_s', assist_mod.DEFAULT_REV_S)))
             out_us = (float(np.clip(out_us[0], lo, hi)), float(np.clip(out_us[1], lo, hi)))
             if kind != last_kind:
                 if kind == assist_mod.ASSIST_RECOVERY:
