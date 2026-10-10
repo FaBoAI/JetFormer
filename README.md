@@ -15,12 +15,22 @@ sudo systemctl restart jetformer-web    # コードを更新したとき
 - **ライブ・収集**:カメラ|ToFのライブ映像、センサー状態、操作値・IMUのグラフ、収集の開始/停止
 - **シーン**:20秒単位のシーンを一覧・絞り込み・選択、詳細(スクラブ再生・時系列・説明/タグ編集・削除)
 - **ジャンル**:走行ジャンル表の確認・追加・名前変更
-- **データセット**:選んだシーンからnuScenes形式を作成 → tarでエクスポート(SHA256付き)→ ダウンロード
+- **データセット**:選んだシーンからnuScenes形式を作成 → tarでエクスポート(SHA256付き)→ ダウンロード / Hugging Face へアップロード(下記)
 - **学習**:データセットと間引き率を選んで、このJetsonのGPUで学習(下記)
 - **走行**:学習結果のモデルで車を走らせる。ステアリング・速度のゲインを走行中に調整、走行中の収集(評価用)も選べる(下記)
 
 JupyterLab(8888番)とは別ポートです。カメラは同時に1つのプロセスしか使えないので、
 JetRacerのノートブックでカメラを使っている間は収集できません。
+
+## Hugging Face へのアップロード(データセットタブ)
+
+データセットごとの「Hugging Face へ」から、Hub のデータセットリポジトリに上げます。ブラウザの **Dataset Viewer** で
+1フレームずつ(カメラ画像・ToFの色画像・操作値・ジャンル)見られる Parquet と、学習用の nuScenes 形式(tar)、
+データセットカード(README)を上げます(`jetformer/hf_export.py`)。目安: 走行1分あたり約72MB、作成に約50秒。
+
+- 最初に1回、Jetsonでログイン(Write権限のトークン): `/home/jetson/miniconda/envs/jetracer/bin/hf auth login`
+- 既定は**非公開**。非公開のデータセットは Hugging Face の PRO / Enterprise でないと Dataset Viewer が表示されない
+- 読み込み: `load_dataset("ユーザー名/jetformer-xxx", split="train")`
 
 ## 学習(管理画面の「学習」タブ)
 

@@ -664,16 +664,61 @@ async function loadJobs() {
   $('#jobs').innerHTML = list.slice(0, 8).map((j) => `
     <div class="job"><b>${esc(j.title)}</b> <span class="muted">${j.state === 'running' ? '実行中' : j.state === 'done' ? '完了' : 'エラー'}</span>
       <div class="progress blue"><div class="bar" style="width:${Math.round(j.progress * 100)}%"></div></div>
-      <div class="muted">${esc(j.message)}</div>${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}</div>`).join('')
+      <div class="muted">${esc(j.message)}</div>${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
+      ${j.result && j.result.url ? `<div><a href="${esc(j.result.url)}" target="_blank" rel="noopener">${esc(j.result.url)}</a></div>` : ''}</div>`).join('')
     || '<div class="muted small">ありません</div>';
   const running = list.some((j) => j.state === 'running');
   if (running) { clearTimeout(jobTimer); jobTimer = setTimeout(loadJobs, 800); }
   if (state._running && !running) loadDatasets();
   state._running = running;
 }
+// ------------------------------------------------------------ Hugging Face
+state.hf = null;
+async function loadHf(refresh) {
+  try { state.hf = await api('GET', '/api/hf/status' + (refresh ? '?refresh=true' : '')); } catch (e) { state.hf = null; }
+  const h = state.hf;
+  $('#hf-status').innerHTML = !h ? '' : h.logged_in
+    ? `🤗 Hugging Face: <b>${esc(h.user)}</b> でログイン中${h.orgs && h.orgs.length ? `(組織: ${h.orgs.map(esc).join(', ')})` : ''}`
+    : '🤗 Hugging Face: <span class="warn-text">未ログイン</span> — Jetsonのターミナルで <code>/home/jetson/miniconda/envs/jetracer/bin/hf auth login</code> を実行し、トークン(Write権限)を入れてください <button class="small" id="btn-hf-refresh">確認</button>';
+}
+document.addEventListener('click', (e) => { if (e.target.id === 'btn-hf-refresh') loadHf(true).then(loadDatasets); });
+function hfRow(d) {
+  const h = state.hf || {};
+  const owner = h.user || 'ユーザー名';
+  const done = d.hf ? `<a href="${esc(d.hf.url)}" target="_blank" rel="noopener">${esc(d.hf.repo_id)}</a>
+      <span class="badge ${d.hf.private ? 'tag' : 'ok'}">${d.hf.private ? '非公開' : '公開'}</span>
+      <span class="muted small">${esc(d.hf.uploaded_at)}</span>` : '<span class="muted small">まだ上げていません</span>';
+  return `<div class="hf-row"><span>🤗</span> ${done} <span class="spacer"></span>
+      <button class="small" data-hf-open="${esc(d.name)}" ${h.logged_in ? '' : 'disabled title="Hugging Face にログインしてください"'}>${d.hf ? 'もう一度上げる' : 'Hugging Face へ'}</button></div>
+    <div class="hf-form hidden" data-hf-form="${esc(d.name)}">
+      <label>リポジトリ(ユーザー名または組織/名前)<input data-hf-repo value="${esc(d.hf ? d.hf.repo_id : owner + '/jetformer-' + d.name)}"></label>
+      <div class="row tight">
+        <label class="inline"><input type="checkbox" data-hf-public ${d.hf && !d.hf.private ? 'checked' : ''}> 公開する(誰でも Dataset Viewer で見られる)</label>
+        <label class="inline"><input type="checkbox" data-hf-nus checked> 学習用のnuScenes形式(tar)も上げる</label>
+      </div>
+      <label>ライセンス<select data-hf-license>
+        ${['other', 'cc-by-4.0', 'cc-by-sa-4.0', 'cc-by-nc-4.0', 'cc-by-nc-sa-4.0', 'mit', 'apache-2.0'].map((l) => `<option ${d.hf && d.hf.license === l ? 'selected' : ''}>${l}</option>`).join('')}
+      </select></label>
+      <div class="muted small">非公開のデータセットは、Hugging Face の PRO / Enterprise でないと Dataset Viewer で表示されません。
+        カメラ画像が含まれるので、公開する前に写っているものを確認してください。</div>
+      <div class="row buttons"><button class="primary small" data-hf-upload="${esc(d.name)}">アップロード</button></div>
+    </div>`;
+}
+async function uploadHf(name, form) {
+  const repo = form.querySelector('[data-hf-repo]').value.trim();
+  const isPublic = form.querySelector('[data-hf-public]').checked;
+  const body = { repo_id: repo, private: !isPublic, include_nuscenes: form.querySelector('[data-hf-nus]').checked,
+                 license: form.querySelector('[data-hf-license]').value };
+  if (!confirm(`データセット ${name} を Hugging Face の ${repo} に${isPublic ? '【公開】' : '非公開'}でアップロードします。`
+               + (isPublic ? '\n公開すると誰でも見られます(カメラ画像を含みます)。' : '') + '\nよろしいですか?')) return;
+  try { await api('POST', `/api/datasets/${encodeURIComponent(name)}/hf`, body); toast('アップロードを始めました(処理状況に進み具合が出ます)'); loadJobs(); }
+  catch (e) { toast(e.message, true); }
+}
+
 async function loadDatasets() {
   let list = [];
   try { list = await api('GET', '/api/datasets'); } catch (e) { toast(e.message, true); return; }
+  if (state.hf === null) await loadHf(false);
   $('#dataset-list').innerHTML = list.slice().reverse().map((d) => `
     <div class="ds">
       <h3>${esc(d.name)} <span class="muted small">${esc(d.version)} ・ ${esc(d.created_at)}</span></h3>
@@ -694,9 +739,13 @@ async function loadDatasets() {
         <span class="spacer"></span>
         <button class="small danger" data-del="${esc(d.name)}">削除</button>
       </div>
+      ${hfRow(d)}
     </div>`).join('') || '<div class="muted">まだありません</div>';
 }
 $('#dataset-list').addEventListener('click', async (e) => {
+  const open = e.target.closest('[data-hf-open]'), up = e.target.closest('[data-hf-upload]');
+  if (open) { document.querySelector(`[data-hf-form="${CSS.escape(open.dataset.hfOpen)}"]`).classList.toggle('hidden'); return; }
+  if (up) { uploadHf(up.dataset.hfUpload, up.closest('.hf-form')); return; }
   const exp = e.target.closest('[data-export]'), del = e.target.closest('[data-del]');
   if (exp) {
     try { await api('POST', `/api/datasets/${encodeURIComponent(exp.dataset.export)}/export`); toast('エクスポートを開始しました'); loadJobs(); }

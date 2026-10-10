@@ -18,7 +18,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, modes, session, sound, tof_format
+from .. import actuator, config, dataset, drive, hf_export, modes, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
@@ -523,6 +523,42 @@ def api_dataset_delete(name: str):
     except KeyError:
         raise HTTPException(404)
     return {'ok': True}
+
+
+_hf_status = {'t': 0.0, 'value': None}
+_hf_uploading = set()
+
+
+@app.get('/api/hf/status')
+def api_hf_status(refresh: bool = False):
+    """Hugging Face にログインしているか(Jetsonで hf auth login 済みか)"""
+    if refresh or _hf_status['value'] is None or time.time() - _hf_status['t'] > 60:
+        _hf_status['value'], _hf_status['t'] = hf_export.login_status(), time.time()
+    return _hf_status['value']
+
+
+@app.post('/api/datasets/{name}/hf')
+def api_dataset_hf(name: str, body: dict = Body(...)):
+    """データセットを Hugging Face Hub に上げる(Dataset Viewer で見られる Parquet + nuScenes の tar + カード)"""
+    if not (config.DATASET_DIR / name / 'dataset_card.json').exists() or '/' in name or '..' in name:
+        raise HTTPException(404, 'データセットがありません')
+    repo_id = str(body.get('repo_id', '')).strip()
+    if repo_id.count('/') != 1 or not all(repo_id.split('/')):
+        raise HTTPException(400, 'リポジトリ名は「ユーザー名/名前」で指定してください')
+    if not api_hf_status(refresh=True).get('logged_in'):
+        raise HTTPException(409, 'Hugging Face にログインしていません。Jetsonで hf auth login を実行してください')
+    if name in _hf_uploading:
+        raise HTTPException(409, 'このデータセットはアップロード中です')
+    _hf_uploading.add(name)
+
+    def run(progress):
+        try:
+            return hf_export.upload(name, repo_id, private=bool(body.get('private', True)),
+                                    include_nuscenes=bool(body.get('include_nuscenes', True)),
+                                    license_id=str(body.get('license') or 'other'), progress=progress)
+        finally:
+            _hf_uploading.discard(name)
+    return jobs.submit('hf', 'Hugging Face へ: %s → %s' % (name, repo_id), run)
 
 
 @app.get('/api/jobs')

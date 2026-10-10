@@ -247,7 +247,7 @@ def upload(name, repo_id, private=True, include_nuscenes=True, license_id='other
                       commit_message='JetFormer dataset %s (%s)' % (name, datetime.datetime.now().strftime('%Y-%m-%d %H:%M')),
                       delete_patterns=['data/*.parquet'])            # 前回の分割数が違っても古いファイルが残らないように
     info = {'repo_id': repo_id, 'url': 'https://huggingface.co/datasets/%s' % repo_id, 'private': bool(private),
-            'counts': counts, 'nuscenes': bool(include_nuscenes),
+            'counts': counts, 'nuscenes': bool(include_nuscenes), 'license': license_id,
             'uploaded_at': datetime.datetime.now().isoformat(timespec='seconds')}
     with open(config.DATASET_DIR / name / 'hf_upload.json', 'w', encoding='utf-8') as f:
         json.dump(info, f, ensure_ascii=False, indent=1)
