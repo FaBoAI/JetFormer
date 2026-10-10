@@ -7,6 +7,8 @@
 
 --progress-json を付けると、進捗を「@@{JSON}」の行で出力する(管理画面が読む)。
 SIGINT/SIGTERM で止めると、そこまでで最良のモデルを書き出してから終了する。
+各エポックの終わりに last.pth(モデル・最適化・学習率・履歴)を保存する。電源断などで止まったら、
+同じ引数に --resume を付けて実行すると、続きのエポックから再開する(2026-10-11、電池切れで26エポック目で止まった)。
 """
 
 import argparse
@@ -98,6 +100,7 @@ def main():
                     help='衝突の前後(水平4G以上の1秒前〜2秒後)も学習に使う(既定では外す)')
     ap.add_argument('--impact-g', type=float, default=4.0,
                     help='衝突とみなす水平の加速度 [G](2.5 = 解析で衝突とした基準、4.0 = 強い衝突だけ)')
+    ap.add_argument('--resume', action='store_true', help='--out の last.pth から続きを学習する(電源断のあとなど)')
     ap.add_argument('--progress-json', action='store_true')
     args = ap.parse_args()
     PROGRESS['enabled'] = args.progress_json
@@ -140,9 +143,28 @@ def main():
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(args.epochs, 1))
     best, best_epoch, best_modes = float('inf'), 0, {}
     history = []
+    start_epoch = 1
+    last_path = os.path.join(args.out, 'last.pth')
+    same_args = {k: getattr(args, k) for k in ('data', 'epochs', 'batch', 'lr', 'stride', 'no_command_input', 'keep_impacts',
+                                               'impact_g', 'no_pretrained')}
+    if args.resume:
+        if not os.path.exists(last_path):
+            raise SystemExit('--resume: %s がありません(最初から学習してください)' % last_path)
+        ck = torch.load(last_path, map_location=device, weights_only=False)
+        diff = {k: (ck['args'].get(k), v) for k, v in same_args.items() if ck['args'].get(k) != v}
+        if diff:
+            raise SystemExit('--resume: 前回と引数が違います(前回, 今回): %s' % diff)
+        model.load_state_dict(ck['model'])
+        optimizer.load_state_dict(ck['optimizer'])
+        scheduler.load_state_dict(ck['scheduler'])
+        best, best_epoch, best_modes, history = ck['best'], ck['best_epoch'], ck['best_modes'], ck['history']
+        start_epoch = ck['epoch'] + 1
+        print('再開: %d エポック目まで済み(最良 %d エポック目)。%d エポック目から続けます' % (
+            ck['epoch'], best_epoch, start_epoch), flush=True)
+        emit('resume', epoch=ck['epoch'])
     state = 'done'
     try:
-        for epoch in range(1, args.epochs + 1):
+        for epoch in range(start_epoch, args.epochs + 1):
             t0 = time.time()
             tr, _ = run_epoch(model, train_dl, device, optimizer, epoch=epoch, phase='train')
             va, va_modes = run_epoch(model, val_dl, device, epoch=epoch, phase='val') if len(val_ds) else (tr, {})
@@ -155,6 +177,11 @@ def main():
             history.append({'epoch': epoch, 'train_us': round(tr * jm.PWM_SCALE, 1), 'val_us': round(va * jm.PWM_SCALE, 1),
                             'val_per_mode_us': per_mode_us, 'seconds': round(time.time() - t0, 1), 'best': improved})
             emit('epoch', **history[-1])
+            tmp = last_path + '.tmp'                     # 途中保存(書き終えてから置き換える)
+            torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
+                        'epoch': epoch, 'best': best, 'best_epoch': best_epoch, 'best_modes': best_modes,
+                        'history': history, 'args': same_args}, tmp)
+            os.replace(tmp, last_path)
             detail = '  '.join('%s %.0fµs' % (names.get(m, m), l * jm.PWM_SCALE) for m, l in sorted(va_modes.items()))
             print('epoch %3d  train %.0fµs  val %.0fµs  %.0fs%s  [%s]' % (
                 epoch, tr * jm.PWM_SCALE, va * jm.PWM_SCALE, time.time() - t0, ' *' if improved else '', detail), flush=True)
