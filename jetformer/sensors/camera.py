@@ -23,11 +23,22 @@ class CameraSensor(SensorThread):
         self.camera = None
         self.dropped = 0
         self.rate_fixes = 0         # 遅いままだったので設定をかけ直した・開き直した回数
+        self.open_retries = 0       # 開いた直後が遅かったので開き直した回数
 
     def _open(self):
-        self.camera = V4L2Camera(width=self.cfg['width'], height=self.cfg['height'],
-                                 capture_fps=self.cfg['fps'], sensor_mode=self.cfg['sensor_mode'],
-                                 capture_device=self.cfg['device'])
+        for attempt in range(3):
+            self.camera = V4L2Camera(width=self.cfg['width'], height=self.cfg['height'],
+                                     capture_fps=self.cfg['fps'], sensor_mode=self.cfg['sensor_mode'],
+                                     capture_device=self.cfg['device'])
+            interval = self._first_interval()
+            if interval <= 1.15e9 / self.cfg['fps']:
+                break
+            # 開いた直後から遅い(約21fps)ときは、配信を始める前に開き直す(開き直すと30fpsになる)
+            self.open_retries += 1
+            self.camera.release()
+            self.camera = None
+        else:
+            raise RuntimeError('カメラが %.1f fps でしか動きません' % (1e9 / interval))
         self._opened = time.monotonic()
         self._slow_since = None
         self._reapplied = False
@@ -37,6 +48,11 @@ class CameraSensor(SensorThread):
         self.dropped = self.camera.stats['dropped']
         self._check_rate()
         return [Sample(t_ns, {'image': image, 'seq': seq})]
+
+    def _first_interval(self, frames=12):
+        """開いた直後のフレーム間隔の中央値 [ns](撮像時刻から)"""
+        ts = [self.camera.read_stamped(timeout=1.0)[1] for _ in range(frames)]
+        return float(sorted(b - a for a, b in zip(ts, ts[1:]))[(frames - 1) // 2])
 
     def _check_rate(self):
         now = time.monotonic()
@@ -64,6 +80,7 @@ class CameraSensor(SensorThread):
         st = super(CameraSensor, self).status()
         st['dropped'] = self.dropped
         st['rate_fixes'] = self.rate_fixes
+        st['open_retries'] = self.open_retries
         if self.camera is not None:
             st['exposure_us'] = self.camera._exposure
             st['gain'] = self.camera._gain
