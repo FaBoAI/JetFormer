@@ -1,12 +1,14 @@
 """センサー群の起動・停止・状態取得"""
 
 from .. import config
+from .audio import AudioSensor
 from .camera import CameraSensor
 from .imu import ImuSensor
 from .tof import TofSensor
 from .vehicle import VehicleSensor
 
-SENSOR_CHANNELS = ('CAM_FRONT', 'TOF_FRONT', 'IMU', 'VEHICLE')
+SENSOR_CHANNELS = ('CAM_FRONT', 'TOF_FRONT', 'IMU', 'VEHICLE', 'AUDIO')
+OPTIONAL_CHANNELS = ('VEHICLE', 'AUDIO')      # つながっていなくても収集はできる
 
 
 class SensorHub(object):
@@ -16,6 +18,7 @@ class SensorHub(object):
             'TOF_FRONT': TofSensor(config.TOF),
             'IMU': ImuSensor(config.IMU),
             'VEHICLE': VehicleSensor(config.VEHICLE),
+            'AUDIO': AudioSensor(config.AUDIO),
         }
 
     def __getitem__(self, name):

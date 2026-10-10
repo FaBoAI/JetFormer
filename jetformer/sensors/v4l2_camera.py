@@ -205,6 +205,10 @@ class V4L2Camera(Camera):
             self._thread = threading.Thread(target=self._reader, daemon=True)
             self._thread.start()
             self.read(timeout=5.0)
+            # ストリーム開始前に書いた設定が、止まっていたセンサーでは効かないことがある(約21fpsで動く)。
+            # 最初のフレームが来てから、フレームレート・露出・ゲインをかけ直す
+            self._set_controls([(_CID_FRAME_RATE, self.capture_fps * 1000000),
+                                (_CID_EXPOSURE, self._exposure), (_CID_GAIN, self._gain)])
         except Exception as e:
             self.release()
             raise RuntimeError('Could not initialize camera (V4L2): %s' % e)

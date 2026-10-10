@@ -6,6 +6,7 @@
 import atexit
 import collections
 import contextlib
+import queue
 import shutil
 import threading
 import time
@@ -265,7 +266,37 @@ def api_live_values():
     veh = hub['VEHICLE'].latest
     if veh is not None:
         out['vehicle_now'] = {k: veh.data[k] for k in ('pwm', 'erpm', 'valid', 'select', 'moving', 'quality')}
+    aud = hub['AUDIO'].latest
+    if aud is not None and hub['AUDIO'].connected:
+        out['audio_now'] = {k: aud.data[k] for k in ('rms_dbfs', 'peak_dbfs', 'channel', 'zero')}
     return out
+
+
+@app.get('/api/live/audio.f32')
+def api_live_audio():
+    """マイクの音を流し続ける(float32 リトルエンディアン、16kHz、モノラル)。管理画面の「聞く」で再生する"""
+    q = queue.Queue(maxsize=100)
+
+    def on_sample(_ch, sample):
+        try:
+            q.put_nowait(sample.data['pcm'])
+        except queue.Full:
+            pass                       # 受け手が遅いときは捨てる(遅れをためない)
+    hub['AUDIO'].subscribe(on_sample)
+
+    def gen():
+        try:
+            while not SHUTDOWN.is_set():
+                try:
+                    pcm = q.get(timeout=1.0)
+                except queue.Empty:
+                    continue
+                yield (pcm.astype(np.float32) / 2.0 ** 31).astype('<f4').tobytes()
+        finally:
+            hub['AUDIO'].unsubscribe(on_sample)
+
+    return StreamingResponse(gen(), media_type='application/octet-stream',
+                             headers={'X-Sample-Rate': str(config.AUDIO['rate']), 'Cache-Control': 'no-cache'})
 
 
 @app.get('/api/live.mjpg')
@@ -319,6 +350,14 @@ def api_scene_thumb(name: str):
     if not p.exists():
         return Response(_jpeg(_placeholder('no thumbnail', 448, 224)), media_type='image/jpeg')
     return FileResponse(p, media_type='image/jpeg', headers={'Cache-Control': 'max-age=3600'})
+
+
+@app.get('/api/scenes/{name}/audio.wav')
+def api_scene_audio(name: str):
+    try:
+        return Response(dataset.scene_audio_wav(name), media_type='audio/wav')
+    except KeyError:
+        raise HTTPException(404, 'このシーンには音声がありません')
 
 
 @app.get('/api/scenes/{name}/frame/{index}.jpg')

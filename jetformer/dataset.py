@@ -169,6 +169,14 @@ def scene_timeseries(name, max_points=600):
             mn, md = np.nan_to_num(np.nanmin(d, axis=1)), np.nan_to_num(np.nanmedian(d, axis=1))
         t, (mn, md) = thin(tof['timestamps_us'], [mn, md])
         out['tof'] = {'t': t, 'min': mn.tolist(), 'median': md.tolist()}
+    audio = _load(p, 'AUDIO')
+    if audio is not None and len(audio['timestamps_us']):
+        n = len(audio['timestamps_us'])
+        x = audio['pcm'].astype(np.float64) / 2.0 ** 31
+        edges = np.concatenate([[0], np.cumsum(audio['chunk_samples'])])
+        rms = np.array([np.sqrt(np.mean(x[edges[i]:edges[i + 1]] ** 2)) if edges[i + 1] > edges[i] else 0.0 for i in range(n)])
+        t, (lv,) = thin(audio['timestamps_us'], [20 * np.log10(np.maximum(rms, 1e-12))])
+        out['audio'] = {'t': t, 'rms_dbfs': np.maximum(lv, -120).round(1).tolist()}
     ai = _load(p, 'AI_CMD')
     if ai is not None and len(ai['timestamps_us']):
         t, (raw, outv, hold, sel) = thin(ai['timestamps_us'], [ai['raw'], ai['out'], ai['hold'], ai['select']])
@@ -177,6 +185,25 @@ def scene_timeseries(name, max_points=600):
                      'out_steer': nan_none(outv[:, 0]), 'out_throttle': nan_none(outv[:, 1]),
                      'hold': hold.astype(int).tolist(), 'select': sel.astype(int).tolist()}
     return out
+
+
+def scene_audio_wav(name):
+    """シーンのマイク音声を、聞きやすいよう最大値をそろえた16bit WAV(bytes)にする"""
+    import io
+    import wave
+    audio = _load(scene_path(name), 'AUDIO')
+    if audio is None or not len(audio['pcm']):
+        raise KeyError(name)
+    x = audio['pcm'].astype(np.float64)
+    peak = np.abs(x).max()
+    y = (x / peak * 0.89 * 32767).astype('<i2') if peak > 0 else np.zeros(len(x), '<i2')   # 約-1dBFSにそろえる
+    buf = io.BytesIO()
+    with wave.open(buf, 'wb') as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(int(audio['sample_rate']))
+        w.writeframes(y.tobytes())
+    return buf.getvalue()
 
 
 def scene_frame(name, index):

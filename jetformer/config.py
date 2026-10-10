@@ -35,6 +35,14 @@ IMU = {
     'gyro_range_dps': 1000,
     'mag': False,                  # AK09916(バイパス経由 0x0C)。現状バス上に現れないため無効
 }
+AUDIO = {
+    # JetFormer基板のI2S MEMSマイク(40ピンヘッダのI2S2)。ピンの有効化は scripts/i2s_mic/enable.sh(要再起動)
+    'card': 'APE', 'device': 'hw:APE,0',          # ADMAIF1
+    'mixer': [('ADMAIF1 Mux', 'I2S2'), ('I2S2 codec master mode', 'cbs-cfs'), ('I2S2 codec frame mode', 'i2s')],
+    'capture_rate': 48000, 'rate': 16000,        # 48kHzで受けて16kHzに間引いて保存・配信
+    'chunk_ms': 20,
+    'channel': os.environ.get('JETFORMER_MIC_CHANNEL', 'auto'),   # 'auto' / 'left' / 'right'(マイクのL/R選択ピン)
+}
 VEHICLE = {
     'bus': 7, 'address': 0x28,     # コントローラ基板(XIAO ESP32-S3)。CH1=ステアリング, CH2=スロットル, CH3=モード切替
     'rate_hz': 100,

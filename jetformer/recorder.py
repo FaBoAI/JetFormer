@@ -8,6 +8,7 @@
                          TOF_FRONT.npz   timestamps_us, seq, depth[N,H,W] uint16
                          IMU.npz         timestamps_us, accel[N,3] m/s^2, gyro[N,3] deg/s, mag[N,3] µT, temp[N]
                          VEHICLE.npz     timestamps_us, pwm[N,3] µs, valid[N,3], select[N], erpm[N], ...
+                         AUDIO.npz       timestamps_us[M](20msごとの受信時刻), pcm[M*320] int32 16kHz モノラル
                          AI_CMD.npz      (AI走行中のみ)timestamps_us(=推論に使ったカメラ時刻), pred[N,10,2] µs,
                                          raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...
                          thumb.jpg
@@ -28,7 +29,7 @@ import cv2
 import numpy as np
 
 from . import clock, config, modes, tof_format
-from .sensors import SENSOR_CHANNELS
+from .sensors import OPTIONAL_CHANNELS, SENSOR_CHANNELS
 
 
 def new_token():
@@ -88,6 +89,7 @@ class _SceneBuffer(object):
         self.imu = []        # (t_ns, accel, gyro, mag, temp)
         self.veh = []        # (t_ns, data)
         self.ai = []         # (t_ns, data) AI走行の指令
+        self.audio = []      # (t_ns, pcm int32[320]) マイク
         self.thumb = None
         self.last_depth = None
         (path / 'CAM_FRONT').mkdir(parents=True, exist_ok=True)
@@ -170,7 +172,7 @@ class Recorder(object):
         self.log = None
         return True
 
-    WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15}   # カメラは自動露出の収束も待つ(1.5秒)
+    WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15, 'AUDIO': 10}   # カメラは自動露出の収束も待つ(1.5秒)
 
     def _warm_up(self, timeout=8.0):
         """センサーが止まっていたら起動し、全センサーが安定して値を出すまで待つ。
@@ -181,10 +183,11 @@ class Recorder(object):
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             if all(self.hub[n].count - start[n] >= self.WARMUP_SAMPLES[n] for n in SENSOR_CHANNELS
-                   if self.hub[n].connected or n != 'VEHICLE'):
+                   if self.hub[n].connected or n not in OPTIONAL_CHANNELS):
                 return
             time.sleep(0.1)
-        missing = [n for n in SENSOR_CHANNELS if self.hub[n].count - start[n] < self.WARMUP_SAMPLES[n]]
+        missing = [n for n in SENSOR_CHANNELS if self.hub[n].count - start[n] < self.WARMUP_SAMPLES[n]
+                   and (self.hub[n].connected or n not in OPTIONAL_CHANNELS)]
         self.last_error = 'センサーの立ち上がりを待ちきれませんでした: %s' % ', '.join(missing)
 
     def set_mode(self, mode_id):
@@ -209,7 +212,8 @@ class Recorder(object):
                 'scene_index': cur + 1, 'scene_elapsed_s': round(elapsed - cur * config.SCENE_SECONDS, 1),
                 'scene_seconds': config.SCENE_SECONDS, 'max_scenes': self.max_scenes,
                 'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof),
-                                   'IMU': len(buf.imu), 'VEHICLE': len(buf.veh), 'AI_CMD': len(buf.ai)} if buf else {},
+                                   'IMU': len(buf.imu), 'VEHICLE': len(buf.veh), 'AI_CMD': len(buf.ai),
+                                   'AUDIO': len(buf.audio)} if buf else {},
                 'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
                 'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
                 'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
@@ -268,6 +272,8 @@ class Recorder(object):
                 buf.imu.append((sample.t_ns, d['accel'], d['gyro'], d['mag'], d['temp']))
             elif channel == 'VEHICLE':
                 buf.veh.append((sample.t_ns, d))
+            elif channel == 'AUDIO':
+                buf.audio.append((sample.t_ns, d['pcm']))
 
     def _io_worker(self):
         params = [cv2.IMWRITE_JPEG_QUALITY, config.CAMERA['jpeg_quality']]
@@ -351,6 +357,12 @@ class Recorder(object):
                      seq=np.array([x['seq'] for x in v], dtype=np.int64),
                      board_t_us=np.array([x['board_t_us'] for x in v], dtype=np.int64),
                      quality=np.array(v[0]['quality']))
+        if buf.audio:
+            np.savez(buf.path / 'AUDIO.npz',
+                     timestamps_us=ts([s[0] for s in buf.audio]),             # 各20msチャンクの末尾の受信時刻
+                     chunk_samples=np.array([len(s[1]) for s in buf.audio], dtype=np.int32),
+                     pcm=np.concatenate([s[1] for s in buf.audio]).astype(np.int32),   # 16kHz モノラル(24bit精度)
+                     sample_rate=np.array(config.AUDIO['rate']))
         if buf.ai:
             a = [s[1] for s in buf.ai]
             np.savez(buf.path / 'AI_CMD.npz',
@@ -379,6 +391,8 @@ class Recorder(object):
         counts = {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof), 'IMU': len(buf.imu), 'VEHICLE': len(buf.veh)}
         if buf.ai:
             counts['AI_CMD'] = len(buf.ai)
+        if buf.audio:
+            counts['AUDIO'] = len(buf.audio)
         rates = {k: round(n / duration, 1) if duration > 0 else 0.0 for k, n in counts.items()}
         stats = {}
         if buf.veh:
@@ -401,6 +415,11 @@ class Recorder(object):
                            'infer_ms_mean': round(float(inf.mean()), 2),
                            'hold_ratio': round(float(np.mean([x['hold'] for x in a])), 3),
                            'applied_ratio': round(float(np.mean([x['select'] and not x['dry_run'] for x in a])), 3)}
+        if buf.audio:
+            pcm = np.concatenate([s[1] for s in buf.audio]).astype(np.float64) / 2.0 ** 31
+            stats['audio'] = {'rms_dbfs': round(float(20 * np.log10(max(np.sqrt(np.mean(pcm * pcm)), 1e-12))), 1),
+                              'peak_dbfs': round(float(20 * np.log10(max(np.abs(pcm).max(), 1e-12))), 1),
+                              'no_signal': bool(not pcm.any())}
         if buf.imu:
             acc = np.stack([s[1] for s in buf.imu])
             stats['accel_peak_ms2'] = round(float(np.abs(np.linalg.norm(acc, axis=1) - 9.80665).max()), 2)

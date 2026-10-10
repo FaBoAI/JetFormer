@@ -74,6 +74,14 @@
         </div>
 
         <div class="card">
+          <div class="card-title">マイク
+            <span class="title-actions"><button id="btn-mic-listen" class="small">🔊 聞く</button></span></div>
+          <div class="mic-meter"><div id="mic-bar" class="mic-bar"></div></div>
+          <div id="mic-level" class="small muted">センサー停止中</div>
+          <label class="inline small">音量 <input type="range" id="mic-gain" min="0" max="2.5" step="0.05" value="1.5"> <span id="mic-gain-v">×32</span></label>
+        </div>
+
+        <div class="card">
           <div class="card-title">現在値</div>
           <div class="values" id="values"></div>
         </div>
@@ -284,6 +292,7 @@
           <input id="m-slider" type="range" min="0" value="0">
           <span id="m-pos" class="muted small"></span>
         </div>
+        <audio id="m-audio" class="m-audio hidden" controls preload="none"></audio>
         <div class="card"><div class="card-title">操作値 PWM [µs](人の操縦中のみ)</div><canvas id="m-chart-veh" height="150"></canvas></div>
         <div class="card"><div class="card-title">加速度 [m/s²] / ヨーレート [deg/s]</div><canvas id="m-chart-imu" height="150"></canvas></div>
         <div class="card"><div class="card-title">ToF 距離(最小・中央値)</div><canvas id="m-chart-tof" height="120"></canvas></div>

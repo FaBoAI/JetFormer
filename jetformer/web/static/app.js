@@ -159,14 +159,18 @@ function showTab(name) {
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
 
 // ------------------------------------------------------------ 状態(1秒ごと)
-const SENSOR_LABEL = { CAM_FRONT: 'カメラ', TOF_FRONT: 'ToF', IMU: 'IMU', VEHICLE: '車両(PWM)', AI_CMD: 'AI指令' };
-const EXPECTED_HZ = { CAM_FRONT: 30, TOF_FRONT: 30, IMU: 100, VEHICLE: 50 };
+const SENSOR_LABEL = { CAM_FRONT: 'カメラ', TOF_FRONT: 'ToF', IMU: 'IMU', VEHICLE: '車両(PWM)', AUDIO: 'マイク', AI_CMD: 'AI指令' };
+const EXPECTED_HZ = { CAM_FRONT: 30, TOF_FRONT: 30, IMU: 100, VEHICLE: 50, AUDIO: 50 };
 
 function sensorExtra(name, s) {
   const parts = [];
   if (name === 'CAM_FRONT' && s.dropped !== undefined) parts.push(`破棄 ${s.dropped}`, s.exposure_us ? `露出 ${(s.exposure_us / 1000).toFixed(1)}ms` : '');
   if (name === 'TOF_FRONT') { parts.push(`破損 ${s.bad_frames}`, `欠落 ${s.skipped}`); }
   if (name === 'IMU') parts.push(s.mag ? '地磁気あり' : '地磁気なし');
+  if (name === 'AUDIO' && s.connected) {
+    parts.push(s.no_signal ? '<span class="warn-text">信号なし(40ピンのI2Sが無効?)</span>' : `${s.level_dbfs ?? '-'} dBFS`);
+    if (s.channel && !s.no_signal) parts.push(`ch ${s.channel}`);
+  }
   if (name === 'VEHICLE') {
     if (s.protocol === 'legacy') parts.push('<span class="warn-text">v1ファーム(値の取り違えあり)</span>');
     else parts.push(`v2 / 読み直し ${s.read_errors || 0}`);
@@ -258,7 +262,57 @@ function renderValues(v) {
   }
   $('#values').innerHTML = rows.length ? rows.map(([k, val]) => `<div class="k">${k}</div><div class="v">${val}</div>`).join('')
     : '<div class="muted">センサー停止中</div>';
+  const a = v.audio_now;
+  $('#mic-bar').style.width = a && !a.zero ? `${Math.max(0, Math.min(100, (a.rms_dbfs + 90) / 90 * 100))}%` : '0';
+  $('#mic-level').innerHTML = !a ? 'センサー停止中(またはマイクを開けません)'
+    : a.zero ? '<span class="warn-text">信号なし: 40ピンヘッダのI2S(pin12/35/38)が無効です。scripts/i2s_mic/enable.sh で有効にしてください</span>'
+    : `${a.rms_dbfs} dBFS(ピーク ${a.peak_dbfs} dBFS)・${a.channel === 1 ? 'R' : 'L'}チャネル`;
 }
+
+// ------------------------------------------------------------ マイクを聞く(16kHz float32 を受け取り Web Audio で鳴らす)
+const micGain = () => Math.pow(10, +$('#mic-gain').value);
+let mic = null;
+async function startMic() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new Ctx(), gain = ctx.createGain(), ctrl = new AbortController();
+  gain.gain.value = micGain(); gain.connect(ctx.destination);
+  mic = { ctx, gain, ctrl };
+  $('#btn-mic-listen').textContent = '■ 止める';
+  try {
+    const res = await fetch('/api/live/audio.f32', { signal: ctrl.signal });
+    const rate = +(res.headers.get('X-Sample-Rate') || 16000);
+    const reader = res.body.getReader();
+    let rest = new Uint8Array(0), t = 0;
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const buf = new Uint8Array(rest.length + value.length);
+      buf.set(rest); buf.set(value, rest.length);
+      const n = buf.length - (buf.length % 4);
+      rest = buf.slice(n);
+      if (!n) continue;
+      const f = new Float32Array(buf.buffer.slice(0, n));
+      const ab = ctx.createBuffer(1, f.length, rate);
+      ab.getChannelData(0).set(f);
+      const src = ctx.createBufferSource();
+      src.buffer = ab; src.connect(gain);
+      const now = ctx.currentTime;
+      if (t < now + 0.03 || t > now + 0.6) t = now + 0.12;     // 途切れた・遅れがたまったら仕切り直す
+      src.start(t); t += ab.duration;
+    }
+  } catch (e) { if (e.name !== 'AbortError') toast('マイクの音を受け取れません: ' + e.message, true); }
+  stopMic();
+}
+function stopMic() {
+  if (!mic) return;
+  mic.ctrl.abort(); mic.ctx.close(); mic = null;
+  $('#btn-mic-listen').textContent = '🔊 聞く';
+}
+$('#btn-mic-listen').addEventListener('click', () => (mic ? stopMic() : startMic()));
+$('#mic-gain').addEventListener('input', () => {
+  $('#mic-gain-v').textContent = `×${Math.round(micGain())}`;
+  if (mic) mic.gain.gain.value = micGain();
+});
 async function pollValues() {
   if (state.tab === 'live' && document.visibilityState === 'visible') {
     try { renderValues(await api('GET', '/api/live/values')); } catch (e) { /* 無視 */ }
@@ -320,7 +374,7 @@ function renderScenes() {
       <img loading="lazy" src="/api/scenes/${encodeURIComponent(s.name)}/thumb.jpg" alt="">
       <div class="body">
         <div class="name">${esc(s.name)}</div>
-        <div class="muted">${fmtTime(s.start_us)} ・ カメラ ${s.counts.CAM_FRONT} / ToF ${s.counts.TOF_FRONT} / IMU ${s.counts.IMU} / 車両 ${s.counts.VEHICLE}</div>
+        <div class="muted">${fmtTime(s.start_us)} ・ カメラ ${s.counts.CAM_FRONT} / ToF ${s.counts.TOF_FRONT} / IMU ${s.counts.IMU} / 車両 ${s.counts.VEHICLE}${s.counts.AUDIO ? ' / 音声あり' : ''}</div>
         ${s.description ? `<div>${esc(s.description)}</div>` : ''}
         <div>${sceneBadges(s)}</div>
       </div>
@@ -386,6 +440,7 @@ async function openScene(name) {
     ['受信断の割合', st.rc_lost_ratio !== undefined ? `${Math.round(st.rc_lost_ratio * 100)} %` : '-'],
     ['加速度ピーク', st.accel_peak_ms2 !== undefined ? `${st.accel_peak_ms2} m/s²` : '-'],
     ['映像の最大間隔', `${st.camera_max_gap_ms} ms`], ['車両データ', s.vehicle_quality || '-'],
+    ['マイク', st.audio ? `平均 ${st.audio.rms_dbfs} dBFS / ピーク ${st.audio.peak_dbfs} dBFS${st.audio.no_signal ? '(信号なし)' : ''}` : '-'],
     ...(s.drive ? [['AIモデル', `${s.drive.run}${s.drive.dry_run ? '(出力なし)' : ''}`],
                    ['走行設定', `ステアリング×${(s.drive.params || {}).steer_gain} / 速度×${(s.drive.params || {}).throttle_gain}(開始時)`]] : []),
     ...(st.ai ? [['AIの遅延', `平均 ${st.ai.latency_ms_mean} ms / 最大 ${st.ai.latency_ms_max} ms(推論 ${st.ai.infer_ms_mean} ms)`],
@@ -396,6 +451,10 @@ async function openScene(name) {
     ? '<div class="muted">途中でジャンルを切り替えています(ここで変更するとシーン全体が1つのジャンルになります)</div><div class="segments">' +
       s.mode_segments.map((sg) => `<div>${sg.start_s.toFixed(1)}〜${sg.end_s.toFixed(1)} 秒: ${modeBadge(sg.mode_id)}</div>`).join('') + '</div>'
     : '';
+  const au = $('#m-audio');
+  au.pause();
+  if (s.counts.AUDIO) { au.src = `/api/scenes/${encodeURIComponent(s.name)}/audio.wav`; au.classList.remove('hidden'); }
+  else { au.removeAttribute('src'); au.classList.add('hidden'); }
   $('#m-desc').value = s.description || '';
   $('#m-tags').value = (s.tags || []).join(', ');
   const slider = $('#m-slider');
@@ -459,7 +518,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') showFrame(+$('#m-slider').value + 1);
   if (e.key === 'ArrowLeft') showFrame(+$('#m-slider').value - 1);
 });
-function closeModal() { state.playing = false; state.modal = null; $('#modal').classList.add('hidden'); }
+function closeModal() { state.playing = false; state.modal = null; $('#m-audio').pause(); $('#modal').classList.add('hidden'); }
 $('#m-save').addEventListener('click', async () => {
   try {
     const body = { description: $('#m-desc').value, tags: parseTags($('#m-tags').value) };
