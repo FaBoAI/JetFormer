@@ -26,6 +26,8 @@ G = 9.80665
 
 class ImuSensor(SensorThread):
     name = 'IMU'
+    MAX_FAIL_STREAK = 20         # 約0.2秒続けて読めなければ開き直す(1回の通信エラーは飛ばすだけ)
+    error_backoff = 0.05
 
     def __init__(self, cfg):
         super(ImuSensor, self).__init__()
@@ -37,6 +39,8 @@ class ImuSensor(SensorThread):
         self.mag_ok = False
         self._mag = [float('nan')] * 3
         self._mag_div = 0
+        self.bus_errors = 0
+        self.fail_streak = 0
         self._discard = 0
 
     def _w(self, reg, val):
@@ -102,10 +106,18 @@ class ImuSensor(SensorThread):
         if now < self._next:
             time.sleep(min(self._next - now, 0.2))
         self._next = max(self._next + self.period, time.monotonic() - self.period)
-        self.bus.write_byte_data(self.addr, REG_BANK_SEL, 0)
-        msg_w = i2c_msg.write(self.addr, [ACCEL_XOUT_H])
-        msg_r = i2c_msg.read(self.addr, 14)
-        self.bus.i2c_rdwr(msg_w, msg_r)
+        try:
+            self.bus.write_byte_data(self.addr, REG_BANK_SEL, 0)
+            msg_w = i2c_msg.write(self.addr, [ACCEL_XOUT_H])
+            msg_r = i2c_msg.read(self.addr, 14)
+            self.bus.i2c_rdwr(msg_w, msg_r)
+        except OSError as e:                     # 走行中のモーターのノイズ: その周期だけ飛ばす(車両データと同じ)
+            self.bus_errors += 1
+            self.fail_streak += 1
+            if self.fail_streak >= self.MAX_FAIL_STREAK:
+                raise RuntimeError('IMUを約%.1f秒続けて読めません: %s' % (self.fail_streak * self.period, e))
+            return []
+        self.fail_streak = 0
         t_ns = clock.now_ns()
         ax, ay, az, gx, gy, gz, temp = struct.unpack('>hhhhhhh', bytes(msg_r))
         if self._discard > 0:
@@ -129,4 +141,5 @@ class ImuSensor(SensorThread):
     def status(self):
         st = super(ImuSensor, self).status()
         st['mag'] = self.mag_ok
+        st['bus_errors'] = self.bus_errors
         return st

@@ -343,3 +343,57 @@ def test_model_info_reports_command_input(monkeypatch, tmp_path):
     monkeypatch.setattr(drive, 'RUNS_DIR', runs)
     assert drive.model_info('old')['command_input'] is True                       # 古い学習結果は今まで通り
     assert drive.model_info('nocmd')['command_input'] is False
+
+
+def test_vehicle_sensor_rides_through_i2c_noise():
+    """I2Cの通信エラーが時々起きても止まらず(その周期を飛ばすだけ)、続いたときだけ開き直す"""
+    from jetformer.sensors import vehicle as vs
+
+    def frame(seq):
+        d = bytearray(vs.SNAP.pack(vs.SNAP_MAGIC, vs.SNAP_VERSION, seq & 0xFFFF, 0, 1500, 1500, 2000, 7, 0, 0, 0, 0, 0, 0))
+        d[-1] = vs.crc8(bytes(d[:-1]))
+        return list(d)
+
+    class Bus(object):
+        def __init__(self, pattern):
+            self.pattern, self.i = pattern, 0
+
+        def read_i2c_block_data(self, addr, reg, n):
+            ok = self.pattern[self.i % len(self.pattern)]
+            self.i += 1
+            if not ok:
+                raise OSError(121, 'Remote I/O error')
+            return frame(self.i)                                  # seq を変える
+    s = vs.VehicleSensor({'bus': 7, 'address': 0x28, 'rate_hz': 100, 'protocol': 'snapshot'})
+    s.bus = Bus([True, False, False, False, True, True])          # 3回続けて失敗する周期がある
+    got = sum(len(s._poll_snapshot()) for _ in range(20))
+    assert got > 10 and s.bus_errors > 0 and s.skipped_polls > 0
+    s.bus = Bus([False])                                          # ずっと読めない → 開き直す
+    with pytest.raises(RuntimeError):
+        for _ in range(vs.VehicleSensor.MAX_FAIL_STREAK + 1):
+            s._poll_snapshot()
+
+
+def test_imu_sensor_rides_through_i2c_noise():
+    from jetformer.sensors import imu as im
+
+    class Bus(object):
+        def __init__(self, fail_every):
+            self.n, self.fail_every = 0, fail_every
+
+        def write_byte_data(self, *a):
+            pass
+
+        def i2c_rdwr(self, w, r):
+            self.n += 1
+            if self.fail_every and self.n % self.fail_every == 0:
+                raise OSError(121, 'Remote I/O error')
+    s = im.ImuSensor(dict(config.IMU, rate_hz=1000))
+    s.a_scale = s.g_scale = 1.0                                   # 本来は開いたときに設定される
+    s.bus = Bus(3)
+    got = sum(len(s._poll()) for _ in range(30))
+    assert got == 20 and s.bus_errors == 10
+    s.bus = Bus(1)
+    with pytest.raises(RuntimeError):
+        for _ in range(im.ImuSensor.MAX_FAIL_STREAK + 1):
+            s._poll()

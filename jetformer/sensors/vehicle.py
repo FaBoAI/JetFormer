@@ -85,6 +85,10 @@ def decode_legacy(raw, kind):
 
 class VehicleSensor(SensorThread):
     name = 'VEHICLE'
+    # 速く走るとモーターのノイズでI2Cの読み取りが時々失敗する(2026-10-10のAI走行で8回、毎回0.5秒途切れて
+    # 走行が中立で止まった)。1回の失敗はその周期(10ms)を飛ばすだけにし、続いたときだけ開き直す
+    MAX_FAIL_STREAK = 30         # 約0.3秒続けて読めなければ開き直す
+    error_backoff = 0.05
 
     def __init__(self, cfg):
         super(VehicleSensor, self).__init__()
@@ -96,6 +100,10 @@ class VehicleSensor(SensorThread):
         self._next = 0.0
         self._last_seq = None
         self.read_errors = 0       # CRC不一致・形式違い(読み直し前の回数)
+        self.bus_errors = 0        # I2Cの通信エラー(ノイズなど)
+        self.skipped_polls = 0     # 読み直しても読めず、その周期を飛ばした回数
+        self.fail_streak = 0
+        self.last_read_error = ''
         self.stale = 0
 
     def _open(self):
@@ -128,11 +136,20 @@ class VehicleSensor(SensorThread):
                 t_ns = clock.now_ns()
                 values = decode_snapshot(data)
                 break
-            except ValueError as e:
+            except ValueError as e:              # CRC不一致など
                 self.read_errors += 1
                 last = e
+            except OSError as e:                 # I2Cの通信エラー(ノイズ・NACK・タイムアウト)
+                self.bus_errors += 1
+                last = e
         else:
-            raise RuntimeError('スナップショットを3回続けて読めません: %s' % last)
+            self.fail_streak += 1
+            self.skipped_polls += 1
+            self.last_read_error = '%s: %s' % (type(last).__name__, last)
+            if self.fail_streak >= self.MAX_FAIL_STREAK:
+                raise RuntimeError('車両データを約%.1f秒続けて読めません: %s' % (self.fail_streak * self.period, last))
+            return []                            # この周期だけ飛ばす
+        self.fail_streak = 0
         if values['seq'] == self._last_seq:
             self.stale += 1
             return []
@@ -161,7 +178,8 @@ class VehicleSensor(SensorThread):
 
     def status(self):
         st = super(VehicleSensor, self).status()
-        st.update(protocol=self.protocol, read_errors=self.read_errors, stale=self.stale)
+        st.update(protocol=self.protocol, read_errors=self.read_errors, bus_errors=self.bus_errors,
+                  skipped_polls=self.skipped_polls, last_read_error=self.last_read_error, stale=self.stale)
         if self.latest is not None:
             d = self.latest.data
             st.update(pwm=d['pwm'], erpm=d['erpm'], select=d['select'], valid=d['valid'])

@@ -23,6 +23,7 @@ class SensorThread(object):
 
     name = 'SENSOR'
     reconnect_interval = 2.0
+    error_backoff = 0.5          # 読み取り中の例外のあと、開き直すまでの待ち [秒]
 
     def __init__(self):
         self._listeners = []
@@ -122,7 +123,7 @@ class SensorThread(object):
                 self.last_error = '%s: %s' % (type(e).__name__, e)
                 self.connected = False
                 self._safe_close()
-                self._stop.wait(0.5)
+                self._stop.wait(self.error_backoff)
         self._safe_close()
         self.connected = False
 

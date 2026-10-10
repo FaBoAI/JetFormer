@@ -174,7 +174,7 @@ function sensorExtra(name, s) {
   }
   if (name === 'VEHICLE') {
     if (s.protocol === 'legacy') parts.push('<span class="warn-text">v1ファーム(値の取り違えあり)</span>');
-    else parts.push(`v2 / 読み直し ${s.read_errors || 0}`);
+    else parts.push(`v2 / 読み直し ${(s.read_errors || 0) + (s.bus_errors || 0)}${s.skipped_polls ? ` / 飛ばし ${s.skipped_polls}` : ''}`);
     if (s.select !== undefined) parts.push(s.select ? '<span class="warn-text">AI走行中</span>' : '人が操縦中');
   }
   return parts.filter(Boolean).join(' / ');
