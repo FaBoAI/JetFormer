@@ -123,12 +123,14 @@ def analyze(log):
     # 周回(ジャイロで360度ごと)と1周のタイム
     lc = LapCounter()
     vsel = veh['select'].astype(bool) if len(veh['timestamps_us']) else np.zeros(0, bool)
-    for ti, g in zip(imu['timestamps_us'] / 1e6, imu['gyro'][:, 2]):
+    hg = np.hypot(imu['accel'][:, 0], imu['accel'][:, 1]) / G
+    for ti, g, h in zip(imu['timestamps_us'] / 1e6, imu['gyro'][:, 2], hg):
         k = max(int(np.searchsorted(veh['timestamps_us'] / 1e6, ti, side='right')) - 1, 0)
-        lap = lc.add(float(ti), float(g), float(veh['erpm'][k]), bool(vsel[k]))
+        lap = lc.add(float(ti), float(g), float(veh['erpm'][k]), bool(vsel[k]), float(h))
     s = lc.summary()
-    r['laps'] = {k: s[k] for k in ('laps', 'direction', 'best_ai_s', 'median_ai_s', 'clean_laps')}
-    r['lap_times'] = [{k: x[k] for k in ('n', 'time_s', 'ai_only', 'takeovers', 'first')} for x in lc.laps]
+    # best/median は「AIだけ・ぶつからず・リカバリーなし」の周、median_ai_all はAIだけの周すべて
+    r['laps'] = {k: s[k] for k in ('laps', 'direction', 'best_ai_s', 'median_ai_s', 'clean_laps', 'ai_laps', 'median_ai_all_s')}
+    r['lap_times'] = [{k: x[k] for k in ('n', 'time_s', 'ai_only', 'takeovers', 'impacts', 'clean', 'first')} for x in lc.laps]
     del lap
     return r, (t, ai, veh, imu, center)
 

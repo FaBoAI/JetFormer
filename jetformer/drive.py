@@ -506,7 +506,8 @@ class Driver(object):
                 if t_ns <= imu_done[0]:
                     continue
                 imu_done[0] = t_ns
-                lap = laps.add(t_ns / 1e9, float(np.degrees(x[5])), float(veh_now['erpm']), bool(veh_now['select']))
+                lap = laps.add(t_ns / 1e9, float(np.degrees(x[5])), float(veh_now['erpm']), bool(veh_now['select']),
+                               float(np.hypot(x[0], x[1])) / 9.80665)
                 if lap:
                     st['laps'] = laps.summary()
                     self._emit('lap', **lap)

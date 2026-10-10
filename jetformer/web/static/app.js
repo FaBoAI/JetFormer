@@ -1070,9 +1070,10 @@ function renderDrive(st) {
     const L = st.laps || {};
     if (L.laps !== undefined) {
       rows.push(['周回(ジャイロ)', `${L.laps}周${L.direction ? `(${L.direction})` : ''} ・ 今の周 ${Math.min(359, L.progress_deg || 0)}°`],
-                ['ベスト(AIだけの周)', L.best_ai_s != null ? `<b>${L.best_ai_s.toFixed(2)} 秒</b> ・ 中央値 ${L.median_ai_s.toFixed(2)} 秒(${L.clean_laps}周)` : '-'],
+                ['ベスト(ぶつからなかった周)', L.best_ai_s != null ? `<b>${L.best_ai_s.toFixed(2)} 秒</b> ・ 中央値 ${L.median_ai_s.toFixed(2)} 秒(${L.clean_laps}周)` : (L.timing ? '-' : '1周目で区切りの位置を決めています')],
+                ['AIだけの周', L.ai_laps ? `${L.ai_laps}周 ・ 中央値 ${L.median_ai_all_s.toFixed(2)} 秒(ぶつかった周も含む)` : '-'],
                 ['最近の周', (L.recent || []).slice().reverse().map((x) =>
-                  `<span class="lap ${x.best ? 'best' : ''} ${x.ai_only && !x.recoveries ? '' : 'muted'}">${x.time_s.toFixed(1)}${x.first ? '(発進)' : ''}${x.ai_only ? '' : '(人)'}${x.recoveries ? '(R)' : ''}</span>`).join(' ') || '-']);
+                  `<span class="lap ${x.best ? 'best' : ''} ${x.clean ? '' : 'muted'}">${x.time_s.toFixed(1)}${x.first ? '(最初)' : ''}${x.ai_only ? '' : '(人)'}${x.impacts ? `(衝${x.impacts})` : ''}${x.recoveries ? '(R)' : ''}</span>`).join(' ') || '-']);
     }
     if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);

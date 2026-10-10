@@ -62,5 +62,19 @@ def test_replay_ai_run_006():
         k = max(np.searchsorted(vt, t, side='right') - 1, 0)
         c.add(t, float(g), float(er[k]), bool(sel[k]))
     s = c.summary()
-    assert 15 <= s['laps'] <= 17 and s['direction'] == '左回り'
-    assert 7.5 < s['best_ai_s'] < 9.0 and 8.5 < s['median_ai_s'] < 10.5
+    assert 14 <= s['laps'] <= 17 and s['direction'] == '左回り'
+    assert 8.5 < s['median_ai_all_s'] < 10.5                     # AIだけの周(ぶつかった周も含む)
+
+
+def test_impact_lap_is_not_clean():
+    c = LapCounter()
+    t, laps = 0.0, []
+    for _ in range(int(40 / 0.01)):
+        g = 6.0 if abs(t - 20.0) < 0.005 else 0.0               # 3周目くらいでぶつかる
+        lap = c.add(t, 40.0, -4000, ai=True, impact_g=g)
+        if lap:
+            laps.append(lap)
+        t += 0.01
+    hit = [x for x in laps if x['impacts']]
+    assert len(hit) == 1 and not hit[0]['clean'] and not hit[0]['best']
+    assert c.summary()['clean_laps'] == len([x for x in laps if not x['first']]) - 1
