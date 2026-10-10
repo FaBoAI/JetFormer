@@ -650,7 +650,7 @@ def api_drive_status(token: str = Query(default='')):
     return st
 
 
-DRIVE_CLIENT_VERSION = 5        # 生存確認(token)を送る画面の版。これより古い画面(キャッシュ)からは走行を始めない
+DRIVE_CLIENT_VERSION = 6        # 生存確認(token)を送る画面の版。これより古い画面(キャッシュ)からは走行を始めない
 
 
 @app.post('/api/drive/start')

@@ -258,6 +258,13 @@
           </div>
           <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
 
+          <label>ToFガード(距離センサーで衝突を予測して減速) <span class="muted">(走行中に変えると、すぐ切り替わります)</span>
+            <select id="dr-tof-guard">
+              <option value="0">OFF</option>
+              <option value="1" selected>記録だけ(動きは変えない。まずこれで警報のタイミングを確認)</option>
+              <option value="2">減速(衝突まで0.5秒未満で前進を弱め、0.3秒未満でブレーキ)</option>
+              <option value="3">減速+ハンドル(近い側から離す)</option>
+            </select></label>
           <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
           <div class="indent">

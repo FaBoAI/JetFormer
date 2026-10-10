@@ -72,7 +72,7 @@ def make_driver(monkeypatch, tmp_path):
     return d
 
 
-def run_loop(d, runner, pca, veh_data, frames=12, lookahead=1, dry_run=False):
+def run_loop(d, runner, pca, veh_data, frames=12, lookahead=1, dry_run=False, tof=None):
     """偽のセンサー値を30fpsで流しながら _loop を回す。戻り値: (例外 or None)"""
     d.params = dict(PARAMS, lookahead=lookahead)
     out = drive._Output(pca, config.PCA9685, REF, lambda: d.params)
@@ -95,7 +95,7 @@ def run_loop(d, runner, pca, veh_data, frames=12, lookahead=1, dry_run=False):
         if not th.is_alive():
             break
         t = clock.now_ns()
-        tof_buf.append((t - 5_000_000, np.full((42, 54), 1000, np.uint16)))
+        tof_buf.append((t - 5_000_000, np.full((42, 54), 1000, np.uint16) if tof is None else tof))
         imu_buf.append((t - 2_000_000, np.zeros(6, np.float32)))
         veh_buf.append((t - 3_000_000, dict(veh_data(i) if callable(veh_data) else veh_data)))
         cam_slot[0] = Sample(t, {'image': np.zeros((224, 224, 3), np.uint8), 'seq': i})
@@ -450,3 +450,44 @@ def test_vehicle_sensor_counts_board_resets():
     for _ in range(5):
         s._poll_snapshot()
     assert s.board_resets == 1 and s.status()['board_resets'] == 1
+
+
+def _wall_tof(dist_mm):
+    """床(1.5m)の手前に、正面の壁(dist_mm)。信頼度4"""
+    d = np.full((42, 54), 1500, np.uint16)
+    d[6:26, 20:34] = dist_mm
+    return (d | (4 << 13)).astype(np.uint16)
+
+
+def _guard_driver(monkeypatch, tmp_path, mode):
+    ref = tmp_path / 'floor.npy'
+    np.save(ref, np.full((42, 54), 1500, np.uint16))
+    monkeypatch.setattr(drive, 'FLOOR_REF_PATH', ref)
+    monkeypatch.setitem(PARAMS, 'tof_guard', mode)
+    monkeypatch.setitem(PARAMS, 'recovery', 0)
+    d = make_driver(monkeypatch, tmp_path)
+    d.recorder.recording = True
+    return d
+
+
+def test_tof_guard_log_only_does_not_change_output(monkeypatch, tmp_path):
+    d = _guard_driver(monkeypatch, tmp_path, 1)
+    runner, pca = FakeRunner(np.tile([[1443.0, 1350.0]], (10, 1))), FakePCA()
+    assert run_loop(d, runner, pca, veh(True, erpm=-5000), tof=_wall_tof(500)) is None
+    rows = [r for _, r in d.recorder.rows]
+    assert any(r['guard'] == 2 for r in rows) and not any(r['guard_applied'] for r in rows)
+    assert all(t == pytest.approx(1350.0) for _, t in pca.pairs[2:])            # 出力はモデルのまま
+    assert d.st['stats']['guard_brake'] >= 1
+
+
+def test_tof_guard_slows_down_when_enabled(monkeypatch, tmp_path):
+    d = _guard_driver(monkeypatch, tmp_path, 2)
+    runner, pca = FakeRunner(np.tile([[1443.0, 1350.0]], (10, 1))), FakePCA()
+    assert run_loop(d, runner, pca, veh(True, erpm=-5000), tof=_wall_tof(500)) is None
+    assert max(t for _, t in pca.pairs[2:]) > REF[1]                                 # ブレーキ側
+    assert any(r['guard_applied'] for _, r in d.recorder.rows)
+    # 何もなければモデルのまま
+    d2 = _guard_driver(monkeypatch, tmp_path, 2)
+    runner2, pca2 = FakeRunner(np.tile([[1443.0, 1350.0]], (10, 1))), FakePCA()
+    assert run_loop(d2, runner2, pca2, veh(True, erpm=-5000), tof=_wall_tof(1500)) is None
+    assert all(t == pytest.approx(1350.0) for _, t in pca2.pairs[2:])

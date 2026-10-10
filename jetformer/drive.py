@@ -48,9 +48,13 @@ PARAM_LIMITS = {
     'recovery': (0, 1),            # 1 = ぶつかって止まったら自動で少し下がってからモデルへ戻す
     'rev_us': (150.0, 500.0),      # リカバリーで下がる強さ(中立からのµs)
     'rev_s': (0.2, 1.2),           # リカバリーで後退を出し続ける時間(下がり始めてから)
+    'tof_guard': (0, 3),           # ToFガード 0=OFF 1=記録だけ(動きは変えない) 2=減速 3=減速+ハンドル
 }
+GUARD_NAMES = {0: '', 1: '減速', 2: 'ブレーキ'}
+FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床の基準(自由走行から作る)
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
-                  'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S}
+                  'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S,
+                  'tof_guard': 1}
 
 
 def _read_json(path):
@@ -275,6 +279,7 @@ class Driver(object):
         p['lookahead'] = int(round(p['lookahead']))
         for k in ('esc_reverse', 'recovery'):         # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
+        p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
         return p
 
     def _save_settings(self):
@@ -480,6 +485,15 @@ class Driver(object):
                  'recoveries': 0, 'esc_assists': 0, 'giveups': 0}
         helper = assist_mod.Assist(ref)
         last_kind = assist_mod.ASSIST_NONE
+        guard = None                        # ToFガード(床の基準があるときだけ)
+        try:
+            from .tof_guard import ToFGuard
+            guard = ToFGuard(np.load(FLOOR_REF_PATH), center=ref[0], neutral=ref[1])
+        except (OSError, ValueError) as e:
+            st['recording_note'] = (st.get('recording_note') or '') + ' ToFガードは使えません(床の基準 %s: %s)' % (
+                FLOOR_REF_PATH.name, e)
+        stats.update(guard_slow=0, guard_brake=0)
+        last_guard = 0
         laps = LapCounter()                 # ジャイロで周回を数え、1周のタイムを測る
         st['laps'] = laps.summary()
         imu_done = [0]
@@ -526,7 +540,7 @@ class Driver(object):
                     'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                     'mode_id': st['mode_id'], 'hold': True, 'select': veh_select, 'latency_ms': np.nan,
                     'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': assist_mod.ASSIST_NONE,
-                    'model_out': (np.nan, np.nan)})
+                    'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False})
             helper.reset()                  # 中立で止めた後は、補助の手順を最初から
 
         while not self._stop.is_set():
@@ -598,10 +612,23 @@ class Driver(object):
             k = min(max(p['lookahead'], 1), len(pred)) - 1
             raw = (float(pred[k, 0]), float(pred[k, 1]))
             model_us = apply_gains(raw, ref, p, lo, hi)
+            # ToFガード: 衝突までの時間(TTC)が短ければ減速(・近い側から離すハンドル)。1 = 記録だけ
+            g_mode, g_code, g_ttc, g_applied, base_us = int(p.get('tof_guard', 1)), 0, np.nan, False, model_us
+            if guard is not None and g_mode >= 1:
+                g_steer, g_thr, g_info = guard.step(model_us[0], model_us[1], tof_raw, float(veh['erpm']),
+                                                    float(np.degrees(imu[-1, 5])))
+                g_ttc = float(g_info['ttc'])
+                g_code = {'slow': 1, 'brake': 2}.get(g_info['action'], 0)
+                if g_code and g_mode >= 2 and veh['select'] and not dry_run:
+                    base_us = (g_steer if g_mode >= 3 else model_us[0], g_thr)
+                    g_applied = True
+                if g_code and not last_guard:
+                    stats['guard_brake' if g_code == 2 else 'guard_slow'] += 1
+                last_guard = g_code
             # 補助: 後退の受け付け(中立を挟む)・ぶつかって止まったときの自動リカバリー
             recent = [x[1] for x in list(imu_buf)[-10:] if x[0] > cam.t_ns - 150_000_000]
             impact_g = max((float(np.hypot(a[0], a[1])) / 9.80665 for a in recent), default=0.0)
-            out_us, kind = helper.step(model_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
+            out_us, kind = helper.step(base_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
                                        time.monotonic(), esc_on=p.get('esc_reverse', 1) == 1,
                                        rec_on=p.get('recovery', 1) == 1,
                                        impact_g=impact_g, rev_us=float(p.get('rev_us', assist_mod.DEFAULT_REV_US)),
@@ -644,13 +671,16 @@ class Driver(object):
                          'select': bool(veh['select']), 'hold': False, 'erpm': int(veh['erpm']),
                          'human': [int(veh['pwm'][0]), int(veh['pwm'][1])] if veh['valid'][0] and veh['valid'][1] else None,
                          'pred': pred.round(1).tolist(), 'assist': assist_mod.ASSIST_NAMES[kind],
+                         'ttc': None if not np.isfinite(g_ttc) else round(min(g_ttc, 9.9), 2),
+                         'guard': GUARD_NAMES[g_code] + ('' if g_applied or not g_code else '(記録だけ)'),
                          'model_out': [round(model_us[0], 1), round(model_us[1], 1)]}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
                 'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                 'mode_id': mode_id, 'hold': False, 'select': bool(veh['select']), 'latency_ms': latency,
-                'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': kind, 'model_out': model_us})
+                'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': kind, 'model_out': model_us,
+                'ttc': g_ttc, 'guard': g_code, 'guard_applied': g_applied})
 
     # ------------------------------------------------------------ 状態
     def status(self):

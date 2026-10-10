@@ -470,7 +470,11 @@ class Recorder(object):
                      dry_run=np.array([x['dry_run'] for x in a], dtype=bool),
                      # 補助 0=なし 1=後退の受け付け(中立を挟んだ) 2=自動リカバリー 3=リカバリー中止(中立)
                      assist=np.array([x.get('assist', 0) for x in a], dtype=np.int8),
-                     model_out=np.array([x.get('model_out', x['out']) for x in a], dtype=np.float32))  # 補助の前の値
+                     model_out=np.array([x.get('model_out', x['out']) for x in a], dtype=np.float32),  # 補助の前の値
+                     # ToFガード: 衝突までの時間[s]、判定 0=なし 1=減速 2=ブレーキ、実際に出力を変えたか(記録だけのときは False)
+                     ttc=np.array([x.get('ttc', np.nan) for x in a], dtype=np.float32),
+                     guard=np.array([x.get('guard', 0) for x in a], dtype=np.int8),
+                     guard_applied=np.array([x.get('guard_applied', False) for x in a], dtype=bool))
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:

@@ -926,6 +926,9 @@ $('#dr-model').addEventListener('change', renderDriveModel);
 $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
 // 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
 const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery']];
+$('#dr-tof-guard').addEventListener('change', async () => {
+  try { await api('POST', '/api/drive/params', { tof_guard: +$('#dr-tof-guard').value }); } catch (e) { toast(e.message, true); }
+});
 for (const [sel, key] of DR_FLAGS) {
   $(sel).addEventListener('change', async () => {
     try { await api('POST', '/api/drive/params', { [key]: $(sel).checked ? 1 : 0 }); } catch (e) { toast(e.message, true); }
@@ -935,6 +938,7 @@ function readDriveParams() {
   const p = {};
   for (const [sel, key] of DR_PARAMS) p[key] = +$(sel).value;
   for (const [sel, key] of DR_FLAGS) p[key] = $(sel).checked ? 1 : 0;
+  p.tof_guard = +$('#dr-tof-guard').value;
   return p;
 }
 // スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
@@ -955,6 +959,7 @@ for (const [sel, key, fmt] of DR_PARAMS) {
 }
 function setDriveParams(p) {
   for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) $(sel).checked = !!+p[key];
+  if (p.tof_guard !== undefined && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
   for (const [sel, key, fmt] of DR_PARAMS) {
     if (p[key] === undefined || drBusy[key]) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
@@ -972,7 +977,7 @@ $('#btn-dr-start').addEventListener('click', async () => {
   if (!m) { toast('モデルを選んでください', true); return; }
   const dry = $('#dr-dry').checked;
   if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
-  const body = { client: 5, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
+  const body = { client: 6, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);
@@ -1056,6 +1061,8 @@ function renderDrive(st) {
               ['推論(TensorRT)', `${s.infer_ms ?? '-'} ms`],
               ['処理したフレーム', `${s.frames ?? 0}(取りこぼし ${s.skipped ?? 0})`],
               ['中立で止めた回数', `${s.holds ?? 0}${st.hold_reason ? ` ・ <span class="warn-text">${esc(st.hold_reason)}</span>` : ''}`],
+              ['ToFガード', `${now && now.ttc != null ? `衝突まで ${now.ttc.toFixed(2)} 秒` : '-'}`
+                + `${now && now.guard ? ` ・ <b class="warn-text">${esc(now.guard)}</b>` : ''} ・ 減速 ${s.guard_slow ?? 0}回 / ブレーキ ${s.guard_brake ?? 0}回`],
               ['補助', `リカバリー ${s.recoveries ?? 0}回 ・ 後退の受け付け ${s.esc_assists ?? 0}回`
                 + (s.giveups ? ` ・ <span class="warn-text">中止 ${s.giveups}回</span>` : '')
                 + (now && now.assist ? ` ・ <b class="warn-text">${esc(now.assist)}中</b>` : '')],
