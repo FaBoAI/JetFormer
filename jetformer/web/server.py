@@ -248,7 +248,7 @@ def api_sensor_check():
     """センサーの向きの点検(約1秒。車を止め、前に障害物のない床の上で)"""
     from .. import sensor_check
     hub.start()
-    deadline = time.time() + 3.0
+    deadline = time.time() + 8.0                 # 起動直後はカメラが映るまで数秒かかる
     while time.time() < deadline and (hub['CAM_FRONT'].latest is None or hub['TOF_FRONT'].latest is None):
         time.sleep(0.1)
     res = sensor_check.run(hub, seconds=1.0)
