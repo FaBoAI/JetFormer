@@ -324,7 +324,7 @@ AI が前進している 16,257フレーム(1秒以内に衝突 2,401)で、「1
 | `fig/policy_*.png` 5枚 | 方策の図(policies.md。`policy_target_shift.png` は「方策が動くはずの量」ではないので動画では使わない) |
 | `fig/eval_*.png` 5枚・`fig/review_*.png` 2枚 | 評価とレビューの図(evaluation.md) |
 
-### コード(`/home/jetson/jetformer/`。ローカルにコミット済み: ba5c6b1 ラベル・データセット、e83ac0e オフライン強化学習)
+### コード(`/home/jetson/jetformer/`。ローカルにコミット済み: 38db3d3 ラベル・データセット、03e4fc1 オフライン強化学習)
 
 | パス | 中身 |
 |---|---|
