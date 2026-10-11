@@ -1,0 +1,58 @@
+{
+ "c": {
+  "run": "ai_mix_20261011-rl-c-fbc-nocmd-s3-e12",
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "num_modes": 6,
+  "engine_mb": 29.2,
+  "trt_vs_torch_max_abs_us": 0.76,
+  "trt_vs_torch_median_abs_us": 0.43,
+  "checks": 16
+ },
+ "b": {
+  "run": "ai_mix_20261011-rl-b-awr-nocmd-s3-e12",
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "num_modes": 6,
+  "engine_mb": 29.1,
+  "trt_vs_torch_max_abs_us": 0.8,
+  "trt_vs_torch_median_abs_us": 0.37,
+  "checks": 16
+ },
+ "a": {
+  "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "num_modes": 8,
+  "engine_mb": 29.1,
+  "trt_vs_torch_max_abs_us": 0.86,
+  "trt_vs_torch_median_abs_us": 0.34,
+  "checks": 32
+ },
+ "n": {
+  "run": "ai_mix_20261011-rl-n-negctl-nocmd-s3-e12",
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "num_modes": 8,
+  "engine_mb": 29.1,
+  "trt_vs_torch_max_abs_us": 1.07,
+  "trt_vs_torch_median_abs_us": 0.34,
+  "checks": 32
+ }
+}

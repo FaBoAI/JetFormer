@@ -1,0 +1,4035 @@
+{
+ "generated": "2026-10-11 (re-verified after the Jetson reboot; previous draft src/summary_prev_0254.json)",
+ "model": "first_trial_20261010-s3-20261010-153629 (trained on logs 135449-152707), genre 5 (low speed) in all runs",
+ "definitions": {
+  "t": "seconds from the first AI_CMD frame of the log (same as tools/drive_report.py)",
+  "impact": "horizontal |a| = hypot(ax, ay) >= 2.5 G, merged within 0.6 s (same quantity as drive.py / LapCounter)",
+  "ai_heading_laps": "gyro-z heading integrated on the AI side / 360 deg (lap-equivalents driven by the AI)",
+  "clean_lap": "LapCounter: AI only, not first, no recovery, no impact",
+  "tof_false_alarm": "warning onset (TTC<0.5, v>0.5 m/s, gaps<0.3 s merged) with no >=2.0G event within 1.5 s",
+  "tof_caught": "warning on within 0.3 s before the impact and started >= 0.3 s before it",
+  "ai_time_s": "sum of AI_CMD frame intervals (clipped 0.1 s) with select=True",
+  "takeover": "end of an AI segment (select True->False) that is not the end of the log and not a board reboot",
+  "stuck_event": "AI side, after |eRPM|>=1000 in the segment, -300<eRPM<300 for >= 0.25 s",
+  "laps": "jetformer.laps.LapCounter fed with every IMU sample (gz, eRPM, AI_CMD.select, hypot(ax,ay)/g); recovery noted on assist==2 frames (none)",
+  "guard_rates": "onsets of guard>=1 / >=2 on AI forward frames (v>0.5 m/s), gaps <= 0.3 s merged, per minute of exposure (AI forward minus 1 s after each >=2 g event)",
+  "recovery_detector": "exact offline replay of jetformer.assist.Assist (src/replay.py reproduces the logged assist codes and outputs 100 %)"
+ },
+ "runs": {
+  "20261010-203924": {
+   "name": "ai_run_009",
+   "duration_s": 91.38,
+   "ai_time_s": 23.2,
+   "ai_distance_m": 40.5,
+   "ai_heading_laps": 1.26,
+   "ai_segments": [
+    {
+     "t0": 8.36,
+     "t1": 10.3,
+     "dur_s": 1.97,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      10
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 13.89,
+     "t1": 15.66,
+     "dur_s": 1.8,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      10
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 17.99,
+     "t1": 19.59,
+     "dur_s": 1.63,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      10
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 22.26,
+     "t1": 24.39,
+     "dur_s": 2.17,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      10
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 41.15,
+     "t1": 46.78,
+     "dur_s": 5.66,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 48.78,
+     "t1": 50.81,
+     "dur_s": 2.07,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 52.64,
+     "t1": 54.61,
+     "dur_s": 2.0,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 60.5,
+     "t1": 66.33,
+     "dur_s": 5.86,
+     "end": "takeover",
+     "steer_gain": [
+      1.7
+     ],
+     "throttle_gain": [
+      1.35
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    }
+   ],
+   "takeovers": 8,
+   "takeover_reasons": [
+    "pre-emptive (heading into HS parking-bay boards, no impact)",
+    "after stopping impact LH 15.16",
+    "after stopping impact LH 19.23",
+    "after stopping impact GM_in 23.98",
+    "after stopping impact HS_P 45.80",
+    "plain stop (LH, curtain, no impact >=2.5G)",
+    "plain stop (LH, curtain, no impact >=2.5G)",
+    "after stopping impact HS_P 65.72"
+   ],
+   "impacts_ai": 6,
+   "impacts_ai_ge4G": 5,
+   "impacts_per_heading_lap": 4.76,
+   "impacts_per_100m": 14.8,
+   "impacts_per_ai_min": 15.5,
+   "impacts": [
+    {
+     "t": 15.16,
+     "g": 3.4,
+     "ax_g": 0.3,
+     "ay_g": -3.4,
+     "loc": "LH",
+     "v_before_ms": 2.03,
+     "erpm_before": -4058,
+     "t_stop_after_s": 0.08,
+     "erpm_at_+0.5s": 0,
+     "glance": false,
+     "ai_seg_end_after_s": 0.5,
+     "model_thr_after_us_median": -65,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 19.23,
+     "g": 7.8,
+     "ax_g": -0.3,
+     "ay_g": -7.8,
+     "loc": "LH",
+     "v_before_ms": 2.01,
+     "erpm_before": -4017,
+     "t_stop_after_s": 0.12,
+     "erpm_at_+0.5s": 363,
+     "glance": false,
+     "ai_seg_end_after_s": 0.37,
+     "model_thr_after_us_median": -93,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 23.98,
+     "g": 8.1,
+     "ax_g": 1.2,
+     "ay_g": -8.0,
+     "loc": "GM_in",
+     "v_before_ms": 2.52,
+     "erpm_before": -5037,
+     "t_stop_after_s": 0.03,
+     "erpm_at_+0.5s": 402,
+     "glance": false,
+     "ai_seg_end_after_s": 0.41,
+     "model_thr_after_us_median": -4,
+     "model_reverse_frames": 2,
+     "ttc_min_before": null
+    },
+    {
+     "t": 45.8,
+     "g": 8.4,
+     "ax_g": -2.4,
+     "ay_g": -8.0,
+     "loc": "HS_P",
+     "v_before_ms": 3.46,
+     "erpm_before": -6910,
+     "t_stop_after_s": 0.06,
+     "erpm_at_+0.5s": 786,
+     "glance": false,
+     "ai_seg_end_after_s": 0.98,
+     "model_thr_after_us_median": 55,
+     "model_reverse_frames": 18,
+     "ttc_min_before": null
+    },
+    {
+     "t": 61.56,
+     "g": 8.4,
+     "ax_g": -2.4,
+     "ay_g": -8.0,
+     "loc": "DE",
+     "v_before_ms": 3.07,
+     "erpm_before": -6138,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4007,
+     "glance": true,
+     "ai_seg_end_after_s": 4.78,
+     "model_thr_after_us_median": -273,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 65.72,
+     "g": 8.2,
+     "ax_g": -1.9,
+     "ay_g": -8.0,
+     "loc": "HS_P",
+     "v_before_ms": 3.38,
+     "erpm_before": -6765,
+     "t_stop_after_s": 0.06,
+     "erpm_at_+0.5s": 640,
+     "glance": false,
+     "ai_seg_end_after_s": 0.62,
+     "model_thr_after_us_median": 12,
+     "model_reverse_frames": 8,
+     "ttc_min_before": null
+    }
+   ],
+   "laps_lapcounter": [
+    {
+     "n": 1,
+     "t_end": 56.055,
+     "time_s": 37.53,
+     "ai_only": false,
+     "human_s": 14.26,
+     "takeovers": 7,
+     "recoveries": 0,
+     "holds": 0,
+     "impacts": 4,
+     "first": true,
+     "clean": false,
+     "best": false,
+     "t_start": 18.52
+    }
+   ],
+   "lap_summary": {
+    "laps": 1,
+    "best_ai_s": null,
+    "median_ai_s": null,
+    "clean_laps": 0,
+    "ai_laps": 0,
+    "median_ai_all_s": null,
+    "direction": "左回り"
+   },
+   "ai_driven_lap_windows": [],
+   "clean_laps": 0,
+   "stuck_events_ai": [
+    {
+     "t": 19.36,
+     "dur_s": 0.26,
+     "end": "takeover"
+    },
+    {
+     "t": 50.33,
+     "dur_s": 0.51,
+     "end": "takeover"
+    },
+    {
+     "t": 53.91,
+     "dur_s": 0.72,
+     "end": "takeover"
+    }
+   ],
+   "recovery_v2": {
+    "episodes": 0,
+    "giveups": 0,
+    "assist_counts": {
+     "0": 2698,
+     "1": 26
+    },
+    "segment_ends_detector": [
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 8.36,
+      "takeover_t": 10.33,
+      "seg_s": 1.97,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": -1325,
+      "impact_t": null,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 6,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 1.52,
+      "back_to_ai_after_s": 3.6
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 13.89,
+      "takeover_t": 15.69,
+      "seg_s": 1.8,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 673,
+      "impact_t": 15.16,
+      "impact_g": 3.4,
+      "v_before": 2.03,
+      "rebound_erpm_max": 864,
+      "stop_after_s": 0.08,
+      "takeover_after_impact_s": 0.53,
+      "impact_seen_erpm": -3669,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 0.92,
+      "back_to_ai_after_s": 2.33
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 17.99,
+      "takeover_t": 19.62,
+      "seg_s": 1.63,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": -261,
+      "impact_t": 19.23,
+      "impact_g": 7.8,
+      "v_before": 2.01,
+      "rebound_erpm_max": 2018,
+      "stop_after_s": 0.12,
+      "takeover_after_impact_s": 0.4,
+      "impact_seen_erpm": -2120,
+      "stuck_from_t": 19.39,
+      "stuck_counted_s": 0.23,
+      "would_fire_t": 19.89,
+      "margin_s": 0.27,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 0.08,
+      "back_to_ai_after_s": 2.67
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 22.26,
+      "takeover_t": 24.42,
+      "seg_s": 2.17,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 607,
+      "impact_t": 23.98,
+      "impact_g": 8.1,
+      "v_before": 2.52,
+      "rebound_erpm_max": 2040,
+      "stop_after_s": 0.03,
+      "takeover_after_impact_s": 0.45,
+      "impact_seen_erpm": -3954,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 2,
+      "esc_neutralised_frames_seg": 2,
+      "human_reverse_after_s": 0.0,
+      "back_to_ai_after_s": 16.76
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 41.15,
+      "takeover_t": 46.81,
+      "seg_s": 5.66,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 297,
+      "impact_t": 45.8,
+      "impact_g": 8.4,
+      "v_before": 3.46,
+      "rebound_erpm_max": 1999,
+      "stop_after_s": 0.06,
+      "takeover_after_impact_s": 1.01,
+      "impact_seen_erpm": -1401,
+      "stuck_from_t": 46.75,
+      "stuck_counted_s": 0.06,
+      "would_fire_t": 47.25,
+      "margin_s": 0.44,
+      "model_rev_req_frames_last0.5s": 10,
+      "esc_neutralised_frames_seg": 16,
+      "human_reverse_after_s": null,
+      "back_to_ai_after_s": 2.0
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 48.78,
+      "takeover_t": 50.84,
+      "seg_s": 2.07,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": 0,
+      "impact_t": null,
+      "stuck_from_t": 50.33,
+      "stuck_counted_s": 0.51,
+      "would_fire_t": 51.13,
+      "margin_s": 0.29,
+      "model_rev_req_frames_last0.5s": 7,
+      "esc_neutralised_frames_seg": 3,
+      "human_reverse_after_s": null,
+      "back_to_ai_after_s": 1.83
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 52.64,
+      "takeover_t": 54.64,
+      "seg_s": 2.0,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": 0,
+      "impact_t": null,
+      "stuck_from_t": 53.94,
+      "stuck_counted_s": 0.7,
+      "would_fire_t": 54.74,
+      "margin_s": 0.1,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": null,
+      "back_to_ai_after_s": 5.9
+     },
+     {
+      "log": "20261010-203924",
+      "name": "ai_run_009",
+      "seg_t0": 60.5,
+      "takeover_t": 66.36,
+      "seg_s": 5.86,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 462,
+      "impact_t": 65.72,
+      "impact_g": 8.2,
+      "v_before": 3.38,
+      "rebound_erpm_max": 1448,
+      "stop_after_s": 0.06,
+      "takeover_after_impact_s": 0.65,
+      "impact_seen_erpm": -3183,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 5,
+      "esc_neutralised_frames_seg": 5,
+      "human_reverse_after_s": 0.01,
+      "back_to_ai_after_s": null
+     }
+    ]
+   },
+   "esc_assist_episodes": [
+    {
+     "t0": 24.22,
+     "t1": 24.26,
+     "frames": 2,
+     "model_thr_us_max": 41,
+     "out_thr_us": 0,
+     "erpm": 799,
+     "impact_before_s": 0.25,
+     "ai_seg_end_after_s": 0.17
+    },
+    {
+     "t0": 45.91,
+     "t1": 46.08,
+     "frames": 6,
+     "model_thr_us_max": 206,
+     "out_thr_us": 0,
+     "erpm": 1999,
+     "impact_before_s": 0.11,
+     "ai_seg_end_after_s": 0.87
+    },
+    {
+     "t0": 46.48,
+     "t1": 46.78,
+     "frames": 10,
+     "model_thr_us_max": 130,
+     "out_thr_us": 0,
+     "erpm": 600,
+     "impact_before_s": 0.68,
+     "ai_seg_end_after_s": 0.3
+    },
+    {
+     "t0": 50.44,
+     "t1": 50.51,
+     "frames": 3,
+     "model_thr_us_max": 114,
+     "out_thr_us": 0,
+     "erpm": -120,
+     "impact_before_s": null,
+     "ai_seg_end_after_s": 0.37
+    },
+    {
+     "t0": 65.83,
+     "t1": 65.96,
+     "frames": 5,
+     "model_thr_us_max": 165,
+     "out_thr_us": 0,
+     "erpm": 1448,
+     "impact_before_s": 0.12,
+     "ai_seg_end_after_s": 0.5
+    }
+   ],
+   "tof_guard_logged": {
+    "exposure_min": 0.264,
+    "warn": {
+     "episodes": 11,
+     "episodes_per_min": 41.7,
+     "false_alarms": 4,
+     "fa_per_min": 15.2,
+     "warn_time_frac": 0.206,
+     "caught_0.3": 6,
+     "caught_0.15": 6,
+     "n_coll": 6,
+     "collisions": [
+      {
+       "t": 15.16,
+       "g": 3.4,
+       "v": 2.03,
+       "lead_s": 0.43,
+       "ttc_min_1s": 0.14
+      },
+      {
+       "t": 19.23,
+       "g": 7.8,
+       "v": 2.01,
+       "lead_s": 0.47,
+       "ttc_min_1s": 0.15
+      },
+      {
+       "t": 23.98,
+       "g": 8.1,
+       "v": 2.52,
+       "lead_s": 0.35,
+       "ttc_min_1s": 0.14
+      },
+      {
+       "t": 45.8,
+       "g": 8.4,
+       "v": 3.46,
+       "lead_s": 0.39,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 61.56,
+       "g": 8.4,
+       "v": 3.07,
+       "lead_s": 0.32,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 65.72,
+       "g": 8.2,
+       "v": 3.38,
+       "lead_s": 0.35,
+       "ttc_min_1s": 0.09
+      }
+     ]
+    },
+    "brake": {
+     "episodes": 7,
+     "episodes_per_min": 26.5,
+     "false_alarms": 0,
+     "fa_per_min": 0.0,
+     "warn_time_frac": 0.082,
+     "caught_0.3": 0,
+     "caught_0.15": 6,
+     "n_coll": 6,
+     "collisions": [
+      {
+       "t": 15.16,
+       "g": 3.4,
+       "v": 2.03,
+       "lead_s": 0.23,
+       "ttc_min_1s": 0.14
+      },
+      {
+       "t": 19.23,
+       "g": 7.8,
+       "v": 2.01,
+       "lead_s": 0.2,
+       "ttc_min_1s": 0.15
+      },
+      {
+       "t": 23.98,
+       "g": 8.1,
+       "v": 2.52,
+       "lead_s": 0.19,
+       "ttc_min_1s": 0.14
+      },
+      {
+       "t": 45.8,
+       "g": 8.4,
+       "v": 3.46,
+       "lead_s": 0.19,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 61.56,
+       "g": 8.4,
+       "v": 3.07,
+       "lead_s": 0.22,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 65.72,
+       "g": 8.2,
+       "v": 3.38,
+       "lead_s": 0.15,
+       "ttc_min_1s": 0.09
+      }
+     ]
+    },
+    "false_alarms_warn": [
+     {
+      "t": 42.55,
+      "dur_s": 0.2,
+      "ttc_min": 0.37,
+      "v": 3.43
+     },
+     {
+      "t": 43.28,
+      "dur_s": 0.23,
+      "ttc_min": 0.42,
+      "v": 3.79
+     },
+     {
+      "t": 62.53,
+      "dur_s": 0.23,
+      "ttc_min": 0.34,
+      "v": 3.58
+     },
+     {
+      "t": 63.13,
+      "dur_s": 0.27,
+      "ttc_min": 0.41,
+      "v": 3.68
+     }
+    ],
+    "raw_onsets_per_ai_forward_min": {
+     "ai_forward_min": 0.285,
+     "warn_onsets": 14,
+     "brake_onsets": 8,
+     "warn_per_min": 49.1,
+     "brake_per_min": 28.1,
+     "warn_time_frac_fwd": 0.232,
+     "applied_frames": 0,
+     "human_side_warn_onsets": 4
+    },
+    "floor_vs_ref_pct": {
+     "row9_pct": -13.9,
+     "row18_pct": -5.2,
+     "frames": 299
+    },
+    "lap_cost_selflimit_s": 1.02
+   },
+   "board_resets_t": [],
+   "hold_episodes": [],
+   "camera_gaps": [
+    {
+     "t": 26.55,
+     "gap_s": 0.2,
+     "ai": false
+    },
+    {
+     "t": 26.82,
+     "gap_s": 0.133,
+     "ai": false
+    },
+    {
+     "t": 59.5,
+     "gap_s": 0.133,
+     "ai": false
+    }
+   ],
+   "vehicle_gaps": [],
+   "holds_note": "none",
+   "latency_ms_p50_p99": [
+    31.9,
+    41.8
+   ],
+   "erpm_ai_p50_p90": [
+    4981,
+    7272
+   ]
+  },
+  "20261010-204208": {
+   "name": "ai_run_010",
+   "duration_s": 117.15,
+   "ai_time_s": 50.5,
+   "ai_distance_m": 114.3,
+   "ai_heading_laps": 3.88,
+   "ai_segments": [
+    {
+     "t0": 8.76,
+     "t1": 12.16,
+     "dur_s": 3.43,
+     "end": "takeover",
+     "steer_gain": [
+      1.2
+     ],
+     "throttle_gain": [
+      1.4
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 14.65,
+     "t1": 17.65,
+     "dur_s": 3.03,
+     "end": "takeover",
+     "steer_gain": [
+      1.2
+     ],
+     "throttle_gain": [
+      1.4
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 27.05,
+     "t1": 41.17,
+     "dur_s": 14.16,
+     "end": "takeover",
+     "steer_gain": [
+      1.2
+     ],
+     "throttle_gain": [
+      1.4
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 58.26,
+     "t1": 64.65,
+     "dur_s": 6.43,
+     "end": "board_reset",
+     "steer_gain": [
+      1.4
+     ],
+     "throttle_gain": [
+      1.25
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 64.75,
+     "t1": 88.43,
+     "dur_s": 23.72,
+     "end": "takeover",
+     "steer_gain": [
+      1.4
+     ],
+     "throttle_gain": [
+      1.25
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 6
+    }
+   ],
+   "takeovers": 4,
+   "takeover_reasons": [
+    "plain stop (LH, soft curtain contact)",
+    "after stopping impact GM_out 16.89",
+    "while moving after DE2 glance 40.59",
+    "pre-emptive before DE (3.1G under human at 88.58)"
+   ],
+   "impacts_ai": 8,
+   "impacts_ai_ge4G": 7,
+   "impacts_per_heading_lap": 2.06,
+   "impacts_per_100m": 7.0,
+   "impacts_per_ai_min": 9.5,
+   "impacts": [
+    {
+     "t": 16.89,
+     "g": 5.1,
+     "ax_g": -2.3,
+     "ay_g": -4.6,
+     "loc": "GM_out",
+     "v_before_ms": 2.5,
+     "erpm_before": -4992,
+     "t_stop_after_s": 0.32,
+     "erpm_at_+0.5s": -44,
+     "glance": false,
+     "ai_seg_end_after_s": 0.76,
+     "model_thr_after_us_median": 7,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 28.24,
+     "g": 11.3,
+     "ax_g": -8.0,
+     "ay_g": -8.0,
+     "loc": "DE",
+     "v_before_ms": 3.58,
+     "erpm_before": -7163,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -5296,
+     "glance": true,
+     "ai_seg_end_after_s": 12.93,
+     "model_thr_after_us_median": -251,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 29.98,
+     "g": 5.8,
+     "ax_g": -4.9,
+     "ay_g": -3.0,
+     "loc": "DE2",
+     "v_before_ms": 3.61,
+     "erpm_before": -7227,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4986,
+     "glance": true,
+     "ai_seg_end_after_s": 11.19,
+     "model_thr_after_us_median": -212,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 36.42,
+     "g": 3.0,
+     "ax_g": -2.2,
+     "ay_g": -2.1,
+     "loc": "GM_in",
+     "v_before_ms": 3.0,
+     "erpm_before": -5997,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4958,
+     "glance": true,
+     "ai_seg_end_after_s": 4.75,
+     "model_thr_after_us_median": -371,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 38.49,
+     "g": 5.7,
+     "ax_g": -3.7,
+     "ay_g": -4.4,
+     "loc": "DE",
+     "v_before_ms": 3.47,
+     "erpm_before": -6941,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4248,
+     "glance": true,
+     "ai_seg_end_after_s": 2.68,
+     "model_thr_after_us_median": -265,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 40.59,
+     "g": 5.7,
+     "ax_g": -4.9,
+     "ay_g": -3.0,
+     "loc": "DE2",
+     "v_before_ms": 3.66,
+     "erpm_before": -7326,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -5608,
+     "glance": true,
+     "ai_seg_end_after_s": 0.58,
+     "model_thr_after_us_median": -134,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 65.85,
+     "g": 9.3,
+     "ax_g": -5.5,
+     "ay_g": -7.5,
+     "loc": "DE",
+     "v_before_ms": 2.69,
+     "erpm_before": -5390,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4446,
+     "glance": true,
+     "ai_seg_end_after_s": 22.58,
+     "model_thr_after_us_median": -272,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 75.67,
+     "g": 8.1,
+     "ax_g": -3.2,
+     "ay_g": -7.4,
+     "loc": "DE",
+     "v_before_ms": 2.38,
+     "erpm_before": -4761,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -3781,
+     "glance": true,
+     "ai_seg_end_after_s": 12.76,
+     "model_thr_after_us_median": -287,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    }
+   ],
+   "laps_lapcounter": [
+    {
+     "n": 1,
+     "t_end": 40.631,
+     "time_s": 10.62,
+     "ai_only": false,
+     "human_s": 10.95,
+     "takeovers": 2,
+     "recoveries": 0,
+     "holds": 0,
+     "impacts": 6,
+     "first": true,
+     "clean": false,
+     "best": false,
+     "t_start": 30.01
+    },
+    {
+     "n": 2,
+     "t_end": 67.901,
+     "time_s": 27.27,
+     "ai_only": false,
+     "human_s": 7.45,
+     "takeovers": 2,
+     "recoveries": 0,
+     "holds": 0,
+     "impacts": 2,
+     "first": false,
+     "clean": false,
+     "best": false,
+     "t_start": 40.63
+    },
+    {
+     "n": 3,
+     "t_end": 78.051,
+     "time_s": 10.15,
+     "ai_only": true,
+     "human_s": 0.0,
+     "takeovers": 0,
+     "recoveries": 0,
+     "holds": 0,
+     "impacts": 1,
+     "first": false,
+     "clean": false,
+     "best": false,
+     "t_start": 67.9
+    }
+   ],
+   "lap_summary": {
+    "laps": 3,
+    "best_ai_s": null,
+    "median_ai_s": null,
+    "clean_laps": 0,
+    "ai_laps": 1,
+    "median_ai_all_s": 10.15,
+    "direction": "左回り"
+   },
+   "ai_driven_lap_windows": [
+    {
+     "lap": 1,
+     "t": [
+      30.01,
+      40.63
+     ],
+     "time_s": 10.62,
+     "ai_frac": 1.0,
+     "impacts": [
+      [
+       36.42,
+       3.0
+      ],
+      [
+       38.49,
+       5.7
+      ],
+      [
+       40.59,
+       5.7
+      ]
+     ],
+     "note": "LapCounter flags it first/mixed because its first-lap stats accumulate from the start of timing"
+    },
+    {
+     "lap": 3,
+     "t": [
+      67.9,
+      78.05
+     ],
+     "time_s": 10.15,
+     "ai_frac": 1.0,
+     "impacts": [
+      [
+       75.67,
+       8.1
+      ]
+     ],
+     "note": "LapCounter ai_only=True; includes a 0.2 s neutral hold (board reboot 72.64) and a 0.13 s camera gap"
+    }
+   ],
+   "clean_laps": 0,
+   "stuck_events_ai": [
+    {
+     "t": 11.85,
+     "dur_s": 0.34,
+     "end": "takeover"
+    },
+    {
+     "t": 17.21,
+     "dur_s": 0.47,
+     "end": "takeover"
+    }
+   ],
+   "recovery_v2": {
+    "episodes": 0,
+    "giveups": 0,
+    "assist_counts": {
+     "0": 3483
+    },
+    "segment_ends_detector": [
+     {
+      "log": "20261010-204208",
+      "name": "ai_run_010",
+      "seg_t0": 8.76,
+      "takeover_t": 12.19,
+      "seg_s": 3.43,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": 0,
+      "impact_t": null,
+      "stuck_from_t": 11.85,
+      "stuck_counted_s": 0.34,
+      "would_fire_t": 12.65,
+      "margin_s": 0.46,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 0.65,
+      "back_to_ai_after_s": 2.5
+     },
+     {
+      "log": "20261010-204208",
+      "name": "ai_run_010",
+      "seg_t0": 14.65,
+      "takeover_t": 17.69,
+      "seg_s": 3.03,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 0,
+      "impact_t": 16.89,
+      "impact_g": 5.1,
+      "v_before": 2.5,
+      "rebound_erpm_max": 0,
+      "stop_after_s": 0.32,
+      "takeover_after_impact_s": 0.8,
+      "impact_seen_erpm": -2031,
+      "stuck_from_t": 17.21,
+      "stuck_counted_s": 0.47,
+      "would_fire_t": 17.71,
+      "margin_s": 0.03,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 1.35,
+      "back_to_ai_after_s": 9.39
+     },
+     {
+      "log": "20261010-204208",
+      "name": "ai_run_010",
+      "seg_t0": 27.05,
+      "takeover_t": 41.2,
+      "seg_s": 14.16,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": -5704,
+      "impact_t": 40.59,
+      "impact_g": 5.7,
+      "v_before": 3.66,
+      "rebound_erpm_max": -5050,
+      "stop_after_s": null,
+      "takeover_after_impact_s": 0.61,
+      "impact_seen_erpm": -5211,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 1.19,
+      "back_to_ai_after_s": 17.09
+     },
+     {
+      "log": "20261010-204208",
+      "name": "ai_run_010",
+      "seg_t0": 64.75,
+      "takeover_t": 88.47,
+      "seg_s": 23.72,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": -2054,
+      "impact_t": null,
+      "stuck_from_t": null,
+      "stuck_counted_s": 0.0,
+      "would_fire_t": null,
+      "margin_s": null,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": null,
+      "back_to_ai_after_s": null
+     }
+    ]
+   },
+   "esc_assist_episodes": [],
+   "tof_guard_logged": {
+    "exposure_min": 0.682,
+    "warn": {
+     "episodes": 25,
+     "episodes_per_min": 36.7,
+     "false_alarms": 11,
+     "fa_per_min": 16.1,
+     "warn_time_frac": 0.226,
+     "caught_0.3": 8,
+     "caught_0.15": 8,
+     "n_coll": 8,
+     "collisions": [
+      {
+       "t": 16.89,
+       "g": 5.1,
+       "v": 2.5,
+       "lead_s": 0.4,
+       "ttc_min_1s": 0.16
+      },
+      {
+       "t": 28.24,
+       "g": 11.3,
+       "v": 3.58,
+       "lead_s": 0.46,
+       "ttc_min_1s": 0.07
+      },
+      {
+       "t": 29.98,
+       "g": 5.8,
+       "v": 3.61,
+       "lead_s": 0.47,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 36.42,
+       "g": 3.0,
+       "v": 3.0,
+       "lead_s": 0.48,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 38.49,
+       "g": 5.7,
+       "v": 3.47,
+       "lead_s": 0.52,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 40.59,
+       "g": 5.7,
+       "v": 3.66,
+       "lead_s": 0.46,
+       "ttc_min_1s": 0.12
+      },
+      {
+       "t": 65.85,
+       "g": 9.3,
+       "v": 2.69,
+       "lead_s": 1.03,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 75.67,
+       "g": 8.1,
+       "v": 2.38,
+       "lead_s": 0.89,
+       "ttc_min_1s": 0.11
+      }
+     ]
+    },
+    "brake": {
+     "episodes": 20,
+     "episodes_per_min": 29.3,
+     "false_alarms": 7,
+     "fa_per_min": 10.3,
+     "warn_time_frac": 0.122,
+     "caught_0.3": 4,
+     "caught_0.15": 8,
+     "n_coll": 8,
+     "collisions": [
+      {
+       "t": 16.89,
+       "g": 5.1,
+       "v": 2.5,
+       "lead_s": 0.37,
+       "ttc_min_1s": 0.16
+      },
+      {
+       "t": 28.24,
+       "g": 11.3,
+       "v": 3.58,
+       "lead_s": 0.3,
+       "ttc_min_1s": 0.07
+      },
+      {
+       "t": 29.98,
+       "g": 5.8,
+       "v": 3.61,
+       "lead_s": 0.24,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 36.42,
+       "g": 3.0,
+       "v": 3.0,
+       "lead_s": 0.15,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 38.49,
+       "g": 5.7,
+       "v": 3.47,
+       "lead_s": 0.25,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 40.59,
+       "g": 5.7,
+       "v": 3.66,
+       "lead_s": 0.22,
+       "ttc_min_1s": 0.12
+      },
+      {
+       "t": 65.85,
+       "g": 9.3,
+       "v": 2.69,
+       "lead_s": 0.83,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 75.67,
+       "g": 8.1,
+       "v": 2.38,
+       "lead_s": 0.73,
+       "ttc_min_1s": 0.11
+      }
+     ]
+    },
+    "false_alarms_warn": [
+     {
+      "t": 9.49,
+      "dur_s": 0.3,
+      "ttc_min": 0.29,
+      "v": 3.01
+     },
+     {
+      "t": 10.96,
+      "dur_s": 0.57,
+      "ttc_min": 0.15,
+      "v": 2.06
+     },
+     {
+      "t": 15.19,
+      "dur_s": 0.27,
+      "ttc_min": 0.17,
+      "v": 1.58
+     },
+     {
+      "t": 32.04,
+      "dur_s": 0.6,
+      "ttc_min": 0.21,
+      "v": 3.8
+     },
+     {
+      "t": 33.67,
+      "dur_s": 0.77,
+      "ttc_min": 0.15,
+      "v": 2.28
+     },
+     {
+      "t": 62.05,
+      "dur_s": 0.5,
+      "ttc_min": 0.13,
+      "v": 2.21
+     },
+     {
+      "t": 62.85,
+      "dur_s": 0.03,
+      "ttc_min": 0.43,
+      "v": 1.86
+     },
+     {
+      "t": 63.22,
+      "dur_s": 0.03,
+      "ttc_min": 0.44,
+      "v": 2.34
+     },
+     {
+      "t": 67.72,
+      "dur_s": 0.03,
+      "ttc_min": 0.49,
+      "v": 3.3
+     },
+     {
+      "t": 69.11,
+      "dur_s": 0.37,
+      "ttc_min": 0.46,
+      "v": 3.63
+     },
+     {
+      "t": 71.78,
+      "dur_s": 0.7,
+      "ttc_min": 0.18,
+      "v": 1.71
+     }
+    ],
+    "raw_onsets_per_ai_forward_min": {
+     "ai_forward_min": 0.811,
+     "warn_onsets": 39,
+     "brake_onsets": 26,
+     "warn_per_min": 48.1,
+     "brake_per_min": 32.1,
+     "warn_time_frac_fwd": 0.235,
+     "applied_frames": 0,
+     "human_side_warn_onsets": 10
+    },
+    "floor_vs_ref_pct": {
+     "row9_pct": -18.0,
+     "row18_pct": -7.1,
+     "frames": 640
+    },
+    "lap_cost_selflimit_s": 3.0
+   },
+   "board_resets_t": [
+    64.68,
+    73.0
+   ],
+   "hold_episodes": [
+    {
+     "t0": 72.81,
+     "t1": 72.98,
+     "frames": 6,
+     "select": true
+    }
+   ],
+   "camera_gaps": [
+    {
+     "t": 16.29,
+     "gap_s": 0.2,
+     "ai": true
+    },
+    {
+     "t": 36.04,
+     "gap_s": 0.2,
+     "ai": true
+    },
+    {
+     "t": 73.64,
+     "gap_s": 0.133,
+     "ai": true
+    }
+   ],
+   "vehicle_gaps": [
+    {
+     "t": 64.52,
+     "gap_s": 0.163
+    },
+    {
+     "t": 72.64,
+     "gap_s": 0.36
+    }
+   ],
+   "holds_note": "72.81-72.98 (6 frames) = 2nd board reboot (vehicle data gap 0.36 s); 1st reboot at 64.68 dropped CH3 select for 0.1 s; camera gaps on AI side 16.29 (0.20 s), 36.04 (0.20 s), 73.64 (0.13 s) -> unrecorded neutral holds",
+   "latency_ms_p50_p99": [
+    30.6,
+    39.8
+   ],
+   "erpm_ai_p50_p90": [
+    4640,
+    7010
+   ]
+  },
+  "20261010-204605": {
+   "name": "ai_run_101",
+   "duration_s": 100.55,
+   "ai_time_s": 25.3,
+   "ai_distance_m": 64.9,
+   "ai_heading_laps": 2.19,
+   "ai_segments": [
+    {
+     "t0": 9.53,
+     "t1": 12.72,
+     "dur_s": 3.23,
+     "end": "takeover",
+     "steer_gain": [
+      1.5
+     ],
+     "throttle_gain": [
+      1.0
+     ],
+     "lookahead": [
+      5
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 22.18,
+     "t1": 42.67,
+     "dur_s": 20.52,
+     "end": "takeover",
+     "steer_gain": [
+      1.5
+     ],
+     "throttle_gain": [
+      1.0
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    },
+    {
+     "t0": 51.5,
+     "t1": 53.1,
+     "dur_s": 1.63,
+     "end": "takeover",
+     "steer_gain": [
+      1.5
+     ],
+     "throttle_gain": [
+      1.0
+     ],
+     "lookahead": [
+      3
+     ],
+     "hold_frames": 0
+    }
+   ],
+   "takeovers": 3,
+   "takeover_reasons": [
+    "after stopping impact LH 12.51",
+    "after stopping impact LH 42.48",
+    "plain stop (GM entry, white PTFE sheet)"
+   ],
+   "impacts_ai": 7,
+   "impacts_ai_ge4G": 5,
+   "impacts_per_heading_lap": 3.2,
+   "impacts_per_100m": 10.8,
+   "impacts_per_ai_min": 16.6,
+   "impacts": [
+    {
+     "t": 12.51,
+     "g": 5.3,
+     "ax_g": -2.0,
+     "ay_g": -4.9,
+     "loc": "LH",
+     "v_before_ms": 1.96,
+     "erpm_before": -3916,
+     "t_stop_after_s": 0.07,
+     "erpm_at_+0.5s": 0,
+     "glance": false,
+     "ai_seg_end_after_s": 0.22,
+     "model_thr_after_us_median": -16,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 25.81,
+     "g": 5.6,
+     "ax_g": -3.3,
+     "ay_g": -4.5,
+     "loc": "DE",
+     "v_before_ms": 3.62,
+     "erpm_before": -7247,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -5726,
+     "glance": true,
+     "ai_seg_end_after_s": 16.86,
+     "model_thr_after_us_median": -222,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 27.58,
+     "g": 9.1,
+     "ax_g": -6.5,
+     "ay_g": -6.3,
+     "loc": "DE2",
+     "v_before_ms": 3.61,
+     "erpm_before": -7228,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -4487,
+     "glance": true,
+     "ai_seg_end_after_s": 15.09,
+     "model_thr_after_us_median": -179,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 32.08,
+     "g": 4.0,
+     "ax_g": 3.9,
+     "ay_g": -0.3,
+     "loc": "R1",
+     "v_before_ms": 2.36,
+     "erpm_before": -4726,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -5389,
+     "glance": true,
+     "ai_seg_end_after_s": 10.59,
+     "model_thr_after_us_median": -237,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 34.96,
+     "g": 6.3,
+     "ax_g": -4.8,
+     "ay_g": -4.1,
+     "loc": "DE",
+     "v_before_ms": 3.3,
+     "erpm_before": -6606,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -3805,
+     "glance": true,
+     "ai_seg_end_after_s": 7.71,
+     "model_thr_after_us_median": -191,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 37.07,
+     "g": 10.8,
+     "ax_g": -7.5,
+     "ay_g": -7.7,
+     "loc": "DE2",
+     "v_before_ms": 4.17,
+     "erpm_before": -8330,
+     "t_stop_after_s": null,
+     "erpm_at_+0.5s": -7738,
+     "glance": true,
+     "ai_seg_end_after_s": 5.6,
+     "model_thr_after_us_median": -321,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    },
+    {
+     "t": 42.48,
+     "g": 2.5,
+     "ax_g": 0.3,
+     "ay_g": -2.5,
+     "loc": "LH",
+     "v_before_ms": 1.81,
+     "erpm_before": -3621,
+     "t_stop_after_s": 0.04,
+     "erpm_at_+0.5s": 176,
+     "glance": false,
+     "ai_seg_end_after_s": 0.19,
+     "model_thr_after_us_median": -18,
+     "model_reverse_frames": 0,
+     "ttc_min_before": null
+    }
+   ],
+   "laps_lapcounter": [
+    {
+     "n": 1,
+     "t_end": 36.949,
+     "time_s": 9.34,
+     "ai_only": false,
+     "human_s": 5.66,
+     "takeovers": 1,
+     "recoveries": 0,
+     "holds": 0,
+     "impacts": 5,
+     "first": true,
+     "clean": false,
+     "best": false,
+     "t_start": 27.61
+    }
+   ],
+   "lap_summary": {
+    "laps": 1,
+    "best_ai_s": null,
+    "median_ai_s": null,
+    "clean_laps": 0,
+    "ai_laps": 0,
+    "median_ai_all_s": null,
+    "direction": "左回り"
+   },
+   "ai_driven_lap_windows": [
+    {
+     "lap": 1,
+     "t": [
+      27.61,
+      36.95
+     ],
+     "time_s": 9.34,
+     "ai_frac": 1.0,
+     "impacts": [
+      [
+       32.08,
+       4.0
+      ],
+      [
+       34.96,
+       6.3
+      ]
+     ],
+     "note": "LapCounter flags it first/mixed (accumulated stats); DE2 27.58 is 0.03 s before the lap start"
+    }
+   ],
+   "clean_laps": 0,
+   "stuck_events_ai": [
+    {
+     "t": 52.57,
+     "dur_s": 0.55,
+     "end": "takeover"
+    }
+   ],
+   "recovery_v2": {
+    "episodes": 0,
+    "giveups": 0,
+    "assist_counts": {
+     "0": 2981,
+     "1": 13
+    },
+    "segment_ends_detector": [
+     {
+      "log": "20261010-204605",
+      "name": "ai_run_101",
+      "seg_t0": 9.53,
+      "takeover_t": 12.76,
+      "seg_s": 3.23,
+      "armed": true,
+      "impact_path": true,
+      "need_s": 0.5,
+      "erpm_at_takeover": 187,
+      "impact_t": 12.51,
+      "impact_g": 5.3,
+      "v_before": 1.96,
+      "rebound_erpm_max": 209,
+      "stop_after_s": 0.07,
+      "takeover_after_impact_s": 0.25,
+      "impact_seen_erpm": -2327,
+      "stuck_from_t": 12.6,
+      "stuck_counted_s": 0.16,
+      "would_fire_t": 13.1,
+      "margin_s": 0.34,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 0.99,
+      "back_to_ai_after_s": 9.46
+     },
+     {
+      "log": "20261010-204605",
+      "name": "ai_run_101",
+      "seg_t0": 22.18,
+      "takeover_t": 42.7,
+      "seg_s": 20.52,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": -55,
+      "impact_t": 42.48,
+      "impact_g": 2.5,
+      "v_before": 1.81,
+      "rebound_erpm_max": 697,
+      "stop_after_s": 0.04,
+      "takeover_after_impact_s": 0.23,
+      "impact_seen_erpm": -489,
+      "stuck_from_t": 42.54,
+      "stuck_counted_s": 0.17,
+      "would_fire_t": 43.34,
+      "margin_s": 0.63,
+      "model_rev_req_frames_last0.5s": 0,
+      "esc_neutralised_frames_seg": 0,
+      "human_reverse_after_s": 0.06,
+      "back_to_ai_after_s": 8.83
+     },
+     {
+      "log": "20261010-204605",
+      "name": "ai_run_101",
+      "seg_t0": 51.5,
+      "takeover_t": 53.13,
+      "seg_s": 1.63,
+      "armed": true,
+      "impact_path": false,
+      "need_s": 0.8,
+      "erpm_at_takeover": 0,
+      "impact_t": null,
+      "stuck_from_t": 52.6,
+      "stuck_counted_s": 0.53,
+      "would_fire_t": 53.4,
+      "margin_s": 0.27,
+      "model_rev_req_frames_last0.5s": 13,
+      "esc_neutralised_frames_seg": 13,
+      "human_reverse_after_s": 1.37,
+      "back_to_ai_after_s": null
+     }
+    ]
+   },
+   "esc_assist_episodes": [
+    {
+     "t0": 52.7,
+     "t1": 53.1,
+     "frames": 13,
+     "model_thr_us_max": 93,
+     "out_thr_us": 0,
+     "erpm": 146,
+     "impact_before_s": null,
+     "ai_seg_end_after_s": 0.4
+    }
+   ],
+   "tof_guard_logged": {
+    "exposure_min": 0.309,
+    "warn": {
+     "episodes": 14,
+     "episodes_per_min": 45.3,
+     "false_alarms": 7,
+     "fa_per_min": 22.6,
+     "warn_time_frac": 0.397,
+     "caught_0.3": 6,
+     "caught_0.15": 6,
+     "n_coll": 7,
+     "collisions": [
+      {
+       "t": 12.51,
+       "g": 5.3,
+       "v": 1.96,
+       "lead_s": 0.48,
+       "ttc_min_1s": 0.15
+      },
+      {
+       "t": 25.81,
+       "g": 5.6,
+       "v": 3.62,
+       "lead_s": 0.79,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 27.58,
+       "g": 9.1,
+       "v": 3.61,
+       "lead_s": 2.56,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 32.08,
+       "g": 4.0,
+       "v": 2.36,
+       "lead_s": null,
+       "ttc_min_1s": 0.24
+      },
+      {
+       "t": 34.96,
+       "g": 6.3,
+       "v": 3.3,
+       "lead_s": 0.45,
+       "ttc_min_1s": 0.1
+      },
+      {
+       "t": 37.07,
+       "g": 10.8,
+       "v": 4.17,
+       "lead_s": 0.46,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 42.48,
+       "g": 2.5,
+       "v": 1.81,
+       "lead_s": 0.44,
+       "ttc_min_1s": 0.14
+      }
+     ]
+    },
+    "brake": {
+     "episodes": 12,
+     "episodes_per_min": 38.8,
+     "false_alarms": 5,
+     "fa_per_min": 16.2,
+     "warn_time_frac": 0.23,
+     "caught_0.3": 0,
+     "caught_0.15": 6,
+     "n_coll": 7,
+     "collisions": [
+      {
+       "t": 12.51,
+       "g": 5.3,
+       "v": 1.96,
+       "lead_s": 0.22,
+       "ttc_min_1s": 0.15
+      },
+      {
+       "t": 25.81,
+       "g": 5.6,
+       "v": 3.62,
+       "lead_s": 0.29,
+       "ttc_min_1s": 0.09
+      },
+      {
+       "t": 27.58,
+       "g": 9.1,
+       "v": 3.61,
+       "lead_s": 0.2,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 32.08,
+       "g": 4.0,
+       "v": 2.36,
+       "lead_s": null,
+       "ttc_min_1s": 0.24
+      },
+      {
+       "t": 34.96,
+       "g": 6.3,
+       "v": 3.3,
+       "lead_s": 0.21,
+       "ttc_min_1s": 0.1
+      },
+      {
+       "t": 37.07,
+       "g": 10.8,
+       "v": 4.17,
+       "lead_s": 0.23,
+       "ttc_min_1s": 0.08
+      },
+      {
+       "t": 42.48,
+       "g": 2.5,
+       "v": 1.81,
+       "lead_s": 0.21,
+       "ttc_min_1s": 0.14
+      }
+     ]
+    },
+    "false_alarms_warn": [
+     {
+      "t": 23.38,
+      "dur_s": 0.47,
+      "ttc_min": 0.1,
+      "v": 2.32
+     },
+     {
+      "t": 29.38,
+      "dur_s": 0.13,
+      "ttc_min": 0.27,
+      "v": 4.58
+     },
+     {
+      "t": 29.98,
+      "dur_s": 0.3,
+      "ttc_min": 0.22,
+      "v": 5.34
+     },
+     {
+      "t": 32.48,
+      "dur_s": 0.23,
+      "ttc_min": 0.35,
+      "v": 2.58
+     },
+     {
+      "t": 33.18,
+      "dur_s": 0.07,
+      "ttc_min": 0.41,
+      "v": 3.72
+     },
+     {
+      "t": 38.71,
+      "dur_s": 2.6,
+      "ttc_min": 0.14,
+      "v": 1.7
+     },
+     {
+      "t": 51.8,
+      "dur_s": 0.77,
+      "ttc_min": 0.23,
+      "v": 0.82
+     }
+    ],
+    "raw_onsets_per_ai_forward_min": {
+     "ai_forward_min": 0.394,
+     "warn_onsets": 28,
+     "brake_onsets": 18,
+     "warn_per_min": 71.1,
+     "brake_per_min": 45.7,
+     "warn_time_frac_fwd": 0.429,
+     "applied_frames": 0,
+     "human_side_warn_onsets": 14
+    },
+    "floor_vs_ref_pct": {
+     "row9_pct": -22.9,
+     "row18_pct": -8.4,
+     "frames": 254
+    },
+    "lap_cost_selflimit_s": 3.46
+   },
+   "board_resets_t": [],
+   "hold_episodes": [
+    {
+     "t0": 74.52,
+     "t1": 100.55,
+     "frames": 781,
+     "select": false
+    }
+   ],
+   "camera_gaps": [
+    {
+     "t": 33.04,
+     "gap_s": 0.133,
+     "ai": true
+    }
+   ],
+   "vehicle_gaps": [],
+   "holds_note": "74.52-100.55 on the human side after the transmitter signal was invalid (71.99) and vehicle data stopped (74.36) = end of session; camera gap on AI side 33.04 (0.13 s)",
+   "latency_ms_p50_p99": [
+    31.0,
+    41.1
+   ],
+   "erpm_ai_p50_p90": [
+    5265,
+    8225
+   ]
+  }
+ },
+ "pooled_new_runs": {
+  "ai_time_s": 99.0,
+  "ai_distance_m": 219.7,
+  "ai_heading_laps": 7.33,
+  "impacts_ai": 21,
+  "impacts_per_heading_lap": 2.86,
+  "impacts_per_heading_lap_95ci_poisson": [
+   1.77,
+   4.38
+  ],
+  "impacts_per_100m": 9.6,
+  "impacts_per_ai_min": 12.7,
+  "hotspots": {
+   "DE (back straight right partition)": 7,
+   "DE2 (after DE to SW)": 4,
+   "LH (black curtain)": 4,
+   "GM_in": 2,
+   "GM_out": 1,
+   "HS_P (parking-bay boards, new)": 2,
+   "R1": 1
+  },
+  "glancing_impacts_kept_driving": 13,
+  "stopping_impacts": 8,
+  "takeovers": 15,
+  "takeovers_per_ai_min": 9.1,
+  "takeover_kinds": {
+   "after_stopping_impact": 8,
+   "plain_stop_no_impact": 4,
+   "while_moving_after_glance": 1,
+   "pre_emptive_while_moving": 2
+  },
+  "lapcounter_laps": 5,
+  "lapcounter_ai_only_laps": 1,
+  "ai_driven_lap_windows": 3,
+  "clean_laps": 0,
+  "ai_lap_times_s": [
+   10.62,
+   10.15,
+   9.34
+  ],
+  "stuck_events_ai": 6,
+  "stuck_events_ended_by_takeover": 6,
+  "recovery_v2_episodes": 0,
+  "recovery_giveups": 0,
+  "recovery_stop_cases": 12,
+  "recovery_takeover_after_impact_s": [
+   0.23,
+   0.25,
+   0.4,
+   0.45,
+   0.53,
+   0.65,
+   0.8,
+   1.01
+  ],
+  "recovery_takeover_after_impact_median_s": 0.49,
+  "recovery_stuck_counted_at_takeover_s": [
+   0.0,
+   0.23,
+   0.0,
+   0.06,
+   0.0,
+   0.47,
+   0.16,
+   0.17,
+   0.51,
+   0.7,
+   0.34,
+   0.53
+  ],
+  "recovery_rebounding_at_takeover": 3,
+  "esc_assist_episodes": 6,
+  "esc_assist_frames": 39,
+  "tof_guard": {
+   "exposure_min": 1.255,
+   "warn_episodes_per_min": 39.8,
+   "brake_episodes_per_min": 31.1,
+   "false_alarms_warn": 22,
+   "false_alarms_warn_per_min": 17.5,
+   "false_alarms_brake_per_min": 9.6,
+   "false_alarms_near_miss_ttc_lt_0.25": 10,
+   "warn_time_frac_incl_pre_impact": 0.264,
+   "warn_time_frac_no_impact_within_1.5s": 0.183,
+   "caught_lead_ge_0.3s": "20/21",
+   "caught_brake_level_lead_ge_0.3s": "4/21",
+   "lead_median_s": 0.46,
+   "ttc_min_before_collisions_range_s": [
+    0.07,
+    0.24
+   ],
+   "missed": "20261010-204605 32.08 R1 4.0 G: only single-frame TTC 0.32/0.24 s at 31.55-31.61 (0.5 s before), then the car steered full right and the obstacle left the forward ToF view; side contact (lateral 3.9 g)",
+   "lap_cost_s_per_lap": {
+    "false_alarms_only_now": 0.26,
+    "false_alarms_only_recal_floor": 0.12,
+    "all_warnings_now": 1.02,
+    "all_warnings_recal_floor": 0.84
+   },
+   "impact_speed_if_applied": {
+    "v_actual_median_ms": 3.07,
+    "v_with_guard_median_ms": 1.96,
+    "energy_reduction_median": 0.65,
+    "below_1ms": "3/21",
+    "model": "self-limiting, 0.15 s delay, coast 1.0 / brake 2.8 m/s2"
+   },
+   "threshold_sweep": [
+    {
+     "rule": "logged: TTC<0.5 (now)",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.46,
+     "fa_per_min": 17.5,
+     "fa": 22,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.183,
+     "cost_selflimit_s_per_lap": 1.02
+    },
+    {
+     "rule": "TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.36,
+     "fa_per_min": 11.9,
+     "fa": 15,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.131,
+     "cost_selflimit_s_per_lap": 0.85
+    },
+    {
+     "rule": "TTC<0.3",
+     "caught_0.3": "3/21",
+     "caught_0.15": "19/21",
+     "lead_median_s": 0.22,
+     "fa_per_min": 9.5,
+     "fa": 12,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.098,
+     "cost_selflimit_s_per_lap": 0.58
+    },
+    {
+     "rule": "TTC<0.5 x2 frames",
+     "caught_0.3": "19/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.43,
+     "fa_per_min": 15.1,
+     "fa": 19,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.161,
+     "cost_selflimit_s_per_lap": 0.94
+    },
+    {
+     "rule": "TTC<0.4 x2 frames",
+     "caught_0.3": "14/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa_per_min": 11.1,
+     "fa": 14,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.117,
+     "cost_selflimit_s_per_lap": 0.77
+    },
+    {
+     "rule": "recal floor TTC<0.5",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.44,
+     "fa_per_min": 15.1,
+     "fa": 19,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.116,
+     "cost_selflimit_s_per_lap": 0.84
+    },
+    {
+     "rule": "recal floor TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.35,
+     "fa_per_min": 12.7,
+     "fa": 16,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.078,
+     "cost_selflimit_s_per_lap": 0.72
+    },
+    {
+     "rule": "recal floor TTC<0.4 x2",
+     "caught_0.3": "14/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa_per_min": 11.1,
+     "fa": 14,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.061,
+     "cost_selflimit_s_per_lap": 0.65
+    },
+    {
+     "rule": "recal floor TTC<0.35 x2",
+     "caught_0.3": "5/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.24,
+     "fa_per_min": 10.3,
+     "fa": 13,
+     "minutes": 1.26,
+     "warn_ratio_approx": 0.054,
+     "cost_selflimit_s_per_lap": 0.57
+    }
+   ],
+   "geometry_variants": [
+    {
+     "variant": "now | floor now | TTC<0.5",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.46,
+     "fa": 22,
+     "fa_per_min": 17.5,
+     "warn_time_frac": 0.183
+    },
+    {
+     "variant": "now | floor now | TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.36,
+     "fa": 15,
+     "fa_per_min": 11.9,
+     "warn_time_frac": 0.131
+    },
+    {
+     "variant": "band 0.12 m | floor now | TTC<0.5",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.46,
+     "fa": 20,
+     "fa_per_min": 15.9,
+     "warn_time_frac": 0.171
+    },
+    {
+     "variant": "band 0.12 m | floor now | TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.34,
+     "fa": 15,
+     "fa_per_min": 11.9,
+     "warn_time_frac": 0.124
+    },
+    {
+     "variant": "band 0.10 m | floor now | TTC<0.5",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.46,
+     "fa": 19,
+     "fa_per_min": 15.1,
+     "warn_time_frac": 0.163
+    },
+    {
+     "variant": "band 0.10 m | floor now | TTC<0.4",
+     "caught_0.3": "16/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.34,
+     "fa": 14,
+     "fa_per_min": 11.1,
+     "warn_time_frac": 0.119
+    },
+    {
+     "variant": "gyro arc only | floor now | TTC<0.5",
+     "caught_0.3": "18/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.45,
+     "fa": 20,
+     "fa_per_min": 15.9,
+     "warn_time_frac": 0.16
+    },
+    {
+     "variant": "gyro arc only | floor now | TTC<0.4",
+     "caught_0.3": "15/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa": 15,
+     "fa_per_min": 11.9,
+     "warn_time_frac": 0.12
+    },
+    {
+     "variant": "vert_min 6 | floor now | TTC<0.5",
+     "caught_0.3": "16/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.35,
+     "fa": 13,
+     "fa_per_min": 10.3,
+     "warn_time_frac": 0.133
+    },
+    {
+     "variant": "vert_min 6 | floor now | TTC<0.4",
+     "caught_0.3": "14/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.34,
+     "fa": 12,
+     "fa_per_min": 9.5,
+     "warn_time_frac": 0.114
+    },
+    {
+     "variant": "band 0.12 + gyro only | floor now | TTC<0.5",
+     "caught_0.3": "18/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.45,
+     "fa": 19,
+     "fa_per_min": 15.1,
+     "warn_time_frac": 0.146
+    },
+    {
+     "variant": "band 0.12 + gyro only | floor now | TTC<0.4",
+     "caught_0.3": "15/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa": 15,
+     "fa_per_min": 11.9,
+     "warn_time_frac": 0.112
+    },
+    {
+     "variant": "now | floor recal | TTC<0.5",
+     "caught_0.3": "20/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.44,
+     "fa": 19,
+     "fa_per_min": 15.1,
+     "warn_time_frac": 0.116
+    },
+    {
+     "variant": "now | floor recal | TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.35,
+     "fa": 16,
+     "fa_per_min": 12.7,
+     "warn_time_frac": 0.078
+    },
+    {
+     "variant": "band 0.12 m | floor recal | TTC<0.5",
+     "caught_0.3": "19/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.43,
+     "fa": 18,
+     "fa_per_min": 14.3,
+     "warn_time_frac": 0.107
+    },
+    {
+     "variant": "band 0.12 m | floor recal | TTC<0.4",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.34,
+     "fa": 16,
+     "fa_per_min": 12.7,
+     "warn_time_frac": 0.074
+    },
+    {
+     "variant": "band 0.10 m | floor recal | TTC<0.5",
+     "caught_0.3": "18/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.43,
+     "fa": 19,
+     "fa_per_min": 15.1,
+     "warn_time_frac": 0.098
+    },
+    {
+     "variant": "band 0.10 m | floor recal | TTC<0.4",
+     "caught_0.3": "16/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.34,
+     "fa": 14,
+     "fa_per_min": 11.1,
+     "warn_time_frac": 0.067
+    },
+    {
+     "variant": "gyro arc only | floor recal | TTC<0.5",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.38,
+     "fa": 20,
+     "fa_per_min": 15.9,
+     "warn_time_frac": 0.092
+    },
+    {
+     "variant": "gyro arc only | floor recal | TTC<0.4",
+     "caught_0.3": "15/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa": 16,
+     "fa_per_min": 12.7,
+     "warn_time_frac": 0.067
+    },
+    {
+     "variant": "vert_min 6 | floor recal | TTC<0.5",
+     "caught_0.3": "9/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.29,
+     "fa": 14,
+     "fa_per_min": 11.1,
+     "warn_time_frac": 0.067
+    },
+    {
+     "variant": "vert_min 6 | floor recal | TTC<0.4",
+     "caught_0.3": "8/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.29,
+     "fa": 12,
+     "fa_per_min": 9.5,
+     "warn_time_frac": 0.052
+    },
+    {
+     "variant": "band 0.12 + gyro only | floor recal | TTC<0.5",
+     "caught_0.3": "17/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.38,
+     "fa": 19,
+     "fa_per_min": 15.1,
+     "warn_time_frac": 0.082
+    },
+    {
+     "variant": "band 0.12 + gyro only | floor recal | TTC<0.4",
+     "caught_0.3": "15/21",
+     "caught_0.15": "20/21",
+     "lead_median_s": 0.33,
+     "fa": 15,
+     "fa_per_min": 11.9,
+     "warn_time_frac": 0.061
+    }
+   ],
+   "suggested": {
+    "first": "fix the ToF/camera mount and rebuild data/tof_floor_ref.npy",
+    "then_mode2": "T_WARN 0.4 / T_BRAKE 0.3 with a rebuilt floor: caught 17/21 (>=0.3 s), 20/21 (>=0.15 s), FA 12.7/min, warn time 7.8 %, est. cost 0.72 s/lap",
+    "not_helpful": "narrower path band, gyro-arc only, VERT_MIN 6 (detection drops more than false alarms)"
+   }
+  },
+  "board_resets": 2,
+  "hold_frames_ai_side": 6
+ },
+ "earlier_runs": {
+  "20261010-172910": {
+   "name": "ai_run_006",
+   "ai_time_s": 152.1,
+   "ai_heading_laps": 15.95,
+   "impacts_ai": 22,
+   "impacts_per_lap": 1.38,
+   "erpm_ai_p50_p90": [
+    5283,
+    6459
+   ],
+   "takeovers": 1,
+   "board_resets": 0
+  },
+  "20261010-173445": {
+   "name": "ai_run_007",
+   "ai_time_s": 236.0,
+   "ai_heading_laps": 22.64,
+   "impacts_ai": 28,
+   "impacts_per_lap": 1.24,
+   "erpm_ai_p50_p90": [
+    5029,
+    6139
+   ],
+   "takeovers": 11,
+   "board_resets": 0,
+   "note": "no recovery; AI held reverse/brake without neutral; v2 detector replay fires on 5 of 6 stuck events before the takeover",
+   "lapcounter": {
+    "laps": 21,
+    "best_ai_s": 9.68,
+    "median_ai_s": 10.11,
+    "clean_laps": 5,
+    "ai_laps": 11,
+    "median_ai_all_s": 10.11,
+    "direction": "左回り"
+   },
+   "stuck_events_ai": [
+    {
+     "t": 35.4,
+     "dur_s": 1.21,
+     "end": "takeover"
+    },
+    {
+     "t": 58.83,
+     "dur_s": 1.69,
+     "end": "takeover"
+    },
+    {
+     "t": 94.89,
+     "dur_s": 2.21,
+     "end": "takeover"
+    },
+    {
+     "t": 143.69,
+     "dur_s": 1.23,
+     "end": "takeover"
+    },
+    {
+     "t": 244.82,
+     "dur_s": 1.87,
+     "end": "takeover"
+    },
+    {
+     "t": 271.23,
+     "dur_s": 0.37,
+     "end": "takeover"
+    }
+   ]
+  },
+  "20261010-181504": {
+   "name": "ai_run_008",
+   "ai_time_s": 80.0,
+   "ai_heading_laps": 5.7,
+   "impacts_ai": 8,
+   "impacts_per_lap": 1.4,
+   "erpm_ai_p50_p90": [
+    4847,
+    6011
+   ],
+   "takeovers": 7,
+   "board_resets": 12,
+   "recovery_v1": {
+    "episodes": 4,
+    "reversed": 0,
+    "giveups": 1,
+    "detail": "26.31 and 29.81: +180us reverse, eRPM stayed 0, give-up 33.27; 65.88 and 81.17 ended by takeover within 0.1-0.5 s"
+   },
+   "lapcounter": {
+    "laps": 4,
+    "best_ai_s": null,
+    "median_ai_s": null,
+    "clean_laps": 0,
+    "ai_laps": 0,
+    "median_ai_all_s": null,
+    "direction": "左回り"
+   }
+  }
+ },
+ "recovery_detector_variants": {
+  "20261010-203924": {
+   "v2 now (impact 0.5 s / plain 0.8 s)": [],
+   "bounce counts (0.5 / 0.8)": [
+    {
+     "t": 46.41,
+     "seg_end": 46.78,
+     "before_takeover_s": 0.37,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 66.33,
+     "seg_end": 66.33,
+     "before_takeover_s": 0.0,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.4 / 0.6)": [
+    {
+     "t": 46.31,
+     "seg_end": 46.78,
+     "before_takeover_s": 0.47,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 54.57,
+     "seg_end": 54.61,
+     "before_takeover_s": 0.03,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 66.23,
+     "seg_end": 66.33,
+     "before_takeover_s": 0.1,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.3 / 0.5)": [
+    {
+     "t": 15.59,
+     "seg_end": 15.66,
+     "before_takeover_s": 0.07,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 46.21,
+     "seg_end": 46.78,
+     "before_takeover_s": 0.57,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 54.47,
+     "seg_end": 54.61,
+     "before_takeover_s": 0.13,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 66.13,
+     "seg_end": 66.33,
+     "before_takeover_s": 0.2,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "no bounce (0.3 / 0.5)": [
+    {
+     "t": 54.47,
+     "seg_end": 54.61,
+     "before_takeover_s": 0.13,
+     "ai_moved_forward_within_1s": false
+    }
+   ]
+  },
+  "20261010-204208": {
+   "v2 now (impact 0.5 s / plain 0.8 s)": [],
+   "bounce counts (0.5 / 0.8)": [],
+   "bounce counts (0.4 / 0.6)": [
+    {
+     "t": 17.65,
+     "seg_end": 17.65,
+     "before_takeover_s": 0.0,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.3 / 0.5)": [
+    {
+     "t": 17.55,
+     "seg_end": 17.65,
+     "before_takeover_s": 0.1,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "no bounce (0.3 / 0.5)": [
+    {
+     "t": 17.55,
+     "seg_end": 17.65,
+     "before_takeover_s": 0.1,
+     "ai_moved_forward_within_1s": false
+    }
+   ]
+  },
+  "20261010-204605": {
+   "v2 now (impact 0.5 s / plain 0.8 s)": [],
+   "bounce counts (0.5 / 0.8)": [],
+   "bounce counts (0.4 / 0.6)": [],
+   "bounce counts (0.3 / 0.5)": [],
+   "no bounce (0.3 / 0.5)": []
+  },
+  "20261010-172910": {
+   "v2 now (impact 0.5 s / plain 0.8 s)": [],
+   "bounce counts (0.5 / 0.8)": [],
+   "bounce counts (0.4 / 0.6)": [],
+   "bounce counts (0.3 / 0.5)": [],
+   "no bounce (0.3 / 0.5)": []
+  },
+  "20261010-173445": {
+   "v2 now (impact 0.5 s / plain 0.8 s)": [
+    {
+     "t": 35.94,
+     "seg_end": 36.57,
+     "before_takeover_s": 0.63,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 59.39,
+     "seg_end": 60.49,
+     "before_takeover_s": 1.1,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 95.73,
+     "seg_end": 97.07,
+     "before_takeover_s": 1.33,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 144.25,
+     "seg_end": 144.89,
+     "before_takeover_s": 0.63,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 245.35,
+     "seg_end": 246.65,
+     "before_takeover_s": 1.3,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.5 / 0.8)": [
+    {
+     "t": 35.78,
+     "seg_end": 36.57,
+     "before_takeover_s": 0.8,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 58.86,
+     "seg_end": 60.49,
+     "before_takeover_s": 1.63,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 93.7,
+     "seg_end": 97.07,
+     "before_takeover_s": 3.36,
+     "ai_moved_forward_within_1s": true
+    },
+    {
+     "t": 143.82,
+     "seg_end": 144.89,
+     "before_takeover_s": 1.07,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 244.89,
+     "seg_end": 246.65,
+     "before_takeover_s": 1.77,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.4 / 0.6)": [
+    {
+     "t": 35.68,
+     "seg_end": 36.57,
+     "before_takeover_s": 0.9,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 58.76,
+     "seg_end": 60.49,
+     "before_takeover_s": 1.73,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 93.6,
+     "seg_end": 97.07,
+     "before_takeover_s": 3.46,
+     "ai_moved_forward_within_1s": true
+    },
+    {
+     "t": 143.72,
+     "seg_end": 144.89,
+     "before_takeover_s": 1.17,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 244.79,
+     "seg_end": 246.65,
+     "before_takeover_s": 1.86,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "bounce counts (0.3 / 0.5)": [
+    {
+     "t": 35.58,
+     "seg_end": 36.57,
+     "before_takeover_s": 1.0,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 58.66,
+     "seg_end": 60.49,
+     "before_takeover_s": 1.83,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 93.5,
+     "seg_end": 97.07,
+     "before_takeover_s": 3.56,
+     "ai_moved_forward_within_1s": true
+    },
+    {
+     "t": 97.07,
+     "seg_end": 97.07,
+     "before_takeover_s": 0.0,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 143.62,
+     "seg_end": 144.89,
+     "before_takeover_s": 1.27,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 158.17,
+     "seg_end": 158.17,
+     "before_takeover_s": 0.0,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 244.69,
+     "seg_end": 246.65,
+     "before_takeover_s": 1.96,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 271.53,
+     "seg_end": 271.56,
+     "before_takeover_s": 0.03,
+     "ai_moved_forward_within_1s": false
+    }
+   ],
+   "no bounce (0.3 / 0.5)": [
+    {
+     "t": 35.74,
+     "seg_end": 36.57,
+     "before_takeover_s": 0.83,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 59.19,
+     "seg_end": 60.49,
+     "before_takeover_s": 1.3,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 95.43,
+     "seg_end": 97.07,
+     "before_takeover_s": 1.63,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 144.05,
+     "seg_end": 144.89,
+     "before_takeover_s": 0.83,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 245.15,
+     "seg_end": 246.65,
+     "before_takeover_s": 1.5,
+     "ai_moved_forward_within_1s": false
+    },
+    {
+     "t": 271.56,
+     "seg_end": 271.56,
+     "before_takeover_s": 0.0,
+     "ai_moved_forward_within_1s": false
+    }
+   ]
+  }
+ },
+ "params_effects": [
+  {
+   "ai_s": 15.6,
+   "dist_m": 31.0,
+   "heading_laps": 1.11,
+   "impacts": 3,
+   "impacts_per_lap": 2.71,
+   "impacts_per_100m": 9.66,
+   "steer_flips_per_s": 2.63,
+   "steer_limit": 0.088,
+   "steer_absdev_med": 97.5,
+   "pred_jitter_us": 11.0,
+   "thr_out_med": -197,
+   "thr_out_p10": -258,
+   "raw_thr_med": -146,
+   "erpm_p50": 6442,
+   "erpm_p90": 7524,
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "steer_gain": 1.7,
+   "throttle_gain": 1.35,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 7.6,
+   "dist_m": 9.5,
+   "heading_laps": 0.15,
+   "impacts": 3,
+   "impacts_per_lap": null,
+   "impacts_per_100m": 31.62,
+   "steer_flips_per_s": 4.1,
+   "steer_limit": 0.269,
+   "steer_absdev_med": 209.2,
+   "pred_jitter_us": 31.6,
+   "thr_out_med": -80,
+   "thr_out_p10": -200,
+   "raw_thr_med": -59,
+   "erpm_p50": 2918,
+   "erpm_p90": 4734,
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "steer_gain": 1.7,
+   "throttle_gain": 1.35,
+   "lookahead": 10
+  },
+  {
+   "ai_s": 20.4,
+   "dist_m": 50.7,
+   "heading_laps": 1.43,
+   "impacts": 6,
+   "impacts_per_lap": 4.19,
+   "impacts_per_100m": 11.84,
+   "steer_flips_per_s": 1.52,
+   "steer_limit": 0.112,
+   "steer_absdev_med": 105.9,
+   "pred_jitter_us": 12.4,
+   "thr_out_med": -199,
+   "thr_out_p10": -338,
+   "raw_thr_med": -142,
+   "erpm_p50": 5580,
+   "erpm_p90": 7222,
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "steer_gain": 1.2,
+   "throttle_gain": 1.4,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 29.9,
+   "dist_m": 63.6,
+   "heading_laps": 2.49,
+   "impacts": 2,
+   "impacts_per_lap": 0.8,
+   "impacts_per_100m": 3.14,
+   "steer_flips_per_s": 2.31,
+   "steer_limit": 0.101,
+   "steer_absdev_med": 73.3,
+   "pred_jitter_us": 12.8,
+   "thr_out_med": -319,
+   "thr_out_p10": -437,
+   "raw_thr_med": -256,
+   "erpm_p50": 3994,
+   "erpm_p90": 6629,
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "steer_gain": 1.4,
+   "throttle_gain": 1.25,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 22.1,
+   "dist_m": 60.1,
+   "heading_laps": 1.85,
+   "impacts": 6,
+   "impacts_per_lap": 3.25,
+   "impacts_per_100m": 9.99,
+   "steer_flips_per_s": 1.9,
+   "steer_limit": 0.12,
+   "steer_absdev_med": 128.3,
+   "pred_jitter_us": 16.0,
+   "thr_out_med": -190,
+   "thr_out_p10": -304,
+   "raw_thr_med": -190,
+   "erpm_p50": 5440,
+   "erpm_p90": 8361,
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "steer_gain": 1.5,
+   "throttle_gain": 1.0,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 3.2,
+   "dist_m": 4.8,
+   "heading_laps": 0.34,
+   "impacts": 1,
+   "impacts_per_lap": 2.96,
+   "impacts_per_100m": null,
+   "steer_flips_per_s": 2.48,
+   "steer_limit": 0.031,
+   "steer_absdev_med": 150.3,
+   "pred_jitter_us": 12.5,
+   "thr_out_med": -74,
+   "thr_out_p10": -165,
+   "raw_thr_med": -74,
+   "erpm_p50": 3909,
+   "erpm_p90": 5072,
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "steer_gain": 1.5,
+   "throttle_gain": 1.0,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 7.7,
+   "dist_m": 19.8,
+   "heading_laps": 0.93,
+   "impacts": 0,
+   "impacts_per_lap": 0.0,
+   "impacts_per_100m": 0.0,
+   "steer_flips_per_s": 1.04,
+   "steer_limit": 0.009,
+   "steer_absdev_med": 94.2,
+   "pred_jitter_us": 10.4,
+   "thr_out_med": -118,
+   "thr_out_p10": -194,
+   "raw_thr_med": -66,
+   "erpm_p50": 4981,
+   "erpm_p90": 6489,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.25,
+   "throttle_gain": 1.8,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 9.8,
+   "dist_m": 26.6,
+   "heading_laps": 0.63,
+   "impacts": 1,
+   "impacts_per_lap": 1.6,
+   "impacts_per_100m": 3.76,
+   "steer_flips_per_s": 1.43,
+   "steer_limit": 0.08,
+   "steer_absdev_med": 125.3,
+   "pred_jitter_us": 17.0,
+   "thr_out_med": -112,
+   "thr_out_p10": -264,
+   "raw_thr_med": -56,
+   "erpm_p50": 5699,
+   "erpm_p90": 7300,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.25,
+   "throttle_gain": 2.0,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 1.6,
+   "dist_m": 4.6,
+   "heading_laps": 0.32,
+   "impacts": 0,
+   "impacts_per_lap": 0.0,
+   "impacts_per_100m": null,
+   "steer_flips_per_s": 0.0,
+   "steer_limit": 0.0,
+   "steer_absdev_med": 73.6,
+   "pred_jitter_us": 7.8,
+   "thr_out_med": -173,
+   "thr_out_p10": -184,
+   "raw_thr_med": -144,
+   "erpm_p50": 5753,
+   "erpm_p90": 5823,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.45,
+   "throttle_gain": 1.2,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 14.8,
+   "dist_m": 36.8,
+   "heading_laps": 1.53,
+   "impacts": 1,
+   "impacts_per_lap": 0.65,
+   "impacts_per_100m": 2.71,
+   "steer_flips_per_s": 2.23,
+   "steer_limit": 0.079,
+   "steer_absdev_med": 86.1,
+   "pred_jitter_us": 13.6,
+   "thr_out_med": -144,
+   "thr_out_p10": -198,
+   "raw_thr_med": -103,
+   "erpm_p50": 5136,
+   "erpm_p90": 6435,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.45,
+   "throttle_gain": 1.4,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 11.5,
+   "dist_m": 28.0,
+   "heading_laps": 1.31,
+   "impacts": 0,
+   "impacts_per_lap": 0.0,
+   "impacts_per_100m": 0.0,
+   "steer_flips_per_s": 0.87,
+   "steer_limit": 0.08,
+   "steer_absdev_med": 111.9,
+   "pred_jitter_us": 13.2,
+   "thr_out_med": -131,
+   "thr_out_p10": -178,
+   "raw_thr_med": -82,
+   "erpm_p50": 4885,
+   "erpm_p90": 5807,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.45,
+   "throttle_gain": 1.6,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 14.6,
+   "dist_m": 35.7,
+   "heading_laps": 1.47,
+   "impacts": 2,
+   "impacts_per_lap": 1.36,
+   "impacts_per_100m": 5.59,
+   "steer_flips_per_s": 1.58,
+   "steer_limit": 0.151,
+   "steer_absdev_med": 118.8,
+   "pred_jitter_us": 15.6,
+   "thr_out_med": -135,
+   "thr_out_p10": -223,
+   "raw_thr_med": -75,
+   "erpm_p50": 4842,
+   "erpm_p90": 6290,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.45,
+   "throttle_gain": 1.8,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 58.6,
+   "dist_m": 164.9,
+   "heading_laps": 6.47,
+   "impacts": 13,
+   "impacts_per_lap": 2.01,
+   "impacts_per_100m": 7.88,
+   "steer_flips_per_s": 1.91,
+   "steer_limit": 0.165,
+   "steer_absdev_med": 106.4,
+   "pred_jitter_us": 14.9,
+   "thr_out_med": -106,
+   "thr_out_p10": -201,
+   "raw_thr_med": -53,
+   "erpm_p50": 5763,
+   "erpm_p90": 6688,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.45,
+   "throttle_gain": 2.0,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 28.5,
+   "dist_m": 67.3,
+   "heading_laps": 2.99,
+   "impacts": 5,
+   "impacts_per_lap": 1.67,
+   "impacts_per_100m": 7.43,
+   "steer_flips_per_s": 2.04,
+   "steer_limit": 0.124,
+   "steer_absdev_med": 114.6,
+   "pred_jitter_us": 11.8,
+   "thr_out_med": -142,
+   "thr_out_p10": -195,
+   "raw_thr_med": -119,
+   "erpm_p50": 4969,
+   "erpm_p90": 5986,
+   "log": "20261010-172910",
+   "name": "ai_run_006",
+   "steer_gain": 1.8,
+   "throttle_gain": 1.2,
+   "lookahead": 5
+  },
+  {
+   "ai_s": 42.7,
+   "dist_m": 93.2,
+   "heading_laps": 4.36,
+   "impacts": 7,
+   "impacts_per_lap": 1.61,
+   "impacts_per_100m": 7.51,
+   "steer_flips_per_s": 1.29,
+   "steer_limit": 0.002,
+   "steer_absdev_med": 71.0,
+   "pred_jitter_us": 9.0,
+   "thr_out_med": -142,
+   "thr_out_p10": -188,
+   "raw_thr_med": -142,
+   "erpm_p50": 4912,
+   "erpm_p90": 5552,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.0,
+   "throttle_gain": 1.0,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 1.6,
+   "dist_m": 4.2,
+   "heading_laps": 0.4,
+   "impacts": 1,
+   "impacts_per_lap": 2.49,
+   "impacts_per_100m": null,
+   "steer_flips_per_s": 0.61,
+   "steer_limit": 0.0,
+   "steer_absdev_med": 253.9,
+   "pred_jitter_us": 9.8,
+   "thr_out_med": -256,
+   "thr_out_p10": -306,
+   "raw_thr_med": -171,
+   "erpm_p50": 4867,
+   "erpm_p90": 6228,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.0,
+   "throttle_gain": 1.5,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 50.8,
+   "dist_m": 119.0,
+   "heading_laps": 5.03,
+   "impacts": 5,
+   "impacts_per_lap": 0.99,
+   "impacts_per_100m": 4.2,
+   "steer_flips_per_s": 1.42,
+   "steer_limit": 0.177,
+   "steer_absdev_med": 120.6,
+   "pred_jitter_us": 10.5,
+   "thr_out_med": -118,
+   "thr_out_p10": -218,
+   "raw_thr_med": -59,
+   "erpm_p50": 5126,
+   "erpm_p90": 6273,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.4,
+   "throttle_gain": 2.0,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 1.7,
+   "dist_m": 3.8,
+   "heading_laps": 0.11,
+   "impacts": 0,
+   "impacts_per_lap": null,
+   "impacts_per_100m": null,
+   "steer_flips_per_s": 1.18,
+   "steer_limit": 0.0,
+   "steer_absdev_med": 80.8,
+   "pred_jitter_us": 11.4,
+   "thr_out_med": -84,
+   "thr_out_p10": -111,
+   "raw_thr_med": -58,
+   "erpm_p50": 4582,
+   "erpm_p90": 5014,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.6,
+   "throttle_gain": 1.45,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 2.2,
+   "dist_m": 4.9,
+   "heading_laps": 0.1,
+   "impacts": 0,
+   "impacts_per_lap": null,
+   "impacts_per_100m": null,
+   "steer_flips_per_s": 1.36,
+   "steer_limit": 0.238,
+   "steer_absdev_med": 443.0,
+   "pred_jitter_us": 12.3,
+   "thr_out_med": -144,
+   "thr_out_p10": -224,
+   "raw_thr_med": -96,
+   "erpm_p50": 4386,
+   "erpm_p90": 5432,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.6,
+   "throttle_gain": 1.5,
+   "lookahead": 3
+  },
+  {
+   "ai_s": 133.2,
+   "dist_m": 311.6,
+   "heading_laps": 12.56,
+   "impacts": 15,
+   "impacts_per_lap": 1.19,
+   "impacts_per_100m": 4.81,
+   "steer_flips_per_s": 1.51,
+   "steer_limit": 0.181,
+   "steer_absdev_med": 125.3,
+   "pred_jitter_us": 12.0,
+   "thr_out_med": -125,
+   "thr_out_p10": -232,
+   "raw_thr_med": -63,
+   "erpm_p50": 5051,
+   "erpm_p90": 6211,
+   "log": "20261010-173445",
+   "name": "ai_run_007",
+   "steer_gain": 1.6,
+   "throttle_gain": 2.0,
+   "lookahead": 3
+  }
+ ],
+ "sensor_geometry": {
+  "method": "camera: rows of the own blue bumper at the image bottom (median of 150 frames); ToF: straight fast driving, rows 9 / 18, centre columns 20-34, median depth vs data/tof_floor_ref.npy",
+  "per_log": {
+   "20261010-135449": {
+    "desc": "",
+    "bumper_rows_median": 6.0,
+    "bumper_rows_iqr": [
+     6.0,
+     7.0
+    ],
+    "tof_row9_pct": -4.0,
+    "tof_row18_pct": -0.8,
+    "tof_frames": 693
+   },
+   "20261010-144028": {
+    "desc": "",
+    "bumper_rows_median": 6.0,
+    "bumper_rows_iqr": [
+     6.0,
+     7.0
+    ],
+    "tof_row9_pct": -6.6,
+    "tof_row18_pct": -1.9,
+    "tof_frames": 371
+   },
+   "20261010-150424": {
+    "desc": "",
+    "bumper_rows_median": 6.0,
+    "bumper_rows_iqr": [
+     6.0,
+     7.0
+    ],
+    "tof_row9_pct": -7.0,
+    "tof_row18_pct": -2.2,
+    "tof_frames": 805
+   },
+   "20261010-152405": {
+    "desc": "",
+    "bumper_rows_median": 7.0,
+    "bumper_rows_iqr": [
+     6.0,
+     8.0
+    ],
+    "tof_row9_pct": -8.0,
+    "tof_row18_pct": -2.5,
+    "tof_frames": 960
+   },
+   "20261010-152707": {
+    "desc": "",
+    "bumper_rows_median": 8.0,
+    "bumper_rows_iqr": [
+     7.0,
+     8.0
+    ],
+    "tof_row9_pct": -7.1,
+    "tof_row18_pct": -2.1,
+    "tof_frames": 775
+   },
+   "20261010-155820": {
+    "desc": "AI走行トライ(Claudeから開始)",
+    "bumper_rows_median": 7.0,
+    "bumper_rows_iqr": [
+     7.0,
+     8.0
+    ],
+    "tof_row9_pct": -8.2,
+    "tof_row18_pct": -2.6,
+    "tof_frames": 592
+   },
+   "20261010-160306": {
+    "desc": "run_001",
+    "bumper_rows_median": 7.0,
+    "bumper_rows_iqr": [
+     3.25,
+     8.0
+    ],
+    "tof_row9_pct": -0.0,
+    "tof_row18_pct": 0.1,
+    "tof_frames": 455
+   },
+   "20261010-163247": {
+    "desc": "run002",
+    "bumper_rows_median": 8.0,
+    "bumper_rows_iqr": [
+     0.0,
+     11.0
+    ],
+    "tof_row9_pct": -17.2,
+    "tof_row18_pct": -5.5,
+    "tof_frames": 389
+   },
+   "20261010-171639": {
+    "desc": "ai_run_003",
+    "bumper_rows_median": 3.5,
+    "bumper_rows_iqr": [
+     3.0,
+     4.0
+    ],
+    "tof_row9_pct": -8.1,
+    "tof_row18_pct": -1.8,
+    "tof_frames": 784
+   },
+   "20261010-172505": {
+    "desc": "ai_run_004",
+    "bumper_rows_median": 3.0,
+    "bumper_rows_iqr": [
+     2.0,
+     4.0
+    ],
+    "tof_row9_pct": -7.4,
+    "tof_row18_pct": -1.9,
+    "tof_frames": 187
+   },
+   "20261010-172910": {
+    "desc": "ai_run_006",
+    "bumper_rows_median": 3.0,
+    "bumper_rows_iqr": [
+     2.0,
+     4.0
+    ],
+    "tof_row9_pct": -6.2,
+    "tof_row18_pct": -1.2,
+    "tof_frames": 1271
+   },
+   "20261010-173445": {
+    "desc": "ai_run_007",
+    "bumper_rows_median": 3.0,
+    "bumper_rows_iqr": [
+     2.0,
+     3.0
+    ],
+    "tof_row9_pct": -5.1,
+    "tof_row18_pct": -0.9,
+    "tof_frames": 2389
+   },
+   "20261010-181504": {
+    "desc": "ai_run_008",
+    "bumper_rows_median": 2.0,
+    "bumper_rows_iqr": [
+     0.0,
+     3.0
+    ],
+    "tof_row9_pct": -6.6,
+    "tof_row18_pct": -1.2,
+    "tof_frames": 1083
+   },
+   "20261010-192141": {
+    "desc": "",
+    "bumper_rows_median": 2.0,
+    "bumper_rows_iqr": [
+     2.0,
+     3.0
+    ],
+    "tof_row9_pct": -3.4,
+    "tof_row18_pct": -0.1,
+    "tof_frames": 1397
+   },
+   "20261010-192654": {
+    "desc": "",
+    "bumper_rows_median": 2.0,
+    "bumper_rows_iqr": [
+     2.0,
+     3.0
+    ],
+    "tof_row9_pct": -3.9,
+    "tof_row18_pct": -0.2,
+    "tof_frames": 1000
+   },
+   "20261010-193130": {
+    "desc": "",
+    "bumper_rows_median": 2.0,
+    "bumper_rows_iqr": [
+     2.0,
+     3.0
+    ],
+    "tof_row9_pct": -3.1,
+    "tof_row18_pct": -0.2,
+    "tof_frames": 1006
+   },
+   "20261010-193638": {
+    "desc": "綺麗な走行データ",
+    "bumper_rows_median": 3.0,
+    "bumper_rows_iqr": [
+     2.0,
+     4.0
+    ],
+    "tof_row9_pct": -2.2,
+    "tof_row18_pct": 0.1,
+    "tof_frames": 618
+   },
+   "20261010-200916": {
+    "desc": "綺麗な走行データ",
+    "bumper_rows_median": 6.0,
+    "bumper_rows_iqr": [
+     5.0,
+     7.0
+    ],
+    "tof_row9_pct": -8.1,
+    "tof_row18_pct": -2.0,
+    "tof_frames": 1781
+   },
+   "20261010-201626": {
+    "desc": "綺麗な走行データ",
+    "bumper_rows_median": 8.0,
+    "bumper_rows_iqr": [
+     7.25,
+     9.0
+    ],
+    "tof_row9_pct": -13.4,
+    "tof_row18_pct": -4.9,
+    "tof_frames": 1647
+   },
+   "20261010-202633": {
+    "desc": "綺麗な走行データ",
+    "bumper_rows_median": 7.0,
+    "bumper_rows_iqr": [
+     7.0,
+     8.0
+    ],
+    "tof_row9_pct": -13.1,
+    "tof_row18_pct": -4.4,
+    "tof_frames": 647
+   },
+   "20261010-203924": {
+    "desc": "ai_run_009",
+    "bumper_rows_median": 9.0,
+    "bumper_rows_iqr": [
+     8.0,
+     10.0
+    ],
+    "tof_row9_pct": -13.9,
+    "tof_row18_pct": -5.2,
+    "tof_frames": 299
+   },
+   "20261010-204208": {
+    "desc": "ai_run_010",
+    "bumper_rows_median": 10.0,
+    "bumper_rows_iqr": [
+     9.0,
+     10.0
+    ],
+    "tof_row9_pct": -18.0,
+    "tof_row18_pct": -7.1,
+    "tof_frames": 640
+   },
+   "20261010-204605": {
+    "desc": "ai_run_101",
+    "bumper_rows_median": 10.0,
+    "bumper_rows_iqr": [
+     7.0,
+     18.0
+    ],
+    "tof_row9_pct": -22.9,
+    "tof_row18_pct": -8.4,
+    "tof_frames": 254
+   }
+  }
+ },
+ "video_moments": [
+  {
+   "id": "clean_fast_lap",
+   "log": "20261010-204208",
+   "run": "ai_run_010",
+   "t_start": 67.9,
+   "t_end": 78.1,
+   "what": "クリーンラップは0周。代わりに唯一の「AIだけの1周」(LapCounter 10.15秒)。直線で最高約4 m/s。75.67秒にDEの仕切りを右前でこすり(8.1G)、そのまま走り続ける。72.8秒に基板の再起動で0.2秒中立",
+   "scene_start": "20261010-204208-0004",
+   "scene_end": "20261010-204208-0004",
+   "frame_start": "20261010-204208/20261010-204208-0004/CAM_FRONT/1791632596327498.jpg",
+   "frame_end": "20261010-204208/20261010-204208-0004/CAM_FRONT/1791632606487063.jpg",
+   "clock_start": "20:43:16.311",
+   "v_max_ms": 4.21
+  },
+  {
+   "id": "clean_fast_lap_alt",
+   "log": "20261010-204208",
+   "run": "ai_run_010",
+   "t_start": 76.0,
+   "t_end": 88.5,
+   "what": "ぶつからずに走った最長のAI区間(12.4秒、約1周強)。88.43秒にDEの手前で人が予防的に交代",
+   "scene_start": "20261010-204208-0004",
+   "scene_end": "20261010-204208-0005",
+   "frame_start": "20261010-204208/20261010-204208-0004/CAM_FRONT/1791632604421850.jpg",
+   "frame_end": "20261010-204208/20261010-204208-0005/CAM_FRONT/1791632616879893.jpg",
+   "clock_start": "20:43:24.411",
+   "v_max_ms": 3.05
+  },
+  {
+   "id": "successful_recovery",
+   "log": "20261010-204208",
+   "run": "ai_run_010",
+   "t_start": 16.3,
+   "t_end": 20.2,
+   "what": "成功したリカバリーは0回(リカバリーv2は一度も作動していない)。いちばん近い場面: GM出口で衝突(16.89秒・5.1G)→止まって0.47秒、検出まであと0.03秒のところで人が交代し、手で下がる",
+   "scene_start": "20261010-204208-0001",
+   "scene_end": "20261010-204208-0002",
+   "frame_start": "20261010-204208/20261010-204208-0001/CAM_FRONT/1791632544898673.jpg",
+   "frame_end": "20261010-204208/20261010-204208-0002/CAM_FRONT/1791632548595763.jpg",
+   "clock_start": "20:42:24.711",
+   "v_max_ms": 3.69
+  },
+  {
+   "id": "failed_recovery",
+   "log": "20261010-181504",
+   "run": "ai_run_008",
+   "t_start": 25.4,
+   "t_end": 35.4,
+   "what": "今回の3本では失敗・繰り返しのリカバリーも0回。比較用に以前の ai_run_008(リカバリーv1): 26.3秒・29.8秒の2回とも後退せず(eRPM 0のまま)、33.3秒にあきらめ(中立)",
+   "scene_start": "20261010-181504-0002",
+   "scene_end": "20261010-181504-0002",
+   "frame_start": "20261010-181504/20261010-181504-0002/CAM_FRONT/1791623729983689.jpg",
+   "frame_end": "20261010-181504/20261010-181504-0002/CAM_FRONT/1791623739942817.jpg",
+   "clock_start": "18:15:29.969",
+   "v_max_ms": 1.52
+  },
+  {
+   "id": "tof_predicted_collision",
+   "log": "20261010-203924",
+   "run": "ai_run_009",
+   "t_start": 45.0,
+   "t_end": 46.3,
+   "what": "ToFガード(記録だけ)が正面衝突を予測: 45.41秒にTTC 2.5→0.49秒で警告、45.61秒からブレーキ判定 → 45.80秒にホームストレートの駐車枠の仕切りへ3.5 m/sで8.4G(0.39秒前に警告)。記録だけなので減速していない",
+   "scene_start": "20261010-203924-0003",
+   "scene_end": "20261010-203924-0003",
+   "frame_start": "20261010-203924/20261010-203924-0003/CAM_FRONT/1791632409758027.jpg",
+   "frame_end": "20261010-203924/20261010-203924-0003/CAM_FRONT/1791632411023963.jpg",
+   "clock_start": "20:40:09.747",
+   "v_max_ms": 3.71
+  },
+  {
+   "id": "tof_predicted_collision_alt",
+   "log": "20261010-204208",
+   "run": "ai_run_010",
+   "t_start": 27.4,
+   "t_end": 28.6,
+   "what": "ホットスポットDE: TTCが0.81→0.40(27.81秒、警告)→0.08秒と下がり、28.24秒に3.6 m/sで右の仕切りに11.3G(0.46秒前に警告)。AIはそのまま走り続ける",
+   "scene_start": "20261010-204208-0002",
+   "scene_end": "20261010-204208-0002",
+   "frame_start": "20261010-204208/20261010-204208-0002/CAM_FRONT/1791632555823517.jpg",
+   "frame_end": "20261010-204208/20261010-204208-0002/CAM_FRONT/1791632556989319.jpg",
+   "clock_start": "20:42:35.811",
+   "v_max_ms": 3.7
+  },
+  {
+   "id": "tof_false_alarm",
+   "log": "20261010-203924",
+   "run": "ai_run_009",
+   "t_start": 42.2,
+   "t_end": 43.8,
+   "what": "誤警報: バックストレートを右の壁沿いに3.4〜3.8 m/sで走り、壁が予測コースの帯に入ってTTC 0.43〜0.45秒が0.2秒ずつ2回(衝突なし)",
+   "scene_start": "20261010-203924-0003",
+   "scene_end": "20261010-203924-0003",
+   "frame_start": "20261010-203924/20261010-203924-0003/CAM_FRONT/1791632406959629.jpg",
+   "frame_end": "20261010-203924/20261010-203924-0003/CAM_FRONT/1791632408525377.jpg",
+   "clock_start": "20:40:06.947",
+   "v_max_ms": 3.88
+  },
+  {
+   "id": "tof_false_alarm_long",
+   "log": "20261010-204605",
+   "run": "ai_run_101",
+   "t_start": 38.4,
+   "t_end": 41.6,
+   "what": "長い誤警報: ホームストレートで右の壁・駐車枠に寄ったまま約2.6秒、TTC 0.15〜0.3秒(ブレーキ判定)が続く。衝突はその1.2秒後(42.48秒)の黒カーテン。床の見え方のずれ(この走行で約−23%)が一因",
+   "scene_start": "20261010-204605-0002",
+   "scene_end": "20261010-204605-0003",
+   "frame_start": "20261010-204605/20261010-204605-0002/CAM_FRONT/1791632803786325.jpg",
+   "frame_end": "20261010-204605/20261010-204605-0003/CAM_FRONT/1791632806950842.jpg",
+   "clock_start": "20:46:43.779",
+   "v_max_ms": 2.81
+  },
+  {
+   "id": "hotspot_DE",
+   "log": "20261010-204208",
+   "run": "ai_run_010",
+   "t_start": 27.4,
+   "t_end": 28.9,
+   "what": "ホットスポットDE(バックストレート右の仕切り): 3.6 m/sで11.3G、跳ね返って走行は継続(今回の21回の衝突のうち11回がDE/DE後半)",
+   "scene_start": "20261010-204208-0002",
+   "scene_end": "20261010-204208-0002",
+   "frame_start": "20261010-204208/20261010-204208-0002/CAM_FRONT/1791632555823517.jpg",
+   "frame_end": "20261010-204208/20261010-204208-0002/CAM_FRONT/1791632557289087.jpg",
+   "clock_start": "20:42:35.811",
+   "v_max_ms": 3.7
+  },
+  {
+   "id": "hotspot_LH",
+   "log": "20261010-203924",
+   "run": "ai_run_009",
+   "t_start": 18.4,
+   "t_end": 20.0,
+   "what": "ホットスポットLH(黒カーテンの左ヘアピン、先読み10): 曲がり切れずカーテンへ7.8G → 止まって0.23秒で人が交代",
+   "scene_start": "20261010-203924-0001",
+   "scene_end": "20261010-203924-0002",
+   "frame_start": "20261010-203924/20261010-203924-0001/CAM_FRONT/1791632383172434.jpg",
+   "frame_end": "20261010-203924/20261010-203924-0002/CAM_FRONT/1791632384738325.jpg",
+   "clock_start": "20:39:43.147",
+   "v_max_ms": 2.44
+  }
+ ],
+ "false_alarm_list_prev": [
+  {
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "t_on": 42.55,
+   "dur_s": 0.2,
+   "t_min": 42.68,
+   "ttc_min": 0.37,
+   "x_free": 1.36,
+   "v": 3.67,
+   "steer_us": 63,
+   "gz": -11,
+   "n_obs": 184,
+   "nL": 0,
+   "nR": 37,
+   "brake": false
+  },
+  {
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "t_on": 43.28,
+   "dur_s": 0.23,
+   "t_min": 43.48,
+   "ttc_min": 0.42,
+   "x_free": 1.55,
+   "v": 3.72,
+   "steer_us": 136,
+   "gz": 105,
+   "n_obs": 256,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "t_on": 62.53,
+   "dur_s": 0.23,
+   "t_min": 62.7,
+   "ttc_min": 0.34,
+   "x_free": 1.3,
+   "v": 3.82,
+   "steer_us": -6,
+   "gz": -43,
+   "n_obs": 143,
+   "nL": 0,
+   "nR": 26,
+   "brake": false
+  },
+  {
+   "log": "20261010-203924",
+   "name": "ai_run_009",
+   "t_on": 63.13,
+   "dur_s": 0.27,
+   "t_min": 63.33,
+   "ttc_min": 0.41,
+   "x_free": 1.46,
+   "v": 3.56,
+   "steer_us": 119,
+   "gz": 91,
+   "n_obs": 243,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 9.49,
+   "dur_s": 0.3,
+   "t_min": 9.76,
+   "ttc_min": 0.29,
+   "x_free": 0.99,
+   "v": 3.31,
+   "steer_us": 164,
+   "gz": 38,
+   "n_obs": 354,
+   "nL": 0,
+   "nR": 198,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 10.96,
+   "dur_s": 0.57,
+   "t_min": 11.36,
+   "ttc_min": 0.15,
+   "x_free": 0.27,
+   "v": 1.79,
+   "steer_us": 176,
+   "gz": 78,
+   "n_obs": 1153,
+   "nL": 329,
+   "nR": 394,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 15.19,
+   "dur_s": 0.27,
+   "t_min": 15.22,
+   "ttc_min": 0.17,
+   "x_free": 0.27,
+   "v": 1.57,
+   "steer_us": -248,
+   "gz": -70,
+   "n_obs": 77,
+   "nL": 0,
+   "nR": 45,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 32.04,
+   "dur_s": 0.6,
+   "t_min": 32.54,
+   "ttc_min": 0.21,
+   "x_free": 0.76,
+   "v": 3.55,
+   "steer_us": 40,
+   "gz": 26,
+   "n_obs": 324,
+   "nL": 0,
+   "nR": 230,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 33.67,
+   "dur_s": 0.77,
+   "t_min": 34.17,
+   "ttc_min": 0.15,
+   "x_free": 0.26,
+   "v": 1.77,
+   "steer_us": 422,
+   "gz": 128,
+   "n_obs": 924,
+   "nL": 191,
+   "nR": 408,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 62.05,
+   "dur_s": 0.5,
+   "t_min": 62.35,
+   "ttc_min": 0.13,
+   "x_free": 0.27,
+   "v": 2.05,
+   "steer_us": -443,
+   "gz": -144,
+   "n_obs": 45,
+   "nL": 0,
+   "nR": 12,
+   "brake": true
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 62.85,
+   "dur_s": 0.03,
+   "t_min": 62.85,
+   "ttc_min": 0.43,
+   "x_free": 0.8,
+   "v": 1.86,
+   "steer_us": -443,
+   "gz": -175,
+   "n_obs": 590,
+   "nL": 23,
+   "nR": 1,
+   "brake": false
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 63.22,
+   "dur_s": 0.03,
+   "t_min": 63.22,
+   "ttc_min": 0.44,
+   "x_free": 9.0,
+   "v": 2.34,
+   "steer_us": 59,
+   "gz": -101,
+   "n_obs": 8,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 67.72,
+   "dur_s": 0.03,
+   "t_min": 67.72,
+   "ttc_min": 0.49,
+   "x_free": 1.61,
+   "v": 3.3,
+   "steer_us": 66,
+   "gz": 94,
+   "n_obs": 213,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 69.11,
+   "dur_s": 0.37,
+   "t_min": 69.45,
+   "ttc_min": 0.46,
+   "x_free": 1.88,
+   "v": 3.85,
+   "steer_us": 51,
+   "gz": -11,
+   "n_obs": 76,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204208",
+   "name": "ai_run_010",
+   "t_on": 71.78,
+   "dur_s": 0.7,
+   "t_min": 71.78,
+   "ttc_min": 0.18,
+   "x_free": 0.32,
+   "v": 1.71,
+   "steer_us": -443,
+   "gz": -152,
+   "n_obs": 113,
+   "nL": 4,
+   "nR": 0,
+   "brake": true
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 23.38,
+   "dur_s": 0.47,
+   "t_min": 23.75,
+   "ttc_min": 0.1,
+   "x_free": 0.28,
+   "v": 2.69,
+   "steer_us": 119,
+   "gz": 59,
+   "n_obs": 638,
+   "nL": 0,
+   "nR": 301,
+   "brake": true
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 29.38,
+   "dur_s": 0.13,
+   "t_min": 29.48,
+   "ttc_min": 0.27,
+   "x_free": 1.33,
+   "v": 4.86,
+   "steer_us": 141,
+   "gz": -11,
+   "n_obs": 159,
+   "nL": 0,
+   "nR": 0,
+   "brake": true
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 29.98,
+   "dur_s": 0.3,
+   "t_min": 30.18,
+   "ttc_min": 0.22,
+   "x_free": 1.18,
+   "v": 5.43,
+   "steer_us": 164,
+   "gz": -70,
+   "n_obs": 234,
+   "nL": 0,
+   "nR": 0,
+   "brake": true
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 32.48,
+   "dur_s": 0.23,
+   "t_min": 32.51,
+   "ttc_min": 0.35,
+   "x_free": 0.93,
+   "v": 2.62,
+   "steer_us": -81,
+   "gz": -124,
+   "n_obs": 59,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 33.18,
+   "dur_s": 0.07,
+   "t_min": 33.21,
+   "ttc_min": 0.41,
+   "x_free": 1.62,
+   "v": 3.95,
+   "steer_us": 118,
+   "gz": 176,
+   "n_obs": 147,
+   "nL": 0,
+   "nR": 0,
+   "brake": false
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 38.71,
+   "dur_s": 2.6,
+   "t_min": 40.67,
+   "ttc_min": 0.14,
+   "x_free": 0.38,
+   "v": 2.66,
+   "steer_us": 17,
+   "gz": 4,
+   "n_obs": 754,
+   "nL": 55,
+   "nR": 175,
+   "brake": true
+  },
+  {
+   "log": "20261010-204605",
+   "name": "ai_run_101",
+   "t_on": 51.8,
+   "dur_s": 0.77,
+   "t_min": 52.03,
+   "ttc_min": 0.23,
+   "x_free": 0.27,
+   "v": 1.16,
+   "steer_us": 123,
+   "gz": 60,
+   "n_obs": 805,
+   "nL": 206,
+   "nR": 182,
+   "brake": true
+  }
+ ]
+}

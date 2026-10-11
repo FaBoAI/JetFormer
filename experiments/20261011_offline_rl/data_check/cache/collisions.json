@@ -1,0 +1,187 @@
+{
+ "validation_from_summary": {
+  "totals": {
+   "ref": 45,
+   "ref_matched_impact": 39,
+   "ref_matched_impact_or_bump": 45,
+   "det_ai": 47,
+   "det_ai_in_reference": 41,
+   "det_ai_visual_extra": 6,
+   "loc_checked": 45,
+   "loc_agree": 45
+  },
+  "recall_impact": 0.8667,
+  "recall_impact_or_bump": 1.0,
+  "precision_ai_vs_reference": 0.8723,
+  "precision_ai_with_visual_check": 1.0,
+  "loc_agreement": 1.0
+ },
+ "per_log": {
+  "20261010-172910": {
+   "reference": 21,
+   "matched_impact": 18,
+   "matched_impact_or_bump": 21,
+   "reference_incl_recovery": 21,
+   "detected_ai": 20,
+   "detected_ai_in_reference": 18,
+   "detected_ai_visual_extra": 2,
+   "time_residual_s_median": 0.0,
+   "loc_agree": 21,
+   "loc_checked": 21
+  },
+  "20261010-173445": {
+   "reference": 24,
+   "matched_impact": 21,
+   "matched_impact_or_bump": 24,
+   "reference_incl_recovery": 27,
+   "detected_ai": 27,
+   "detected_ai_in_reference": 23,
+   "detected_ai_visual_extra": 4,
+   "time_residual_s_median": 0.0,
+   "loc_agree": 24,
+   "loc_checked": 24
+  }
+ },
+ "unmatched_reference": [],
+ "reference_matched_by_bump": [
+  {
+   "log": "20261010-172910",
+   "t": 55.44,
+   "loc": "R1(手前・軽)",
+   "loc_detected": "R1",
+   "g_3d": 2.8,
+   "horizontal_g": 1.03,
+   "dynamic_g": 2.89
+  },
+  {
+   "log": "20261010-172910",
+   "t": 102.87,
+   "loc": "R1(手前・軽)",
+   "loc_detected": "R1",
+   "g_3d": 3.6,
+   "horizontal_g": 2.16,
+   "dynamic_g": 3.7
+  },
+  {
+   "log": "20261010-172910",
+   "t": 139.02,
+   "loc": "R1(手前)",
+   "loc_detected": "R1",
+   "g_3d": 4.7,
+   "horizontal_g": 1.59,
+   "dynamic_g": 4.72
+  },
+  {
+   "log": "20261010-173445",
+   "t": 74.77,
+   "loc": "GM(軽)",
+   "loc_detected": "GM",
+   "g_3d": 2.8,
+   "horizontal_g": 1.67,
+   "dynamic_g": 2.9
+  },
+  {
+   "log": "20261010-173445",
+   "t": 121.3,
+   "loc": "LH(軽)",
+   "loc_detected": "LH",
+   "g_3d": 2.7,
+   "horizontal_g": 2.36,
+   "dynamic_g": 3.02
+  },
+  {
+   "log": "20261010-173445",
+   "t": 132.12,
+   "loc": "R1(手前・軽)",
+   "loc_detected": "R1",
+   "g_3d": 2.8,
+   "horizontal_g": 1.17,
+   "dynamic_g": 2.54
+  }
+ ],
+ "extra_detected_ai": [
+  {
+   "log": "20261010-172910",
+   "t_map": 34.23,
+   "g": 2.71,
+   "loc": "LH",
+   "visual_check": "LH: 黒カーテンに正面から触れる"
+  },
+  {
+   "log": "20261010-172910",
+   "t_map": 142.35,
+   "g": 2.7,
+   "loc": "DE",
+   "visual_check": "DE: 右の白い壁をこする"
+  },
+  {
+   "log": "20261010-173445",
+   "t_map": 51.41,
+   "g": 2.74,
+   "loc": "DE",
+   "visual_check": "DE: 右の赤白の壁をこする"
+  },
+  {
+   "log": "20261010-173445",
+   "t_map": 150.69,
+   "g": 3.04,
+   "loc": "DE",
+   "visual_check": "DE: 右の白い壁をこする"
+  },
+  {
+   "log": "20261010-173445",
+   "t_map": 163.95,
+   "g": 2.82,
+   "loc": "DE",
+   "visual_check": "DE: 右の白い壁をこする"
+  },
+  {
+   "log": "20261010-173445",
+   "t_map": 216.27,
+   "g": 2.86,
+   "loc": "DE",
+   "visual_check": "DE: 右の白い壁をこする"
+  }
+ ],
+ "counts": {
+  "20261010-172910": {
+   "collision_map_ai_rows": 21,
+   "collision_map_ai_rows_excl_recovery": 21,
+   "labels_ai_collisions_2.5G": 20,
+   "labels_ai_strong_4G": 16,
+   "labels_ai_by_loc": {
+    "R1": 1,
+    "GM": 6,
+    "DE": 12,
+    "LH": 1
+   },
+   "collision_map_by_loc_excl_recovery": {
+    "R1": 4,
+    "GM": 6,
+    "DE": 11
+   },
+   "labels_bumps_ai": 10
+  },
+  "20261010-173445": {
+   "collision_map_ai_rows": 27,
+   "collision_map_ai_rows_excl_recovery": 24,
+   "labels_ai_collisions_2.5G": 27,
+   "labels_ai_strong_4G": 21,
+   "labels_ai_by_loc": {
+    "R1": 9,
+    "GM": 2,
+    "DE": 13,
+    "other": 2,
+    "LH": 1
+   },
+   "collision_map_by_loc_excl_recovery": {
+    "R1": 9,
+    "GM": 2,
+    "DE": 9,
+    "other": 2,
+    "LH": 2
+   },
+   "labels_bumps_ai": 6
+  }
+ }
+}

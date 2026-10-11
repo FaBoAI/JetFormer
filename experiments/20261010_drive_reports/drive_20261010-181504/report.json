@@ -1,0 +1,215 @@
+{
+ "log": "20261010-181504",
+ "scenes": 10,
+ "description": "ai_run_008",
+ "run": "first_trial_20261010-s3-20261010-153629",
+ "params": {
+  "steer_gain": 1.0,
+  "throttle_gain": 2.0,
+  "steer_trim_us": 0.0,
+  "lookahead": 3,
+  "osc_percent": 0.0,
+  "esc_reverse": 1,
+  "recovery": 1
+ },
+ "steer_center_us": 1443.0,
+ "throttle_neutral_us": 1498.0,
+ "duration_s": 190.8,
+ "frames": 5687,
+ "ai_side_s": 78.7,
+ "ai_side_ratio": 0.415,
+ "ai_segments": 10,
+ "ai_segments_longest_s": [
+  23.3,
+  12.9,
+  12.2,
+  12.1,
+  7.6
+ ],
+ "human_takeovers": 10,
+ "holds_on_ai_side": 204,
+ "hold_events": 7,
+ "sensor_gaps_ms": {
+  "VEHICLE": [
+   223,
+   2366,
+   263,
+   360,
+   2362,
+   2364,
+   2364,
+   360,
+   2362,
+   359,
+   362,
+   362
+  ],
+  "IMU": [
+   112
+  ],
+  "CAM_FRONT": [
+   266,
+   233
+  ],
+  "TOF_FRONT": []
+ },
+ "latency_ms": {
+  "p50": 27.8,
+  "p99": 36.3
+ },
+ "infer_ms_p50": 5.6,
+ "camera_fps": 29.8,
+ "steer_out_us": {
+  "p5": 1143,
+  "p50": 1514,
+  "p95": 1886
+ },
+ "throttle_out_us": {
+  "p5": 1177,
+  "p50": 1381,
+  "p95": 1512
+ },
+ "steer_at_limit_ratio": 0.005,
+ "steer_abs_dev_us_mean": 151.5,
+ "steer_sign_flips_per_s": 1.29,
+ "steer_step_us_p95": 55.8,
+ "erpm_ai": {
+  "median": 4313,
+  "p95": 6176,
+  "moving_ratio": 0.852
+ },
+ "erpm_human": {
+  "median": 0,
+  "p95": 2163
+ },
+ "impacts": [
+  {
+   "t_s": 16.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 25.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 25.6,
+   "ai_side": true
+  },
+  {
+   "t_s": 41.9,
+   "ai_side": false
+  },
+  {
+   "t_s": 56.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 58.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 64.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 80.1,
+   "ai_side": true
+  },
+  {
+   "t_s": 86.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 97.8,
+   "ai_side": true
+  },
+  {
+   "t_s": 109.6,
+   "ai_side": false
+  },
+  {
+   "t_s": 121.6,
+   "ai_side": true
+  }
+ ],
+ "takeovers": [
+  {
+   "t_s": 35.2,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 41.8,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 47.6,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 66.3,
+   "impact_before_s": 2.1
+  },
+  {
+   "t_s": 81.3,
+   "impact_before_s": 1.2
+  },
+  {
+   "t_s": 89.0,
+   "impact_before_s": 2.8
+  },
+  {
+   "t_s": 101.9,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 107.9,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 113.9,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 122.1,
+   "impact_before_s": 0.5
+  }
+ ],
+ "accel_peak_g": 10.3,
+ "laps": {
+  "laps": 4,
+  "direction": "左回り",
+  "best_ai_s": null,
+  "median_ai_s": null,
+  "clean_laps": 0
+ },
+ "lap_times": [
+  {
+   "n": 1,
+   "time_s": 14.03,
+   "ai_only": false,
+   "takeovers": 0,
+   "first": true
+  },
+  {
+   "n": 2,
+   "time_s": 39.54,
+   "ai_only": false,
+   "takeovers": 3,
+   "first": false
+  },
+  {
+   "n": 3,
+   "time_s": 15.81,
+   "ai_only": false,
+   "takeovers": 1,
+   "first": false
+  },
+  {
+   "n": 4,
+   "time_s": 17.82,
+   "ai_only": false,
+   "takeovers": 2,
+   "first": false
+  }
+ ]
+}

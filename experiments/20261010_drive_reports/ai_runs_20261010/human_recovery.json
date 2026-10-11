@@ -1,0 +1,2904 @@
+{
+ "title": "Human collision/stuck recovery -> automatic recovery manoeuvre parameters (JetFormer, 2026-10-10)",
+ "data": {
+  "human_only_logs": [
+   "20261010-135449",
+   "20261010-144028",
+   "20261010-150424",
+   "20261010-152405",
+   "20261010-152707"
+  ],
+  "ai_run_logs_human_segments": [
+   "20261010-163247",
+   "20261010-172910",
+   "20261010-173445"
+  ],
+  "skipped_corrupted_scenes": [
+   "20261010-163247-0021",
+   "20261010-163247-0022"
+  ],
+  "driving_time_s": {
+   "ai_side": 424,
+   "human_side": 606
+  },
+  "conventions": {
+   "steer_center_us": 1443,
+   "throttle_neutral_us": 1498,
+   "forward": "below neutral",
+   "reverse_brake": "above neutral",
+   "erpm": "negative = forward",
+   "hall_counts": "erpm/10 per second; 6 per electrical rev; increases when reversing"
+  },
+  "command_bands": {
+   "F": "thr < 1478",
+   "N": "1478..1538",
+   "R": "thr > 1538"
+  },
+  "note": "effective command = AI out while CH3 selects AI, transmitter pwm otherwise"
+ },
+ "esc_reverse_rule": {
+  "threshold_sensitivity": "R band threshold 20-60 us above neutral: identical conclusions (human after-F 0/29-0/31, rolling-forward 0/9-0/11, after-brake 33/37); at 80 us one human after-F case flips because a weak brake (<1578 us) is then counted as neutral",
+  "statement": "Reverse drive engages only if (1) the last non-neutral command was R (a brake) of >= ~1560 us for >= ~0.1 s, (2) then neutral, (3) the motor is not turning forward (eRPM >= -150) when R is applied again. The first R after any forward command (even a 30 ms forward blip) only brakes, indefinitely. Reverse->forward has no lockout.",
+  "counts": {
+   "after_F/AI": {
+    "engaged": 2,
+    "n": 26
+   },
+   "after_F/human": {
+    "engaged": 0,
+    "n": 29
+   },
+   "after_R_brake/AI": {
+    "engaged": 1,
+    "n": 3
+   },
+   "after_R_brake/human": {
+    "engaged": 33,
+    "n": 37
+   },
+   "after_R_reverse/human": {
+    "engaged": 3,
+    "n": 7
+   },
+   "after_R_rolling_fwd/AI": {
+    "engaged": 0,
+    "n": 4
+   },
+   "after_R_rolling_fwd/human": {
+    "engaged": 0,
+    "n": 10
+   }
+  },
+  "success_stats": {
+   "neutral_gap_s": {
+    "n": 33,
+    "median": 0.12,
+    "p25": 0.08,
+    "p75": 0.17,
+    "min": 0.02,
+    "max": 0.58
+   },
+   "onset_after_R_s": {
+    "n": 33,
+    "median": 0.08,
+    "p25": 0.059,
+    "p75": 0.1,
+    "min": 0.04,
+    "max": 0.27
+   },
+   "brake_pulse_us": {
+    "n": 33,
+    "median": 1729.0,
+    "p25": 1676.0,
+    "p75": 1797.0,
+    "min": 1501.0,
+    "max": 2000.0
+   },
+   "brake_pulse_s": {
+    "n": 33,
+    "median": 0.27,
+    "p25": 0.24,
+    "p75": 0.51,
+    "min": 0.12,
+    "max": 2.77
+   },
+   "reverse_cmd_us": {
+    "n": 33,
+    "median": 1793.0,
+    "p25": 1701.0,
+    "p75": 1863.0,
+    "min": 1590.0,
+    "max": 1943.0
+   },
+   "erpm_at_R": {
+    "n": 33,
+    "median": 0.0,
+    "p25": 0.0,
+    "p75": 41.0,
+    "min": 0.0,
+    "max": 1238.0
+   }
+  },
+  "failures_after_brake": [
+   {
+    "log": "20261010-163247",
+    "t": 92.99,
+    "thr": 1897,
+    "dur": 0.27,
+    "gap": 0.24,
+    "prev_thr": 1547.088623046875,
+    "prev_dur": 0.0700730000000027,
+    "dh": 0.0,
+    "peak": 0
+   },
+   {
+    "log": "20261010-172910",
+    "t": 159.85,
+    "thr": 1586,
+    "dur": 0.22,
+    "gap": 0.27,
+    "prev_thr": 1578.0,
+    "prev_dur": 0.3912729999999931,
+    "dh": 9.0,
+    "peak": 370
+   },
+   {
+    "log": "20261010-173445",
+    "t": 60.88,
+    "thr": 1667,
+    "dur": 0.27,
+    "gap": 0.38,
+    "prev_thr": 1945.115234375,
+    "prev_dur": 2.179992999999998,
+    "dh": 0.0,
+    "peak": 0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 288.15,
+    "thr": 1602,
+    "dur": 0.1,
+    "gap": 0.171,
+    "prev_thr": 1606.0,
+    "prev_dur": 0.4600189999999975,
+    "dh": 8.0,
+    "peak": 773
+   }
+  ],
+  "rolling_forward": {
+   "n": 14,
+   "engaged": 0,
+   "erpm_at_R": {
+    "n": 14,
+    "median": -1474.5,
+    "p25": -3501.0,
+    "p75": -939.75,
+    "min": -5324.0,
+    "max": -327.0
+   },
+   "gap": {
+    "n": 14,
+    "median": 0.101,
+    "p25": 0.039,
+    "p75": 0.135,
+    "min": 0.02,
+    "max": 0.881
+   }
+  },
+  "ai_long_R_after_F_stationary": [
+   {
+    "log": "20261010-163247",
+    "t": 89.05,
+    "dur": 0.73,
+    "thr": 1663,
+    "disp_after_0p5s": -1.0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 35.27,
+    "dur": 1.3,
+    "thr": 2000,
+    "disp_after_0p5s": 0.0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 58.32,
+    "dur": 2.18,
+    "thr": 1945,
+    "disp_after_0p5s": 1.0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 94.3,
+    "dur": 2.77,
+    "thr": 1900,
+    "disp_after_0p5s": 2.0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 99.03,
+    "dur": 0.5,
+    "thr": 1665,
+    "disp_after_0p5s": null
+   },
+   {
+    "log": "20261010-173445",
+    "t": 143.25,
+    "dur": 1.63,
+    "thr": 1954,
+    "disp_after_0p5s": 0.0
+   },
+   {
+    "log": "20261010-173445",
+    "t": 197.73,
+    "dur": 0.5,
+    "thr": 1558,
+    "disp_after_0p5s": null
+   },
+   {
+    "log": "20261010-173445",
+    "t": 244.45,
+    "dur": 2.21,
+    "thr": 1736,
+    "disp_after_0p5s": 0.0
+   }
+  ],
+  "ai_natural_experiment": "173445 t=99.0-100.2: AI output R1665 (brake) -> N 0.20 s -> R1701 and the car reversed 112 counts (then hit something behind at t=100.17, 2.6 g)"
+ },
+ "episodes_classification": {
+  "A": "collision/stuck against wall/obstacle (n=19: 9 human-only, 10 AI-run takeovers)",
+  "B": "braked to stop near obstacle, no impact (n=4)",
+  "C": "manoeuvring/repositioning without obstacle (n=5, excluded from parameters)"
+ },
+ "episode_stats": {
+  "A_all": {
+   "n": 19,
+   "impact_g": {
+    "n": 19,
+    "median": 5.2,
+    "p25": 3.7,
+    "p75": 6.75,
+    "min": 0.7,
+    "max": 8.9
+   },
+   "speed_pre_erpm": {
+    "n": 19,
+    "median": -4189.0,
+    "p25": -5156.0,
+    "p75": -3912.0,
+    "min": -7196.0,
+    "max": -2469.0
+   },
+   "first_R_after_stop_s": {
+    "n": 19,
+    "median": 0.27,
+    "p25": 0.07,
+    "p75": 0.7,
+    "min": -0.01,
+    "max": 1.26
+   },
+   "engage_after_stop_s": {
+    "n": 19,
+    "median": 1.29,
+    "p25": 0.705,
+    "p75": 2.035,
+    "min": 0.31,
+    "max": 4.45
+   },
+   "neutral_gap_s": {
+    "n": 19,
+    "median": 0.15,
+    "p25": 0.085,
+    "p75": 0.2,
+    "min": 0.05,
+    "max": 0.58
+   },
+   "n_engagements": {
+    "n": 19,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 1.0,
+    "max": 2.0
+   },
+   "failed_R_attempts": {
+    "n": 19,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 0.0,
+    "max": 3.0
+   },
+   "rev_thr_med_us": {
+    "n": 19,
+    "median": 1712.0,
+    "p25": 1673.0,
+    "p75": 1770.0,
+    "min": 1596.0,
+    "max": 1824.0
+   },
+   "rev_thr_max_us": {
+    "n": 19,
+    "median": 1763.0,
+    "p25": 1701.5,
+    "p75": 1828.0,
+    "min": 1632.0,
+    "max": 1925.0
+   },
+   "rev_cmd_s": {
+    "n": 19,
+    "median": 0.28,
+    "p25": 0.22,
+    "p75": 0.405,
+    "min": 0.2,
+    "max": 1.13
+   },
+   "rev_motion_s": {
+    "n": 19,
+    "median": 0.62,
+    "p25": 0.53,
+    "p75": 0.93,
+    "min": 0.43,
+    "max": 1.65
+   },
+   "rev_counts": {
+    "n": 19,
+    "median": 111.0,
+    "p25": 94.5,
+    "p75": 129.0,
+    "min": 50.0,
+    "max": 328.0
+   },
+   "rev_peak_erpm": {
+    "n": 19,
+    "median": 2682.0,
+    "p25": 2176.0,
+    "p75": 3353.5,
+    "min": 1174.0,
+    "max": 4627.0
+   },
+   "fwd_after_rev_s": {
+    "n": 19,
+    "median": 0.07,
+    "p25": 0.065,
+    "p75": 0.08,
+    "min": 0.04,
+    "max": 0.19
+   },
+   "fwd_after_stop_s": {
+    "n": 19,
+    "median": 2.0,
+    "p25": 1.515,
+    "p75": 3.005,
+    "min": 0.92,
+    "max": 5.35
+   },
+   "free_after_stop_s": {
+    "n": 19,
+    "median": 2.82,
+    "p25": 1.86,
+    "p75": 3.82,
+    "min": 1.01,
+    "max": 7.54
+   },
+   "st_stop_us": {
+    "n": 19,
+    "median": -405.0,
+    "p25": -443.0,
+    "p75": -57.5,
+    "min": -451.0,
+    "max": 400.0
+   },
+   "st_rev_us": {
+    "n": 19,
+    "median": -1.0,
+    "p25": -3.0,
+    "p75": 126.5,
+    "min": -196.0,
+    "max": 447.0
+   },
+   "st_fwd_us": {
+    "n": 19,
+    "median": -379.0,
+    "p25": -447.0,
+    "p75": -209.0,
+    "min": -452.0,
+    "max": 372.0
+   },
+   "st_rev_rel": {
+    "same": 2,
+    "opposite": 4,
+    "centred": 12,
+    "pre-centred": 1
+   },
+   "st_fwd_rel": {
+    "centred": 2,
+    "same": 15,
+    "opposite": 1,
+    "pre-centred": 1
+   },
+   "st_fwd_vs_rev": {
+    "centred": 2,
+    "opposite": 6,
+    "pre-centred": 11
+   },
+   "st_fwd_vs_contact": {
+    "centred": 2,
+    "contact unclear": 2,
+    "toward": 2,
+    "away": 13
+   },
+   "stop_steer_side": {
+    "L": 4,
+    "R": 14,
+    "C": 1
+   },
+   "contact_side": {
+    "L": 17,
+    "?": 2
+   },
+   "tof_obs_stop_m": {
+    "n": 19,
+    "median": 0.34,
+    "p25": 0.31,
+    "p75": 0.39,
+    "min": 0.19,
+    "max": 0.42
+   },
+   "tof_obs_rev_end_m": {
+    "n": 19,
+    "median": 0.7,
+    "p25": 0.4,
+    "p75": 0.81,
+    "min": 0.14,
+    "max": 1.37
+   }
+  },
+  "A_human_only": {
+   "n": 9,
+   "impact_g": {
+    "n": 9,
+    "median": 6.5,
+    "p25": 2.9,
+    "p75": 7.1,
+    "min": 0.7,
+    "max": 8.9
+   },
+   "speed_pre_erpm": {
+    "n": 9,
+    "median": -5442.0,
+    "p25": -5927.0,
+    "p75": -3349.0,
+    "min": -7196.0,
+    "max": -2469.0
+   },
+   "first_R_after_stop_s": {
+    "n": 9,
+    "median": 0.88,
+    "p25": 0.44,
+    "p75": 0.95,
+    "min": 0.02,
+    "max": 1.26
+   },
+   "engage_after_stop_s": {
+    "n": 9,
+    "median": 1.29,
+    "p25": 0.89,
+    "p75": 1.59,
+    "min": 0.32,
+    "max": 2.04
+   },
+   "neutral_gap_s": {
+    "n": 9,
+    "median": 0.08,
+    "p25": 0.07,
+    "p75": 0.1,
+    "min": 0.05,
+    "max": 0.15
+   },
+   "n_engagements": {
+    "n": 9,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 1.0,
+    "max": 2.0
+   },
+   "failed_R_attempts": {
+    "n": 9,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 1.0,
+    "max": 3.0
+   },
+   "rev_thr_med_us": {
+    "n": 9,
+    "median": 1793.0,
+    "p25": 1717.0,
+    "p75": 1813.0,
+    "min": 1683.0,
+    "max": 1824.0
+   },
+   "rev_thr_max_us": {
+    "n": 9,
+    "median": 1837.0,
+    "p25": 1776.0,
+    "p75": 1866.0,
+    "min": 1691.0,
+    "max": 1925.0
+   },
+   "rev_cmd_s": {
+    "n": 9,
+    "median": 0.24,
+    "p25": 0.21,
+    "p75": 0.28,
+    "min": 0.2,
+    "max": 1.13
+   },
+   "rev_motion_s": {
+    "n": 9,
+    "median": 0.53,
+    "p25": 0.48,
+    "p75": 0.56,
+    "min": 0.43,
+    "max": 1.65
+   },
+   "rev_counts": {
+    "n": 9,
+    "median": 104.0,
+    "p25": 71.0,
+    "p75": 109.0,
+    "min": 50.0,
+    "max": 188.0
+   },
+   "rev_peak_erpm": {
+    "n": 9,
+    "median": 2682.0,
+    "p25": 2461.0,
+    "p75": 3390.0,
+    "min": 1174.0,
+    "max": 4627.0
+   },
+   "fwd_after_rev_s": {
+    "n": 9,
+    "median": 0.07,
+    "p25": 0.07,
+    "p75": 0.08,
+    "min": 0.04,
+    "max": 0.13
+   },
+   "fwd_after_stop_s": {
+    "n": 9,
+    "median": 1.77,
+    "p25": 1.46,
+    "p75": 2.11,
+    "min": 0.92,
+    "max": 4.26
+   },
+   "free_after_stop_s": {
+    "n": 9,
+    "median": 1.87,
+    "p25": 1.56,
+    "p75": 2.19,
+    "min": 1.01,
+    "max": 4.36
+   },
+   "st_stop_us": {
+    "n": 9,
+    "median": -282.0,
+    "p25": -449.0,
+    "p75": 152.0,
+    "min": -451.0,
+    "max": 400.0
+   },
+   "st_rev_us": {
+    "n": 9,
+    "median": 75.0,
+    "p25": 0.0,
+    "p75": 137.0,
+    "min": -196.0,
+    "max": 447.0
+   },
+   "st_fwd_us": {
+    "n": 9,
+    "median": -323.0,
+    "p25": -443.0,
+    "p75": -190.0,
+    "min": -447.0,
+    "max": 372.0
+   },
+   "st_rev_rel": {
+    "same": 2,
+    "opposite": 3,
+    "centred": 4
+   },
+   "st_fwd_rel": {
+    "centred": 1,
+    "same": 7,
+    "opposite": 1
+   },
+   "st_fwd_vs_rev": {
+    "centred": 1,
+    "opposite": 4,
+    "pre-centred": 4
+   },
+   "st_fwd_vs_contact": {
+    "centred": 1,
+    "contact unclear": 2,
+    "toward": 1,
+    "away": 5
+   },
+   "stop_steer_side": {
+    "L": 3,
+    "R": 6
+   },
+   "contact_side": {
+    "L": 7,
+    "?": 2
+   },
+   "tof_obs_stop_m": {
+    "n": 9,
+    "median": 0.33,
+    "p25": 0.27,
+    "p75": 0.4,
+    "min": 0.19,
+    "max": 0.42
+   },
+   "tof_obs_rev_end_m": {
+    "n": 9,
+    "median": 0.66,
+    "p25": 0.45,
+    "p75": 0.7,
+    "min": 0.14,
+    "max": 0.75
+   }
+  },
+  "A_ai_takeover": {
+   "n": 10,
+   "impact_g": {
+    "n": 10,
+    "median": 4.85,
+    "p25": 4.125,
+    "p75": 5.3,
+    "min": 3.3,
+    "max": 7.1
+   },
+   "speed_pre_erpm": {
+    "n": 10,
+    "median": -4159.5,
+    "p25": -4533.5,
+    "p75": -3956.75,
+    "min": -4870.0,
+    "max": -3425.0
+   },
+   "first_R_after_stop_s": {
+    "n": 10,
+    "median": 0.09,
+    "p25": 0.05,
+    "p75": 0.135,
+    "min": -0.01,
+    "max": 0.49
+   },
+   "engage_after_stop_s": {
+    "n": 10,
+    "median": 1.5,
+    "p25": 0.657,
+    "p75": 2.542,
+    "min": 0.31,
+    "max": 4.45
+   },
+   "neutral_gap_s": {
+    "n": 10,
+    "median": 0.2,
+    "p25": 0.173,
+    "p75": 0.263,
+    "min": 0.12,
+    "max": 0.58
+   },
+   "n_engagements": {
+    "n": 10,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "failed_R_attempts": {
+    "n": 10,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.0,
+    "min": 0.0,
+    "max": 2.0
+   },
+   "rev_thr_med_us": {
+    "n": 10,
+    "median": 1675.0,
+    "p25": 1633.0,
+    "p75": 1709.25,
+    "min": 1596.0,
+    "max": 1747.0
+   },
+   "rev_thr_max_us": {
+    "n": 10,
+    "median": 1747.0,
+    "p25": 1672.25,
+    "p75": 1761.0,
+    "min": 1632.0,
+    "max": 1799.0
+   },
+   "rev_cmd_s": {
+    "n": 10,
+    "median": 0.355,
+    "p25": 0.247,
+    "p75": 0.467,
+    "min": 0.21,
+    "max": 1.0
+   },
+   "rev_motion_s": {
+    "n": 10,
+    "median": 0.755,
+    "p25": 0.645,
+    "p75": 1.105,
+    "min": 0.53,
+    "max": 1.25
+   },
+   "rev_counts": {
+    "n": 10,
+    "median": 121.5,
+    "p25": 111.25,
+    "p75": 171.25,
+    "min": 74.0,
+    "max": 328.0
+   },
+   "rev_peak_erpm": {
+    "n": 10,
+    "median": 2696.0,
+    "p25": 2158.5,
+    "p75": 3045.5,
+    "min": 1324.0,
+    "max": 4254.0
+   },
+   "fwd_after_rev_s": {
+    "n": 10,
+    "median": 0.075,
+    "p25": 0.062,
+    "p75": 0.087,
+    "min": 0.06,
+    "max": 0.19
+   },
+   "fwd_after_stop_s": {
+    "n": 10,
+    "median": 2.5,
+    "p25": 1.627,
+    "p75": 3.315,
+    "min": 1.34,
+    "max": 5.35
+   },
+   "free_after_stop_s": {
+    "n": 10,
+    "median": 3.295,
+    "p25": 2.882,
+    "p75": 4.378,
+    "min": 1.76,
+    "max": 7.54
+   },
+   "st_stop_us": {
+    "n": 10,
+    "median": -443.0,
+    "p25": -443.0,
+    "p75": -396.0,
+    "min": -443.0,
+    "max": 270.0
+   },
+   "st_rev_us": {
+    "n": 10,
+    "median": -3.0,
+    "p25": -3.0,
+    "p75": -1.0,
+    "min": -96.0,
+    "max": 443.0
+   },
+   "st_fwd_us": {
+    "n": 10,
+    "median": -429.0,
+    "p25": -451.0,
+    "p75": -257.5,
+    "min": -452.0,
+    "max": 137.0
+   },
+   "st_rev_rel": {
+    "opposite": 1,
+    "centred": 8,
+    "pre-centred": 1
+   },
+   "st_fwd_rel": {
+    "same": 8,
+    "centred": 1,
+    "pre-centred": 1
+   },
+   "st_fwd_vs_rev": {
+    "opposite": 2,
+    "pre-centred": 7,
+    "centred": 1
+   },
+   "st_fwd_vs_contact": {
+    "away": 8,
+    "centred": 1,
+    "toward": 1
+   },
+   "stop_steer_side": {
+    "R": 8,
+    "L": 1,
+    "C": 1
+   },
+   "contact_side": {
+    "L": 10
+   },
+   "tof_obs_stop_m": {
+    "n": 10,
+    "median": 0.355,
+    "p25": 0.315,
+    "p75": 0.388,
+    "min": 0.26,
+    "max": 0.42
+   },
+   "tof_obs_rev_end_m": {
+    "n": 10,
+    "median": 0.8,
+    "p25": 0.445,
+    "p75": 0.897,
+    "min": 0.15,
+    "max": 1.37
+   }
+  },
+  "B": {
+   "n": 4,
+   "impact_g": {
+    "n": 4,
+    "median": 0.75,
+    "p25": 0.675,
+    "p75": 0.95,
+    "min": 0.6,
+    "max": 1.4
+   },
+   "speed_pre_erpm": {
+    "n": 4,
+    "median": -2997.5,
+    "p25": -4851.75,
+    "p75": -2398.25,
+    "min": -8733.0,
+    "max": -2282.0
+   },
+   "first_R_after_stop_s": {
+    "n": 4,
+    "median": 0.295,
+    "p25": 0.17,
+    "p75": 0.432,
+    "min": 0.14,
+    "max": 0.5
+   },
+   "engage_after_stop_s": {
+    "n": 4,
+    "median": 0.405,
+    "p25": 0.25,
+    "p75": 0.583,
+    "min": 0.22,
+    "max": 0.68
+   },
+   "neutral_gap_s": {
+    "n": 4,
+    "median": 0.1,
+    "p25": 0.08,
+    "p75": 0.133,
+    "min": 0.02,
+    "max": 0.23
+   },
+   "n_engagements": {
+    "n": 4,
+    "median": 1.0,
+    "p25": 1.0,
+    "p75": 1.25,
+    "min": 1.0,
+    "max": 2.0
+   },
+   "failed_R_attempts": {
+    "n": 4,
+    "median": 0.0,
+    "p25": 0.0,
+    "p75": 0.25,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "rev_thr_med_us": {
+    "n": 4,
+    "median": 1686.5,
+    "p25": 1668.0,
+    "p75": 1737.0,
+    "min": 1638.0,
+    "max": 1863.0
+   },
+   "rev_thr_max_us": {
+    "n": 4,
+    "median": 1830.0,
+    "p25": 1802.5,
+    "p75": 1864.25,
+    "min": 1744.0,
+    "max": 1943.0
+   },
+   "rev_cmd_s": {
+    "n": 4,
+    "median": 0.45,
+    "p25": 0.278,
+    "p75": 0.65,
+    "min": 0.27,
+    "max": 0.74
+   },
+   "rev_motion_s": {
+    "n": 4,
+    "median": 0.855,
+    "p25": 0.752,
+    "p75": 1.047,
+    "min": 0.73,
+    "max": 1.34
+   },
+   "rev_counts": {
+    "n": 4,
+    "median": 161.0,
+    "p25": 141.0,
+    "p75": 209.25,
+    "min": 132.0,
+    "max": 303.0
+   },
+   "rev_peak_erpm": {
+    "n": 4,
+    "median": 3323.0,
+    "p25": 2877.25,
+    "p75": 3474.75,
+    "min": 1993.0,
+    "max": 3477.0
+   },
+   "fwd_after_rev_s": {
+    "n": 4,
+    "median": 0.095,
+    "p25": 0.065,
+    "p75": 0.13,
+    "min": 0.02,
+    "max": 0.19
+   },
+   "fwd_after_stop_s": {
+    "n": 4,
+    "median": 1.39,
+    "p25": 1.308,
+    "p75": 1.52,
+    "min": 1.3,
+    "max": 1.67
+   },
+   "free_after_stop_s": {
+    "n": 2,
+    "median": 2.445,
+    "p25": 1.917,
+    "p75": 2.973,
+    "min": 1.39,
+    "max": 3.5
+   },
+   "st_stop_us": {
+    "n": 4,
+    "median": 177.0,
+    "p25": 6.0,
+    "p75": 350.25,
+    "min": -3.0,
+    "max": 366.0
+   },
+   "st_rev_us": {
+    "n": 4,
+    "median": -1.5,
+    "p25": -86.25,
+    "p75": 98.75,
+    "min": -339.0,
+    "max": 398.0
+   },
+   "st_fwd_us": {
+    "n": 4,
+    "median": -61.5,
+    "p25": -223.5,
+    "p75": 131.75,
+    "min": -450.0,
+    "max": 452.0
+   },
+   "st_rev_rel": {
+    "centred": 2,
+    "pre-centred": 1,
+    "same": 1
+   },
+   "st_fwd_rel": {
+    "centred": 1,
+    "pre-centred": 2,
+    "opposite": 1
+   },
+   "st_fwd_vs_rev": {
+    "centred": 1,
+    "pre-centred": 1,
+    "opposite": 2
+   },
+   "st_fwd_vs_contact": {
+    "contact unclear": 4
+   },
+   "stop_steer_side": {
+    "L": 2,
+    "C": 2
+   },
+   "contact_side": {
+    "?": 4
+   },
+   "tof_obs_stop_m": {
+    "n": 4,
+    "median": 0.35,
+    "p25": 0.297,
+    "p75": 0.485,
+    "min": 0.14,
+    "max": 0.89
+   },
+   "tof_obs_rev_end_m": {
+    "n": 4,
+    "median": 0.835,
+    "p25": 0.55,
+    "p75": 1.222,
+    "min": 0.16,
+    "max": 1.92
+   }
+  }
+ },
+ "forward_kick": {
+  "human_only": {
+   "thr_us_median": 1266,
+   "dur_s_median": 0.8,
+   "steer_us_median": -168,
+   "counts_median": 443
+  },
+  "ai_takeover": {
+   "thr_us_median": 1369,
+   "dur_s_median": 0.6,
+   "steer_us_median": -428,
+   "counts_median": 178
+  },
+  "starts_before_reverse_motion_ends_s": 0.15
+ },
+ "reverse_counts_during_command": {
+  "median": 38,
+  "iqr": [
+   28,
+   62
+  ],
+  "fraction_of_total_median": 0.38,
+  "erpm_at_release_median": 2211
+ },
+ "handback": {
+  "per_episode": [
+   {
+    "ep": 19,
+    "t_stop": 35.22,
+    "takeover_after_stop": 1.35,
+    "handback_after_stop": 3.56,
+    "handback_after_rev_end": 0.91,
+    "fwd_phase_s": 0.85,
+    "fwd_thr_med": 1498,
+    "fwd_st_med": -3,
+    "fwd_counts": 262,
+    "erpm_at_handback": -2861,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 20,
+    "t_stop": 58.29,
+    "takeover_after_stop": 2.21,
+    "handback_after_stop": 4.96,
+    "handback_after_rev_end": 1.13,
+    "fwd_phase_s": 1.05,
+    "fwd_thr_med": 1496,
+    "fwd_st_med": -3,
+    "fwd_counts": 210,
+    "erpm_at_handback": -1712,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 21,
+    "t_stop": 93.09,
+    "takeover_after_stop": 3.98,
+    "handback_after_stop": 5.92,
+    "handback_after_rev_end": 0.76,
+    "fwd_phase_s": 0.57,
+    "fwd_thr_med": 1496,
+    "fwd_st_med": -3,
+    "fwd_counts": 63,
+    "erpm_at_handback": -963,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 22,
+    "t_stop": 101.57,
+    "takeover_after_stop": 0.26,
+    "handback_after_stop": 3.22,
+    "handback_after_rev_end": 1.0,
+    "fwd_phase_s": 0.93,
+    "fwd_thr_med": 1495,
+    "fwd_st_med": -3,
+    "fwd_counts": 184,
+    "erpm_at_handback": -1634,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 23,
+    "t_stop": 107.48,
+    "takeover_after_stop": -1.18,
+    "handback_after_stop": 2.99,
+    "handback_after_rev_end": 1.51,
+    "fwd_phase_s": 1.42,
+    "fwd_thr_med": 1432,
+    "fwd_st_med": -448,
+    "fwd_counts": 319,
+    "erpm_at_handback": -1844,
+    "st_at_handback": -1
+   },
+   {
+    "ep": 24,
+    "t_stop": 143.2,
+    "takeover_after_stop": 1.68,
+    "handback_after_stop": 4.28,
+    "handback_after_rev_end": 1.07,
+    "fwd_phase_s": 0.96,
+    "fwd_thr_med": 1492,
+    "fwd_st_med": -3,
+    "fwd_counts": 120,
+    "erpm_at_handback": -926,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 25,
+    "t_stop": 157.81,
+    "takeover_after_stop": 0.36,
+    "handback_after_stop": 2.44,
+    "handback_after_rev_end": 1.08,
+    "fwd_phase_s": 1.0,
+    "fwd_thr_med": 1496,
+    "fwd_st_med": -8,
+    "fwd_counts": 211,
+    "erpm_at_handback": -1898,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 26,
+    "t_stop": 210.56,
+    "takeover_after_stop": 0.37,
+    "handback_after_stop": 2.82,
+    "handback_after_rev_end": 1.08,
+    "fwd_phase_s": 1.02,
+    "fwd_thr_med": 1493,
+    "fwd_st_med": -190,
+    "fwd_counts": 234,
+    "erpm_at_handback": -2083,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 27,
+    "t_stop": 244.33,
+    "takeover_after_stop": 2.33,
+    "handback_after_stop": 4.26,
+    "handback_after_rev_end": 1.02,
+    "fwd_phase_s": 0.96,
+    "fwd_thr_med": 1495,
+    "fwd_st_med": -4,
+    "fwd_counts": 206,
+    "erpm_at_handback": -1974,
+    "st_at_handback": -3
+   },
+   {
+    "ep": 28,
+    "t_stop": 271.17,
+    "takeover_after_stop": 0.41,
+    "handback_after_stop": 2.82,
+    "handback_after_rev_end": 1.55,
+    "fwd_phase_s": 1.48,
+    "fwd_thr_med": 1494,
+    "fwd_st_med": -451,
+    "fwd_counts": 207,
+    "erpm_at_handback": -730,
+    "st_at_handback": -4
+   }
+  ],
+  "summary": {
+   "takeover_after_stop": {
+    "n": 10,
+    "median": 0.88,
+    "p25": 0.362,
+    "p75": 2.078,
+    "min": -1.18,
+    "max": 3.98
+   },
+   "handback_after_stop": {
+    "n": 10,
+    "median": 3.39,
+    "p25": 2.862,
+    "p75": 4.275,
+    "min": 2.44,
+    "max": 5.92
+   },
+   "handback_after_rev_end": {
+    "n": 10,
+    "median": 1.075,
+    "p25": 1.005,
+    "p75": 1.117,
+    "min": 0.76,
+    "max": 1.55
+   },
+   "fwd_phase_s": {
+    "n": 10,
+    "median": 0.98,
+    "p25": 0.938,
+    "p75": 1.042,
+    "min": 0.57,
+    "max": 1.48
+   },
+   "fwd_counts": {
+    "n": 10,
+    "median": 208.5,
+    "p25": 189.5,
+    "p75": 228.25,
+    "min": 63.0,
+    "max": 319.0
+   },
+   "fwd_thr_med": {
+    "n": 10,
+    "median": 1495.0,
+    "p25": 1493.25,
+    "p75": 1496.0,
+    "min": 1432.0,
+    "max": 1498.0
+   },
+   "fwd_st_med": {
+    "n": 10,
+    "median": -3.5,
+    "p25": -144.5,
+    "p75": -3.0,
+    "min": -451.0,
+    "max": -3.0
+   },
+   "erpm_at_handback": {
+    "n": 10,
+    "median": -1778.0,
+    "p25": -1955.0,
+    "p75": -1130.75,
+    "min": -2861.0,
+    "max": -730.0
+   }
+  }
+ },
+ "repeat_stuck_after_handback_173445": [
+  {
+   "ep": 19,
+   "next_ep": 20,
+   "gap_s": 19.51
+  },
+  {
+   "ep": 20,
+   "next_ep": 21,
+   "gap_s": 29.84
+  },
+  {
+   "ep": 21,
+   "next_ep": 22,
+   "gap_s": 2.56
+  },
+  {
+   "ep": 22,
+   "next_ep": 23,
+   "gap_s": 2.69
+  },
+  {
+   "ep": 23,
+   "next_ep": 24,
+   "gap_s": 32.73
+  },
+  {
+   "ep": 24,
+   "next_ep": 25,
+   "gap_s": 10.33
+  },
+  {
+   "ep": 25,
+   "next_ep": 26,
+   "gap_s": 50.31
+  },
+  {
+   "ep": 26,
+   "next_ep": 27,
+   "gap_s": 30.95
+  },
+  {
+   "ep": 27,
+   "next_ep": 28,
+   "gap_s": 22.58
+  }
+ ],
+ "detection": {
+  "forward_start_latency_from_rest_s": {
+   "n": 10,
+   "median": 0.11,
+   "max": 0.29
+  },
+  "forward_stall_observed": "forward command with |eRPM|<100 and no hall motion >=0.15 s: only 2 runs (0.18 s each, both normal starts) in 1030 s; the AI stuck signature is R commanded while stationary (ESC brake lockout) for 1.08-2.06 s until takeover",
+  "impacts_ge_2p5g": {
+   "ai_side": 54,
+   "ai_side_glancing": 44,
+   "human_side": 38,
+   "human_side_glancing": 26
+  },
+  "D1": "impact |a|-1g >= 2.5 g (>=2 samples >1 g within +-50 ms) while moving forward (median eRPM over previous 0.2 s < -500); eRPM > -300 within 0.6 s; forward progress < 20 hall counts during the next 0.5 s -> trigger",
+  "D2": "still (|eRPM|<150 and |dHall|<=2 per 0.1 s) while command outside the neutral band (thr<1478 or thr>1538) continuously for >= 0.6 s; masked for 1.0 s after AI start / hand-back",
+  "sweep": [
+   {
+    "T2_s": 0.3,
+    "confirm_s": 0.3,
+    "A_detected": 15,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 10,
+    "triggers_outside_A_on_AI_side": 1,
+    "latency_from_stop_median": 0.3
+   },
+   {
+    "T2_s": 0.3,
+    "confirm_s": 0.5,
+    "A_detected": 14,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 6,
+    "triggers_outside_A_on_AI_side": 0,
+    "latency_from_stop_median": 0.5
+   },
+   {
+    "T2_s": 0.6,
+    "confirm_s": 0.3,
+    "A_detected": 14,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 7,
+    "triggers_outside_A_on_AI_side": 1,
+    "latency_from_stop_median": 0.3
+   },
+   {
+    "T2_s": 0.6,
+    "confirm_s": 0.5,
+    "A_detected": 11,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 3,
+    "triggers_outside_A_on_AI_side": 0,
+    "latency_from_stop_median": 0.5
+   },
+   {
+    "T2_s": 1.0,
+    "confirm_s": 0.3,
+    "A_detected": 14,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 6,
+    "triggers_outside_A_on_AI_side": 1,
+    "latency_from_stop_median": 0.3
+   },
+   {
+    "T2_s": 1.0,
+    "confirm_s": 0.5,
+    "A_detected": 11,
+    "A_total": 19,
+    "AI_run_A_detected": 10,
+    "AI_run_A_total": 10,
+    "triggers_outside_A": 2,
+    "triggers_outside_A_on_AI_side": 0,
+    "latency_from_stop_median": 0.5
+   }
+  ]
+ },
+ "recommended_state_machine": {
+  "units": "absolute PWM us, bypass apply_gains (throttle_gain must not scale these)",
+  "DETECT": "D1 or D2 (see detection); latency = stop + 0.5 s (D1) / stop + >=0.6 s (D2)",
+  "BRAKE": {
+   "thr_us": 1700,
+   "steer_us": 1443,
+   "duration_s": 0.25,
+   "why": "first R after forward is always a brake; also kills forward roll"
+  },
+  "NEUTRAL": {
+   "thr_us": 1498,
+   "steer_us": 1443,
+   "min_s": 0.15,
+   "until": "eRPM >= -150 (not rolling forward)",
+   "timeout_s": 1.0
+  },
+  "REVERSE": {
+   "thr_us": 1720,
+   "allowed_range_us": [
+    1680,
+    1800
+   ],
+   "steer": "centre 1443 (or <=150 us opposite to the pre-stop steering); never same side",
+   "engage_check": "hall +5 within 0.30 s else NEUTRAL 0.2 s and retry (max 3 cycles)",
+   "release_when": "hall >= +40 counts since engagement or eRPM >= 2200 or 0.5 s of R",
+   "expected_total": "~100-120 counts incl. coast (~0.6 s of motion)",
+   "abort": "impact >= 2.5 g while reversing -> NEUTRAL, go to ESCAPE"
+  },
+  "COAST": {
+   "thr_us": 1498,
+   "duration_s": 0.3,
+   "or_until": "eRPM < 1000"
+  },
+  "ESCAPE_FORWARD": {
+   "thr_us": 1360,
+   "duration_s": 0.6,
+   "or_until": "forward hall >= 150 counts",
+   "steer_us": "full lock away from the contact side: impact a_y < -2 g (left contact) -> ~1000 (right); a_y > +2 g -> ~1890 (left); otherwise the pre-stop steering direction"
+  },
+  "HANDBACK": {
+   "condition": "eRPM < -1500 (moving forward) after ESCAPE, sticks neutral up to 0.4 s",
+   "expected_after_stop_s": 2.3,
+   "human_reference_after_stop_s": 3.39,
+   "human_after_reverse_end_s": 1.08,
+   "human_erpm_at_handback": -1778
+  },
+  "COOLDOWN": "D2 masked 1.0 s after hand-back; D1 always armed (needs a new impact)",
+  "ESCALATE": "if re-stuck within 10 s after hand-back: reverse target x1.5 (~170 counts) and ESCAPE 0.8 s at full lock",
+  "GIVE_UP": "(a) no reverse engagement after 3 NEUTRAL->REVERSE cycles (~1.5 s); (b) 3 recoveries within 20 s; (c) re-stuck within 5 s after hand-back twice in a row -> hold neutral, request human (CH3)"
+ },
+ "episodes": [
+  {
+   "id": 1,
+   "cls": "A",
+   "log": "20261010-135449",
+   "t_stop_s": 92.42,
+   "source": "human-only",
+   "impact_g": 3.0,
+   "impact_ay_g": -2.6,
+   "speed_pre_erpm": -3349,
+   "steer_stop_us": 400,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.95,
+   "reverse_engaged_after_stop_s": 1.6,
+   "neutral_gaps_s": [
+    0.12
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1700.0,
+     "dur": 0.43
+    }
+   ],
+   "onset_after_R_s": [
+    0.1
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1688,
+   "reverse_thr_max_us": 1694,
+   "reverse_cmd_s": 0.2,
+   "reverse_motion_s": 0.43,
+   "reverse_hall_counts": 53,
+   "reverse_peak_erpm": 1414,
+   "steer_reverse_us": 132,
+   "steer_reverse_vs_prestop": "same",
+   "forward_after_reverse_s": 0.07,
+   "steer_forward_us": 5,
+   "steer_forward_vs_prestop": "centred",
+   "kick_thr_us": 1306,
+   "kick_s": 0.75,
+   "kick_steer_us": 73,
+   "forward_after_stop_s": 2.11,
+   "normal_driving_after_stop_s": 2.19,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.26,
+   "tof_obstacle_at_reverse_end_m": 0.46
+  },
+  {
+   "id": 2,
+   "cls": "A",
+   "log": "20261010-144028",
+   "t_stop_s": 8.81,
+   "source": "human-only",
+   "impact_g": 0.7,
+   "impact_ay_g": -0.5,
+   "speed_pre_erpm": -2469,
+   "steer_stop_us": -114,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.02,
+   "reverse_engaged_after_stop_s": 0.32,
+   "neutral_gaps_s": [
+    0.08
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1559.0,
+     "dur": 0.12
+    }
+   ],
+   "onset_after_R_s": [
+    0.1
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1683,
+   "reverse_thr_max_us": 1691,
+   "reverse_cmd_s": 0.21,
+   "reverse_motion_s": 0.48,
+   "reverse_hall_counts": 50,
+   "reverse_peak_erpm": 1174,
+   "steer_reverse_us": 447,
+   "steer_reverse_vs_prestop": "opposite",
+   "forward_after_reverse_s": 0.13,
+   "steer_forward_us": -446,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1330,
+   "kick_s": 3.74,
+   "kick_steer_us": -1,
+   "forward_after_stop_s": 0.92,
+   "normal_driving_after_stop_s": 1.01,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.39,
+   "tof_obstacle_at_reverse_end_m": 0.16
+  },
+  {
+   "id": 3,
+   "cls": "A",
+   "log": "20261010-150424",
+   "t_stop_s": 11.03,
+   "source": "human-only",
+   "impact_g": 2.0,
+   "impact_ay_g": -2.8,
+   "speed_pre_erpm": -3993,
+   "steer_stop_us": 224,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.35,
+   "reverse_engaged_after_stop_s": 0.73,
+   "neutral_gaps_s": [
+    0.07
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1749.0,
+     "dur": 0.24
+    }
+   ],
+   "onset_after_R_s": [
+    0.07
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1824,
+   "reverse_thr_max_us": 1837,
+   "reverse_cmd_s": 0.24,
+   "reverse_motion_s": 0.56,
+   "reverse_hall_counts": 109,
+   "reverse_peak_erpm": 2682,
+   "steer_reverse_us": -196,
+   "steer_reverse_vs_prestop": "opposite",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": 372,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1266,
+   "kick_s": 0.61,
+   "kick_steer_us": 371,
+   "forward_after_stop_s": 1.38,
+   "normal_driving_after_stop_s": 1.47,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.27,
+   "tof_obstacle_at_reverse_end_m": 0.14
+  },
+  {
+   "id": 4,
+   "cls": "A",
+   "log": "20261010-150424",
+   "t_stop_s": 116.52,
+   "source": "human-only",
+   "impact_g": 7.7,
+   "impact_ay_g": -8.0,
+   "speed_pre_erpm": -6743,
+   "steer_stop_us": -449,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 1.26,
+   "reverse_engaged_after_stop_s": 2.04,
+   "neutral_gaps_s": [
+    0.1
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1797.0,
+     "dur": 0.61
+    }
+   ],
+   "onset_after_R_s": [
+    0.07
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1793,
+   "reverse_thr_max_us": 1853,
+   "reverse_cmd_s": 0.23,
+   "reverse_motion_s": 0.59,
+   "reverse_hall_counts": 108,
+   "reverse_peak_erpm": 4267,
+   "steer_reverse_us": 206,
+   "steer_reverse_vs_prestop": "opposite",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": -443,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1239,
+   "kick_s": 0.8,
+   "kick_steer_us": -342,
+   "forward_after_stop_s": 2.7,
+   "normal_driving_after_stop_s": 2.83,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.33,
+   "tof_obstacle_at_reverse_end_m": 0.66
+  },
+  {
+   "id": 5,
+   "cls": "A",
+   "log": "20261010-152405",
+   "t_stop_s": 54.88,
+   "source": "human-only",
+   "impact_g": 2.9,
+   "impact_ay_g": 0.2,
+   "speed_pre_erpm": -2987,
+   "steer_stop_us": -451,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.94,
+   "reverse_engaged_after_stop_s": 1.29,
+   "neutral_gaps_s": [
+    0.05
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1726.0,
+     "dur": 0.25
+    }
+   ],
+   "onset_after_R_s": [
+    0.05
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1717,
+   "reverse_thr_max_us": 1776,
+   "reverse_cmd_s": 0.21,
+   "reverse_motion_s": 0.47,
+   "reverse_hall_counts": 71,
+   "reverse_peak_erpm": 2588,
+   "steer_reverse_us": -1,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.06,
+   "steer_forward_us": -379,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1208,
+   "kick_s": 0.72,
+   "kick_steer_us": -379,
+   "forward_after_stop_s": 1.77,
+   "normal_driving_after_stop_s": 1.87,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.19,
+   "tof_obstacle_at_reverse_end_m": 0.45
+  },
+  {
+   "id": 6,
+   "cls": "A",
+   "log": "20261010-152405",
+   "t_stop_s": 86.98,
+   "source": "human-only",
+   "impact_g": 7.1,
+   "impact_ay_g": -8.0,
+   "speed_pre_erpm": -5442,
+   "steer_stop_us": -449,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.88,
+   "reverse_engaged_after_stop_s": 1.59,
+   "neutral_gaps_s": [
+    0.15,
+    0.153
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1722.0,
+     "dur": 0.51
+    },
+    {
+     "thr": 1729.0,
+     "dur": 0.43
+    }
+   ],
+   "onset_after_R_s": [
+    0.05,
+    0.06
+   ],
+   "failed_R_attempts": 3,
+   "fail_reasons": {
+    "brake (after F)": 2,
+    "other": 1
+   },
+   "n_reverse_engagements": 2,
+   "reverse_thr_median_us": 1719,
+   "reverse_thr_max_us": 1866,
+   "reverse_cmd_s": 1.13,
+   "reverse_motion_s": 1.65,
+   "reverse_hall_counts": 188,
+   "reverse_peak_erpm": 4627,
+   "steer_reverse_us": 75,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.07,
+   "steer_forward_us": -323,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1308,
+   "kick_s": 0.53,
+   "kick_steer_us": -323,
+   "forward_after_stop_s": 4.26,
+   "normal_driving_after_stop_s": 4.36,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.42,
+   "tof_obstacle_at_reverse_end_m": 0.75
+  },
+  {
+   "id": 7,
+   "cls": "B",
+   "log": "20261010-152405",
+   "t_stop_s": 119.82,
+   "source": "human-only",
+   "impact_g": 0.6,
+   "impact_ay_g": -1.1,
+   "speed_pre_erpm": -2282,
+   "steer_stop_us": 366,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.18,
+   "reverse_engaged_after_stop_s": 0.26,
+   "neutral_gaps_s": [
+    0.1
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1712.0,
+     "dur": 0.22
+    }
+   ],
+   "onset_after_R_s": [
+    0.08
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "other": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1638,
+   "reverse_thr_max_us": 1822,
+   "reverse_cmd_s": 0.74,
+   "reverse_motion_s": 1.34,
+   "reverse_hall_counts": 303,
+   "reverse_peak_erpm": 3477,
+   "steer_reverse_us": -1,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.11,
+   "steer_forward_us": 25,
+   "steer_forward_vs_prestop": "centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 1.67,
+   "normal_driving_after_stop_s": null,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.35,
+   "tof_obstacle_at_reverse_end_m": 0.16
+  },
+  {
+   "id": 8,
+   "cls": "A",
+   "log": "20261010-152707",
+   "t_stop_s": 67.62,
+   "source": "human-only",
+   "impact_g": 8.9,
+   "impact_ay_g": -8.0,
+   "speed_pre_erpm": -5634,
+   "steer_stop_us": -282,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.52,
+   "reverse_engaged_after_stop_s": 0.89,
+   "neutral_gaps_s": [
+    0.09
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1771.0,
+     "dur": 0.23
+    }
+   ],
+   "onset_after_R_s": [
+    0.05
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1815,
+   "reverse_thr_max_us": 1905,
+   "reverse_cmd_s": 0.28,
+   "reverse_motion_s": 0.54,
+   "reverse_hall_counts": 104,
+   "reverse_peak_erpm": 3390,
+   "steer_reverse_us": 0,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.07,
+   "steer_forward_us": -190,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1251,
+   "kick_s": 0.92,
+   "kick_steer_us": -168,
+   "forward_after_stop_s": 1.46,
+   "normal_driving_after_stop_s": 1.56,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.41,
+   "tof_obstacle_at_reverse_end_m": 0.7
+  },
+  {
+   "id": 9,
+   "cls": "A",
+   "log": "20261010-152707",
+   "t_stop_s": 77.26,
+   "source": "human-only",
+   "impact_g": 7.0,
+   "impact_ay_g": -8.0,
+   "speed_pre_erpm": -5927,
+   "steer_stop_us": -351,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 1.09,
+   "reverse_engaged_after_stop_s": 1.43,
+   "neutral_gaps_s": [
+    0.05
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1775.0,
+     "dur": 0.19
+    }
+   ],
+   "onset_after_R_s": [
+    0.1
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1813,
+   "reverse_thr_max_us": 1819,
+   "reverse_cmd_s": 0.36,
+   "reverse_motion_s": 0.53,
+   "reverse_hall_counts": 121,
+   "reverse_peak_erpm": 3317,
+   "steer_reverse_us": 1,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.04,
+   "steer_forward_us": -289,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1254,
+   "kick_s": 0.99,
+   "kick_steer_us": -235,
+   "forward_after_stop_s": 2.0,
+   "normal_driving_after_stop_s": 2.14,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.4,
+   "tof_obstacle_at_reverse_end_m": 0.7
+  },
+  {
+   "id": 10,
+   "cls": "A",
+   "log": "20261010-152707",
+   "t_stop_s": 85.94,
+   "source": "human-only",
+   "impact_g": 6.5,
+   "impact_ay_g": -7.3,
+   "speed_pre_erpm": -7196,
+   "steer_stop_us": 152,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.44,
+   "reverse_engaged_after_stop_s": 1.11,
+   "neutral_gaps_s": [
+    0.07
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1773.0,
+     "dur": 0.51
+    }
+   ],
+   "onset_after_R_s": [
+    0.09
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1797,
+   "reverse_thr_max_us": 1925,
+   "reverse_cmd_s": 0.24,
+   "reverse_motion_s": 0.51,
+   "reverse_hall_counts": 93,
+   "reverse_peak_erpm": 2461,
+   "steer_reverse_us": 137,
+   "steer_reverse_vs_prestop": "same",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": -447,
+   "steer_forward_vs_prestop": "opposite",
+   "kick_thr_us": 1279,
+   "kick_s": 1.77,
+   "kick_steer_us": -146,
+   "forward_after_stop_s": 1.7,
+   "normal_driving_after_stop_s": 1.85,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.32,
+   "tof_obstacle_at_reverse_end_m": 0.71
+  },
+  {
+   "id": 11,
+   "cls": "B",
+   "log": "20261010-152707",
+   "t_stop_s": 98.41,
+   "source": "human-only",
+   "impact_g": 1.4,
+   "impact_ay_g": -0.7,
+   "speed_pre_erpm": -2437,
+   "steer_stop_us": 9,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.14,
+   "reverse_engaged_after_stop_s": 0.22,
+   "neutral_gaps_s": [
+    0.1
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1738.0,
+     "dur": 0.19
+    }
+   ],
+   "onset_after_R_s": [
+    0.08
+   ],
+   "failed_R_attempts": 0,
+   "fail_reasons": {},
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1678,
+   "reverse_thr_max_us": 1744,
+   "reverse_cmd_s": 0.28,
+   "reverse_motion_s": 0.95,
+   "reverse_hall_counts": 144,
+   "reverse_peak_erpm": 1993,
+   "steer_reverse_us": -2,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.19,
+   "steer_forward_us": -148,
+   "steer_forward_vs_prestop": "pre-centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 1.31,
+   "normal_driving_after_stop_s": null,
+   "handback_after_stop_s": null,
+   "tof_obstacle_at_stop_m": 0.35,
+   "tof_obstacle_at_reverse_end_m": 0.99
+  },
+  {
+   "id": 12,
+   "cls": "B",
+   "log": "20261010-163247",
+   "t_stop_s": 27.81,
+   "source": "AI-run takeover",
+   "impact_g": 0.8,
+   "impact_ay_g": -0.0,
+   "speed_pre_erpm": -8733,
+   "steer_stop_us": -3,
+   "takeover_after_stop_s": -0.51,
+   "first_R_after_stop_s": 0.41,
+   "reverse_engaged_after_stop_s": 0.68,
+   "neutral_gaps_s": [
+    0.02,
+    0.17
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1501.0,
+     "dur": 0.53
+    },
+    {
+     "thr": 1590.0,
+     "dur": 0.37
+    }
+   ],
+   "onset_after_R_s": [
+    0.27,
+    0.04
+   ],
+   "failed_R_attempts": 0,
+   "fail_reasons": {},
+   "n_reverse_engagements": 2,
+   "reverse_thr_median_us": 1695,
+   "reverse_thr_max_us": 1838,
+   "reverse_cmd_s": 0.62,
+   "reverse_motion_s": 0.73,
+   "reverse_hall_counts": 132,
+   "reverse_peak_erpm": 3172,
+   "steer_reverse_us": -339,
+   "steer_reverse_vs_prestop": "pre-centred",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": 452,
+   "steer_forward_vs_prestop": "pre-centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 1.47,
+   "normal_driving_after_stop_s": 3.5,
+   "handback_after_stop_s": 3.22,
+   "tof_obstacle_at_stop_m": 0.14,
+   "tof_obstacle_at_reverse_end_m": 1.92
+  },
+  {
+   "id": 13,
+   "cls": "C",
+   "log": "20261010-163247",
+   "t_stop_s": 34.87,
+   "source": "AI-run takeover",
+   "impact_g": 0.4,
+   "impact_ay_g": 0.1,
+   "speed_pre_erpm": -8117,
+   "steer_stop_us": -226,
+   "takeover_after_stop_s": -0.09,
+   "first_R_after_stop_s": 1.37,
+   "reverse_engaged_after_stop_s": 1.74,
+   "neutral_gaps_s": [
+    0.12,
+    0.17,
+    0.05
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1705.0,
+     "dur": 0.2
+    },
+    {
+     "thr": 1676.0,
+     "dur": 0.95
+    },
+    {
+     "thr": 1702.0,
+     "dur": 0.25
+    }
+   ],
+   "onset_after_R_s": [
+    0.05,
+    0.05,
+    0.06
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 3,
+   "reverse_thr_median_us": 1911,
+   "reverse_thr_max_us": 1941,
+   "reverse_cmd_s": 0.19,
+   "reverse_motion_s": 0.68,
+   "reverse_hall_counts": 85,
+   "reverse_peak_erpm": 2960,
+   "steer_reverse_us": -69,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": null,
+   "steer_forward_us": null,
+   "steer_forward_vs_prestop": null,
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": null,
+   "normal_driving_after_stop_s": 11.79,
+   "handback_after_stop_s": 3.04,
+   "tof_obstacle_at_stop_m": null,
+   "tof_obstacle_at_reverse_end_m": 0.13
+  },
+  {
+   "id": 14,
+   "cls": "C",
+   "log": "20261010-163247",
+   "t_stop_s": 47.23,
+   "source": "AI-run human",
+   "impact_g": 0.3,
+   "impact_ay_g": -0.2,
+   "speed_pre_erpm": -8542,
+   "steer_stop_us": -2,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.14,
+   "reverse_engaged_after_stop_s": 1.2,
+   "neutral_gaps_s": [
+    0.07,
+    0.1
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1841.5,
+     "dur": 0.3
+    },
+    {
+     "thr": 1829.0,
+     "dur": 0.22
+    }
+   ],
+   "onset_after_R_s": [
+    0.09,
+    0.1
+   ],
+   "failed_R_attempts": 3,
+   "fail_reasons": {
+    "brake (after F)": 3
+   },
+   "n_reverse_engagements": 2,
+   "reverse_thr_median_us": 1878,
+   "reverse_thr_max_us": 1945,
+   "reverse_cmd_s": 1.02,
+   "reverse_motion_s": 1.59,
+   "reverse_hall_counts": 189,
+   "reverse_peak_erpm": 5203,
+   "steer_reverse_us": -74,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.03,
+   "steer_forward_us": -449,
+   "steer_forward_vs_prestop": "pre-centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 3.97,
+   "normal_driving_after_stop_s": 4.1,
+   "handback_after_stop_s": 34.08,
+   "tof_obstacle_at_stop_m": null,
+   "tof_obstacle_at_reverse_end_m": 0.69
+  },
+  {
+   "id": 15,
+   "cls": "C",
+   "log": "20261010-163247",
+   "t_stop_s": 52.0,
+   "source": "AI-run human",
+   "impact_g": 1.4,
+   "impact_ay_g": -0.2,
+   "speed_pre_erpm": -3254,
+   "steer_stop_us": -441,
+   "takeover_after_stop_s": null,
+   "first_R_after_stop_s": 0.78,
+   "reverse_engaged_after_stop_s": 1.18,
+   "neutral_gaps_s": [
+    0.1,
+    0.1
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1837.0,
+     "dur": 0.24
+    },
+    {
+     "thr": 1867.5,
+     "dur": 0.24
+    }
+   ],
+   "onset_after_R_s": [
+    0.06,
+    0.08
+   ],
+   "failed_R_attempts": 2,
+   "fail_reasons": {
+    "brake (after F)": 2
+   },
+   "n_reverse_engagements": 2,
+   "reverse_thr_median_us": 1868,
+   "reverse_thr_max_us": 1943,
+   "reverse_cmd_s": 1.04,
+   "reverse_motion_s": 2.44,
+   "reverse_hall_counts": 132,
+   "reverse_peak_erpm": 3519,
+   "steer_reverse_us": 0,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": null,
+   "steer_forward_us": null,
+   "steer_forward_vs_prestop": null,
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": null,
+   "normal_driving_after_stop_s": 29.62,
+   "handback_after_stop_s": 29.31,
+   "tof_obstacle_at_stop_m": 1.51,
+   "tof_obstacle_at_reverse_end_m": 0.14
+  },
+  {
+   "id": 16,
+   "cls": "B",
+   "log": "20261010-163247",
+   "t_stop_s": 89.51,
+   "source": "AI-run takeover",
+   "impact_g": 0.7,
+   "impact_ay_g": -0.3,
+   "speed_pre_erpm": -3558,
+   "steer_stop_us": 345,
+   "takeover_after_stop_s": 0.27,
+   "first_R_after_stop_s": 0.5,
+   "reverse_engaged_after_stop_s": 0.55,
+   "neutral_gaps_s": [
+    0.23
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1662.9638671875,
+     "dur": 0.73
+    }
+   ],
+   "onset_after_R_s": [
+    0.05
+   ],
+   "failed_R_attempts": 0,
+   "fail_reasons": {},
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1863,
+   "reverse_thr_max_us": 1943,
+   "reverse_cmd_s": 0.27,
+   "reverse_motion_s": 0.76,
+   "reverse_hall_counts": 178,
+   "reverse_peak_erpm": 3474,
+   "steer_reverse_us": 398,
+   "steer_reverse_vs_prestop": "same",
+   "forward_after_reverse_s": 0.02,
+   "steer_forward_us": -450,
+   "steer_forward_vs_prestop": "opposite",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 1.3,
+   "normal_driving_after_stop_s": 1.39,
+   "handback_after_stop_s": 2.52,
+   "tof_obstacle_at_stop_m": 0.89,
+   "tof_obstacle_at_reverse_end_m": 0.68
+  },
+  {
+   "id": 17,
+   "cls": "C",
+   "log": "20261010-163247",
+   "t_stop_s": 92.23,
+   "source": "AI-run takeover",
+   "impact_g": 0.3,
+   "impact_ay_g": -0.1,
+   "speed_pre_erpm": -2431,
+   "steer_stop_us": 0,
+   "takeover_after_stop_s": 0.59,
+   "first_R_after_stop_s": 0.45,
+   "reverse_engaged_after_stop_s": 1.24,
+   "neutral_gaps_s": [
+    0.17,
+    0.101,
+    0.07
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1897.0,
+     "dur": 0.27
+    },
+    {
+     "thr": 1943.0,
+     "dur": 0.22
+    },
+    {
+     "thr": 1942.0,
+     "dur": 0.27
+    }
+   ],
+   "onset_after_R_s": [
+    0.04,
+    0.03,
+    0.08
+   ],
+   "failed_R_attempts": 4,
+   "fail_reasons": {
+    "other": 2,
+    "brake (after F)": 2
+   },
+   "n_reverse_engagements": 3,
+   "reverse_thr_median_us": 1893,
+   "reverse_thr_max_us": 1945,
+   "reverse_cmd_s": 1.89,
+   "reverse_motion_s": 4.95,
+   "reverse_hall_counts": 1216,
+   "reverse_peak_erpm": 4689,
+   "steer_reverse_us": 2,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 13.46,
+   "steer_forward_us": 1,
+   "steer_forward_vs_prestop": "centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 20.62,
+   "normal_driving_after_stop_s": 21.22,
+   "handback_after_stop_s": 24.33,
+   "tof_obstacle_at_stop_m": 0.93,
+   "tof_obstacle_at_reverse_end_m": 0.95
+  },
+  {
+   "id": 18,
+   "cls": "C",
+   "log": "20261010-163247",
+   "t_stop_s": 120.02,
+   "source": "AI-run takeover",
+   "impact_g": 0.4,
+   "impact_ay_g": -0.8,
+   "speed_pre_erpm": -2328,
+   "steer_stop_us": -3,
+   "takeover_after_stop_s": -0.5,
+   "first_R_after_stop_s": -0.0,
+   "reverse_engaged_after_stop_s": 0.47,
+   "neutral_gaps_s": [
+    0.12
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1719.0,
+     "dur": 0.27
+    }
+   ],
+   "onset_after_R_s": [
+    0.08
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "still rolling fwd": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1780,
+   "reverse_thr_max_us": 1824,
+   "reverse_cmd_s": 0.24,
+   "reverse_motion_s": 1.03,
+   "reverse_hall_counts": 203,
+   "reverse_peak_erpm": 3139,
+   "steer_reverse_us": -2,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": -34,
+   "steer_forward_vs_prestop": "centred",
+   "kick_thr_us": null,
+   "kick_s": null,
+   "kick_steer_us": null,
+   "forward_after_stop_s": 1.54,
+   "normal_driving_after_stop_s": null,
+   "handback_after_stop_s": 10.65,
+   "tof_obstacle_at_stop_m": 0.96,
+   "tof_obstacle_at_reverse_end_m": 0.92
+  },
+  {
+   "id": 19,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 35.22,
+   "source": "AI-run takeover",
+   "impact_g": 4.1,
+   "impact_ay_g": -4.4,
+   "speed_pre_erpm": -4189,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 1.35,
+   "first_R_after_stop_s": 0.05,
+   "reverse_engaged_after_stop_s": 2.03,
+   "neutral_gaps_s": [
+    0.58
+   ],
+   "brake_pulses": [
+    {
+     "thr": 2000.0,
+     "dur": 1.3
+    }
+   ],
+   "onset_after_R_s": [
+    0.1
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1745,
+   "reverse_thr_max_us": 1755,
+   "reverse_cmd_s": 0.23,
+   "reverse_motion_s": 0.62,
+   "reverse_hall_counts": 111,
+   "reverse_peak_erpm": 2933,
+   "steer_reverse_us": 121,
+   "steer_reverse_vs_prestop": "opposite",
+   "forward_after_reverse_s": 0.06,
+   "steer_forward_us": -228,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1353,
+   "kick_s": 0.47,
+   "kick_steer_us": -274,
+   "forward_after_stop_s": 2.71,
+   "normal_driving_after_stop_s": 2.82,
+   "handback_after_stop_s": 3.56,
+   "tof_obstacle_at_stop_m": 0.39,
+   "tof_obstacle_at_reverse_end_m": 0.87
+  },
+  {
+   "id": 20,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 58.29,
+   "source": "AI-run takeover",
+   "impact_g": 5.3,
+   "impact_ay_g": -6.1,
+   "speed_pre_erpm": -3913,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 2.21,
+   "first_R_after_stop_s": 0.03,
+   "reverse_engaged_after_stop_s": 3.19,
+   "neutral_gaps_s": [
+    0.181
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1667.0,
+     "dur": 0.27
+    }
+   ],
+   "onset_after_R_s": [
+    0.15
+   ],
+   "failed_R_attempts": 2,
+   "fail_reasons": {
+    "brake (after F)": 1,
+    "other": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1631,
+   "reverse_thr_max_us": 1632,
+   "reverse_cmd_s": 0.38,
+   "reverse_motion_s": 0.63,
+   "reverse_hall_counts": 74,
+   "reverse_peak_erpm": 1398,
+   "steer_reverse_us": -3,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": -451,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1371,
+   "kick_s": 0.59,
+   "kick_steer_us": -451,
+   "forward_after_stop_s": 3.91,
+   "normal_driving_after_stop_s": 5.05,
+   "handback_after_stop_s": 4.96,
+   "tof_obstacle_at_stop_m": 0.39,
+   "tof_obstacle_at_reverse_end_m": 0.73
+  },
+  {
+   "id": 21,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 93.09,
+   "source": "AI-run takeover",
+   "impact_g": 5.3,
+   "impact_ay_g": -6.1,
+   "speed_pre_erpm": -4130,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 3.98,
+   "first_R_after_stop_s": 0.14,
+   "reverse_engaged_after_stop_s": 4.45,
+   "neutral_gaps_s": [
+    0.33
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1899.705078125,
+     "dur": 2.77
+    }
+   ],
+   "onset_after_R_s": [
+    0.14
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1687,
+   "reverse_thr_max_us": 1747,
+   "reverse_cmd_s": 0.33,
+   "reverse_motion_s": 0.71,
+   "reverse_hall_counts": 128,
+   "reverse_peak_erpm": 3782,
+   "steer_reverse_us": -1,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.19,
+   "steer_forward_us": -3,
+   "steer_forward_vs_prestop": "centred",
+   "kick_thr_us": 1423,
+   "kick_s": 0.53,
+   "kick_steer_us": -319,
+   "forward_after_stop_s": 5.35,
+   "normal_driving_after_stop_s": 7.54,
+   "handback_after_stop_s": 5.92,
+   "tof_obstacle_at_stop_m": 0.37,
+   "tof_obstacle_at_reverse_end_m": 0.9
+  },
+  {
+   "id": 22,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 101.57,
+   "source": "AI-run takeover",
+   "impact_g": 3.3,
+   "impact_ay_g": -2.1,
+   "speed_pre_erpm": -3425,
+   "steer_stop_us": 270,
+   "takeover_after_stop_s": 0.26,
+   "first_R_after_stop_s": 0.49,
+   "reverse_engaged_after_stop_s": 0.97,
+   "neutral_gaps_s": [
+    0.17
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1628.0,
+     "dur": 0.25
+    }
+   ],
+   "onset_after_R_s": [
+    0.06
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1663,
+   "reverse_thr_max_us": 1799,
+   "reverse_cmd_s": 1.0,
+   "reverse_motion_s": 1.25,
+   "reverse_hall_counts": 328,
+   "reverse_peak_erpm": 4254,
+   "steer_reverse_us": -96,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.07,
+   "steer_forward_us": 137,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1367,
+   "kick_s": 0.6,
+   "kick_steer_us": 114,
+   "forward_after_stop_s": 2.29,
+   "normal_driving_after_stop_s": 4.16,
+   "handback_after_stop_s": 3.22,
+   "tof_obstacle_at_stop_m": 0.26,
+   "tof_obstacle_at_reverse_end_m": 0.15
+  },
+  {
+   "id": 23,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 107.48,
+   "source": "AI-run takeover",
+   "impact_g": 4.1,
+   "impact_ay_g": -4.9,
+   "speed_pre_erpm": -3911,
+   "steer_stop_us": -1,
+   "takeover_after_stop_s": -1.18,
+   "first_R_after_stop_s": 0.27,
+   "reverse_engaged_after_stop_s": 0.31,
+   "neutral_gaps_s": [
+    0.17
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1739.0,
+     "dur": 0.22
+    }
+   ],
+   "onset_after_R_s": [
+    0.04
+   ],
+   "failed_R_attempts": 0,
+   "fail_reasons": {},
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1639,
+   "reverse_thr_max_us": 1660,
+   "reverse_cmd_s": 0.91,
+   "reverse_motion_s": 1.21,
+   "reverse_hall_counts": 235,
+   "reverse_peak_erpm": 2459,
+   "steer_reverse_us": 443,
+   "steer_reverse_vs_prestop": "pre-centred",
+   "forward_after_reverse_s": 0.09,
+   "steer_forward_us": -451,
+   "steer_forward_vs_prestop": "pre-centred",
+   "kick_thr_us": 1374,
+   "kick_s": 1.02,
+   "kick_steer_us": -451,
+   "forward_after_stop_s": 1.57,
+   "normal_driving_after_stop_s": 1.76,
+   "handback_after_stop_s": 2.99,
+   "tof_obstacle_at_stop_m": 0.31,
+   "tof_obstacle_at_reverse_end_m": 1.37
+  },
+  {
+   "id": 24,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 143.2,
+   "source": "AI-run takeover",
+   "impact_g": 4.5,
+   "impact_ay_g": -4.9,
+   "speed_pre_erpm": -4088,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 1.68,
+   "first_R_after_stop_s": 0.05,
+   "reverse_engaged_after_stop_s": 2.07,
+   "neutral_gaps_s": [
+    0.24
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1954.392578125,
+     "dur": 1.63
+    }
+   ],
+   "onset_after_R_s": [
+    0.15
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "other": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1628,
+   "reverse_thr_max_us": 1634,
+   "reverse_cmd_s": 0.43,
+   "reverse_motion_s": 1.12,
+   "reverse_hall_counts": 115,
+   "reverse_peak_erpm": 1324,
+   "steer_reverse_us": -1,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.11,
+   "steer_forward_us": -411,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1405,
+   "kick_s": 0.63,
+   "kick_steer_us": -409,
+   "forward_after_stop_s": 3.32,
+   "normal_driving_after_stop_s": 4.45,
+   "handback_after_stop_s": 4.28,
+   "tof_obstacle_at_stop_m": 0.33,
+   "tof_obstacle_at_reverse_end_m": 0.95
+  },
+  {
+   "id": 25,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 157.81,
+   "source": "AI-run takeover",
+   "impact_g": 5.2,
+   "impact_ay_g": -6.0,
+   "speed_pre_erpm": -4571,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 0.36,
+   "first_R_after_stop_s": 0.09,
+   "reverse_engaged_after_stop_s": 0.65,
+   "neutral_gaps_s": [
+    0.2
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1562.24169921875,
+     "dur": 0.27
+    }
+   ],
+   "onset_after_R_s": [
+    0.09
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1701,
+   "reverse_thr_max_us": 1709,
+   "reverse_cmd_s": 0.21,
+   "reverse_motion_s": 0.8,
+   "reverse_hall_counts": 112,
+   "reverse_peak_erpm": 2141,
+   "steer_reverse_us": -3,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.08,
+   "steer_forward_us": -447,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1358,
+   "kick_s": 0.6,
+   "kick_steer_us": -447,
+   "forward_after_stop_s": 1.44,
+   "normal_driving_after_stop_s": 3.11,
+   "handback_after_stop_s": 2.44,
+   "tof_obstacle_at_stop_m": 0.34,
+   "tof_obstacle_at_reverse_end_m": 0.89
+  },
+  {
+   "id": 26,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 210.56,
+   "source": "AI-run takeover",
+   "impact_g": 4.2,
+   "impact_ay_g": -4.3,
+   "speed_pre_erpm": -4870,
+   "steer_stop_us": -443,
+   "takeover_after_stop_s": 0.37,
+   "first_R_after_stop_s": -0.01,
+   "reverse_engaged_after_stop_s": 0.68,
+   "neutral_gaps_s": [
+    0.2
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1570.695068359375,
+     "dur": 0.38
+    }
+   ],
+   "onset_after_R_s": [
+    0.11
+   ],
+   "failed_R_attempts": 2,
+   "fail_reasons": {
+    "still rolling fwd": 1,
+    "other": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1596,
+   "reverse_thr_max_us": 1777,
+   "reverse_cmd_s": 0.48,
+   "reverse_motion_s": 1.06,
+   "reverse_hall_counts": 185,
+   "reverse_peak_erpm": 3005,
+   "steer_reverse_us": -3,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.06,
+   "steer_forward_us": -346,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1342,
+   "kick_s": 0.6,
+   "kick_steer_us": -328,
+   "forward_after_stop_s": 1.8,
+   "normal_driving_after_stop_s": 1.96,
+   "handback_after_stop_s": 2.82,
+   "tof_obstacle_at_stop_m": 0.38,
+   "tof_obstacle_at_reverse_end_m": 0.17
+  },
+  {
+   "id": 27,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 244.33,
+   "source": "AI-run takeover",
+   "impact_g": 6.1,
+   "impact_ay_g": -6.5,
+   "speed_pre_erpm": -4421,
+   "steer_stop_us": -405,
+   "takeover_after_stop_s": 2.33,
+   "first_R_after_stop_s": 0.12,
+   "reverse_engaged_after_stop_s": 2.7,
+   "neutral_gaps_s": [
+    0.27
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1736.4501953125,
+     "dur": 2.21
+    }
+   ],
+   "onset_after_R_s": [
+    0.1
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "brake (after F)": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1747,
+   "reverse_thr_max_us": 1763,
+   "reverse_cmd_s": 0.21,
+   "reverse_motion_s": 0.53,
+   "reverse_hall_counts": 96,
+   "reverse_peak_erpm": 2211,
+   "steer_reverse_us": -3,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.06,
+   "steer_forward_us": -451,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1365,
+   "kick_s": 0.6,
+   "kick_steer_us": -451,
+   "forward_after_stop_s": 3.3,
+   "normal_driving_after_stop_s": 3.48,
+   "handback_after_stop_s": 4.26,
+   "tof_obstacle_at_stop_m": 0.31,
+   "tof_obstacle_at_reverse_end_m": 0.73
+  },
+  {
+   "id": 28,
+   "cls": "A",
+   "log": "20261010-173445",
+   "t_stop_s": 271.17,
+   "source": "AI-run takeover",
+   "impact_g": 7.1,
+   "impact_ay_g": -7.2,
+   "speed_pre_erpm": -4863,
+   "steer_stop_us": -393,
+   "takeover_after_stop_s": 0.41,
+   "first_R_after_stop_s": 0.09,
+   "reverse_engaged_after_stop_s": 0.61,
+   "neutral_gaps_s": [
+    0.12
+   ],
+   "brake_pulses": [
+    {
+     "thr": 1608.154296875,
+     "dur": 0.32
+    }
+   ],
+   "onset_after_R_s": [
+    0.08
+   ],
+   "failed_R_attempts": 1,
+   "fail_reasons": {
+    "other": 1
+   },
+   "n_reverse_engagements": 1,
+   "reverse_thr_median_us": 1712,
+   "reverse_thr_max_us": 1747,
+   "reverse_cmd_s": 0.3,
+   "reverse_motion_s": 0.69,
+   "reverse_hall_counts": 130,
+   "reverse_peak_erpm": 3059,
+   "steer_reverse_us": -3,
+   "steer_reverse_vs_prestop": "centred",
+   "forward_after_reverse_s": 0.07,
+   "steer_forward_us": -452,
+   "steer_forward_vs_prestop": "same",
+   "kick_thr_us": 1370,
+   "kick_s": 0.78,
+   "kick_steer_us": -451,
+   "forward_after_stop_s": 1.34,
+   "normal_driving_after_stop_s": 3.07,
+   "handback_after_stop_s": 2.82,
+   "tof_obstacle_at_stop_m": 0.42,
+   "tof_obstacle_at_reverse_end_m": 0.35
+  }
+ ]
+}

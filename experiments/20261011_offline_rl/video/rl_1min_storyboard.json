@@ -1,0 +1,170 @@
+{
+ "title": "JetFormer 10月11日\nオフライン強化学習のチャレンジ",
+ "log": "20261010-173445",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月11日のレポート",
+   "src_start": 22.5,
+   "src_end": 28.7,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "10月10日の課題",
+    "オフライン強化学習のしくみ",
+    "机上の結果",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。10月11日は、オフライン強化学習に挑戦しました!",
+     "say": "ラピカです。10月11日は、オフライン強化学習に挑戦しました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_issues",
+   "kind": "clip",
+   "log": "20261010-173445",
+   "caption": "10/10の課題: R1とDE",
+   "src_start": 56.5,
+   "src_end": 66.6,
+   "speed": 1.25,
+   "highlights": [
+    "impact"
+   ],
+   "lines": [
+    {
+     "text": "10/10の課題は、R1に速く入ってぶつかることと、DEで右へ曲がり続けることでした。",
+     "say": "10月10日の課題は、アールワンに速く入ってぶつかることと、ディーイーで、右へ曲がり続けることでした。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_pipeline",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "オフライン強化学習の流れ",
+   "src_start": 110.6,
+   "src_end": 122.8,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/offline_rl_20261011/fig/summary_pipeline.png",
+   "lines": [
+    {
+     "text": "そこで、捨てていたAIの走行も使い、予想より良かった行動に印を付けました。",
+     "say": "そこで、捨てていたエーアイの走行も使い、予想より良かった行動に印を付けました。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "JetFormerの形はそのままで、印をジャンルとして学び直しました。",
+     "say": "ジェットフォーマーの形はそのままで、印をジャンルとして学び直しました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_results",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "結果(机上の評価)",
+   "src_start": 122.8,
+   "src_end": 133.6,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/offline_rl_20261011/fig/summary_results.png",
+   "lines": [
+    {
+     "text": "結果、価値は衝突を予測できず、机上の関門はどの方策も通りませんでした。",
+     "say": "結果、価値は、衝突を予測できず、机上の関門は、どの方策も通りませんでした。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "人の走りとの一致も、今のモデルBが一番でした。",
+     "say": "人の走りとの一致も、今のモデルビーが一番でした。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_noise",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "差は学習のばらつき程度",
+   "src_start": 160.5,
+   "src_end": 167.7,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/offline_rl_20261011/fig/summary_noise.png",
+   "lines": [
+    {
+     "text": "印で出力は動きましたが、その差は学習のばらつきと同じくらいでした。",
+     "say": "印で出力は動きましたが、その差は、学習のばらつきと同じくらいでした。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 192.0,
+   "src_end": 199.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "AIの走行も使って学び直した",
+    "価値の衝突予測は0.41(基準0.8)",
+    "机上の関門は4本とも不合格",
+    "人との一致はモデルBが最良",
+    "印の効果は学習のばらつき程度",
+    "実車は未走行。モデルBのまま"
+   ],
+   "lines": [
+    {
+     "text": "机上では走行の精度は上がらず、実車で良くなる根拠もないので、モデルBのままにします。",
+     "say": "机上では、走行の精度は上がらず、実車で良くなる根拠も無いので、モデルビーのままにします。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s7_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 176.0,
+   "src_end": 186.9,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/offline_rl_20261011/fig/summary_issues.png",
+   "lines": [
+    {
+     "text": "課題は、危険を測れる価値、報酬の悪用、難しい場面のデータの少なさ、そして電源です。",
+     "say": "課題は、危険を測れる価値と、報酬の悪用、難しい場面のデータの少なさ、そして電源です。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,5848 @@
+{
+ "definitions": "周ごとの品質表(人・AI)— explore_data.md の根拠(読み取りのみ、CPU)\n\n    source ~/miniconda/etc/profile.d/conda.sh && conda activate jetracer\n    nice -n 15 python lap_quality.py > lap_quality.json\n\n生ログ ~/jetformer/data/raw/<log>/ の IMU・VEHICLE・AI_CMD だけを読む(画像は読まない)。\n定義は collision_map.md(cmap_src)にそろえた:\n  - 向き: gyro z(deg/s)から静止時の中央値を引いて積分(0.2秒を超える途切れは積分しない)\n  - R1 の起点: 平滑化したヨーレート(11サンプル平均)が −30 deg/s を下回る区間のうち、\n    最小 ≤ −120、向きの変化 ≤ −40、直前 2秒に 90度超の左旋回(または区間の変化 ≤ −90)、\n    直前 1.2〜0.1秒に 60度超の右旋回がない(cmap は 3〜0.6秒前。夜の人のログで R1 を落とすので狭めた)、前の起点から 5秒以上。さらに 1.5秒以内のヨー最小 ≤ −170 かつ\n    (深さ ≤ −90度 または 1秒以内に衝突)\n  - R1 の進入速度: 起点の 0.4秒前〜0.15秒後の最大の前進 eRPM\n  - 緑マット出口(tg): 起点から 2秒以内の向きの最小(≤ −90)の後、4.5秒以内に −25度まで戻った時刻(cmap は 3.5秒)\n  - DE の向き: tg+0.6秒の向き − 起点の向き(+ = 左)\n  - 衝突: 水平 hypot(ax, ay) ≥ 2.5G、0.6秒以内はまとめる、±50ms に 1G 超が1サンプルだけのもの(跳ね)は除く。≥4G を強い衝突\n  - 衝突の場所: R1 = [起点−0.05, 起点+1.0)、GM = [起点+1.0, tg+0.3)、DE = [tg+0.3, tg+2.0)、その他 = 周の残り\n  - 周: 起点から次の起点まで(6〜14秒、IMU の途切れ ≤ 0.25秒、向きの変化 300〜420度)\n  - 区間の時間: R1+GM = 起点→tg、DE+SW = tg→向き +150度(tg+1秒以降で最初)、HS+LH = +150度→次の起点(向きは起点基準の目安)\n  - 速度: |eRPM| × 0.5e-3 m/s(65mm タイヤ、空転を含む目安)\n",
+ "logs": {
+  "20261010-135449": {
+   "kind": "human",
+   "group": "afternoon",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 2,
+   "t0_us": 1791608020327571,
+   "passes": [
+    {
+     "a": 45.45,
+     "v_in": 3624.0,
+     "r1_hits": [],
+     "tg": 48.149666,
+     "de_psi": -10.825837233499897,
+     "de_v": 3769.475,
+     "de_vmax": 4396.0,
+     "gm_hits": [],
+     "de_hits": [
+      4.7
+     ],
+     "de_psi12": -18.962927748532366,
+     "de_yaw": 7.89987691807356,
+     "de_psi_min": -24.578119925680994,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 95.3,
+     "v_in": 4489.0,
+     "r1_hits": [],
+     "tg": 97.49912,
+     "de_psi": 28.55981028378028,
+     "de_v": 4414.225,
+     "de_vmax": 5658.0,
+     "gm_hits": [
+      8.1
+     ],
+     "de_hits": [],
+     "de_psi12": 18.543572017409588,
+     "de_yaw": 16.861825571298596,
+     "de_psi_min": -24.203652246376805,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 45.45,
+     "time_s": 49.85,
+     "dh": 846,
+     "valid": false,
+     "impacts": 3,
+     "strong": 1,
+     "v_in": 3624.0,
+     "de_psi": -10.825837233499897,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 2,
+     "scene": "20261010-135449-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 119,
+    "GM": 97,
+    "DE": 80,
+    "other": 1464,
+    "moving": 1760,
+    "cd": {
+     "R1": 119,
+     "GM": 97,
+     "DE": 80,
+     "other": 1464
+    }
+   },
+   "impacts": 5
+  },
+  "20261010-144028": {
+   "kind": "human",
+   "group": "afternoon",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 4,
+   "t0_us": 1791610838630870,
+   "passes": [
+    {
+     "a": 9.74,
+     "v_in": 2726.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 19.44,
+     "v_in": 4745.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 38.96,
+     "v_in": 4218.0,
+     "r1_hits": [],
+     "tg": 41.216704,
+     "de_psi": 5.393970192994971,
+     "de_v": 4164.775,
+     "de_vmax": 5923.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -11.89988459700055,
+     "de_yaw": -18.852097936630248,
+     "de_psi_min": -24.64063912331767,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 48.09,
+     "v_in": 4019.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 9.74,
+     "time_s": 9.7,
+     "dh": 303,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 2726.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-144028-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 19.44,
+     "time_s": 19.52,
+     "dh": 92,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4745.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-144028-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 38.96,
+     "time_s": 9.13,
+     "dh": 345,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4218.0,
+     "de_psi": 5.393970192994971,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.26,
+      "DESW": 4.14,
+      "HSLH": 2.73
+     },
+     "sector_erpm": {
+      "R1GM": 3934,
+      "DESW": 6155,
+      "HSLH": 5992
+     },
+     "erpm_p50": 5072.0,
+     "erpm_p90": 6830.0,
+     "dist_m": 23.760361178500006,
+     "scene": "20261010-144028-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 218,
+    "GM": 41,
+    "DE": 51,
+    "other": 864,
+    "moving": 1174,
+    "cd": {
+     "R1": 218,
+     "GM": 41,
+     "DE": 51,
+     "other": 864
+    }
+   },
+   "impacts": 2
+  },
+  "20261010-150424": {
+   "kind": "human",
+   "group": "afternoon",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 10,
+   "t0_us": 1791612274606777,
+   "passes": [
+    {
+     "a": 0.01,
+     "v_in": 2238.0,
+     "r1_hits": [],
+     "tg": 3.219187,
+     "de_psi": -31.16189273773622,
+     "de_v": 4153.175,
+     "de_vmax": 4584.0,
+     "gm_hits": [
+      2.9
+     ],
+     "de_hits": [],
+     "de_psi12": -25.839113406252626,
+     "de_yaw": 12.386353225602939,
+     "de_psi_min": -44.51372218310307,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 13.65,
+     "v_in": 3343.0,
+     "r1_hits": [],
+     "tg": 16.56081,
+     "de_psi": 31.17300323207286,
+     "de_v": 3929.8125,
+     "de_vmax": 5036.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 1.8459113825076088,
+     "de_yaw": 17.31253631496429,
+     "de_psi_min": -24.287144436721064,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 46.31,
+     "v_in": 4541.0,
+     "r1_hits": [],
+     "tg": 48.769144,
+     "de_psi": -22.44437469790921,
+     "de_v": 4599.9625,
+     "de_vmax": 5211.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -0.7309383565597045,
+     "de_yaw": -12.687388899771896,
+     "de_psi_min": -24.85646757209736,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 55.95,
+     "v_in": 5314.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 77.24,
+     "v_in": 4437.0,
+     "r1_hits": [],
+     "tg": 80.369156,
+     "de_psi": -41.07977095664887,
+     "de_v": 5285.8375,
+     "de_vmax": 6821.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -46.14141209331865,
+     "de_yaw": -33.475573893547065,
+     "de_psi_min": -46.38710984089698,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 87.57,
+     "v_in": 5422.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 116.15,
+     "v_in": 7521.0,
+     "r1_hits": [
+      8.4
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 128.28,
+     "v_in": 6703.0,
+     "r1_hits": [],
+     "tg": 130.645955,
+     "de_psi": 19.175374072053728,
+     "de_v": 5888.4,
+     "de_vmax": 7228.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -5.582484917029888,
+     "de_yaw": 8.575894638215077,
+     "de_psi_min": -24.248893728718485,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 157.18,
+     "v_in": 6050.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 166.77,
+     "v_in": 5679.0,
+     "r1_hits": [],
+     "tg": 169.125268,
+     "de_psi": 12.64125719195863,
+     "de_v": 4725.5875,
+     "de_vmax": 6517.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -4.74291098990625,
+     "de_yaw": -13.203182597527743,
+     "de_psi_min": -24.085378772347667,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 0.01,
+     "time_s": 13.64,
+     "dh": 324,
+     "valid": false,
+     "impacts": 2,
+     "strong": 0,
+     "v_in": 2238.0,
+     "de_psi": -31.16189273773622,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": false,
+     "other_hit": 1,
+     "scene": "20261010-150424-0001",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 13.65,
+     "time_s": 32.66,
+     "dh": 587,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3343.0,
+     "de_psi": 31.17300323207286,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-150424-0001",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 46.31,
+     "time_s": 9.64,
+     "dh": 363,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4541.0,
+     "de_psi": -22.44437469790921,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.46,
+      "DESW": 4.2,
+      "HSLH": 2.98
+     },
+     "sector_erpm": {
+      "R1GM": 3982,
+      "DESW": 5209,
+      "HSLH": 6744
+     },
+     "erpm_p50": 5104.5,
+     "erpm_p90": 6976.0,
+     "dist_m": 25.477995866500006,
+     "scene": "20261010-150424-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 55.95,
+     "time_s": 21.29,
+     "dh": 39,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5314.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-150424-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 77.24,
+     "time_s": 10.33,
+     "dh": 305,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4437.0,
+     "de_psi": -41.07977095664887,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 3.13,
+      "DESW": 4.02,
+      "HSLH": 3.182
+     },
+     "sector_erpm": {
+      "R1GM": 4065,
+      "DESW": 6446,
+      "HSLH": 6198
+     },
+     "erpm_p50": 5696.0,
+     "erpm_p90": 7177.000000000001,
+     "dist_m": 27.740209031,
+     "scene": "20261010-150424-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 87.57,
+     "time_s": 28.58,
+     "dh": 274,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5422.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-150424-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 116.15,
+     "time_s": 12.13,
+     "dh": 358,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 7521.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-150424-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 128.28,
+     "time_s": 28.9,
+     "dh": 416,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 6703.0,
+     "de_psi": 19.175374072053728,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-150424-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 157.18,
+     "time_s": 9.59,
+     "dh": 212,
+     "valid": false,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 6050.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "scene": "20261010-150424-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 561,
+    "GM": 349,
+    "DE": 294,
+    "other": 1721,
+    "moving": 2925,
+    "cd": {
+     "R1": 561,
+     "GM": 349,
+     "DE": 294,
+     "other": 1721
+    }
+   },
+   "impacts": 4
+  },
+  "20261010-152405": {
+   "kind": "human",
+   "group": "afternoon",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 11,
+   "t0_us": 1791613445615410,
+   "passes": [
+    {
+     "a": 6.68,
+     "v_in": 5083.0,
+     "r1_hits": [],
+     "tg": 9.249912,
+     "de_psi": -3.6899485145061135,
+     "de_v": 5659.85,
+     "de_vmax": 7534.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -3.6899485145061135,
+     "de_yaw": -45.07791484064526,
+     "de_psi_min": -24.727251477033633,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 16.0,
+     "v_in": 6238.0,
+     "r1_hits": [],
+     "tg": 19.781107,
+     "de_psi": -45.254376615536444,
+     "de_v": 5034.775,
+     "de_vmax": 7402.0,
+     "gm_hits": [
+      8.7
+     ],
+     "de_hits": [
+      2.8
+     ],
+     "de_psi12": -47.205408645069326,
+     "de_yaw": 32.95731748143832,
+     "de_psi_min": -75.46297384898514,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 25.89,
+     "v_in": 6628.0,
+     "r1_hits": [],
+     "tg": 27.921106,
+     "de_psi": -4.582091075159838,
+     "de_v": 5888.15,
+     "de_vmax": 7024.0,
+     "gm_hits": [],
+     "de_hits": [
+      6.6,
+      8.0
+     ],
+     "de_psi12": 32.3736270782357,
+     "de_yaw": 17.989329856137434,
+     "de_psi_min": -23.743939232739308,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 34.49,
+     "v_in": 6261.0,
+     "r1_hits": [],
+     "tg": 36.884684,
+     "de_psi": 26.15143862173295,
+     "de_v": 5750.05,
+     "de_vmax": 6835.0,
+     "gm_hits": [],
+     "de_hits": [
+      5.2
+     ],
+     "de_psi12": -40.548472998302486,
+     "de_yaw": 28.434451886018117,
+     "de_psi_min": -49.3381586217713,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 44.63,
+     "v_in": 6108.0,
+     "r1_hits": [],
+     "tg": 47.531106,
+     "de_psi": -41.85539821435805,
+     "de_v": 5134.7875,
+     "de_vmax": 7591.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -41.44483316437709,
+     "de_yaw": -42.93394451538722,
+     "de_psi_min": -44.49987781925847,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 54.29,
+     "v_in": 5054.0,
+     "r1_hits": [
+      3.4
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 67.88,
+     "v_in": 5223.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 77.64,
+     "v_in": 5849.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 86.46,
+     "v_in": 6366.0,
+     "r1_hits": [
+      8.0
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 101.03,
+     "v_in": 4964.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 110.09,
+     "v_in": 6093.0,
+     "r1_hits": [],
+     "tg": 112.247753,
+     "de_psi": 11.05621497856555,
+     "de_v": 5052.4125,
+     "de_vmax": 6608.0,
+     "gm_hits": [],
+     "de_hits": [
+      5.5
+     ],
+     "de_psi12": -0.3886424169700149,
+     "de_yaw": -36.630590206881365,
+     "de_psi_min": -24.994413187506325,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 6.68,
+     "time_s": 9.32,
+     "dh": 321,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5083.0,
+     "de_psi": -3.6899485145061135,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-152405-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 16.0,
+     "time_s": 9.89,
+     "dh": 307,
+     "valid": false,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 6238.0,
+     "de_psi": -45.254376615536444,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "scene": "20261010-152405-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 25.89,
+     "time_s": 8.6,
+     "dh": 377,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6628.0,
+     "de_psi": -4.582091075159838,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.03,
+      "DESW": 3.85,
+      "HSLH": 2.72
+     },
+     "sector_erpm": {
+      "R1GM": 5086,
+      "DESW": 6532,
+      "HSLH": 7430
+     },
+     "erpm_p50": 6219.0,
+     "erpm_p90": 8254.4,
+     "dist_m": 26.716871839499998,
+     "scene": "20261010-152405-0002",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 34.49,
+     "time_s": 10.14,
+     "dh": 396,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6261.0,
+     "de_psi": 26.15143862173295,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 2.394,
+      "DESW": 3.796,
+      "HSLH": 3.95
+     },
+     "sector_erpm": {
+      "R1GM": 5664,
+      "DESW": 6446,
+      "HSLH": 5958
+     },
+     "erpm_p50": 6138.5,
+     "erpm_p90": 7479.3,
+     "dist_m": 30.313461060499975,
+     "scene": "20261010-152405-0002",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 44.63,
+     "time_s": 9.66,
+     "dh": 341,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 6108.0,
+     "de_psi": -41.85539821435805,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 2.9,
+      "DESW": 3.52,
+      "HSLH": 3.24
+     },
+     "sector_erpm": {
+      "R1GM": 4258,
+      "DESW": 7070,
+      "HSLH": 4646
+     },
+     "erpm_p50": 5100.5,
+     "erpm_p90": 7955.0,
+     "dist_m": 26.059799434999988,
+     "scene": "20261010-152405-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 54.29,
+     "time_s": 13.59,
+     "dh": 337,
+     "valid": true,
+     "impacts": 3,
+     "strong": 1,
+     "v_in": 5054.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "scene": "20261010-152405-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 67.88,
+     "time_s": 9.76,
+     "dh": 200,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5223.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-152405-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 77.64,
+     "time_s": 8.82,
+     "dh": 245,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5849.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-152405-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 86.46,
+     "time_s": 14.57,
+     "dh": 383,
+     "valid": false,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 6366.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-152405-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 101.03,
+     "time_s": 9.06,
+     "dh": 222,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4964.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-152405-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 647,
+    "GM": 333,
+    "DE": 301,
+    "other": 2253,
+    "moving": 3534,
+    "cd": {
+     "R1": 647,
+     "GM": 333,
+     "DE": 301,
+     "other": 2253
+    }
+   },
+   "impacts": 12
+  },
+  "20261010-152707": {
+   "kind": "human",
+   "group": "afternoon",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 10,
+   "t0_us": 1791613627704937,
+   "passes": [
+    {
+     "a": 7.35,
+     "v_in": 6129.0,
+     "r1_hits": [],
+     "tg": 9.888361,
+     "de_psi": -8.962507415014699,
+     "de_v": 5244.3125,
+     "de_vmax": 8933.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -11.806421535854042,
+     "de_yaw": -19.575711711744468,
+     "de_psi_min": -24.956439549140498,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 16.43,
+     "v_in": 6422.0,
+     "r1_hits": [
+      3.1
+     ],
+     "tg": 18.288222,
+     "de_psi": 29.196168463706158,
+     "de_v": 5388.675,
+     "de_vmax": 9101.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 27.600434453036655,
+     "de_yaw": 38.781504759192465,
+     "de_psi_min": -24.23319343339375,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 24.71,
+     "v_in": 6124.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 33.06,
+     "v_in": 6641.0,
+     "r1_hits": [],
+     "tg": 35.277791,
+     "de_psi": 9.27548202674916,
+     "de_v": 5207.325,
+     "de_vmax": 9239.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 3.4915465133744874,
+     "de_yaw": 13.42022402882576,
+     "de_psi_min": -24.6383961275194,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 41.46,
+     "v_in": 5798.0,
+     "r1_hits": [],
+     "tg": 43.937868,
+     "de_psi": 13.6571754675997,
+     "de_v": 5611.0125,
+     "de_vmax": 6831.0,
+     "gm_hits": [
+      3.9
+     ],
+     "de_hits": [],
+     "de_psi12": -23.92032491767668,
+     "de_yaw": -15.795731920003892,
+     "de_psi_min": -25.65850255004466,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 50.18,
+     "v_in": 6988.0,
+     "r1_hits": [],
+     "tg": 52.697903,
+     "de_psi": 23.57858238671315,
+     "de_v": 6292.5125,
+     "de_vmax": 9182.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 19.2336301380617,
+     "de_yaw": 29.219720313609656,
+     "de_psi_min": -23.95949966004264,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 58.69,
+     "v_in": 6072.0,
+     "r1_hits": [],
+     "tg": 60.317806,
+     "de_psi": 46.09643085629705,
+     "de_v": 4743.3625,
+     "de_vmax": 7677.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -5.3732304987538555,
+     "de_yaw": 41.73628142674764,
+     "de_psi_min": -23.722440232514145,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 66.67,
+     "v_in": 7665.0,
+     "r1_hits": [
+      8.6
+     ],
+     "tg": 71.107789,
+     "de_psi": -19.391621933340957,
+     "de_v": 5760.05,
+     "de_vmax": 9269.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -31.274001854524613,
+     "de_yaw": -26.080793174604576,
+     "de_psi_min": -31.35288362619167,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 76.77,
+     "v_in": 6887.0,
+     "r1_hits": [
+      8.0
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 90.0,
+     "v_in": 5696.0,
+     "r1_hits": [],
+     "tg": 91.96817,
+     "de_psi": 46.35832169426567,
+     "de_v": 5733.625,
+     "de_vmax": 9178.0,
+     "gm_hits": [
+      4.8
+     ],
+     "de_hits": [],
+     "de_psi12": 6.824863249780265,
+     "de_yaw": 37.47408643762271,
+     "de_psi_min": -23.488592260062887,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 7.35,
+     "time_s": 9.08,
+     "dh": 320,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 6129.0,
+     "de_psi": -8.962507415014699,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.54,
+      "DESW": 3.43,
+      "HSLH": 3.11
+     },
+     "sector_erpm": {
+      "R1GM": 4730,
+      "DESW": 8149,
+      "HSLH": 7143
+     },
+     "erpm_p50": 6090.5,
+     "erpm_p90": 8620.0,
+     "dist_m": 28.2357534725,
+     "scene": "20261010-152707-0001",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 16.43,
+     "time_s": 8.28,
+     "dh": 389,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 6422.0,
+     "de_psi": 29.196168463706158,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 1.86,
+      "DESW": 3.14,
+      "HSLH": 3.28
+     },
+     "sector_erpm": {
+      "R1GM": 4562,
+      "DESW": 7214,
+      "HSLH": 7531
+     },
+     "erpm_p50": 6437.0,
+     "erpm_p90": 8879.3,
+     "dist_m": 26.352001028000004,
+     "scene": "20261010-152707-0001",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 24.71,
+     "time_s": 8.35,
+     "dh": 234,
+     "valid": false,
+     "impacts": 2,
+     "strong": 0,
+     "v_in": 6124.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "scene": "20261010-152707-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 33.06,
+     "time_s": 8.4,
+     "dh": 382,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 6641.0,
+     "de_psi": 9.27548202674916,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.22,
+      "DESW": 3.29,
+      "HSLH": 2.89
+     },
+     "sector_erpm": {
+      "R1GM": 5128,
+      "DESW": 7976,
+      "HSLH": 5874
+     },
+     "erpm_p50": 6041.0,
+     "erpm_p90": 8837.0,
+     "dist_m": 26.468058675999995,
+     "scene": "20261010-152707-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 41.46,
+     "time_s": 8.72,
+     "dh": 333,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 5798.0,
+     "de_psi": 13.6571754675997,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.48,
+      "DESW": 3.69,
+      "HSLH": 2.55
+     },
+     "sector_erpm": {
+      "R1GM": 5263,
+      "DESW": 6693,
+      "HSLH": 7640
+     },
+     "erpm_p50": 6294.0,
+     "erpm_p90": 8258.9,
+     "dist_m": 27.93560889649999,
+     "scene": "20261010-152707-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 50.18,
+     "time_s": 8.51,
+     "dh": 351,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 6988.0,
+     "de_psi": 23.57858238671315,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.52,
+      "DESW": 3.16,
+      "HSLH": 2.83
+     },
+     "sector_erpm": {
+      "R1GM": 5642,
+      "DESW": 8001,
+      "HSLH": 8392
+     },
+     "erpm_p50": 6582.0,
+     "erpm_p90": 9360.0,
+     "dist_m": 29.477885843500005,
+     "scene": "20261010-152707-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 58.69,
+     "time_s": 7.98,
+     "dh": 392,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 6072.0,
+     "de_psi": 46.09643085629705,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 1.63,
+      "DESW": 3.52,
+      "HSLH": 2.83
+     },
+     "sector_erpm": {
+      "R1GM": 5116,
+      "DESW": 7258,
+      "HSLH": 8429
+     },
+     "erpm_p50": 7016.0,
+     "erpm_p90": 9071.7,
+     "dist_m": 26.66501020949996,
+     "scene": "20261010-152707-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 66.67,
+     "time_s": 10.1,
+     "dh": 336,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 7665.0,
+     "de_psi": -19.391621933340957,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 4.44,
+      "DESW": 3.39,
+      "HSLH": 2.27
+     },
+     "sector_erpm": {
+      "R1GM": 5050,
+      "DESW": 7995,
+      "HSLH": 8602
+     },
+     "erpm_p50": 5860.0,
+     "erpm_p90": 8943.0,
+     "dist_m": 29.16480069900003,
+     "scene": "20261010-152707-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 76.77,
+     "time_s": 13.23,
+     "dh": 233,
+     "valid": false,
+     "impacts": 3,
+     "strong": 2,
+     "v_in": 6887.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "scene": "20261010-152707-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 586,
+    "GM": 393,
+    "DE": 396,
+    "other": 1388,
+    "moving": 2763,
+    "cd": {
+     "R1": 586,
+     "GM": 393,
+     "DE": 396,
+     "other": 1388
+    }
+   },
+   "impacts": 11
+  },
+  "20261010-193638": {
+   "kind": "human",
+   "group": "evening",
+   "genre": 4,
+   "bias_dps": -0.061,
+   "anchors": 4,
+   "t0_us": 1791628608542556,
+   "passes": [
+    {
+     "a": 2.18,
+     "v_in": 3775.0,
+     "r1_hits": [],
+     "tg": 4.537603,
+     "de_psi": -4.882766373114777,
+     "de_v": 4083.8125,
+     "de_vmax": 6752.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -6.990275203346243,
+     "de_yaw": -13.238313196599483,
+     "de_psi_min": -23.674159712939968,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 41.15,
+     "v_in": 3828.0,
+     "r1_hits": [],
+     "tg": 43.345274,
+     "de_psi": 41.461964447076184,
+     "de_v": 3740.75,
+     "de_vmax": 5705.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 37.144855821025544,
+     "de_yaw": 76.28607880423466,
+     "de_psi_min": -24.871315047796543,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 50.6,
+     "v_in": 4175.0,
+     "r1_hits": [],
+     "tg": 53.01021,
+     "de_psi": -6.695592194931578,
+     "de_v": 3972.4938271604938,
+     "de_vmax": 5846.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -23.824081231809714,
+     "de_yaw": -39.820691639083925,
+     "de_psi_min": -24.00304452560249,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 80.21,
+     "v_in": 4583.0,
+     "r1_hits": [],
+     "tg": 82.684596,
+     "de_psi": 0.07000969021351011,
+     "de_v": 3099.6625,
+     "de_vmax": 5285.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 3.7916029874002106,
+     "de_yaw": 11.927229466985484,
+     "de_psi_min": -24.74925550495982,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 2.18,
+     "time_s": 38.97,
+     "dh": 528,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3775.0,
+     "de_psi": -4.882766373114777,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-193638-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 41.15,
+     "time_s": 9.44,
+     "dh": 405,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3828.0,
+     "de_psi": 41.461964447076184,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.194,
+      "DESW": 3.874,
+      "HSLH": 3.377
+     },
+     "sector_erpm": {
+      "R1GM": 3675,
+      "DESW": 5604,
+      "HSLH": 6994
+     },
+     "erpm_p50": 5252.0,
+     "erpm_p90": 7175.0,
+     "dist_m": 25.4246501675,
+     "scene": "20261010-193638-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 50.6,
+     "time_s": 29.61,
+     "dh": 499,
+     "valid": false,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 4175.0,
+     "de_psi": -6.695592194931578,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "scene": "20261010-193638-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 207,
+    "GM": 172,
+    "DE": 201,
+    "other": 1135,
+    "moving": 1715,
+    "cd": {
+     "R1": 207,
+     "GM": 172,
+     "DE": 201,
+     "other": 1135
+    }
+   },
+   "impacts": 1
+  },
+  "20261010-200916": {
+   "kind": "human",
+   "group": "evening",
+   "genre": 4,
+   "bias_dps": -0.0915,
+   "anchors": 19,
+   "t0_us": 1791630566476965,
+   "passes": [
+    {
+     "a": 2.61,
+     "v_in": 4027.0,
+     "r1_hits": [],
+     "tg": 5.259965,
+     "de_psi": 15.45686592025902,
+     "de_v": 5402.875,
+     "de_vmax": 6184.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -41.354796450565345,
+     "de_yaw": -37.900341237666176,
+     "de_psi_min": -48.35676413945663,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 13.17,
+     "v_in": 5111.0,
+     "r1_hits": [],
+     "tg": 16.569875,
+     "de_psi": -16.938585775704155,
+     "de_v": 4806.6625,
+     "de_vmax": 7987.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -21.844098706276895,
+     "de_yaw": 5.487296821673711,
+     "de_psi_min": -24.902316086160113,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 43.75,
+     "v_in": 3916.0,
+     "r1_hits": [],
+     "tg": 46.161378,
+     "de_psi": -17.230813743484077,
+     "de_v": 4927.6125,
+     "de_vmax": 5963.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 9.181049828606888,
+     "de_yaw": -63.43038754562537,
+     "de_psi_min": -31.48533454442486,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 52.94,
+     "v_in": 5999.0,
+     "r1_hits": [],
+     "tg": 55.389888,
+     "de_psi": -9.272572719600475,
+     "de_v": 4915.8875,
+     "de_vmax": 7654.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -21.3451590565478,
+     "de_yaw": -5.257113949457804,
+     "de_psi_min": -24.651079568624027,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 82.7,
+     "v_in": 5023.0,
+     "r1_hits": [],
+     "tg": 85.359969,
+     "de_psi": -0.1613030621240341,
+     "de_v": 4512.35,
+     "de_vmax": 5995.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -13.640999768422944,
+     "de_yaw": 0.44853235654911755,
+     "de_psi_min": -24.117209102221295,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 92.14,
+     "v_in": 4377.0,
+     "r1_hits": [],
+     "tg": 95.8499,
+     "de_psi": -9.558092057869999,
+     "de_v": 4930.3875,
+     "de_vmax": 7127.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -12.381303428821866,
+     "de_yaw": 10.913109802206357,
+     "de_psi_min": -24.739877038893383,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 132.75,
+     "v_in": 3345.0,
+     "r1_hits": [],
+     "tg": 135.590052,
+     "de_psi": 32.954609984620674,
+     "de_v": 3713.675,
+     "de_vmax": 4738.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 4.462758226380629,
+     "de_yaw": 35.51473698417346,
+     "de_psi_min": -24.38466474360257,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 143.04,
+     "v_in": 5170.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 172.0,
+     "v_in": 4825.0,
+     "r1_hits": [],
+     "tg": 174.589887,
+     "de_psi": -25.823670455636602,
+     "de_v": 4416.925,
+     "de_vmax": 7058.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -20.617183504244622,
+     "de_yaw": -9.848069240649542,
+     "de_psi_min": -26.60928577529785,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 181.15,
+     "v_in": 5243.0,
+     "r1_hits": [],
+     "tg": 183.899908,
+     "de_psi": -9.735578042757425,
+     "de_v": 6152.775,
+     "de_vmax": 8447.0,
+     "gm_hits": [],
+     "de_hits": [
+      2.6
+     ],
+     "de_psi12": -32.186387990897856,
+     "de_yaw": -18.690575309729173,
+     "de_psi_min": -32.70374464864699,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 212.98,
+     "v_in": 4620.0,
+     "r1_hits": [],
+     "tg": 215.839905,
+     "de_psi": -36.89959170277916,
+     "de_v": 4888.8375,
+     "de_vmax": 6761.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -33.36166693667383,
+     "de_yaw": -61.84526341909268,
+     "de_psi_min": -48.58437386453534,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 222.6,
+     "v_in": 4957.0,
+     "r1_hits": [],
+     "tg": 225.009909,
+     "de_psi": -13.210627760991883,
+     "de_v": 3674.1125,
+     "de_vmax": 6310.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -3.6042405730222526,
+     "de_yaw": -5.91971560617288,
+     "de_psi_min": -24.27293787941653,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 250.28,
+     "v_in": 6846.0,
+     "r1_hits": [],
+     "tg": 252.469881,
+     "de_psi": 10.410095526370242,
+     "de_v": 4170.75,
+     "de_vmax": 7315.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 6.851799221059991,
+     "de_yaw": 4.493394519885381,
+     "de_psi_min": -24.115054130541466,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 259.01,
+     "v_in": 5399.0,
+     "r1_hits": [],
+     "tg": 261.029893,
+     "de_psi": 37.99960614933025,
+     "de_v": 4585.725,
+     "de_vmax": 7489.0,
+     "gm_hits": [],
+     "de_hits": [
+      5.8
+     ],
+     "de_psi12": -33.759979885036955,
+     "de_yaw": 35.3917690684398,
+     "de_psi_min": -41.120736530625436,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 289.54,
+     "v_in": 6061.0,
+     "r1_hits": [],
+     "tg": 291.849913,
+     "de_psi": -7.421489089007082,
+     "de_v": 5188.6375,
+     "de_vmax": 6497.0,
+     "gm_hits": [],
+     "de_hits": [
+      8.5
+     ],
+     "de_psi12": -26.889405661961973,
+     "de_yaw": 6.575203583637873,
+     "de_psi_min": -29.186318743370066,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 300.19,
+     "v_in": 3930.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 339.17,
+     "v_in": 3780.0,
+     "r1_hits": [],
+     "tg": 341.700084,
+     "de_psi": 15.7088450464571,
+     "de_v": 3736.8875,
+     "de_vmax": 5533.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 0.6941245061652808,
+     "de_yaw": 12.072154985864957,
+     "de_psi_min": -23.647490507385555,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 368.48,
+     "v_in": 5032.0,
+     "r1_hits": [],
+     "tg": 371.189915,
+     "de_psi": -5.339200603603786,
+     "de_v": 3750.125,
+     "de_vmax": 4860.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 1.0886587676022828,
+     "de_yaw": 0.03617198841046479,
+     "de_psi_min": -24.587517646728884,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 378.69,
+     "v_in": 5551.0,
+     "r1_hits": [],
+     "tg": 380.799924,
+     "de_psi": 21.88423282752865,
+     "de_v": 3072.95,
+     "de_vmax": 6482.0,
+     "gm_hits": [],
+     "de_hits": [
+      8.7
+     ],
+     "de_psi12": 18.194725903805193,
+     "de_yaw": 32.14786679993073,
+     "de_psi_min": -23.06126685421532,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 2.61,
+     "time_s": 10.56,
+     "dh": 370,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4027.0,
+     "de_psi": 15.45686592025902,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.65,
+      "DESW": 4.67,
+      "HSLH": 3.24
+     },
+     "sector_erpm": {
+      "R1GM": 4404,
+      "DESW": 5703,
+      "HSLH": 5188
+     },
+     "erpm_p50": 5095.5,
+     "erpm_p90": 6727.0,
+     "dist_m": 27.125836808000003,
+     "scene": "20261010-200916-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 13.17,
+     "time_s": 30.58,
+     "dh": 369,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5111.0,
+     "de_psi": -16.938585775704155,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 43.75,
+     "time_s": 9.19,
+     "dh": 362,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3916.0,
+     "de_psi": -17.230813743484077,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.411,
+      "DESW": 3.669,
+      "HSLH": 3.111
+     },
+     "sector_erpm": {
+      "R1GM": 4069,
+      "DESW": 5745,
+      "HSLH": 7223
+     },
+     "erpm_p50": 5581.0,
+     "erpm_p90": 7785.0,
+     "dist_m": 26.09520883399999,
+     "scene": "20261010-200916-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 52.94,
+     "time_s": 29.76,
+     "dh": 319,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5999.0,
+     "de_psi": -9.272572719600475,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 82.7,
+     "time_s": 9.44,
+     "dh": 374,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5023.0,
+     "de_psi": -0.1613030621240341,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.66,
+      "DESW": 3.9,
+      "HSLH": 2.88
+     },
+     "sector_erpm": {
+      "R1GM": 4398,
+      "DESW": 5906,
+      "HSLH": 7114
+     },
+     "erpm_p50": 5364.5,
+     "erpm_p90": 7761.0,
+     "dist_m": 26.665098564999976,
+     "scene": "20261010-200916-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 92.14,
+     "time_s": 40.61,
+     "dh": 714,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4377.0,
+     "de_psi": -9.558092057869999,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0003",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 132.75,
+     "time_s": 10.29,
+     "dh": 388,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3345.0,
+     "de_psi": 32.954609984620674,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.84,
+      "DESW": 4.13,
+      "HSLH": 3.32
+     },
+     "sector_erpm": {
+      "R1GM": 3504,
+      "DESW": 4694,
+      "HSLH": 6846
+     },
+     "erpm_p50": 4448.0,
+     "erpm_p90": 7402.800000000001,
+     "dist_m": 25.972096634000003,
+     "scene": "20261010-200916-0004",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 143.04,
+     "time_s": 28.96,
+     "dh": 213,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5170.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0004",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 172.0,
+     "time_s": 9.15,
+     "dh": 358,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4825.0,
+     "de_psi": -25.823670455636602,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.59,
+      "DESW": 3.78,
+      "HSLH": 2.78
+     },
+     "sector_erpm": {
+      "R1GM": 3945,
+      "DESW": 6802,
+      "HSLH": 6428
+     },
+     "erpm_p50": 5110.0,
+     "erpm_p90": 8013.0,
+     "dist_m": 25.492283955999962,
+     "scene": "20261010-200916-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 181.15,
+     "time_s": 31.83,
+     "dh": 410,
+     "valid": false,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 5243.0,
+     "de_psi": -9.735578042757425,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "scene": "20261010-200916-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 212.98,
+     "time_s": 9.62,
+     "dh": 333,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4620.0,
+     "de_psi": -36.89959170277916,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.86,
+      "DESW": 4.53,
+      "HSLH": 2.23
+     },
+     "sector_erpm": {
+      "R1GM": 4498,
+      "DESW": 6555,
+      "HSLH": 6149
+     },
+     "erpm_p50": 5547.0,
+     "erpm_p90": 7102.0,
+     "dist_m": 26.903360632499993,
+     "scene": "20261010-200916-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 222.6,
+     "time_s": 27.68,
+     "dh": 183,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4957.0,
+     "de_psi": -13.210627760991883,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 250.28,
+     "time_s": 8.73,
+     "dh": 365,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 6846.0,
+     "de_psi": 10.410095526370242,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.19,
+      "DESW": 3.518,
+      "HSLH": 3.022
+     },
+     "sector_erpm": {
+      "R1GM": 4812,
+      "DESW": 6600,
+      "HSLH": 7612
+     },
+     "erpm_p50": 5852.0,
+     "erpm_p90": 8313.200000000003,
+     "dist_m": 26.95391637700007,
+     "scene": "20261010-200916-0007",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 259.01,
+     "time_s": 30.53,
+     "dh": 542,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5399.0,
+     "de_psi": 37.99960614933025,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "scene": "20261010-200916-0007",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 289.54,
+     "time_s": 10.65,
+     "dh": 372,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6061.0,
+     "de_psi": -7.421489089007082,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 2.31,
+      "DESW": 4.78,
+      "HSLH": 3.56
+     },
+     "sector_erpm": {
+      "R1GM": 4525,
+      "DESW": 5474,
+      "HSLH": 4768
+     },
+     "erpm_p50": 4895.0,
+     "erpm_p90": 6170.0,
+     "dist_m": 26.316917836000002,
+     "scene": "20261010-200916-0008",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 300.19,
+     "time_s": 38.98,
+     "dh": 289,
+     "valid": false,
+     "impacts": 4,
+     "strong": 4,
+     "v_in": 3930.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 4,
+     "scene": "20261010-200916-0008",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 339.17,
+     "time_s": 29.31,
+     "dh": 354,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3780.0,
+     "de_psi": 15.7088450464571,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-200916-0009",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 368.48,
+     "time_s": 10.21,
+     "dh": 349,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 5032.0,
+     "de_psi": -5.339200603603786,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 2.71,
+      "DESW": 4.39,
+      "HSLH": 3.11
+     },
+     "sector_erpm": {
+      "R1GM": 4129,
+      "DESW": 5213,
+      "HSLH": 6759
+     },
+     "erpm_p50": 5017.0,
+     "erpm_p90": 7345.0,
+     "dist_m": 26.563126818000036,
+     "scene": "20261010-200916-0010",
+     "in_clean_driving": true,
+     "split": "train"
+    }
+   ],
+   "frames": {
+    "R1": 1070,
+    "GM": 872,
+    "DE": 858,
+    "other": 2945,
+    "moving": 5745,
+    "cd": {
+     "R1": 1070,
+     "GM": 872,
+     "DE": 858,
+     "other": 2945
+    }
+   },
+   "impacts": 11
+  },
+  "20261010-201626": {
+   "kind": "human",
+   "group": "evening",
+   "genre": 5,
+   "bias_dps": -0.061,
+   "anchors": 12,
+   "t0_us": 1791630996437032,
+   "passes": [
+    {
+     "a": 15.64,
+     "v_in": 4089.0,
+     "r1_hits": [],
+     "tg": 17.819845,
+     "de_psi": -29.261078385583573,
+     "de_v": 3849.75,
+     "de_vmax": 4957.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -25.905848897290525,
+     "de_yaw": -33.478194134720304,
+     "de_psi_min": -29.459497448599905,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 49.66,
+     "v_in": 4448.0,
+     "r1_hits": [],
+     "tg": 52.029874,
+     "de_psi": 4.007565356414034,
+     "de_v": 3880.35,
+     "de_vmax": 4763.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -7.595434610082748,
+     "de_yaw": -13.261179196834565,
+     "de_psi_min": -23.67945088839099,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 60.67,
+     "v_in": 3963.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 92.97,
+     "v_in": 4655.0,
+     "r1_hits": [],
+     "tg": 95.596976,
+     "de_psi": -15.19544365288084,
+     "de_v": 4535.475,
+     "de_vmax": 5415.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -28.662416113972085,
+     "de_yaw": -27.712398928403854,
+     "de_psi_min": -32.37882384697946,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 138.35,
+     "v_in": 4189.0,
+     "r1_hits": [],
+     "tg": 142.009842,
+     "de_psi": 12.89264939784698,
+     "de_v": 3697.8625,
+     "de_vmax": 4271.0,
+     "gm_hits": [
+      2.5,
+      2.7
+     ],
+     "de_hits": [],
+     "de_psi12": -8.840057903980323,
+     "de_yaw": -2.5406503558158873,
+     "de_psi_min": -23.76064733020212,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 169.3,
+     "v_in": 5349.0,
+     "r1_hits": [],
+     "tg": 172.199816,
+     "de_psi": 0.4639196405569237,
+     "de_v": 3871.425,
+     "de_vmax": 5086.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -7.133859171412041,
+     "de_yaw": -10.143292852242787,
+     "de_psi_min": -23.777303000043048,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 180.83,
+     "v_in": 4544.0,
+     "r1_hits": [],
+     "tg": 183.59985,
+     "de_psi": -12.325717236256423,
+     "de_v": 4292.0625,
+     "de_vmax": 5288.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -45.173427322037696,
+     "de_yaw": -14.779471838474274,
+     "de_psi_min": -46.139512520816425,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 214.31,
+     "v_in": 5056.0,
+     "r1_hits": [],
+     "tg": 216.799822,
+     "de_psi": 23.712051525435527,
+     "de_v": 4568.4625,
+     "de_vmax": 5570.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -22.748822049206865,
+     "de_yaw": 27.291753460795192,
+     "de_psi_min": -24.807858051874064,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 224.7,
+     "v_in": 4973.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 256.16,
+     "v_in": 4940.0,
+     "r1_hits": [],
+     "tg": 258.689811,
+     "de_psi": 21.446832952133263,
+     "de_v": 4245.9375,
+     "de_vmax": 4798.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -42.10055471693158,
+     "de_yaw": -11.382114507754643,
+     "de_psi_min": -43.40757056710527,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 266.5,
+     "v_in": 5136.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 294.64,
+     "v_in": 5597.0,
+     "r1_hits": [],
+     "tg": 297.019844,
+     "de_psi": 20.461903064998296,
+     "de_v": 4160.525,
+     "de_vmax": 6275.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -14.798025988513473,
+     "de_yaw": 25.329368486756184,
+     "de_psi_min": -30.246546122705695,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 15.64,
+     "time_s": 34.02,
+     "dh": 356,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4089.0,
+     "de_psi": -29.261078385583573,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-201626-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 49.66,
+     "time_s": 11.01,
+     "dh": 387,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 4448.0,
+     "de_psi": 4.007565356414034,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "sector_s": {
+      "R1GM": 2.37,
+      "DESW": 5.0,
+      "HSLH": 3.64
+     },
+     "sector_erpm": {
+      "R1GM": 3960,
+      "DESW": 4528,
+      "HSLH": 5480
+     },
+     "erpm_p50": 4487.0,
+     "erpm_p90": 5573.0,
+     "dist_m": 25.05038886100001,
+     "scene": "20261010-201626-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 60.67,
+     "time_s": 32.3,
+     "dh": 251,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3963.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-201626-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 92.97,
+     "time_s": 45.38,
+     "dh": 801,
+     "valid": false,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 4655.0,
+     "de_psi": -15.19544365288084,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "scene": "20261010-201626-0003",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 138.35,
+     "time_s": 30.95,
+     "dh": 187,
+     "valid": false,
+     "impacts": 2,
+     "strong": 0,
+     "v_in": 4189.0,
+     "de_psi": 12.89264939784698,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-201626-0004",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 169.3,
+     "time_s": 11.53,
+     "dh": 381,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5349.0,
+     "de_psi": 0.4639196405569237,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.9,
+      "DESW": 4.69,
+      "HSLH": 3.941
+     },
+     "sector_erpm": {
+      "R1GM": 3802,
+      "DESW": 5069,
+      "HSLH": 5372
+     },
+     "erpm_p50": 5042.0,
+     "erpm_p90": 5508.0,
+     "dist_m": 27.00800549850003,
+     "scene": "20261010-201626-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 180.83,
+     "time_s": 33.48,
+     "dh": 353,
+     "valid": false,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 4544.0,
+     "de_psi": -12.325717236256423,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "scene": "20261010-201626-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 214.31,
+     "time_s": 10.39,
+     "dh": 381,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5056.0,
+     "de_psi": 23.712051525435527,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.49,
+      "DESW": 4.59,
+      "HSLH": 3.31
+     },
+     "sector_erpm": {
+      "R1GM": 4922,
+      "DESW": 5505,
+      "HSLH": 5924
+     },
+     "erpm_p50": 5469.0,
+     "erpm_p90": 6150.800000000001,
+     "dist_m": 27.88301765850004,
+     "scene": "20261010-201626-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 224.7,
+     "time_s": 31.46,
+     "dh": 339,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4973.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-201626-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 256.16,
+     "time_s": 10.34,
+     "dh": 364,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4940.0,
+     "de_psi": 21.446832952133263,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "sector_s": {
+      "R1GM": 2.53,
+      "DESW": 5.1,
+      "HSLH": 2.71
+     },
+     "sector_erpm": {
+      "R1GM": 4695,
+      "DESW": 5307,
+      "HSLH": 6449
+     },
+     "erpm_p50": 5019.5,
+     "erpm_p90": 6545.0,
+     "dist_m": 27.13442469550009,
+     "scene": "20261010-201626-0007",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 266.5,
+     "time_s": 28.14,
+     "dh": 236,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5136.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-201626-0007",
+     "in_clean_driving": true,
+     "split": "val"
+    }
+   ],
+   "frames": {
+    "R1": 697,
+    "GM": 471,
+    "DE": 454,
+    "other": 3001,
+    "moving": 4623,
+    "cd": {
+     "R1": 697,
+     "GM": 471,
+     "DE": 454,
+     "other": 3001
+    }
+   },
+   "impacts": 7
+  },
+  "20261010-202633": {
+   "kind": "human",
+   "group": "evening",
+   "genre": 4,
+   "bias_dps": -0.061,
+   "anchors": 7,
+   "t0_us": 1791631603506867,
+   "passes": [
+    {
+     "a": 2.98,
+     "v_in": 3919.0,
+     "r1_hits": [],
+     "tg": 6.379999,
+     "de_psi": -37.16315783002062,
+     "de_v": 6567.5625,
+     "de_vmax": 7990.0,
+     "gm_hits": [],
+     "de_hits": [
+      3.5
+     ],
+     "de_psi12": 32.942493795290204,
+     "de_yaw": -26.385671200354896,
+     "de_psi_min": -37.34156500397623,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 34.2,
+     "v_in": 4246.0,
+     "r1_hits": [],
+     "tg": 36.114343,
+     "de_psi": -3.897579724083471,
+     "de_v": 4749.493827160494,
+     "de_vmax": 8120.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -9.531921108569236,
+     "de_yaw": -3.7611789296070737,
+     "de_psi_min": -23.54807203638137,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 66.01,
+     "v_in": 5448.0,
+     "r1_hits": [],
+     "tg": 69.290031,
+     "de_psi": -27.940086420968782,
+     "de_v": 6158.2625,
+     "de_vmax": 8709.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -23.734853721218542,
+     "de_yaw": 3.441504855782299,
+     "de_psi_min": -29.881989018154968,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 123.92,
+     "v_in": 3746.0,
+     "r1_hits": [],
+     "tg": 125.880108,
+     "de_psi": 11.819108569548007,
+     "de_v": 4358.8875,
+     "de_vmax": 5798.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 5.208794506155527,
+     "de_yaw": 48.3433251310203,
+     "de_psi_min": -24.97753587841521,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 154.7,
+     "v_in": 4612.0,
+     "r1_hits": [],
+     "tg": 156.930171,
+     "de_psi": -0.25618753534422467,
+     "de_v": 4805.8625,
+     "de_vmax": 6157.0,
+     "gm_hits": [],
+     "de_hits": [
+      10.6
+     ],
+     "de_psi12": -13.707583567281517,
+     "de_yaw": -23.592910810042238,
+     "de_psi_min": -24.05246668042969,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 185.18,
+     "v_in": 5231.0,
+     "r1_hits": [],
+     "tg": 186.972398,
+     "de_psi": -15.893292336016202,
+     "de_v": 4361.7625,
+     "de_vmax": 6311.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 26.50454248200799,
+     "de_yaw": -8.167114780110827,
+     "de_psi_min": -24.119162478862336,
+     "ai": false,
+     "ai_de": false
+    },
+    {
+     "a": 218.56,
+     "v_in": 4369.0,
+     "r1_hits": [],
+     "tg": 220.769998,
+     "de_psi": -16.766569745280776,
+     "de_v": 4515.5,
+     "de_vmax": 6347.0,
+     "gm_hits": [
+      8.3
+     ],
+     "de_hits": [],
+     "de_psi12": -12.68900468809943,
+     "de_yaw": -27.29808194226906,
+     "de_psi_min": -23.51812287139728,
+     "ai": false,
+     "ai_de": false
+    }
+   ],
+   "laps": [
+    {
+     "a": 2.98,
+     "time_s": 31.22,
+     "dh": 337,
+     "valid": false,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 3919.0,
+     "de_psi": -37.16315783002062,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "scene": "20261010-202633-0001",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 34.2,
+     "time_s": 31.81,
+     "dh": 444,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4246.0,
+     "de_psi": -3.897579724083471,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-202633-0002",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 66.01,
+     "time_s": 57.91,
+     "dh": 316,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5448.0,
+     "de_psi": -27.940086420968782,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-202633-0003",
+     "in_clean_driving": true,
+     "split": "val"
+    },
+    {
+     "a": 123.92,
+     "time_s": 30.78,
+     "dh": 373,
+     "valid": false,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3746.0,
+     "de_psi": 11.819108569548007,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "scene": "20261010-202633-0005",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 154.7,
+     "time_s": 30.48,
+     "dh": 300,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 4612.0,
+     "de_psi": -0.25618753534422467,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "scene": "20261010-202633-0006",
+     "in_clean_driving": true,
+     "split": "train"
+    },
+    {
+     "a": 185.18,
+     "time_s": 33.38,
+     "dh": 459,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5231.0,
+     "de_psi": -15.893292336016202,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "scene": "20261010-202633-0007",
+     "in_clean_driving": true,
+     "split": "val"
+    }
+   ],
+   "frames": {
+    "R1": 413,
+    "GM": 291,
+    "DE": 353,
+    "other": 903,
+    "moving": 1960,
+    "cd": {
+     "R1": 413,
+     "GM": 291,
+     "DE": 353,
+     "other": 903
+    }
+   },
+   "impacts": 6
+  },
+  "20261010-171639": {
+   "kind": "ai",
+   "group": "ai_run_003",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 6,
+   "t0_us": 1791620219960367,
+   "passes": [
+    {
+     "a": 0.83,
+     "v_in": 4317.0,
+     "r1_hits": [],
+     "tg": 2.759124,
+     "de_psi": 50.186163141444666,
+     "de_v": 5127.925,
+     "de_vmax": 6105.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 22.381644853040214,
+     "de_yaw": 44.3602729535709,
+     "de_psi_min": -23.807942518844637,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    },
+    {
+     "a": 11.61,
+     "v_in": 5351.0,
+     "r1_hits": [],
+     "tg": 14.028949,
+     "de_psi": 15.19853216395228,
+     "de_v": 5090.4125,
+     "de_vmax": 5869.0,
+     "gm_hits": [],
+     "de_hits": [
+      9.2
+     ],
+     "de_psi12": -14.394905866000386,
+     "de_yaw": -8.647357811530432,
+     "de_psi_min": -30.18845956806598,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    },
+    {
+     "a": 22.43,
+     "v_in": 5116.0,
+     "r1_hits": [],
+     "tg": 24.928896,
+     "de_psi": 4.744907842431758,
+     "de_v": 5218.5375,
+     "de_vmax": 5672.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -22.088222972057224,
+     "de_yaw": -28.329668702160724,
+     "de_psi_min": -23.97028367385451,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    },
+    {
+     "a": 60.2,
+     "v_in": 2326.0,
+     "r1_hits": [],
+     "tg": 63.289268,
+     "de_psi": -14.730564681930218,
+     "de_v": 5395.525,
+     "de_vmax": 6226.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -38.33125632655356,
+     "de_yaw": -39.77540762623151,
+     "de_psi_min": -38.60232248781608,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    },
+    {
+     "a": 71.6,
+     "v_in": 3757.0,
+     "r1_hits": [],
+     "tg": 73.978891,
+     "de_psi": -1.0238088545993378,
+     "de_v": 4487.85,
+     "de_vmax": 5059.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -19.612790285011215,
+     "de_yaw": -27.199695684512456,
+     "de_psi_min": -23.245718725873303,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    },
+    {
+     "a": 82.98,
+     "v_in": 4952.0,
+     "r1_hits": [],
+     "tg": 85.449871,
+     "de_psi": 7.166612299423832,
+     "de_v": 4824.8375,
+     "de_vmax": 6140.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -10.382413245116368,
+     "de_yaw": -10.091971699396769,
+     "de_psi_min": -23.49305607947076,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 0.83,
+     "time_s": 10.78,
+     "dh": 387,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 4317.0,
+     "de_psi": 50.186163141444666,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 1.93,
+      "DESW": 4.8,
+      "HSLH": 4.05
+     },
+     "sector_erpm": {
+      "R1GM": 3583,
+      "DESW": 5407,
+      "HSLH": 4833
+     },
+     "erpm_p50": 4890.0,
+     "erpm_p90": 5523.0,
+     "dist_m": 25.025639304,
+     "scene": "20261010-171639-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 11.61,
+     "time_s": 10.82,
+     "dh": 368,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5351.0,
+     "de_psi": 15.19853216395228,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.42,
+      "DESW": 4.67,
+      "HSLH": 3.73
+     },
+     "sector_erpm": {
+      "R1GM": 4076,
+      "DESW": 5107,
+      "HSLH": 4808
+     },
+     "erpm_p50": 4798.0,
+     "erpm_p90": 6541.799999999999,
+     "dist_m": 26.101002057499993,
+     "scene": "20261010-171639-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 22.43,
+     "time_s": 37.77,
+     "dh": 180,
+     "valid": false,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 5116.0,
+     "de_psi": 4.744907842431758,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3,
+     "scene": "20261010-171639-0003",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 60.2,
+     "time_s": 11.4,
+     "dh": 340,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 2326.0,
+     "de_psi": -14.730564681930218,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 3.089,
+      "DESW": 5.42,
+      "HSLH": 2.89
+     },
+     "sector_erpm": {
+      "R1GM": 3492,
+      "DESW": 5257,
+      "HSLH": 5424
+     },
+     "erpm_p50": 4762.5,
+     "erpm_p90": 6061.9000000000015,
+     "dist_m": 25.673494094499983,
+     "scene": "20261010-171639-0005",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 71.6,
+     "time_s": 11.38,
+     "dh": 348,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 3757.0,
+     "de_psi": -1.0238088545993378,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      0.8
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.38,
+      "DESW": 5.36,
+      "HSLH": 3.641
+     },
+     "sector_erpm": {
+      "R1GM": 3894,
+      "DESW": 4604,
+      "HSLH": 4641
+     },
+     "erpm_p50": 4578.0,
+     "erpm_p90": 5029.200000000001,
+     "dist_m": 25.081150881499997,
+     "scene": "20261010-171639-0005",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 323,
+    "GM": 288,
+    "DE": 305,
+    "other": 1250,
+    "moving": 2166,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 7
+  },
+  "20261010-172910": {
+   "kind": "ai",
+   "group": "ai_run_006",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 16,
+   "t0_us": 1791620970368340,
+   "passes": [
+    {
+     "a": 5.79,
+     "v_in": 4991.0,
+     "r1_hits": [],
+     "tg": 7.760391,
+     "de_psi": -6.31371325411402,
+     "de_v": 4289.2,
+     "de_vmax": 5594.0,
+     "gm_hits": [],
+     "de_hits": [
+      7.8
+     ],
+     "de_psi12": -6.2495544840773505,
+     "de_yaw": 2.281587549408928,
+     "de_psi_min": -24.33169163023723,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.8,
+      1.2
+     ],
+     "la": 5
+    },
+    {
+     "a": 15.27,
+     "v_in": 5222.0,
+     "r1_hits": [],
+     "tg": 17.940192,
+     "de_psi": 25.779161178666186,
+     "de_v": 4626.15,
+     "de_vmax": 5718.0,
+     "gm_hits": [
+      7.9
+     ],
+     "de_hits": [
+      9.5
+     ],
+     "de_psi12": 1.0882369156960294,
+     "de_yaw": 12.036998995784986,
+     "de_psi_min": -23.365920505310896,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.8,
+      1.2
+     ],
+     "la": 5
+    },
+    {
+     "a": 25.57,
+     "v_in": 4537.0,
+     "r1_hits": [],
+     "tg": 27.870082,
+     "de_psi": 13.918444906784543,
+     "de_v": 4375.0125,
+     "de_vmax": 5717.0,
+     "gm_hits": [
+      9.1
+     ],
+     "de_hits": [],
+     "de_psi12": 2.728437780530612,
+     "de_yaw": 4.250507593651613,
+     "de_psi_min": -24.819369553823208,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.8,
+      1.2
+     ],
+     "la": 5
+    },
+    {
+     "a": 34.97,
+     "v_in": 3998.0,
+     "r1_hits": [],
+     "tg": 36.759913,
+     "de_psi": -3.985087479964477,
+     "de_v": 5213.6375,
+     "de_vmax": 6474.0,
+     "gm_hits": [],
+     "de_hits": [
+      9.4
+     ],
+     "de_psi12": 37.593822545880585,
+     "de_yaw": 0.852642426888148,
+     "de_psi_min": -24.315330285993696,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      1.4
+     ],
+     "la": 5
+    },
+    {
+     "a": 43.61,
+     "v_in": 3865.0,
+     "r1_hits": [],
+     "tg": 45.490012,
+     "de_psi": 10.978082415847666,
+     "de_v": 4400.675,
+     "de_vmax": 5911.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 6.314120702970058,
+     "de_yaw": -9.119471056481538,
+     "de_psi_min": -23.351235333898785,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      1.4
+     ],
+     "la": 5
+    },
+    {
+     "a": 53.39,
+     "v_in": 4823.0,
+     "r1_hits": [],
+     "tg": 55.239879,
+     "de_psi": 8.494805398282097,
+     "de_v": 4007.7625,
+     "de_vmax": 6418.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -1.904247248707179,
+     "de_yaw": -5.047981120035296,
+     "de_psi_min": -23.929911140266086,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      1.6
+     ],
+     "la": 5
+    },
+    {
+     "a": 63.19,
+     "v_in": 5215.0,
+     "r1_hits": [
+      2.5
+     ],
+     "tg": 65.519933,
+     "de_psi": -9.74746052274486,
+     "de_v": 4840.7,
+     "de_vmax": 7353.0,
+     "gm_hits": [],
+     "de_hits": [
+      8.6
+     ],
+     "de_psi12": -27.550189275268167,
+     "de_yaw": -41.89634277621905,
+     "de_psi_min": -44.46190167023906,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      1.8
+     ],
+     "la": 5
+    },
+    {
+     "a": 73.11,
+     "v_in": 4751.0,
+     "r1_hits": [],
+     "tg": 74.859928,
+     "de_psi": 9.553186365631518,
+     "de_v": 3904.4625,
+     "de_vmax": 6886.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -5.7321135302827315,
+     "de_yaw": 0.1524391144514084,
+     "de_psi_min": -24.700828510161045,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      1.8
+     ],
+     "la": 5
+    },
+    {
+     "a": 82.85,
+     "v_in": 5238.0,
+     "r1_hits": [],
+     "tg": 84.899976,
+     "de_psi": 8.180927333348336,
+     "de_v": 4618.7,
+     "de_vmax": 8840.0,
+     "gm_hits": [],
+     "de_hits": [
+      9.2
+     ],
+     "de_psi12": -41.29186284266325,
+     "de_yaw": -22.542889905683065,
+     "de_psi_min": -51.20206869851063,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.25,
+      1.8
+     ],
+     "la": 5
+    },
+    {
+     "a": 92.03,
+     "v_in": 6103.0,
+     "r1_hits": [],
+     "tg": 93.960051,
+     "de_psi": 1.4806410216151562,
+     "de_v": 5003.2125,
+     "de_vmax": 7451.0,
+     "gm_hits": [],
+     "de_hits": [
+      8.7
+     ],
+     "de_psi12": -24.881348981219162,
+     "de_yaw": -12.810562269162324,
+     "de_psi_min": -25.036679899647424,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.25,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 100.72,
+     "v_in": 5758.0,
+     "r1_hits": [],
+     "tg": 102.820002,
+     "de_psi": -13.983685790583877,
+     "de_v": 4208.9375,
+     "de_vmax": 7132.0,
+     "gm_hits": [
+      5.7
+     ],
+     "de_hits": [
+      10.8
+     ],
+     "de_psi12": -6.56877698281005,
+     "de_yaw": -23.709177715798557,
+     "de_psi_min": -21.724200851147543,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 109.85,
+     "v_in": 5478.0,
+     "r1_hits": [],
+     "tg": 111.969918,
+     "de_psi": -3.542931887938721,
+     "de_v": 4753.6875,
+     "de_vmax": 7712.0,
+     "gm_hits": [
+      4.1
+     ],
+     "de_hits": [
+      9.3
+     ],
+     "de_psi12": -0.7748300283483331,
+     "de_yaw": -24.43495951096217,
+     "de_psi_min": -23.34769610051808,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 119.02,
+     "v_in": 6482.0,
+     "r1_hits": [],
+     "tg": 121.300547,
+     "de_psi": -7.300971766724615,
+     "de_v": 5267.875,
+     "de_vmax": 7554.0,
+     "gm_hits": [],
+     "de_hits": [
+      2.7
+     ],
+     "de_psi12": -6.350200109142861,
+     "de_yaw": -42.1361798470219,
+     "de_psi_min": -28.531624636486413,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 128.54,
+     "v_in": 5909.0,
+     "r1_hits": [],
+     "tg": 131.119926,
+     "de_psi": -28.266024874361392,
+     "de_v": 5416.7875,
+     "de_vmax": 7313.0,
+     "gm_hits": [],
+     "de_hits": [
+      11.1
+     ],
+     "de_psi12": -18.166861713688377,
+     "de_yaw": -57.654507208173555,
+     "de_psi_min": -31.690345868249096,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 138.03,
+     "v_in": 5907.0,
+     "r1_hits": [],
+     "tg": 140.290014,
+     "de_psi": -7.137945212797604,
+     "de_v": 4420.6,
+     "de_vmax": 8034.0,
+     "gm_hits": [
+      3.5
+     ],
+     "de_hits": [
+      6.0
+     ],
+     "de_psi12": -3.893023193827503,
+     "de_yaw": -35.10975677222014,
+     "de_psi_min": -24.12168040668803,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    },
+    {
+     "a": 147.22,
+     "v_in": 6705.0,
+     "r1_hits": [],
+     "tg": 149.559978,
+     "de_psi": -6.70944807565138,
+     "de_v": 4698.7,
+     "de_vmax": 7759.0,
+     "gm_hits": [
+      4.1
+     ],
+     "de_hits": [
+      9.6
+     ],
+     "de_psi12": -7.681513094816182,
+     "de_yaw": -20.512609057002148,
+     "de_psi_min": -24.02300734106757,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5
+    }
+   ],
+   "laps": [
+    {
+     "a": 5.79,
+     "time_s": 9.48,
+     "dh": 352,
+     "valid": true,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 4991.0,
+     "de_psi": -6.31371325411402,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.8,
+      1.2
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.97,
+      "DESW": 4.16,
+      "HSLH": 3.351
+     },
+     "sector_erpm": {
+      "R1GM": 3470,
+      "DESW": 5272,
+      "HSLH": 5625
+     },
+     "erpm_p50": 5065.5,
+     "erpm_p90": 5986.0,
+     "dist_m": 22.406875357500002,
+     "scene": "20261010-172910-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 15.27,
+     "time_s": 10.3,
+     "dh": 370,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5222.0,
+     "de_psi": 25.779161178666186,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.8,
+      1.2
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.67,
+      "DESW": 4.281,
+      "HSLH": 3.349
+     },
+     "sector_erpm": {
+      "R1GM": 3249,
+      "DESW": 5345,
+      "HSLH": 5616
+     },
+     "erpm_p50": 5105.5,
+     "erpm_p90": 5907.0,
+     "dist_m": 23.948190491000002,
+     "scene": "20261010-172910-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 25.57,
+     "time_s": 9.4,
+     "dh": 356,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 4537.0,
+     "de_psi": 13.918444906784543,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.5,
+      1.2
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.3,
+      "DESW": 4.13,
+      "HSLH": 2.97
+     },
+     "sector_erpm": {
+      "R1GM": 3574,
+      "DESW": 5531,
+      "HSLH": 5974
+     },
+     "erpm_p50": 5390.0,
+     "erpm_p90": 6421.1,
+     "dist_m": 23.631105996500004,
+     "scene": "20261010-172910-0003",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 34.97,
+     "time_s": 8.64,
+     "dh": 358,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 3998.0,
+     "de_psi": -3.985087479964477,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      1.4
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.79,
+      "DESW": 3.87,
+      "HSLH": 2.98
+     },
+     "sector_erpm": {
+      "R1GM": 3819,
+      "DESW": 5500,
+      "HSLH": 6044
+     },
+     "erpm_p50": 5421.0,
+     "erpm_p90": 6407.000000000001,
+     "dist_m": 22.3130209325,
+     "scene": "20261010-172910-0003",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 43.61,
+     "time_s": 9.78,
+     "dh": 366,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 3865.0,
+     "de_psi": 10.978082415847666,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      1.6
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.88,
+      "DESW": 4.1,
+      "HSLH": 3.804
+     },
+     "sector_erpm": {
+      "R1GM": 3354,
+      "DESW": 5582,
+      "HSLH": 4762
+     },
+     "erpm_p50": 4786.5,
+     "erpm_p90": 5785.0,
+     "dist_m": 23.272446813499997,
+     "scene": "20261010-172910-0004",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 53.39,
+     "time_s": 9.8,
+     "dh": 374,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4823.0,
+     "de_psi": 8.494805398282097,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      1.6
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.846,
+      "DESW": 4.23,
+      "HSLH": 3.72
+     },
+     "sector_erpm": {
+      "R1GM": 3727,
+      "DESW": 5036,
+      "HSLH": 4798
+     },
+     "erpm_p50": 4780.5,
+     "erpm_p90": 5893.0,
+     "dist_m": 23.3281865225,
+     "scene": "20261010-172910-0004",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 63.19,
+     "time_s": 9.92,
+     "dh": 340,
+     "valid": true,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 5215.0,
+     "de_psi": -9.74746052274486,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      1.8
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.33,
+      "DESW": 4.541,
+      "HSLH": 3.049
+     },
+     "sector_erpm": {
+      "R1GM": 4081,
+      "DESW": 5490,
+      "HSLH": 4937
+     },
+     "erpm_p50": 4959.0,
+     "erpm_p90": 6733.0,
+     "dist_m": 24.986911061000022,
+     "scene": "20261010-172910-0005",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 73.11,
+     "time_s": 9.74,
+     "dh": 363,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4751.0,
+     "de_psi": 9.553186365631518,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.25,
+      1.8
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.749,
+      "DESW": 4.161,
+      "HSLH": 3.829
+     },
+     "sector_erpm": {
+      "R1GM": 4167,
+      "DESW": 5461,
+      "HSLH": 4750
+     },
+     "erpm_p50": 4862.0,
+     "erpm_p90": 6372.8,
+     "dist_m": 23.913719127500002,
+     "scene": "20261010-172910-0005",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 82.85,
+     "time_s": 9.18,
+     "dh": 362,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5238.0,
+     "de_psi": 8.180927333348336,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.25,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.05,
+      "DESW": 4.11,
+      "HSLH": 3.02
+     },
+     "sector_erpm": {
+      "R1GM": 4037,
+      "DESW": 6151,
+      "HSLH": 5924
+     },
+     "erpm_p50": 5763.0,
+     "erpm_p90": 7422.100000000001,
+     "dist_m": 24.89292858650002,
+     "scene": "20261010-172910-0006",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 92.03,
+     "time_s": 8.69,
+     "dh": 358,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 6103.0,
+     "de_psi": 1.4806410216151562,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 1.93,
+      "DESW": 4.01,
+      "HSLH": 2.75
+     },
+     "sector_erpm": {
+      "R1GM": 5030,
+      "DESW": 6291,
+      "HSLH": 6252
+     },
+     "erpm_p50": 6041.0,
+     "erpm_p90": 7047.000000000001,
+     "dist_m": 24.999486050000016,
+     "scene": "20261010-172910-0006",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 100.72,
+     "time_s": 9.13,
+     "dh": 346,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5758.0,
+     "de_psi": -13.983685790583877,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.1,
+      "DESW": 4.44,
+      "HSLH": 2.59
+     },
+     "sector_erpm": {
+      "R1GM": 5003,
+      "DESW": 5891,
+      "HSLH": 6185
+     },
+     "erpm_p50": 5799.0,
+     "erpm_p90": 6500.6,
+     "dist_m": 25.383675561000018,
+     "scene": "20261010-172910-0007",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 109.85,
+     "time_s": 9.17,
+     "dh": 362,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5478.0,
+     "de_psi": -3.542931887938721,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.12,
+      "DESW": 4.26,
+      "HSLH": 2.79
+     },
+     "sector_erpm": {
+      "R1GM": 4748,
+      "DESW": 5923,
+      "HSLH": 5862
+     },
+     "erpm_p50": 5763.0,
+     "erpm_p90": 6408.4,
+     "dist_m": 25.411539487999995,
+     "scene": "20261010-172910-0007",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 119.02,
+     "time_s": 9.52,
+     "dh": 362,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 6482.0,
+     "de_psi": -7.300971766724615,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.281,
+      "DESW": 4.209,
+      "HSLH": 3.03
+     },
+     "sector_erpm": {
+      "R1GM": 4612,
+      "DESW": 6333,
+      "HSLH": 5138
+     },
+     "erpm_p50": 5568.0,
+     "erpm_p90": 6670.0,
+     "dist_m": 26.285527125000044,
+     "scene": "20261010-172910-0007",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 128.54,
+     "time_s": 9.49,
+     "dh": 346,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5909.0,
+     "de_psi": -28.266024874361392,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.58,
+      "DESW": 4.43,
+      "HSLH": 2.48
+     },
+     "sector_erpm": {
+      "R1GM": 4800,
+      "DESW": 5994,
+      "HSLH": 5790
+     },
+     "erpm_p50": 5731.0,
+     "erpm_p90": 6652.8,
+     "dist_m": 26.355422622999992,
+     "scene": "20261010-172910-0008",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 138.03,
+     "time_s": 9.19,
+     "dh": 357,
+     "valid": true,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 5907.0,
+     "de_psi": -7.137945212797604,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.45,
+      2.0
+     ],
+     "la": 5,
+     "sector_s": {
+      "R1GM": 2.26,
+      "DESW": 4.07,
+      "HSLH": 2.86
+     },
+     "sector_erpm": {
+      "R1GM": 4738,
+      "DESW": 6213,
+      "HSLH": 5723
+     },
+     "erpm_p50": 5781.0,
+     "erpm_p90": 6716.800000000001,
+     "dist_m": 25.48853940599998,
+     "scene": "20261010-172910-0008",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 954,
+    "GM": 575,
+    "DE": 804,
+    "other": 2320,
+    "moving": 4653,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 20
+  },
+  "20261010-173445": {
+   "kind": "ai",
+   "group": "ai_run_007",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 23,
+   "t0_us": 1791621285838725,
+   "passes": [
+    {
+     "a": 24.62,
+     "v_in": 5406.0,
+     "r1_hits": [],
+     "tg": 26.980987,
+     "de_psi": -6.911517216478501,
+     "de_v": 5529.3,
+     "de_vmax": 6953.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -27.38671423118798,
+     "de_yaw": -56.82774535616239,
+     "de_psi_min": -32.7385255384975,
+     "ai": false,
+     "ai_de": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 34.63,
+     "v_in": 6924.0,
+     "r1_hits": [
+      4.9
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 47.94,
+     "v_in": 4549.0,
+     "r1_hits": [],
+     "tg": 50.219919,
+     "de_psi": -7.86626257471562,
+     "de_v": 4883.1125,
+     "de_vmax": 7109.0,
+     "gm_hits": [],
+     "de_hits": [
+      2.8
+     ],
+     "de_psi12": -27.100828107619122,
+     "de_yaw": -37.04115938941638,
+     "de_psi_min": -35.96283536096314,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 57.69,
+     "v_in": 6561.0,
+     "r1_hits": [
+      6.1
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 72.91,
+     "v_in": 5153.0,
+     "r1_hits": [],
+     "tg": 75.350022,
+     "de_psi": -4.417783844306541,
+     "de_v": 5539.1125,
+     "de_vmax": 7293.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -37.07241826558743,
+     "de_yaw": -60.93478822253518,
+     "de_psi_min": -40.73853836832723,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 83.04,
+     "v_in": 5211.0,
+     "r1_hits": [],
+     "tg": 85.260114,
+     "de_psi": -24.139499486606383,
+     "de_v": 5478.9125,
+     "de_vmax": 6379.0,
+     "gm_hits": [],
+     "de_hits": [
+      9.5
+     ],
+     "de_psi12": -15.968639381731236,
+     "de_yaw": -59.51016427675883,
+     "de_psi_min": -37.20197469880395,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 92.62,
+     "v_in": 5578.0,
+     "r1_hits": [
+      6.1
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 106.16,
+     "v_in": 9722.0,
+     "r1_hits": [
+      4.0
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 121.43,
+     "v_in": 6001.0,
+     "r1_hits": [],
+     "tg": 124.240243,
+     "de_psi": -29.27303793361716,
+     "de_v": 4606.9375,
+     "de_vmax": 7391.0,
+     "gm_hits": [],
+     "de_hits": [
+      8.7
+     ],
+     "de_psi12": -18.77650137083492,
+     "de_yaw": -67.98230838824492,
+     "de_psi_min": -39.60250866474735,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 132.02,
+     "v_in": 5181.0,
+     "r1_hits": [],
+     "tg": 134.710218,
+     "de_psi": -10.450955374697969,
+     "de_v": 4767.45,
+     "de_vmax": 7693.0,
+     "gm_hits": [],
+     "de_hits": [
+      11.0
+     ],
+     "de_psi12": -6.2804466406273605,
+     "de_yaw": -43.94742213409455,
+     "de_psi_min": -27.71721787304068,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 142.63,
+     "v_in": 6494.0,
+     "r1_hits": [
+      5.3
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 157.4,
+     "v_in": 6586.0,
+     "r1_hits": [
+      6.0
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 170.82,
+     "v_in": 5020.0,
+     "r1_hits": [],
+     "tg": 173.1,
+     "de_psi": -9.962715472879154,
+     "de_v": 5166.0875,
+     "de_vmax": 6748.0,
+     "gm_hits": [],
+     "de_hits": [
+      5.8
+     ],
+     "de_psi12": -7.657043911110122,
+     "de_yaw": -45.19067909050796,
+     "de_psi_min": -32.629845333248795,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 180.33,
+     "v_in": 5251.0,
+     "r1_hits": [],
+     "tg": 182.31999,
+     "de_psi": 26.428110935704353,
+     "de_v": 5004.0,
+     "de_vmax": 7091.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -16.306678627391193,
+     "de_yaw": 4.410061484078566,
+     "de_psi_min": -24.158626332958193,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 190.11,
+     "v_in": 4820.0,
+     "r1_hits": [],
+     "tg": 192.483234,
+     "de_psi": -23.87878989861656,
+     "de_v": 5367.0625,
+     "de_vmax": 6979.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -16.004166495764366,
+     "de_yaw": -63.886180359125134,
+     "de_psi_min": -32.11446278458243,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 200.19,
+     "v_in": 5421.0,
+     "r1_hits": [],
+     "tg": 202.310608,
+     "de_psi": -21.233813175012074,
+     "de_v": 5966.725,
+     "de_vmax": 6526.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": 0.7250948784158027,
+     "de_yaw": -46.46646443257729,
+     "de_psi_min": -27.62845425314208,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 210.11,
+     "v_in": 6540.0,
+     "r1_hits": [
+      4.5
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 223.02,
+     "v_in": 5065.0,
+     "r1_hits": [],
+     "tg": 225.201365,
+     "de_psi": -5.878463577814728,
+     "de_v": 4754.0625,
+     "de_vmax": 6871.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -27.774299572599375,
+     "de_yaw": -49.265753541390104,
+     "de_psi_min": -33.87057006318901,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 233.06,
+     "v_in": 6330.0,
+     "r1_hits": [],
+     "tg": 235.630049,
+     "de_psi": -3.272669939979096,
+     "de_v": 6082.1125,
+     "de_vmax": 8202.0,
+     "gm_hits": [
+      6.4
+     ],
+     "de_hits": [
+      9.1
+     ],
+     "de_psi12": -14.963978259984287,
+     "de_yaw": -18.732431282936517,
+     "de_psi_min": -24.497049770729063,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.6,
+      1.5
+     ],
+     "la": 3
+    },
+    {
+     "a": 243.8,
+     "v_in": 5398.0,
+     "r1_hits": [
+      7.0
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 259.44,
+     "v_in": 5214.0,
+     "r1_hits": [],
+     "tg": 262.070022,
+     "de_psi": -7.5475186197472794,
+     "de_v": 5513.5875,
+     "de_vmax": 6101.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -33.97963127154617,
+     "de_yaw": -43.349086445569995,
+     "de_psi_min": -34.05222121078532,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 270.83,
+     "v_in": 5645.0,
+     "r1_hits": [
+      8.0
+     ],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 288.72,
+     "v_in": 2548.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 24.62,
+     "time_s": 10.01,
+     "dh": 366,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5406.0,
+     "de_psi": -6.911517216478501,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.361,
+      "DESW": 4.049,
+      "HSLH": 3.6
+     },
+     "sector_erpm": {
+      "R1GM": 4503,
+      "DESW": 5975,
+      "HSLH": 4646
+     },
+     "erpm_p50": 5039.0,
+     "erpm_p90": 6322.0,
+     "dist_m": 25.453796210999997,
+     "scene": "20261010-173445-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 34.63,
+     "time_s": 13.31,
+     "dh": 346,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6924.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 47.94,
+     "time_s": 9.75,
+     "dh": 372,
+     "valid": true,
+     "impacts": 1,
+     "strong": 0,
+     "v_in": 4549.0,
+     "de_psi": -7.86626257471562,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.28,
+      "DESW": 4.37,
+      "HSLH": 3.101
+     },
+     "sector_erpm": {
+      "R1GM": 4034,
+      "DESW": 5645,
+      "HSLH": 4992
+     },
+     "erpm_p50": 5243.0,
+     "erpm_p90": 6057.0,
+     "dist_m": 24.608468727,
+     "scene": "20261010-173445-0003",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 57.69,
+     "time_s": 15.22,
+     "dh": 348,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6561.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0003",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 72.91,
+     "time_s": 10.13,
+     "dh": 356,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5153.0,
+     "de_psi": -4.417783844306541,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.4,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.44,
+      "DESW": 4.5,
+      "HSLH": 3.19
+     },
+     "sector_erpm": {
+      "R1GM": 4160,
+      "DESW": 5763,
+      "HSLH": 4460
+     },
+     "erpm_p50": 4936.0,
+     "erpm_p90": 6153.0,
+     "dist_m": 25.295991643999994,
+     "scene": "20261010-173445-0004",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 83.04,
+     "time_s": 9.58,
+     "dh": 359,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5211.0,
+     "de_psi": -24.139499486606383,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.22,
+      "DESW": 4.66,
+      "HSLH": 2.7
+     },
+     "sector_erpm": {
+      "R1GM": 4392,
+      "DESW": 5777,
+      "HSLH": 5306
+     },
+     "erpm_p50": 5239.0,
+     "erpm_p90": 6293.0,
+     "dist_m": 24.915865621499982,
+     "scene": "20261010-173445-0005",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 92.62,
+     "time_s": 13.54,
+     "dh": 12,
+     "valid": false,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 5578.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0005",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 106.16,
+     "time_s": 15.27,
+     "dh": 337,
+     "valid": false,
+     "impacts": 3,
+     "strong": 2,
+     "v_in": 9722.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "ai_only": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0006",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 121.43,
+     "time_s": 10.59,
+     "dh": 353,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 6001.0,
+     "de_psi": -29.27303793361716,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.81,
+      "DESW": 4.851,
+      "HSLH": 2.93
+     },
+     "sector_erpm": {
+      "R1GM": 4268,
+      "DESW": 5426,
+      "HSLH": 4905
+     },
+     "erpm_p50": 5090.0,
+     "erpm_p90": 6072.0,
+     "dist_m": 26.727973588999994,
+     "scene": "20261010-173445-0007",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 132.02,
+     "time_s": 10.61,
+     "dh": 363,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5181.0,
+     "de_psi": -10.450955374697969,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.69,
+      "DESW": 4.752,
+      "HSLH": 3.167
+     },
+     "sector_erpm": {
+      "R1GM": 4162,
+      "DESW": 5371,
+      "HSLH": 4636
+     },
+     "erpm_p50": 4978.0,
+     "erpm_p90": 6594.0,
+     "dist_m": 26.541539135500027,
+     "scene": "20261010-173445-0007",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 142.63,
+     "time_s": 14.77,
+     "dh": 351,
+     "valid": false,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 6494.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0008",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 157.4,
+     "time_s": 13.42,
+     "dh": 355,
+     "valid": true,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 6586.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0008",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 170.82,
+     "time_s": 9.51,
+     "dh": 347,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5020.0,
+     "de_psi": -9.962715472879154,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.278,
+      "DESW": 4.35,
+      "HSLH": 2.88
+     },
+     "sector_erpm": {
+      "R1GM": 4098,
+      "DESW": 5567,
+      "HSLH": 4875
+     },
+     "erpm_p50": 5069.0,
+     "erpm_p90": 5931.0,
+     "dist_m": 23.762235092999994,
+     "scene": "20261010-173445-0009",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 180.33,
+     "time_s": 9.78,
+     "dh": 376,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5251.0,
+     "de_psi": 26.428110935704353,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 1.99,
+      "DESW": 4.0,
+      "HSLH": 3.79
+     },
+     "sector_erpm": {
+      "R1GM": 4015,
+      "DESW": 5861,
+      "HSLH": 4567
+     },
+     "erpm_p50": 5060.0,
+     "erpm_p90": 6172.3,
+     "dist_m": 24.412765091500017,
+     "scene": "20261010-173445-0010",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 190.11,
+     "time_s": 10.08,
+     "dh": 346,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 4820.0,
+     "de_psi": -23.87878989861656,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.373,
+      "DESW": 4.457,
+      "HSLH": 3.25
+     },
+     "sector_erpm": {
+      "R1GM": 4174,
+      "DESW": 5720,
+      "HSLH": 4628
+     },
+     "erpm_p50": 5108.5,
+     "erpm_p90": 6144.0,
+     "dist_m": 25.14140625049998,
+     "scene": "20261010-173445-0010",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 200.19,
+     "time_s": 9.92,
+     "dh": 361,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5421.0,
+     "de_psi": -21.233813175012074,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.121,
+      "DESW": 4.369,
+      "HSLH": 3.43
+     },
+     "sector_erpm": {
+      "R1GM": 3764,
+      "DESW": 5806,
+      "HSLH": 4816
+     },
+     "erpm_p50": 5224.5,
+     "erpm_p90": 6207.0,
+     "dist_m": 25.012909612000033,
+     "scene": "20261010-173445-0011",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 210.11,
+     "time_s": 12.91,
+     "dh": 351,
+     "valid": true,
+     "impacts": 2,
+     "strong": 1,
+     "v_in": 6540.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0011",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 223.02,
+     "time_s": 10.04,
+     "dh": 355,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5065.0,
+     "de_psi": -5.878463577814728,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.6,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.183,
+      "DESW": 4.469,
+      "HSLH": 3.39
+     },
+     "sector_erpm": {
+      "R1GM": 4048,
+      "DESW": 5529,
+      "HSLH": 4482
+     },
+     "erpm_p50": 5014.5,
+     "erpm_p90": 6279.000000000002,
+     "dist_m": 24.66549088099998,
+     "scene": "20261010-173445-0012",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 233.06,
+     "time_s": 10.74,
+     "dh": 359,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 6330.0,
+     "de_psi": -3.272669939979096,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.57,
+      "DESW": 4.881,
+      "HSLH": 3.289
+     },
+     "sector_erpm": {
+      "R1GM": 4541,
+      "DESW": 5039,
+      "HSLH": 5220
+     },
+     "erpm_p50": 5039.0,
+     "erpm_p90": 5593.200000000001,
+     "dist_m": 26.312509794999947,
+     "scene": "20261010-173445-0012",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 243.8,
+     "time_s": 15.64,
+     "dh": 354,
+     "valid": false,
+     "impacts": 3,
+     "strong": 3,
+     "v_in": 5398.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "ai_only": false,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0013",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 259.44,
+     "time_s": 11.39,
+     "dh": 349,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 5214.0,
+     "de_psi": -7.5475186197472794,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.63,
+      "DESW": 5.32,
+      "HSLH": 3.44
+     },
+     "sector_erpm": {
+      "R1GM": 3483,
+      "DESW": 5384,
+      "HSLH": 4714
+     },
+     "erpm_p50": 4761.0,
+     "erpm_p90": 5655.0,
+     "dist_m": 26.02217442149995,
+     "scene": "20261010-173445-0013",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 270.83,
+     "time_s": 17.89,
+     "dh": 354,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 5645.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 1,
+     "ai_only": false,
+     "gain": [
+      1.0,
+      1.0
+     ],
+     "la": 3,
+     "scene": "20261010-173445-0014",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 1324,
+    "GM": 561,
+    "DE": 658,
+    "other": 5222,
+    "moving": 7765,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 29
+  },
+  "20261010-181504": {
+   "kind": "ai",
+   "group": "ai_run_008",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 3,
+   "t0_us": 1791623704545232,
+   "passes": [
+    {
+     "a": 14.58,
+     "v_in": 5594.0,
+     "r1_hits": [],
+     "tg": 16.949606,
+     "de_psi": -5.371016423361084,
+     "de_v": 4725.7625,
+     "de_vmax": 6535.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -34.85189046499261,
+     "de_yaw": -33.10620001455148,
+     "de_psi_min": -34.92421518994934,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.0,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 25.07,
+     "v_in": 4633.0,
+     "r1_hits": [
+      5.2
+     ],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.0,
+      2.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 69.27,
+     "v_in": 1882.0,
+     "r1_hits": [],
+     "tg": 72.139885,
+     "de_psi": -14.922743350813334,
+     "de_v": 4388.6625,
+     "de_vmax": 6594.0,
+     "gm_hits": [],
+     "de_hits": [],
+     "de_psi12": -36.83752456063735,
+     "de_yaw": -28.968496404091518,
+     "de_psi_min": -39.194955743835635,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.0,
+      2.0
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 14.58,
+     "time_s": 10.49,
+     "dh": 371,
+     "valid": true,
+     "impacts": 0,
+     "strong": 0,
+     "v_in": 5594.0,
+     "de_psi": -5.371016423361084,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 0,
+     "ai_only": true,
+     "gain": [
+      1.0,
+      2.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.37,
+      "DESW": 4.351,
+      "HSLH": 3.77
+     },
+     "sector_erpm": {
+      "R1GM": 4339,
+      "DESW": 5885,
+      "HSLH": 4571
+     },
+     "erpm_p50": 5149.0,
+     "erpm_p90": 6141.0,
+     "dist_m": 26.183593207500003,
+     "scene": "20261010-181504-0001",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 25.07,
+     "time_s": 44.2,
+     "dh": 351,
+     "valid": false,
+     "impacts": 4,
+     "strong": 4,
+     "v_in": 4633.0,
+     "de_psi": null,
+     "r1_hit": true,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 3,
+     "ai_only": false,
+     "gain": [
+      1.0,
+      2.0
+     ],
+     "la": 3,
+     "scene": "20261010-181504-0002",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 174,
+    "GM": 99,
+    "DE": 102,
+    "other": 2822,
+    "moving": 3197,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 8
+  },
+  "20261010-203924": {
+   "kind": "ai",
+   "group": "ai_run_009",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 2,
+   "t0_us": 1791632364733354,
+   "passes": [
+    {
+     "a": 22.31,
+     "v_in": 1990.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.7,
+      1.35
+     ],
+     "la": 10
+    },
+    {
+     "a": 56.96,
+     "v_in": 3429.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.7,
+      1.35
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 22.31,
+     "time_s": 34.65,
+     "dh": 368,
+     "valid": false,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 1990.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 2,
+     "ai_only": false,
+     "gain": [
+      1.7,
+      1.35
+     ],
+     "la": 3,
+     "scene": "20261010-203924-0002",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 120,
+    "GM": 0,
+    "DE": 0,
+    "other": 1193,
+    "moving": 1313,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 6
+  },
+  "20261010-204208": {
+   "kind": "ai",
+   "group": "ai_run_010",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 4,
+   "t0_us": 1791632528392885,
+   "passes": [
+    {
+     "a": 15.12,
+     "v_in": 3181.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.2,
+      1.4
+     ],
+     "la": 3
+    },
+    {
+     "a": 34.58,
+     "v_in": 3546.0,
+     "r1_hits": [],
+     "tg": 37.609884,
+     "de_psi": -38.29410273391085,
+     "de_v": 6247.0375,
+     "de_vmax": 7156.0,
+     "gm_hits": [
+      3.0
+     ],
+     "de_hits": [
+      5.7
+     ],
+     "de_psi12": -20.938655776225346,
+     "de_yaw": -53.4736115194735,
+     "de_psi_min": -45.672214446394264,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.2,
+      1.4
+     ],
+     "la": 3
+    },
+    {
+     "a": 62.29,
+     "v_in": 4575.0,
+     "r1_hits": [],
+     "tg": 64.290009,
+     "de_psi": -2.2350077099725922,
+     "de_v": 4516.707692307692,
+     "de_vmax": 5842.0,
+     "gm_hits": [],
+     "de_hits": [
+      9.3
+     ],
+     "de_psi12": 11.690505809483625,
+     "de_yaw": -20.74034607410431,
+     "de_psi_min": -24.804798021722036,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.4,
+      1.25
+     ],
+     "la": 3
+    },
+    {
+     "a": 71.61,
+     "v_in": 5167.0,
+     "r1_hits": [],
+     "tg": null,
+     "ai": true,
+     "ai_de": false,
+     "gain": [
+      1.4,
+      1.25
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 15.12,
+     "time_s": 19.46,
+     "dh": 389,
+     "valid": false,
+     "impacts": 3,
+     "strong": 3,
+     "v_in": 3181.0,
+     "de_psi": null,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": false,
+     "other_hit": 3,
+     "ai_only": false,
+     "gain": [
+      1.2,
+      1.4
+     ],
+     "la": 3,
+     "scene": "20261010-204208-0001",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 34.58,
+     "time_s": 27.71,
+     "dh": 328,
+     "valid": false,
+     "impacts": 4,
+     "strong": 3,
+     "v_in": 3546.0,
+     "de_psi": -38.29410273391085,
+     "r1_hit": false,
+     "gm_hit": true,
+     "de_hit": true,
+     "other_hit": 2,
+     "ai_only": false,
+     "gain": [
+      1.2,
+      1.4
+     ],
+     "la": 3,
+     "scene": "20261010-204208-0002",
+     "in_clean_driving": false,
+     "split": null
+    },
+    {
+     "a": 62.29,
+     "time_s": 9.32,
+     "dh": 402,
+     "valid": true,
+     "impacts": 1,
+     "strong": 1,
+     "v_in": 4575.0,
+     "de_psi": -2.2350077099725922,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 0,
+     "ai_only": false,
+     "gain": [
+      1.4,
+      1.25
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.0,
+      "DESW": 4.39,
+      "HSLH": 2.93
+     },
+     "sector_erpm": {
+      "R1GM": 4832,
+      "DESW": 5562,
+      "HSLH": 7334
+     },
+     "erpm_p50": 5650.0,
+     "erpm_p90": 7830.599999999999,
+     "dist_m": 26.637847709500022,
+     "scene": "20261010-204208-0004",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 239,
+    "GM": 100,
+    "DE": 101,
+    "other": 1579,
+    "moving": 2019,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 10
+  },
+  "20261010-204605": {
+   "kind": "ai",
+   "group": "ai_run_101",
+   "genre": 5,
+   "bias_dps": -0.0915,
+   "anchors": 2,
+   "t0_us": 1791632765377027,
+   "passes": [
+    {
+     "a": 22.31,
+     "v_in": 1296.0,
+     "r1_hits": [],
+     "tg": 24.880191,
+     "de_psi": -22.518816093770965,
+     "de_v": 7282.4625,
+     "de_vmax": 8800.0,
+     "gm_hits": [],
+     "de_hits": [
+      5.6
+     ],
+     "de_psi12": -3.1847533281924143,
+     "de_yaw": -72.86128203670184,
+     "de_psi_min": -41.26381437185975,
+     "ai": false,
+     "ai_de": false,
+     "gain": [
+      1.5,
+      1.0
+     ],
+     "la": 3
+    },
+    {
+     "a": 31.68,
+     "v_in": 7058.0,
+     "r1_hits": [
+      4.0
+     ],
+     "tg": 33.849939,
+     "de_psi": 13.35070671646406,
+     "de_v": 5441.4875,
+     "de_vmax": 7027.0,
+     "gm_hits": [],
+     "de_hits": [
+      6.3
+     ],
+     "de_psi12": 9.619755765893615,
+     "de_yaw": -3.7235777278741202,
+     "de_psi_min": -24.397988066134133,
+     "ai": true,
+     "ai_de": true,
+     "gain": [
+      1.5,
+      1.0
+     ],
+     "la": 3
+    }
+   ],
+   "laps": [
+    {
+     "a": 22.31,
+     "time_s": 9.37,
+     "dh": 339,
+     "valid": true,
+     "impacts": 2,
+     "strong": 2,
+     "v_in": 1296.0,
+     "de_psi": -22.518816093770965,
+     "r1_hit": false,
+     "gm_hit": false,
+     "de_hit": true,
+     "other_hit": 1,
+     "ai_only": true,
+     "gain": [
+      1.5,
+      1.0
+     ],
+     "la": 3,
+     "sector_s": {
+      "R1GM": 2.57,
+      "DESW": 4.27,
+      "HSLH": 2.532
+     },
+     "sector_erpm": {
+      "R1GM": 4444,
+      "DESW": 6962,
+      "HSLH": 8504
+     },
+     "erpm_p50": 6181.0,
+     "erpm_p90": 9548.8,
+     "dist_m": 28.78118503,
+     "scene": "20261010-204605-0002",
+     "in_clean_driving": false,
+     "split": null
+    }
+   ],
+   "frames": {
+    "R1": 87,
+    "GM": 95,
+    "DE": 102,
+    "other": 1007,
+    "moving": 1291,
+    "cd": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "other": 0
+    }
+   },
+   "impacts": 7
+  }
+ }
+}

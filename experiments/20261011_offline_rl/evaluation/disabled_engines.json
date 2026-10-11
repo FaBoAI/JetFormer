@@ -1,0 +1,39 @@
+{
+ "at": "2026-10-12T01:22:06",
+ "runs": {
+  "n": {
+   "run": "ai_mix_20261011-rl-n-negctl-nocmd-s3-e12",
+   "state": "renamed",
+   "restore": "mv /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-n-negctl-nocmd-s3-e12/jetformer_fp16.engine.do_not_drive /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-n-negctl-nocmd-s3-e12/jetformer_fp16.engine"
+  },
+  "a": {
+   "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+   "state": "renamed",
+   "restore": "mv /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-a-recap-nocmd-s3-e12/jetformer_fp16.engine.do_not_drive /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-a-recap-nocmd-s3-e12/jetformer_fp16.engine"
+  },
+  "b": {
+   "run": "ai_mix_20261011-rl-b-awr-nocmd-s3-e12",
+   "state": "renamed",
+   "restore": "mv /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-b-awr-nocmd-s3-e12/jetformer_fp16.engine.do_not_drive /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-b-awr-nocmd-s3-e12/jetformer_fp16.engine"
+  },
+  "c": {
+   "run": "ai_mix_20261011-rl-c-fbc-nocmd-s3-e12",
+   "state": "renamed",
+   "restore": "mv /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-c-fbc-nocmd-s3-e12/jetformer_fp16.engine.do_not_drive /home/jetson/jetformer/data/runs/ai_mix_20261011-rl-c-fbc-nocmd-s3-e12/jetformer_fp16.engine"
+  }
+ },
+ "drive_list_models_after": [
+  "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "clean_driving_20261011-s3-20261011-021839",
+  "first_trial_20261010-s3-20261010-153629",
+  "lowspeed_20261010b-s1-20261010-144643",
+  "lowspeed_20261010-s1-20261010-141911",
+  "train_test-s2-20261010-044445",
+  "train_test-s3-20261010-044125",
+  "train_test-s1-20261010-040343",
+  "train_test-s2-20261010-035947",
+  "train_test-s1-20261010-034809",
+  "v2_check-s3-20261010-032020"
+ ],
+ "note": "ゲートC に合格した方策が無いので、4本とも管理画面の走行の一覧から外した(エンジンの名前を変えただけ。戻すときは restore のコマンド)。rl_policies.py run は .do_not_drive があるとエンジンを作り直さない"
+}

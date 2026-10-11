@@ -1,0 +1,187 @@
+{
+ "title": "JetFormer 10月10日のまとめ",
+ "log": "20261010-172910",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-172910",
+   "caption": "10月10日のまとめ",
+   "src_start": 60.0,
+   "src_end": 64.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "TransFuserを手本にしたJetFormer",
+    "学習と精度比較",
+    "AI走行の評価",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。10月10日のまとめです。",
+     "say": "ラピカです。10月10日のまとめです。",
+     "expression": "happy",
+     "pose": "normal"
+    },
+    {
+     "text": "車にはカメラ、距離センサー、IMUを積み、Jetsonで走らせます。",
+     "say": "車には、カメラ、距離センサー、アイエムユーを積み、ジェットソンで走らせます。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/system_config.png"
+  },
+  {
+   "id": "s2_design",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "TransFuserを手本に",
+   "src_start": 64.0,
+   "src_end": 72.0,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/architecture.png",
+   "lines": [
+    {
+     "text": "TransFuserを手本に、センサーをTransformerで融合するJetFormerを作りました。",
+     "say": "トランスフューザーを手本に、センサーを、トランスフォーマーで融合する、ジェットフォーマーを作りました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s2b_transformer",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "Transformerのしくみ",
+   "src_start": 80.0,
+   "src_end": 86.0,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/transformer.png",
+   "lines": [
+    {
+     "text": "95個のトークンを4層のエンコーダで混ぜ、デコーダの代わりに出力用トークンから0.33秒先までの操作を出します。",
+     "say": "95個のトークンを、4層のエンコーダで混ぜ、デコーダの代わりに、出力用のトークンから、0.33秒先までの操作を出します。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_training",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "学習と精度比較",
+   "src_start": 86.0,
+   "src_end": 92.0,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/training_results.png",
+   "lines": [
+    {
+     "text": "模倣学習では、今の操作を入力しないモデルBが一番正確でした。",
+     "say": "模倣学習では、今の操作を入力しないモデルビーが、一番正確でした。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_006",
+   "kind": "clip",
+   "log": "20261010-172910",
+   "caption": "AI走行",
+   "src_start": 40.0,
+   "src_end": 46.0,
+   "speed": 1,
+   "highlights": [],
+   "lines": [
+    {
+     "text": "AIは、人と同じくらいのラップでコースを周回できました。",
+     "say": "エーアイは、人と同じくらいのラップで、コースを周回できました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s5_hotspots",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "衝突は3か所に集中",
+   "src_start": 98.0,
+   "src_end": 104.0,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/overnight_20261011/course/course_map.png",
+   "lines": [
+    {
+     "text": "衝突は人より多く、約9割がR1・DE・緑マットに集中しました。",
+     "say": "衝突は人より多く、約9割が、アールワン、ディーイー、緑マットに集中しました。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_summary",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "今日のまとめ",
+   "src_start": 110.0,
+   "src_end": 116.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "JetFormerが推論1.9msで実車を制御",
+    "AI走行11本で、合計66.5周",
+    "衝突なしの周は約9.7秒、人と同程度",
+    "操作を入れないモデルBが一番正確",
+    "ラップ計測・自動リカバリー・ToFガード"
+   ],
+   "lines": [
+    {
+     "text": "まとめると、JetFormerを実車で動かし、AIがコースを周回するところまで来ました。",
+     "say": "まとめると、ジェットフォーマーを実車で動かし、エーアイが、コースを周回するところまで来ました。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s7_issues",
+   "kind": "ending",
+   "log": "20261010-172910",
+   "caption": "課題",
+   "src_start": 116.0,
+   "src_end": 124.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "衝突は1周1.56回(人は0.6〜1.0回)",
+    "R1: 入る速度が速いとぶつかる",
+    "DE: 緑マットを出ても右へ曲がり続ける",
+    "カメラ・距離センサーの向きのずれ(疑い)",
+    "リカバリーv2は実車で未確認"
+   ],
+   "lines": [
+    {
+     "text": "課題は、R1に入る速さ、DE出口の曲がり方、そしてセンサーの向きです。",
+     "say": "課題は、アールワンに入る速さ、ディーイー出口の曲がり方、そして、センサーの向きです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

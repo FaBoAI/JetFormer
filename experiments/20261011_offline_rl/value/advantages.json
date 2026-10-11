@@ -1,0 +1,481 @@
+{
+ "gamma": 0.99,
+ "n_step": 30,
+ "good_frac": 0.35,
+ "dataset": "ai_mix_20261011",
+ "eligible_rule": "future_valid & vehicle_valid & ジャンルあり & label_valid & 未来の操作が 950〜2050µs",
+ "human_correction_rule": "介入の検証セット(intervention_val_20261011)の修正区間・前進のフレーム(人。失敗による交代の後 5秒まで)。ai_mix では future_valid=False なので、方策の学習に使うにはデータセットの作り直しが要る",
+ "labels": {
+  "main": {
+   "value_variant": "feat_loc",
+   "reward": "main",
+   "course_progress": false,
+   "eps": {
+    "4": 0.4017,
+    "5": 0.4856
+   },
+   "eligible_finite": 45744,
+   "good_share_eligible": 0.35,
+   "good_share_by_genre": {
+    "4": 0.35,
+    "5": 0.35
+   },
+   "A_std_eligible": 1.5072,
+   "bootstrapped_share": 0.9901
+  },
+  "neg": {
+   "rule": "陰性対照: 下位 35% を「良い」(人の修正は 0)",
+   "eps_low": {
+    "4": -0.0833,
+    "5": -0.1516
+   }
+  },
+  "noloc": {
+   "value_variant": "feat",
+   "reward": "main",
+   "course_progress": false,
+   "eps": {
+    "4": 0.382,
+    "5": 0.4917
+   },
+   "eligible_finite": 45744,
+   "good_share_eligible": 0.35,
+   "good_share_by_genre": {
+    "4": 0.35,
+    "5": 0.35
+   },
+   "A_std_eligible": 1.5684,
+   "bootstrapped_share": 0.9901
+  },
+  "fwd": {
+   "value_variant": "feat_loc_fwd",
+   "reward": "fwd",
+   "course_progress": false,
+   "eps": {
+    "4": 0.3096,
+    "5": 0.4193
+   },
+   "eligible_finite": 45744,
+   "good_share_eligible": 0.35,
+   "good_share_by_genre": {
+    "4": 0.35,
+    "5": 0.35
+   },
+   "A_std_eligible": 1.352,
+   "bootstrapped_share": 0.9901
+  },
+  "x2": {
+   "value_variant": "feat_loc_x2",
+   "reward": "x2",
+   "course_progress": false,
+   "eps": {
+    "4": 0.4643,
+    "5": 0.5785
+   },
+   "eligible_finite": 45744,
+   "good_share_eligible": 0.35,
+   "good_share_by_genre": {
+    "4": 0.35,
+    "5": 0.35
+   },
+   "A_std_eligible": 1.7003,
+   "bootstrapped_share": 0.9901
+  },
+  "course": {
+   "value_variant": "feat_loc",
+   "reward": "main",
+   "course_progress": true,
+   "eps": {
+    "4": 0.4017,
+    "5": 0.4856
+   },
+   "eligible_finite": 11515,
+   "good_share_eligible": 0.3539,
+   "good_share_by_genre": {
+    "5": 0.3539
+   },
+   "A_std_eligible": 1.7493,
+   "bootstrapped_share": 0.9801
+  }
+ },
+ "agreement_with_main": {
+  "noloc": {
+   "frames": 45744,
+   "agreement": 0.8544,
+   "jaccard_good": 0.6557,
+   "spearman_A": 0.8745,
+   "by_loc": {
+    "unknown": {
+     "n": 1885,
+     "agreement": 0.7767,
+     "good_main": 0.4361,
+     "good_noloc": 0.2838
+    },
+    "R1": {
+     "n": 4417,
+     "agreement": 0.8671,
+     "good_main": 0.3093,
+     "good_noloc": 0.2773
+    },
+    "GM": {
+     "n": 6362,
+     "agreement": 0.8422,
+     "good_main": 0.3425,
+     "good_noloc": 0.4025
+    },
+    "DE": {
+     "n": 7324,
+     "agreement": 0.8543,
+     "good_main": 0.3135,
+     "good_noloc": 0.356
+    },
+    "other": {
+     "n": 11746,
+     "agreement": 0.8557,
+     "good_main": 0.3766,
+     "good_noloc": 0.3894
+    },
+    "HS": {
+     "n": 7218,
+     "agreement": 0.8738,
+     "good_main": 0.3214,
+     "good_noloc": 0.3138
+    },
+    "LH": {
+     "n": 6792,
+     "agreement": 0.8564,
+     "good_main": 0.3835,
+     "good_noloc": 0.3304
+    }
+   },
+   "by_source": {
+    "human": {
+     "n": 26878,
+     "agreement": 0.8412,
+     "good_main": 0.3732,
+     "good_noloc": 0.3676
+    },
+    "ai": {
+     "n": 18866,
+     "agreement": 0.8732,
+     "good_main": 0.317,
+     "good_noloc": 0.325
+    }
+   },
+   "near_collision": {
+    "n": 10498,
+    "agreement": 0.9084,
+    "agreement_elsewhere": 0.8383
+   }
+  },
+  "fwd": {
+   "frames": 45744,
+   "agreement": 0.9275,
+   "jaccard_good": 0.8123,
+   "spearman_A": 0.9535,
+   "by_loc": {
+    "unknown": {
+     "n": 1885,
+     "agreement": 0.9464,
+     "good_main": 0.4361,
+     "good_fwd": 0.4472
+    },
+    "R1": {
+     "n": 4417,
+     "agreement": 0.9296,
+     "good_main": 0.3093,
+     "good_fwd": 0.309
+    },
+    "GM": {
+     "n": 6362,
+     "agreement": 0.9187,
+     "good_main": 0.3425,
+     "good_fwd": 0.3581
+    },
+    "DE": {
+     "n": 7324,
+     "agreement": 0.9081,
+     "good_main": 0.3135,
+     "good_fwd": 0.2757
+    },
+    "other": {
+     "n": 11746,
+     "agreement": 0.9367,
+     "good_main": 0.3766,
+     "good_fwd": 0.3695
+    },
+    "HS": {
+     "n": 7218,
+     "agreement": 0.9371,
+     "good_main": 0.3214,
+     "good_fwd": 0.3333
+    },
+    "LH": {
+     "n": 6792,
+     "agreement": 0.9239,
+     "good_main": 0.3835,
+     "good_fwd": 0.4064
+    }
+   },
+   "by_source": {
+    "human": {
+     "n": 26878,
+     "agreement": 0.9238,
+     "good_main": 0.3732,
+     "good_fwd": 0.3694
+    },
+    "ai": {
+     "n": 18866,
+     "agreement": 0.9328,
+     "good_main": 0.317,
+     "good_fwd": 0.3224
+    }
+   },
+   "near_collision": {
+    "n": 10498,
+    "agreement": 0.911,
+    "agreement_elsewhere": 0.9324
+   }
+  },
+  "x2": {
+   "frames": 45744,
+   "agreement": 0.94,
+   "jaccard_good": 0.8421,
+   "spearman_A": 0.9727,
+   "by_loc": {
+    "unknown": {
+     "n": 1885,
+     "agreement": 0.9517,
+     "good_main": 0.4361,
+     "good_x2": 0.4557
+    },
+    "R1": {
+     "n": 4417,
+     "agreement": 0.9368,
+     "good_main": 0.3093,
+     "good_x2": 0.3235
+    },
+    "GM": {
+     "n": 6362,
+     "agreement": 0.9384,
+     "good_main": 0.3425,
+     "good_x2": 0.3378
+    },
+    "DE": {
+     "n": 7324,
+     "agreement": 0.9295,
+     "good_main": 0.3135,
+     "good_x2": 0.3438
+    },
+    "other": {
+     "n": 11746,
+     "agreement": 0.9424,
+     "good_main": 0.3766,
+     "good_x2": 0.3622
+    },
+    "HS": {
+     "n": 7218,
+     "agreement": 0.9529,
+     "good_main": 0.3214,
+     "good_x2": 0.3056
+    },
+    "LH": {
+     "n": 6792,
+     "agreement": 0.9339,
+     "good_main": 0.3835,
+     "good_x2": 0.3822
+    }
+   },
+   "by_source": {
+    "human": {
+     "n": 26878,
+     "agreement": 0.9363,
+     "good_main": 0.3732,
+     "good_x2": 0.3725
+    },
+    "ai": {
+     "n": 18866,
+     "agreement": 0.9453,
+     "good_main": 0.317,
+     "good_x2": 0.318
+    }
+   },
+   "near_collision": {
+    "n": 10498,
+    "agreement": 0.9477,
+    "agreement_elsewhere": 0.9377
+   }
+  },
+  "course": {
+   "frames": 11515,
+   "agreement": 0.8964,
+   "jaccard_good": 0.7372,
+   "spearman_A": 0.941,
+   "by_loc": {
+    "unknown": {
+     "n": 141,
+     "agreement": 0.9149,
+     "good_main": 0.5674,
+     "good_course": 0.4823
+    },
+    "R1": {
+     "n": 1196,
+     "agreement": 0.8102,
+     "good_main": 0.2977,
+     "good_course": 0.4239
+    },
+    "GM": {
+     "n": 1292,
+     "agreement": 0.8313,
+     "good_main": 0.4683,
+     "good_course": 0.3506
+    },
+    "DE": {
+     "n": 1967,
+     "agreement": 0.9578,
+     "good_main": 0.243,
+     "good_course": 0.2344
+    },
+    "other": {
+     "n": 3115,
+     "agreement": 0.8892,
+     "good_main": 0.2546,
+     "good_course": 0.2767
+    },
+    "HS": {
+     "n": 2195,
+     "agreement": 0.933,
+     "good_main": 0.3353,
+     "good_course": 0.3877
+    },
+    "LH": {
+     "n": 1609,
+     "agreement": 0.8999,
+     "good_main": 0.4736,
+     "good_course": 0.5426
+    }
+   },
+   "by_source": {
+    "ai": {
+     "n": 11515,
+     "agreement": 0.8964,
+     "good_main": 0.3309,
+     "good_course": 0.3539
+    }
+   },
+   "near_collision": {
+    "n": 3822,
+    "agreement": 0.9267,
+    "agreement_elsewhere": 0.8813
+   }
+  },
+  "course_subset_top35": {
+   "frames": 11515,
+   "agreement": 0.8951,
+   "jaccard_good": 0.7393,
+   "spearman": 0.941,
+   "by_loc": {
+    "unknown": {
+     "n": 141,
+     "good_a": 0.5745,
+     "good_b": 0.4823,
+     "agreement": 0.9078
+    },
+    "R1": {
+     "n": 1196,
+     "good_a": 0.3144,
+     "good_b": 0.4206,
+     "agreement": 0.8169
+    },
+    "GM": {
+     "n": 1292,
+     "good_a": 0.4791,
+     "good_b": 0.3467,
+     "agreement": 0.8228
+    },
+    "DE": {
+     "n": 1967,
+     "good_a": 0.2644,
+     "good_b": 0.2303,
+     "agreement": 0.9507
+    },
+    "other": {
+     "n": 3115,
+     "good_a": 0.2819,
+     "good_b": 0.2693,
+     "agreement": 0.8854
+    },
+    "HS": {
+     "n": 2195,
+     "good_a": 0.3503,
+     "good_b": 0.3854,
+     "agreement": 0.9358
+    },
+    "LH": {
+     "n": 1609,
+     "good_a": 0.4891,
+     "good_b": 0.5426,
+     "agreement": 0.9055
+    }
+   },
+   "rule": "当てはめのある AI のログの、方策に使える AI のフレームだけで、本命の A とコース図の進みの A のそれぞれ上位 35% を「良い」にして比べる"
+  },
+  "reward_sum_1s_fwd_vs_course": {
+   "frames": 12576,
+   "agreement": 0.8302,
+   "jaccard_good": 0.6095,
+   "spearman": 0.7799,
+   "by_loc": {
+    "unknown": {
+     "n": 204,
+     "good_a": 0.2304,
+     "good_b": 0.2157,
+     "agreement": 0.9853
+    },
+    "R1": {
+     "n": 1434,
+     "good_a": 0.1534,
+     "good_b": 0.3089,
+     "agreement": 0.7064
+    },
+    "GM": {
+     "n": 1673,
+     "good_a": 0.3078,
+     "good_b": 0.1871,
+     "agreement": 0.8027
+    },
+    "DE": {
+     "n": 2013,
+     "good_a": 0.6701,
+     "good_b": 0.5484,
+     "agreement": 0.8594
+    },
+    "other": {
+     "n": 3276,
+     "good_a": 0.5415,
+     "good_b": 0.4548,
+     "agreement": 0.8346
+    },
+    "HS": {
+     "n": 2242,
+     "good_a": 0.211,
+     "good_b": 0.3029,
+     "agreement": 0.8885
+    },
+    "LH": {
+     "n": 1734,
+     "good_a": 0.0138,
+     "good_b": 0.1897,
+     "agreement": 0.823
+    }
+   },
+   "rule": "V を使わない 1秒の割引報酬和(罰なし)。AI のフレーム(当てはめのある5ログ)で、前進距離とコース図の進みのそれぞれ上位 35%"
+  }
+ },
+ "counts": {
+  "frames": 60842,
+  "eligible": 45746,
+  "human_correction": 1838,
+  "human_correction_scored": 1570
+ }
+}

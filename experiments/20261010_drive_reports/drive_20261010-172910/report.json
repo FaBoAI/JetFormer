@@ -1,0 +1,367 @@
+{
+ "log": "20261010-172910",
+ "scenes": 9,
+ "description": "ai_run_006",
+ "run": "first_trial_20261010-s3-20261010-153629",
+ "params": {
+  "steer_gain": 1.8,
+  "throttle_gain": 1.2,
+  "steer_trim_us": 0.0,
+  "lookahead": 5,
+  "osc_percent": 0.0
+ },
+ "steer_center_us": 1443.0,
+ "throttle_neutral_us": 1498.0,
+ "duration_s": 162.5,
+ "frames": 4746,
+ "ai_side_s": 147.8,
+ "ai_side_ratio": 0.934,
+ "ai_segments": 1,
+ "ai_segments_longest_s": [
+  152.1
+ ],
+ "human_takeovers": 1,
+ "holds_on_ai_side": 0,
+ "hold_events": 0,
+ "sensor_gaps_ms": {
+  "VEHICLE": [],
+  "IMU": [],
+  "CAM_FRONT": [
+   200,
+   167,
+   200,
+   200,
+   200,
+   200,
+   167
+  ],
+  "TOF_FRONT": []
+ },
+ "latency_ms": {
+  "p50": 30.2,
+  "p99": 38.9
+ },
+ "infer_ms_p50": 5.6,
+ "camera_fps": 29.2,
+ "steer_out_us": {
+  "p5": 1000,
+  "p50": 1517,
+  "p95": 2000
+ },
+ "throttle_out_us": {
+  "p5": 1272,
+  "p50": 1372,
+  "p95": 1491
+ },
+ "steer_at_limit_ratio": 0.121,
+ "steer_abs_dev_us_mean": 177.0,
+ "steer_sign_flips_per_s": 1.85,
+ "steer_step_us_p95": 96.9,
+ "erpm_ai": {
+  "median": 5277,
+  "p95": 6748,
+  "moving_ratio": 0.999
+ },
+ "erpm_human": {
+  "median": 1242,
+  "p95": 4941
+ },
+ "impacts": [
+  {
+   "t_s": 6.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 8.9,
+   "ai_side": true
+  },
+  {
+   "t_s": 14.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 15.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 16.5,
+   "ai_side": true
+  },
+  {
+   "t_s": 19.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 26.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 26.8,
+   "ai_side": true
+  },
+  {
+   "t_s": 28.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 30.1,
+   "ai_side": true
+  },
+  {
+   "t_s": 35.4,
+   "ai_side": true
+  },
+  {
+   "t_s": 37.8,
+   "ai_side": true
+  },
+  {
+   "t_s": 38.6,
+   "ai_side": true
+  },
+  {
+   "t_s": 44.1,
+   "ai_side": true
+  },
+  {
+   "t_s": 53.4,
+   "ai_side": true
+  },
+  {
+   "t_s": 54.5,
+   "ai_side": true
+  },
+  {
+   "t_s": 63.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 63.7,
+   "ai_side": true
+  },
+  {
+   "t_s": 65.6,
+   "ai_side": true
+  },
+  {
+   "t_s": 66.7,
+   "ai_side": true
+  },
+  {
+   "t_s": 82.8,
+   "ai_side": true
+  },
+  {
+   "t_s": 86.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 92.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 93.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 95.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 101.1,
+   "ai_side": true
+  },
+  {
+   "t_s": 101.9,
+   "ai_side": true
+  },
+  {
+   "t_s": 102.7,
+   "ai_side": true
+  },
+  {
+   "t_s": 104.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 111.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 111.9,
+   "ai_side": true
+  },
+  {
+   "t_s": 113.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 119.0,
+   "ai_side": true
+  },
+  {
+   "t_s": 120.6,
+   "ai_side": true
+  },
+  {
+   "t_s": 122.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 128.4,
+   "ai_side": true
+  },
+  {
+   "t_s": 132.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 138.5,
+   "ai_side": true
+  },
+  {
+   "t_s": 140.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 141.2,
+   "ai_side": true
+  },
+  {
+   "t_s": 149.5,
+   "ai_side": true
+  },
+  {
+   "t_s": 150.9,
+   "ai_side": true
+  }
+ ],
+ "takeovers": [
+  {
+   "t_s": 152.1,
+   "impact_before_s": 1.2
+  }
+ ],
+ "accel_peak_g": 10.1,
+ "laps": {
+  "laps": 16,
+  "direction": "左回り",
+  "best_ai_s": 8.15,
+  "median_ai_s": 9.72,
+  "clean_laps": 14
+ },
+ "lap_times": [
+  {
+   "n": 1,
+   "time_s": 9.06,
+   "ai_only": false,
+   "takeovers": 1,
+   "first": true
+  },
+  {
+   "n": 2,
+   "time_s": 9.18,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 3,
+   "time_s": 9.88,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 4,
+   "time_s": 9.72,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 5,
+   "time_s": 9.84,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 6,
+   "time_s": 9.88,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 7,
+   "time_s": 8.15,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 8,
+   "time_s": 11.43,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 9,
+   "time_s": 10.35,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 10,
+   "time_s": 9.09,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 11,
+   "time_s": 9.45,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 12,
+   "time_s": 9.34,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 13,
+   "time_s": 9.29,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 14,
+   "time_s": 10.2,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 15,
+   "time_s": 9.44,
+   "ai_only": true,
+   "takeovers": 0,
+   "first": false
+  },
+  {
+   "n": 16,
+   "time_s": 10.77,
+   "ai_only": false,
+   "takeovers": 1,
+   "first": false
+  }
+ ]
+}

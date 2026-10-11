@@ -191,6 +191,11 @@ data/exports/<name>.tar(.sha256)              クラウド学習用
 `jetformer/config.py`(環境変数で上書き可):`JETFORMER_PORT`、`JETFORMER_DATA`、`JETFORMER_SCENE_SECONDS`、
 `JETFORMER_TOF_PORT`、`JETFORMER_VEHICLE_PROTOCOL`(`snapshot`=ファームv2〔既定〕/ `legacy`=v1)など。
 
+## 検証中のトライアル
+
+実車走行・学習・解析の検証の記録(レポート・解析スクリプト・図)は [`experiments/`](experiments/README.md) にある。
+10/10 の AI走行の解析、衝突のないデータでの学習と精度比較、「ぶつからずに速く走る車への道筋」、オフライン強化学習のチャレンジ(10/11)など。
+
 ## 未解決・要確認
 
 - 実車でのAI走行の確認(PCA9685の時計補正、ゲインの目安、先読みの最適値)

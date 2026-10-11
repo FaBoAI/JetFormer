@@ -1,0 +1,861 @@
+{
+ "c": {
+  "run": "ai_mix_20261011-rl-c-fbc-nocmd-s3-e12",
+  "title": "(c) filtered BC",
+  "state": "done",
+  "epochs_done": 12,
+  "best_epoch": 4,
+  "best_val_us": 57.2,
+  "best_val_per_mode_us": {
+   "4": 61.4,
+   "5": 55.1
+  },
+  "best_val_l1_us": null,
+  "train_samples": 9545,
+  "val_samples": 1888,
+  "train_mode_counts": {
+   "4": 2209,
+   "5": 7336
+  },
+  "trained_modes": [
+   4,
+   5
+  ],
+  "num_modes": 6,
+  "impact_masked_frames": {
+   "train": 448,
+   "val": 121
+  },
+  "rl_options": {
+   "init": "/home/jetson/jetformer/data/runs/clean_driving_20261011-nocmd-s3-20261011-024626/best.pth",
+   "init_mode_copy": null,
+   "seed": 0,
+   "drop_mask": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/drop_clean.npz",
+   "sample_weights_npz": null,
+   "mode_remap_npz": null,
+   "mode_remap_dropout": 0.0,
+   "weight_scale": 1.0,
+   "dropped_frames": {
+    "train": 9409,
+    "val": 1620
+   },
+   "impact_kept_frames": {
+    "train": 0,
+    "val": 0
+   },
+   "sha1": {
+    "init": "2770c4ff5d08",
+    "drop_mask": "91dbf60bff39"
+   }
+  },
+  "steer_center_us": 1442.0,
+  "throttle_neutral_us": 1498.0,
+  "train_seconds_sum_epochs": 636.5,
+  "duration_s_last_process": 678.4,
+  "wall_train_s": 697.8,
+  "wall_engine_s": 95.1,
+  "resumed": false,
+  "engine": true,
+  "history": [
+   {
+    "epoch": 1,
+    "train_us": 29.2,
+    "val_us": 58.4,
+    "val_per_mode_us": {
+     "4": 63.5,
+     "5": 55.9
+    },
+    "seconds": 57.9,
+    "best": true
+   },
+   {
+    "epoch": 2,
+    "train_us": 25.2,
+    "val_us": 57.6,
+    "val_per_mode_us": {
+     "4": 61.9,
+     "5": 55.5
+    },
+    "seconds": 54.3,
+    "best": true
+   },
+   {
+    "epoch": 3,
+    "train_us": 22.8,
+    "val_us": 57.9,
+    "val_per_mode_us": {
+     "4": 62.1,
+     "5": 55.8
+    },
+    "seconds": 52.5,
+    "best": false
+   },
+   {
+    "epoch": 4,
+    "train_us": 21.1,
+    "val_us": 57.2,
+    "val_per_mode_us": {
+     "4": 61.4,
+     "5": 55.1
+    },
+    "seconds": 53.2,
+    "best": true
+   },
+   {
+    "epoch": 5,
+    "train_us": 19.4,
+    "val_us": 58.2,
+    "val_per_mode_us": {
+     "4": 62.5,
+     "5": 56.0
+    },
+    "seconds": 53.5,
+    "best": false
+   },
+   {
+    "epoch": 6,
+    "train_us": 18.0,
+    "val_us": 57.8,
+    "val_per_mode_us": {
+     "4": 61.1,
+     "5": 56.1
+    },
+    "seconds": 54.4,
+    "best": false
+   },
+   {
+    "epoch": 7,
+    "train_us": 17.0,
+    "val_us": 57.6,
+    "val_per_mode_us": {
+     "4": 61.6,
+     "5": 55.5
+    },
+    "seconds": 51.8,
+    "best": false
+   },
+   {
+    "epoch": 8,
+    "train_us": 15.9,
+    "val_us": 57.7,
+    "val_per_mode_us": {
+     "4": 62.2,
+     "5": 55.5
+    },
+    "seconds": 51.8,
+    "best": false
+   },
+   {
+    "epoch": 9,
+    "train_us": 15.1,
+    "val_us": 57.6,
+    "val_per_mode_us": {
+     "4": 61.5,
+     "5": 55.7
+    },
+    "seconds": 51.8,
+    "best": false
+   },
+   {
+    "epoch": 10,
+    "train_us": 14.4,
+    "val_us": 57.7,
+    "val_per_mode_us": {
+     "4": 61.8,
+     "5": 55.6
+    },
+    "seconds": 51.8,
+    "best": false
+   },
+   {
+    "epoch": 11,
+    "train_us": 14.0,
+    "val_us": 57.6,
+    "val_per_mode_us": {
+     "4": 61.6,
+     "5": 55.6
+    },
+    "seconds": 51.7,
+    "best": false
+   },
+   {
+    "epoch": 12,
+    "train_us": 13.8,
+    "val_us": 57.6,
+    "val_per_mode_us": {
+     "4": 61.5,
+     "5": 55.6
+    },
+    "seconds": 51.8,
+    "best": false
+   }
+  ],
+  "expected_samples": [
+   9545,
+   1888
+  ]
+ },
+ "b": {
+  "run": "ai_mix_20261011-rl-b-awr-nocmd-s3-e12",
+  "title": "(b) AWR",
+  "state": "done",
+  "epochs_done": 12,
+  "best_epoch": 7,
+  "best_val_us": 53.5,
+  "best_val_per_mode_us": {
+   "4": 61.6,
+   "5": 54.1
+  },
+  "best_val_l1_us": 56.3,
+  "train_samples": 11637,
+  "val_samples": 2094,
+  "train_mode_counts": {
+   "4": 2209,
+   "5": 9428
+  },
+  "trained_modes": [
+   4,
+   5
+  ],
+  "num_modes": 6,
+  "impact_masked_frames": {
+   "train": 176,
+   "val": 110
+  },
+  "rl_options": {
+   "init": "/home/jetson/jetformer/data/runs/clean_driving_20261011-nocmd-s3-20261011-024626/best.pth",
+   "init_mode_copy": null,
+   "seed": 0,
+   "drop_mask": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/drop_all.npz",
+   "sample_weights_npz": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/awr_weights.npz",
+   "mode_remap_npz": null,
+   "mode_remap_dropout": 0.0,
+   "weight_scale": 1.4555936707838373,
+   "dropped_frames": {
+    "train": 3427,
+    "val": 1010
+   },
+   "impact_kept_frames": {
+    "train": 5744,
+    "val": 588
+   },
+   "sha1": {
+    "init": "2770c4ff5d08",
+    "drop_mask": "7b38baa34759",
+    "sample_weights_npz": "7b863e263f2d"
+   }
+  },
+  "steer_center_us": 1442.0,
+  "throttle_neutral_us": 1498.0,
+  "train_seconds_sum_epochs": 758.5,
+  "duration_s_last_process": 807.2,
+  "wall_train_s": 824.2,
+  "wall_engine_s": 89.2,
+  "resumed": false,
+  "engine": true,
+  "history": [
+   {
+    "epoch": 1,
+    "train_us": 37.1,
+    "val_us": 55.3,
+    "val_per_mode_us": {
+     "4": 62.3,
+     "5": 55.5
+    },
+    "seconds": 72.0,
+    "best": true,
+    "val_l1_us": 57.5
+   },
+   {
+    "epoch": 2,
+    "train_us": 32.7,
+    "val_us": 55.9,
+    "val_per_mode_us": {
+     "4": 62.0,
+     "5": 56.6
+    },
+    "seconds": 62.1,
+    "best": false,
+    "val_l1_us": 58.2
+   },
+   {
+    "epoch": 3,
+    "train_us": 29.0,
+    "val_us": 53.9,
+    "val_per_mode_us": {
+     "4": 61.4,
+     "5": 54.9
+    },
+    "seconds": 63.3,
+    "best": true,
+    "val_l1_us": 56.8
+   },
+   {
+    "epoch": 4,
+    "train_us": 26.9,
+    "val_us": 54.9,
+    "val_per_mode_us": {
+     "4": 62.6,
+     "5": 55.4
+    },
+    "seconds": 62.2,
+    "best": false,
+    "val_l1_us": 57.6
+   },
+   {
+    "epoch": 5,
+    "train_us": 24.9,
+    "val_us": 54.1,
+    "val_per_mode_us": {
+     "4": 61.6,
+     "5": 54.8
+    },
+    "seconds": 62.2,
+    "best": false,
+    "val_l1_us": 56.8
+   },
+   {
+    "epoch": 6,
+    "train_us": 22.9,
+    "val_us": 53.7,
+    "val_per_mode_us": {
+     "4": 61.0,
+     "5": 54.5
+    },
+    "seconds": 63.0,
+    "best": true,
+    "val_l1_us": 56.5
+   },
+   {
+    "epoch": 7,
+    "train_us": 21.0,
+    "val_us": 53.5,
+    "val_per_mode_us": {
+     "4": 61.6,
+     "5": 54.1
+    },
+    "seconds": 62.6,
+    "best": true,
+    "val_l1_us": 56.3
+   },
+   {
+    "epoch": 8,
+    "train_us": 19.5,
+    "val_us": 54.9,
+    "val_per_mode_us": {
+     "4": 61.4,
+     "5": 54.9
+    },
+    "seconds": 62.2,
+    "best": false,
+    "val_l1_us": 56.9
+   },
+   {
+    "epoch": 9,
+    "train_us": 18.5,
+    "val_us": 54.0,
+    "val_per_mode_us": {
+     "4": 61.5,
+     "5": 54.5
+    },
+    "seconds": 62.1,
+    "best": false,
+    "val_l1_us": 56.6
+   },
+   {
+    "epoch": 10,
+    "train_us": 17.6,
+    "val_us": 54.1,
+    "val_per_mode_us": {
+     "4": 61.7,
+     "5": 54.7
+    },
+    "seconds": 62.3,
+    "best": false,
+    "val_l1_us": 56.8
+   },
+   {
+    "epoch": 11,
+    "train_us": 16.8,
+    "val_us": 54.0,
+    "val_per_mode_us": {
+     "4": 61.4,
+     "5": 54.6
+    },
+    "seconds": 62.2,
+    "best": false,
+    "val_l1_us": 56.7
+   },
+   {
+    "epoch": 12,
+    "train_us": 16.5,
+    "val_us": 53.9,
+    "val_per_mode_us": {
+     "4": 61.5,
+     "5": 54.5
+    },
+    "seconds": 62.3,
+    "best": false,
+    "val_l1_us": 56.6
+   }
+  ],
+  "expected_samples": [
+   11637,
+   2094
+  ]
+ },
+ "a": {
+  "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+  "title": "(a) 印つき(RECAP 型)",
+  "state": "done",
+  "epochs_done": 12,
+  "best_epoch": 9,
+  "best_val_us": 55.3,
+  "best_val_per_mode_us": {
+   "4": 64.4,
+   "5": 55.3,
+   "6": 48.6,
+   "7": 55.5
+  },
+  "best_val_l1_us": null,
+  "train_samples": 11637,
+  "val_samples": 2094,
+  "train_mode_counts": {
+   "4": 1419,
+   "5": 6166,
+   "6": 3262,
+   "7": 790
+  },
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "num_modes": 8,
+  "impact_masked_frames": {
+   "train": 176,
+   "val": 110
+  },
+  "rl_options": {
+   "init": "/home/jetson/jetformer/data/runs/clean_driving_20261011-nocmd-s3-20261011-024626/best.pth",
+   "init_mode_copy": "6:5,7:4",
+   "seed": 0,
+   "drop_mask": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/drop_all.npz",
+   "sample_weights_npz": null,
+   "mode_remap_npz": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/modes_a.npz",
+   "mode_remap_dropout": 0.3,
+   "weight_scale": 1.0,
+   "dropped_frames": {
+    "train": 3427,
+    "val": 1010
+   },
+   "impact_kept_frames": {
+    "train": 5744,
+    "val": 588
+   },
+   "sha1": {
+    "init": "2770c4ff5d08",
+    "drop_mask": "7b38baa34759",
+    "mode_remap_npz": "f516262ff1ec"
+   }
+  },
+  "steer_center_us": 1442.0,
+  "throttle_neutral_us": 1498.0,
+  "train_seconds_sum_epochs": 752.8,
+  "duration_s_last_process": 799.1,
+  "wall_train_s": 812.9,
+  "wall_engine_s": 87.9,
+  "resumed": false,
+  "engine": true,
+  "history": [
+   {
+    "epoch": 1,
+    "train_us": 33.6,
+    "val_us": 56.0,
+    "val_per_mode_us": {
+     "4": 66.0,
+     "5": 56.1,
+     "6": 48.9,
+     "7": 55.1
+    },
+    "seconds": 65.5,
+    "best": true
+   },
+   {
+    "epoch": 2,
+    "train_us": 28.0,
+    "val_us": 56.4,
+    "val_per_mode_us": {
+     "4": 66.1,
+     "5": 56.3,
+     "6": 49.0,
+     "7": 57.2
+    },
+    "seconds": 62.6,
+    "best": false
+   },
+   {
+    "epoch": 3,
+    "train_us": 25.2,
+    "val_us": 57.5,
+    "val_per_mode_us": {
+     "4": 67.1,
+     "5": 57.0,
+     "6": 50.6,
+     "7": 58.4
+    },
+    "seconds": 62.3,
+    "best": false
+   },
+   {
+    "epoch": 4,
+    "train_us": 23.1,
+    "val_us": 56.1,
+    "val_per_mode_us": {
+     "4": 65.1,
+     "5": 56.3,
+     "6": 48.9,
+     "7": 56.9
+    },
+    "seconds": 62.4,
+    "best": false
+   },
+   {
+    "epoch": 5,
+    "train_us": 20.9,
+    "val_us": 55.6,
+    "val_per_mode_us": {
+     "4": 64.6,
+     "5": 55.2,
+     "6": 49.3,
+     "7": 56.4
+    },
+    "seconds": 63.0,
+    "best": true
+   },
+   {
+    "epoch": 6,
+    "train_us": 19.5,
+    "val_us": 56.2,
+    "val_per_mode_us": {
+     "4": 64.3,
+     "5": 56.5,
+     "6": 49.7,
+     "7": 56.5
+    },
+    "seconds": 62.3,
+    "best": false
+   },
+   {
+    "epoch": 7,
+    "train_us": 18.1,
+    "val_us": 55.7,
+    "val_per_mode_us": {
+     "4": 64.5,
+     "5": 55.6,
+     "6": 49.2,
+     "7": 56.1
+    },
+    "seconds": 62.3,
+    "best": false
+   },
+   {
+    "epoch": 8,
+    "train_us": 16.8,
+    "val_us": 55.9,
+    "val_per_mode_us": {
+     "4": 64.5,
+     "5": 55.7,
+     "6": 49.5,
+     "7": 56.3
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 9,
+    "train_us": 15.9,
+    "val_us": 55.3,
+    "val_per_mode_us": {
+     "4": 64.4,
+     "5": 55.3,
+     "6": 48.6,
+     "7": 55.5
+    },
+    "seconds": 63.3,
+    "best": true
+   },
+   {
+    "epoch": 10,
+    "train_us": 15.1,
+    "val_us": 55.4,
+    "val_per_mode_us": {
+     "4": 64.5,
+     "5": 55.3,
+     "6": 48.8,
+     "7": 55.4
+    },
+    "seconds": 62.6,
+    "best": false
+   },
+   {
+    "epoch": 11,
+    "train_us": 14.6,
+    "val_us": 55.4,
+    "val_per_mode_us": {
+     "4": 64.4,
+     "5": 55.3,
+     "6": 48.9,
+     "7": 55.4
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 12,
+    "train_us": 14.4,
+    "val_us": 55.6,
+    "val_per_mode_us": {
+     "4": 64.6,
+     "5": 55.6,
+     "6": 49.1,
+     "7": 55.5
+    },
+    "seconds": 62.1,
+    "best": false
+   }
+  ],
+  "expected_samples": [
+   11637,
+   2094
+  ]
+ },
+ "n": {
+  "run": "ai_mix_20261011-rl-n-negctl-nocmd-s3-e12",
+  "title": "(n) 陰性対照(印を逆)",
+  "state": "done",
+  "epochs_done": 12,
+  "best_epoch": 5,
+  "best_val_us": 55.2,
+  "best_val_per_mode_us": {
+   "4": 56.7,
+   "5": 47.0,
+   "6": 62.3,
+   "7": 70.1
+  },
+  "best_val_l1_us": null,
+  "train_samples": 11637,
+  "val_samples": 2094,
+  "train_mode_counts": {
+   "4": 1499,
+   "5": 6270,
+   "6": 3158,
+   "7": 710
+  },
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "num_modes": 8,
+  "impact_masked_frames": {
+   "train": 176,
+   "val": 110
+  },
+  "rl_options": {
+   "init": "/home/jetson/jetformer/data/runs/clean_driving_20261011-nocmd-s3-20261011-024626/best.pth",
+   "init_mode_copy": "6:5,7:4",
+   "seed": 0,
+   "drop_mask": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/drop_all.npz",
+   "sample_weights_npz": null,
+   "mode_remap_npz": "/home/jetson/jetformer/data/rl/ai_mix_20261011/policy/modes_n.npz",
+   "mode_remap_dropout": 0.3,
+   "weight_scale": 1.0,
+   "dropped_frames": {
+    "train": 3427,
+    "val": 1010
+   },
+   "impact_kept_frames": {
+    "train": 5744,
+    "val": 588
+   },
+   "sha1": {
+    "init": "2770c4ff5d08",
+    "drop_mask": "7b38baa34759",
+    "mode_remap_npz": "b3930ef68443"
+   }
+  },
+  "steer_center_us": 1442.0,
+  "throttle_neutral_us": 1498.0,
+  "train_seconds_sum_epochs": 753.9,
+  "duration_s_last_process": 799.3,
+  "wall_train_s": 811.0,
+  "wall_engine_s": 86.4,
+  "resumed": false,
+  "engine": true,
+  "history": [
+   {
+    "epoch": 1,
+    "train_us": 33.7,
+    "val_us": 56.0,
+    "val_per_mode_us": {
+     "4": 56.5,
+     "5": 47.7,
+     "6": 64.2,
+     "7": 70.7
+    },
+    "seconds": 67.0,
+    "best": true
+   },
+   {
+    "epoch": 2,
+    "train_us": 28.1,
+    "val_us": 56.7,
+    "val_per_mode_us": {
+     "4": 57.9,
+     "5": 48.2,
+     "6": 64.1,
+     "7": 72.4
+    },
+    "seconds": 62.0,
+    "best": false
+   },
+   {
+    "epoch": 3,
+    "train_us": 25.3,
+    "val_us": 57.2,
+    "val_per_mode_us": {
+     "4": 59.0,
+     "5": 48.6,
+     "6": 64.6,
+     "7": 73.0
+    },
+    "seconds": 62.4,
+    "best": false
+   },
+   {
+    "epoch": 4,
+    "train_us": 23.2,
+    "val_us": 56.6,
+    "val_per_mode_us": {
+     "4": 57.9,
+     "5": 48.5,
+     "6": 64.3,
+     "7": 69.8
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 5,
+    "train_us": 21.0,
+    "val_us": 55.2,
+    "val_per_mode_us": {
+     "4": 56.7,
+     "5": 47.0,
+     "6": 62.3,
+     "7": 70.1
+    },
+    "seconds": 63.7,
+    "best": true
+   },
+   {
+    "epoch": 6,
+    "train_us": 19.6,
+    "val_us": 56.0,
+    "val_per_mode_us": {
+     "4": 56.8,
+     "5": 48.2,
+     "6": 63.5,
+     "7": 69.9
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 7,
+    "train_us": 18.1,
+    "val_us": 56.1,
+    "val_per_mode_us": {
+     "4": 56.6,
+     "5": 48.5,
+     "6": 63.2,
+     "7": 70.4
+    },
+    "seconds": 62.6,
+    "best": false
+   },
+   {
+    "epoch": 8,
+    "train_us": 16.8,
+    "val_us": 56.0,
+    "val_per_mode_us": {
+     "4": 56.6,
+     "5": 48.4,
+     "6": 62.9,
+     "7": 70.1
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 9,
+    "train_us": 15.9,
+    "val_us": 55.3,
+    "val_per_mode_us": {
+     "4": 56.6,
+     "5": 47.0,
+     "6": 62.8,
+     "7": 70.3
+    },
+    "seconds": 62.2,
+    "best": false
+   },
+   {
+    "epoch": 10,
+    "train_us": 15.2,
+    "val_us": 55.3,
+    "val_per_mode_us": {
+     "4": 56.4,
+     "5": 47.1,
+     "6": 62.7,
+     "7": 70.2
+    },
+    "seconds": 62.5,
+    "best": false
+   },
+   {
+    "epoch": 11,
+    "train_us": 14.6,
+    "val_us": 55.4,
+    "val_per_mode_us": {
+     "4": 56.5,
+     "5": 47.3,
+     "6": 62.7,
+     "7": 70.1
+    },
+    "seconds": 62.4,
+    "best": false
+   },
+   {
+    "epoch": 12,
+    "train_us": 14.4,
+    "val_us": 55.5,
+    "val_per_mode_us": {
+     "4": 56.5,
+     "5": 47.5,
+     "6": 62.8,
+     "7": 70.2
+    },
+    "seconds": 62.5,
+    "best": false
+   }
+  ],
+  "expected_samples": [
+   11637,
+   2094
+  ]
+ }
+}

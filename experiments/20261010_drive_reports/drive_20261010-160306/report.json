@@ -1,0 +1,119 @@
+{
+ "log": "20261010-160306",
+ "scenes": 4,
+ "description": "run_001",
+ "run": "first_trial_20261010-s3-20261010-153629",
+ "params": {
+  "steer_gain": 1.6,
+  "throttle_gain": 1.0,
+  "steer_trim_us": 0.0,
+  "lookahead": 3,
+  "osc_percent": 0.0
+ },
+ "steer_center_us": 1443.0,
+ "throttle_neutral_us": 1498.0,
+ "duration_s": 69.4,
+ "frames": 2074,
+ "ai_side_s": 38.5,
+ "ai_side_ratio": 0.557,
+ "ai_segments": 5,
+ "ai_segments_longest_s": [
+  17.5,
+  9.8,
+  6.0,
+  3.3,
+  2.3
+ ],
+ "human_takeovers": 5,
+ "holds_on_ai_side": 68,
+ "hold_events": 4,
+ "sensor_gaps_ms": {
+  "VEHICLE": [
+   522,
+   517,
+   521,
+   518
+  ],
+  "IMU": [
+   870,
+   878,
+   870
+  ],
+  "CAM_FRONT": [],
+  "TOF_FRONT": []
+ },
+ "latency_ms": {
+  "p50": 28.2,
+  "p99": 36.2
+ },
+ "infer_ms_p50": 5.6,
+ "camera_fps": 29.9,
+ "steer_out_us": {
+  "p5": 1000,
+  "p50": 1460,
+  "p95": 1838
+ },
+ "throttle_out_us": {
+  "p5": 1156,
+  "p50": 1230,
+  "p95": 1443
+ },
+ "steer_at_limit_ratio": 0.121,
+ "steer_abs_dev_us_mean": 162.4,
+ "steer_sign_flips_per_s": 2.26,
+ "steer_step_us_p95": 83.8,
+ "erpm_ai": {
+  "median": 3607,
+  "p95": 7160,
+  "moving_ratio": 0.959
+ },
+ "erpm_human": {
+  "median": 0,
+  "p95": 1998
+ },
+ "impacts": [
+  {
+   "t_s": 16.9,
+   "ai_side": true
+  },
+  {
+   "t_s": 25.6,
+   "ai_side": true
+  },
+  {
+   "t_s": 26.7,
+   "ai_side": true
+  },
+  {
+   "t_s": 38.3,
+   "ai_side": true
+  },
+  {
+   "t_s": 42.9,
+   "ai_side": true
+  }
+ ],
+ "takeovers": [
+  {
+   "t_s": 21.4,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 33.2,
+   "impact_before_s": null
+  },
+  {
+   "t_s": 39.2,
+   "impact_before_s": 0.9
+  },
+  {
+   "t_s": 43.4,
+   "impact_before_s": 0.5
+  },
+  {
+   "t_s": 52.2,
+   "impact_before_s": null
+  }
+ ],
+ "accel_peak_g": 10.4
+}

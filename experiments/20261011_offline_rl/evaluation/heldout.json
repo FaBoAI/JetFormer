@@ -1,0 +1,850 @@
+{
+ "created_at": "2026-10-12T00:28:13",
+ "note": "方策の学習(10-11 23時)の前に決まっていた ai_mix の val と intervention_val だけを使う。この表と規則は予測の前に書き出し、結果を見て入れ替えない",
+ "dataset": "ai_mix_20261011",
+ "iv_dataset": "intervention_val_20261011",
+ "val_scenes": [
+  "20261010-135449-0003",
+  "20261010-150424-0001",
+  "20261010-152405-0002",
+  "20261010-152707-0001",
+  "20261010-172505-0002",
+  "20261010-193638-0003",
+  "20261010-200916-0004",
+  "20261010-200916-0009",
+  "20261010-201626-0003",
+  "20261010-201626-0007",
+  "20261010-202633-0003",
+  "20261010-202633-0007",
+  "20261010-204208-0001",
+  "20261010-204208-0002",
+  "20261010-204208-0003",
+  "20261010-204208-0004",
+  "20261010-204208-0005"
+ ],
+ "human_clean_scenes": [
+  "20261010-135449-0003",
+  "20261010-150424-0001",
+  "20261010-152405-0002",
+  "20261010-152707-0001",
+  "20261010-193638-0003",
+  "20261010-200916-0004",
+  "20261010-200916-0009",
+  "20261010-201626-0003",
+  "20261010-201626-0007",
+  "20261010-202633-0003",
+  "20261010-202633-0007"
+ ],
+ "ai_val_scenes": [
+  "20261010-172505-0002",
+  "20261010-204208-0001",
+  "20261010-204208-0002",
+  "20261010-204208-0003",
+  "20261010-204208-0004",
+  "20261010-204208-0005"
+ ],
+ "iv_windows": [
+  {
+   "name": "20261010-171639-tk01",
+   "log": "20261010-171639",
+   "class": "after_collision",
+   "loc": "HS",
+   "scored": 109,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-171639-tk02",
+   "log": "20261010-171639",
+   "class": "after_collision",
+   "loc": "other",
+   "scored": 150,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-172505-tk01",
+   "log": "20261010-172505",
+   "class": "preemptive",
+   "loc": "LH",
+   "scored": 56,
+   "log_heldout_policies": true,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-172910-tk01",
+   "log": "20261010-172910",
+   "class": "after_collision",
+   "loc": "other",
+   "scored": 150,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk01",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 17,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk02",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 24,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk03",
+   "log": "20261010-173445",
+   "class": "stuck",
+   "loc": "R1",
+   "scored": 12,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk04",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "GM",
+   "scored": 22,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk05",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 70,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk06",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 22,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk07",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 21,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk08",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 23,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk09",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 20,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk10",
+   "log": "20261010-173445",
+   "class": "after_collision",
+   "loc": "R1",
+   "scored": 36,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-173445-tk11",
+   "log": "20261010-173445",
+   "class": "preemptive",
+   "loc": "LH",
+   "scored": 117,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-181504-tk02",
+   "log": "20261010-181504",
+   "class": "preemptive",
+   "loc": "LH",
+   "scored": 58,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-181504-tk04",
+   "log": "20261010-181504",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 29,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-181504-tk05",
+   "log": "20261010-181504",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 80,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-181504-tk06",
+   "log": "20261010-181504",
+   "class": "after_collision",
+   "loc": "unknown",
+   "scored": 20,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-181504-tk09",
+   "log": "20261010-181504",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 8,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-203924-tk02",
+   "log": "20261010-203924",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 14,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-203924-tk03",
+   "log": "20261010-203924",
+   "class": "after_collision",
+   "loc": "unknown",
+   "scored": 23,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-203924-tk04",
+   "log": "20261010-203924",
+   "class": "after_collision",
+   "loc": "unknown",
+   "scored": 100,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-203924-tk05",
+   "log": "20261010-203924",
+   "class": "after_collision",
+   "loc": "other",
+   "scored": 34,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-203924-tk08",
+   "log": "20261010-203924",
+   "class": "after_collision",
+   "loc": "HS",
+   "scored": 72,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-204208-tk02",
+   "log": "20261010-204208",
+   "class": "after_collision",
+   "loc": "unknown",
+   "scored": 74,
+   "log_heldout_policies": true,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-204208-tk03",
+   "log": "20261010-204208",
+   "class": "after_collision",
+   "loc": "other",
+   "scored": 88,
+   "log_heldout_policies": true,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-204605-tk01",
+   "log": "20261010-204605",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 46,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  },
+  {
+   "name": "20261010-204605-tk02",
+   "log": "20261010-204605",
+   "class": "after_collision",
+   "loc": "LH",
+   "scored": 75,
+   "log_heldout_policies": false,
+   "log_heldout_B": true
+  }
+ ],
+ "checks": {
+  "ai_mix_val_in_ai_mix_train": [],
+  "ai_mix_val_in_clean_train(B)": [],
+  "clean_val_equals_ai_mix_human_val": true,
+  "iv_scored_frames_used_in_policy_training": 0
+ },
+ "r1_passes": [
+  {
+   "pass_id": 16,
+   "log": "20261010-152405",
+   "ta_s": 25.893,
+   "tg_s": 27.883,
+   "ai": false,
+   "entry_erpm": 6628.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 16.38,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 17,
+   "log": "20261010-152405",
+   "ta_s": 34.493,
+   "tg_s": 36.856,
+   "ai": false,
+   "entry_erpm": 6261.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 28.43,
+   "frames": 11,
+   "src": 0
+  },
+  {
+   "pass_id": 25,
+   "log": "20261010-152707",
+   "ta_s": 7.374,
+   "tg_s": 9.861,
+   "ai": false,
+   "entry_erpm": 6129.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -18.31,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 26,
+   "log": "20261010-152707",
+   "ta_s": 16.431,
+   "tg_s": 18.261,
+   "ai": false,
+   "entry_erpm": 6422.0,
+   "r1_strong": false,
+   "r1_collision": true,
+   "de_collision": false,
+   "de_yaw_dps": 40.7,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 46,
+   "log": "20261010-172505",
+   "ta_s": 6.761,
+   "tg_s": 8.802,
+   "ai": true,
+   "entry_erpm": 5052.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 5.2,
+   "frames": 12,
+   "src": 1
+  },
+  {
+   "pass_id": 47,
+   "log": "20261010-172505",
+   "ta_s": 14.201,
+   "tg_s": null,
+   "ai": false,
+   "entry_erpm": 5223.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": null,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 90,
+   "log": "20261010-193638",
+   "ta_s": 80.232,
+   "tg_s": 82.639,
+   "ai": false,
+   "entry_erpm": 4480.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 13.08,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 96,
+   "log": "20261010-200916",
+   "ta_s": 133.045,
+   "tg_s": 135.465,
+   "ai": false,
+   "entry_erpm": 3355.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 72.8,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 97,
+   "log": "20261010-200916",
+   "ta_s": 143.065,
+   "tg_s": null,
+   "ai": false,
+   "entry_erpm": 5170.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": null,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 110,
+   "log": "20261010-201626",
+   "ta_s": 92.973,
+   "tg_s": 95.557,
+   "ai": false,
+   "entry_erpm": 4655.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -26.66,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 116,
+   "log": "20261010-201626",
+   "ta_s": 256.179,
+   "tg_s": 258.643,
+   "ai": false,
+   "entry_erpm": 4816.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -1.75,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 117,
+   "log": "20261010-201626",
+   "ta_s": 266.503,
+   "tg_s": null,
+   "ai": false,
+   "entry_erpm": 4971.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": null,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 121,
+   "log": "20261010-202633",
+   "ta_s": 66.019,
+   "tg_s": 68.459,
+   "ai": false,
+   "entry_erpm": 5448.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 32.56,
+   "frames": 13,
+   "src": 0
+  },
+  {
+   "pass_id": 124,
+   "log": "20261010-202633",
+   "ta_s": 185.241,
+   "tg_s": 186.949,
+   "ai": false,
+   "entry_erpm": 5202.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -9.68,
+   "frames": 12,
+   "src": 0
+  },
+  {
+   "pass_id": 127,
+   "log": "20261010-204208",
+   "ta_s": 34.601,
+   "tg_s": 37.571,
+   "ai": true,
+   "entry_erpm": 3546.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": -53.7,
+   "frames": 12,
+   "src": 1
+  },
+  {
+   "pass_id": 128,
+   "log": "20261010-204208",
+   "ta_s": 62.291,
+   "tg_s": 64.263,
+   "ai": true,
+   "entry_erpm": 4575.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": -18.0,
+   "frames": 12,
+   "src": 1
+  },
+  {
+   "pass_id": 129,
+   "log": "20261010-204208",
+   "ta_s": 71.601,
+   "tg_s": 74.621,
+   "ai": true,
+   "entry_erpm": 5167.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 14.29,
+   "frames": 12,
+   "src": 1
+  }
+ ],
+ "de_passes": [
+  {
+   "pass_id": 16,
+   "log": "20261010-152405",
+   "ta_s": 25.893,
+   "tg_s": 27.883,
+   "ai": false,
+   "entry_erpm": 6628.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 16.38,
+   "frames": 21,
+   "src": 0
+  },
+  {
+   "pass_id": 17,
+   "log": "20261010-152405",
+   "ta_s": 34.493,
+   "tg_s": 36.856,
+   "ai": false,
+   "entry_erpm": 6261.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 28.43,
+   "frames": 22,
+   "src": 0
+  },
+  {
+   "pass_id": 25,
+   "log": "20261010-152707",
+   "ta_s": 7.374,
+   "tg_s": 9.861,
+   "ai": false,
+   "entry_erpm": 6129.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -18.31,
+   "frames": 22,
+   "src": 0
+  },
+  {
+   "pass_id": 26,
+   "log": "20261010-152707",
+   "ta_s": 16.431,
+   "tg_s": 18.261,
+   "ai": false,
+   "entry_erpm": 6422.0,
+   "r1_strong": false,
+   "r1_collision": true,
+   "de_collision": false,
+   "de_yaw_dps": 40.7,
+   "frames": 24,
+   "src": 0
+  },
+  {
+   "pass_id": 46,
+   "log": "20261010-172505",
+   "ta_s": 6.761,
+   "tg_s": 8.802,
+   "ai": true,
+   "entry_erpm": 5052.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 5.2,
+   "frames": 23,
+   "src": 1
+  },
+  {
+   "pass_id": 90,
+   "log": "20261010-193638",
+   "ta_s": 80.232,
+   "tg_s": 82.639,
+   "ai": false,
+   "entry_erpm": 4480.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 13.08,
+   "frames": 24,
+   "src": 0
+  },
+  {
+   "pass_id": 96,
+   "log": "20261010-200916",
+   "ta_s": 133.045,
+   "tg_s": 135.465,
+   "ai": false,
+   "entry_erpm": 3355.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 72.8,
+   "frames": 24,
+   "src": 0
+  },
+  {
+   "pass_id": 110,
+   "log": "20261010-201626",
+   "ta_s": 92.973,
+   "tg_s": 95.557,
+   "ai": false,
+   "entry_erpm": 4655.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -26.66,
+   "frames": 24,
+   "src": 0
+  },
+  {
+   "pass_id": 116,
+   "log": "20261010-201626",
+   "ta_s": 256.179,
+   "tg_s": 258.643,
+   "ai": false,
+   "entry_erpm": 4816.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -1.75,
+   "frames": 23,
+   "src": 0
+  },
+  {
+   "pass_id": 121,
+   "log": "20261010-202633",
+   "ta_s": 66.019,
+   "tg_s": 68.459,
+   "ai": false,
+   "entry_erpm": 5448.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": 32.56,
+   "frames": 24,
+   "src": 0
+  },
+  {
+   "pass_id": 124,
+   "log": "20261010-202633",
+   "ta_s": 185.241,
+   "tg_s": 186.949,
+   "ai": false,
+   "entry_erpm": 5202.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": false,
+   "de_yaw_dps": -9.68,
+   "frames": 22,
+   "src": 0
+  },
+  {
+   "pass_id": 127,
+   "log": "20261010-204208",
+   "ta_s": 34.601,
+   "tg_s": 37.571,
+   "ai": true,
+   "entry_erpm": 3546.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": -53.7,
+   "frames": 24,
+   "src": 1
+  },
+  {
+   "pass_id": 128,
+   "log": "20261010-204208",
+   "ta_s": 62.291,
+   "tg_s": 64.263,
+   "ai": true,
+   "entry_erpm": 4575.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": -18.0,
+   "frames": 23,
+   "src": 1
+  },
+  {
+   "pass_id": 129,
+   "log": "20261010-204208",
+   "ta_s": 71.601,
+   "tg_s": 74.621,
+   "ai": true,
+   "entry_erpm": 5167.0,
+   "r1_strong": false,
+   "r1_collision": false,
+   "de_collision": true,
+   "de_yaw_dps": 14.29,
+   "frames": 24,
+   "src": 1
+  }
+ ],
+ "counts": {
+  "r1_passes": 17,
+  "r1_ai": 4,
+  "de_passes": 14,
+  "de_ai": 4,
+  "straight_frames": 542,
+  "pred_frames": 10985,
+  "pred_frames_ai_mix_val": 9415,
+  "pred_frames_iv": 1570,
+  "iv_windows_log_heldout_policies": 3
+ },
+ "pred_table_key": "3d339512828b17195d568f1b93ee4a28208f2e85",
+ "configs": {
+  "B": {
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "genre_map": null
+  },
+  "c": {
+   "run": "ai_mix_20261011-rl-c-fbc-nocmd-s3-e12",
+   "genre_map": null
+  },
+  "b": {
+   "run": "ai_mix_20261011-rl-b-awr-nocmd-s3-e12",
+   "genre_map": null
+  },
+  "a_good": {
+   "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+   "genre_map": {
+    "5": 6,
+    "4": 7
+   }
+  },
+  "a_base": {
+   "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+   "genre_map": null
+  },
+  "n_good": {
+   "run": "ai_mix_20261011-rl-n-negctl-nocmd-s3-e12",
+   "genre_map": {
+    "5": 6,
+    "4": 7
+   }
+  },
+  "n_base": {
+   "run": "ai_mix_20261011-rl-n-negctl-nocmd-s3-e12",
+   "genre_map": null
+  }
+ },
+ "rules": {
+  "reference_rl": "c",
+  "reference_collapse": "B",
+  "r1": "保留した R1 の通過(窓 = 起点の 0.4秒手前〜起点、窓のフレームがすべて val)で、走行の出力のスロットル(先読み 3・ゲイン 1.0)の通過ごとの平均の差(方策 − 基準、+ = 遅い)の通過単位ブートストラップ 95% 区間の下限 > 0、かつ、見積もった進入 eRPM が 5500 未満の通過の割合が基準より高い(点推定)",
+  "de": "保留した DE の通過(窓 = 緑マット出口〜0.8秒後)で、走行の出力のステア(ゲイン 1.3)の差(方策 − 基準、+ = 左)の通過単位ブートストラップ 95% 区間の下限 > 0",
+  "collapse": "(i) 保留の直線(場所 HS・DE、|ヨー| < 20°/s、前進 eRPM > 2000、衝突の前後を除く)で、前進の強さ(1498µs − 出力のスロットル)の低下がモデル B の 5% 以内(点推定)、(ii) 保留した人のきれいな走行(衝突の前後 2.5G を除く)の L1(1〜10フレーム先・ステアとスロットルの平均)がモデル B の 1.10倍以内(点推定)、(iii) 同じフレームで前進の偏り(3フレーム先の予測 − 人、tools/compare_models.py の fwd_bias_us)≥ −30µs",
+  "labels": "学習の印(I。(n) は I_neg)が、(i) 芝などの空転(コース図の進み / 車輪の距離 < 0.6、0.5秒の窓)、(ii) 2.5G 未満の強い衝撃(水平 1.5〜2.5G、衝突の前後を除く)に、比べる集団より 10ポイント以上多く付いていない、(iii) 人の後退(eRPM > 300)の「良い」の割合が 10% 以下。ヘアピンの内側を削る走りは位置が無いので判定しない",
+  "negative_control": "陰性対照 (n)(「〜・良」のジャンルで評価)が、方策の出力の項目(2・3・4)のどれかで落ちること。落ちなければ、ゲートC は何も見分けていない",
+  "value": "ゲートC の1(価値の AUROC)はその1(value.md)の結果をそのまま使う",
+  "candidate_rl": "(a)(b) を実車の候補にするのは、1〜5 をすべて満たし、かつ陰性対照が落ちたときだけ",
+  "candidate_c": "(c) filtered BC を「段階B + AI のデータ」の候補にするのは、モデル B と比べて 4 を満たし、R1 か DE のどちらかで B より良い(区間が 0 を含まない)、かつ、どちらも B より有意に悪くないとき(ロードマップ 4.4 ゲートD・4.5)",
+  "thresholds": {
+   "straight_drop_max": 0.05,
+   "l1_ratio_max": 1.1,
+   "fwd_bias_min_us": -30.0,
+   "label_excess_max": 0.1,
+   "reverse_good_max": 0.1,
+   "spin_ratio": 0.6,
+   "scrape_g": [
+    1.5,
+    2.5
+   ],
+   "ci": 0.95,
+   "n_boot": 2000
+  },
+  "primary_output": "jetformer/drive.py の apply_gains と同じ式で、先読み 3・ステアのゲイン 1.3・速度のゲイン 1.0・トリム 0 の出力(各モデルの steer_center_us・throttle_neutral_us の周り)"
+ },
+ "drive_settings": {
+  "steer_gain": 1.3,
+  "throttle_gain": 1.0,
+  "lookahead": 3,
+  "steer_trim_us": 0.0
+ },
+ "inputs_sha1": {
+  "frames.npz": "a5cb883d3e0f5112e1e834358c6913e330ee5223",
+  "passes.json": "5291da2e8f393531ebe4aac28bd434541de2f432",
+  "advantages.npz": "f1982225848c17861bf8bfd461753cbdbfb52be9",
+  "ai_mix_splits": "30f123f69c813519f38318a3c53b59737e98b7ed",
+  "iv_splits": "a9b8e792d4b235f015918fdcd867c5eab045df54"
+ },
+ "best_pth_sha1_head": {
+  "B": "cd812439dfa0306f09ef39a233954cffccac1f18",
+  "c": "b68cd20bb18fad0b437635056390569be62cb2ad",
+  "b": "e1bbb8f390a245c0a9aa6c2713c3a6a456212f99",
+  "a_good": "4a5085f129dc4fd8bbbc4578ac9cbbf6995183cb",
+  "a_base": "4a5085f129dc4fd8bbbc4578ac9cbbf6995183cb",
+  "n_good": "efbe730360e650542f7a9337a8ad174cb8c2f166",
+  "n_base": "efbe730360e650542f7a9337a8ad174cb8c2f166"
+ }
+}

@@ -1,0 +1,586 @@
+{
+ "title": "JetFormer 10月10日のまとめ",
+ "log": "20261010-172910",
+ "scenes": [
+  {
+   "id": "t01_title",
+   "kind": "title",
+   "log": "20261010-172910",
+   "caption": "10月10日の一日",
+   "src_start": 60.0,
+   "src_end": 66.0,
+   "speed": 1.0,
+   "highlights": [],
+   "summary_items": [
+    "TT-02 SRX+Jetson Orin Nano",
+    "10/10 01:58 着手 〜 10/11 朝",
+    "作る・集める・学ぶ・走らせる"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。10月10日の一日を、約5分でまとめます。",
+     "say": "ラピカです。10月10日の一日を、約5分でまとめます。",
+     "expression": "happy",
+     "pose": "normal"
+    },
+    {
+     "text": "JetFormerを作り、データを集めて学習し、AIで走らせた一日でした。",
+     "say": "ジェットフォーマーを作り、データを集めて学習し、エーアイで走らせた一日でした。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "d01_design",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "TransFuserを手本に",
+   "src_start": 66.0,
+   "src_end": 72.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/architecture.png",
+   "lines": [
+    {
+     "text": "手本は、カメラとLiDARをTransformerで融合する自動運転モデル、TransFuserです。",
+     "say": "手本は、カメラとライダーをトランスフォーマーで融合する、トランスフューザーです。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "JetFormerは5種類の入力を、出力用と合わせて95個のトークンにします。",
+     "say": "ジェットフォーマーは、5種類の入力を、出力用と合わせて、95個のトークンにします。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "融合は最終段の1回だけ。推論1.9ミリ秒で、0.33秒先までの操作を出します。",
+     "say": "融合は最終段の1回だけ。推論は1.9ミリ秒で、0.33秒先までの操作を出します。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "c01_data",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "データを集める",
+   "src_start": 72.0,
+   "src_end": 80.0,
+   "speed": 1.0,
+   "highlights": [
+    "timeline"
+   ],
+   "summary_items": [
+    "20秒ずつのシーン(nuScenes風)",
+    "カメラ・ToF・IMU・操作を同時に記録",
+    "声のカウントダウンとピーで開始",
+    "午後: 人の低速走行 22シーン 約7分",
+    "夜: 「綺麗な走行」30シーンを追加",
+    "合計52シーン → 夜のモデルA・B"
+   ],
+   "lines": [
+    {
+     "text": "データは20秒ずつのシーンで集め、車のスピーカーの「ピー」で記録を始めます。",
+     "say": "データは20秒ずつのシーンで集め、車のスピーカーのピーで、記録を始めます。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "午後は人の低速走行を22シーン、約7分。この日のAIが学んだのは、これだけです。",
+     "say": "午後は、人の低速走行を22シーン、約7分。この日のエーアイが学んだのは、これだけです。",
+     "expression": "surprised",
+     "pose": "normal"
+    },
+    {
+     "text": "夜には「綺麗な走行」を30シーン足して、52シーンにしました。",
+     "say": "夜には、綺麗な走行を30シーン足して、52シーンにしました。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "m01_copycat",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "学習とコピーキャット",
+   "src_start": 80.0,
+   "src_end": 86.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/training_results.png",
+   "lines": [
+    {
+     "text": "学習は、人の操作をまねる模倣学習です。",
+     "say": "学習は、人の操作をまねる、模倣学習です。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "でも14時56分、モデルが入力の「今の操作」をまねていると分かりました。",
+     "say": "でも14時56分、モデルが、入力の今の操作をまねていると分かりました。",
+     "expression": "surprised",
+     "pose": "point"
+    },
+    {
+     "text": "ステアの誤差は、人の操作を入れると36.1、自分の予測では64.7マイクロ秒です。",
+     "say": "ステアの誤差は、人の操作を入れると36.1、自分の予測を入れると64.7マイクロ秒です。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "m02_ab",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "夜のモデルAとB",
+   "src_start": 86.0,
+   "src_end": 92.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/training_results.png",
+   "lines": [
+    {
+     "text": "夜は52シーンで、今の操作を入れるAと、入れないBを学習しました。",
+     "say": "夜は52シーンで、今の操作を入れるエーと、入れないビーを学習しました。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "走行と同じ条件ではBが最良。当日のモデルより誤差がステア36%、スロットル57%減。",
+     "say": "走行と同じ条件ではビーが最良で、当日のモデルより誤差が、ステアで36、スロットルで57パーセント減りました。",
+     "expression": "happy",
+     "pose": "point"
+    },
+    {
+     "text": "ただ、この比べ方はBに有利で、AもBもまだ実車では走っていません。",
+     "say": "ただ、この比べ方はビーに有利で、エーもビーも、まだ実車では走っていません。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r01_timeline",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "一日の流れ",
+   "src_start": 92.0,
+   "src_end": 98.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/day_timeline.png",
+   "lines": [
+    {
+     "text": "AI走行は15時50分から20時47分まで。初期、ゲイン調整、リカバリー、夜の4段階です。",
+     "say": "エーアイ走行は、15時50分から20時47分まで。初期、ゲイン調整、リカバリー、夜の、4つの段階です。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "Jetsonは電池で動いていて、電池切れで5回以上止まりました。",
+     "say": "ジェットソンは電池で動いていて、電池切れで、5回以上止まりました。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r02_course",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "コースと3つの難所",
+   "src_start": 98.0,
+   "src_end": 104.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/overnight_20261011/course/course_map.png",
+   "lines": [
+    {
+     "text": "コースは左回りで、1周約25.5メートル。",
+     "say": "コースは左回りで、1周、約25.5メートル。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "難所は、右ヘアピンのR1、バックストレートの角のDE、緑マットのGMです。",
+     "say": "難所は、右ヘアピンのアールワン、バックストレートのかどのディーイー、緑のマットのジーエムです。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "r03_legend",
+   "kind": "legend",
+   "log": "20261010-172910",
+   "caption": "画面の見かた",
+   "src_start": 20.0,
+   "src_end": 27.0,
+   "speed": 1.0,
+   "highlights": [
+    "prediction",
+    "timeline",
+    "tof",
+    "gauges"
+   ],
+   "lines": [
+    {
+     "text": "左はAIの目のカメラとセンサー。紫の帯は、AIが予想した進路です。",
+     "say": "左は、エーアイの目のカメラとセンサー。紫の帯は、エーアイが予想した進路です。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "下は走行の全体。紫がAIの運転、白い線が人の交代、オレンジの印が衝撃です。",
+     "say": "下は、走行の全体。紫がエーアイの運転、白い線が人の交代、オレンジの印が衝撃です。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "r04_hold",
+   "kind": "clip",
+   "log": "20261010-155820",
+   "caption": "初期: HOLDで止まる",
+   "src_start": 28.5,
+   "src_end": 41.0,
+   "speed": 0.75,
+   "highlights": [
+    "timeline",
+    "gauges"
+   ],
+   "lines": [
+    {
+     "text": "初期の走行では、車両データが途切れて、AIが中立で止まるHOLDが何度も起きました。",
+     "say": "初期の走行では、車両データが途切れて、エーアイが中立で止まる、ホールドが何度も起きました。",
+     "expression": "surprised",
+     "pose": "point"
+    },
+    {
+     "text": "16時10分に通信エラーとして直し、006と007では0回に。",
+     "say": "16時10分に通信エラーとして直し、ゼロゼロロクとゼロゼロナナでは0回に。",
+     "expression": "normal",
+     "pose": "normal"
+    },
+    {
+     "text": "ただ記録は基板の再起動と同じ形で、原因はまだ確かめていません。",
+     "say": "ただ、記録は基板の再起動と同じ形で、原因はまだ確かめていません。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r05_006",
+   "kind": "clip",
+   "log": "20261010-172910",
+   "caption": "006 約16周・交代1回",
+   "src_start": 37.9,
+   "src_end": 57.4,
+   "speed": 1.0,
+   "highlights": [
+    "laps",
+    "prediction",
+    "speed"
+   ],
+   "lines": [
+    {
+     "text": "17時29分の006は、AIが150秒以上走り続けて約16周。交代は最後の1回だけ。",
+     "say": "17時29分のゼロゼロロクは、エーアイが150秒以上走り続けて、約16周。交代は最後の1回だけ。",
+     "expression": "happy",
+     "pose": "point"
+    },
+    {
+     "text": "この2周は9.75秒と9.82秒。2.5G以上の衝突がない周で、人と同じくらいです。",
+     "say": "この2周は、9.75秒と9.82秒。2.5ジー以上の衝突がない周で、人と同じくらいです。",
+     "expression": "happy",
+     "pose": "normal"
+    },
+    {
+     "text": "ただ衝突は22回。半分はDEで、当たっても走り続けていました。",
+     "say": "ただ、衝突は22回。半分はディーイーで、当たっても走り続けていました。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r06_007_r1",
+   "kind": "clip",
+   "log": "20261010-173445",
+   "caption": "007 R1で止まる",
+   "src_start": 137.5,
+   "src_end": 147.5,
+   "speed": 0.5,
+   "highlights": [
+    "full_lock",
+    "impact",
+    "reverse"
+   ],
+   "lines": [
+    {
+     "text": "007では、R1で白い板に正面から当たって止まる場面が続きました。",
+     "say": "ゼロゼロナナでは、アールワンで白い板に正面から当たって、止まる場面が続きました。",
+     "expression": "surprised",
+     "pose": "point"
+    },
+    {
+     "text": "AIは後退を出し続けますが、ESCは中立をはさまないと下がりません。",
+     "say": "エーアイはバックを出し続けますが、スピードコントローラーは、中立をはさまないと下がりません。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "交代11回のうち10回がR1から。人が中立をはさむと、すぐ下がりました。",
+     "say": "交代11回のうち10回が、アールワンから。人が中立をはさむと、すぐに下がりました。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r07_008",
+   "kind": "clip",
+   "log": "20261010-181504",
+   "caption": "008 リカバリーv1",
+   "src_start": 25.0,
+   "src_end": 35.8,
+   "speed": 0.5,
+   "highlights": [
+    "reverse",
+    "speed",
+    "timeline"
+   ],
+   "lines": [
+    {
+     "text": "18時15分の008では、自動リカバリーの初版を試しました。",
+     "say": "18時15分のゼロゼロハチでは、自動リカバリーの初版を試しました。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "ぶつかって止まると働きますが、後退が弱く、4回とも下がれませんでした。",
+     "say": "ぶつかって止まると働きますが、バックが弱く、4回とも下がれませんでした。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "下の帯の赤い所は、基板の再起動でAIが止まった所。再起動はこの走行で12回です。",
+     "say": "下の帯の赤い所は、基板の再起動で、エーアイが止まった所。再起動は、この走行で12回です。",
+     "expression": "surprised",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "r08_night",
+   "kind": "clip",
+   "log": "20261010-204208",
+   "caption": "夜: 衝突が2倍以上",
+   "src_start": 26.9,
+   "src_end": 41.2,
+   "speed": 0.75,
+   "highlights": [
+    "impact",
+    "timeline",
+    "tof"
+   ],
+   "lines": [
+    {
+     "text": "夜の3本は、1周あたりの衝突が2.86回。006と007の2倍以上でした。",
+     "say": "夜の3本は、1周あたりの衝突が、2.86回。ゼロゼロロクとゼロゼロナナの、2倍以上でした。",
+     "expression": "surprised",
+     "pose": "point"
+    },
+    {
+     "text": "カメラとToFが下向きにずれた疑いがありますが、衝突が増えた原因かは未確定です。",
+     "say": "カメラと距離センサーが下向きにずれた疑いがありますが、衝突が増えた原因かは、まだ分かりません。",
+     "expression": "worried",
+     "pose": "normal"
+    },
+    {
+     "text": "リカバリーv2は、人の交代のほうが早く、一度も作動しませんでした。",
+     "say": "リカバリーブイツーは、人の交代のほうが早く、一度も作動しませんでした。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "r09_runs",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "AI走行11本の結果",
+   "src_start": 104.0,
+   "src_end": 110.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/runs_results.png",
+   "lines": [
+    {
+     "text": "記録が残る11本で、AIの時間は748秒、66.5周。衝突は1周あたり1.56回でした。",
+     "say": "記録が残る11本で、エーアイの時間は748秒、66.5周。衝突は1周あたり1.56回でした。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "衝突なしの周のベストは007の9.68秒。タイムは人並みで、衝突は人より多めです。",
+     "say": "衝突なしの周のベストは、ゼロゼロナナの9.68秒。タイムは人並みで、衝突は、人より多めです。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "b01_built",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "走りながら作ったもの",
+   "src_start": 180.0,
+   "src_end": 188.0,
+   "speed": 1.0,
+   "highlights": [
+    "laps",
+    "tof"
+   ],
+   "summary_items": [
+    "17:54 リカバリーv1・後退前に中立",
+    "17:58 周回とラップの表示・読み上げ",
+    "18:33 リカバリーv2(人とESCの手順)",
+    "18:39 基板の再起動からすぐ復帰",
+    "18:43 ToFガード(当日は記録だけ)",
+    "20:36 衝突の前後を学習から外す"
+   ],
+   "lines": [
+    {
+     "text": "走りながら、この6つの道具を作りました。",
+     "say": "走りながら、この6つの道具を作りました。",
+     "expression": "happy",
+     "pose": "point"
+    },
+    {
+     "text": "記録だけのガードは、夜の衝突21回中20回を0.3秒以上前に警告。誤警報は1分に17.5回。",
+     "say": "記録だけのガードは、夜の衝突21回中20回を、0.3秒以上前に警告。ごけいほうは、1分に17.5回。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "リカバリーv2の後退と、ガードの減速は、まだ実車で試せていません。",
+     "say": "リカバリーブイツーのバックと、ガードの減速は、まだ実車で試せていません。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "p01_plan",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "ぶつからずに速く",
+   "src_start": 110.0,
+   "src_end": 116.0,
+   "speed": 1.0,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/summary_20261010/fig/plan.png",
+   "lines": [
+    {
+     "text": "006と007の衝突の9割は、R1・DE・GMの3か所。AIが人より遅いのは周の後半です。",
+     "say": "ゼロゼロロクとゼロゼロナナの衝突の9割は、3つの難所。エーアイが人より遅いのは、周の後半です。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "だからヘアピンは遅く入り、直線で速く走ります。",
+     "say": "だから、ヘアピンは遅く入り、直線で速く走ります。",
+     "expression": "happy",
+     "pose": "point"
+    },
+    {
+     "text": "目標は、1周1.17回の衝突を、10月25日に0.9回以下、12月ごろに0.7回以下へ。",
+     "say": "目標は、1周1.17回の衝突を、10月25日に0.9回以下、12月ごろに0.7回以下へ。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "数字は目標で、効果は見込みです。実車ではまだ試していません。",
+     "say": "数字は目標で、効果は見込みです。実車では、まだ試していません。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "n01_next",
+   "kind": "summary",
+   "log": "20261010-172910",
+   "caption": "次にやる3つ",
+   "src_start": 116.0,
+   "src_end": 124.0,
+   "speed": 1.0,
+   "highlights": [],
+   "summary_items": [
+    "① 測れる状態に(取付・電源) 〜10/14",
+    "10/14 基準を測り直す(候補はモデルB)",
+    "② 安全層v1: R1・GM・DEの速度上限",
+    "再生で確認 → 10/20 実車でA/B/A",
+    "③ 遅く入って速く出る手本 10/16",
+    "学習し直し → 10/22 実車でA/B/A"
+   ],
+   "lines": [
+    {
+     "text": "まず14日の朝までに、取り付けと電源を直して、測れる状態にします。",
+     "say": "まず14日の朝までに、取り付けと電源を直して、測れる状態にします。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "次に、R1・GM・DEの速度上限を作り、記録の再生で確かめて、20日に実車で比べます。",
+     "say": "次に、3つの難所の速度上限を作り、記録の再生で確かめて、20日に実車で比べます。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "そして16日に「遅く入って速く出る」手本を集めて学習し直し、22日に実車で比べます。",
+     "say": "そして16日に、遅く入って速く出る手本を集めて学習し直し、22日に実車で比べます。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "e01_end",
+   "kind": "ending",
+   "log": "20261010-172910",
+   "caption": "おつかれさまでした",
+   "src_start": 124.0,
+   "src_end": 130.0,
+   "speed": 1.0,
+   "highlights": [],
+   "summary_items": [
+    "タイムは人並み・衝突は人より多め",
+    "次は測れる状態から(10/14)",
+    "安全層を作るかはご判断ください"
+   ],
+   "lines": [
+    {
+     "text": "次は衝突を減らす番です。安全層を作るかどうか、ご判断をお願いします。",
+     "say": "次は、衝突を減らす番です。安全層を作るかどうか、ご判断をお願いします。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

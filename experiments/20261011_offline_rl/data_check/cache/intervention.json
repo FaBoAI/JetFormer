@@ -1,0 +1,109 @@
+{
+ "windows": 29,
+ "scored": 1570,
+ "scored_by_source": {
+  "0": 1570
+ },
+ "scored_by_kind": {
+  "0": 1570
+ },
+ "scored_with_label_valid_vehicle_valid_after_takeover_mode_set": 1570,
+ "scored_with_forward_throttle_command": 660,
+ "counts": {
+  "takeovers": 39,
+  "windows": 29,
+  "takeovers_by_class": {
+   "operational": 9,
+   "after_collision": 25,
+   "stuck": 2,
+   "preemptive": 3
+  },
+  "windows_by_class": {
+   "operational": 0,
+   "after_collision": 25,
+   "stuck": 1,
+   "preemptive": 3
+  },
+  "correction_frames": 3203,
+  "correction_kinds": {
+   "forward": 1838,
+   "reverse": 1184,
+   "idle": 181
+  },
+  "scored_frames": 1570
+ },
+ "baselines_all": {
+  "n": 1570,
+  "hold_current_steer_mae": [
+   18.6,
+   36.7,
+   54.3,
+   71.3,
+   87.5,
+   102.9,
+   117.5,
+   131.6,
+   145.4,
+   158.4
+  ],
+  "hold_current_throttle_mae": [
+   10.2,
+   19.8,
+   28.4,
+   36.2,
+   42.8,
+   48.5,
+   51.9,
+   54.4,
+   56.0,
+   57.1
+  ],
+  "hold_current_k3": [
+   54.3,
+   28.4
+  ],
+  "constant_ref_k3": [
+   171.8,
+   46.4
+  ],
+  "human_steer_abs_dev_k3": 171.8,
+  "human_throttle_k3_median": 1496.0
+ },
+ "baseline_compare_clean": {
+  "n": 5753,
+  "hold_current_steer_mae": [
+   16.2,
+   31.5,
+   46.6,
+   61.2,
+   75.4,
+   89.0,
+   101.9,
+   114.1,
+   125.6,
+   136.4
+  ],
+  "hold_current_throttle_mae": [
+   6.9,
+   12.7,
+   18.0,
+   23.3,
+   28.2,
+   32.5,
+   36.5,
+   40.1,
+   43.4,
+   46.7
+  ],
+  "hold_current_k3": [
+   46.6,
+   18.0
+  ],
+  "constant_ref_k3": [
+   160.6,
+   189.0
+  ],
+  "human_steer_abs_dev_k3": 160.6,
+  "human_throttle_k3_median": 1307.0
+ }
+}

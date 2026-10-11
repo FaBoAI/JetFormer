@@ -1,0 +1,885 @@
+{
+ "dataset": "first_trial_20261010",
+ "scenes": [
+  {
+   "scene": "20261010-135449-0001",
+   "frames": 598,
+   "duration_s": 19.98,
+   "camera_fps": 29.88,
+   "camera_dropped": 3,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 25.3,
+    "max": 33.6
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 14.4
+   },
+   "usable_frames": 587,
+   "steering_us": {
+    "p5": 1201.0,
+    "p50": 1486.0,
+    "p95": 1873.0
+   },
+   "throttle_us": {
+    "p5": 1338.0,
+    "p50": 1363.0,
+    "p95": 1393.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -5367,
+    "max": -2391,
+    "median_moving": -3910
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 712,
+   "tof_near_ratio": 0.259,
+   "steer_yaw_corr": -0.92,
+   "accel_peak_ms2": 14.3,
+   "impacts": 0,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-135449-0002",
+   "frames": 594,
+   "duration_s": 19.98,
+   "camera_fps": 29.68,
+   "camera_dropped": 7,
+   "camera_max_gap_ms": 133.2,
+   "tof_age_ms": {
+    "mean": 17.8,
+    "max": 38.2
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 17.5
+   },
+   "usable_frames": 584,
+   "steering_us": {
+    "p5": 1005.0,
+    "p50": 1444.0,
+    "p95": 1807.0
+   },
+   "throttle_us": {
+    "p5": 1315.0,
+    "p50": 1354.0,
+    "p95": 1424.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -5935,
+    "max": -1663,
+    "median_moving": -4309
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 708,
+   "tof_near_ratio": 0.261,
+   "steer_yaw_corr": -0.94,
+   "accel_peak_ms2": 25.2,
+   "impacts": 2,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-144028-0001",
+   "frames": 593,
+   "duration_s": 19.95,
+   "camera_fps": 29.67,
+   "camera_dropped": 7,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 24.7,
+    "max": 95.2
+   },
+   "vehicle_age_ms": {
+    "mean": 5.4,
+    "max": 87.1
+   },
+   "usable_frames": 574,
+   "steering_us": {
+    "p5": 996.0,
+    "p50": 1500.0,
+    "p95": 1891.0
+   },
+   "throttle_us": {
+    "p5": 1279.0,
+    "p50": 1328.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 0.992,
+   "erpm": {
+    "min": -6645,
+    "max": 1167,
+    "median_moving": -5026
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 672,
+   "tof_near_ratio": 0.27,
+   "steer_yaw_corr": -0.88,
+   "accel_peak_ms2": 17.6,
+   "impacts": 0,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-144028-0002",
+   "frames": 590,
+   "duration_s": 19.98,
+   "camera_fps": 29.47,
+   "camera_dropped": 11,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 17.5,
+    "max": 38.7
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 14.1
+   },
+   "usable_frames": 579,
+   "steering_us": {
+    "p5": 1108.0,
+    "p50": 1505.0,
+    "p95": 1894.0
+   },
+   "throttle_us": {
+    "p5": 1238.0,
+    "p50": 1303.0,
+    "p95": 1492.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -7555,
+    "max": -2668,
+    "median_moving": -5334
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 697,
+   "tof_near_ratio": 0.26,
+   "steer_yaw_corr": -0.77,
+   "accel_peak_ms2": 22.0,
+   "impacts": 1,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-150424-0002",
+   "frames": 591,
+   "duration_s": 19.92,
+   "camera_fps": 29.62,
+   "camera_dropped": 8,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 20.4,
+    "max": 28.0
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 16.6
+   },
+   "usable_frames": 581,
+   "steering_us": {
+    "p5": 1025.0,
+    "p50": 1450.0,
+    "p95": 1892.0
+   },
+   "throttle_us": {
+    "p5": 1245.0,
+    "p50": 1298.0,
+    "p95": 1493.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -7092,
+    "max": -2211,
+    "median_moving": -5209
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 694,
+   "tof_near_ratio": 0.261,
+   "steer_yaw_corr": -0.92,
+   "accel_peak_ms2": 21.9,
+   "impacts": 1,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-150424-0003",
+   "frames": 591,
+   "duration_s": 19.95,
+   "camera_fps": 29.57,
+   "camera_dropped": 9,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 25.3,
+    "max": 34.0
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 15.9
+   },
+   "usable_frames": 581,
+   "steering_us": {
+    "p5": 999.0,
+    "p50": 1515.0,
+    "p95": 1891.0
+   },
+   "throttle_us": {
+    "p5": 1227.0,
+    "p50": 1288.0,
+    "p95": 1496.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -8571,
+    "max": -2026,
+    "median_moving": -5375
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 675,
+   "tof_near_ratio": 0.264,
+   "steer_yaw_corr": -0.92,
+   "accel_peak_ms2": 13.8,
+   "impacts": 0,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-150424-0004",
+   "frames": 593,
+   "duration_s": 19.95,
+   "camera_fps": 29.67,
+   "camera_dropped": 7,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 18.5,
+    "max": 39.3
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 13.2
+   },
+   "usable_frames": 583,
+   "steering_us": {
+    "p5": 996.0,
+    "p50": 1478.0,
+    "p95": 1894.0
+   },
+   "throttle_us": {
+    "p5": 1169.0,
+    "p50": 1269.0,
+    "p95": 1502.0
+   },
+   "moving_ratio": 0.983,
+   "erpm": {
+    "min": -9308,
+    "max": 4234,
+    "median_moving": -5281
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 675,
+   "tof_near_ratio": 0.268,
+   "steer_yaw_corr": -0.89,
+   "accel_peak_ms2": 76.0,
+   "impacts": 3,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-150424-0005",
+   "frames": 591,
+   "duration_s": 19.95,
+   "camera_fps": 29.57,
+   "camera_dropped": 9,
+   "camera_max_gap_ms": 199.8,
+   "tof_age_ms": {
+    "mean": 10.0,
+    "max": 41.4
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 15.6
+   },
+   "usable_frames": 581,
+   "steering_us": {
+    "p5": 1001.0,
+    "p50": 1470.0,
+    "p95": 1892.0
+   },
+   "throttle_us": {
+    "p5": 1155.0,
+    "p50": 1235.0,
+    "p95": 1496.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -8014,
+    "max": -2706,
+    "median_moving": -5808
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 688,
+   "tof_near_ratio": 0.265,
+   "steer_yaw_corr": -0.91,
+   "accel_peak_ms2": 26.9,
+   "impacts": 3,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0001",
+   "frames": 590,
+   "duration_s": 19.95,
+   "camera_fps": 29.53,
+   "camera_dropped": 10,
+   "camera_max_gap_ms": 199.8,
+   "tof_age_ms": {
+    "mean": 13.2,
+    "max": 46.2
+   },
+   "vehicle_age_ms": {
+    "mean": 5.2,
+    "max": 14.8
+   },
+   "usable_frames": 581,
+   "steering_us": {
+    "p5": 992.0,
+    "p50": 1550.0,
+    "p95": 1895.0
+   },
+   "throttle_us": {
+    "p5": 1178.0,
+    "p50": 1302.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 0.866,
+   "erpm": {
+    "min": -8887,
+    "max": 1558,
+    "median_moving": -5007
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 694,
+   "tof_near_ratio": 0.253,
+   "steer_yaw_corr": -0.69,
+   "accel_peak_ms2": 76.3,
+   "impacts": 1,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0003",
+   "frames": 590,
+   "duration_s": 19.95,
+   "camera_fps": 29.52,
+   "camera_dropped": 10,
+   "camera_max_gap_ms": 133.2,
+   "tof_age_ms": {
+    "mean": 17.1,
+    "max": 24.8
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 18.0
+   },
+   "usable_frames": 580,
+   "steering_us": {
+    "p5": 994.0,
+    "p50": 1450.0,
+    "p95": 1895.0
+   },
+   "throttle_us": {
+    "p5": 1181.0,
+    "p50": 1275.0,
+    "p95": 1499.0
+   },
+   "moving_ratio": 0.995,
+   "erpm": {
+    "min": -9067,
+    "max": 2428,
+    "median_moving": -4882
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 661,
+   "tof_near_ratio": 0.275,
+   "steer_yaw_corr": -0.9,
+   "accel_peak_ms2": 79.9,
+   "impacts": 7,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0004",
+   "frames": 589,
+   "duration_s": 19.98,
+   "camera_fps": 29.42,
+   "camera_dropped": 12,
+   "camera_max_gap_ms": 166.5,
+   "tof_age_ms": {
+    "mean": 13.7,
+    "max": 41.3
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 17.4
+   },
+   "usable_frames": 579,
+   "steering_us": {
+    "p5": 996.0,
+    "p50": 1490.0,
+    "p95": 1895.0
+   },
+   "throttle_us": {
+    "p5": 1183.0,
+    "p50": 1277.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 0.998,
+   "erpm": {
+    "min": -8902,
+    "max": 2231,
+    "median_moving": -5137
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 681,
+   "tof_near_ratio": 0.264,
+   "steer_yaw_corr": -0.8,
+   "accel_peak_ms2": 44.1,
+   "impacts": 4,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0005",
+   "frames": 594,
+   "duration_s": 19.95,
+   "camera_fps": 29.72,
+   "camera_dropped": 6,
+   "camera_max_gap_ms": 133.2,
+   "tof_age_ms": {
+    "mean": 21.3,
+    "max": 28.8
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 16.4
+   },
+   "usable_frames": 584,
+   "steering_us": {
+    "p5": 1141.0,
+    "p50": 1447.0,
+    "p95": 1878.0
+   },
+   "throttle_us": {
+    "p5": 1202.0,
+    "p50": 1307.0,
+    "p95": 1679.0
+   },
+   "moving_ratio": 0.966,
+   "erpm": {
+    "min": -8418,
+    "max": 4487,
+    "median_moving": -5531
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 656,
+   "tof_near_ratio": 0.267,
+   "steer_yaw_corr": -0.87,
+   "accel_peak_ms2": 68.0,
+   "impacts": 1,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0006",
+   "frames": 593,
+   "duration_s": 19.98,
+   "camera_fps": 29.62,
+   "camera_dropped": 8,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 7.8,
+    "max": 41.9
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 17.7
+   },
+   "usable_frames": 583,
+   "steering_us": {
+    "p5": 1045.0,
+    "p50": 1445.0,
+    "p95": 1887.0
+   },
+   "throttle_us": {
+    "p5": 1219.0,
+    "p50": 1291.0,
+    "p95": 1497.0
+   },
+   "moving_ratio": 0.998,
+   "erpm": {
+    "min": -8381,
+    "max": 312,
+    "median_moving": -4928
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 669,
+   "tof_near_ratio": 0.267,
+   "steer_yaw_corr": -0.91,
+   "accel_peak_ms2": 43.6,
+   "impacts": 5,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152405-0007",
+   "frames": 232,
+   "duration_s": 7.76,
+   "camera_fps": 29.77,
+   "camera_dropped": 2,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 29.9,
+    "max": 33.1
+   },
+   "vehicle_age_ms": {
+    "mean": 5.2,
+    "max": 22.7
+   },
+   "usable_frames": 223,
+   "steering_us": {
+    "p5": 1141.0,
+    "p50": 1441.0,
+    "p95": 1603.0
+   },
+   "throttle_us": {
+    "p5": 1409.0,
+    "p50": 1498.0,
+    "p95": 1638.0
+   },
+   "moving_ratio": 0.539,
+   "erpm": {
+    "min": -2052,
+    "max": 3304,
+    "median_moving": -736
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 430,
+   "tof_near_ratio": 0.212,
+   "steer_yaw_corr": -0.88,
+   "accel_peak_ms2": 5.7,
+   "impacts": 0,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152707-0002",
+   "frames": 584,
+   "duration_s": 19.96,
+   "camera_fps": 29.21,
+   "camera_dropped": 16,
+   "camera_max_gap_ms": 133.2,
+   "tof_age_ms": {
+    "mean": 21.6,
+    "max": 33.7
+   },
+   "vehicle_age_ms": {
+    "mean": 5.2,
+    "max": 15.5
+   },
+   "usable_frames": 574,
+   "steering_us": {
+    "p5": 1077.0,
+    "p50": 1518.0,
+    "p95": 1893.0
+   },
+   "throttle_us": {
+    "p5": 1144.0,
+    "p50": 1235.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -9762,
+    "max": -2163,
+    "median_moving": -6393
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 680,
+   "tof_near_ratio": 0.267,
+   "steer_yaw_corr": -0.77,
+   "accel_peak_ms2": 31.2,
+   "impacts": 5,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152707-0003",
+   "frames": 586,
+   "duration_s": 19.99,
+   "camera_fps": 29.27,
+   "camera_dropped": 15,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 16.3,
+    "max": 23.3
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 15.0
+   },
+   "usable_frames": 576,
+   "steering_us": {
+    "p5": 994.0,
+    "p50": 1544.0,
+    "p95": 1895.0
+   },
+   "throttle_us": {
+    "p5": 1133.0,
+    "p50": 1214.0,
+    "p95": 1469.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -10362,
+    "max": -2142,
+    "median_moving": -6308
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 687,
+   "tof_near_ratio": 0.266,
+   "steer_yaw_corr": -0.92,
+   "accel_peak_ms2": 29.2,
+   "impacts": 1,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152707-0004",
+   "frames": 586,
+   "duration_s": 19.92,
+   "camera_fps": 29.37,
+   "camera_dropped": 13,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 13.3,
+    "max": 42.8
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 12.0
+   },
+   "usable_frames": 578,
+   "steering_us": {
+    "p5": 1075.0,
+    "p50": 1454.0,
+    "p95": 1887.0
+   },
+   "throttle_us": {
+    "p5": 1123.0,
+    "p50": 1235.0,
+    "p95": 1566.0
+   },
+   "moving_ratio": 0.983,
+   "erpm": {
+    "min": -10050,
+    "max": 3205,
+    "median_moving": -5963
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 655,
+   "tof_near_ratio": 0.268,
+   "steer_yaw_corr": -0.85,
+   "accel_peak_ms2": 86.9,
+   "impacts": 6,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-152707-0005",
+   "frames": 594,
+   "duration_s": 19.95,
+   "camera_fps": 29.72,
+   "camera_dropped": 6,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 21.4,
+    "max": 29.0
+   },
+   "vehicle_age_ms": {
+    "mean": 5.1,
+    "max": 15.3
+   },
+   "usable_frames": 584,
+   "steering_us": {
+    "p5": 1023.0,
+    "p50": 1451.0,
+    "p95": 1893.0
+   },
+   "throttle_us": {
+    "p5": 1126.0,
+    "p50": 1260.0,
+    "p95": 1648.0
+   },
+   "moving_ratio": 0.97,
+   "erpm": {
+    "min": -9609,
+    "max": 2843,
+    "median_moving": -5295
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 659,
+   "tof_near_ratio": 0.256,
+   "steer_yaw_corr": -0.8,
+   "accel_peak_ms2": 46.7,
+   "impacts": 3,
+   "split": "train"
+  },
+  {
+   "scene": "20261010-135449-0003",
+   "frames": 596,
+   "duration_s": 19.95,
+   "camera_fps": 29.82,
+   "camera_dropped": 4,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 13.5,
+    "max": 42.0
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 14.7
+   },
+   "usable_frames": 587,
+   "steering_us": {
+    "p5": 1109.0,
+    "p50": 1494.0,
+    "p95": 1891.0
+   },
+   "throttle_us": {
+    "p5": 1269.0,
+    "p50": 1333.0,
+    "p95": 1500.0
+   },
+   "moving_ratio": 0.973,
+   "erpm": {
+    "min": -6856,
+    "max": 1414,
+    "median_moving": -4357
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 668,
+   "tof_near_ratio": 0.278,
+   "steer_yaw_corr": -0.83,
+   "accel_peak_ms2": 33.9,
+   "impacts": 1,
+   "split": "val"
+  },
+  {
+   "scene": "20261010-150424-0001",
+   "frames": 594,
+   "duration_s": 19.95,
+   "camera_fps": 29.72,
+   "camera_dropped": 6,
+   "camera_max_gap_ms": 99.9,
+   "tof_age_ms": {
+    "mean": 14.7,
+    "max": 41.7
+   },
+   "vehicle_age_ms": {
+    "mean": 5.2,
+    "max": 17.8
+   },
+   "usable_frames": 584,
+   "steering_us": {
+    "p5": 992.0,
+    "p50": 1462.0,
+    "p95": 1752.0
+   },
+   "throttle_us": {
+    "p5": 1268.0,
+    "p50": 1348.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 0.995,
+   "erpm": {
+    "min": -7082,
+    "max": 2568,
+    "median_moving": -4225
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 644,
+   "tof_near_ratio": 0.27,
+   "steer_yaw_corr": -0.91,
+   "accel_peak_ms2": 27.6,
+   "impacts": 1,
+   "split": "val"
+  },
+  {
+   "scene": "20261010-152405-0002",
+   "frames": 588,
+   "duration_s": 19.98,
+   "camera_fps": 29.38,
+   "camera_dropped": 13,
+   "camera_max_gap_ms": 66.6,
+   "tof_age_ms": {
+    "mean": 18.6,
+    "max": 35.9
+   },
+   "vehicle_age_ms": {
+    "mean": 5.2,
+    "max": 14.9
+   },
+   "usable_frames": 578,
+   "steering_us": {
+    "p5": 1005.0,
+    "p50": 1448.0,
+    "p95": 1895.0
+   },
+   "throttle_us": {
+    "p5": 1167.0,
+    "p50": 1223.0,
+    "p95": 1498.0
+   },
+   "moving_ratio": 1.0,
+   "erpm": {
+    "min": -9770,
+    "max": -1750,
+    "median_moving": -6283
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 681,
+   "tof_near_ratio": 0.265,
+   "steer_yaw_corr": -0.87,
+   "accel_peak_ms2": 45.0,
+   "impacts": 7,
+   "split": "val"
+  },
+  {
+   "scene": "20261010-152707-0001",
+   "frames": 591,
+   "duration_s": 19.96,
+   "camera_fps": 29.56,
+   "camera_dropped": 9,
+   "camera_max_gap_ms": 66.7,
+   "tof_age_ms": {
+    "mean": 9.9,
+    "max": 40.9
+   },
+   "vehicle_age_ms": {
+    "mean": 5.0,
+    "max": 17.9
+   },
+   "usable_frames": 581,
+   "steering_us": {
+    "p5": 988.0,
+    "p50": 1441.0,
+    "p95": 1891.0
+   },
+   "throttle_us": {
+    "p5": 1170.0,
+    "p50": 1307.0,
+    "p95": 1499.0
+   },
+   "moving_ratio": 0.795,
+   "erpm": {
+    "min": -8921,
+    "max": 0,
+    "median_moving": -5265
+   },
+   "tof_invalid_ratio": 0.0,
+   "tof_median_mm": 698,
+   "tof_near_ratio": 0.26,
+   "steer_yaw_corr": -0.93,
+   "accel_peak_ms2": 18.8,
+   "impacts": 0,
+   "split": "val"
+  }
+ ]
+}

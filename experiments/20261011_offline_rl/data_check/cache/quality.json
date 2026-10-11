@@ -1,0 +1,97 @@
+{
+ "human_throttle_glitch": {
+  "rule": "人の未来の操作のどれかが 900µs 未満(受信機の読み取りの異常。10ms のサンプル 1〜2個)",
+  "usable_frames": 84,
+  "usable_frames_val": 35,
+  "min_us": 149.0
+ },
+ "erpm_valid_false_on_ai_frames": 7001,
+ "model_b": {
+  "result.json": {
+   "steer_center_us": 1441.0,
+   "throttle_neutral_us": 1496.0,
+   "command_input": false,
+   "dataset": "clean_driving_20261011"
+  },
+  "model_config.json": {
+   "steer_center_us": 1441.0,
+   "throttle_neutral_us": 1496.0,
+   "trained_modes": [
+    4,
+    5
+   ],
+   "command_input": false,
+   "dataset": "clean_driving_20261011"
+  }
+ },
+ "modes_usable": {
+  "human/4": 9955,
+  "human/5": 17014,
+  "ai/4": 0,
+  "ai/5": 18866
+ },
+ "carried_penalties": {
+  "totals": {
+   "penalties_carried": {
+    "collision": 4,
+    "failure_takeover": 2
+   },
+   "collisions_on_masked_frames": 1,
+   "failure_takeovers_on_masked_frames": 1
+  },
+  "events": {
+   "20261010-155820": [
+    {
+     "kind": "collision",
+     "from_frame": 117,
+     "to_frame": 102,
+     "dt_s": 0.5,
+     "t_from_s": 3.897,
+     "t_to_s": 3.397
+    },
+    {
+     "kind": "collision",
+     "from_frame": 481,
+     "to_frame": 470,
+     "dt_s": 0.4,
+     "t_from_s": 16.288,
+     "t_to_s": 15.888
+    },
+    {
+     "kind": "collision",
+     "from_frame": 752,
+     "to_frame": 737,
+     "dt_s": 0.5,
+     "t_from_s": 25.314,
+     "t_to_s": 24.814
+    },
+    {
+     "kind": "failure_takeover",
+     "from_frame": 131,
+     "to_frame": 102,
+     "dt_s": 0.999,
+     "t_from_s": 4.397,
+     "t_to_s": 3.397
+    },
+    {
+     "kind": "failure_takeover",
+     "from_frame": 767,
+     "to_frame": 737,
+     "dt_s": 0.999,
+     "t_from_s": 25.814,
+     "t_to_s": 24.814
+    }
+   ],
+   "20261010-181504": [
+    {
+     "kind": "collision",
+     "from_frame": 1908,
+     "to_frame": 1901,
+     "dt_s": 0.233,
+     "t_from_s": 64.218,
+     "t_to_s": 63.985
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,186 @@
+{
+ "B:5": {
+  "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "genre": 5,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1441.0,
+   1496.0
+  ],
+  "command_input": false,
+  "load_s": 0.54,
+  "samples": 32,
+  "compared": 27,
+  "out_vs_cached_torch_max_us": 9.65,
+  "out_vs_cached_torch_median_us": 0.86,
+  "infer_ms_median": 5.34,
+  "out_steer_us_range": [
+   1000.0,
+   1986.0
+  ],
+  "out_throttle_us_range": [
+   1235.0,
+   1511.0
+  ],
+  "checked_at": "2026-10-12T00:45:39"
+ },
+ "B:4": {
+  "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "genre": 4,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1441.0,
+   1496.0
+  ],
+  "command_input": false,
+  "load_s": 0.07,
+  "samples": 32,
+  "compared": 5,
+  "out_vs_cached_torch_max_us": 3.07,
+  "out_vs_cached_torch_median_us": 0.98,
+  "infer_ms_median": 5.42,
+  "out_steer_us_range": [
+   1000.0,
+   2000.0
+  ],
+  "out_throttle_us_range": [
+   1206.0,
+   1511.0
+  ],
+  "checked_at": "2026-10-12T00:45:40"
+ },
+ "c:5": {
+  "run": "ai_mix_20261011-rl-c-fbc-nocmd-s3-e12",
+  "genre": 5,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1442.0,
+   1498.0
+  ],
+  "command_input": false,
+  "load_s": 0.07,
+  "samples": 32,
+  "compared": 27,
+  "out_vs_cached_torch_max_us": 4.52,
+  "out_vs_cached_torch_median_us": 0.9,
+  "infer_ms_median": 5.35,
+  "out_steer_us_range": [
+   1000.0,
+   1921.0
+  ],
+  "out_throttle_us_range": [
+   1228.0,
+   1518.0
+  ],
+  "checked_at": "2026-10-12T00:45:41"
+ },
+ "b:5": {
+  "run": "ai_mix_20261011-rl-b-awr-nocmd-s3-e12",
+  "genre": 5,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1442.0,
+   1498.0
+  ],
+  "command_input": false,
+  "load_s": 0.06,
+  "samples": 32,
+  "compared": 27,
+  "out_vs_cached_torch_max_us": 10.81,
+  "out_vs_cached_torch_median_us": 0.76,
+  "infer_ms_median": 5.48,
+  "out_steer_us_range": [
+   1000.0,
+   1994.0
+  ],
+  "out_throttle_us_range": [
+   1225.0,
+   1543.0
+  ],
+  "checked_at": "2026-10-12T00:45:42"
+ },
+ "a_good:6": {
+  "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+  "genre": 6,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1442.0,
+   1498.0
+  ],
+  "command_input": false,
+  "load_s": 0.08,
+  "samples": 32,
+  "compared": 27,
+  "out_vs_cached_torch_max_us": 4.48,
+  "out_vs_cached_torch_median_us": 0.85,
+  "infer_ms_median": 5.38,
+  "out_steer_us_range": [
+   1000.0,
+   1949.0
+  ],
+  "out_throttle_us_range": [
+   1249.0,
+   1511.0
+  ],
+  "checked_at": "2026-10-12T00:45:43"
+ },
+ "a_good:7": {
+  "run": "ai_mix_20261011-rl-a-recap-nocmd-s3-e12",
+  "genre": 7,
+  "ui_model_info": true,
+  "trained_modes": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "genre_in_trained_modes": true,
+  "ref_us": [
+   1442.0,
+   1498.0
+  ],
+  "command_input": false,
+  "load_s": 0.06,
+  "samples": 32,
+  "compared": 5,
+  "out_vs_cached_torch_max_us": 4.61,
+  "out_vs_cached_torch_median_us": 0.64,
+  "infer_ms_median": 5.35,
+  "out_steer_us_range": [
+   1000.0,
+   2000.0
+  ],
+  "out_throttle_us_range": [
+   1216.0,
+   1524.0
+  ],
+  "checked_at": "2026-10-12T00:45:44"
+ }
+}

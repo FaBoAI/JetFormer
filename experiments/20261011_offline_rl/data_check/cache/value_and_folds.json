@@ -1,0 +1,533 @@
+{
+ "collision_within_1s": {
+  "rule": "使えるフレーム(future_valid・vehicle_valid・ジャンルあり)で、直前 2秒以内に衝突が無いもの。陽性 = 1秒以内に衝突(水平 2.5G、人・AI どちらの衝突も)",
+  "by_split_source": {
+   "train/human": {
+    "frames": 18912,
+    "positives_1s": 1069,
+    "positive_rate": 0.0565,
+    "collision_events": 38
+   },
+   "train/ai": {
+    "frames": 13676,
+    "positives_1s": 2037,
+    "positive_rate": 0.1489,
+    "collision_events": 79
+   },
+   "val/human": {
+    "frames": 5084,
+    "positives_1s": 306,
+    "positive_rate": 0.0602,
+    "collision_events": 11
+   },
+   "val/ai": {
+    "frames": 1230,
+    "positives_1s": 155,
+    "positive_rate": 0.126,
+    "collision_events": 9
+   }
+  }
+ },
+ "per_log": {
+  "20261010-135449": {
+   "ai_log": false,
+   "description": "",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 1758,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 120,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 2,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-144028": {
+   "ai_log": false,
+   "description": "",
+   "split": [
+    "train"
+   ],
+   "usable_human": 1153,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 59,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 3,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-150424": {
+   "ai_log": false,
+   "description": "",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 2910,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 120,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 8,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 1,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-152405": {
+   "ai_log": false,
+   "description": "",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 3708,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 271,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 12,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 1,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-152707": {
+   "ai_log": false,
+   "description": "",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 2893,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 247,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 10,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 2,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-155820": {
+   "ai_log": true,
+   "description": "AI走行トライ(Claudeから開始)",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 583,
+   "positives_1s_ai": 71,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 2,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 1,
+   "r1_strong_human": 0,
+   "r1_any_ai": 1,
+   "de_collision_ai": 1,
+   "collisions_ai": 6,
+   "failure_takeovers": 4
+  },
+  "20261010-160306": {
+   "ai_log": true,
+   "description": "run_001",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 869,
+   "positives_1s_ai": 58,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 1,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 3,
+   "failure_takeovers": 2
+  },
+  "20261010-163247": {
+   "ai_log": true,
+   "description": "run002",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 862,
+   "positives_1s_ai": 156,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 4,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 2,
+   "de_collision_ai": 2,
+   "collisions_ai": 8,
+   "failure_takeovers": 5
+  },
+  "20261010-171639": {
+   "ai_log": true,
+   "description": "ai_run_003",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 1663,
+   "positives_1s_ai": 180,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 4,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 1,
+   "collisions_ai": 7,
+   "failure_takeovers": 2
+  },
+  "20261010-172505": {
+   "ai_log": true,
+   "description": "ai_run_004",
+   "split": [
+    "val"
+   ],
+   "usable_human": 0,
+   "usable_ai": 381,
+   "positives_1s_ai": 30,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 1,
+   "r1_passes_human": 1,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 1,
+   "collisions_ai": 1,
+   "failure_takeovers": 1
+  },
+  "20261010-172910": {
+   "ai_log": true,
+   "description": "ai_run_006",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 4252,
+   "positives_1s_ai": 411,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 16,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 1,
+   "de_collision_ai": 12,
+   "collisions_ai": 20,
+   "failure_takeovers": 1
+  },
+  "20261010-173445": {
+   "ai_log": true,
+   "description": "ai_run_007",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 6367,
+   "positives_1s_ai": 725,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 22,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 9,
+   "r1_strong_human": 0,
+   "r1_any_ai": 9,
+   "de_collision_ai": 13,
+   "collisions_ai": 27,
+   "failure_takeovers": 11
+  },
+  "20261010-181504": {
+   "ai_log": true,
+   "description": "ai_run_008",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 1508,
+   "positives_1s_ai": 167,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 2,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 1,
+   "r1_strong_human": 0,
+   "r1_any_ai": 1,
+   "de_collision_ai": 0,
+   "collisions_ai": 7,
+   "failure_takeovers": 6
+  },
+  "20261010-193638": {
+   "ai_log": false,
+   "description": "綺麗な走行データ",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 1713,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 30,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 3,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-200916": {
+   "ai_log": false,
+   "description": "綺麗な走行データ",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 5745,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 269,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 16,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-201626": {
+   "ai_log": false,
+   "description": "綺麗な走行データ",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 4592,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 144,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 12,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-202633": {
+   "ai_log": false,
+   "description": "綺麗な走行データ",
+   "split": [
+    "train",
+    "val"
+   ],
+   "usable_human": 2497,
+   "usable_ai": 0,
+   "positives_1s_ai": 0,
+   "positives_1s_human": 115,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 7,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 0,
+   "failure_takeovers": 0
+  },
+  "20261010-203924": {
+   "ai_log": true,
+   "description": "ai_run_009",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 453,
+   "positives_1s_ai": 145,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 0,
+   "r1_passes_human": 1,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 0,
+   "collisions_ai": 6,
+   "failure_takeovers": 5
+  },
+  "20261010-204208": {
+   "ai_log": true,
+   "description": "ai_run_010",
+   "split": [
+    "val"
+   ],
+   "usable_human": 0,
+   "usable_ai": 1267,
+   "positives_1s_ai": 125,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 3,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 0,
+   "de_collision_ai": 3,
+   "collisions_ai": 8,
+   "failure_takeovers": 2
+  },
+  "20261010-204605": {
+   "ai_log": true,
+   "description": "ai_run_101",
+   "split": [
+    "train"
+   ],
+   "usable_human": 0,
+   "usable_ai": 661,
+   "positives_1s_ai": 124,
+   "positives_1s_human": 0,
+   "r1_passes_ai": 1,
+   "r1_passes_human": 0,
+   "r1_strong_ai": 0,
+   "r1_strong_human": 0,
+   "r1_any_ai": 1,
+   "de_collision_ai": 1,
+   "collisions_ai": 7,
+   "failure_takeovers": 2
+  }
+ },
+ "log_folds_proposal": {
+  "k": 5,
+  "folds": [
+   [
+    "20261010-172505",
+    "20261010-204208",
+    "20261010-204605",
+    "20261010-200916"
+   ],
+   [
+    "20261010-173445",
+    "20261010-201626",
+    "20261010-144028"
+   ],
+   [
+    "20261010-172910",
+    "20261010-152405",
+    "20261010-193638"
+   ],
+   [
+    "20261010-163247",
+    "20261010-181504",
+    "20261010-203924",
+    "20261010-150424",
+    "20261010-135449"
+   ],
+   [
+    "20261010-171639",
+    "20261010-155820",
+    "20261010-160306",
+    "20261010-152707",
+    "20261010-202633"
+   ]
+  ],
+  "per_fold": [
+   {
+    "logs": [
+     "20261010-172505",
+     "20261010-204208",
+     "20261010-204605",
+     "20261010-200916"
+    ],
+    "usable_ai": 2309,
+    "usable_human": 5745,
+    "r1_passes_ai": 5,
+    "r1_strong_ai": 0,
+    "collisions_ai": 16,
+    "positives_1s_ai": 279,
+    "positives_1s_human": 269
+   },
+   {
+    "logs": [
+     "20261010-173445",
+     "20261010-201626",
+     "20261010-144028"
+    ],
+    "usable_ai": 6367,
+    "usable_human": 5745,
+    "r1_passes_ai": 22,
+    "r1_strong_ai": 9,
+    "collisions_ai": 27,
+    "positives_1s_ai": 725,
+    "positives_1s_human": 203
+   },
+   {
+    "logs": [
+     "20261010-172910",
+     "20261010-152405",
+     "20261010-193638"
+    ],
+    "usable_ai": 4252,
+    "usable_human": 5421,
+    "r1_passes_ai": 16,
+    "r1_strong_ai": 0,
+    "collisions_ai": 20,
+    "positives_1s_ai": 411,
+    "positives_1s_human": 301
+   },
+   {
+    "logs": [
+     "20261010-163247",
+     "20261010-181504",
+     "20261010-203924",
+     "20261010-150424",
+     "20261010-135449"
+    ],
+    "usable_ai": 2823,
+    "usable_human": 4668,
+    "r1_passes_ai": 6,
+    "r1_strong_ai": 1,
+    "collisions_ai": 21,
+    "positives_1s_ai": 468,
+    "positives_1s_human": 240
+   },
+   {
+    "logs": [
+     "20261010-171639",
+     "20261010-155820",
+     "20261010-160306",
+     "20261010-152707",
+     "20261010-202633"
+    ],
+    "usable_ai": 3115,
+    "usable_human": 5390,
+    "r1_passes_ai": 7,
+    "r1_strong_ai": 1,
+    "collisions_ai": 16,
+    "positives_1s_ai": 309,
+    "positives_1s_human": 362
+   }
+  ]
+ }
+}
