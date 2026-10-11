@@ -231,6 +231,36 @@ def api_sensors_stop():
     return {'ok': True}
 
 
+LAST_SENSOR_CHECK = {}
+
+
+def _record_meta(body):
+    """収集に残すメモ: コースの配置・電池(画面で入力)と、15分以内のセンサーの向きの点検"""
+    meta = {k: str(body.get(k) or '').strip() for k in ('layout', 'battery') if body.get(k)}
+    chk = LAST_SENSOR_CHECK.get('result')
+    if chk and time.time() - chk.get('time', 0) < 900:
+        meta['sensor_check'] = chk
+    return meta
+
+
+@app.post('/api/sensor_check')
+def api_sensor_check():
+    """センサーの向きの点検(約1秒。車を止め、前に障害物のない床の上で)"""
+    from .. import sensor_check
+    hub.start()
+    deadline = time.time() + 3.0
+    while time.time() < deadline and (hub['CAM_FRONT'].latest is None or hub['TOF_FRONT'].latest is None):
+        time.sleep(0.1)
+    res = sensor_check.run(hub, seconds=1.0)
+    LAST_SENSOR_CHECK['result'] = res
+    return res
+
+
+@app.get('/api/sensor_check')
+def api_sensor_check_last():
+    return LAST_SENSOR_CHECK.get('result') or {}
+
+
 @app.post('/api/record/start')
 def api_record_start(body: dict = Body(default={})):
     if trainer.running:
@@ -238,7 +268,7 @@ def api_record_start(body: dict = Body(default={})):
     if collect.active:
         raise HTTPException(409, 'すでに収集中です')
     common = dict(description=body.get('description', ''), tags=body.get('tags', []), location=body.get('location', ''),
-                  mode_id=int(body.get('mode_id', modes.UNSET)))
+                  mode_id=int(body.get('mode_id', modes.UNSET)), meta=_record_meta(body))
     try:
         modes.validate(common['mode_id'])
         if body.get('method', 'runs') == 'runs':
@@ -678,6 +708,14 @@ def api_drive_stop(body: dict = Body(default={})):
     except RuntimeError as e:
         raise HTTPException(409, str(e))
     return {'ok': True}
+
+
+@app.post('/api/drive/takeover_reason')
+def api_drive_takeover_reason(body: dict = Body(default={})):
+    try:
+        return driver.takeover_reason(str(body.get('reason', '')))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
 
 @app.post('/api/drive/params')

@@ -246,6 +246,8 @@ class Driver(object):
         self.history = collections.deque(maxlen=300)
         self.st = {'phase': 'idle', 'message': '停止中', 'error': None}
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)。走行ループから呼ぶので待たせないこと
+        self.last_takeover_ns = None
+        self.takeover_reasons = []
 
     def _emit(self, event, **info):
         for cb in list(self.listeners):
@@ -333,6 +335,8 @@ class Driver(object):
             self.hb_token = uuid.uuid4().hex
             self.heartbeat_t = time.monotonic()
             self.hb_count = 0
+            self.last_takeover_ns = None
+            self.takeover_reasons = []
             self.st = {'phase': 'starting', 'message': 'モデルとセンサーを準備中…', 'error': None, 'run': run,
                        'model': info, 'mode_id': mode_id, 'dry_run': bool(dry_run), 'record': bool(record),
                        'recording_note': '', 'ref': None, 'started': time.time(), 'stop_reason': '',
@@ -342,6 +346,22 @@ class Driver(object):
                                            name='drive', daemon=True)
             self.thread.start()
             return run, self.hb_token
+
+    TAKEOVER_REASONS = {'collision': '衝突した', 'stuck': '止まった', 'preemptive': '危なかった(予防)', 'other': 'その他・終了'}
+
+    def takeover_reason(self, reason):
+        """人が交代した理由を記録する(ロードマップ S3)。直前(60秒以内)の交代の時刻と結びつける"""
+        if reason not in self.TAKEOVER_REASONS:
+            raise ValueError('理由は %s のどれか' % ', '.join(self.TAKEOVER_REASONS))
+        now = clock.now_ns()
+        tk = self.last_takeover_ns if self.last_takeover_ns and now - self.last_takeover_ns < 60e9 else None
+        ev = {'reason': reason, 'label': self.TAKEOVER_REASONS[reason],
+              'takeover_us': int(tk // 1000) if tk else None,
+              'since_takeover_s': round((now - tk) / 1e9, 2) if tk else None, 'run': self.st.get('run')}
+        ev['recorded'] = self.recorder.add_event('takeover_reason', ev)
+        self.takeover_reasons.append(ev)
+        self.st['takeover_reasons'] = self.takeover_reasons[-20:]
+        return ev
 
     def stop(self, reason='停止ボタン'):
         if not self.running:
@@ -581,6 +601,9 @@ class Driver(object):
             count_laps(veh)
             if last_select is not None and bool(veh['select']) != last_select:
                 self._emit('handover', select=bool(veh['select']))       # CH3で操縦が切り替わった
+                if not veh['select']:
+                    self.last_takeover_ns = cam.t_ns                        # 人が取り返した(交代の理由のボタンと結びつける)
+                    st['takeovers'] = st.get('takeovers', 0) + 1
             last_select = bool(veh['select'])
             if veh['select'] and not veh['valid'][2]:
                 # 送信機の電源断・圏外: 基板はSELECTをAI側のまま保つので、人が取り戻せない。中立で止める

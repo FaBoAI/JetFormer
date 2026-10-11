@@ -51,6 +51,11 @@
           <label>走行の説明<input id="rec-desc" placeholder="例: 白線の駐車枠に後退で入れる"></label>
           <label>タグ(カンマ区切り)<input id="rec-tags" placeholder="例: indoor, cw, daylight"></label>
           <label>場所<input id="rec-location" placeholder="例: GClue lab"></label>
+          <div class="row">
+            <label>コースの配置<input id="rec-layout" placeholder="例: A(10/10の配置)"></label>
+            <label>電池<input id="rec-battery" placeholder="例: 2号・満充電"></label>
+          </div>
+          <div class="muted small">直近15分以内に「センサーの向きの点検」をしていれば、その結果も一緒に記録します。</div>
           <label>収集のしかた</label>
           <div class="row tight">
             <label class="inline"><input type="radio" name="rec-method" value="runs" checked> 走行ごと(カウントダウン)</label>
@@ -97,6 +102,12 @@
             </span>
           </div>
           <table class="sensor-table" id="sensor-table"></table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">センサーの向きの点検 <small>(走る前と後に。車を止め、前に障害物のない床の上で)</small>
+            <span class="title-actions"><button id="btn-sensor-check" class="small">点検する</button></span></div>
+          <div id="sensor-check-result" class="small muted">カメラ(写るバンパーの行)と ToF(遠い床の距離)が、学習データと同じ向きかを測ります(約1秒)。</div>
         </div>
 
         <div class="card">
@@ -330,6 +341,15 @@
             <div class="muted small"><span class="key raw"></span>モデルの予測 <span class="key out"></span><span id="dr-out-key">出力(ゲイン後)</span> <span class="key ref"></span>中心・中立 ・ 範囲 1000〜2000µs</div>
           </div>
           <div class="values" id="dr-stats"></div>
+          <div class="takeover-reasons">
+            <div class="small">交代したら理由を押してください(キー 1〜4)<span id="dr-tk-info" class="muted"></span></div>
+            <div class="row buttons">
+              <button class="small" data-tk="collision">1 衝突した</button>
+              <button class="small" data-tk="stuck">2 止まった</button>
+              <button class="small" data-tk="preemptive">3 危なかった(予防)</button>
+              <button class="small" data-tk="other">4 その他・終了</button>
+            </div>
+          </div>
         </div>
         <div class="charts">
           <div class="card"><div class="card-title">ステアリング [µs]</div><canvas id="dr-chart-steer" height="140"></canvas></div>

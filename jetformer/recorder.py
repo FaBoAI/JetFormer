@@ -136,7 +136,7 @@ class Recorder(object):
 
     # ------------------------------------------------------------------ 制御
     def start(self, description='', tags=None, location='', max_scenes=None, mode_id=modes.UNSET, drive=None,
-              runs_mode=False):
+              runs_mode=False, meta=None):
         """runs_mode=True: 走行ごとに区切る(begin_run〜end_run の間だけ記録し、1回の走行を1シーンにする)。
         False: 開始から20秒ごとに区切って記録し続ける"""
         mode_id = modes.validate(mode_id)
@@ -167,6 +167,7 @@ class Recorder(object):
                             'VEHICLE': {k: v for k, v in config.VEHICLE.items()}},
                 'calibration': config.CALIBRATION,
                 'drive': drive,
+                'meta': dict(meta or {}),            # コースの配置・電池・センサーの向きの点検など(後で比べるため)
                 'software': 'jetformer',
             })
             self.scenes = {}
@@ -300,6 +301,17 @@ class Recorder(object):
             }
 
     # ------------------------------------------------------------------ 受信
+    def add_event(self, kind, data):
+        """出来事を記録のフォルダの events.jsonl に1行ずつ足す(交代の理由など。途中で電源が落ちても、そこまでは残る)"""
+        with self.lock:
+            if not self.recording:
+                return False
+            path = self.log['path'] / 'events.jsonl'
+        line = json.dumps(dict(data, kind=kind, t_us=int(clock.now_ns() // 1000)), ensure_ascii=False)
+        with open(path, 'a', encoding='utf-8') as f:
+            f.write(line + '\n')
+        return True
+
     def add_ai(self, t_ns, data):
         """AI走行の指令を記録する(収集中でなければ何もしない)。t_ns は推論に使ったカメラ画像の時刻"""
         with self.lock:

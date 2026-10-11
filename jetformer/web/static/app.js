@@ -413,6 +413,7 @@ $('#btn-rec-start').addEventListener('click', async () => {
   const mode = document.querySelector('input[name=rec-mode]:checked').value;
   const body = { method: recMethod(), mode_id: +$('#rec-mode').value, description: $('#rec-desc').value,
                  tags: parseTags($('#rec-tags').value), location: $('#rec-location').value,
+                 layout: $('#rec-layout').value, battery: $('#rec-battery').value,
                  max_scenes: mode === 'count' ? parseInt($('#rec-count').value, 10) || 1 : null,
                  runs: $('#rec-runs').value, run_seconds: $('#rec-run-seconds').value, pause_s: $('#rec-pause').value };
   try {
@@ -1110,3 +1111,41 @@ loadScenes();
 // デバッグ・自動テスト用(ブラウザのコンソールから操作できるように)
 window.jetformer = { state, showTab, loadSound, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes, loadTrain, pollTrain,
                      loadDrive, pollDrive, stopDrive };
+
+
+// ------------------------------------------------------------ センサーの向きの点検(ロードマップ S0)
+function renderSensorCheck(r) {
+  const el = $('#sensor-check-result');
+  if (!r || !r.time) return;
+  const t = new Date(r.time * 1000).toLocaleTimeString();
+  const tof = r.tof_floor_pct ? `遠い床 ${r.tof_floor_pct['9'] ?? '-'}% ・ 近い床 ${r.tof_floor_pct['18'] ?? '-'}%(目安 ±${r.tof_tolerance_pct}%)` : 'ToF: 基準なし';
+  const cam = r.bumper_rows !== undefined ? `バンパー ${r.bumper_rows} 行(学習データ ${r.bumper_target[0]}〜${r.bumper_target[1]} 行)` : 'カメラ: 映像なし';
+  el.className = 'small';
+  el.innerHTML = `<span class="badge ${r.ok ? 'ok' : 'warn'}">${r.ok ? 'OK' : '要確認'}</span> ${esc(t)} ・ ${esc(cam)} ・ ${esc(tof)}`
+    + (r.notes || []).map((n) => `<div class="${n.startsWith('注意') ? 'muted' : 'warn-text'}">${esc(n)}</div>`).join('');
+}
+$('#btn-sensor-check').addEventListener('click', async () => {
+  const b = $('#btn-sensor-check');
+  b.disabled = true;
+  $('#sensor-check-result').textContent = '測っています(約1秒)…';
+  try { renderSensorCheck(await api('POST', '/api/sensor_check')); } catch (e) { toast(e.message, true); }
+  b.disabled = false;
+});
+api('GET', '/api/sensor_check').then(renderSensorCheck).catch(() => {});
+
+
+// ------------------------------------------------------------ 交代の理由(ロードマップ S3)
+async function sendTakeoverReason(reason) {
+  try {
+    const r = await api('POST', '/api/drive/takeover_reason', { reason });
+    toast(`交代の理由: ${r.label}${r.since_takeover_s != null ? `(交代の ${r.since_takeover_s} 秒後)` : '(直前の交代なし)'}${r.recorded ? '' : ' ※収集していないので記録には残りません'}`);
+    $('#dr-tk-info').textContent = ` ・ 記録 ${(state.drive.tkCount = (state.drive.tkCount || 0) + 1)} 件`;
+  } catch (e) { toast(e.message, true); }
+}
+document.querySelectorAll('[data-tk]').forEach((b) => b.addEventListener('click', () => sendTakeoverReason(b.dataset.tk)));
+document.addEventListener('keydown', (e) => {
+  if (state.tab !== 'drive' || !(state.drive.st && state.drive.st.running)) return;
+  if (e.target && ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+  const reason = { 1: 'collision', 2: 'stuck', 3: 'preemptive', 4: 'other' }[e.key];
+  if (reason) { e.preventDefault(); sendTakeoverReason(reason); }
+});

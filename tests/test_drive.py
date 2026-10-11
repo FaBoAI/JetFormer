@@ -506,3 +506,17 @@ def test_impact_mask_excludes_frames_around_crashes():
     imu2 = np.zeros((n, 10, 6), np.float32)
     imu2[:, :, 2] = 3 * 9.8                                   # 上下の揺れだけなら外さない
     assert not impact_mask(t_us, imu2).any()
+
+
+def test_takeover_reason_links_to_last_takeover(monkeypatch, tmp_path):
+    d = make_driver(monkeypatch, tmp_path)
+    events = []
+    d.recorder.add_event = lambda kind, data: events.append((kind, data)) or True
+    d.last_takeover_ns = clock.now_ns() - 2_000_000_000                # 2秒前に人が取り返した
+    ev = d.takeover_reason('collision')
+    assert ev['label'] == '衝突した' and 1.5 < ev['since_takeover_s'] < 3.0 and ev['recorded']
+    assert events and events[0][0] == 'takeover_reason'
+    d.last_takeover_ns = clock.now_ns() - 120_000_000_000              # 2分前は結びつけない
+    assert d.takeover_reason('other')['takeover_us'] is None
+    with pytest.raises(ValueError):
+        d.takeover_reason('unknown')
