@@ -503,7 +503,8 @@ def cmd_predict(args):
     rp._check_gpu_free(min_gb=2.0)
     import torch
     from torch.utils.data import DataLoader
-    from jetformer.model import JetFormer, PWM_CENTER, PWM_SCALE
+    from jetformer.model import PWM_CENTER, PWM_SCALE
+    from jetformer.policies import runtime
     loaders = {}
     for name in todo:
         run, gmap = config_of(name)
@@ -516,8 +517,7 @@ def cmd_predict(args):
         trained = [int(x) for x in cfg['trained_modes']]
         genres, sub = _genres([it[4] for it in fs.items], gmap, trained)
         t0 = time.time()
-        model = JetFormer(num_modes=cfg['num_modes']).cuda().eval()
-        model.load_state_dict(load_state_dict(d / ('%s.pth' % ckpt)))
+        model, _, _, _ = runtime.load_run(d, ckpt, device='cuda')        # どのモデルの種類も(無ければ jetformer_v0)
         dl = DataLoader(fs, batch_size=args.batch, shuffle=False, num_workers=args.workers)
         preds, k = [], 0
         with torch.no_grad():
@@ -525,7 +525,8 @@ def cmd_predict(args):
                 g = torch.from_numpy(genres[k:k + len(image)])
                 k += len(image)
                 onehot = torch.nn.functional.one_hot(g, cfg['num_modes']).float()
-                p = model(image.cuda(), tof.cuda(), imu.cuda(), state.cuda(), onehot.cuda()).float().cpu().numpy()
+                x = dict(image=image.cuda(), tof=tof.cuda(), imu=imu.cuda(), state=state.cuda(), mode=onehot.cuda())
+                p = runtime.forward(model, x)['actions'].float().cpu().numpy()      # tcp も操作の枝(actions)で比べる
                 preds.append(p * PWM_SCALE + PWM_CENTER)
         pred = np.concatenate(preds).astype(np.float32)
         rp._save_npz(pred_path(name, ckpt), pred=pred, genre=genres.astype(np.int8), substituted=sub,
@@ -1021,9 +1022,7 @@ def cmd_engine_check(args):
         runner = TRTRunner(str(drive.RUNS_DIR / run / drive.ENGINE_FILE))
         row['load_s'] = _r(time.time() - t0, 2)
         nm = info['num_modes']
-        zeros = {'image': np.zeros((1, 3, 224, 224), np.float32), 'tof': np.zeros((1, 2, 42, 54), np.float32),
-                 'imu': np.zeros((1, drive.IMU_STEPS, 6), np.float32), 'state': np.zeros((1, 3), np.float32),
-                 'mode': np.zeros((1, nm), np.float32)}
+        zeros = {n: np.zeros(runner.shapes[n], np.float32) for n in runner.inputs}     # drive.py と同じくエンジンの形から
         for _ in range(3):
             runner.run_numpy(**zeros)
         oh = np.zeros((1, nm), np.float32)
@@ -1042,7 +1041,8 @@ def cmd_engine_check(args):
             img = cv2.imdecode(enc, cv2.IMREAD_COLOR) if ok else img
             x = normalize_inputs(img, a['tof'][i], a['imu'][i], a['vehicle'][i], info['command_input'])
             t1 = time.perf_counter()
-            res = runner.run_numpy(image=x[0][None], tof=x[1][None], imu=x[2][None], state=x[3][None], mode=oh)
+            res = runner.run_numpy(**{'image': x[0][None], 'tof': x[1][None], 'imu': x[2][None], 'state': x[3][None],
+                                      'mode': oh})
             ms.append((time.perf_counter() - t1) * 1000)
             pred = res['actions'][0] * drive.PWM_SCALE + drive.PWM_CENTER
             k = min(max(p['lookahead'], 1), len(pred)) - 1

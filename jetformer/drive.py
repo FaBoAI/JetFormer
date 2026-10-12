@@ -15,6 +15,11 @@
 安全のための動作(どれも中立を出す): センサーの値が途切れた・古い / 推論結果が異常 / AI側なのにプロポのCH3が
 届いていない(送信機の電源断・圏外では基板のSELECTがAI側のまま残るため)/ PCA9685への書き込み失敗。
 走行を始めたページからの問い合わせが3秒途絶えたら走行を止める。
+
+モデルの種類(方策、jetformer/policies)はどれも出力 actions [1,10,2] を持つので、先読み・ゲイン・ToFガード・補助・ラップ・
+CH3 の交代・センサーの途切れで中立はそのまま効く。推論の直後・先読みの前に、方策の後処理(model_config.json の
+postprocess。tcp の制御器)と予測の重ね合わせ(ensemble_j > 0)を通せる(policies.post.Stage。評価の道具と同じ手順)。
+エンジンには基本の5つの入力を全部渡す(エンジンが使わない入力は読まれないだけ)。
 """
 
 import collections
@@ -24,13 +29,15 @@ import threading
 import time
 import traceback
 import uuid
+from pathlib import Path
 
 import cv2
 import numpy as np
 
 from . import assist as assist_mod
-from . import clock, config, modes
+from . import clock, config, modes, policies
 from .laps import LapCounter
+from .policies import post as post_mod
 
 SETTINGS_PATH = config.DATA_DIR / 'drive_settings.json'
 RUNS_DIR = config.DATA_DIR / 'runs'
@@ -49,12 +56,23 @@ PARAM_LIMITS = {
     'rev_us': (150.0, 500.0),      # リカバリーで下がる強さ(中立からのµs)
     'rev_s': (0.2, 1.2),           # リカバリーで後退を出し続ける時間(下がり始めてから)
     'tof_guard': (0, 3),           # ToFガード 0=OFF 1=記録だけ(動きは変えない) 2=減速 3=減速+ハンドル
+    # 方策の後処理(tcp の制御器だけが読む)・予測の重ね合わせ(どの方策にも)
+    'speed_cap': (0.0, 5.0),       # 速度の上限 [m/s](0 = なし)。tcp の制御器が前進を弱めるだけ(速くはしない)
+    'speed_scale': (0.5, 1.5),     # 予測した目標速度に掛ける倍率(tcp_mode 1〜3 だけで効く)
+    'tcp_mode': (0, 3),            # tcp の出し方 0=操作の枝だけ(既定・比較で評価した出力) 1=ハイブリッド 2=混ぜる 3=通過点を追う
+    'ensemble_j': (0, 3),          # 予測の重ね合わせ: 何フレーム前の予測まで混ぜるか(0 = オフ)
+    'ensemble_m': (0.0, 2.0),      # 予測の重ね合わせ: 古い予測を軽くする強さ(重み exp(-m·j))
 }
+RESET_ON_BOOT = ('tcp_mode', 'speed_scale')       # 起動のたびに既定へ戻す項目(drive_settings.json から読まない)
+ENGINE_CHECK_FILE = 'engine_check.json'          # エンジンの確認(精度・速さ)の結果。あれば走行タブに出す(精度の不合格は走らせない)
+# 走行タブで最初に選ぶ「推奨のモデル」(方策の比較などの評価で決めたもの。tools/policy_zoo.py recommend で書く)。
+# 無ければ今まで通り(前回のモデル → 一番新しいモデル)
+RECOMMENDED_PATH = config.DATA_DIR / 'drive_recommended.json'
 GUARD_NAMES = {0: '', 1: '減速', 2: 'ブレーキ'}
 FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床の基準(自由走行から作る)
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
                   'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S,
-                  'tof_guard': 1}
+                  'tof_guard': 1, 'speed_cap': 0.0, 'speed_scale': 1.0, 'tcp_mode': 0, 'ensemble_j': 0, 'ensemble_m': 0.5}
 
 
 def _read_json(path):
@@ -98,6 +116,11 @@ def model_info(name):
     if trained is None:            # 古い学習結果: 学習用シーンに含まれていたジャンル(分からなければ走らせない)
         trained = _trained_modes_from_dataset(cfg.get('dataset'), cfg.get('stride'))
     trained = [m for m in trained if 0 <= m < cfg['num_modes']]
+    policy = policies.policy_of(cfg)            # 'policy' の無い古い学習結果は jetformer_v0
+    ok, why = policies.drivable(cfg)
+    check = engine_check_of(d)
+    if ok and check and check.get('accuracy_ok') is False:      # 今のエンジンが精度の確認に落ちている → 走らせない
+        ok, why = False, engine_gate_reason(check)
     return {
         'name': name, 'dataset': cfg.get('dataset'), 'created_at': run.get('created_at'),
         'state': res.get('state'), 'best_val_us': res.get('best_val_us'),
@@ -106,15 +129,79 @@ def model_info(name):
         'steer_center_us': cfg.get('steer_center_us'), 'throttle_neutral_us': cfg.get('throttle_neutral_us'),
         'stride': cfg.get('stride'), 'future_steps': cfg.get('future_steps', 10),
         'command_input': cfg.get('command_input', True),
+        'policy': policy, 'policy_title': policies.title_of(policy),
+        'policy_cfg': cfg.get('policy_cfg') if 'policy' in cfg else dict(policies.V0_FROZEN_CFG),
+        'inputs': policies.inputs_of(cfg), 'outputs': policies.outputs_of(cfg),
+        'postprocess': cfg.get('postprocess'), 'drivable': ok, 'why_not': why,
+        'engine_precision': (cfg.get('engine') or {}).get('precision', 'fp16'),
+        'engine_check': check,
     }
 
 
+def engine_check_of(run_dir):
+    """<学習結果>/engine_check.json(エンジンの確認: 実フレームで TensorRT と PyTorch FP32 の差・速さ)→ 表示用の dict。
+    無い・今のエンジンの確認でない(エンジンの大きさ・更新時刻が違う)なら None。
+    精度の確認(accuracy_ok)に落ちたエンジンは model_info が走行できない(drivable False)にする。速さだけの不合格は警告だけ"""
+    c = _read_json(Path(run_dir) / ENGINE_CHECK_FILE)
+    if not isinstance(c, dict):
+        return None
+    try:
+        stt = (Path(run_dir) / ENGINE_FILE).stat()
+        eng = c.get('engine') or {}
+        if int(eng.get('size', -1)) != stt.st_size or int(eng.get('mtime_ns', -1)) != stt.st_mtime_ns:
+            return None
+    except (OSError, TypeError, ValueError):
+        return None
+    keys = ('ok', 'accuracy_ok', 'speed_ok', 'actions_max_us', 'gate_us', 'run_numpy_median_ms', 'checked_at', 'note')
+    return {k: c.get(k) for k in keys}
+
+
+def engine_gate_reason(check):
+    """精度の確認に落ちたエンジンの「走れない理由」(走行タブに出す)"""
+    try:
+        detail = '(TensorRT と PyTorch FP32 の差 最大 %.2f µs > %.1f µs)' % (float(check['actions_max_us']),
+                                                                         float(check.get('gate_us') or 2.5))
+    except (KeyError, TypeError, ValueError):
+        detail = ''
+    return ('エンジンが精度の確認に落ちています%s。エンジンを作り直して確認に合格するまで走行に使えません'
+            '(学習タブで作り直す・tools/build_engine.py)' % detail)
+
+
+def recommended():
+    """推奨のモデル(data/drive_recommended.json)→ {'run', 'reason', 'source', 'decided_at'}。無い・壊れていれば None"""
+    r = _read_json(RECOMMENDED_PATH)
+    if not isinstance(r, dict) or not isinstance(r.get('run'), str) or not r['run']:
+        return None
+    return {k: r.get(k) for k in ('run', 'reason', 'source', 'decided_at')}
+
+
+def save_recommended(run, reason='', source='', decided_at=None):
+    """推奨のモデルを書く(走行タブが最初に選び、一覧の先頭に出す)。run が走行に使えなくても書く(画面では選べないまま)"""
+    if not run or '/' in run or '..' in run:
+        raise ValueError('学習結果の名前が正しくありません: %r' % run)
+    rec = {'run': run, 'reason': reason or '', 'source': source or '',
+           'decided_at': decided_at or time.strftime('%Y-%m-%dT%H:%M:%S')}
+    RECOMMENDED_PATH.parent.mkdir(parents=True, exist_ok=True)
+    tmp = str(RECOMMENDED_PATH) + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(rec, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, RECOMMENDED_PATH)
+    return rec
+
+
 def list_models():
-    """新しい順(作成日時、無ければ名前)"""
+    """推奨のモデル(recommended())を先頭に、残りは新しい順(作成日時、無ければ名前)。
+    推奨のモデルには recommended True と推奨の理由(recommended_reason)を付ける"""
     if not RUNS_DIR.exists():
         return []
     models = [m for m in (model_info(d.name) for d in RUNS_DIR.iterdir()) if m]
-    return sorted(models, key=lambda m: (m['created_at'] or '', m['name']), reverse=True)
+    models.sort(key=lambda m: (m['created_at'] or '', m['name']), reverse=True)
+    rec = recommended()
+    for m in models:
+        m['recommended'] = bool(rec) and m['name'] == rec['run']
+        if m['recommended']:
+            m['recommended_reason'] = rec.get('reason') or ''
+    return [m for m in models if m['recommended']] + [m for m in models if not m['recommended']]
 
 
 def _reference_from_dataset(dataset):
@@ -169,6 +256,29 @@ def predicted_now(prev_pred, prev_cam_t, cam_t, fps):
     gap = int(round((cam_t - prev_cam_t) * fps / 1e9))
     k = min(max(gap, 1), len(prev_pred)) - 1
     return float(prev_pred[k, 0]), float(prev_pred[k, 1])
+
+
+def _num(x, nd=2):
+    """表示用の数(数値でなければ None。JSON に NaN を入れない)"""
+    try:
+        x = float(x)
+    except (TypeError, ValueError):
+        return None
+    return round(x, nd) if np.isfinite(x) else None
+
+
+def post_view(pinfo, v_now):
+    """後処理の情報 → 画面の表示用(st['now']['post'])"""
+    if not pinfo:
+        return None
+    return {'mode': int(pinfo.get('mode', -1)), 'branch': str(pinfo.get('branch', '')),
+            'v_hat': _num(pinfo.get('v_hat')), 'v_cmd': _num(pinfo.get('v_cmd')), 'v_now': _num(v_now),
+            'v_curv': _num(pinfo.get('v_curv')), 'cap': _num(pinfo.get('cap'))}
+
+
+def uses_post(p):
+    """走行のパラメータが後処理(tcp の制御器)を要るか: 速度の上限 > 0 または tcp の出し方 ≥ 1"""
+    return float(p.get('speed_cap', 0) or 0) > 0 or int(p.get('tcp_mode', 0) or 0) >= 1
 
 
 def apply_gains(raw, ref, p, lo, hi):
@@ -239,6 +349,10 @@ class Driver(object):
         saved = _read_json(SETTINGS_PATH) or {}
         self.params = dict(DEFAULT_PARAMS)
         self.params.update({k: v for k, v in saved.get('params', {}).items() if k in DEFAULT_PARAMS})
+        # tcp の出し方・目標速度の倍率は、次に起動したときに持ち越さない(試験的な出し方 2・3 が別の日・別のモデルで
+        # そのまま使われないように。速度の上限は前進を弱めるだけなので残す)。レビュー 2026-10-12
+        for k in RESET_ON_BOOT:
+            self.params[k] = DEFAULT_PARAMS[k]
         self.last = {'run': saved.get('run'), 'mode_id': saved.get('mode_id')}
         self.heartbeat_t = time.monotonic()
         self.hb_token = None
@@ -282,6 +396,8 @@ class Driver(object):
         for k in ('esc_reverse', 'recovery'):         # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
+        for k in ('tcp_mode', 'ensemble_j'):           # 整数の項目(古い設定ファイルには無い)
+            p[k] = int(round(float(p.get(k, DEFAULT_PARAMS[k]))))
         return p
 
     def _save_settings(self):
@@ -299,6 +415,8 @@ class Driver(object):
         """走行中でも反映する(ゲイン・トリム・先読み・時計補正・ジャンル)。送られた項目だけ変える"""
         with self.lock:
             p = self._clean_params(values)
+            if self.running and self.st.get('post_failed') and uses_post(p) and not uses_post(self.params):
+                raise ValueError('後処理を読み込めなかったため、速度の上限・TCP の出し方は使えません(操作の枝だけで走っています)')
             if values.get('mode_id') is not None:
                 mode_id = int(values['mode_id'])
                 info = self.st.get('model')
@@ -324,10 +442,18 @@ class Driver(object):
             info = model_info(run or '')
             if info is None:
                 raise ValueError('走行に使える学習結果がありません(TensorRTエンジンが必要): %s' % run)
+            if not info.get('drivable', True):
+                raise ValueError('このモデルでは走行できません: %s' % info.get('why_not'))
             mode_id = int(mode_id)
             if mode_id not in info['trained_modes']:
                 raise ValueError('このモデルはジャンル %d(%s)を学習していません' % (mode_id, modes.name_of(mode_id)))
-            self.params = self._clean_params(params or {})
+            new_params = self._clean_params(params or {})
+            if info.get('postprocess') and uses_post(new_params):
+                ref0 = (float(info.get('steer_center_us') or PWM_CENTER), float(info.get('throttle_neutral_us') or PWM_CENTER))
+                obj, note = post_mod.make(info, ref0)
+                if obj is None:
+                    raise ValueError('%s。速度の上限・TCP の出し方は使えません(上限を 0、出し方を「操作の枝だけ」にすると走れます)' % note)
+            self.params = new_params
             self.last = {'run': run, 'mode_id': mode_id}
             self._save_settings()
             self._stop.clear()
@@ -413,9 +539,12 @@ class Driver(object):
             torch.cuda.synchronize()        # このスレッドでCUDAを初期化しておく
             runner = TRTRunner(str(RUNS_DIR / info['name'] / ENGINE_FILE))
             num_modes = info['num_modes']
-            zeros = {'image': np.zeros((1, 3, 224, 224), np.float32), 'tof': np.zeros((1, 2, 42, 54), np.float32),
-                     'imu': np.zeros((1, IMU_STEPS, 6), np.float32), 'state': np.zeros((1, 3), np.float32),
-                     'mode': np.zeros((1, num_modes), np.float32)}
+            # エンジンの入出力が走行の約束(基本の5つの入力・actions [1,10,2])に合うか、走る前に確かめる
+            ok, why = policies.check_io({n: list(runner.shapes[n]) for n in runner.inputs},
+                                        {n: list(runner.shapes[n]) for n in runner.outputs}, num_modes)
+            if not ok:
+                raise RuntimeError('エンジンの入出力が走行に合いません: %s' % why)
+            zeros = {n: np.zeros(runner.shapes[n], np.float32) for n in runner.inputs}     # エンジンの形から作る
             for _ in range(3):              # 初回の推論は遅いので先に済ませる
                 runner.run_numpy(**zeros)
 
@@ -441,8 +570,12 @@ class Driver(object):
 
             if record:
                 st['message'] = '収集を開始しています…'
+                pp = info.get('postprocess') or None
                 drive_info = {'run': info['name'], 'dataset': info['dataset'], 'dry_run': dry_run,
-                              'params': dict(self.params), 'steer_center_us': ref[0], 'throttle_neutral_us': ref[1]}
+                              'params': dict(self.params), 'steer_center_us': ref[0], 'throttle_neutral_us': ref[1],
+                              'policy': info.get('policy', policies.DEFAULT), 'policy_cfg': info.get('policy_cfg'),
+                              'postprocess': ({'kind': pp.get('kind'), 'version': pp.get('version')}
+                                              if isinstance(pp, dict) else None)}
                 try:
                     started_log = self.recorder.start(description=description, tags=tags, mode_id=st['mode_id'],
                                                       drive=drive_info)
@@ -505,6 +638,12 @@ class Driver(object):
                  'recoveries': 0, 'esc_assists': 0, 'giveups': 0}
         helper = assist_mod.Assist(ref)
         last_kind = assist_mod.ASSIST_NONE
+        # 方策の後処理(tcp の制御器)と予測の重ね合わせ。後処理の無い方策・ensemble_j = 0 なら actions のまま
+        stage = post_mod.Stage(st.get('model') or {}, ref, fps=fps)
+        if stage.note:
+            st['recording_note'] = ((st.get('recording_note') or '') + ' ' + stage.note).strip()
+        st['post_kind'] = post_mod.kind_of(st.get('model') or {}) if stage.post is not None else None
+        st['post_failed'] = stage.failed
         guard = None                        # ToFガード(床の基準があるときだけ)
         try:
             from .tof_guard import ToFGuard
@@ -561,8 +700,11 @@ class Driver(object):
                     'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                     'mode_id': st['mode_id'], 'hold': True, 'select': veh_select, 'latency_ms': np.nan,
                     'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': assist_mod.ASSIST_NONE,
-                    'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False})
+                    'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False,
+                    'model_pred': np.full((10, 2), np.nan, np.float32), 'post_mode': -1, 'v_hat': np.nan,
+                    'v_cmd': np.nan, 'ens_j': int(p.get('ensemble_j', 0))})
             helper.reset()                  # 中立で止めた後は、補助の手順を最初から
+            stage.reset()                   # 後処理・重ね合わせも最初から(止めていた間の予測を混ぜない)
 
         while not self._stop.is_set():
             p = self.params
@@ -625,12 +767,22 @@ class Driver(object):
                 oh[0, mode_id] = 1.0
                 mode_cache[mode_id] = oh
             t0 = time.perf_counter()
-            res = runner.run_numpy(image=img[None], tof=tof[None], imu=imu_n[None], state=state[None],
-                                   mode=mode_cache[mode_id])
-            pred = res['actions'][0] * PWM_SCALE + PWM_CENTER     # [10,2] µs
+            # 基本の5つを必ず渡す(エンジンが使わない入力は読まれない)
+            feed = {'image': img[None], 'tof': tof[None], 'imu': imu_n[None], 'state': state[None],
+                    'mode': mode_cache[mode_id]}
+            res = runner.run_numpy(**feed)
+            model_pred = stage.model_pred(res)     # [10,2] µs(後処理・重ね合わせの前)
             infer_ms = (time.perf_counter() - t0) * 1000.0
-            if not np.all(np.isfinite(pred)):
+            if not np.all(np.isfinite(model_pred)):
                 hold('推論結果が数値ではありません', cam, bool(veh['select']), infer_ms)
+                applied = False
+                continue
+            # 後処理(tcp の制御器。無い方策はそのまま)→ 予測の重ね合わせ(ensemble_j > 0 のとき)
+            v_now = post_mod.speed_of(veh['erpm'])
+            try:
+                pred, pinfo = stage.apply(res, model_pred, v_now, p, cam.t_ns)
+            except post_mod.PostError as e:
+                hold(str(e), cam, bool(veh['select']), infer_ms)          # 推論の異常と同じく中立
                 applied = False
                 continue
             k = min(max(p['lookahead'], 1), len(pred)) - 1
@@ -697,14 +849,19 @@ class Driver(object):
                          'pred': pred.round(1).tolist(), 'assist': assist_mod.ASSIST_NAMES[kind],
                          'ttc': None if not np.isfinite(g_ttc) else round(min(g_ttc, 9.9), 2),
                          'guard': GUARD_NAMES[g_code] + ('' if g_applied or not g_code else '(記録だけ)'),
-                         'model_out': [round(model_us[0], 1), round(model_us[1], 1)]}
+                         'model_out': [round(model_us[0], 1), round(model_us[1], 1)],
+                         'post': post_view(pinfo, v_now), 'ens_j': int(p.get('ensemble_j', 0))}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
                 'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                 'mode_id': mode_id, 'hold': False, 'select': bool(veh['select']), 'latency_ms': latency,
                 'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': kind, 'model_out': model_us,
-                'ttc': g_ttc, 'guard': g_code, 'guard_applied': g_applied})
+                'ttc': g_ttc, 'guard': g_code, 'guard_applied': g_applied,
+                'model_pred': np.asarray(model_pred, np.float32), 'post_mode': int(pinfo.get('mode', -1)) if pinfo else -1,
+                'v_hat': float(pinfo.get('v_hat', np.nan)) if pinfo else np.nan,
+                'v_cmd': float(pinfo.get('v_cmd', np.nan)) if pinfo else np.nan,
+                'ens_j': int(p.get('ensemble_j', 0))})
 
     # ------------------------------------------------------------ 状態
     def status(self):

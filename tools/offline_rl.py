@@ -508,6 +508,7 @@ def cmd_features(args):
     import cv2
     import torch
     from jetformer.model import JetFormer, PWM_CENTER, PWM_SCALE
+    from jetformer.policies import runtime
     from jetformer.train_data import normalize_inputs
 
     root = config.DATASET_DIR / args.dataset
@@ -531,10 +532,12 @@ def cmd_features(args):
     trained = [int(x) for x in cfg.get('trained_modes') or [5]]
     use_cmd = bool(cfg.get('command_input', True))
     dev = torch.device(args.device)
-    model = JetFormer(num_modes=cfg['num_modes']).to(dev).eval()
-    model.load_state_dict(torch.load(run_dir / 'best.pth', map_location=dev, weights_only=True))
+    model, _, _, _ = runtime.load_run(run_dir, 'best', device=dev)       # どのモデルの種類も(無ければ jetformer_v0)
     grab = {}
-    model.norm.register_forward_hook(lambda mod, inp, out: grab.__setitem__('tok', out[:, -1].detach()))
+    if type(model) is JetFormer:            # v0: 融合の出力トークン(今までと同じ)
+        model.norm.register_forward_hook(lambda mod, inp, out: grab.__setitem__('tok', out[:, -1].detach()))
+    elif not callable(getattr(model, 'embed', None)):
+        raise SystemExit('features: このモデルの種類(%s)は特徴(embed)を出せません' % cfg.get('policy'))
 
     class SceneFrames(torch.utils.data.Dataset):
         def __init__(self, a):
@@ -568,7 +571,10 @@ def cmd_features(args):
         feats, preds, modes_used, subs = [], [], [], []
         with torch.inference_mode():
             for im, tof, imu, st, mode, mid, sub in loader:
-                out = model(im.to(dev), tof.to(dev), imu.to(dev), st.to(dev), mode.to(dev))
+                x = dict(image=im.to(dev), tof=tof.to(dev), imu=imu.to(dev), state=st.to(dev), mode=mode.to(dev))
+                out = runtime.forward(model, x)['actions']
+                if type(model) is not JetFormer:
+                    grab['tok'] = model.embed(**x).detach()                  # 方策の特徴(embed を持つものだけ)
                 feats.append(grab['tok'].float().cpu().numpy())
                 preds.append(out.float().cpu().numpy() * PWM_SCALE + PWM_CENTER)
                 modes_used.append(mid.numpy())

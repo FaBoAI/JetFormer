@@ -814,18 +814,71 @@ $('#btn-hfdl-start').addEventListener('click', async () => {
 
 
 // ------------------------------------------------------------ 学習
-const TRAIN_RATE = 200, VAL_RATE = 650;     // Orin Nano実測: 学習 約200枚/秒、検証 約650枚/秒
+const TRAIN_RATE = 200, VAL_RATE = 650;     // Orin Nano実測(v0): 学習 約200枚/秒、検証 約650枚/秒(方策の目安が無いとき)
 const fmtDur = (s) => (s === null || s === undefined) ? '-' : s >= 3600 ? `${Math.floor(s / 3600)}時間${Math.round(s % 3600 / 60)}分`
   : s >= 60 ? `${Math.floor(s / 60)}分${Math.round(s % 60)}秒` : `${Math.round(s)}秒`;
 state.datasets = [];
+state.policies = [];
 async function loadTrain() {
   try { state.datasets = await api('GET', '/api/datasets'); } catch (e) { return; }
+  try { state.policies = await api('GET', '/api/policies'); } catch (e) { state.policies = []; }
   const sel = $('#tr-dataset'), cur = sel.value;
   sel.innerHTML = state.datasets.slice().reverse().map((d) => `<option value="${esc(d.name)}">${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム)</option>`).join('')
     || '<option value="">データセットがありません</option>';
   if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
+  renderPolicySelect();
   updateEstimate(); loadRuns(); pollTrain();
 }
+// モデルの種類(方策の登録簿 GET /api/policies)。準備ができていないものは選べず、理由を出す
+const trPolicy = () => state.policies.find((x) => x.name === $('#tr-policy').value);
+function renderPolicySelect() {
+  const sel = $('#tr-policy'), cur = sel.value || 'jetformer_v0';
+  sel.innerHTML = state.policies.map((p) => `<option value="${esc(p.name)}" ${p.ready ? '' : 'disabled'}>${esc(p.title)}`
+    + `${p.status === 'experimental' ? '(試験的)' : ''}${p.ready ? '' : ' — 使えません'}</option>`).join('')
+    || '<option value="jetformer_v0">JetFormer v0(今の標準)</option>';
+  const ok = (v) => [...sel.options].some((o) => o.value === v && !o.disabled);
+  sel.value = ok(cur) ? cur : 'jetformer_v0';
+  renderPolicyInfo();
+}
+function renderPolicyInfo() {
+  const p = trPolicy();
+  if (!p) { $('#tr-policy-info').innerHTML = ''; $('#tr-policy-opts').innerHTML = ''; return; }
+  const h = p.hints || {};
+  const notReady = state.policies.filter((x) => !x.ready).map((x) => `<div class="muted">${esc(x.why_not)}</div>`).join('');
+  $('#tr-policy-info').innerHTML = `<div class="muted">${esc(p.description || '')}</div>`
+    + `<div>推論の目安 約 <b>${h.infer_ms ?? '-'}</b> ms(TensorRT・走行と同じ呼び方)・パラメータ <b>${h.params_m ?? '-'}</b>M`
+    + `${h.params_trainable_m ? `(学習するのは ${h.params_trainable_m}M)` : ''}・出力 ${esc((p.outputs || ['actions']).join(', '))}</div>`
+    + (p.requires_pretrained ? '<div class="warn-text">事前学習の重みが必要です(「ImageNet事前学習の重みを使う」を入れたまま。重みは自動では取りません)</div>' : '')
+    + (p.postprocess ? '<div class="muted">走行タブで目標速度 → 制御器(速度の上限)に切り替えられます。既定は操作の枝のまま</div>' : '')
+    + (notReady ? `<details><summary class="small muted">選べないモデルの種類</summary>${notReady}</details>` : '');
+  $('#tr-policy-opts').innerHTML = (p.options || []).map((o) => {
+    const d = p.defaults[o.key];
+    const id = `tr-popt-${o.key}`;
+    if (o.type === 'bool') return `<label class="inline"><input type="checkbox" id="${id}" data-popt="${esc(o.key)}" ${d ? 'checked' : ''}> ${esc(o.label || o.key)}</label>`;
+    if (o.type === 'choice') {
+      return `<label>${esc(o.label || o.key)}<select id="${id}" data-popt="${esc(o.key)}">${(o.choices || []).map((c) =>
+        `<option value="${esc(JSON.stringify(c))}" ${JSON.stringify(c) === JSON.stringify(d) ? 'selected' : ''}>${esc(Array.isArray(c) ? c.join('・') : String(c))}${JSON.stringify(c) === JSON.stringify(d) ? '(既定)' : ''}</option>`).join('')}</select></label>`;
+    }
+    return `<label>${esc(o.label || o.key)}(既定 ${esc(String(d))})<input id="${id}" data-popt="${esc(o.key)}" type="number" value="${esc(String(d))}"`
+      + `${o.min != null ? ` min="${o.min}"` : ''}${o.max != null ? ` max="${o.max}"` : ''} step="${o.type === 'int' ? 1 : 'any'}" class="num"></label>`;
+  }).join('');
+}
+function readPolicyCfg() {
+  // 既定値から変えた項目だけ送る(何も変えなければ null = 既定の形)
+  const p = trPolicy();
+  if (!p) return null;
+  const cfg = {};
+  for (const el of document.querySelectorAll('#tr-policy-opts [data-popt]')) {
+    const key = el.dataset.popt, o = (p.options || []).find((x) => x.key === key) || {};
+    let v;
+    if (o.type === 'bool') v = el.checked;
+    else if (o.type === 'choice') v = JSON.parse(el.value);
+    else v = o.type === 'int' ? parseInt(el.value, 10) : +el.value;
+    if (JSON.stringify(v) !== JSON.stringify(p.defaults[key])) cfg[key] = v;
+  }
+  return Object.keys(cfg).length ? cfg : null;
+}
+$('#tr-policy').addEventListener('change', () => { renderPolicyInfo(); updateEstimate(); });
 function updateEstimate() {
   const d = state.datasets.find((x) => x.name === $('#tr-dataset').value);
   if (!d) { $('#tr-estimate').textContent = 'データセットを作成してください(データセットタブ)'; $('#tr-ds-info').innerHTML = ''; return; }
@@ -837,18 +890,22 @@ function updateEstimate() {
   const usable = d.frames - (mf['0'] || 0);
   const trFrac = d.scenes ? d.train_scenes / d.scenes : 1;
   const nTrain = Math.round(usable * trFrac / stride), nVal = Math.round(usable * (1 - trFrac) / stride);
-  const perEpoch = nTrain / TRAIN_RATE + nVal / VAL_RATE + 3;
-  const total = perEpoch * epochs + 30 + ($('#tr-engine').checked ? 70 : 0);
+  const h = (trPolicy() || {}).hints || {};       // 方策の目安(bench の実測)。無ければ v0 の実測
+  const perEpoch = nTrain / (h.train_rate || TRAIN_RATE) + nVal / (h.val_rate || VAL_RATE) + 3;
+  const total = perEpoch * epochs + 30 + ($('#tr-engine').checked ? (h.engine_s || 70) : 0);
   $('#tr-estimate').innerHTML = `学習 最大 <b>${nTrain}</b> 枚 / 検証 最大 <b>${nVal}</b> 枚<br>1エポック 約 <b>${fmtDur(perEpoch)}</b> → 合計 約 <b>${fmtDur(total)}</b>`
     + '<div class="muted small">操作値が無効・AI走行中のフレームは除外されるため、実際はこれより少し短くなります</div>';
 }
 ['#tr-dataset', '#tr-stride', '#tr-epochs', '#tr-engine'].forEach((s) => $(s).addEventListener('change', updateEstimate));
 $('#tr-epochs').addEventListener('input', updateEstimate);
 $('#btn-tr-start').addEventListener('click', async () => {
+  const seed = $('#tr-seed').value.trim();
   const body = { dataset: $('#tr-dataset').value, stride: +$('#tr-stride').value, epochs: +$('#tr-epochs').value,
                  batch: +$('#tr-batch').value, lr: +$('#tr-lr').value, pretrained: $('#tr-pretrained').checked,
                  build_engine: $('#tr-engine').checked, command_input: !$('#tr-nocmd').checked,
-                 mask_impacts: $('#tr-mask-impacts').checked };
+                 mask_impacts: $('#tr-mask-impacts').checked,
+                 policy: $('#tr-policy').value || 'jetformer_v0', policy_cfg: readPolicyCfg(),
+                 impact_g: $('#tr-impact-g').value ? +$('#tr-impact-g').value : null, seed: seed === '' ? null : parseInt(seed, 10) };
   if (!body.dataset) { toast('データセットを選んでください', true); return; }
   try { const r = await api('POST', '/api/train/start', body); toast(`学習を開始しました (${r.run})`); pollTrain(); }
   catch (e) { toast(e.message, true); }
@@ -909,14 +966,18 @@ async function loadRuns() {
            title="上の一式に PyTorch の重み(best.pth)も入れる"><button class="small">＋重み(.pth)</button></a>` : ''}` : '';
     const files = emu + ' ' + (r.files || []).filter((f) => f !== 'run.json').map((f) =>
       `<a href="/api/runs/${encodeURIComponent(r.name)}/files/${f}" download><button class="small">⬇ ${f}</button></a>`).join(' ');
+    const pol = r.params.policy || 'jetformer_v0';
+    const polBadge = `<span class="badge policy ${pol === 'jetformer_v0' ? 'v0' : 'exp'}" title="モデルの種類">${esc(r.policy_title || pol)}</span>`;
     return `<div class="ds">
-      <h3>${esc(r.name)} <span class="badge ${cls}">${txt}</span></h3>
+      <h3>${esc(r.name)} <span class="badge ${cls}">${txt}</span> ${polBadge}</h3>
       <div class="stats">
         <span>データセット <b>${esc(r.params.dataset)}</b></span><span>間引き <b>1/${r.params.stride}</b></span>
         <span>エポック <b>${r.epochs_done ?? '-'}</b> / ${r.params.epochs}</span>
         <span>最良の検証誤差 <b>${r.best_val_us ?? '-'}</b> µs${r.best_epoch ? `(${r.best_epoch}エポック目)` : ''}</span>
         <span>時間 <b>${fmtDur(r.duration_s)}</b></span><span>学習 ${r.train_samples ?? '-'} 枚</span>
         ${r.params.command_input === false ? '<span class="badge tag">今の操作値なし</span>' : ''}
+        ${r.params.impact_g != null && Math.abs(r.params.impact_g - 2.5) < 1e-6 ? '<span class="badge tag">衝突 2.5G</span>' : ''}
+        ${r.params.seed != null ? `<span class="badge tag">種 ${esc(String(r.params.seed))}</span>` : ''}
       </div>
       <div class="mode-loss">${Object.entries(r.best_val_per_mode_us || {}).map(([id, v]) =>
         `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>
@@ -942,20 +1003,40 @@ const DR_PARAMS = [
   ['#dr-osc', 'osc_percent', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(1)} %`],
   ['#dr-rev-us', 'rev_us', (v) => `中立+${(+v).toFixed(0)} µs`],
   ['#dr-rev-s', 'rev_s', (v) => `${(+v).toFixed(2)} 秒`],
+  // TCP の制御器(tcp だけ)・予測の重ね合わせ(どのモデルにも)
+  ['#dr-speed-cap', 'speed_cap', (v) => (+v > 0 ? `${(+v).toFixed(2)} m/s(約 ${Math.round(+v / 0.5e-3)} eRPM)` : '上限なし')],
+  ['#dr-speed-scale', 'speed_scale', (v) => (+v).toFixed(2)],
+  ['#dr-ens-j', 'ensemble_j', (v) => (+v > 0 ? `${v} フレーム前まで` : 'オフ')],
+  ['#dr-ens-m', 'ensemble_m', (v) => (+v).toFixed(1)],
 ];
 const drModel = () => state.drive.models.find((m) => m.name === $('#dr-model').value);
+// 走行タブで選ぶモデル(DOM を使わない。tests/test_drive_model_select.py が node で確かめる)。
+// 走行中のモデル → 初回は「推奨のモデル」(評価で決めたもの。一覧の先頭)→ 前回のモデル → 今の選択 → 一覧の最初の走れるもの。
+// 前は「前回 → 一番新しい学習結果」で、評価の前に使った古いモデルや、比較の実験で作った新しいモデルが選ばれていた。
+// 走れないもの(drivable false: エンジンが精度の確認に落ちた・入力が作れないなど)は選ばない。
+function pickDriveModel(models, { running = '', last = '', cur = '', first = false } = {}) {
+  const ok = (name) => !!name && models.some((m) => m.name === name && m.drivable !== false);
+  const rec = models.find((m) => m.recommended && m.drivable !== false);
+  const order = first ? [running, rec && rec.name, last, cur] : [running, cur, rec && rec.name, last];
+  for (const want of order) if (ok(want)) return want;
+  const any = models.find((m) => m.drivable !== false);
+  return any ? any.name : '';
+}
 async function loadDrive() {
   try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { toast(e.message, true); return; }
   if (!state.drive.st) { try { state.drive.st = await api('GET', '/api/drive/status'); } catch (e) { /* 後で */ } }
   const sel = $('#dr-model'), cur = sel.value;
   sel.innerHTML = state.drive.models.map((m) =>
-    `<option value="${esc(m.name)}">${esc(m.name)}${m.best_val_us != null ? `(検証誤差 ${m.best_val_us}µs)` : ''}</option>`).join('')
+    `<option value="${esc(m.name)}" ${m.drivable === false ? 'disabled' : ''}>${m.recommended ? '★推奨 ' : ''}「${esc(m.policy_title || 'JetFormer v0')}」${esc(m.name)}`
+    + `${m.best_val_us != null ? `(検証誤差 ${m.best_val_us}µs)` : ''}${m.drivable === false ? ` — 走れません: ${esc(m.why_not || '')}` : ''}</option>`).join('')
     || '<option value="">走行できるモデルがありません(学習タブで「TensorRTエンジンを作る」)</option>';
   const st = state.drive.st;
-  const last = !state.drive.restored && st && st.last ? st.last.run : null;     // 初回は前回使ったモデル
-  for (const want of [st && st.running && st.run, last, cur]) {
-    if (want && [...sel.options].some((o) => o.value === want)) { sel.value = want; break; }
-  }
+  const first = !state.drive.restored;
+  const last = first && st && st.last ? st.last.run : '';                       // 初回だけ前回使ったモデルを候補にする
+  const want = pickDriveModel(state.drive.models, { running: st && st.running ? st.run : '', last, cur, first });
+  if (want) sel.value = want;
+  const rec = state.drive.models.find((m) => m.recommended);
+  if (first && rec && want === rec.name && last && last !== rec.name) state.drive.restoreNote = `前回のモデル(${last})ではなく、推奨のモデルを選びました`;
   renderDriveModel();
   state.drive.restored = true;
   pollDrive();
@@ -963,9 +1044,22 @@ async function loadDrive() {
 function renderDriveModel() {
   const m = drModel();
   const modeSel = $('#dr-mode'), cur = modeSel.value;
+  const isTcp = !!(m && m.postprocess && m.postprocess.kind === 'tcp_controller');
+  $('#dr-tcp').classList.toggle('hidden', !isTcp);
   if (!m) { $('#dr-model-info').textContent = ''; modeSel.innerHTML = ''; return; }
   const names = Object.fromEntries((m.modes || []).map((x) => [x.id, x.name]));
-  $('#dr-model-info').innerHTML = `データセット ${esc(m.dataset)} ・ 間引き 1/${m.stride ?? '-'} ・ ${esc(m.created_at || '')}`
+  const pp = m.postprocess && m.postprocess.kind ? (m.postprocess.kind === 'tcp_controller' ? 'TCP の制御器' : m.postprocess.kind) : 'なし';
+  const ec = m.engine_check;
+  $('#dr-model-info').innerHTML = (m.recommended ? `<div><span class="badge ok">★推奨のモデル</span>${m.recommended_reason ? ` ${esc(m.recommended_reason)}` : ''}`
+      + `${state.drive.restoreNote ? `<div class="muted">${esc(state.drive.restoreNote)}</div>` : ''}</div>` : '')
+    + `モデルの種類 <b>${esc(m.policy_title || 'JetFormer v0')}</b> ・ 出力 ${esc((m.outputs || ['actions']).join(', '))} ・ 後処理: ${esc(pp)}`
+    + ` ・ エンジン ${esc(m.engine_precision || 'fp16')}`
+    + (m.drivable === false ? `<div class="warn-text">走行できません: ${esc(m.why_not || '')}</div>` : '')
+    // 精度の確認に落ちたエンジンは drivable false(上の理由に出る)。ここは速さだけ落ちたときの警告
+    + (ec && ec.ok === false && ec.accuracy_ok !== false ? `<div class="warn-text">このエンジンは速さの確認に落ちています${ec.run_numpy_median_ms != null
+      ? `(推論 中央値 ${(+ec.run_numpy_median_ms).toFixed(2)} ms)` : ''}。走れますが、30fps を守れないことがあります</div>` : '')
+    + (ec && ec.note ? `<div class="muted small">${esc(ec.note)}</div>` : '')
+    + `<div>データセット ${esc(m.dataset)} ・ 間引き 1/${m.stride ?? '-'} ・ ${esc(m.created_at || '')}</div>`
     + `<div class="mode-loss">${Object.entries(m.best_val_per_mode_us || {}).map(([id, v]) =>
       `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>`;
   modeSel.innerHTML = (m.modes || []).filter((x) => x.id !== 0).map((x) => {
@@ -981,12 +1075,51 @@ function renderDriveModel() {
   const first = [...modeSel.options].find((o) => !o.disabled);
   if (first) modeSel.value = first.value;
 }
-$('#dr-model').addEventListener('change', renderDriveModel);
+$('#dr-model').addEventListener('change', async () => {
+  state.drive.restoreNote = '';                 // 人が選び直した(「推奨のモデルを選びました」は出さない)
+  renderDriveModel();
+  // モデルを替えたら TCP の出し方は「操作の枝だけ」に戻す(試験的な出し方を別のモデルへ持ち越さない)
+  if (+$('#dr-tcp-mode').value !== 0) {
+    $('#dr-tcp-mode').value = '0';
+    try { await api('POST', '/api/drive/params', { tcp_mode: 0 }); } catch (e) { toast(e.message, true); }
+    updateTcpWarn();
+  }
+  updateNoPostNote();
+});
 $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
 // 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
 const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery']];
 $('#dr-tof-guard').addEventListener('change', async () => {
   try { await api('POST', '/api/drive/params', { tof_guard: +$('#dr-tof-guard').value }); } catch (e) { toast(e.message, true); }
+});
+$('#dr-tcp-mode').addEventListener('change', async () => {
+  try { await api('POST', '/api/drive/params', { tcp_mode: +$('#dr-tcp-mode').value }); } catch (e) { toast(e.message, true); }
+  updateTcpWarn();
+});
+function updateTcpWarn() {
+  // 出し方 1〜3 の目標速度の追従には速度ゲインも掛かる(速度の上限はゲインで割り戻すので、ゲインに関係なく効く)
+  $('#dr-tcp-warn').classList.toggle('hidden', !(+$('#dr-tcp-mode').value >= 1 && Math.abs(+$('#dr-throttle-gain').value - 1) > 1e-6));
+}
+$('#dr-throttle-gain').addEventListener('input', updateTcpWarn);
+// 後処理の無いモデルで、速度の上限・TCP の出し方が設定に残っているとき: 効かないことを出す(スライダーは tcp のときだけ表示)
+function updateNoPostNote() {
+  const m = drModel(), st = state.drive.st || {}, p = st.params || {};
+  const hasPost = !!(m && m.postprocess);
+  const cap = +(p.speed_cap || 0), mode = +(p.tcp_mode || 0);
+  const show = !!m && !hasPost && (cap > 0 || mode >= 1);
+  $('#dr-nopost-note').classList.toggle('hidden', !show);
+  if (show) {
+    $('#dr-nopost-text').textContent = `${cap > 0 ? `速度の上限 ${cap.toFixed(2)} m/s` : ''}${cap > 0 && mode >= 1 ? '・' : ''}`
+      + `${mode >= 1 ? `TCP の出し方(${TCP_MODES[mode] || mode})` : ''}は、このモデル(後処理なし)では効きません。`;
+  }
+}
+$('#btn-dr-nopost-reset').addEventListener('click', async () => {
+  try {
+    const p = await api('POST', '/api/drive/params', { speed_cap: 0, tcp_mode: 0 });
+    if (state.drive.st) state.drive.st.params = p;
+    setDriveParams(p);
+  } catch (e) { toast(e.message, true); }
+  updateNoPostNote();
 });
 for (const [sel, key] of DR_FLAGS) {
   $(sel).addEventListener('change', async () => {
@@ -998,6 +1131,7 @@ function readDriveParams() {
   for (const [sel, key] of DR_PARAMS) p[key] = +$(sel).value;
   for (const [sel, key] of DR_FLAGS) p[key] = $(sel).checked ? 1 : 0;
   p.tof_guard = +$('#dr-tof-guard').value;
+  p.tcp_mode = +$('#dr-tcp-mode').value;
   return p;
 }
 // スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
@@ -1019,6 +1153,7 @@ for (const [sel, key, fmt] of DR_PARAMS) {
 function setDriveParams(p) {
   for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) $(sel).checked = !!+p[key];
   if (p.tof_guard !== undefined && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
+  if (p.tcp_mode !== undefined && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
   for (const [sel, key, fmt] of DR_PARAMS) {
     if (p[key] === undefined || drBusy[key]) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
@@ -1035,7 +1170,12 @@ $('#btn-dr-start').addEventListener('click', async () => {
   const m = drModel();
   if (!m) { toast('モデルを選んでください', true); return; }
   const dry = $('#dr-dry').checked;
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
+  const isTcp = !!(m.postprocess && m.postprocess.kind === 'tcp_controller');
+  const tcpMode = +$('#dr-tcp-mode').value, cap = +$('#dr-speed-cap').value;
+  // TCP の出し方 1〜3 は机上の比較で評価していない(制御器のスロットルの写像はまだ粗い)ので、始める前に確かめる
+  const tcpLine = isTcp && tcpMode >= 1 ? `\n\n注意: TCP の出し方が「${TCP_MODES[tcpMode] || tcpMode}」です。比較で評価したのは「操作の枝だけ」です(車で試すのはこちらを勧めます)。` : '';
+  const capLine = isTcp && cap > 0 ? `\n速度の上限 ${cap.toFixed(2)} m/s` : '';
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${tcpLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
   const body = { client: 6, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
@@ -1135,9 +1275,14 @@ function renderDrive(st) {
                   `<span class="lap ${x.best ? 'best' : ''} ${x.clean ? '' : 'muted'}">${x.time_s.toFixed(1)}${x.first ? '(最初)' : ''}${x.ai_only ? '' : '(人)'}${x.impacts ? `(衝${x.impacts})` : ''}${x.recoveries ? '(R)' : ''}</span>`).join(' ') || '-']);
     }
     if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
+    if (now && now.post) rows.push(['TCP の制御器', tcpLiveText(now.post)]);
+    if (now && now.ens_j) rows.push(['予測の重ね合わせ', `${now.ens_j} フレーム前まで`]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);
   }
   $('#dr-stats').innerHTML = rows.map(([k, v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
+  $('#dr-tcp-live').innerHTML = now && now.post ? tcpLiveText(now.post) : (st.running ? '' : '<span class="muted">走行中は予測の目標速度などをここに出します</span>');
+  updateTcpWarn();
+  updateNoPostNote();
   const h = st.history || { t: [] };
   drawChart($('#dr-chart-steer'), [
     { x: h.t, y: h.raw_steer || [], color: COLORS.aux, label: '予測' },
@@ -1148,13 +1293,23 @@ function renderDrive(st) {
     { x: h.t, y: h.out_throttle || [], color: COLORS.throttle, label: '出力' },
   ], { xMin: -10, xMax: 0, minSpan: 100 });
   const training = state.status && state.status.training;
-  $('#btn-dr-start').disabled = st.running || !drModel() || !!training;
-  $('#btn-dr-start').title = training ? '学習中は走行できません' : '';
+  const dm = drModel();
+  $('#btn-dr-start').disabled = st.running || !dm || dm.drivable === false || !!training;
+  $('#btn-dr-start').title = training ? '学習中は走行できません' : (dm && dm.drivable === false ? `このモデルでは走行できません: ${dm.why_not || ''}` : '');
   $('#btn-dr-stop').disabled = !st.running;
   $('#btn-float-stop').classList.toggle('hidden', !st.running);
   document.body.classList.toggle('driving', !!st.running);
   $('#dr-model').disabled = st.running;
   $('#dr-dry').disabled = st.running; $('#dr-record').disabled = st.running;
+}
+
+// TCP の制御器の今の値(目標速度・上限の後・今の速さ・曲がれる速さの目安・出力を決めた枝)
+const TCP_MODES = { 0: '操作の枝', 1: 'ハイブリッド', 2: '混ぜる', 3: '通過点' };
+function tcpLiveText(q) {
+  const v = (x) => (x == null ? '-' : `${x.toFixed(2)} m/s`);
+  const e = (x) => (x == null ? '' : `(${Math.round(x / 0.5e-3)} eRPM)`);
+  return `予測の目標速度 <b>${v(q.v_hat)}</b> ・ 上限の後 <b>${v(q.v_cmd)}</b>${q.cap ? `(上限 ${q.cap.toFixed(2)})` : ''}`
+    + ` ・ 今 ${v(q.v_now)}${e(q.v_now)} ・ 曲がれる目安 ${v(q.v_curv)} ・ ${esc(TCP_MODES[q.mode] || String(q.mode))}(${esc(q.branch || '')})`;
 }
 
 // ------------------------------------------------------------ 起動

@@ -3,6 +3,9 @@
 tools/train.py を別プロセスで起動し、「@@{JSON}」の進捗行を読んで状態を保持する。
 終了後は(指定があれば)TensorRTエンジンを作る。結果は data/runs/<run>/ に残る:
   best.pth / jetformer.onnx / model_config.json / result.json / train.log / jetformer_fp16.engine
+
+モデルの種類(方策)は jetformer/policies の登録簿(torch を読まない)。既定の jetformer_v0 で引数を変えなければ、
+今までとまったく同じコマンドで学習する。ほかの方策は学習結果の名前に短い名前(slug)が入る(<データセット>-<slug>-s<間引き>-<日時>)。
 """
 
 import collections
@@ -16,7 +19,7 @@ import sys
 import threading
 import time
 
-from . import config
+from . import config, policies
 
 RUNS_DIR = config.DATA_DIR / 'runs'
 TRAIN_SCRIPT = config.ROOT / 'tools' / 'train.py'
@@ -34,6 +37,17 @@ def mem_available_mb():
 ARTIFACTS = ('best.pth', 'jetformer.onnx', 'jetformer_fp16.engine', 'model_config.json', 'result.json', 'train.log')
 
 
+def start_args(body):
+    """管理画面の学習の開始(POST /api/train/start の body)→ TrainingManager.start の引数。
+    無い項目は既定値(古い画面のキャッシュからでも今までと同じ v0 の学習)"""
+    return {'stride': body.get('stride', 3), 'epochs': body.get('epochs', 30), 'batch': body.get('batch', 64),
+            'lr': body.get('lr', 3e-4), 'pretrained': body.get('pretrained', True),
+            'build_engine': body.get('build_engine', True), 'command_input': body.get('command_input', True),
+            'mask_impacts': body.get('mask_impacts', True),
+            'policy': body.get('policy') or policies.DEFAULT, 'policy_cfg': body.get('policy_cfg') or None,
+            'impact_g': body.get('impact_g'), 'seed': body.get('seed')}
+
+
 class TrainingManager(object):
     def __init__(self):
         self.lock = threading.Lock()
@@ -46,7 +60,9 @@ class TrainingManager(object):
         return self.proc is not None and self.proc.poll() is None or bool(self.state and self.state['phase'] == 'engine')
 
     def start(self, dataset, stride=3, epochs=30, batch=64, lr=3e-4, pretrained=True, build_engine=True, command_input=True,
-              mask_impacts=True):
+              mask_impacts=True, policy=policies.DEFAULT, policy_cfg=None, impact_g=None, seed=None):
+        """policy_cfg: 方策の設定(管理画面の options にあるものだけ。既定値から変えたものだけ送られる)。
+        impact_g: 衝突とみなす水平の加速度 [G](None = train.py の既定 4.0)。seed: 乱数の種(None = 決めない)"""
         with self.lock:
             if self.running:
                 raise RuntimeError('すでに学習中です')
@@ -56,16 +72,43 @@ class TrainingManager(object):
             stride, epochs, batch = int(stride), int(epochs), int(batch)
             if not (1 <= stride <= 30 and 1 <= epochs <= 500 and 1 <= batch <= 256):
                 raise ValueError('設定値が範囲外です')
+            policy = policy or policies.DEFAULT
+            try:
+                spec = policies.get(policy)
+            except KeyError as e:
+                raise ValueError(str(e.args[0]))
+            pcfg = spec.resolve(policy_cfg or {}, ui=True)          # ValueError → 400
+            ok, why = spec.ready()
+            if not ok:
+                raise ValueError(why)
+            if spec.requires_pretrained and not pretrained:
+                raise ValueError('%s は事前学習の重みが必要です(「ImageNet事前学習の重みを使う」を入れてください)' % spec.title)
+            if impact_g is not None:
+                impact_g = float(impact_g)
+                if not (1.0 <= impact_g <= 16.0):
+                    raise ValueError('衝突とみなす加速度は 1〜16 G にしてください')
+            if seed is not None and str(seed).strip() != '':
+                seed = int(seed)
+                if not (0 <= seed < 2 ** 31):
+                    raise ValueError('乱数の種は 0 以上の整数にしてください')
+            else:
+                seed = None
+            need_mb = max(MIN_FREE_MB, int(spec.hints.get('min_free_mb', MIN_FREE_MB)))
             free = mem_available_mb()
-            if free < MIN_FREE_MB:
+            if free < need_mb:
                 raise RuntimeError('空きメモリが足りません(%.1f GB、学習には %.1f GB 必要)。ほかの学習・推論のプログラムを止めるか、'
-                                   '管理画面のサービスを再起動してください' % (free / 1024, MIN_FREE_MB / 1024))
-            name = '%s-s%d-%s' % (dataset, stride, datetime.datetime.now().strftime('%Y%m%d-%H%M%S'))
+                                   '管理画面のサービスを再起動してください' % (free / 1024, need_mb / 1024))
+            stamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+            if policy == policies.DEFAULT:
+                name = '%s-s%d-%s' % (dataset, stride, stamp)
+            else:
+                name = '%s-%s-s%d-%s' % (dataset, spec.slug, stride, stamp)
             out = RUNS_DIR / name
             out.mkdir(parents=True)
             params = {'dataset': dataset, 'stride': stride, 'epochs': epochs, 'batch': batch, 'lr': float(lr),
                       'pretrained': bool(pretrained), 'build_engine': bool(build_engine), 'command_input': bool(command_input),
-                      'mask_impacts': bool(mask_impacts)}
+                      'mask_impacts': bool(mask_impacts), 'policy': policy, 'policy_cfg': pcfg, 'impact_g': impact_g,
+                      'seed': seed}
             with open(out / 'run.json', 'w', encoding='utf-8') as f:
                 json.dump(dict(params, name=name, created_at=datetime.datetime.now().isoformat(timespec='seconds')),
                           f, ensure_ascii=False, indent=1)
@@ -78,6 +121,16 @@ class TrainingManager(object):
                 cmd.append('--no-command-input')
             if not mask_impacts:
                 cmd.append('--keep-impacts')
+            # 既定以外のときだけ足す(v0・既定の引数なら今までとまったく同じコマンド)
+            if policy != policies.DEFAULT:
+                cmd += ['--policy', policy]
+            changed = spec.changed(pcfg)
+            if changed:
+                cmd += ['--policy-cfg', json.dumps(changed, sort_keys=True, ensure_ascii=False)]
+            if impact_g is not None:
+                cmd += ['--impact-g', str(impact_g)]
+            if seed is not None:
+                cmd += ['--seed', str(seed)]
             self.state = {'name': name, 'params': params, 'phase': 'starting', 'started': time.time(),
                           'epoch': 0, 'epochs': epochs, 'step': 0, 'steps': 0, 'step_phase': '',
                           'history': [], 'info': {}, 'eta_s': None, 'message': '起動中…', 'error': None,
@@ -215,10 +268,14 @@ class TrainingManager(object):
                 continue
             res = self._read_json(d / 'result.json') or {}
             active = self.state is not None and self.state['name'] == d.name and self.running
+            params = {k: meta.get(k, True if k == 'command_input' else None)
+                      for k in ('dataset', 'stride', 'epochs', 'batch', 'lr', 'pretrained', 'command_input', 'mask_impacts')}
+            # モデルの種類(古い学習結果は jetformer_v0)・衝突の加速度・乱数の種(run.json、無ければ result.json)
+            params['policy'] = meta.get('policy') or res.get('policy') or policies.DEFAULT
+            params['impact_g'] = meta.get('impact_g', res.get('impact_g'))
+            params['seed'] = meta.get('seed', res.get('seed'))
             runs.append({
-                'name': d.name, 'params': {k: meta.get(k, True if k == 'command_input' else None)
-                                           for k in ('dataset', 'stride', 'epochs', 'batch', 'lr', 'pretrained', 'command_input',
-                                                     'mask_impacts')},
+                'name': d.name, 'params': params, 'policy_title': policies.title_of(params['policy']),
                 'created_at': meta.get('created_at'), 'state': 'running' if active else res.get('state', 'error'),
                 'epochs_done': res.get('epochs_done'), 'best_val_us': res.get('best_val_us'), 'best_epoch': res.get('best_epoch'),
                 'best_val_per_mode_us': res.get('best_val_per_mode_us', {}), 'modes': res.get('modes', []),

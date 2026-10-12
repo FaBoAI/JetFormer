@@ -218,6 +218,9 @@
           <p class="muted small">このJetson(Orin Nano)のGPUで学習します。学習中は収集できません。</p>
           <label>データセット<select id="tr-dataset"></select></label>
           <div id="tr-ds-info" class="small"></div>
+          <label>モデルの種類<select id="tr-policy"></select></label>
+          <div id="tr-policy-info" class="small"></div>
+          <div id="tr-policy-opts" class="policy-opts"></div>
           <label>間引き率(30fpsの連続フレームは似ているので、間引いても精度はあまり落ちません)
             <select id="tr-stride">
               <option value="1">1/1 全フレーム(30fps相当)</option>
@@ -234,7 +237,15 @@
           <label class="inline"><input type="checkbox" id="tr-pretrained" checked> ImageNet事前学習の重みを使う(初回のみネット接続が必要)</label>
           <label class="inline"><input type="checkbox" id="tr-engine" checked> 学習後にTensorRTエンジンを作る(走行用)</label>
           <label class="inline"><input type="checkbox" id="tr-nocmd"> 今の操作値を入力に使わない(AI走行と学習の条件をそろえる)</label>
-          <label class="inline"><input type="checkbox" id="tr-mask-impacts" checked> ぶつかった前後(水平4G以上の1秒前〜2秒後)を学習に使わない(AIが衝突をまねないように)</label>
+          <label class="inline"><input type="checkbox" id="tr-mask-impacts" checked> ぶつかった前後(水平の加速度が「衝突とみなす加速度」以上の1秒前〜2秒後)を学習に使わない(AIが衝突をまねないように)</label>
+          <details class="adv"><summary class="small">詳細(モデルどうしを比べるための設定)</summary>
+            <label>衝突とみなす加速度
+              <select id="tr-impact-g">
+                <option value="" selected>4.0 G(既定・強い衝突だけ)</option>
+                <option value="2.5">2.5 G(モデル B と同じ。比べるときはこちら)</option>
+              </select></label>
+            <label>乱数の種(空 = 決めない。同じ種なら学習のばらつきの一部がそろう)<input id="tr-seed" type="number" min="0" step="1" placeholder="例: 0" class="num"></label>
+          </details>
           <div id="tr-estimate" class="estimate"></div>
           <div class="row buttons"><button id="btn-tr-start" class="primary">学習を開始</button></div>
         </div>
@@ -280,6 +291,32 @@
           </div>
           <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
 
+          <div id="dr-nopost-note" class="warn-text small hidden"><span id="dr-nopost-text"></span>
+            <button id="btn-dr-nopost-reset" class="small">上限なし・操作の枝だけに戻す</button></div>
+          <div id="dr-tcp" class="tcp-panel hidden">
+            <div class="small"><b>TCP 型の出し方</b> <span class="muted">(走行中に変えると、すぐ切り替わります)</span></div>
+            <select id="dr-tcp-mode">
+              <option value="0" selected>操作の枝だけ(既定・比較で評価した出力)</option>
+              <option value="1">ハイブリッド(ステア = 操作の枝、スロットル = 目標速度 → 制御器)</option>
+              <option value="2">混ぜる(試験的)</option>
+              <option value="3">通過点を追う(試験的)</option>
+            </select>
+            <div class="gain">
+              <div class="gain-head"><span>速度の上限</span><b id="dr-speed-cap-v">上限なし</b></div>
+              <input type="range" id="dr-speed-cap" min="0" max="5" step="0.05" value="0">
+              <div class="gain-scale"><span>0(上限なし)</span><span>2.75 m/s ≒ 5500 eRPM</span><span>5 m/s</span></div>
+              <div class="muted small">上限は前進を弱めるだけで、速くはしません(どの出し方でも、速度ゲインに関係なく効きます。予測の重ね合わせの後にも掛け直します)。</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>目標速度の倍率</span><b id="dr-speed-scale-v">1.00</b></div>
+              <input type="range" id="dr-speed-scale" min="0.5" max="1.5" step="0.05" value="1">
+              <div class="muted small">出し方 1〜3 だけで効きます。</div>
+            </div>
+            <div id="dr-tcp-warn" class="warn-text small hidden">出し方 1〜3 では、速度ゲインが制御器のスロットル(目標速度の追従)にも掛かります(1.0 を勧めます)。速度の上限はゲインに関係なく効きます</div>
+            <div class="warn-text small">出し方 1〜3 は試験的です。制御器のスロットルの写像はまだ粗く(正解の目標速度を入れても人との相関 0.5 程度)、比較で評価したのは「操作の枝だけ」です</div>
+            <div id="dr-tcp-live" class="small"></div>
+          </div>
+
           <label>ToFガード(距離センサーで衝突を予測して減速) <span class="muted">(走行中に変えると、すぐ切り替わります)</span>
             <select id="dr-tof-guard">
               <option value="0">OFF</option>
@@ -321,6 +358,15 @@
               <div class="gain-head"><span>先読み(何フレーム先の予測を使うか)</span><b id="dr-look-v">1</b></div>
               <input type="range" id="dr-look" min="1" max="10" step="1" value="1">
               <div class="muted small">遅れて曲がり始めるときは大きく。1フレーム = 約33ms</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>予測の重ね合わせ(何フレーム前の予測まで混ぜるか)</span><b id="dr-ens-j-v">オフ</b></div>
+              <input type="range" id="dr-ens-j" min="0" max="3" step="1" value="0">
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>重ね合わせで古い予測を軽くする強さ</span><b id="dr-ens-m-v">0.5</b></div>
+              <input type="range" id="dr-ens-m" min="0" max="2" step="0.1" value="0.5">
+              <div class="muted small">どのモデルにも使えます。滑らかになる代わりに反応が少し遅れます(既定はオフ。モデルの比較には使っていません)。</div>
             </div>
             <div class="gain">
               <div class="gain-head"><span>PCA9685 時計補正</span><b id="dr-osc-v">0.0 %</b></div>

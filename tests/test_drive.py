@@ -520,3 +520,277 @@ def test_takeover_reason_links_to_last_takeover(monkeypatch, tmp_path):
     assert d.takeover_reason('other')['takeover_us'] is None
     with pytest.raises(ValueError):
         d.takeover_reason('unknown')
+
+
+# ---------------------------------------------------------------- モデルの種類(方策)・後処理・重ね合わせ
+class ExtraRunner(FakeRunner):
+    """追加の出力(tcp の waypoints・speed_logits の形)も返す偽のエンジン"""
+
+    def run_numpy(self, **kw):
+        out = super().run_numpy(**kw)
+        out['waypoints'] = np.zeros((1, 10, 2), np.float32)
+        out['speed_logits'] = np.zeros((1, 10), np.float32)
+        return out
+
+
+class FakeTCPPost(object):
+    """スロットルを中立 − 100·v_now µs にし、ステアは actions のまま(偽の後処理)"""
+    kind = 'fake_tcp'
+    instances = []
+
+    def __init__(self, pp, ref):
+        self.ref, self.resets, self.seen = ref, 0, []
+        FakeTCPPost.instances.append(self)
+
+    def reset(self):
+        self.resets += 1
+
+    def step(self, outputs, v_now, params, t_ns):
+        self.seen.append(sorted(outputs))
+        pred = outputs['actions'] * 500 + 1500
+        pred[:, 1] = self.ref[1] - 100.0
+        return pred.astype(np.float32), {'mode': int(params.get('tcp_mode', 0)), 'branch': 'fake', 'v_hat': 2.5,
+                                         'v_cmd': 2.0, 'v_curv': float('nan'), 'cap': 0.0}
+
+
+@pytest.fixture
+def fake_post(monkeypatch):
+    import sys
+    import types
+    from jetformer.policies import post
+    mod = types.ModuleType('jetformer_test_drive_post')
+    mod.FakeTCPPost = FakeTCPPost
+    monkeypatch.setitem(sys.modules, mod.__name__, mod)
+    monkeypatch.setitem(post.KINDS, 'fake_tcp', (mod.__name__, 'FakeTCPPost'))
+    FakeTCPPost.instances = []
+    return FakeTCPPost
+
+
+def test_model_info_policy_fields_and_old_configs(monkeypatch, tmp_path):
+    runs = tmp_path / 'runs'
+    cfgs = {'old': {}, 'act': {'policy': 'act', 'policy_cfg': {'dec_layers': 2}, 'outputs': ['actions']},
+            'unknown': {'policy': 'someday', 'inputs': ['image', 'mode']},
+            'history': {'policy': 'act', 'inputs': ['image', 'history']}}
+    for name, cfg in cfgs.items():
+        (runs / name).mkdir(parents=True)
+        (runs / name / drive.ENGINE_FILE).write_bytes(b'x')
+        (runs / name / 'model_config.json').write_text(json.dumps(dict(cfg, num_modes=6, trained_modes=[4, 5])))
+    monkeypatch.setattr(drive, 'RUNS_DIR', runs)
+    old = drive.model_info('old')
+    assert old['policy'] == 'jetformer_v0' and old['drivable'] is True and old['why_not'] == ''
+    assert old['policy_cfg'] == {'dim': 256, 'layers': 4, 'heads': 8} and old['inputs'] == list(drive.policies.BASE_INPUTS)
+    assert old['outputs'] == ['actions'] and old['postprocess'] is None
+    assert drive.model_info('act')['policy_title'].startswith('ACT')
+    assert drive.model_info('unknown')['policy_title'] == 'someday' and drive.model_info('unknown')['drivable'] is True
+    bad = drive.model_info('history')
+    assert bad['drivable'] is False and 'history' in bad['why_not']
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    with pytest.raises(ValueError, match='走行できません'):
+        d.start('history', 4)
+    assert {m['name'] for m in drive.list_models()} == set(cfgs)          # 走れないものも一覧には出す(画面で選べなくする)
+
+
+def test_loop_feeds_all_base_inputs_and_default_is_unchanged(monkeypatch, tmp_path):
+    d = make_driver(monkeypatch, tmp_path)
+    pred = np.array([[1460.0 + 10 * k, 1510.0 + 5 * k] for k in range(10)], np.float32)
+    runner, pca = FakeRunner(pred), FakePCA()
+    d.recorder.recording = True
+    monkeypatch.setitem(PARAMS, 'ensemble_j', 0)
+    assert run_loop(d, runner, pca, veh(True), lookahead=3) is None
+    assert set(runner.calls[0]) == {'image', 'tof', 'imu', 'state', 'mode'}
+    assert runner.calls[0]['mode'].shape == (1, 6)
+    assert pca.pairs[-1] == pytest.approx((pred[2, 0], pred[2, 1]))          # 後処理なし・重ね合わせなし = 今まで通り
+    rows = [r for _, r in d.recorder.rows if not r['hold']]
+    assert rows and all(np.array_equal(r['model_pred'], r['pred']) for r in rows)
+    assert all(r['post_mode'] == -1 and np.isnan(r['v_hat']) and r['ens_j'] == 0 for r in rows)
+    assert d.st['now']['post'] is None
+
+
+def test_loop_runs_post_before_lookahead_and_records(monkeypatch, tmp_path, fake_post):
+    d = make_driver(monkeypatch, tmp_path)
+    d.st['model'] = {'postprocess': {'kind': 'fake_tcp', 'version': 1}}
+    pred = np.tile([[1600.0, 1450.0]], (10, 1))
+    runner, pca = ExtraRunner(pred), FakePCA()
+    d.recorder.recording = True
+    monkeypatch.setitem(PARAMS, 'tcp_mode', 1)
+    assert run_loop(d, runner, pca, veh(True, erpm=-2000)) is None
+    obj = fake_post.instances[-1]
+    assert obj.seen and obj.seen[-1] == ['actions', 'speed_logits', 'waypoints']    # 追加の出力も後処理に渡る
+    assert pca.pairs[-1] == pytest.approx((1600.0, REF[1] - 100.0))                 # 先読み・ゲインは後処理の後
+    rows = [r for _, r in d.recorder.rows if not r['hold']]
+    assert rows and all(r['post_mode'] == 1 and r['v_hat'] == 2.5 and r['v_cmd'] == 2.0 for r in rows)
+    assert np.allclose(rows[-1]['model_pred'][:, 1], 1450.0) and np.allclose(rows[-1]['pred'][:, 1], REF[1] - 100.0)
+    post_now = d.st['now']['post']
+    assert post_now['branch'] == 'fake' and post_now['v_curv'] is None and post_now['v_now'] == pytest.approx(1.0)
+    json.dumps(d.st['now'], allow_nan=False)                                       # 画面へ送れる(NaN なし)
+
+
+def test_hold_resets_post(monkeypatch, tmp_path, fake_post):
+    d = make_driver(monkeypatch, tmp_path)
+    d.st['model'] = {'postprocess': {'kind': 'fake_tcp'}}
+    runner, pca = ExtraRunner(np.tile([[1600.0, 1450.0]], (10, 1))), FakePCA()
+    assert run_loop(d, runner, pca, veh(True, valid=(False, False, False))) is None     # CH3 が届かない → 中立
+    assert fake_post.instances[-1].resets >= 1
+
+
+def test_post_unavailable_falls_back_to_actions(monkeypatch, tmp_path):
+    d = make_driver(monkeypatch, tmp_path)
+    d.st['model'] = {'postprocess': {'kind': 'no_such_kind'}}
+    pred = np.tile([[1600.0, 1450.0]], (10, 1))
+    runner, pca = ExtraRunner(pred), FakePCA()
+    assert run_loop(d, runner, pca, veh(True)) is None
+    assert pca.pairs[-1] == pytest.approx((1600.0, 1450.0))
+    assert '操作の枝' in d.st['recording_note']
+    assert d.st['post_failed'] is True
+
+
+def test_new_params_are_rounded_and_old_settings_load(monkeypatch, tmp_path):
+    (tmp_path / 'drive_settings.json').write_text(json.dumps({'params': {'steer_gain': 1.2}, 'run': 'x', 'mode_id': 5}))
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    assert d.params['steer_gain'] == 1.2 and d.params['tcp_mode'] == 0 and d.params['speed_cap'] == 0.0
+    assert d.params['ensemble_j'] == 0 and d.params['speed_scale'] == 1.0
+    p = d.set_params({'tcp_mode': 1.6, 'ensemble_j': 2.4, 'speed_cap': 9.0, 'speed_scale': 0.1, 'ensemble_m': 0.3})
+    assert p['tcp_mode'] == 2 and isinstance(p['tcp_mode'], int) and p['ensemble_j'] == 2
+    assert p['speed_cap'] == 5.0 and p['speed_scale'] == 0.5 and p['ensemble_m'] == pytest.approx(0.3)
+    for k in ('speed_cap', 'speed_scale', 'tcp_mode', 'ensemble_j', 'ensemble_m'):
+        assert k in drive.PARAM_LIMITS and k in drive.DEFAULT_PARAMS
+
+
+def test_ai_cmd_npz_has_policy_fields_with_defaults(monkeypatch, tmp_path):
+    """古い呼び方(新しい欄なし)の行と新しい行が混ざっても AI_CMD.npz を書け、新しい欄は既定値で埋まる"""
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path)
+    monkeypatch.setattr(config, 'SCENE_SECONDS', 1.0)
+    rec = Recorder(FakeHub())
+    rec._warm_up = lambda: None
+    log = rec.start(description='t')
+    t0 = rec.log['start_ns']
+    for i in range(20):
+        rec._on_sample('CAM_FRONT', Sample(t0 + i * 33_000_000, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': i}))
+    old_row = {'pred': np.zeros((10, 2), np.float32), 'raw': (1, 2), 'out': (1, 2), 'gains': (1, 1), 'trim': 0,
+               'lookahead': 1, 'mode_id': 5, 'hold': False, 'select': True, 'latency_ms': 1.0, 'infer_ms': 1.0,
+               'dry_run': False}
+    new_row = dict(old_row, model_pred=np.ones((10, 2), np.float32), post_mode=1, v_hat=2.0, v_cmd=1.5, ens_j=2)
+    rec.add_ai(t0 + 66_000_000, old_row)
+    rec.add_ai(t0 + 99_000_000, new_row)
+    rec._io.join()
+    rec._finalize(0, partial=False)
+    rec.stop(only_log=log)
+    z = np.load(tmp_path / log / ('%s-0001' % log) / 'AI_CMD.npz')
+    assert z['model_pred'].shape == (2, 10, 2) and z['model_pred'][0].sum() == 0 and z['model_pred'][1].sum() == 20
+    assert z['post_mode'].tolist() == [-1, 1] and np.isnan(z['v_hat'][0]) and z['v_cmd'][1] == 1.5
+    assert z['ens_j'].tolist() == [0, 2]
+
+
+# ---------------------------------------------------------------- レビュー(2026-10-12)で直した点
+def test_boot_does_not_carry_over_tcp_mode(monkeypatch, tmp_path):
+    """tcp の出し方・目標速度の倍率は次に起動したときに持ち越さない(速度の上限は残す)"""
+    (tmp_path / 'drive_settings.json').write_text(json.dumps(
+        {'params': {'tcp_mode': 3, 'speed_scale': 1.4, 'speed_cap': 1.5, 'steer_gain': 1.2}, 'run': 'x', 'mode_id': 5}))
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    assert d.params['tcp_mode'] == 0 and d.params['speed_scale'] == 1.0
+    assert d.params['speed_cap'] == 1.5 and d.params['steer_gain'] == 1.2
+
+
+def _run_dir(runs, name, cfg):
+    (runs / name).mkdir(parents=True)
+    (runs / name / drive.ENGINE_FILE).write_bytes(b'engine')
+    (runs / name / 'model_config.json').write_text(json.dumps(dict(cfg, num_modes=6, trained_modes=[4, 5],
+                                                                   steer_center_us=1441.0, throttle_neutral_us=1496.0)))
+
+
+def test_start_refuses_cap_when_postprocess_cannot_load(monkeypatch, tmp_path):
+    """model_config に後処理があるのに読めないとき、速度の上限・tcp の出し方を使う走行は始めない(黙って actions だけで
+    走らない)。上限 0・出し方 0 なら今までどおり操作の枝で始める"""
+    runs = tmp_path / 'runs'
+    _run_dir(runs, 'broken_tcp', {'policy': 'tcp', 'postprocess': {'kind': 'no_such_kind', 'version': 1}})
+    monkeypatch.setattr(drive, 'RUNS_DIR', runs)
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    started = []
+    d._run = lambda *a: started.append(a)                               # 走行のスレッドの中身は回さない
+    with pytest.raises(ValueError, match='速度の上限'):
+        d.start('broken_tcp', 4, params={'speed_cap': 1.0})
+    with pytest.raises(ValueError, match='速度の上限'):
+        d.start('broken_tcp', 4, params={'tcp_mode': 1, 'speed_cap': 0.0})
+    assert not started and d.thread is None
+    d.start('broken_tcp', 4, params={'speed_cap': 0.0, 'tcp_mode': 0})
+    d.thread.join(2)
+    assert started
+
+
+def test_start_accepts_cap_when_postprocess_loads(monkeypatch, tmp_path, fake_post):
+    runs = tmp_path / 'runs'
+    _run_dir(runs, 'ok_tcp', {'policy': 'tcp', 'postprocess': {'kind': 'fake_tcp', 'version': 1}})
+    _run_dir(runs, 'v0', {})
+    monkeypatch.setattr(drive, 'RUNS_DIR', runs)
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    d._run = lambda *a: None
+    d.start('ok_tcp', 4, params={'speed_cap': 1.0, 'tcp_mode': 1})
+    d.thread.join(2)
+    d.start('v0', 4, params={'speed_cap': 1.0})                         # 後処理の無いモデル: 効かないだけ(画面に出す)
+    d.thread.join(2)
+
+
+def test_set_params_refuses_cap_while_post_failed(monkeypatch, tmp_path):
+    d = make_driver(monkeypatch, tmp_path)
+
+    class Alive(object):
+        def is_alive(self):
+            return True
+    d.thread = Alive()
+    d.st['post_failed'] = True
+    with pytest.raises(ValueError, match='後処理'):
+        d.set_params({'speed_cap': 1.5})
+    with pytest.raises(ValueError, match='後処理'):
+        d.set_params({'tcp_mode': 1})
+    assert d.set_params({'steer_gain': 1.1})['steer_gain'] == 1.1       # ほかの項目は変えられる
+    d.st['post_failed'] = False
+    assert d.set_params({'speed_cap': 1.5})['speed_cap'] == 1.5
+
+
+def test_model_info_engine_check(monkeypatch, tmp_path):
+    """<学習結果>/engine_check.json を走行タブに出す(今のエンジンの確認のときだけ)。精度の確認に落ちたエンジンは走らせない
+    (2026-10-12 のレビュー。前は警告だけ。詳しくは tests/test_drive_model_select.py)"""
+    runs = tmp_path / 'runs'
+    _run_dir(runs, 'dino', {'policy': 'dinov2', 'engine': {'precision': 'fp16'}})
+    monkeypatch.setattr(drive, 'RUNS_DIR', runs)
+    assert drive.model_info('dino')['engine_check'] is None and drive.model_info('dino')['engine_precision'] == 'fp16'
+    stt = (runs / 'dino' / drive.ENGINE_FILE).stat()
+    chk = {'ok': False, 'accuracy_ok': False, 'speed_ok': True, 'actions_max_us': 2.854, 'gate_us': 2.5,
+           'run_numpy_median_ms': 4.98, 'checked_at': '2026-10-12 18:27:24', 'note': 'n',
+           'engine': {'size': stt.st_size, 'mtime_ns': stt.st_mtime_ns}}
+    (runs / 'dino' / drive.ENGINE_CHECK_FILE).write_text(json.dumps(chk))
+    info = drive.model_info('dino')
+    assert info['engine_check']['ok'] is False and info['engine_check']['actions_max_us'] == 2.854
+    assert info['drivable'] is False and '精度の確認に落ちています' in info['why_not'] and '2.85 µs > 2.5 µs' in info['why_not']
+    (runs / 'dino' / drive.ENGINE_FILE).write_bytes(b'rebuilt engine')   # エンジンを作り直した → 古い確認は出さない・走れる
+    assert drive.model_info('dino')['engine_check'] is None and drive.model_info('dino')['drivable'] is True
+
+
+def test_closed_loop_cap_with_gain_through_apply_gains():
+    """本物の制御器 + drive.apply_gains: 強い前進の操作の枝・上限 1.0 m/s で、ゲイン 0.5・2.0 でも
+    ゲインの後のスロットルが thr_ff(1.0) になる(実際の較正の値。レビューの見積もり: 前はゲイン 0.5 で約 0.32 m/s)"""
+    from jetformer.policies import controller as C
+    offs = np.arange(-575.0, 576.0, 50.0)
+    k = np.maximum.accumulate(np.clip(0.004 * offs, -1.5, 1.5)) + np.arange(len(offs)) * 1e-6
+    pp = {'kind': 'tcp_controller', 'version': 1, 'speed_bins': [0.5 * i for i in range(10)],
+          'steer_table': {'offset_us': offs.tolist(), 'bands_mps': [2.0, 3.0], 'curv': [k.tolist()] * 3},
+          'throttle_ff': {'c0': 1490.73, 'c1': -72.073, 'c2': -13.648, 'tau_s': 0.33, 'fwd_max_us': 361.0}}
+    ref = (1441.0, 1496.0)
+    strong = {'actions': np.full((10, 2), -0.6, np.float32), 'waypoints': np.zeros((10, 2), np.float32),
+              'speed_logits': np.zeros(10, np.float32)}
+    for gain in (0.5, 1.0, 2.0):
+        c = C.TCPPost(pp, ref)
+        p = dict(PARAMS, throttle_gain=gain, tcp_mode=0, speed_cap=1.0)
+        v = 0.0
+        for i in range(450):
+            out, _ = c.step(strong, v, p, i * int(1e9 / 30))
+            thr = drive.apply_gains((float(out[0, 0]), float(out[0, 1])), ref, p, 1000, 2000)[1]
+            fwd = ref[1] - thr
+            v_ss = (fwd - (ref[1] - 1490.73)) / 72.073 if fwd > 0 else max(v - 0.1, 0.0)
+            v += (max(v_ss, 0.0) - v) * (1.0 / 30) / 0.3
+        assert abs(v - 1.0) < 0.1, (gain, v)

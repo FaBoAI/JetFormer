@@ -109,13 +109,14 @@ def data_report(name, out_dir):
 
 # ------------------------------------------------------------ モデルの評価
 def model_report(name, run, arrays, out_dir):
-    import torch
-    from jetformer.model import JetFormer, PWM_CENTER, PWM_SCALE
+    """どのモデルの種類(方策)も runtime.load_run で作り、推論の後は走行と同じ post.Stage を通す(走行の既定のパラメータ)"""
+    from jetformer.drive import DEFAULT_PARAMS
+    from jetformer.policies import post as post_mod
+    from jetformer.policies import runtime
     from jetformer.train_data import normalize_inputs
     rdir = config.DATA_DIR / 'runs' / run
-    cfg = json.load(open(rdir / 'model_config.json'))
-    model = JetFormer(num_modes=cfg['num_modes']).cuda().eval()
-    model.load_state_dict(torch.load(rdir / 'best.pth', map_location='cuda', weights_only=True))
+    model, cfg, _, _ = runtime.load_run(rdir, 'best', device='cuda')
+    ref = (float(cfg.get('steer_center_us') or 1500.0), float(cfg.get('throttle_neutral_us') or 1500.0))
     use_command = cfg.get('command_input', True)
     root = config.DATASET_DIR / name
     splits = json.load(open(root / 'splits.json'))
@@ -130,22 +131,24 @@ def model_report(name, run, arrays, out_dir):
         ok = a['vehicle_valid'] & a['future_valid']
         preds_tf, preds_sf = np.full((n, 10, 2), np.nan), np.full((n, 10, 2), np.nan)
         prev = None
-        with torch.no_grad():
-            for i in range(n):
-                img = cv2.imread(str(root / str(a['cam_files'][i])))
-                mode = torch.zeros(1, cfg['num_modes'])
-                mode[0, int(a['mode'][i])] = 1
-                for kind in ('tf', 'sf'):
-                    veh = a['vehicle'][i].copy()
-                    if kind == 'sf' and prev is not None:          # 自己入力: 前フレームの予測(次の時刻に当たる値)
-                        veh[0], veh[1] = prev
-                    im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh, use_command)
-                    out = model(torch.from_numpy(im)[None].cuda(), torch.from_numpy(tof)[None].cuda(),
-                                torch.from_numpy(imu)[None].cuda(), torch.from_numpy(st)[None].cuda(), mode.cuda())
-                    p = out[0].float().cpu().numpy() * PWM_SCALE + PWM_CENTER
-                    (preds_tf if kind == 'tf' else preds_sf)[i] = p
-                    if kind == 'sf':
-                        prev = (float(p[0, 0]), float(p[0, 1]))
+        stages = {'tf': post_mod.Stage(cfg, ref), 'sf': post_mod.Stage(cfg, ref)}
+        for i in range(n):
+            img = cv2.imread(str(root / str(a['cam_files'][i])))
+            mode = np.zeros((1, cfg['num_modes']), np.float32)
+            mode[0, int(a['mode'][i])] = 1
+            for kind in ('tf', 'sf'):
+                veh = a['vehicle'][i].copy()
+                if kind == 'sf' and prev is not None:          # 自己入力: 前フレームの予測(次の時刻に当たる値)
+                    veh[0], veh[1] = prev
+                im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh, use_command)
+                res = runtime.predict(model, {'image': im[None], 'tof': tof[None], 'imu': imu[None], 'state': st[None],
+                                              'mode': mode})
+                stage = stages[kind]
+                p, _ = stage.apply(res, stage.model_pred(res), post_mod.speed_of(a['vehicle'][i][3]), DEFAULT_PARAMS,
+                                   int(a['timestamps_us'][i]) * 1000)
+                (preds_tf if kind == 'tf' else preds_sf)[i] = p
+                if kind == 'sf':
+                    prev = (float(p[0, 0]), float(p[0, 1]))
         y = a['future_actions'][ok]
         cur = np.repeat(a['vehicle'][ok][:, None, :2], 10, axis=1)          # 今の操作値を続ける
         mean = np.broadcast_to(mean_action, y.shape)

@@ -130,10 +130,23 @@ def io_spec(name):
         'gains': ('走行時のゲイン: ステア = 中心 + トリム + ゲイン x (予測 - 中心)。スロットルのゲインは前進側(中立より小さい側)だけ'),
         'conventions': {'steer_center_us': cfg.get('steer_center_us'), 'throttle_neutral_us': cfg.get('throttle_neutral_us'),
                         'steering': 'µs が中心より大きい = 左', 'throttle': 'µs が中立より小さい = 前進(大きい = ブレーキ・後退)'}}}
+    # TCP / TransFuser++ 型の追加の出力(走行の既定 tcp_mode 0 は actions だけを使う)
+    pp = cfg.get('postprocess') if isinstance(cfg.get('postprocess'), dict) else {}
+    bins = pp.get('speed_bins') or [round(0.5 * k, 1) for k in range(10)]
+    out_notes['waypoints'] = {
+        'shape': '[1, 10, 2] = 撮像時刻の車の位置を原点にした、0.1 秒刻みで 1 秒先までの通過点 [x, y](m)',
+        'axes': '自車の座標: x = 前、y = 左(m)', 'dt_s': pp.get('wp_dt', 0.1)}
+    out_notes['speed_logits'] = {
+        'shape': '[1, %d] = 目標速度のクラス(%s m/s)の logits' % (len(bins), '・'.join('%g' % b for b in bins)),
+        'to_speed': '目標速度 m/s = Σ softmax(logits) × クラスの速度(期待値)', 'speed_bins': bins}
+    post_note = None
+    if pp.get('kind') == 'tcp_controller':
+        post_note = ('制御器は jetformer/policies/controller.py(numpy、TCPPost)。model_config.json の postprocess に較正の値がある。'
+                     '走行の既定(tcp_mode 0)は actions をそのまま使い、速度の上限(speed_cap)を掛けたときだけ前進を弱める')
     return {'name': name, 'policy': cfg.get('policy', 'jetformer_v0'), 'onnx': ONNX_NAME, 'opset_note': 'バッチは 1 固定',
             'inputs': [dict(i, **{'how': notes.get(i['name'], {})}) for i in inputs],
             'outputs': [dict(o, **{'how': out_notes.get(o['name'], {})}) for o in outputs],
-            'model_config': cfg}
+            'postprocess_note': post_note, 'model_config': cfg}
 
 
 def readme(name, spec):
@@ -171,10 +184,13 @@ python run_onnx_example.py . --image frame.jpg --erpm -4000 --mode 5
 - ステアリングは中心より大きい µs が左。スロットルは中立より小さい µs が前進。eRPM は負が前進
 - IMU はセンサーの取り付けの向きのまま(+x 右、+y 前、gz 正 = 左回り)
 - 実車ではこの出力に、ゲイン・トリム・ToF ガード・自動リカバリー・人の交代などの安全の仕組みがかかる(エミュレーター側で再現する)
+- どのモデルの種類(ポリシー)も `actions` を出す。TCP 型の `waypoints`・`speed_logits` は追加の出力(走行の既定は `actions` だけを使う)%s
 
 書き出し: %s
 ''' % (name, spec['policy'], spec['model_config'].get('dataset'), spec['model_config'].get('trained_modes'),
-       st.get('note', ''), ins, outs, datetime.datetime.now().isoformat(timespec='seconds'))
+       st.get('note', ''), ins, outs,
+       ('\n- ' + spec['postprocess_note']) if spec.get('postprocess_note') else '',
+       datetime.datetime.now().isoformat(timespec='seconds'))
 
 
 class _Sink(object):

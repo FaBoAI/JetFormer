@@ -77,6 +77,43 @@ tar の中身は「エクスポート」と同じ nuScenes 形式で、別の Je
 再起動します(2026-10-10に1回発生)。そのため学習は空きが3.5GB未満なら始めず、TensorRTエンジンは別プロセスで作ります。
 ほかに大きなプログラム(JupyterのJetRacerのカーネルなど)が動いているときは止めてから学習してください。
 
+### モデルの種類(方策)
+
+学習タブの「モデルの種類」で、構造の違うモデルを選べます(`jetformer/policies/` の登録簿。一覧は `GET /api/policies`)。
+既定は **JetFormer v0(今の標準)** で、選ばなければ今までとまったく同じ学習・同じファイルになります。
+
+| 名前 | 中身 |
+|---|---|
+| `jetformer_v0` | 今までのモデル(下の「モデル」) |
+| `act` | ACT 型: v0 と同じトークン → Encoder → 10 個の行動クエリの Decoder |
+| `tcp` | TCP / TransFuser++ 型: 通過点 + 目標速度 + 操作の枝。走行タブで目標速度 → 制御器・速度の上限を選べる(既定は操作の枝のまま。出し方 1〜3 は試験的で、起動のたび・モデルを替えたときに操作の枝に戻る。速度の上限は速度ゲインに関係なく効く) |
+| `msfusion` | 本家 TransFuser に近い多段融合(ResNet-18 と ToF の CNN を4段で融合) |
+| `dinov2` | DINOv2 ViT-S/14(凍結)の画像特徴。重み `data/pretrained/dinov2_vits14_pretrain.pth` が要る(自動では取らない) |
+
+どの種類も出力 `actions`(10 フレーム先までの [ステア, スロットル])を持つので、走行の安全の仕組み(ゲイン・トリム・先読み・ToF ガード・
+リカバリー・ラップ・CH3 の交代・センサーの途切れで中立)はそのまま効きます。まだ作っていない種類は「使えません」と出て選べません。
+「詳細」の「衝突とみなす加速度」(2.5G = モデル B と同じ)・「乱数の種」は、モデルどうしを比べるときに条件をそろえるためのものです。
+CLI では `tools/train.py --policy act [--policy-cfg '{"dec_layers": 3}']`。`model_config.json` に `policy`・`policy_cfg`・
+`inputs`(書き出した ONNX から読み直した名前)などが入り、`policy` の無い古い学習結果は `jetformer_v0` として読みます。
+エンジンの精度は `model_config.json` の `engine.precision`(既定 fp16)で、`tools/build_engine.py` は作った後に入出力を確かめます。
+学習結果のフォルダーに `engine_check.json`(実フレームで TensorRT と PyTorch FP32 の差・速さを確かめた結果)があれば、走行タブに出します。今のエンジンが精度の確認(差 最大 2.5 µs 以内)に落ちていれば、走行タブで選べなくし、理由を出します(走行も始めません。エンジンを作り直せば、古い確認は当てません)。速さだけ落ちたときは警告だけです。
+
+走行タブは、評価で決めた**推奨のモデル**(`data/drive_recommended.json`)を一覧の先頭に「★推奨」と出し、ページを開いたときに選びます(前回使ったモデルより先。無ければ今まで通り前回のモデル → 一番新しいモデル)。方策の比較の評価の推奨は `python tools/policy_zoo.py recommend` で書きます(手で決めるときは `--run <学習結果> --reason <理由>`)。
+
+**DINOv2 の重みの取得**(`dinov2` を使うときだけ・1回だけ。ネットから自動では取りません)。電源断で半端なファイルを残さないよう、
+`.part` に書いて sha256 を確かめてから名前を変えます:
+
+```bash
+cd ~/jetformer && mkdir -p data/pretrained
+curl -fL -o data/pretrained/dinov2_vits14_pretrain.pth.part \
+    https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth
+sha256sum data/pretrained/dinov2_vits14_pretrain.pth.part
+# → b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9 と同じなら
+mv data/pretrained/dinov2_vits14_pretrain.pth.part data/pretrained/dinov2_vits14_pretrain.pth
+```
+
+(公式の通常版 ViT-S/14、約 88 MB。`data/` は git に入りません。DINOv2 のコードと重みは Apache-2.0)
+
 ## 学習済みモデルを Jetson の外で使う(エミュレーター用の書き出し)
 
 学習タブの各モデルの「⬇ エミュレーター用(zip)」で、Mac などのエミュレーターで動かすための一式を zip で取れます

@@ -61,7 +61,9 @@ VARIANTS = {
 }
 GPU_PATTERNS = ('tools/train.py', 'build_engine.py', 'offline_rl.py features', 'trtexec', 'compare_models.py',
                 'tools/evaluate.py', 'rl_policies.py check-engines', 'rl_policies.py common-val',
-                'rl_evaluate.py predict', 'rl_evaluate.py crosscheck', 'rl_evaluate.py engine-check')
+                'rl_evaluate.py predict', 'rl_evaluate.py crosscheck', 'rl_evaluate.py engine-check',
+                # 方策の比較(policy zoo)・推論の速さの計測
+                'benchmark_model.py', 'policy_zoo.py train', 'policy_zoo.py predict', 'policy_zoo.py engine-check')
 DISABLED_ENGINE_SUFFIX = '.do_not_drive'   # 走らせない方策のエンジン(管理画面の一覧から外すために名前を変えたもの)
 
 
@@ -487,7 +489,8 @@ def cmd_check_engines(args):
     _check_gpu_free(min_gb=2.0)
     import torch
     from jetformer import drive
-    from jetformer.model import JetFormer, PWM_SCALE
+    from jetformer.model import PWM_SCALE
+    from jetformer.policies import runtime
     from jetformer.train_data import JetFormerDataset
     from jetformer.trt_runtime import TRTRunner
     ds = JetFormerDataset(str(config.DATASET_DIR / args.dataset), 'val', stride=30, use_command=False)
@@ -497,9 +500,7 @@ def cmd_check_engines(args):
     for v in args.variants:
         out = RUNS_DIR / run_name(v, args.epochs, args.dataset)
         info = drive.model_info(out.name)
-        cfg = _read_json(out / 'model_config.json')
-        model = JetFormer(num_modes=cfg['num_modes']).eval().cuda()
-        model.load_state_dict(torch.load(out / 'best.pth', map_location='cuda', weights_only=True))
+        model, cfg, _, _ = runtime.load_run(out, 'best', device='cuda')
         runner = TRTRunner(str(out / 'jetformer_fp16.engine'))
         diffs = []
         for n in pick:
@@ -508,8 +509,7 @@ def cmd_check_engines(args):
                 onehot = torch.zeros(1, cfg['num_modes'])
                 onehot[0, g] = 1.0
                 x = dict(image=image[None], tof=tof[None], imu=imu[None], state=state[None], mode=onehot)
-                with torch.no_grad():
-                    ref = model(**{k: t.cuda() for k, t in x.items()}).float().cpu().numpy()
+                ref = runtime.predict(model, x)['actions']
                 got = runner.run_numpy(**{k: t.numpy() for k, t in x.items()})['actions']
                 diffs.append(float(np.abs(got - ref).max() * PWM_SCALE))
         rows[v] = {'run': out.name, 'ui_model_info': info is not None,
@@ -559,7 +559,8 @@ def cmd_common_val(args):
     _check_gpu_free(min_gb=2.0)
     import torch
     from torch.utils.data import DataLoader
-    from jetformer.model import JetFormer, PWM_CENTER, PWM_SCALE
+    from jetformer.model import PWM_CENTER, PWM_SCALE
+    from jetformer.policies import runtime
     from jetformer.train_data import JetFormerDataset
     groups = val_groups(args.dataset)
     ds = JetFormerDataset(str(config.DATASET_DIR / args.dataset), 'val', stride=TRAIN['stride'], use_command=False)
@@ -585,9 +586,7 @@ def cmd_common_val(args):
     label_cache = None
     per_sample = {}
     for name, d, use_good in models:
-        cfg = _read_json(d / 'model_config.json')
-        model = JetFormer(num_modes=cfg['num_modes']).cuda().eval()
-        model.load_state_dict(torch.load(d / 'best.pth', map_location='cuda', weights_only=True))
+        model, cfg, _, _ = runtime.load_run(d, 'best', device='cuda')
         preds, labels = [], []
         with torch.no_grad():
             for image, tof, imu, state, mode, target in dl:
@@ -595,7 +594,8 @@ def cmd_common_val(args):
                 if use_good:
                     g = torch.tensor([good_of.get(int(x), int(x)) for x in g])
                 onehot = torch.nn.functional.one_hot(g, cfg['num_modes']).float()
-                p = model(image.cuda(), tof.cuda(), imu.cuda(), state.cuda(), onehot.cuda()).float().cpu().numpy()
+                x = dict(image=image.cuda(), tof=tof.cuda(), imu=imu.cuda(), state=state.cuda(), mode=onehot.cuda())
+                p = runtime.forward(model, x)['actions'].float().cpu().numpy()
                 preds.append(p * PWM_SCALE + PWM_CENTER)
                 labels.append(target.numpy() * PWM_SCALE + PWM_CENTER)
         pred = np.concatenate(preds)

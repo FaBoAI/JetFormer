@@ -9,6 +9,10 @@
     keep_impact True のフレームは衝突の前後の除外(mask_impacts)から外す(AWR などで失敗の前後の AI のフレームを使う)
     weights     損失の重み(return_weight=True のとき 7番目の値として返す)
     mode_remap  学習するジャンルを付け替える(-1 = そのまま)。remap_dropout の確率で元のジャンルに戻す(分類器なし誘導の形)
+
+方策の追加の正解(既定では使わない。jetformer/policies の方策のモジュールの extra_targets が作る):
+    extra_targets  {シーン名: {キー: np.ndarray [シーンのフレーム数, ...]}}。渡すと各サンプルの最後に
+                   {'y_<キー>': Tensor} の dict を足す(tcp の通過点・目標速度など)。渡さなければ今までと同じタプル
 """
 
 import json
@@ -94,9 +98,10 @@ def _per_frame(table, scene, n, fill, dtype):
 class JetFormerDataset(torch.utils.data.Dataset):
     def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True,
                  mask_impacts=False, impact_g=IMPACT_G, drop=None, keep_impact=None, weights=None, mode_remap=None,
-                 remap_dropout=0.0, extra_modes=None, return_weight=False):
+                 remap_dropout=0.0, extra_modes=None, return_weight=False, extra_targets=None):
         """drop・keep_impact・weights・mode_remap は load_frame_table の表(None = 使わない。既定はどれも使わない)。
-        extra_modes: mode_remap の付け替え先のジャンル(data/modes.json の項目)で、データセットの表に無いもの"""
+        extra_modes: mode_remap の付け替え先のジャンル(data/modes.json の項目)で、データセットの表に無いもの。
+        extra_targets: 方策の追加の正解 {シーン名: {キー: [フレーム数, ...]}}(None = 使わない)"""
         self.root = root
         self.color_jitter = color_jitter
         self.use_command = use_command
@@ -105,6 +110,7 @@ class JetFormerDataset(torch.utils.data.Dataset):
         self.impact_kept = 0               # keep_impact で衝突の前後の除外から戻したフレーム数(間引きの前)
         self.remap_dropout = float(remap_dropout)
         self.return_weight = return_weight
+        self.extra_keys = []                 # 追加の正解のキー(__getitem__ の最後の dict の 'y_<キー>')
         with open(os.path.join(root, 'dataset_card.json'), encoding='utf-8') as f:
             card = json.load(f)
         self.modes = card.get('modes', [{'id': 0, 'name': '未設定'}])
@@ -152,6 +158,18 @@ class JetFormerDataset(torch.utils.data.Dataset):
                     raise ValueError('シーン %s: 付け替え先のジャンル %s がジャンルの表にありません'
                                      % (s, sorted(set(r[bad].tolist()))))
                 a['_remap'] = r
+            if extra_targets is not None:
+                if s not in extra_targets:
+                    raise KeyError('%s の追加の正解がありません' % s)
+                keys = sorted(extra_targets[s])
+                if self.scenes and keys != self.extra_keys:
+                    raise ValueError('シーン %s の追加の正解のキー %s がほかのシーン %s と違います' % (s, keys, self.extra_keys))
+                self.extra_keys = keys
+                for key in keys:
+                    arr = np.asarray(extra_targets[s][key])
+                    if len(arr) != n:
+                        raise ValueError('シーン %s の追加の正解 %s の長さ %d がフレーム数 %d と違います' % (s, key, len(arr), n))
+                    a['_y_' + key] = arr
             k = len(self.scenes)
             self.scenes.append(a)
             self.index.extend((k, int(i)) for i in np.nonzero(ok)[0])
@@ -184,6 +202,8 @@ class JetFormerDataset(torch.utils.data.Dataset):
         if self.return_weight:
             w = float(a['_weight'][i]) if '_weight' in a else 1.0
             out = out + (torch.tensor(w, dtype=torch.float32),)
+        if self.extra_keys:                  # 方策の追加の正解(最後の dict。既定の collate がまとめる)
+            out = out + ({'y_' + key: torch.as_tensor(np.array(a['_y_' + key][i])) for key in self.extra_keys},)
         return out
 
     def sample_weights(self):

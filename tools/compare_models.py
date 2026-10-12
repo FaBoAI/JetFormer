@@ -11,6 +11,11 @@
 ほかに、ハンドルの向きの正解率(人が中心から100µs以上切っているフレームで、3フレーム先の予測が同じ向きか)と、
 前進の強さの偏り(予測 − 人。負なら人より強く前進 = 速く走りがち)。
 モデルが学習していないジャンルのシーンは、そのモデルが学習したジャンルで代用して評価する(表に印をつける)。
+
+どのモデルの種類(方策、jetformer/policies)も同じ手順で評価する: runtime.load_run(model_config.json の policy。無ければ
+jetformer_v0)→ runtime.predict(FP32)→ policies.post.Stage(走行と同じ後処理・重ね合わせ。シーンごとに時刻の順)。
+後処理の設定は走行の既定(tcp_mode 0・速度の上限なし・重ね合わせなし = actions そのまま)。--post-params で変えられる
+(例 '{"tcp_mode": 1, "speed_cap": 2.75}'。比較の判定には使わない参考の行)。
 """
 
 import argparse
@@ -23,50 +28,63 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from jetformer import config  # noqa: E402
+from jetformer.policies import post as post_mod  # noqa: E402
 from jetformer.train_data import impact_mask, normalize_inputs  # noqa: E402
 
 H = 10
 
 
-def load_model(run):
-    import torch
-    from jetformer.model import JetFormer
+def load_model(run, device='cuda'):
+    """学習結果 → (モデル, model_config, 学習したジャンル, result)。どの方策も runtime.load_run で作る"""
+    from jetformer.policies import runtime
     d = config.DATA_DIR / 'runs' / run
-    cfg = json.load(open(d / 'model_config.json', encoding='utf-8'))
-    m = JetFormer(num_modes=cfg['num_modes']).cuda().eval()
-    m.load_state_dict(torch.load(d / 'best.pth', map_location='cuda', weights_only=True))
+    m, cfg, _, _ = runtime.load_run(d, 'best', device=device)
     res = json.load(open(d / 'result.json', encoding='utf-8')) if (d / 'result.json').exists() else {}
     trained = cfg.get('trained_modes') or [int(k) for k in (res.get('train_mode_counts') or {})] or [5]
     return m, cfg, [int(x) for x in trained], res
 
 
-def predict_scene(model, cfg, trained, root, a):
-    import torch
-    from jetformer.model import PWM_CENTER, PWM_SCALE
+def drive_params(post_params=None):
+    """後処理に渡す走行のパラメータ(走行の既定 + 指定)"""
+    from jetformer.drive import DEFAULT_PARAMS
+    return dict(DEFAULT_PARAMS, **(post_params or {}))
+
+
+def predict_scene(model, cfg, trained, root, a, post_params=None, predict=None):
+    """シーンの全フレームを時刻の順に予測する → (教師あり [N,10,2] µs, 自己入力 [N,10,2] µs, ジャンルの代用 [N])。
+    推論の後は走行と同じ post.Stage(後処理・重ね合わせ)を通す(教師あり・自己入力で別の Stage)。
+    predict(model, inputs) → {名前: [1,...]}(既定 runtime.predict。テストで偽物を渡せる)"""
+    if predict is None:
+        from jetformer.policies import runtime
+        predict = runtime.predict
     n = len(a['timestamps_us'])
     use_cmd = cfg.get('command_input', True)
+    ref = (float(cfg.get('steer_center_us') or 1443.0), float(cfg.get('throttle_neutral_us') or 1498.0))
+    params = drive_params(post_params)
+    stages = {'tf': post_mod.Stage(cfg, ref), 'sf': post_mod.Stage(cfg, ref)}
     tf, sf = np.full((n, H, 2), np.nan, np.float32), np.full((n, H, 2), np.nan, np.float32)
     substituted = np.zeros(n, bool)
     prev = None
-    with torch.no_grad():
-        for i in range(n):
-            img = cv2.imread(str(root / str(a['cam_files'][i])))
-            mode_id = int(a['mode'][i])
-            if mode_id not in trained:
-                mode_id, substituted[i] = trained[0], True
-            mode = torch.zeros(1, cfg['num_modes'])
-            mode[0, mode_id] = 1
-            for kind in ('tf', 'sf'):
-                veh = a['vehicle'][i].copy()
-                if kind == 'sf' and prev is not None:
-                    veh[0], veh[1] = prev
-                im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh, use_cmd)
-                out = model(torch.from_numpy(im)[None].cuda(), torch.from_numpy(tof)[None].cuda(),
-                            torch.from_numpy(imu)[None].cuda(), torch.from_numpy(st)[None].cuda(), mode.cuda())
-                p = out[0].float().cpu().numpy() * PWM_SCALE + PWM_CENTER
-                (tf if kind == 'tf' else sf)[i] = p
-                if kind == 'sf':
-                    prev = (float(p[0, 0]), float(p[0, 1]))
+    for i in range(n):
+        img = cv2.imread(str(root / str(a['cam_files'][i])))
+        mode_id = int(a['mode'][i])
+        if mode_id not in trained:
+            mode_id, substituted[i] = trained[0], True
+        mode = np.zeros((1, cfg['num_modes']), np.float32)
+        mode[0, mode_id] = 1
+        t_ns = int(a['timestamps_us'][i]) * 1000
+        for kind in ('tf', 'sf'):
+            veh = a['vehicle'][i].copy()
+            if kind == 'sf' and prev is not None:
+                veh[0], veh[1] = prev
+            im, tof, imu, st = normalize_inputs(img, a['tof'][i], a['imu'][i], veh, use_cmd)
+            res = predict(model, {'image': im[None], 'tof': tof[None], 'imu': imu[None], 'state': st[None], 'mode': mode})
+            stage = stages[kind]
+            mp = stage.model_pred(res)
+            p, _ = stage.apply(res, mp, post_mod.speed_of(a['vehicle'][i][3]), params, t_ns)
+            (tf if kind == 'tf' else sf)[i] = p
+            if kind == 'sf':
+                prev = (float(p[0, 0]), float(p[0, 1]))
     return tf, sf, substituted
 
 
@@ -92,7 +110,10 @@ def main():
     ap.add_argument('--runs', nargs='+', required=True)
     ap.add_argument('--impact-g', type=float, default=2.5)
     ap.add_argument('--stride', type=int, default=1, help='N フレームに1つ評価(速くしたいとき)')
+    ap.add_argument('--post-params', default=None,
+                    help='後処理に渡す走行のパラメータの JSON(既定: 走行の既定 = tcp_mode 0・上限なし・重ね合わせなし)')
     args = ap.parse_args()
+    post_params = json.loads(args.post_params) if args.post_params else None
     root = config.DATASET_DIR / args.dataset
     splits = json.load(open(root / 'splits.json'))
     out_dir = config.DATA_DIR / 'reports' / ('compare_' + args.dataset)
@@ -109,14 +130,16 @@ def main():
             ok = a['vehicle_valid'] & a['future_valid']
             if args.stride > 1:
                 ok &= (np.arange(len(ok)) % args.stride) == 0
-            tf, sf, sub = predict_scene(model, cfg, trained, root, a)
+            extra = {'post_params': post_params} if post_params else {}         # 既定は今までと同じ呼び方
+            tf, sf, sub = predict_scene(model, cfg, trained, root, a, **extra)
             imp = impact_mask(a['timestamps_us'], a['imu'], args.impact_g)
             for kind, p in (('tf', tf), ('sf', sf)):
                 rows[kind].append((p[ok], a['future_actions'][ok], a['vehicle'][ok][:, :2]))
             meta.append({'scene': s, 'mode': a['mode'][ok].astype(int), 'impact': imp[ok], 'sub': sub[ok],
                          'source': 'old_val' if s.startswith(('20261010-13', '20261010-14', '20261010-15')) else 'new_val'})
             print('%s %s: %d フレーム' % (run[:40], s, int(ok.sum())), flush=True)
-        r = {'trained_modes': trained, 'command_input': cfg.get('command_input', True),
+        r = {'policy': cfg.get('policy', 'jetformer_v0'), 'post_params': post_params,
+             'trained_modes': trained, 'command_input': cfg.get('command_input', True),
              'mask_impacts': cfg.get('mask_impacts', False), 'train_dataset': cfg.get('dataset'),
              'best_val_us': res.get('best_val_us'), 'train_samples': res.get('train_samples')}
         modes_all = np.concatenate([m['mode'] for m in meta])

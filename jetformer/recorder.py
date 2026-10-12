@@ -10,7 +10,8 @@
                          VEHICLE.npz     timestamps_us, pwm[N,3] µs, valid[N,3], select[N], erpm[N], ...
                          AUDIO.npz       timestamps_us[M](20msごとの受信時刻), pcm[M*320] int32 16kHz モノラル
                          AI_CMD.npz      (AI走行中のみ)timestamps_us(=推論に使ったカメラ時刻), pred[N,10,2] µs,
-                                         raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...
+                                         raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...,
+                                         model_pred[N,10,2](方策の後処理・重ね合わせの前), post_mode, v_hat, v_cmd, ens_j
                          thumb.jpg
 
 サンプルは計測時刻で「どのシーンに属するか」を決めるので、センサー間でシーン境界がずれない。
@@ -486,7 +487,14 @@ class Recorder(object):
                      # ToFガード: 衝突までの時間[s]、判定 0=なし 1=減速 2=ブレーキ、実際に出力を変えたか(記録だけのときは False)
                      ttc=np.array([x.get('ttc', np.nan) for x in a], dtype=np.float32),
                      guard=np.array([x.get('guard', 0) for x in a], dtype=np.int8),
-                     guard_applied=np.array([x.get('guard_applied', False) for x in a], dtype=bool))
+                     guard_applied=np.array([x.get('guard_applied', False) for x in a], dtype=bool),
+                     # 方策の後処理の前の予測 [N,10,2] µs(後処理も重ね合わせも無いときは pred と同じ)・tcp の制御器の
+                     # 出し方(-1 = 後処理なし)・予測した目標速度 / 上限の後の目標速度 [m/s]・重ね合わせのフレーム数(0 = オフ)
+                     model_pred=np.stack([np.asarray(x.get('model_pred', x['pred']), np.float32) for x in a]),
+                     post_mode=np.array([x.get('post_mode', -1) for x in a], dtype=np.int8),
+                     v_hat=np.array([x.get('v_hat', np.nan) for x in a], dtype=np.float32),
+                     v_cmd=np.array([x.get('v_cmd', np.nan) for x in a], dtype=np.float32),
+                     ens_j=np.array([x.get('ens_j', 0) for x in a], dtype=np.int8))
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:

@@ -18,10 +18,11 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, hf_export, model_export, modes, session, sound, tof_format
+from .. import actuator, config, dataset, drive, hf_export, model_export, modes, policies, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
+from ..training import start_args as training_start_args
 
 STATIC = config.ROOT / 'jetformer' / 'web' / 'static'
 
@@ -673,16 +674,19 @@ def api_train_start(body: dict = Body(...)):
     if driver.running:
         raise HTTPException(409, 'AI走行中は学習できません(GPUを奪い合い、30fpsの走行が乱れるため)')
     try:
-        name = trainer.start(body.get('dataset', ''), stride=body.get('stride', 3), epochs=body.get('epochs', 30),
-                             batch=body.get('batch', 64), lr=body.get('lr', 3e-4),
-                             pretrained=body.get('pretrained', True), build_engine=body.get('build_engine', True),
-                             command_input=body.get('command_input', True),
-                             mask_impacts=body.get('mask_impacts', True))
+        # モデルの種類・衝突の加速度・乱数の種も(無ければ jetformer_v0 = 古い画面のキャッシュからでも今までと同じ学習)
+        name = trainer.start(body.get('dataset', ''), **training_start_args(body))
     except ValueError as e:
         raise HTTPException(400, str(e))
     except RuntimeError as e:
         raise HTTPException(409, str(e))
     return {'ok': True, 'run': name}
+
+
+@app.get('/api/policies')
+def api_policies():
+    """学習できるモデルの種類(方策の登録簿。torch を読まない): 名前・表示名・説明・状態・設定・目安"""
+    return policies.list_specs()
 
 
 @app.post('/api/train/stop')
