@@ -156,6 +156,8 @@ body.driving main { padding-bottom: 96px; }
 .hf-status code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 11px; }
 .hf-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 13px; }
 .hf-form { margin-top: 6px; background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.hfdl-list { max-height: 220px; overflow-y: auto; margin: 4px 0 8px; }
+.hfdl-item { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 13px; }
 
 /* サウンド */
 .snd-events { display: flex; flex-wrap: wrap; gap: 2px 0; margin-top: 6px; }

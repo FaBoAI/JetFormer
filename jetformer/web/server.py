@@ -592,6 +592,56 @@ def api_dataset_hf(name: str, body: dict = Body(...)):
     return jobs.submit('hf', 'Hugging Face へ: %s → %s' % (name, repo_id), run)
 
 
+_hf_downloading = set()
+
+
+def _hub_error(e):
+    """Hub の例外を、画面に出せる HTTP エラーにする"""
+    if isinstance(e, ValueError):
+        return HTTPException(400, str(e))
+    name = type(e).__name__
+    if name in ('RepositoryNotFoundError', 'GatedRepoError', 'RevisionNotFoundError'):
+        return HTTPException(404, 'リポジトリが見つかりません(名前の誤り、または非公開でログインが必要): %s' % name)
+    return HTTPException(502, 'Hugging Face に接続できません: %s' % name)
+
+
+@app.get('/api/hf/hub_datasets')
+def api_hf_hub_datasets(author: str = '', search: str = '', all_tags: bool = False):
+    """Hub の JetFormer のデータセットを探す(author = ユーザー名または組織、search = 名前の一部)"""
+    try:
+        return hf_export.list_hub_datasets(author=author, search=search, only_jetformer=not all_tags)
+    except Exception as e:
+        raise _hub_error(e)
+
+
+@app.get('/api/hf/hub_files')
+def api_hf_hub_files(repo_id: str, revision: str = ''):
+    """リポジトリにある学習用の tar(nuscenes/*.tar)と大きさ。同じ名前のデータセットが既にあるかも返す"""
+    try:
+        return {'repo_id': repo_id, 'files': hf_export.hub_dataset_files(repo_id, revision or None)}
+    except Exception as e:
+        raise _hub_error(e)
+
+
+@app.post('/api/hf/download')
+def api_hf_download(body: dict = Body(...)):
+    """Hub のデータセットを Jetson の data/datasets/ に取り込む(処理状況に進み具合が出る)"""
+    repo_id = str(body.get('repo_id', '')).strip()
+    revision = str(body.get('revision') or '').strip() or None
+    if repo_id.count('/') != 1 or not all(repo_id.split('/')):
+        raise HTTPException(400, 'リポジトリ名は「ユーザー名または組織/名前」で指定してください')
+    if repo_id in _hf_downloading:
+        raise HTTPException(409, 'このリポジトリはダウンロード中です')
+    _hf_downloading.add(repo_id)
+
+    def run(progress):
+        try:
+            return hf_export.download(repo_id, revision=revision, filename=body.get('file') or None, progress=progress)
+        finally:
+            _hf_downloading.discard(repo_id)
+    return jobs.submit('hf_download', 'Hugging Face から: %s' % repo_id, run)
+
+
 @app.get('/api/jobs')
 def api_jobs():
     return jobs.list()

@@ -507,6 +507,8 @@ def list_datasets():
                 c['export'] = {'file': exp.name, 'bytes': exp.stat().st_size} if exp.exists() else None
                 hf = d / 'hf_upload.json'                     # Hugging Face に上げた記録
                 c['hf'] = json.loads(hf.read_text(encoding='utf-8')) if hf.exists() else None
+                src = d / 'hf_source.json'                    # Hugging Face から取り込んだ記録
+                c['hf_source'] = json.loads(src.read_text(encoding='utf-8')) if src.exists() else None
                 out.append(c)
     return out
 

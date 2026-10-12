@@ -256,3 +256,158 @@ def upload(name, repo_id, private=True, include_nuscenes=True, license_id='other
         progress(1.0, 'アップロードしました')
     return info
 
+
+
+# ---------------------------------------------------------------- Hub からダウンロード(Hub → Jetson)
+# upload() で上げたリポジトリの nuscenes/<名前>.tar(dataset.export_dataset と同じ形)を取ってきて、
+# data/datasets/<名前>/ に展開する。展開したデータセットは、作ったものと同じように学習タブで使える。
+# Dataset Viewer 用の parquet だけのリポジトリ(nuscenes/*.tar が無い)は取り込めない。
+
+HUB_TAG = 'jetformer'                    # make_card が付けるタグ
+NAME_CHARS = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.')
+CHUNK = 8 << 20
+
+
+def _check_repo_id(repo_id):
+    repo_id = (repo_id or '').strip()
+    if repo_id.count('/') != 1 or not all(repo_id.split('/')) or '..' in repo_id or ' ' in repo_id:
+        raise ValueError('リポジトリ名は「ユーザー名または組織/名前」で指定してください')
+    return repo_id
+
+
+def list_hub_datasets(author=None, search=None, limit=50, only_jetformer=True):
+    """Hub のデータセットの一覧(新しい順)。only_jetformer なら JetFormer のタグが付いたものだけ"""
+    from huggingface_hub import HfApi
+    out = []
+    for d in HfApi().list_datasets(author=(author or '').strip() or None, search=(search or '').strip() or None,
+                                   filter=HUB_TAG if only_jetformer else None, sort='last_modified', limit=limit):
+        out.append({'repo_id': d.id, 'private': bool(getattr(d, 'private', False)),
+                    'last_modified': d.last_modified.isoformat(timespec='seconds') if getattr(d, 'last_modified', None) else None,
+                    'downloads': getattr(d, 'downloads', None), 'url': 'https://huggingface.co/datasets/%s' % d.id})
+    return out
+
+
+def hub_dataset_files(repo_id, revision=None):
+    """リポジトリにある学習用の tar の一覧 [{'path', 'name', 'size', 'sha256', 'exists'}](無ければ空)"""
+    from huggingface_hub import HfApi
+    from huggingface_hub.errors import EntryNotFoundError
+    repo_id = _check_repo_id(repo_id)
+    try:
+        entries = list(HfApi().list_repo_tree(repo_id, path_in_repo='nuscenes', repo_type='dataset', revision=revision,
+                                              expand=True))
+    except EntryNotFoundError:
+        return []
+    out = []
+    for e in entries:
+        path = getattr(e, 'path', '')
+        if not path.endswith('.tar') or getattr(e, 'size', None) is None:
+            continue
+        name = os.path.basename(path)[:-4]
+        lfs = getattr(e, 'lfs', None)
+        sha = (lfs.get('sha256') if isinstance(lfs, dict) else getattr(lfs, 'sha256', None)) if lfs else None
+        out.append({'path': path, 'name': name, 'size': int(e.size), 'sha256': sha,
+                    'exists': (config.DATASET_DIR / name).exists()})
+    return out
+
+
+def _open_remote(repo_id, path, revision=None):
+    """Hub のファイルを読み出す(ログインしていればそのトークンで。公開リポジトリはログイン不要)"""
+    from huggingface_hub import HfFileSystem
+    rev = '@%s' % revision if revision else ''
+    return HfFileSystem().open('datasets/%s%s/%s' % (repo_id, rev, path), 'rb', block_size=CHUNK)
+
+
+def _check_name(name):
+    if not name or name.startswith('.') or not set(name) <= NAME_CHARS:
+        raise ValueError('データセット名に使えない文字があります: %r' % name)
+    return name
+
+
+def extract_dataset_tar(tar_path, name, progress=None, p0=0.0, p1=1.0):
+    """export_dataset の形の tar(先頭のフォルダ = データセット名)を data/datasets/<name>/ に展開する。
+
+    途中のフォルダ(data/datasets/.download-<name>)に展開してから置き換えるので、途中で止まっても半端なデータセットは
+    残らない。tar の中身は先頭のフォルダが <name> のものだけを、通常のファイルとフォルダに限って取り出す(絶対パス・.. ・リンクは拒否)"""
+    import tarfile
+    _check_name(name)
+    dest = config.DATASET_DIR / name
+    if dest.exists():
+        raise FileExistsError('同じ名前のデータセット「%s」があります。削除してからダウンロードしてください' % name)
+    stage = config.DATASET_DIR / ('.download-%s' % name)
+    if stage.exists():
+        shutil.rmtree(stage)
+    stage.mkdir(parents=True)
+    try:
+        with tarfile.open(tar_path) as tar:
+            members = tar.getmembers()
+            for m in members:
+                parts = m.name.split('/')
+                if parts[0] != name or m.name.startswith('/') or '..' in parts or not (m.isfile() or m.isdir()):
+                    raise ValueError('tar の中身がデータセット「%s」の形ではありません(%s)' % (name, m.name))
+            for k, m in enumerate(members):
+                tar.extract(m, stage, filter='data')
+                if progress and k % 200 == 0:
+                    progress(p0 + (p1 - p0) * k / max(len(members), 1), '展開中 %d / %d' % (k, len(members)))
+        root = stage / name
+        for need in ('dataset_card.json', 'splits.json'):
+            if not (root / need).exists():
+                raise ValueError('展開したデータセットに %s がありません' % need)
+        os.replace(root, dest)
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+    return dest
+
+
+def download(repo_id, revision=None, filename=None, progress=None):
+    """Hub のデータセット(nuscenes/*.tar)を data/datasets/ に取り込む。戻り値 {'name', 'repo_id', 'bytes', ...}"""
+    import hashlib
+    repo_id = _check_repo_id(repo_id)
+    if progress:
+        progress(0.01, 'リポジトリを確認中(%s)' % repo_id)
+    files = hub_dataset_files(repo_id, revision)
+    if filename:
+        files = [f for f in files if f['path'] == filename or f['name'] == filename]
+    if not files:
+        raise ValueError('%s に学習用の tar(nuscenes/*.tar)がありません。Dataset Viewer 用の parquet だけのリポジトリは、'
+                         'まだ取り込めません' % repo_id)
+    f = files[0]
+    name = _check_name(f['name'])
+    if (config.DATASET_DIR / name).exists():
+        raise FileExistsError('同じ名前のデータセット「%s」があります。削除してからダウンロードしてください' % name)
+    work = config.DATA_DIR / 'downloads'
+    work.mkdir(parents=True, exist_ok=True)
+    config.DATASET_DIR.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(work).free
+    if free < f['size'] * 2.2:                         # tar + 展開後
+        raise OSError('空き容量が足りません(必要 約%.1f GB、空き %.1f GB)' % (f['size'] * 2.2 / 1e9, free / 1e9))
+    part = work / ('%s.tar.part' % name)
+    sha = hashlib.sha256()
+    done = 0
+    try:
+        with _open_remote(repo_id, f['path'], revision) as src, open(part, 'wb') as dst:
+            while True:
+                block = src.read(CHUNK)
+                if not block:
+                    break
+                dst.write(block)
+                sha.update(block)
+                done += len(block)
+                if progress:
+                    progress(0.02 + 0.78 * done / max(f['size'], 1),
+                             'ダウンロード中 %.0f / %.0f MB' % (done / 1e6, f['size'] / 1e6))
+        if done != f['size']:
+            raise IOError('ダウンロードの大きさが合いません(%d / %d バイト)' % (done, f['size']))
+        if f.get('sha256') and sha.hexdigest() != f['sha256']:
+            raise IOError('ダウンロードした tar のハッシュが Hub の値と合いません')
+        dest = extract_dataset_tar(part, name, progress, 0.8, 0.99)
+    finally:
+        if part.exists():
+            part.unlink()
+    info = {'name': name, 'repo_id': repo_id, 'revision': revision, 'file': f['path'], 'bytes': done,
+            'sha256': sha.hexdigest(), 'url': 'https://huggingface.co/datasets/%s' % repo_id,
+            'downloaded_at': datetime.datetime.now().isoformat(timespec='seconds')}
+    with open(dest / 'hf_source.json', 'w', encoding='utf-8') as fh:
+        json.dump(info, fh, ensure_ascii=False, indent=1)
+    if progress:
+        progress(1.0, 'ダウンロードしました: %s' % name)
+    return info

@@ -730,6 +730,8 @@ async function loadDatasets() {
         <span>時間 <b>${(d.hours * 60).toFixed(1)}</b> 分</span>
         <span>車両データ <b>${esc(d.vehicle_quality.join(', '))}</b></span>
       </div>
+      ${d.hf_source ? `<div class="muted small">🤗 取り込み元: <a href="${esc(d.hf_source.url)}" target="_blank" rel="noopener">${esc(d.hf_source.repo_id)}</a>
+        ・ ${esc(d.hf_source.downloaded_at)}</div>` : ''}
       <div class="stats">${Object.entries(d.mode_frames || {}).map(([id, n]) => {
         const m = (d.modes || []).find((x) => x.id === +id);
         return `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(m ? m.name : 'ID ' + id)}</span> ${n} フレーム</span>`;
@@ -758,6 +760,46 @@ $('#dataset-list').addEventListener('click', async (e) => {
     try { await api('DELETE', `/api/datasets/${encodeURIComponent(del.dataset.del)}`); loadDatasets(); }
     catch (err) { toast(err.message, true); }
   }
+});
+// ------------------------------------------------------------ Hugging Face からダウンロード
+async function searchHubDatasets() {
+  const author = $('#hfdl-author').value.trim();
+  $('#hfdl-list').innerHTML = '<div class="muted small">探しています…</div>';
+  let list = [];
+  try { list = await api('GET', '/api/hf/hub_datasets?author=' + encodeURIComponent(author)); }
+  catch (e) { $('#hfdl-list').innerHTML = ''; toast(e.message, true); return; }
+  $('#hfdl-list').innerHTML = list.map((d) => `
+    <div class="hfdl-item"><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.repo_id)}</a>
+      ${d.private ? '<span class="badge tag">非公開</span>' : ''}
+      <span class="muted small">${esc((d.last_modified || '').replace('T', ' '))}</span><span class="spacer"></span>
+      <button class="small" data-hfdl-pick="${esc(d.repo_id)}">選ぶ</button></div>`).join('')
+    || '<div class="muted small">見つかりませんでした(JetFormer のタグが付いたデータセットだけを探します)</div>';
+}
+async function checkHubRepo() {
+  const repo = $('#hfdl-repo').value.trim();
+  if (!repo) { toast('リポジトリを入れてください', true); return null; }
+  $('#hfdl-files').textContent = '確認しています…';
+  let r;
+  try { r = await api('GET', '/api/hf/hub_files?repo_id=' + encodeURIComponent(repo)); }
+  catch (e) { $('#hfdl-files').textContent = ''; toast(e.message, true); return null; }
+  $('#hfdl-files').innerHTML = r.files.length ? r.files.map((f) => `<div>📦 <b>${esc(f.name)}</b> ${(f.size / 1e6).toFixed(1)} MB
+      ${f.exists ? '<span class="warn-text">— 同じ名前のデータセットがあります(削除してから取り込んでください)</span>' : ''}</div>`).join('')
+    : '<span class="warn-text">学習用の tar(nuscenes/*.tar)がありません。Dataset Viewer 用の parquet だけのリポジトリは取り込めません</span>';
+  return r.files;
+}
+$('#btn-hfdl-search').addEventListener('click', searchHubDatasets);
+$('#btn-hfdl-check').addEventListener('click', checkHubRepo);
+$('#hfdl-list').addEventListener('click', (e) => {
+  const pick = e.target.closest('[data-hfdl-pick]');
+  if (pick) { $('#hfdl-repo').value = pick.dataset.hfdlPick; checkHubRepo(); }
+});
+$('#btn-hfdl-start').addEventListener('click', async () => {
+  const files = await checkHubRepo();
+  if (!files || !files.length) return;
+  if (files[0].exists) { toast('同じ名前のデータセットがあります', true); return; }
+  if (!confirm(`${$('#hfdl-repo').value.trim()} の ${files[0].name}(${(files[0].size / 1e6).toFixed(1)} MB)をダウンロードして取り込みます。`)) return;
+  try { await api('POST', '/api/hf/download', { repo_id: $('#hfdl-repo').value.trim() }); toast('ダウンロードを始めました(処理状況に進み具合が出ます)'); loadJobs(); }
+  catch (err) { toast(err.message, true); }
 });
 
 

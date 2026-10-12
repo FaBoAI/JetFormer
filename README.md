@@ -41,6 +41,18 @@ python tools/evaluate.py --dataset <データセット> --run <学習結果>   #
 - 既定は**非公開**。非公開のデータセットは Hugging Face の PRO / Enterprise でないと Dataset Viewer が表示されない
 - 読み込み: `load_dataset("ユーザー名/jetformer-xxx", split="train")`
 
+## Hugging Face からのダウンロード(データセットタブ)
+
+データセットタブの「🤗 Hugging Face からダウンロード」で、Hub に上げた JetFormer のデータセットをこの Jetson に取り込みます。
+「探す」で `jetformer` タグの付いたデータセットを一覧し(ユーザー名・組織で絞り込める)、「確認」で学習用の tar と大きさを見て、
+「ダウンロード」で `data/datasets/<名前>/` に展開します。取り込んだデータセットは一覧(取り込み元つき)と学習タブに出ます。
+
+- 取り込むのは、アップロードで上げた学習用の nuScenes 形式 `nuscenes/<名前>.tar`。Dataset Viewer 用の Parquet だけのリポジトリは取り込めない
+- 公開リポジトリはログインなしで取れる。非公開は、上と同じ `hf auth login` が必要
+- Hub のハッシュ(SHA-256)で確かめてから、途中のフォルダに展開して置き換える(止まっても半端なデータセットは残らない)。
+  同じ名前のデータセットがあるときは取り込まない(先に削除する)
+- API: `GET /api/hf/hub_datasets?author=` ・ `GET /api/hf/hub_files?repo_id=` ・ `POST /api/hf/download {"repo_id": ...}`
+
 ## 学習(管理画面の「学習」タブ)
 
 1. 学習するデータセットを選ぶ(ジャンルごとのフレーム数が出る)
