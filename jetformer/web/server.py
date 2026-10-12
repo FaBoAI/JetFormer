@@ -14,11 +14,11 @@ import uuid
 
 import cv2
 import numpy as np
-from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, hf_export, model_export, modes, policies, session, sound, tof_format
+from .. import actuator, config, dataset, dataset_import, drive, hf_export, model_export, modes, policies, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
@@ -539,6 +539,50 @@ def api_dataset_create(body: dict = Body(...)):
                       lambda progress: dataset.build_dataset(name, scenes, val_ratio, min_duration, progress=progress,
                                                              val_scenes=body.get('val_scenes'), tags=body.get('tags')))
     return job
+
+
+@app.put('/api/datasets/import')
+async def api_dataset_import(request: Request, filename: str = Query(...), simulator: bool = True):
+    """PC から送られたデータセット(tar・tar.gz・tgz・zip。1ファイル = 1データセット)を受け取り、処理状況のジョブで取り込む。
+    本文はファイルそのもの(ブラウザの XMLHttpRequest、tools/upload_datasets.py、curl -T)。simulator=1 で simulator のタグ"""
+    fn = (filename or '').replace('\\', '/').split('/')[-1]
+    if not fn.lower().endswith(dataset_import.ARCHIVE_SUFFIXES):
+        raise HTTPException(400, '.tar・.tar.gz・.tgz・.zip を送ってください(1ファイル = 1データセット)')
+    work = config.DATA_DIR / 'uploads'
+    work.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(str(work)).free
+    limit = int(free * 0.45)                          # 送られたファイル + 展開したもので空きの 9 割まで
+    length = int(request.headers.get('content-length') or 0)
+    if length and length > limit:
+        raise HTTPException(507, '空き容量が足りません(ファイル %.1f GB、空き %.1f GB)' % (length / 1e9, free / 1e9))
+    part = work / ('%s-%s.part' % (uuid.uuid4().hex[:8], fn))
+    size = 0
+    try:
+        with open(part, 'wb') as f:
+            async for chunk in request.stream():
+                size += len(chunk)
+                if size > limit:
+                    raise HTTPException(507, '空き容量が足りません(%.1f GB まで)' % (limit / 1e9))
+                f.write(chunk)
+    except BaseException:
+        part.unlink(missing_ok=True)
+        raise
+    if size == 0:
+        part.unlink(missing_ok=True)
+        raise HTTPException(400, '空のファイルです')
+
+    def run(progress):
+        try:
+            return dataset_import.import_archive(part, simulator=simulator, source_name=fn, progress=progress)
+        finally:
+            part.unlink(missing_ok=True)
+    return jobs.submit('import', '取り込み: %s(%.1f MB)' % (fn, size / 1e6), run)
+
+
+@app.get('/api/tools/upload_datasets.py')
+def api_upload_tool():
+    """別の環境からまとめて送るためのスクリプト(標準ライブラリだけ)"""
+    return FileResponse(config.ROOT / 'tools' / 'upload_datasets.py', filename='upload_datasets.py', media_type='text/x-python')
 
 
 @app.post('/api/datasets/{name}/tags')

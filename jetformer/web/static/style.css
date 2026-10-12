@@ -188,3 +188,8 @@ input.snd-text { flex: 1; margin: 0 !important; }
 .policy-opts label { margin-top: 6px; }
 .tcp-panel { margin-top: 12px; padding: 8px 10px; border: 1px solid #bae6fd; border-radius: 8px; background: #f0f9ff; }
 .tcp-panel select { width: 100%; margin: 4px 0 6px 0; }
+
+.drop-zone { border: 2px dashed var(--line); border-radius: 10px; padding: 14px; text-align: center; font-size: 13px; margin: 6px 0; }
+.drop-zone.over { border-color: #7c3aed; background: #f5f3ff; }
+.file-btn { display: inline-block; margin-top: 4px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 6px; cursor: pointer; background: #fff; }
+.imp-list { margin: 6px 0; }

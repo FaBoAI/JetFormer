@@ -190,6 +190,18 @@
         <label>最短シーン長 [秒]<input id="ds-min" type="number" step="1" min="0" value="5"></label>
         <label class="inline"><input type="checkbox" id="ds-sim"> 🎮 シミュレーターのデータ(simulator のタグを付ける。シーンに simulator のタグがあれば自動で付く)</label>
         <div class="row buttons"><button id="btn-ds-create" class="primary">作成</button></div>
+        <div class="card-title" style="margin-top:16px">📥 PC から取り込む(シミュレーターなど)</div>
+        <p class="muted small">別の環境(シミュレーター・エミュレーターなど)で作ったデータセットを、まとめて取り込みます。
+          1ファイル = 1データセットの .tar・.tar.gz・.zip(エクスポートと同じ形。中に dataset_card.json・splits.json・aligned/・samples/)。
+          取り込む前に、学習に使える形かを確かめます。</p>
+        <div id="imp-drop" class="drop-zone">ここにファイルをドロップ(複数可)<br><span class="small muted">または</span>
+          <label class="file-btn">ファイルを選ぶ<input type="file" id="imp-files" multiple accept=".tar,.tgz,.gz,.zip" hidden></label></div>
+        <label class="inline"><input type="checkbox" id="imp-sim" checked> 🎮 シミュレーターのデータとして取り込む(simulator のタグ)</label>
+        <div id="imp-list" class="imp-list"></div>
+        <details class="small"><summary>シミュレーターの PC からコマンドで送る</summary>
+          <p class="muted">フォルダのまま送れます(その場で tar にします)。Python 3 の標準ライブラリだけで動きます。</p>
+          <p><a id="imp-tool-link" href="/api/tools/upload_datasets.py" download>upload_datasets.py をダウンロード</a></p>
+          <pre class="log" id="imp-cmd"></pre></details>
         <div class="card-title" style="margin-top:16px">🤗 Hugging Face からダウンロード</div>
         <p class="muted small">Hub に上げた JetFormer のデータセット(学習用の nuScenes 形式の tar 入り)を、この Jetson に取り込みます。
           取り込んだデータセットは一覧と学習タブに出ます。公開リポジトリはログインなしで取れます。</p>

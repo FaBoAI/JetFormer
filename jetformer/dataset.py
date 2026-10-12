@@ -623,6 +623,8 @@ def list_datasets():
                 c['hf'] = json.loads(hf.read_text(encoding='utf-8')) if hf.exists() else None
                 src = d / 'hf_source.json'                    # Hugging Face から取り込んだ記録
                 c['hf_source'] = json.loads(src.read_text(encoding='utf-8')) if src.exists() else None
+                imp = d / 'import_source.json'                # PC から取り込んだ記録
+                c['import_source'] = json.loads(imp.read_text(encoding='utf-8')) if imp.exists() else None
                 c['bytes'] = dataset_bytes(d)
                 c.setdefault('tags', [])
                 c.setdefault('source', SIM_TAG if SIM_TAG in c['tags'] else 'real')

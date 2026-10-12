@@ -48,6 +48,28 @@ tar の中身は「エクスポート」と同じ nuScenes 形式で、別の Je
 - 既定は**非公開**。非公開のデータセットは Hugging Face の PRO / Enterprise でないと Dataset Viewer が表示されない
 - 読み込み: `load_dataset("ユーザー名/jetformer-xxx", split="train")`
 
+## 別の環境(シミュレーターなど)で作ったデータセットを取り込む(データセットタブ)
+
+データセットタブの「📥 PC から取り込む」に、別の環境で作ったデータセットのファイルをドロップします(複数可、1つずつ順に送る)。
+1ファイル = 1データセットの `.tar`・`.tar.gz`・`.tgz`・`.zip` で、中身はエクスポートと同じ形です(先頭のフォルダ = データセット名、
+中に `dataset_card.json`・`splits.json`・`aligned/<シーン>.npz`・`samples/` の画像)。先頭のフォルダが無く `dataset_card.json` が
+いちばん上にあるものは、カードの `name` で取り込みます。Mac の Finder や tar が入れる `__MACOSX/`・`.DS_Store`・`._*` は無視します。
+
+- 既定では「🎮 シミュレーターのデータ」として取り込み、`simulator` のタグを付けます(外すと実機のデータとして)
+- 取り込む前に、学習が読むものがそろっているかを確かめます: `splits.json` の各シーンの `aligned/*.npz` に
+  `timestamps_us`・`cam_files`・`tof [N,42,54]`・`imu [N,10,6]`・`vehicle [N,4]`・`vehicle_valid`・`future_actions [N,10,2]`・
+  `future_valid`・`mode`(0 = 未設定は学習に使われない)があり、画像があること。足りなければ取り込みません(半端なデータセットは残らない)
+- 同じ名前のデータセットがあるときは取り込みません。取り込んだ記録は `import_source.json`
+- シミュレーターの PC からコマンドでまとめて送る(Python 3 の標準ライブラリだけ。フォルダはその場で tar にして送る):
+  `tools/upload_datasets.py`(管理画面の `/api/tools/upload_datasets.py` からも取れる)
+
+```bash
+python3 upload_datasets.py --host http://192.168.55.1:8080 sim_run_01/ sim_run_02/ more.tar
+```
+
+- API: `PUT /api/datasets/import?filename=<名前>.tar&simulator=1`(本文はファイルそのもの。`curl -T x.tar ...` でも送れる)・
+  `POST /api/datasets/<名前>/tags`
+
 ## Hugging Face からのダウンロード(データセットタブ)
 
 データセットタブの「🤗 Hugging Face からダウンロード」で、Hub に上げた JetFormer のデータセットをこの Jetson に取り込みます。

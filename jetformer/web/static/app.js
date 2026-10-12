@@ -749,6 +749,7 @@ function datasetCard(d) {
         <span>時間 <b>${typeof d.hours === 'number' ? (d.hours * 60).toFixed(1) : '-'}</b> 分</span>
         <span>車両データ <b>${esc((d.vehicle_quality || []).join(', ') || '-')}</b></span>
       </div>
+      ${d.import_source ? `<div class="muted small">📥 PC から取り込み: ${esc(d.import_source.file)} ・ ${esc(d.import_source.imported_at)}</div>` : ''}
       ${d.hf_source ? `<div class="muted small">🤗 取り込み元: <a href="${esc(d.hf_source.url)}" target="_blank" rel="noopener">${esc(d.hf_source.repo_id)}</a>
         ・ ${esc(d.hf_source.downloaded_at)}</div>` : ''}
       <div class="stats">${Object.entries(d.mode_frames || {}).map(([id, n]) => {
@@ -798,6 +799,55 @@ $('#dataset-list').addEventListener('click', async (e) => {
     catch (err) { toast(err.message, true); }
   }
 });
+// ------------------------------------------------------------ PC から取り込む(シミュレーターなど)
+$('#imp-cmd').textContent = `python3 upload_datasets.py --host ${location.origin} sim_run_01/ sim_run_02/ more.tar\n` +
+  `python3 upload_datasets.py --host ${location.origin} --real exported.tar     # 実機のデータとして`;
+state.importQueue = [];
+state.importing = false;
+function importRow(item) {
+  const pct = item.total ? Math.round(100 * item.sent / item.total) : 0;
+  return `<div class="job"><b>${esc(item.file.name)}</b> <span class="muted">${(item.file.size / 1e6).toFixed(1)} MB ・ ${esc(item.state)}</span>
+    <div class="progress blue"><div class="bar" style="width:${pct}%"></div></div>${item.error ? `<div class="err">${esc(item.error)}</div>` : ''}</div>`;
+}
+function renderImports() { $('#imp-list').innerHTML = state.importQueue.map(importRow).join(''); }
+function uploadOne(item) {
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    const q = `filename=${encodeURIComponent(item.file.name)}&simulator=${item.simulator ? 1 : 0}`;
+    xhr.open('PUT', '/api/datasets/import?' + q);
+    xhr.upload.onprogress = (e) => { item.sent = e.loaded; item.total = e.total; item.state = '送信中'; renderImports(); };
+    xhr.onload = () => {
+      if (xhr.status < 300) { item.state = '送信済み → 取り込み中(処理状況に進み具合)'; item.sent = item.total = 1; }
+      else { let m = xhr.responseText; try { m = JSON.parse(m).detail || m; } catch (e) { /* そのまま */ } item.state = '失敗'; item.error = m; }
+      renderImports(); loadJobs(); resolve();
+    };
+    xhr.onerror = () => { item.state = '失敗'; item.error = '送信できませんでした(接続が切れた)'; renderImports(); resolve(); };
+    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    xhr.send(item.file);
+  });
+}
+async function runImports() {
+  if (state.importing) return;
+  state.importing = true;
+  for (const item of state.importQueue) {
+    if (item.state !== '待ち') continue;
+    await uploadOne(item);
+  }
+  state.importing = false;
+}
+function queueImports(files) {
+  const ok = /\.(tar|tgz|tar\.gz|zip)$/i;
+  for (const f of files) {
+    if (!ok.test(f.name)) { toast(`${f.name}: .tar・.tar.gz・.zip を選んでください(フォルダは zip か tar にするか、コマンドで送る)`, true); continue; }
+    state.importQueue.push({ file: f, simulator: $('#imp-sim').checked, state: '待ち', sent: 0, total: f.size, error: '' });
+  }
+  renderImports(); runImports();
+}
+$('#imp-files').addEventListener('change', (e) => { queueImports([...e.target.files]); e.target.value = ''; });
+const dz = $('#imp-drop');
+['dragenter', 'dragover'].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.add('over'); }));
+['dragleave', 'drop'].forEach((t) => dz.addEventListener(t, (e) => { e.preventDefault(); dz.classList.remove('over'); }));
+dz.addEventListener('drop', (e) => queueImports([...e.dataTransfer.files]));
 // ------------------------------------------------------------ Hugging Face からダウンロード
 async function searchHubDatasets() {
   const author = $('#hfdl-author').value.trim();
