@@ -610,8 +610,19 @@ def iter_dataset_tar(name, chunk=4 << 20):
         yield rest
 
 
+def _raw_scene_names():
+    """収集したシーン(と展開したシーン)の名前の集合(フォルダの名前だけ見る)"""
+    out = set()
+    if config.RAW_DIR.exists():
+        for log_dir in config.RAW_DIR.iterdir():
+            if log_dir.is_dir():
+                out.update(x.name for x in log_dir.iterdir() if x.is_dir())
+    return out
+
+
 def list_datasets():
     out = []
+    raw_names = None
     if config.DATASET_DIR.exists():
         for d in sorted(config.DATASET_DIR.iterdir()):
             card = d / 'dataset_card.json'
@@ -626,6 +637,12 @@ def list_datasets():
                 imp = d / 'import_source.json'                # PC から取り込んだ記録
                 c['import_source'] = json.loads(imp.read_text(encoding='utf-8')) if imp.exists() else None
                 c['bytes'] = dataset_bytes(d)
+                if raw_names is None:
+                    raw_names = _raw_scene_names()
+                c['local_scenes'] = sum(1 for n in c.get('source_scenes') or [] if n in raw_names)
+                log = c.get('scene_log')
+                c['scene_count'] = len([x for x in (config.RAW_DIR / log).iterdir() if x.is_dir()]) \
+                    if log and (config.RAW_DIR / log).is_dir() else 0
                 c.setdefault('tags', [])
                 c.setdefault('source', SIM_TAG if SIM_TAG in c['tags'] else 'real')
                 out.append(c)

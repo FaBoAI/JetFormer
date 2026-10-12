@@ -19,6 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(config, 'DATA_DIR', tmp_path / 'data')
     monkeypatch.setattr(config, 'DATASET_DIR', tmp_path / 'data' / 'datasets')
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path / 'data' / 'raw')        # シーンへの展開も一時フォルダに
     config.DATASET_DIR.mkdir(parents=True)
     return tmp_path
 
@@ -87,6 +88,9 @@ def test_import_formats(dirs, kind):
     assert not [p for p in config.DATASET_DIR.iterdir() if p.name.startswith('.import-')]
     listed = {d['name']: d for d in dataset.list_datasets()}
     assert listed['sim_run_01']['source'] == 'simulator' and listed['sim_run_01']['import_source']['file'] == arch.name
+    assert info['scenes']['created'] == ['ds-sim_run_01-0001']                      # シーンタブにも出る
+    assert listed['sim_run_01']['scene_count'] == 1
+    assert dataset.load_scene_meta('ds-sim_run_01-0001')['tags'] == ['simulator']
 
 
 def test_import_as_real(dirs):

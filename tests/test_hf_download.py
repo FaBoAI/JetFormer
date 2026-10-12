@@ -14,6 +14,7 @@ from jetformer import config, dataset, hf_export
 def dirs(tmp_path, monkeypatch):
     monkeypatch.setattr(config, 'DATA_DIR', tmp_path / 'data')
     monkeypatch.setattr(config, 'DATASET_DIR', tmp_path / 'data' / 'datasets')
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path / 'data' / 'raw')        # シーンへの展開も一時フォルダに
     monkeypatch.setattr(config, 'EXPORT_DIR', tmp_path / 'data' / 'exports')
     config.DATASET_DIR.mkdir(parents=True)
     return tmp_path
@@ -63,6 +64,7 @@ def test_download_extracts_dataset_and_records_source(dirs, monkeypatch):
     assert not [p for p in config.DATASET_DIR.iterdir() if p.name.startswith('.download-')]
     listed = {d['name']: d for d in dataset.list_datasets()}
     assert listed['tiny_ds']['hf_source']['repo_id'] == 'FaBoAI/jetformer-tiny_ds'
+    assert 'scenes' in info                                  # シーンへの展開を試みた(この小さな形では npz が無いので注意だけ)
 
 
 def test_download_refuses_existing_dataset(dirs, monkeypatch):

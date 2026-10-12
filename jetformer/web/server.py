@@ -585,6 +585,15 @@ def api_upload_tool():
     return FileResponse(config.ROOT / 'tools' / 'upload_datasets.py', filename='upload_datasets.py', media_type='text/x-python')
 
 
+@app.post('/api/datasets/{name}/scenes')
+def api_dataset_scenes(name: str):
+    """データセットのシーンを、シーンタブで見られる形(data/raw/ds-<名前>/)に展開する(作り直しも同じ)"""
+    from .. import scene_import
+    if '..' in name or '/' in name or not (config.DATASET_DIR / name / 'dataset_card.json').exists():
+        raise HTTPException(404, 'データセットがありません')
+    return jobs.submit('scenes', 'シーンに展開: %s' % name, lambda progress: scene_import.dataset_to_scenes(name, progress))
+
+
 @app.post('/api/datasets/{name}/tags')
 def api_dataset_tags(name: str, body: dict = Body(...)):
     """データセットのタグを付け直す(例 {"tags": ["simulator"]})。シミュレーターのシーンが入っていれば simulator は外れない"""

@@ -159,8 +159,9 @@ def validate_dataset(root, sample=20):
     return errors[:20], warnings[:20], summary
 
 
-def import_archive(path, simulator=True, source_name=None, progress=None):
-    """アーカイブを data/datasets/<名前>/ に取り込む。戻り値 {'name', 'summary', 'warnings', 'tags', 'source'}"""
+def import_archive(path, simulator=True, source_name=None, progress=None, to_scenes=True):
+    """アーカイブを data/datasets/<名前>/ に取り込む。戻り値 {'name', 'summary', 'warnings', 'tags', 'source', 'scenes'}
+    to_scenes: シーンタブで見られるよう、シーンの形にも展開する(scene_import.dataset_to_scenes)"""
     path = Path(path)
     kind, members, handle = _members(path)
     try:
@@ -209,11 +210,26 @@ def import_archive(path, simulator=True, source_name=None, progress=None):
     info = {'name': name, 'file': source_name or path.name, 'bytes': path.stat().st_size, 'archive': kind,
             'simulator': bool(simulator), 'imported_at': datetime.datetime.now().isoformat(timespec='seconds'),
             'summary': summary, 'warnings': warnings}
+    scenes = expand_scenes(name, progress, info['warnings']) if to_scenes else None
+    info['scenes'] = scenes
     with open(dest / 'import_source.json', 'w', encoding='utf-8') as f:
         json.dump(info, f, ensure_ascii=False, indent=1)
     if progress:
-        progress(1.0, '取り込みました: %s(%d シーン・学習に使えるフレーム %d)' % (name, summary['scenes'], summary['usable_frames']))
+        progress(1.0, '取り込みました: %s(%d シーン・学習に使えるフレーム %d%s)' % (
+            name, summary['scenes'], summary['usable_frames'],
+            '・シーンタブに %d シーン' % len(scenes['created']) if scenes and scenes.get('created') else ''))
     return dict(info, tags=card['tags'], source=card['source'])
+
+
+def expand_scenes(name, progress=None, warnings=None):
+    """シーンの形に展開する。失敗しても取り込みは取り消さず、注意に書く"""
+    from . import scene_import
+    try:
+        return scene_import.dataset_to_scenes(name, progress, 0.9, 0.99)
+    except Exception as e:                                              # noqa: BLE001
+        if warnings is not None:
+            warnings.append('シーンタブへの展開に失敗しました: %s' % e)
+        return None
 
 
 def dataset_name_ok(name):

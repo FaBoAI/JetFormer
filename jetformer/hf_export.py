@@ -436,6 +436,10 @@ def download(repo_id, revision=None, filename=None, progress=None):
     info = {'name': name, 'repo_id': repo_id, 'revision': revision, 'file': f['path'], 'bytes': done,
             'sha256': sha.hexdigest(), 'url': 'https://huggingface.co/datasets/%s' % repo_id,
             'downloaded_at': datetime.datetime.now().isoformat(timespec='seconds')}
+    from .dataset_import import expand_scenes
+    warnings = []
+    info['scenes'] = expand_scenes(name, progress, warnings)        # シーンタブで見られるように(元のシーンがあれば作らない)
+    info['warnings'] = warnings
     with open(dest / 'hf_source.json', 'w', encoding='utf-8') as fh:
         json.dump(info, fh, ensure_ascii=False, indent=1)
     if progress:

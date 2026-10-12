@@ -750,6 +750,12 @@ function datasetCard(d) {
         <span>車両データ <b>${esc((d.vehicle_quality || []).join(', ') || '-')}</b></span>
       </div>
       ${d.import_source ? `<div class="muted small">📥 PC から取り込み: ${esc(d.import_source.file)} ・ ${esc(d.import_source.imported_at)}</div>` : ''}
+      <div class="small">${d.scene_count ? `🎞 シーンタブに <b>${d.scene_count}</b> シーン(${esc(d.scene_log)})
+          <button class="small" data-ds-view="${esc(d.scene_log)}">シーンタブで見る</button>
+          <button class="small" data-ds-expand="${esc(d.name)}" title="データセットから作り直す">作り直す</button>`
+        : d.local_scenes ? `<span class="muted">🎞 元のシーン ${d.local_scenes} / ${v(d.scenes)} がシーンタブにあります</span>`
+        : `<span class="muted">シーンタブには出ていません</span> <button class="small" data-ds-expand="${esc(d.name)}"
+             title="データセットのシーンを、収集したシーンと同じ形にして、シーンタブで1フレームずつ見られるようにする">🎞 シーンに展開</button>`}</div>
       ${d.hf_source ? `<div class="muted small">🤗 取り込み元: <a href="${esc(d.hf_source.url)}" target="_blank" rel="noopener">${esc(d.hf_source.repo_id)}</a>
         ・ ${esc(d.hf_source.downloaded_at)}</div>` : ''}
       <div class="stats">${Object.entries(d.mode_frames || {}).map(([id, n]) => {
@@ -769,6 +775,13 @@ function datasetCard(d) {
     </div>`;
 }
 $('#dataset-list').addEventListener('click', async (e) => {
+  const vw = e.target.closest('[data-ds-view]'), ex = e.target.closest('[data-ds-expand]');
+  if (vw) { showTab('scenes'); $('#scene-filter').value = vw.dataset.dsView; renderScenes(); return; }
+  if (ex) {
+    try { await api('POST', `/api/datasets/${encodeURIComponent(ex.dataset.dsExpand)}/scenes`); toast('シーンへの展開を始めました(処理状況に進み具合)'); loadJobs(); }
+    catch (err) { toast(err.message, true); }
+    return;
+  }
   const tg = e.target.closest('[data-ds-tags]'), sm = e.target.closest('[data-ds-sim]');
   if (tg || sm) {
     const name = (tg || sm).dataset.dsTags || (tg || sm).dataset.dsSim;
