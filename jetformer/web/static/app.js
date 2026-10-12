@@ -721,14 +721,22 @@ async function loadDatasets() {
   let list = [];
   try { list = await api('GET', '/api/datasets'); } catch (e) { toast(e.message, true); return; }
   if (state.hf === null) await loadHf(false);
-  $('#dataset-list').innerHTML = list.slice().reverse().map((d) => `
+  // 1つのデータセットの情報が欠けていても、一覧全体は表示する(検証用に作った特殊なデータセットなど)
+  const card = (d) => { try { return datasetCard(d); } catch (e) {
+    return `<div class="ds"><h3>${esc(d.name)}</h3><div class="err small">表示できません: ${esc(e.message)}</div>
+      <div class="row"><span class="spacer"></span><button class="small danger" data-del="${esc(d.name)}">削除</button></div></div>`; } };
+  $('#dataset-list').innerHTML = list.slice().reverse().map(card).join('') || '<div class="muted">まだありません</div>';
+}
+function datasetCard(d) {
+  const v = (x) => (x === undefined || x === null ? '-' : x);
+  return `
     <div class="ds">
-      <h3>${esc(d.name)} <span class="muted small">${esc(d.version)} ・ ${esc(d.created_at)}</span></h3>
+      <h3>${esc(d.name)} <span class="muted small">${esc(v(d.version))} ・ ${esc(v(d.created_at))}</span></h3>
       <div class="stats">
-        <span>シーン <b>${d.scenes}</b> (学習 ${d.train_scenes} / 検証 ${d.val_scenes})</span>
-        <span>フレーム <b>${d.frames}</b></span><span>ToF <b>${d.tof_frames}</b></span>
-        <span>時間 <b>${(d.hours * 60).toFixed(1)}</b> 分</span>
-        <span>車両データ <b>${esc(d.vehicle_quality.join(', '))}</b></span>
+        <span>シーン <b>${v(d.scenes)}</b> (学習 ${v(d.train_scenes)} / 検証 ${v(d.val_scenes)})</span>
+        <span>フレーム <b>${v(d.frames)}</b></span><span>ToF <b>${v(d.tof_frames)}</b></span>
+        <span>時間 <b>${typeof d.hours === 'number' ? (d.hours * 60).toFixed(1) : '-'}</b> 分</span>
+        <span>車両データ <b>${esc((d.vehicle_quality || []).join(', ') || '-')}</b></span>
       </div>
       ${d.hf_source ? `<div class="muted small">🤗 取り込み元: <a href="${esc(d.hf_source.url)}" target="_blank" rel="noopener">${esc(d.hf_source.repo_id)}</a>
         ・ ${esc(d.hf_source.downloaded_at)}</div>` : ''}
@@ -746,7 +754,7 @@ async function loadDatasets() {
         <button class="small danger" data-del="${esc(d.name)}">削除</button>
       </div>
       ${hfRow(d)}
-    </div>`).join('') || '<div class="muted">まだありません</div>';
+    </div>`;
 }
 $('#dataset-list').addEventListener('click', async (e) => {
   const open = e.target.closest('[data-hf-open]'), up = e.target.closest('[data-hf-upload]');
