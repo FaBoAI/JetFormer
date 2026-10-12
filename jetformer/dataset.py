@@ -496,6 +496,63 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     return card
 
 
+_size_cache = {}
+
+
+def dataset_bytes(root):
+    """データセットのフォルダの合計の大きさ(バイト)。dataset_card.json が変わらない限り覚えておく"""
+    key = str(root)
+    stamp = (root / 'dataset_card.json').stat().st_mtime
+    hit = _size_cache.get(key)
+    if hit and hit[0] == stamp:
+        return hit[1]
+    total, stack = 0, [str(root)]
+    while stack:
+        with os.scandir(stack.pop()) as it:
+            for e in it:
+                if e.is_dir(follow_symlinks=False):
+                    stack.append(e.path)
+                elif e.is_file(follow_symlinks=False):
+                    total += e.stat(follow_symlinks=False).st_size
+    _size_cache[key] = (stamp, total)
+    return total
+
+
+class _Chunks(object):
+    """tarfile の書き出し先。書かれたバイトを溜めておき、iter_dataset_tar が少しずつ取り出す"""
+
+    def __init__(self):
+        self.parts, self.size = [], 0
+
+    def write(self, b):
+        self.parts.append(bytes(b))
+        self.size += len(b)
+        return len(b)
+
+    def take(self):
+        out = b''.join(self.parts)
+        self.parts, self.size = [], 0
+        return out
+
+
+def iter_dataset_tar(name, chunk=4 << 20):
+    """データセットを tar(export_dataset と同じ形・無圧縮)にしながら、少しずつバイト列を返す(ダウンロード用)。
+    ファイルに書き出さないので、Jetson の空き容量を使わない"""
+    root = config.DATASET_DIR / name
+    if '..' in name or '/' in name or not (root / 'dataset_card.json').exists():
+        raise KeyError(name)
+    files = sorted(f for f in root.rglob('*') if f.is_file() and not f.is_symlink())
+    buf = _Chunks()
+    with tarfile.open(fileobj=buf, mode='w|', format=tarfile.PAX_FORMAT) as tar:
+        for f in files:
+            tar.add(f, arcname=str(f.relative_to(config.DATASET_DIR)), recursive=False)
+            if buf.size >= chunk:
+                yield buf.take()
+    rest = buf.take()
+    if rest:
+        yield rest
+
+
 def list_datasets():
     out = []
     if config.DATASET_DIR.exists():
@@ -509,6 +566,7 @@ def list_datasets():
                 c['hf'] = json.loads(hf.read_text(encoding='utf-8')) if hf.exists() else None
                 src = d / 'hf_source.json'                    # Hugging Face から取り込んだ記録
                 c['hf_source'] = json.loads(src.read_text(encoding='utf-8')) if src.exists() else None
+                c['bytes'] = dataset_bytes(d)
                 out.append(c)
     return out
 

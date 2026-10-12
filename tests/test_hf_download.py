@@ -142,3 +142,31 @@ def test_repo_id_check(repo):
 def test_name_check(name):
     with pytest.raises(ValueError):
         hf_export._check_name(name)
+
+
+def test_iter_dataset_tar_round_trip(dirs):
+    """その場で作る tar(ブラウザへのダウンロード)が、export_dataset の tar と同じ中身で、取り込みにも使えること"""
+    root = make_dataset('tiny_ds')
+    (root / 'samples' / 'CAM_FRONT').mkdir(parents=True)
+    long_name = 'x' * 150 + '.jpg'                                   # 100 文字を超える名前(PAX)
+    (root / 'samples' / 'CAM_FRONT' / long_name).write_bytes(bytes(range(256)) * 50)
+    stream = b''.join(dataset.iter_dataset_tar('tiny_ds', chunk=1024))
+    exported = dataset.export_dataset('tiny_ds').read_bytes()
+
+    def contents(data):
+        with tarfile.open(fileobj=io.BytesIO(data)) as tar:
+            return {m.name: tar.extractfile(m).read() for m in tar.getmembers() if m.isfile()}
+    assert contents(stream) == contents(exported)
+    assert 'tiny_ds/samples/CAM_FRONT/' + long_name in contents(stream)
+    assert dataset.dataset_bytes(root) == sum(len(v) for v in contents(stream).values())
+    path = dirs / 'stream.tar'
+    path.write_bytes(stream)
+    dataset.delete_dataset('tiny_ds')
+    hf_export.extract_dataset_tar(path, 'tiny_ds')                   # PC から戻すときも同じ形で展開できる
+    assert (config.DATASET_DIR / 'tiny_ds' / 'samples' / 'CAM_FRONT' / long_name).exists()
+
+
+@pytest.mark.parametrize('bad', ['../etc', 'a/b', 'missing'])
+def test_iter_dataset_tar_rejects_bad_names(dirs, bad):
+    with pytest.raises(KeyError):
+        next(dataset.iter_dataset_tar(bad))

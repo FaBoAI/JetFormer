@@ -547,6 +547,16 @@ def api_dataset_export(name: str):
     return job
 
 
+@app.get('/api/datasets/{name}/download')
+def api_dataset_download(name: str):
+    """データセットをそのままブラウザにダウンロードする(その場で tar にしながら送る。Jetson にファイルは作らない)"""
+    if '..' in name or '/' in name or not (config.DATASET_DIR / name / 'dataset_card.json').exists():
+        raise HTTPException(404, 'データセットがありません')
+    return StreamingResponse(dataset.iter_dataset_tar(name), media_type='application/x-tar',
+                             headers={'Content-Disposition': 'attachment; filename="%s.tar"' % name,
+                                      'X-Dataset-Bytes': str(dataset.dataset_bytes(config.DATASET_DIR / name))})
+
+
 @app.delete('/api/datasets/{name}')
 def api_dataset_delete(name: str):
     try:

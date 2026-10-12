@@ -737,9 +737,11 @@ async function loadDatasets() {
         return `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(m ? m.name : 'ID ' + id)}</span> ${n} フレーム</span>`;
       }).join('')}</div>
       <div class="row">
-        ${d.export ? `<a href="/api/exports/${encodeURIComponent(d.export.file)}" download><button class="primary small">⬇ ダウンロード (${(d.export.bytes / 1e6).toFixed(1)} MB)</button></a>
+        <a href="/api/datasets/${encodeURIComponent(d.name)}/download" download="${esc(d.name)}.tar"
+           title="その場で tar にしながら送ります(Hugging Face も、Jetson の空き容量も使いません)"><button class="primary small">⬇ PCにダウンロード(tar・約 ${((d.bytes || 0) / 1e6).toFixed(0)} MB)</button></a>
+        ${d.export ? `<a href="/api/exports/${encodeURIComponent(d.export.file)}" download><button class="small">保存済みの tar (${(d.export.bytes / 1e6).toFixed(1)} MB)</button></a>
                       <span class="muted small">data/exports/${esc(d.export.file)}(.sha256付き)</span>`
-                   : `<button class="small" data-export="${esc(d.name)}">エクスポート(tar作成)</button>`}
+                   : `<button class="small" data-export="${esc(d.name)}" title="data/exports/ に tar と sha256 を作ります">エクスポート(tar作成)</button>`}
         <span class="spacer"></span>
         <button class="small danger" data-del="${esc(d.name)}">削除</button>
       </div>
