@@ -114,12 +114,24 @@ def test_import_warns_without_mode(dirs):
     assert any('mode' in w for w in warnings)
 
 
-def test_import_rejects_name_conflict(dirs):
+def test_same_file_again_is_already_imported_and_expands_scenes(dirs):
+    """同じファイルをもう一度送ったら、エラーにせず「取り込み済み」。シーンタブに出ていなければ展開する"""
     src = make_sim_dataset(dirs / 'src')
     arch = tar_of(src, dirs / 'a.tar')
-    dataset_import.import_archive(arch)
-    with pytest.raises(FileExistsError):
-        dataset_import.import_archive(arch)
+    first = dataset_import.import_archive(arch, to_scenes=False)              # シーンへの展開が無かった頃の取り込み
+    assert first['scenes'] is None and not dataset.list_scenes()
+    again = dataset_import.import_archive(arch)
+    assert again['already_imported'] and again['scenes']['created'] == ['ds-sim_run_01-0001']
+    third = dataset_import.import_archive(arch)                               # もう展開済み
+    assert third['already_imported'] and third['scenes'] is None and len(dataset.list_scenes()) == 1
+
+
+def test_different_file_with_same_name_is_refused(dirs):
+    src = make_sim_dataset(dirs / 'src')
+    dataset_import.import_archive(tar_of(src, dirs / 'a.tar'))
+    (src / 'extra.txt').write_text('changed', encoding='utf-8')
+    with pytest.raises(FileExistsError, match='a.tar から取り込み済み'):
+        dataset_import.import_archive(tar_of(src, dirs / 'b.tar'))
 
 
 def test_import_rejects_two_datasets_in_one_file(dirs):

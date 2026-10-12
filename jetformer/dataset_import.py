@@ -172,7 +172,7 @@ def import_archive(path, simulator=True, source_name=None, progress=None, to_sce
         name = dataset_name_ok(top)
         dest = config.DATASET_DIR / name
         if dest.exists():
-            raise FileExistsError('同じ名前のデータセット「%s」があります。削除してから取り込んでください' % name)
+            return already_imported(name, source_name or path.name, path.stat().st_size, progress, to_scenes)
         stage = config.DATASET_DIR / ('.import-%s' % uuid.uuid4().hex[:8])
         root = stage / name
         root.mkdir(parents=True)
@@ -219,6 +219,31 @@ def import_archive(path, simulator=True, source_name=None, progress=None, to_sce
             name, summary['scenes'], summary['usable_frames'],
             '・シーンタブに %d シーン' % len(scenes['created']) if scenes and scenes.get('created') else ''))
     return dict(info, tags=card['tags'], source=card['source'])
+
+
+def already_imported(name, file_name, size, progress=None, to_scenes=True):
+    """同じ名前のデータセットがあるとき。同じファイル(名前と大きさ)から取り込んだものなら「取り込み済み」として成功にし、
+    シーンタブにまだ出ていなければ展開する。違うものなら、どれが入っているかを書いてエラーにする"""
+    dest = config.DATASET_DIR / name
+    try:
+        prev = json.loads((dest / 'import_source.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        prev = None
+    if not prev or prev.get('file') != file_name or int(prev.get('bytes', -1)) != int(size):
+        how = ('(%s に %s から取り込み済み)' % (prev.get('imported_at'), prev.get('file'))) if prev else ''
+        raise FileExistsError('同じ名前のデータセット「%s」があります%s。中身を入れ替えるときは、データセットタブで削除してから'
+                              '取り込んでください' % (name, how))
+    card = json.loads((dest / 'dataset_card.json').read_text(encoding='utf-8'))
+    log = card.get('scene_log')
+    scenes = None
+    warnings = list(prev.get('warnings') or [])
+    if to_scenes and not (log and (config.RAW_DIR / log).is_dir()):
+        scenes = expand_scenes(name, progress, warnings)
+    if progress:
+        progress(1.0, 'すでに取り込み済みです(%s)%s' % (prev.get('imported_at'),
+                      '。シーンタブに %d シーンを展開しました' % len(scenes['created']) if scenes and scenes.get('created') else ''))
+    return dict(prev, already_imported=True, scenes=scenes, warnings=warnings, tags=card.get('tags', []),
+                source=card.get('source', 'real'))
 
 
 def expand_scenes(name, progress=None, warnings=None):

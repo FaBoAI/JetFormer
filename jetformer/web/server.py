@@ -6,6 +6,8 @@
 import atexit
 import collections
 import contextlib
+import json
+import os
 import queue
 import shutil
 import threading
@@ -131,9 +133,32 @@ history = LiveHistory()
 
 # ---------------------------------------------------------------- バックグラウンドジョブ
 class Jobs(object):
+    """データセットの作成・取り込みなどの重い処理を、別のスレッドで動かして進み具合を見せる。
+    終わったジョブは HISTORY_FILE に残し、管理画面を再起動しても処理状況に出す(成功した取り込みが見えなくならないように)"""
+    HISTORY_FILE = config.DATA_DIR / 'jobs_history.json'
+
     def __init__(self):
         self.jobs = collections.OrderedDict()
         self.lock = threading.Lock()
+        try:
+            with open(self.HISTORY_FILE, encoding='utf-8') as f:
+                for j in json.load(f)[-30:]:
+                    if j.get('state') == 'running':           # 再起動で止まったもの
+                        j.update(state='error', error='管理画面の再起動で止まりました', finished=j.get('finished') or time.time())
+                    self.jobs[j['id']] = j
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
+
+    def _save(self):
+        try:
+            with self.lock:
+                done = [j for j in self.jobs.values() if j.get('state') != 'running']
+            tmp = str(self.HISTORY_FILE) + '.tmp'
+            with open(tmp, 'w', encoding='utf-8') as f:
+                json.dump(done[-30:], f, ensure_ascii=False, default=str)
+            os.replace(tmp, self.HISTORY_FILE)
+        except OSError:
+            pass
 
     def submit(self, kind, title, fn):
         job_id = uuid.uuid4().hex[:8]
@@ -157,6 +182,7 @@ class Jobs(object):
                 job['state'] = 'error'
                 job['error'] = '%s: %s' % (type(e).__name__, e)
             job['finished'] = time.time()
+            self._save()
 
         threading.Thread(target=run, name='job-' + job_id, daemon=True).start()
         return job
