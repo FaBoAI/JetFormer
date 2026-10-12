@@ -122,6 +122,24 @@ def build_parquet(name, out_dir, progress=None):
     return counts
 
 
+BASE_TAGS = ['jetformer', 'rc-car', 'autonomous-driving', 'time-of-flight', 'imitation-learning']
+SOURCE_LABELS = {'real': '実機', 'simulator': 'シミュレーター', 'mixed': '実機 + シミュレーター'}
+
+
+def hub_tags(card):
+    """データセットカードの tags。データセットのタグ(英数字にできるもの)と、シミュレーターのデータなら simulator・synthetic を足す"""
+    import re
+    tags = list(BASE_TAGS)
+    extra = list(card.get('tags') or [])
+    if card.get('source') in ('simulator', 'mixed'):
+        extra += ['simulator', 'synthetic']
+    for t in extra:
+        t = re.sub(r'[^a-z0-9-]+', '-', str(t).strip().lower()).strip('-')
+        if t and t not in tags:
+            tags.append(t)
+    return tags
+
+
 def make_card(name, repo_id, counts, include_nuscenes, license_id='other'):
     """README.md(データセットカード)"""
     root = config.DATASET_DIR / name
@@ -130,9 +148,9 @@ def make_card(name, repo_id, counts, include_nuscenes, license_id='other'):
     scenes = _scene_table(root, name)
     modes = card.get('modes', [])
     mode_frames = card.get('mode_frames', {})
-    yaml = ['---', 'license: %s' % license_id, 'task_categories:', '- robotics',
-            'tags:', '- jetformer', '- rc-car', '- autonomous-driving', '- time-of-flight', '- imitation-learning',
-            'pretty_name: JetFormer %s' % name, 'configs:', '- config_name: default', '  data_files:']
+    yaml = ['---', 'license: %s' % license_id, 'task_categories:', '- robotics', 'tags:']
+    yaml += ['- %s' % t for t in hub_tags(card)]
+    yaml += ['pretty_name: JetFormer %s' % name, 'configs:', '- config_name: default', '  data_files:']
     for _, hub_name in SPLITS:
         if hub_name in counts:
             yaml += ['  - split: %s' % hub_name, '    path: data/%s-*.parquet' % hub_name]
@@ -154,6 +172,7 @@ RCカー(Jetson Orin Nano)で収集した、カメラ・ToF(VL53L9)・IMU・操�
 収集は20秒前後の「走行(シーン)」単位で、走行ジャンル(駐車・高速走行など)が付いています。
 
 - 作成: %(created)s / シーン数 %(scenes)d / フレーム数 %(frames)d(学習 %(train)s・検証 %(val)s)
+- データの種類: %(source)s
 - JetFormer の管理画面で収集・作成
 
 ## 読み込み
@@ -195,7 +214,8 @@ row["steering_us"]    # その時刻のステアリング [µs]
 %(scene_rows)s
 %(nus)s''' % {'name': name, 'created': card.get('created_at', ''), 'scenes': card.get('scenes', 0), 'frames': card.get('frames', 0),
               'train': counts.get('train', 0), 'val': counts.get('validation', 0), 'repo': repo_id,
-              'mode_rows': mode_rows, 'scene_rows': scene_rows, 'nus': nus}
+              'mode_rows': mode_rows, 'scene_rows': scene_rows, 'nus': nus,
+              'source': SOURCE_LABELS.get(card.get('source', 'real'), card.get('source', 'real'))}
 
 
 def stage(name, repo_id, include_nuscenes=True, license_id='other', progress=None):
@@ -275,15 +295,25 @@ def _check_repo_id(repo_id):
     return repo_id
 
 
-def list_hub_datasets(author=None, search=None, limit=50, only_jetformer=True):
-    """Hub のデータセットの一覧(新しい順)。only_jetformer なら JetFormer のタグが付いたものだけ"""
+def list_hub_datasets(author=None, search=None, limit=50, only_jetformer=True, kind='all'):
+    """Hub のデータセットの一覧(新しい順)。only_jetformer なら JetFormer のタグが付いたものだけ。
+    kind: 'all'・'real'(simulator のタグが無いもの)・'simulator'(simulator のタグがあるもの)"""
     from huggingface_hub import HfApi
+    filt = [HUB_TAG] if only_jetformer else []
+    if kind == 'simulator':
+        filt.append('simulator')
     out = []
     for d in HfApi().list_datasets(author=(author or '').strip() or None, search=(search or '').strip() or None,
-                                   filter=HUB_TAG if only_jetformer else None, sort='last_modified', limit=limit):
+                                   filter=filt or None, sort='last_modified', limit=limit,
+                                   expand=['tags', 'lastModified', 'private', 'downloads']):
+        tags = list(getattr(d, 'tags', None) or [])
+        sim = 'simulator' in tags
+        if kind == 'real' and sim:
+            continue
         out.append({'repo_id': d.id, 'private': bool(getattr(d, 'private', False)),
                     'last_modified': d.last_modified.isoformat(timespec='seconds') if getattr(d, 'last_modified', None) else None,
-                    'downloads': getattr(d, 'downloads', None), 'url': 'https://huggingface.co/datasets/%s' % d.id})
+                    'downloads': getattr(d, 'downloads', None), 'url': 'https://huggingface.co/datasets/%s' % d.id,
+                    'simulator': sim, 'tags': [t for t in tags if ':' not in t]})
     return out
 
 

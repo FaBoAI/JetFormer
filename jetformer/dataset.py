@@ -87,6 +87,59 @@ def list_scenes():
     return scenes
 
 
+# シミュレーター(エミュレーター)で作ったデータを表すタグ。シーンのタグにこのどれかがあればシミュレーターのシーンとみなす
+SIM_TAG = 'simulator'
+SIM_TAG_ALIASES = {'simulator', 'sim', 'simulation', 'emulator', 'シミュレーター', 'シミュレータ', 'エミュレーター', 'エミュレータ'}
+
+
+def normalize_tags(tags):
+    """データセットのタグを整える(空白を除き、重複をなくし、シミュレーターの別名は 'simulator' にまとめる)"""
+    out = []
+    for t in tags or []:
+        t = str(t).strip()
+        if not t:
+            continue
+        if t.lower() in SIM_TAG_ALIASES or t in SIM_TAG_ALIASES:
+            t = SIM_TAG
+        if t not in out:
+            out.append(t)
+    return out
+
+
+def is_sim_scene(meta):
+    """シーンがシミュレーターのデータか(scene.json の source か、シーンのタグで判断)"""
+    if str(meta.get('source', '')).lower() == SIM_TAG:
+        return True
+    return SIM_TAG in normalize_tags(meta.get('tags'))
+
+
+def data_source(n_scenes, n_sim, tags=()):
+    """データの種類: 'real'(実機)・'simulator'・'mixed'(実機+シミュレーター)"""
+    if n_sim and n_sim >= n_scenes:
+        return SIM_TAG
+    if n_sim:
+        return 'mixed'
+    return SIM_TAG if SIM_TAG in normalize_tags(tags) else 'real'
+
+
+def set_dataset_tags(name, tags):
+    """データセットのタグを付け直す(dataset_card.json)。データの種類(source)もタグに合わせる"""
+    root = config.DATASET_DIR / name
+    if '..' in name or '/' in name or not (root / 'dataset_card.json').exists():
+        raise KeyError(name)
+    card = json.loads((root / 'dataset_card.json').read_text(encoding='utf-8'))
+    card['tags'] = normalize_tags(tags)
+    n_sim = int(card.get('sim_scenes', 0) or 0)
+    if SIM_TAG in card['tags']:
+        card['source'] = data_source(card.get('scenes', 0), n_sim, card['tags']) if n_sim else SIM_TAG
+    else:
+        card['source'] = 'real' if not n_sim else data_source(card.get('scenes', 0), n_sim)
+        if n_sim:                                  # シミュレーターのシーンが入っているなら、タグは外せない
+            card['tags'] = normalize_tags(card['tags'] + [SIM_TAG])
+    _write_json(root / 'dataset_card.json', card, indent=1)
+    return card
+
+
 def scene_path(name):
     log = name.rsplit('-', 1)[0]
     p = config.RAW_DIR / log / name
@@ -288,9 +341,10 @@ def _aligned_arrays(cam_t, tof, imu, veh):
     return out
 
 
-def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, progress=None, val_scenes=None):
+def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, progress=None, val_scenes=None, tags=None):
     """選んだシーンからnuScenes形式のデータセットを作る。dataset_card(dict)を返す。
-    val_scenes を渡すと、そのシーンを検証用にする(別のデータセットと同じ検証シーンで比べたいとき)"""
+    val_scenes を渡すと、そのシーンを検証用にする(別のデータセットと同じ検証シーンで比べたいとき)
+    tags: データセットのタグ(例 ['simulator'])。シーンのタグに simulator(別名を含む)があれば自動で付く"""
     if not name or any(c in name for c in '/\\.') or ' ' in name:
         raise ValueError('データセット名に使えない文字が含まれています')
     root = config.DATASET_DIR / name
@@ -492,6 +546,9 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
         'source_scenes': names,
         'skipped_legacy_scenes': skipped_legacy,
     }
+    n_sim = sum(1 for m in metas if is_sim_scene(m))
+    card_tags = normalize_tags(list(tags or []) + ([SIM_TAG] if n_sim else []))
+    card.update(tags=card_tags, sim_scenes=n_sim, source=data_source(len(metas), n_sim, card_tags))
     _write_json(root / 'dataset_card.json', card, indent=1)
     return card
 
@@ -567,6 +624,8 @@ def list_datasets():
                 src = d / 'hf_source.json'                    # Hugging Face から取り込んだ記録
                 c['hf_source'] = json.loads(src.read_text(encoding='utf-8')) if src.exists() else None
                 c['bytes'] = dataset_bytes(d)
+                c.setdefault('tags', [])
+                c.setdefault('source', SIM_TAG if SIM_TAG in c['tags'] else 'real')
                 out.append(c)
     return out
 

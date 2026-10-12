@@ -537,8 +537,17 @@ def api_dataset_create(body: dict = Body(...)):
     min_duration = float(body.get('min_duration', 5.0))
     job = jobs.submit('build', 'データセット作成: %s' % name,
                       lambda progress: dataset.build_dataset(name, scenes, val_ratio, min_duration, progress=progress,
-                                                             val_scenes=body.get('val_scenes')))
+                                                             val_scenes=body.get('val_scenes'), tags=body.get('tags')))
     return job
+
+
+@app.post('/api/datasets/{name}/tags')
+def api_dataset_tags(name: str, body: dict = Body(...)):
+    """データセットのタグを付け直す(例 {"tags": ["simulator"]})。シミュレーターのシーンが入っていれば simulator は外れない"""
+    try:
+        return dataset.set_dataset_tags(name, body.get('tags') or [])
+    except KeyError:
+        raise HTTPException(404, 'データセットがありません')
 
 
 @app.post('/api/datasets/{name}/export')
@@ -617,10 +626,13 @@ def _hub_error(e):
 
 
 @app.get('/api/hf/hub_datasets')
-def api_hf_hub_datasets(author: str = '', search: str = '', all_tags: bool = False):
-    """Hub の JetFormer のデータセットを探す(author = ユーザー名または組織、search = 名前の一部)"""
+def api_hf_hub_datasets(author: str = '', search: str = '', all_tags: bool = False, kind: str = 'all'):
+    """Hub の JetFormer のデータセットを探す(author = ユーザー名または組織、search = 名前の一部、
+    kind = all・real(実機)・simulator(シミュレーター))"""
+    if kind not in ('all', 'real', 'simulator'):
+        raise HTTPException(400, 'kind は all・real・simulator のどれか')
     try:
-        return hf_export.list_hub_datasets(author=author, search=search, only_jetformer=not all_tags)
+        return hf_export.list_hub_datasets(author=author, search=search, only_jetformer=not all_tags, kind=kind)
     except Exception as e:
         raise _hub_error(e)
 

@@ -459,7 +459,7 @@ function sceneBadges(s) {
   if (s.drive) b.push(`<span class="badge ai">AIモデル${s.drive.dry_run ? '(出力なし)' : ''}</span>`);
   if (s.stats && s.stats.ai_driving_ratio > 0) b.push(`<span class="badge warn">AI走行 ${Math.round(s.stats.ai_driving_ratio * 100)}%</span>`);
   if (s.stats && s.stats.camera_max_gap_ms > 70) b.push(`<span class="badge warn">映像途切れ ${s.stats.camera_max_gap_ms}ms</span>`);
-  for (const t of s.tags || []) b.push(`<span class="badge tag">${esc(t)}</span>`);
+  for (const t of s.tags || []) b.push(isSimTag(t) ? '<span class="badge sim">🎮 シミュレーター</span>' : `<span class="badge tag">${esc(t)}</span>`);
   return b.join('');
 }
 function renderScenes() {
@@ -655,7 +655,7 @@ $('#btn-ds-create').addEventListener('click', async () => {
   if (!state.selected.size) { toast('シーンを選択してください', true); return; }
   try {
     await api('POST', '/api/datasets', { name, scenes: [...state.selected], val_ratio: parseFloat($('#ds-val').value),
-                                         min_duration: parseFloat($('#ds-min').value) });
+                                         min_duration: parseFloat($('#ds-min').value), tags: $('#ds-sim').checked ? ['simulator'] : [] });
     toast('作成を開始しました'); loadJobs();
   } catch (e) { toast(e.message, true); }
 });
@@ -717,9 +717,17 @@ async function uploadHf(name, form) {
   catch (e) { toast(e.message, true); }
 }
 
+const SIM_TAGS = ['simulator', 'sim', 'simulation', 'emulator', 'シミュレーター', 'シミュレータ', 'エミュレーター', 'エミュレータ'];
+const isSimTag = (t) => SIM_TAGS.includes(String(t).trim().toLowerCase()) || SIM_TAGS.includes(String(t).trim());
+function sourceBadge(d) {
+  if (d.source === 'simulator') return '<span class="badge sim" title="シミュレーター(エミュレーター)で作ったデータ">🎮 シミュレーター</span>';
+  if (d.source === 'mixed') return `<span class="badge sim" title="実機とシミュレーターのシーンが混ざっている">🎮 実機 + シミュレーター(${d.sim_scenes} シーン)</span>`;
+  return '<span class="badge ok" title="実機で集めたデータ">実機</span>';
+}
 async function loadDatasets() {
   let list = [];
   try { list = await api('GET', '/api/datasets'); } catch (e) { toast(e.message, true); return; }
+  state.datasetList = list;
   if (state.hf === null) await loadHf(false);
   // 1つのデータセットの情報が欠けていても、一覧全体は表示する(検証用に作った特殊なデータセットなど)
   const card = (d) => { try { return datasetCard(d); } catch (e) {
@@ -731,7 +739,10 @@ function datasetCard(d) {
   const v = (x) => (x === undefined || x === null ? '-' : x);
   return `
     <div class="ds">
-      <h3>${esc(d.name)} <span class="muted small">${esc(v(d.version))} ・ ${esc(v(d.created_at))}</span></h3>
+      <h3>${esc(d.name)} ${sourceBadge(d)} <span class="muted small">${esc(v(d.version))} ・ ${esc(v(d.created_at))}</span></h3>
+      <div class="ds-tags small">${(d.tags || []).filter((t) => !isSimTag(t)).map((t) => `<span class="badge tag">${esc(t)}</span>`).join(' ')}
+        <button class="small" data-ds-tags="${esc(d.name)}" title="データセットのタグを付け直す(Hugging Face のカードのタグにもなる)">タグ</button>
+        ${d.source === 'mixed' ? '' : `<button class="small" data-ds-sim="${esc(d.name)}" data-on="${d.source === 'simulator' ? 1 : 0}">${d.source === 'simulator' ? '🎮 シミュレーターを外す' : '🎮 シミュレーターにする'}</button>`}</div>
       <div class="stats">
         <span>シーン <b>${v(d.scenes)}</b> (学習 ${v(d.train_scenes)} / 検証 ${v(d.val_scenes)})</span>
         <span>フレーム <b>${v(d.frames)}</b></span><span>ToF <b>${v(d.tof_frames)}</b></span>
@@ -757,6 +768,22 @@ function datasetCard(d) {
     </div>`;
 }
 $('#dataset-list').addEventListener('click', async (e) => {
+  const tg = e.target.closest('[data-ds-tags]'), sm = e.target.closest('[data-ds-sim]');
+  if (tg || sm) {
+    const name = (tg || sm).dataset.dsTags || (tg || sm).dataset.dsSim;
+    const d = (state.datasetList || []).find((x) => x.name === name) || { tags: [] };
+    let tags = d.tags || [];
+    if (tg) {
+      const t = prompt(`${name} のタグ(カンマ区切り。シミュレーターのデータには simulator)`, tags.join(', '));
+      if (t === null) return;
+      tags = t.split(',').map((x) => x.trim()).filter(Boolean);
+    } else {
+      tags = sm.dataset.on === '1' ? tags.filter((x) => !isSimTag(x)) : [...tags, 'simulator'];
+    }
+    try { await api('POST', `/api/datasets/${encodeURIComponent(name)}/tags`, { tags }); loadDatasets(); }
+    catch (err) { toast(err.message, true); }
+    return;
+  }
   const open = e.target.closest('[data-hf-open]'), up = e.target.closest('[data-hf-upload]');
   if (open) { document.querySelector(`[data-hf-form="${CSS.escape(open.dataset.hfOpen)}"]`).classList.toggle('hidden'); return; }
   if (up) { uploadHf(up.dataset.hfUpload, up.closest('.hf-form')); return; }
@@ -776,11 +803,11 @@ async function searchHubDatasets() {
   const author = $('#hfdl-author').value.trim();
   $('#hfdl-list').innerHTML = '<div class="muted small">探しています…</div>';
   let list = [];
-  try { list = await api('GET', '/api/hf/hub_datasets?author=' + encodeURIComponent(author)); }
+  try { list = await api('GET', '/api/hf/hub_datasets?author=' + encodeURIComponent(author) + '&kind=' + $('#hfdl-kind').value); }
   catch (e) { $('#hfdl-list').innerHTML = ''; toast(e.message, true); return; }
   $('#hfdl-list').innerHTML = list.map((d) => `
     <div class="hfdl-item"><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.repo_id)}</a>
-      ${d.private ? '<span class="badge tag">非公開</span>' : ''}
+      ${d.private ? '<span class="badge tag">非公開</span>' : ''}${d.simulator ? ' <span class="badge sim">🎮 シミュレーター</span>' : ''}
       <span class="muted small">${esc((d.last_modified || '').replace('T', ' '))}</span><span class="spacer"></span>
       <button class="small" data-hfdl-pick="${esc(d.repo_id)}">選ぶ</button></div>`).join('')
     || '<div class="muted small">見つかりませんでした(JetFormer のタグが付いたデータセットだけを探します)</div>';
@@ -823,7 +850,7 @@ async function loadTrain() {
   try { state.datasets = await api('GET', '/api/datasets'); } catch (e) { return; }
   try { state.policies = await api('GET', '/api/policies'); } catch (e) { state.policies = []; }
   const sel = $('#tr-dataset'), cur = sel.value;
-  sel.innerHTML = state.datasets.slice().reverse().map((d) => `<option value="${esc(d.name)}">${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム)</option>`).join('')
+  sel.innerHTML = state.datasets.slice().reverse().map((d) => `<option value="${esc(d.name)}">${d.source === 'simulator' ? '🎮 ' : d.source === 'mixed' ? '🎮+ ' : ''}${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム${d.source === 'simulator' ? '・シミュレーター' : d.source === 'mixed' ? '・実機+シミュレーター' : ''})</option>`).join('')
     || '<option value="">データセットがありません</option>';
   if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
   renderPolicySelect();
