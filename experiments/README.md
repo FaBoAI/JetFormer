@@ -2,7 +2,7 @@
 
 JetFormer の実車走行・学習・解析の検証の記録。作業で使った解析スクリプト・レポート(Markdown)・図をそのまま置いている。
 ツールとして整えたものは `tools/` にある(`label_events.py`・`build_ai_dataset.py`・`make_intervention_set.py`・
-`offline_rl.py`・`rl_*.py`・`course_*.py` など)。
+`offline_rl.py`・`rl_*.py`・`course_*.py`・`policy_zoo.py`、方策は `jetformer/policies/`)。
 
 | フォルダ | 中身 |
 |---|---|
@@ -10,6 +10,7 @@ JetFormer の実車走行・学習・解析の検証の記録。作業で使っ�
 | [`20261011_overnight/`](20261011_overnight/README.md) | 10/10 夜〜10/11 朝: 衝突のない走行データでの学習(モデルA: 操作値あり / モデルB: 操作値なし)と精度比較、AI走行 009/010/101 の解析、course.html からのコース図、ロードマップとオフライン強化学習・事前学習の調査(`research/`) |
 | [`20261011_day_summary/`](20261011_day_summary/fast_and_safe_plan.md) | 10/10 の1日のまとめ(`facts.md`)と「ぶつからずに速く走る車への道筋」(データ・制御・学習の3つの探索 `explore_*.md` と計画 `fast_and_safe_plan.md`)。構成図・Transformer の図(`fig/`) |
 | [`20261011_offline_rl/`](20261011_offline_rl/README.md) | オフライン強化学習(RECAP 型の最小形)のチャレンジ: 価値・アドバンテージ・方策(filtered BC / AWR / アドバンテージ条件付き / 陰性対照)の学習と机上の判定(ゲートC)。結果は「机上では走行の精度は上がらなかった。走行はモデルBのまま」 |
+| [`20261012_policy_zoo/`](20261012_policy_zoo/README.md) | 方策(Policy)の比較: TransFuser軽量型(JetFormer v0)を基準に、ACT型・TCP型・TransFuser多段型・DINOv2型を追加し、5 方策 × 種 2 を同じ条件で学習・評価(`evaluation.md`。結果を見る前に固定した規則で判定)。結果は「ベストは TransFuser軽量型(モデル B)のまま、差は最大 1.1µs」。設計(`spec.md`・`interfaces.md`)・速さの計測(`bench/`)・学習の記録(`training.md`)・図・動画の台本 |
 
 ## 注意
 

@@ -1,0 +1,15 @@
+{
+ "name": "msfusion",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 487.7,
+ "train_step_ms_p90": 488.7,
+ "train_samples_per_s_gpu": 131.2,
+ "eval_batch_ms_median": 156.5,
+ "peak_allocated_mb": 1738.0,
+ "peak_reserved_mb": 1984.0,
+ "warmup_s": 2.6,
+ "params_m": 19.41,
+ "trainable_params_m": 19.41,
+ "done": true
+}

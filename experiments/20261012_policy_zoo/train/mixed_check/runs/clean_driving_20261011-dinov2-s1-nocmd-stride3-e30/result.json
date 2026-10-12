@@ -1,0 +1,434 @@
+{
+ "state": "done",
+ "dataset": "clean_driving_20261011",
+ "stride": 3,
+ "epochs_planned": 30,
+ "epochs_done": 30,
+ "batch": 64,
+ "lr": 0.0003,
+ "pretrained": true,
+ "train_samples": 5912,
+ "val_samples": 1559,
+ "best_val_us": 50.3,
+ "best_epoch": 17,
+ "best_val_per_mode_us": {
+  "4": 61.2,
+  "5": 42.6
+ },
+ "modes": [
+  {
+   "id": 0,
+   "name": "未設定",
+   "description": "ジャンル未設定(学習には使わない)"
+  },
+  {
+   "id": 1,
+   "name": "駐車(1)",
+   "description": ""
+  },
+  {
+   "id": 2,
+   "name": "駐車(2)",
+   "description": ""
+  },
+  {
+   "id": 3,
+   "name": "駐車(3)",
+   "description": ""
+  },
+  {
+   "id": 4,
+   "name": "高速走行",
+   "description": ""
+  },
+  {
+   "id": 5,
+   "name": "低速走行",
+   "description": ""
+  }
+ ],
+ "train_mode_counts": {
+  "4": 2228,
+  "5": 3684
+ },
+ "command_input": false,
+ "mask_impacts": true,
+ "impact_g": 2.5,
+ "impact_masked_frames": {
+  "train": 3522,
+  "val": 1083
+ },
+ "steer_center_us": 1441.0,
+ "throttle_neutral_us": 1496.0,
+ "history": [
+  {
+   "epoch": 1,
+   "train_us": 83.0,
+   "val_us": 67.4,
+   "val_per_mode_us": {
+    "4": 78.5,
+    "5": 59.7
+   },
+   "seconds": 36.5,
+   "best": true
+  },
+  {
+   "epoch": 2,
+   "train_us": 62.4,
+   "val_us": 60.8,
+   "val_per_mode_us": {
+    "4": 72.7,
+    "5": 52.4
+   },
+   "seconds": 34.1,
+   "best": true
+  },
+  {
+   "epoch": 3,
+   "train_us": 54.3,
+   "val_us": 55.7,
+   "val_per_mode_us": {
+    "4": 68.6,
+    "5": 46.6
+   },
+   "seconds": 35.5,
+   "best": true
+  },
+  {
+   "epoch": 4,
+   "train_us": 50.0,
+   "val_us": 57.6,
+   "val_per_mode_us": {
+    "4": 65.8,
+    "5": 51.8
+   },
+   "seconds": 32.5,
+   "best": false
+  },
+  {
+   "epoch": 5,
+   "train_us": 47.6,
+   "val_us": 55.3,
+   "val_per_mode_us": {
+    "4": 67.6,
+    "5": 46.6
+   },
+   "seconds": 34.7,
+   "best": true
+  },
+  {
+   "epoch": 6,
+   "train_us": 45.8,
+   "val_us": 51.9,
+   "val_per_mode_us": {
+    "4": 62.2,
+    "5": 44.7
+   },
+   "seconds": 34.0,
+   "best": true
+  },
+  {
+   "epoch": 7,
+   "train_us": 43.2,
+   "val_us": 54.1,
+   "val_per_mode_us": {
+    "4": 63.4,
+    "5": 47.7
+   },
+   "seconds": 32.5,
+   "best": false
+  },
+  {
+   "epoch": 8,
+   "train_us": 41.3,
+   "val_us": 52.9,
+   "val_per_mode_us": {
+    "4": 64.0,
+    "5": 45.2
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 9,
+   "train_us": 39.7,
+   "val_us": 52.4,
+   "val_per_mode_us": {
+    "4": 63.4,
+    "5": 44.8
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 10,
+   "train_us": 38.0,
+   "val_us": 52.3,
+   "val_per_mode_us": {
+    "4": 63.8,
+    "5": 44.3
+   },
+   "seconds": 32.5,
+   "best": false
+  },
+  {
+   "epoch": 11,
+   "train_us": 35.9,
+   "val_us": 54.0,
+   "val_per_mode_us": {
+    "4": 65.1,
+    "5": 46.2
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 12,
+   "train_us": 34.2,
+   "val_us": 52.2,
+   "val_per_mode_us": {
+    "4": 64.2,
+    "5": 43.8
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 13,
+   "train_us": 32.9,
+   "val_us": 52.1,
+   "val_per_mode_us": {
+    "4": 63.0,
+    "5": 44.6
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 14,
+   "train_us": 31.5,
+   "val_us": 50.6,
+   "val_per_mode_us": {
+    "4": 62.2,
+    "5": 42.6
+   },
+   "seconds": 34.4,
+   "best": true
+  },
+  {
+   "epoch": 15,
+   "train_us": 30.2,
+   "val_us": 51.7,
+   "val_per_mode_us": {
+    "4": 61.8,
+    "5": 44.6
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 16,
+   "train_us": 28.5,
+   "val_us": 51.4,
+   "val_per_mode_us": {
+    "4": 62.5,
+    "5": 43.7
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 17,
+   "train_us": 27.0,
+   "val_us": 50.3,
+   "val_per_mode_us": {
+    "4": 61.2,
+    "5": 42.6
+   },
+   "seconds": 35.5,
+   "best": true
+  },
+  {
+   "epoch": 18,
+   "train_us": 26.1,
+   "val_us": 52.3,
+   "val_per_mode_us": {
+    "4": 64.3,
+    "5": 43.9
+   },
+   "seconds": 32.5,
+   "best": false
+  },
+  {
+   "epoch": 19,
+   "train_us": 25.1,
+   "val_us": 52.2,
+   "val_per_mode_us": {
+    "4": 63.8,
+    "5": 44.1
+   },
+   "seconds": 32.5,
+   "best": false
+  },
+  {
+   "epoch": 20,
+   "train_us": 24.0,
+   "val_us": 51.1,
+   "val_per_mode_us": {
+    "4": 62.6,
+    "5": 43.1
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 21,
+   "train_us": 22.9,
+   "val_us": 50.9,
+   "val_per_mode_us": {
+    "4": 62.6,
+    "5": 42.7
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 22,
+   "train_us": 22.2,
+   "val_us": 51.2,
+   "val_per_mode_us": {
+    "4": 61.9,
+    "5": 43.7
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 23,
+   "train_us": 21.6,
+   "val_us": 52.1,
+   "val_per_mode_us": {
+    "4": 63.5,
+    "5": 44.1
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 24,
+   "train_us": 20.9,
+   "val_us": 51.6,
+   "val_per_mode_us": {
+    "4": 63.1,
+    "5": 43.6
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 25,
+   "train_us": 20.4,
+   "val_us": 51.2,
+   "val_per_mode_us": {
+    "4": 62.3,
+    "5": 43.4
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 26,
+   "train_us": 20.0,
+   "val_us": 50.8,
+   "val_per_mode_us": {
+    "4": 61.9,
+    "5": 43.1
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 27,
+   "train_us": 19.8,
+   "val_us": 51.1,
+   "val_per_mode_us": {
+    "4": 62.2,
+    "5": 43.4
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 28,
+   "train_us": 19.5,
+   "val_us": 51.1,
+   "val_per_mode_us": {
+    "4": 62.1,
+    "5": 43.4
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 29,
+   "train_us": 19.5,
+   "val_us": 51.2,
+   "val_per_mode_us": {
+    "4": 62.3,
+    "5": 43.4
+   },
+   "seconds": 32.6,
+   "best": false
+  },
+  {
+   "epoch": 30,
+   "train_us": 19.3,
+   "val_us": 51.1,
+   "val_per_mode_us": {
+    "4": 62.2,
+    "5": 43.3
+   },
+   "seconds": 32.6,
+   "best": false
+  }
+ ],
+ "policy": "dinov2",
+ "policy_cfg": {
+  "variant": "vits14",
+  "weights": "data/pretrained/dinov2_vits14_pretrain.pth",
+  "pool": 2,
+  "use_cls": true,
+  "finetune_last": 0,
+  "lr_mult": 0.1,
+  "dim": 256,
+  "layers": 4,
+  "heads": 8,
+  "vit_depth": 12
+ },
+ "seed": 1,
+ "params_m": {
+  "total": 24.5,
+  "trainable": 2.87
+ },
+ "peak_mem_mb": 475.1,
+ "rl_options": {
+  "init": null,
+  "init_mode_copy": null,
+  "seed": 1,
+  "drop_mask": null,
+  "sample_weights_npz": null,
+  "mode_remap_npz": null,
+  "mode_remap_dropout": 0.0,
+  "weight_scale": 1.0,
+  "dropped_frames": {
+   "train": 0,
+   "val": 0
+  },
+  "impact_kept_frames": {
+   "train": 0,
+   "val": 0
+  },
+  "sha1": {}
+ },
+ "duration_s": 1109.0
+}

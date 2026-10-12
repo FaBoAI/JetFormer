@@ -1,0 +1,15 @@
+{
+ "name": "act_d512",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 442.5,
+ "train_step_ms_p90": 446.1,
+ "train_samples_per_s_gpu": 144.6,
+ "eval_batch_ms_median": 141.7,
+ "peak_allocated_mb": 2240.0,
+ "peak_reserved_mb": 2334.0,
+ "warmup_s": 5.9,
+ "params_m": 35.46,
+ "trainable_params_m": 35.46,
+ "done": true
+}

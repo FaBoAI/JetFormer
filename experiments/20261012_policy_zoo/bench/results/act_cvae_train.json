@@ -1,0 +1,15 @@
+{
+ "name": "act_cvae",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 331.1,
+ "train_step_ms_p90": 332.2,
+ "train_samples_per_s_gpu": 193.3,
+ "eval_batch_ms_median": 104.9,
+ "peak_allocated_mb": 1434.0,
+ "peak_reserved_mb": 1768.0,
+ "warmup_s": 2.4,
+ "params_m": 16.92,
+ "trainable_params_m": 16.92,
+ "done": true
+}

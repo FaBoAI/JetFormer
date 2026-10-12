@@ -1,0 +1,15 @@
+{
+ "name": "act",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 315.3,
+ "train_step_ms_p90": 316.4,
+ "train_samples_per_s_gpu": 203.0,
+ "eval_batch_ms_median": 105.3,
+ "peak_allocated_mb": 1367.0,
+ "peak_reserved_mb": 1709.0,
+ "warmup_s": 2.0,
+ "params_m": 14.78,
+ "trainable_params_m": 14.78,
+ "done": true
+}

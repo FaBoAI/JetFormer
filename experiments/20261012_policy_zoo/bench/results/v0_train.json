@@ -1,0 +1,15 @@
+{
+ "name": "v0",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 310.3,
+ "train_step_ms_p90": 311.3,
+ "train_samples_per_s_gpu": 206.2,
+ "eval_batch_ms_median": 103.1,
+ "peak_allocated_mb": 1335.0,
+ "peak_reserved_mb": 1692.0,
+ "warmup_s": 5.3,
+ "params_m": 14.08,
+ "trainable_params_m": 14.08,
+ "done": true
+}

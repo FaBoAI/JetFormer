@@ -1,0 +1,15 @@
+{
+ "name": "act_dec4",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 341.3,
+ "train_step_ms_p90": 342.2,
+ "train_samples_per_s_gpu": 187.5,
+ "eval_batch_ms_median": 111.9,
+ "peak_allocated_mb": 1457.0,
+ "peak_reserved_mb": 1795.0,
+ "warmup_s": 2.0,
+ "params_m": 17.15,
+ "trainable_params_m": 17.15,
+ "done": true
+}

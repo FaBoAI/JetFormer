@@ -1,0 +1,29 @@
+{
+ "dataset": "clean_driving_20261011",
+ "stride": 3,
+ "epochs": 30,
+ "batch": 64,
+ "lr": 0.0003,
+ "pretrained": true,
+ "build_engine": true,
+ "command_input": false,
+ "mask_impacts": true,
+ "policy": "dinov2",
+ "policy_cfg": {
+  "variant": "vits14",
+  "weights": "data/pretrained/dinov2_vits14_pretrain.pth",
+  "pool": 2,
+  "use_cls": true,
+  "finetune_last": 0,
+  "lr_mult": 0.1,
+  "dim": 256,
+  "layers": 4,
+  "heads": 8,
+  "vit_depth": 12
+ },
+ "impact_g": 2.5,
+ "seed": 1,
+ "name": "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30",
+ "created_at": "2026-10-12T18:02:54",
+ "note": "方策の比較(policy zoo 2026-10-12)の学習。机上の比較用で、実車の A/B/A の前は走行の標準はモデル B のまま"
+}

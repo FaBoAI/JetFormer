@@ -1,0 +1,182 @@
+{
+ "name": "msfusion_l4",
+ "export": {
+  "seconds": 3.5,
+  "onnx_mb": 83.6,
+  "nodes": 2927,
+  "ops": {
+   "Constant": 913,
+   "Unsqueeze": 368,
+   "Reshape": 196,
+   "Concat": 175,
+   "Identity": 164,
+   "Transpose": 137,
+   "Shape": 136,
+   "Gather": 128,
+   "Add": 117,
+   "Slice": 82,
+   "MatMul": 81,
+   "Cast": 66,
+   "Mul": 65,
+   "Sqrt": 48,
+   "Relu": 46,
+   "LayerNormalization": 36,
+   "Div": 32,
+   "Squeeze": 32,
+   "Conv": 29,
+   "Gemm": 24,
+   "Mod": 16,
+   "Softmax": 16,
+   "AveragePool": 6,
+   "Resize": 6,
+   "ReduceMean": 2,
+   "MaxPool": 1,
+   "Greater": 1,
+   "ConstantOfShape": 1,
+   "Pad": 1,
+   "Flatten": 1,
+   "ReduceSum": 1
+  },
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ]
+  },
+  "warnings": [
+   "DeprecationWarning: The feature will be removed. Please remove usage of this function",
+   "DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.py",
+   "TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means tha",
+   "UserWarning: Constant folding - Only steps=1 can be constant folded for opset >= 10 onnx::Slice op. Constant folding not applied. (Triggered internally at /pytorch/torch/csrc/jit/passes/onnx/constant_fold.cpp:178."
+  ],
+  "params_m": 33.37,
+  "trainable_params_m": 33.37
+ },
+ "build": {
+  "ok": true,
+  "seconds": 230.8,
+  "engine_mb": 44.4,
+  "trt_version": "10.16.1.11",
+  "layers_in_network": 5351,
+  "warnings": [],
+  "process_peak_rss_mb": 3825.0
+ },
+ "engine_io": {
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ]
+  }
+ },
+ "memory": {
+  "engine_activation_mb": 3.1,
+  "runner_load_delta_mb": 8.2,
+  "torch_peak_after_mb": 218.0
+ },
+ "accuracy": {
+  "actions": {
+   "trt_max_abs": 0.009838029742240906,
+   "trt_mean_abs": 0.0015505353221669793,
+   "ref_std": 0.08440648764371872,
+   "ref_max_abs": 0.24485331773757935,
+   "trt_rel_max": 0.04017927870154381,
+   "torch_autocast_max_abs": 0.0056359171867370605,
+   "trt_max_us": 4.919014930725098,
+   "trt_mean_us": 0.7752676606178284
+  }
+ },
+ "latency": {
+  "gpu_mhz_before": 1020.0,
+  "trt_exec": {
+   "median_ms": 3.069,
+   "p90_ms": 3.222,
+   "p99_ms": 3.262,
+   "mean_ms": 3.103,
+   "max_ms": 3.331,
+   "n": 600
+  },
+  "trt_call": {
+   "median_ms": 3.342,
+   "p90_ms": 3.484,
+   "p99_ms": 3.553,
+   "mean_ms": 3.354,
+   "max_ms": 3.641,
+   "n": 600
+  },
+  "trt_run_numpy": {
+   "median_ms": 3.668,
+   "p90_ms": 3.723,
+   "p99_ms": 3.877,
+   "mean_ms": 3.675,
+   "max_ms": 4.042,
+   "n": 600
+  },
+  "gpu_mhz_after": 1020.0,
+  "torch_fp16": {
+   "median_ms": 33.985,
+   "p90_ms": 35.124,
+   "p99_ms": 37.336,
+   "mean_ms": 34.239,
+   "max_ms": 38.168,
+   "n": 200
+  }
+ },
+ "measure_done": "2026-10-12T10:32:42"
+}

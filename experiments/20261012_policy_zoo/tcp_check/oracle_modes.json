@@ -1,0 +1,18 @@
+{
+ "frames": 4185,
+ "center_us": 1441.0,
+ "neutral_us": 1496.0,
+ "throttle_mode1": {
+  "mae_us": 71.3,
+  "corr": 0.479,
+  "forward_frac_ctrl": 0.852,
+  "forward_frac_human": 0.932,
+  "mean_ctrl_us": 1350.0,
+  "mean_human_us": 1305.0
+ },
+ "steer_mode3": {
+  "mae_us": 51.9,
+  "corr": 0.943
+ },
+ "note": "検証 11 シーン・stride 1・wp_valid & future_valid & vehicle_valid & 2.5G の前後を除く。10 ステップをまとめて計算"
+}

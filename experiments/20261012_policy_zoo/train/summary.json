@@ -1,0 +1,1194 @@
+{
+ "plan": {
+  "epochs": 30,
+  "projected_min": 242.6,
+  "budget_min": 219.4,
+  "limit_min": 285.2,
+  "cut": null,
+  "per_run_min": {
+   "jetformer_v0": 24.6,
+   "act": 21.8,
+   "tcp": 22.6,
+   "msfusion": 31.2,
+   "dinov2": 21.2
+  }
+ },
+ "probe": {
+  "jetformer_v0": {
+   "done": true,
+   "exit": 0,
+   "wall_s": 86.2,
+   "mem_available_mb": 4727,
+   "epoch_s": 44.9,
+   "duration_s": 67.8,
+   "val_us_epoch1": 60.7,
+   "train_us_epoch1": 75.3,
+   "peak_mem_mb": 1273.8,
+   "params_m": {
+    "total": 14.08,
+    "trainable": 14.08
+   },
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "log_tail": [
+    "  self.fusion = nn.TransformerEncoder(layer, layers)",
+    "epoch   1  train 75µs  val 61µs  45s *  [高速走行 69µs  低速走行 55µs]",
+    "保存: /home/jetson/jetformer/data/runs/_zoo_probe/jetformer_v0/best.pth, jetformer.onnx, model_config.json"
+   ],
+   "code": "4eeb809ad09d",
+   "at": "2026-10-12 14:05:01",
+   "overhead_s": 41.3
+  },
+  "act": {
+   "done": true,
+   "exit": 0,
+   "wall_s": 82.0,
+   "mem_available_mb": 3546,
+   "epoch_s": 38.3,
+   "duration_s": 58.0,
+   "val_us_epoch1": 81.7,
+   "train_us_epoch1": 118.9,
+   "peak_mem_mb": 1331.9,
+   "params_m": {
+    "total": 15.57,
+    "trainable": 15.57
+   },
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "log_tail": [
+    "モデルの種類: ACT 型(行動クエリの Decoder)(act)パラメータ 15.6M(学習 15.6M)設定 {\"dim\": 256, \"enc_layers\": 4, \"dec_layers\": 2, \"heads\": 8, \"ffn\": 512, \"dropout\": 0.1, \"cvae\": false, \"latent_dim\": 32, \"kl_weight\": 10.0, \"cvae_layers\": 2}",
+    "epoch   1  train 119µs  val 82µs  39s *  [高速走行 103µs  低速走行 67µs]",
+    "保存: /home/jetson/jetformer/data/runs/_zoo_probe/act/best.pth, jetformer.onnx, model_config.json"
+   ],
+   "code": "4eeb809ad09d",
+   "at": "2026-10-12 14:06:23",
+   "overhead_s": 43.7
+  },
+  "tcp": {
+   "done": true,
+   "exit": 0,
+   "wall_s": 80.6,
+   "mem_available_mb": 3837,
+   "epoch_s": 39.9,
+   "duration_s": 58.3,
+   "val_us_epoch1": 73.6,
+   "train_us_epoch1": 106.8,
+   "peak_mem_mb": 1348.9,
+   "params_m": {
+    "total": 15.59,
+    "trainable": 15.59
+   },
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "log_tail": [
+    "モデルの種類: TCP / TransFuser++ 型(通過点 + 目標速度)(tcp)パラメータ 15.6M(学習 15.6M)設定 {\"dim\": 256, \"enc_layers\": 4, \"dec_layers\": 2, \"heads\": 8, \"ffn\": 512, \"dropout\": 0.1, \"wp_steps\": 10, \"wp_dt\": 0.1, \"speed_bins\": 10, \"speed_max\": 4.5, \"w_wp\": 0.5, \"w_speed\": 0.1, \"cumsum\": \"op\", \"labels\": \"tcp_labels_v1\"}",
+    "epoch   1  train 107µs  val 74µs  40s *  [高速走行 85µs  低速走行 65µs]",
+    "保存: /home/jetson/jetformer/data/runs/_zoo_probe/tcp/best.pth, jetformer.onnx, model_config.json"
+   ],
+   "code": "4eeb809ad09d",
+   "at": "2026-10-12 14:07:44",
+   "overhead_s": 40.7
+  },
+  "msfusion": {
+   "done": true,
+   "exit": 0,
+   "wall_s": 107.1,
+   "mem_available_mb": 3781,
+   "epoch_s": 53.2,
+   "duration_s": 77.1,
+   "val_us_epoch1": 66.4,
+   "train_us_epoch1": 85.9,
+   "peak_mem_mb": 1740.9,
+   "params_m": {
+    "total": 18.92,
+    "trainable": 18.92
+   },
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "log_tail": [
+    "/home/jetson/miniconda/envs/jetracer/lib/python3.13/site-packages/torch/onnx/_internal/torchscript_exporter/utils.py:1186: UserWarning: Constant folding - Only steps=1 can be constant folded for opset >= 10 onnx::Slice op. Constant folding not applied. (Triggered internally at /pytorch/torch/csrc/jit/passes/onnx/constant_fold.cpp:178.)",
+    "  _C._jit_pass_onnx_graph_shape_type_inference(",
+    "保存: /home/jetson/jetformer/data/runs/_zoo_probe/msfusion/best.pth, jetformer.onnx, model_config.json"
+   ],
+   "code": "4eeb809ad09d",
+   "at": "2026-10-12 14:09:31",
+   "overhead_s": 53.9
+  },
+  "dinov2": {
+   "done": true,
+   "exit": 0,
+   "wall_s": 78.4,
+   "mem_available_mb": 3897,
+   "epoch_s": 36.8,
+   "duration_s": 55.7,
+   "val_us_epoch1": 68.6,
+   "train_us_epoch1": 83.0,
+   "peak_mem_mb": 475.1,
+   "params_m": {
+    "total": 24.5,
+    "trainable": 2.87
+   },
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "log_tail": [
+    "/home/jetson/jetformer/tools/../jetformer/policies/vit.py:52: TracerWarning: Iterating over a tensor might cause the trace to be incorrect. Passing a tensor of different shape won't change the number of iterations executed (and might lead to errors or silently give incorrect results).",
+    "  q, k, v = self.qkv(x).reshape(b, n, 3, self.heads, c // self.heads).permute(2, 0, 3, 1, 4)",
+    "保存: /home/jetson/jetformer/data/runs/_zoo_probe/dinov2/best.pth, jetformer.onnx, model_config.json"
+   ],
+   "code": "4eeb809ad09d",
+   "at": "2026-10-12 14:10:50",
+   "overhead_s": 41.6
+  }
+ },
+ "runs": [
+  {
+   "key": "jetformer_v0/s0",
+   "run": "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+   "policy": "jetformer_v0",
+   "seed": 0,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.3,
+   "best_epoch": 25,
+   "last_val_us": 49.4,
+   "min_val_us": 49.3,
+   "last_train_us": 14.1,
+   "best_val_per_mode_us": {
+    "4": 60.6,
+    "5": 41.4
+   },
+   "params_m": {
+    "total": 14.08,
+    "trainable": 14.08
+   },
+   "peak_mem_mb": 1273.8,
+   "epoch_s_median": 33.3,
+   "epoch_s_first": 38.3,
+   "train_epochs_s_sum": 1029.2,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 53.8,
+   "engine_mb": 27.8,
+   "model_config_policy": "jetformer_v0",
+   "policy_cfg": {
+    "dim": 256,
+    "layers": 4,
+    "heads": 8
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 14:11:25",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1207.1,
+     "ended": "2026-10-12 14:31:32",
+     "mem_available_mb": 3770
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1207.1,
+   "engine_wall_s": 102.6,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 0.647,
+     "actions_mean_us": 0.1269,
+     "actions_p99_us": 0.503,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 132.71
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.374,
+     "run_numpy_p99": 2.654,
+     "engine_median": 1.494,
+     "engine_p99": 1.682,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "JetFormer v0(今の標準)"
+   }
+  },
+  {
+   "key": "act/s0",
+   "run": "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+   "policy": "act",
+   "seed": 0,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 50.8,
+   "best_epoch": 22,
+   "last_val_us": 51.1,
+   "min_val_us": 50.8,
+   "last_train_us": 16.4,
+   "best_val_per_mode_us": {
+    "4": 61.8,
+    "5": 43.1
+   },
+   "params_m": {
+    "total": 15.57,
+    "trainable": 15.57
+   },
+   "peak_mem_mb": 1331.9,
+   "epoch_s_median": 35.4,
+   "epoch_s_first": 40.8,
+   "train_epochs_s_sum": 1088.0,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 59.5,
+   "engine_mb": 30.9,
+   "model_config_policy": "act",
+   "policy_cfg": {
+    "dim": 256,
+    "enc_layers": 4,
+    "dec_layers": 2,
+    "heads": 8,
+    "ffn": 512,
+    "dropout": 0.1,
+    "cvae": false,
+    "latent_dim": 32,
+    "kl_weight": 10.0,
+    "cvae_layers": 2
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 14:33:15",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1341.2,
+     "ended": "2026-10-12 14:55:37",
+     "mem_available_mb": 4382
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1341.2,
+   "engine_wall_s": 129.5,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 1.099,
+     "actions_mean_us": 0.1957,
+     "actions_p99_us": 0.753,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 132.41
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.587,
+     "run_numpy_p99": 2.879,
+     "engine_median": 1.692,
+     "engine_p99": 2.13,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "ACT 型(行動クエリの Decoder)"
+   }
+  },
+  {
+   "key": "tcp/s0",
+   "run": "clean_driving_20261011-tcp-s0-nocmd-stride3-e30",
+   "policy": "tcp",
+   "seed": 0,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.3,
+   "best_epoch": 27,
+   "last_val_us": 49.5,
+   "min_val_us": 49.3,
+   "last_train_us": 20.8,
+   "best_val_per_mode_us": {
+    "4": 60.6,
+    "5": 41.4
+   },
+   "params_m": {
+    "total": 15.59,
+    "trainable": 15.59
+   },
+   "peak_mem_mb": 1348.9,
+   "epoch_s_median": 37.8,
+   "epoch_s_first": 42.9,
+   "train_epochs_s_sum": 1146.9,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 59.6,
+   "engine_mb": 31.0,
+   "model_config_policy": "tcp",
+   "policy_cfg": {
+    "dim": 256,
+    "enc_layers": 4,
+    "dec_layers": 2,
+    "heads": 8,
+    "ffn": 512,
+    "dropout": 0.1,
+    "wp_steps": 10,
+    "wp_dt": 0.1,
+    "speed_bins": 10,
+    "speed_max": 4.5,
+    "w_wp": 0.5,
+    "w_speed": 0.1,
+    "cumsum": "op",
+    "labels": "tcp_labels_v1"
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": "tcp_controller",
+   "attempts": [
+    {
+     "started": "2026-10-12 14:57:46",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1418.9,
+     "ended": "2026-10-12 15:21:25",
+     "mem_available_mb": 4655
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1418.9,
+   "engine_wall_s": 127.9,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "last_train_parts": {
+    "wp_m": 0.05474,
+    "ce": 0.45033
+   },
+   "last_train_loss": 0.11392,
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 1.566,
+     "actions_mean_us": 0.2239,
+     "actions_p99_us": 1.021,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 128.79,
+     "waypoints_max_m": 0.00486,
+     "waypoints_ref_absmax_m": 3.987,
+     "gate_waypoints_0p02m": true,
+     "speed_exp_max_mps": 0.00269,
+     "gate_speed_0p05mps": true
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.664,
+     "run_numpy_p99": 2.954,
+     "engine_median": 1.999,
+     "engine_p99": 2.223,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": "tcp_controller"
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "TCP / TransFuser++ 型(通過点 + 目標速度)"
+   }
+  },
+  {
+   "key": "msfusion/s0",
+   "run": "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30",
+   "policy": "msfusion",
+   "seed": 0,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.1,
+   "best_epoch": 20,
+   "last_val_us": 50.1,
+   "min_val_us": 49.1,
+   "last_train_us": 32.4,
+   "best_val_per_mode_us": {
+    "4": 60.5,
+    "5": 41.1
+   },
+   "params_m": {
+    "total": 18.92,
+    "trainable": 18.92
+   },
+   "peak_mem_mb": 1740.9,
+   "epoch_s_median": 49.9,
+   "epoch_s_first": 55.3,
+   "train_epochs_s_sum": 1511.8,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 72.4,
+   "engine_mb": 37.8,
+   "model_config_policy": "msfusion",
+   "policy_cfg": {
+    "dim": 256,
+    "scales": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "ex_layers": [
+     2,
+     2,
+     2,
+     1
+    ],
+    "ex_heads": 4,
+    "ex_ffn": [
+     4,
+     4,
+     4,
+     2
+    ],
+    "late_layers": 2,
+    "late_heads": 8,
+    "head": "tokens",
+    "dropout": 0.1
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 15:23:33",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1788.3,
+     "ended": "2026-10-12 15:53:22",
+     "mem_available_mb": 4524
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1788.3,
+   "engine_wall_s": 243.0,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 2.093,
+     "actions_mean_us": 0.1217,
+     "actions_p99_us": 0.658,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 142.55
+    },
+    "latency_ms": {
+     "run_numpy_median": 3.194,
+     "run_numpy_p99": 3.489,
+     "engine_median": 2.228,
+     "engine_p99": 2.532,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "多段融合(TransFuser 型)"
+   }
+  },
+  {
+   "key": "dinov2/s0",
+   "run": "clean_driving_20261011-dinov2-s0-nocmd-stride3-e30",
+   "policy": "dinov2",
+   "seed": 0,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 50.7,
+   "best_epoch": 19,
+   "last_val_us": 51.1,
+   "min_val_us": 50.7,
+   "last_train_us": 19.3,
+   "best_val_per_mode_us": {
+    "4": 61.4,
+    "5": 43.2
+   },
+   "params_m": {
+    "total": 24.5,
+    "trainable": 2.87
+   },
+   "peak_mem_mb": 475.1,
+   "epoch_s_median": 32.6,
+   "epoch_s_first": 36.8,
+   "train_epochs_s_sum": 1009.2,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 93.6,
+   "engine_mb": 49.7,
+   "model_config_policy": "dinov2",
+   "policy_cfg": {
+    "variant": "vits14",
+    "weights": "data/pretrained/dinov2_vits14_pretrain.pth",
+    "pool": 2,
+    "use_cls": true,
+    "finetune_last": 0,
+    "lr_mult": 0.1,
+    "dim": 256,
+    "layers": 4,
+    "heads": 8,
+    "vit_depth": 12
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 15:57:25",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1132.7,
+     "ended": "2026-10-12 16:16:18",
+     "mem_available_mb": 4604
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1132.7,
+   "engine_wall_s": 128.1,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 2.456,
+     "actions_mean_us": 0.248,
+     "actions_p99_us": 1.424,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 136.54
+    },
+    "latency_ms": {
+     "run_numpy_median": 5.106,
+     "run_numpy_p99": 5.3,
+     "engine_median": 3.937,
+     "engine_p99": 4.149,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "DINOv2 の画像特徴(ViT-S/14 凍結)"
+   }
+  },
+  {
+   "key": "jetformer_v0/s1",
+   "run": "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30",
+   "policy": "jetformer_v0",
+   "seed": 1,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.3,
+   "best_epoch": 25,
+   "last_val_us": 49.6,
+   "min_val_us": 49.3,
+   "last_train_us": 13.9,
+   "best_val_per_mode_us": {
+    "4": 61.1,
+    "5": 41.0
+   },
+   "params_m": {
+    "total": 14.08,
+    "trainable": 14.08
+   },
+   "peak_mem_mb": 1273.8,
+   "epoch_s_median": 33.3,
+   "epoch_s_first": 39.7,
+   "train_epochs_s_sum": 1019.2,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 53.8,
+   "engine_mb": 27.8,
+   "model_config_policy": "jetformer_v0",
+   "policy_cfg": {
+    "dim": 256,
+    "layers": 4,
+    "heads": 8
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 16:18:26",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1210.6,
+     "ended": "2026-10-12 16:38:37",
+     "mem_available_mb": 4444
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1210.6,
+   "engine_wall_s": 103.8,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 0.855,
+     "actions_mean_us": 0.1309,
+     "actions_p99_us": 0.5,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 134.71
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.362,
+     "run_numpy_p99": 2.56,
+     "engine_median": 1.519,
+     "engine_p99": 1.735,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "JetFormer v0(今の標準)"
+   }
+  },
+  {
+   "key": "act/s1",
+   "run": "clean_driving_20261011-act-s1-nocmd-stride3-e30",
+   "policy": "act",
+   "seed": 1,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 50.0,
+   "best_epoch": 23,
+   "last_val_us": 50.5,
+   "min_val_us": 50.0,
+   "last_train_us": 16.2,
+   "best_val_per_mode_us": {
+    "4": 60.6,
+    "5": 42.7
+   },
+   "params_m": {
+    "total": 15.57,
+    "trainable": 15.57
+   },
+   "peak_mem_mb": 1331.9,
+   "epoch_s_median": 35.5,
+   "epoch_s_first": 42.3,
+   "train_epochs_s_sum": 1086.6,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 59.5,
+   "engine_mb": 30.9,
+   "model_config_policy": "act",
+   "policy_cfg": {
+    "dim": 256,
+    "enc_layers": 4,
+    "dec_layers": 2,
+    "heads": 8,
+    "ffn": 512,
+    "dropout": 0.1,
+    "cvae": false,
+    "latent_dim": 32,
+    "kl_weight": 10.0,
+    "cvae_layers": 2
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 16:40:20",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1312.3,
+     "ended": "2026-10-12 17:02:13",
+     "mem_available_mb": 4331
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1312.3,
+   "engine_wall_s": 122.1,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 1.155,
+     "actions_mean_us": 0.1751,
+     "actions_p99_us": 0.712,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 130.02
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.524,
+     "run_numpy_p99": 2.685,
+     "engine_median": 1.659,
+     "engine_p99": 1.697,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "ACT 型(行動クエリの Decoder)"
+   }
+  },
+  {
+   "key": "tcp/s1",
+   "run": "clean_driving_20261011-tcp-s1-nocmd-stride3-e30",
+   "policy": "tcp",
+   "seed": 1,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.5,
+   "best_epoch": 17,
+   "last_val_us": 49.6,
+   "min_val_us": 49.5,
+   "last_train_us": 21.2,
+   "best_val_per_mode_us": {
+    "4": 61.2,
+    "5": 41.4
+   },
+   "params_m": {
+    "total": 15.59,
+    "trainable": 15.59
+   },
+   "peak_mem_mb": 1348.9,
+   "epoch_s_median": 37.0,
+   "epoch_s_first": 42.6,
+   "train_epochs_s_sum": 1127.3,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 59.6,
+   "engine_mb": 31.0,
+   "model_config_policy": "tcp",
+   "policy_cfg": {
+    "dim": 256,
+    "enc_layers": 4,
+    "dec_layers": 2,
+    "heads": 8,
+    "ffn": 512,
+    "dropout": 0.1,
+    "wp_steps": 10,
+    "wp_dt": 0.1,
+    "speed_bins": 10,
+    "speed_max": 4.5,
+    "w_wp": 0.5,
+    "w_speed": 0.1,
+    "cumsum": "op",
+    "labels": "tcp_labels_v1"
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": "tcp_controller",
+   "attempts": [
+    {
+     "started": "2026-10-12 17:04:15",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1325.4,
+     "ended": "2026-10-12 17:26:21",
+     "mem_available_mb": 4336
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1325.4,
+   "engine_wall_s": 131.0,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "last_train_parts": {
+    "wp_m": 0.05483,
+    "ce": 0.45378
+   },
+   "last_train_loss": 0.11524,
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 1.127,
+     "actions_mean_us": 0.178,
+     "actions_p99_us": 0.706,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 126.46,
+     "waypoints_max_m": 0.00508,
+     "waypoints_ref_absmax_m": 3.812,
+     "gate_waypoints_0p02m": true,
+     "speed_exp_max_mps": 0.00505,
+     "gate_speed_0p05mps": true
+    },
+    "latency_ms": {
+     "run_numpy_median": 2.524,
+     "run_numpy_p99": 2.658,
+     "engine_median": 1.673,
+     "engine_p99": 1.906,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": "tcp_controller"
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "TCP / TransFuser++ 型(通過点 + 目標速度)"
+   }
+  },
+  {
+   "key": "msfusion/s1",
+   "run": "clean_driving_20261011-msfusion-s1-nocmd-stride3-e30",
+   "policy": "msfusion",
+   "seed": 1,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 49.3,
+   "best_epoch": 29,
+   "last_val_us": 49.4,
+   "min_val_us": 49.3,
+   "last_train_us": 31.2,
+   "best_val_per_mode_us": {
+    "4": 60.7,
+    "5": 41.4
+   },
+   "params_m": {
+    "total": 18.92,
+    "trainable": 18.92
+   },
+   "peak_mem_mb": 1740.9,
+   "epoch_s_median": 49.0,
+   "epoch_s_first": 57.2,
+   "train_epochs_s_sum": 1509.0,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 72.4,
+   "engine_mb": 37.8,
+   "model_config_policy": "msfusion",
+   "policy_cfg": {
+    "dim": 256,
+    "scales": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "ex_layers": [
+     2,
+     2,
+     2,
+     1
+    ],
+    "ex_heads": 4,
+    "ex_ffn": [
+     4,
+     4,
+     4,
+     2
+    ],
+    "late_layers": 2,
+    "late_heads": 8,
+    "head": "tokens",
+    "dropout": 0.1
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 17:28:32",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1816.8,
+     "ended": "2026-10-12 17:58:49",
+     "mem_available_mb": 4471
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1816.8,
+   "engine_wall_s": 245.6,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": true,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 1.503,
+     "actions_mean_us": 0.1118,
+     "actions_p99_us": 0.703,
+     "gate_actions_2p5us": true,
+     "finite": true,
+     "torch_actions_spread_us": 133.46
+    },
+    "latency_ms": {
+     "run_numpy_median": 3.189,
+     "run_numpy_p99": 3.462,
+     "engine_median": 2.205,
+     "engine_p99": 2.409,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "多段融合(TransFuser 型)"
+   }
+  },
+  {
+   "key": "dinov2/s1",
+   "run": "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30",
+   "policy": "dinov2",
+   "seed": 1,
+   "state": "done",
+   "epochs_done": 30,
+   "best_val_us": 50.3,
+   "best_epoch": 17,
+   "last_val_us": 51.1,
+   "min_val_us": 50.3,
+   "last_train_us": 19.3,
+   "best_val_per_mode_us": {
+    "4": 61.2,
+    "5": 42.6
+   },
+   "params_m": {
+    "total": 24.5,
+    "trainable": 2.87
+   },
+   "peak_mem_mb": 475.1,
+   "epoch_s_median": 32.6,
+   "epoch_s_first": 36.5,
+   "train_epochs_s_sum": 994.0,
+   "files": [
+    "best.pth",
+    "engine.log",
+    "jetformer.onnx",
+    "jetformer_fp16.engine",
+    "last.pth",
+    "model_config.json",
+    "result.json",
+    "run.json",
+    "train.log"
+   ],
+   "onnx_mb": 93.6,
+   "engine_mb": 51.6,
+   "model_config_policy": "dinov2",
+   "policy_cfg": {
+    "variant": "vits14",
+    "weights": "data/pretrained/dinov2_vits14_pretrain.pth",
+    "pool": 2,
+    "use_cls": true,
+    "finetune_last": 0,
+    "lr_mult": 0.1,
+    "dim": 256,
+    "layers": 4,
+    "heads": 8,
+    "vit_depth": 12
+   },
+   "engine_precision": "fp16",
+   "postprocess_kind": null,
+   "attempts": [
+    {
+     "started": "2026-10-12 18:02:54",
+     "resume_from_epoch": 0,
+     "code": "4eeb809ad09d",
+     "exit": 0,
+     "wall_s": 1132.4,
+     "ended": "2026-10-12 18:21:47",
+     "mem_available_mb": 4465
+    }
+   ],
+   "resumed": [],
+   "train_wall_s": 1132.4,
+   "engine_wall_s": 138.6,
+   "code": [
+    "4eeb809ad09d"
+   ],
+   "engine_check": {
+    "all_gates": false,
+    "drivable": true,
+    "check_io": true,
+    "accuracy": {
+     "actions_max_us": 2.854,
+     "actions_mean_us": 0.291,
+     "actions_p99_us": 1.684,
+     "gate_actions_2p5us": false,
+     "finite": true,
+     "torch_actions_spread_us": 135.78
+    },
+    "latency_ms": {
+     "run_numpy_median": 4.976,
+     "run_numpy_p99": 5.233,
+     "engine_median": 3.86,
+     "engine_p99": 4.07,
+     "gate_run_numpy": true
+    },
+    "postprocess_kind": null
+   },
+   "drive_list": {
+    "listed": true,
+    "drivable": true,
+    "policy_title": "DINOv2 の画像特徴(ViT-S/14 凍結)"
+   }
+  }
+ ],
+ "by_policy": {
+  "jetformer_v0": {
+   "n": 2,
+   "best_val_mean_us": 49.3,
+   "best_val_min_us": 49.3,
+   "best_val_max_us": 49.3,
+   "last_val_mean_us": 49.5
+  },
+  "act": {
+   "n": 2,
+   "best_val_mean_us": 50.4,
+   "best_val_min_us": 50.0,
+   "best_val_max_us": 50.8,
+   "last_val_mean_us": 50.8
+  },
+  "tcp": {
+   "n": 2,
+   "best_val_mean_us": 49.4,
+   "best_val_min_us": 49.3,
+   "best_val_max_us": 49.5,
+   "last_val_mean_us": 49.55
+  },
+  "msfusion": {
+   "n": 2,
+   "best_val_mean_us": 49.2,
+   "best_val_min_us": 49.1,
+   "best_val_max_us": 49.3,
+   "last_val_mean_us": 49.75
+  },
+  "dinov2": {
+   "n": 2,
+   "best_val_mean_us": 50.5,
+   "best_val_min_us": 50.3,
+   "best_val_max_us": 50.7,
+   "last_val_mean_us": 51.1
+  }
+ },
+ "model_b": {
+  "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "best_val_us": 49.0,
+  "best_epoch": 25,
+  "last_val_us": 49.4
+ },
+ "codes": [
+  "4eeb809ad09d"
+ ],
+ "note": "検証 L1 = train.py の検証(clean val 11 シーン・stride 3・1,559 サンプル)。spec §5.2 の主指標ではない"
+}

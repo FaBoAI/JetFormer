@@ -1,0 +1,94 @@
+{
+ "epochs": 30,
+ "seeds": [
+  0,
+  1
+ ],
+ "order": [
+  [
+   "jetformer_v0",
+   0
+  ],
+  [
+   "act",
+   0
+  ],
+  [
+   "tcp",
+   0
+  ],
+  [
+   "msfusion",
+   0
+  ],
+  [
+   "dinov2",
+   0
+  ],
+  [
+   "jetformer_v0",
+   1
+  ],
+  [
+   "act",
+   1
+  ],
+  [
+   "tcp",
+   1
+  ],
+  [
+   "msfusion",
+   1
+  ],
+  [
+   "dinov2",
+   1
+  ]
+ ],
+ "runs": {
+  "jetformer_v0/s0": "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+  "act/s0": "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+  "tcp/s0": "clean_driving_20261011-tcp-s0-nocmd-stride3-e30",
+  "msfusion/s0": "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30",
+  "dinov2/s0": "clean_driving_20261011-dinov2-s0-nocmd-stride3-e30",
+  "jetformer_v0/s1": "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30",
+  "act/s1": "clean_driving_20261011-act-s1-nocmd-stride3-e30",
+  "tcp/s1": "clean_driving_20261011-tcp-s1-nocmd-stride3-e30",
+  "msfusion/s1": "clean_driving_20261011-msfusion-s1-nocmd-stride3-e30",
+  "dinov2/s1": "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30"
+ },
+ "per_run_min": {
+  "jetformer_v0": 24.6,
+  "act": 21.8,
+  "tcp": 22.6,
+  "msfusion": 31.2,
+  "dinov2": 21.2
+ },
+ "projected_min": 242.6,
+ "budget_min": 219.4,
+ "limit_min": 285.2,
+ "cut": null,
+ "spec_estimate_min": {
+  "jetformer_v0": 17,
+  "act": 18,
+  "tcp": 18,
+  "msfusion": 26,
+  "dinov2": 16
+ },
+ "common_args": [
+  "--stride",
+  "3",
+  "--batch",
+  "64",
+  "--lr",
+  "3e-4",
+  "--workers",
+  "4",
+  "--no-command-input",
+  "--impact-g",
+  "2.5"
+ ],
+ "written_at": "2026-10-12 14:11:19",
+ "code": "4eeb809ad09d"
+}

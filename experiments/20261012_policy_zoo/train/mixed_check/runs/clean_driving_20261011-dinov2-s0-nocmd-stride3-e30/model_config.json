@@ -1,0 +1,121 @@
+{
+ "num_modes": 6,
+ "modes": [
+  {
+   "id": 0,
+   "name": "未設定",
+   "description": "ジャンル未設定(学習には使わない)"
+  },
+  {
+   "id": 1,
+   "name": "駐車(1)",
+   "description": ""
+  },
+  {
+   "id": 2,
+   "name": "駐車(2)",
+   "description": ""
+  },
+  {
+   "id": 3,
+   "name": "駐車(3)",
+   "description": ""
+  },
+  {
+   "id": 4,
+   "name": "高速走行",
+   "description": ""
+  },
+  {
+   "id": 5,
+   "name": "低速走行",
+   "description": ""
+  }
+ ],
+ "future_steps": 10,
+ "inputs": [
+  "image",
+  "tof",
+  "imu",
+  "state",
+  "mode"
+ ],
+ "tof_channels": 2,
+ "pwm_center": 1500.0,
+ "pwm_scale": 500.0,
+ "tof_max_mm": 4000.0,
+ "erpm_scale": 20000.0,
+ "dataset": "clean_driving_20261011",
+ "stride": 3,
+ "trained_modes": [
+  4,
+  5
+ ],
+ "train_mode_counts": {
+  "4": 2228,
+  "5": 3684
+ },
+ "steer_center_us": 1441.0,
+ "throttle_neutral_us": 1496.0,
+ "command_input": false,
+ "mask_impacts": true,
+ "policy": "dinov2",
+ "policy_cfg": {
+  "variant": "vits14",
+  "weights": "data/pretrained/dinov2_vits14_pretrain.pth",
+  "pool": 2,
+  "use_cls": true,
+  "finetune_last": 0,
+  "lr_mult": 0.1,
+  "dim": 256,
+  "layers": 4,
+  "heads": 8,
+  "vit_depth": 12
+ },
+ "contract": 1,
+ "input_shapes": {
+  "image": [
+   1,
+   3,
+   224,
+   224
+  ],
+  "tof": [
+   1,
+   2,
+   42,
+   54
+  ],
+  "imu": [
+   1,
+   10,
+   6
+  ],
+  "state": [
+   1,
+   3
+  ],
+  "mode": [
+   1,
+   6
+  ]
+ },
+ "outputs": [
+  "actions"
+ ],
+ "output_shapes": {
+  "actions": [
+   1,
+   10,
+   2
+  ]
+ },
+ "engine": {
+  "precision": "fp16_norm_fp32",
+  "workspace_gb": 1.0
+ },
+ "params_m": {
+  "total": 24.5,
+  "trainable": 2.87
+ }
+}

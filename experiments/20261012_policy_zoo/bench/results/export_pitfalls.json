@@ -1,0 +1,212 @@
+{
+ "adaptive_pool_28_to_8": {
+  "ok": false,
+  "error": "SymbolicValueError: Unsupported: ONNX export of operator adaptive_avg_pool2d, output size that are not factor of input size. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues  [Caused by the value '1 defined in (%1 : Long(2, str"
+ },
+ "adaptive_pool_28_to_7": {
+  "ok": true,
+  "ops": {
+   "AveragePool": 1
+  },
+  "inputs": [
+   "x"
+  ],
+  "warnings": []
+ },
+ "adaptive_pool_7_to_8": {
+  "ok": false,
+  "error": "SymbolicValueError: Unsupported: ONNX export of operator adaptive_avg_pool2d, output size that are not factor of input size. Please feel free to request support or submit a pull request on PyTorch GitHub: https://github.com/pytorch/pytorch/issues  [Caused by the value '1 defined in (%1 : Long(2, str"
+ },
+ "interpolate_antialias": {
+  "ok": false,
+  "error": "UnsupportedOperatorError: Exporting the operator 'aten::_upsample_bilinear2d_aa' to ONNX opset version 17 is not supported"
+ },
+ "interpolate_bilinear": {
+  "ok": true,
+  "ops": {
+   "Constant": 4,
+   "Shape": 1,
+   "Slice": 1,
+   "Concat": 1,
+   "Resize": 1
+  },
+  "inputs": [
+   "x"
+  ],
+  "warnings": []
+ },
+ "encoder_layer_fastpath_on": {
+  "ok": false,
+  "error": "UnsupportedOperatorError: Exporting the operator 'aten::_transformer_encoder_layer_fwd' to ONNX opset version 17 is not supported"
+ },
+ "mha_fastpath_on": {
+  "ok": false,
+  "error": "UnsupportedOperatorError: Exporting the operator 'aten::_native_multi_head_attention' to ONNX opset version 17 is not supported"
+ },
+ "encoder_layer_fastpath_off": {
+  "ok": true,
+  "ops": {
+   "Constant": 24,
+   "Reshape": 11,
+   "Transpose": 8,
+   "Add": 6,
+   "MatMul": 5,
+   "Identity": 3,
+   "Slice": 3,
+   "Gather": 3,
+   "Sqrt": 3,
+   "LayerNormalization": 2,
+   "Shape": 2,
+   "Cast": 2
+  },
+  "inputs": [
+   "input.1"
+  ],
+  "warnings": [
+   "Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as "
+  ]
+ },
+ "mha_fastpath_off": {
+  "ok": true,
+  "ops": {
+   "Constant": 24,
+   "Reshape": 11,
+   "Transpose": 8,
+   "MatMul": 3,
+   "Slice": 3,
+   "Gather": 3,
+   "Sqrt": 3,
+   "Add": 2,
+   "Shape": 2,
+   "Cast": 2,
+   "Mul": 2,
+   "Mod": 1
+  },
+  "inputs": [
+   "onnx::Transpose_0"
+  ],
+  "warnings": [
+   "Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as "
+  ]
+ },
+ "gelu_erf": {
+  "ok": true,
+  "ops": {
+   "Constant": 3,
+   "Mul": 2,
+   "Div": 1,
+   "Erf": 1,
+   "Add": 1
+  },
+  "inputs": [
+   "onnx::Div_0"
+  ],
+  "warnings": []
+ },
+ "gelu_tanh": {
+  "ok": true,
+  "ops": {
+   "Mul": 6,
+   "Constant": 4,
+   "Add": 2,
+   "Tanh": 1
+  },
+  "inputs": [
+   "onnx::Mul_0"
+  ],
+  "warnings": []
+ },
+ "sdpa": {
+  "ok": true,
+  "ops": {
+   "Constant": 3,
+   "Sqrt": 3,
+   "Cast": 2,
+   "Mul": 2,
+   "MatMul": 2,
+   "Shape": 1,
+   "Slice": 1,
+   "Div": 1,
+   "Transpose": 1,
+   "Softmax": 1
+  },
+  "inputs": [
+   "onnx::Shape_0",
+   "onnx::Transpose_1",
+   "onnx::MatMul_2"
+  ],
+  "warnings": []
+ },
+ "layernorm": {
+  "ok": true,
+  "ops": {
+   "LayerNormalization": 1
+  },
+  "inputs": [
+   "input"
+  ],
+  "warnings": []
+ },
+ "gru_cell": {
+  "ok": true,
+  "ops": {
+   "Add": 4,
+   "Gemm": 2,
+   "Constant": 2,
+   "Split": 2,
+   "Sigmoid": 2,
+   "Mul": 2,
+   "Tanh": 1,
+   "Sub": 1
+  },
+  "inputs": [
+   "onnx::Gemm_0",
+   "onnx::Gemm_1"
+  ],
+  "warnings": []
+ },
+ "gru_layer": {
+  "ok": true,
+  "ops": {
+   "Constant": 6,
+   "Transpose": 2,
+   "Shape": 1,
+   "Gather": 1,
+   "Unsqueeze": 1,
+   "Concat": 1,
+   "Expand": 1,
+   "GRU": 1,
+   "Squeeze": 1
+  },
+  "inputs": [
+   "input"
+  ],
+  "warnings": [
+   "Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as ",
+   "Exporting a model to ONNX with a batch_size other than 1, with a variable length with GRU can cause an error when running the ONNX model with a different batch "
+  ]
+ },
+ "unused_inputs": {
+  "ok": true,
+  "ops": {
+   "Constant": 1,
+   "Mul": 1
+  },
+  "inputs": [
+   "used"
+  ],
+  "warnings": []
+ },
+ "dict_output": {
+  "ok": true,
+  "ops": {
+   "Constant": 2,
+   "Mul": 1,
+   "ReduceSum": 1
+  },
+  "inputs": [
+   "onnx::Mul_0"
+  ],
+  "warnings": []
+ }
+}

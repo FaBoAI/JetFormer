@@ -1,0 +1,217 @@
+{
+ "jetformer_v0": {
+  "mem_available_before_train_mb": 4748,
+  "train": {
+   "exit": 0,
+   "wall_s": 45.2,
+   "state": "done",
+   "best_val_us": 116.2,
+   "params_m": {
+    "total": 14.08,
+    "trainable": 14.08
+   },
+   "peak_mem_mb": 1273.6,
+   "duration_s": 31.6,
+   "train_samples": 320,
+   "val_samples": 320,
+   "history": [
+    {
+     "epoch": 1,
+     "train_us": 142.1,
+     "val_us": 116.2,
+     "val_per_mode_us": {
+      "4": 131.6,
+      "5": 105.3
+     },
+     "seconds": 13.1,
+     "best": true
+    }
+   ]
+  },
+  "engine": {
+   "exit": 0,
+   "wall_s": 97.6
+  },
+  "onnx": {
+   "nodes": 427,
+   "mb": 53.8
+  },
+  "check": {
+   "exit": 0,
+   "wall_s": 21.6
+  }
+ },
+ "act": {
+  "mem_available_before_train_mb": 4484,
+  "train": {
+   "exit": 0,
+   "wall_s": 43.0,
+   "state": "done",
+   "best_val_us": 291.9,
+   "params_m": {
+    "total": 15.57,
+    "trainable": 15.57
+   },
+   "peak_mem_mb": 1331.7,
+   "duration_s": 28.8,
+   "train_samples": 320,
+   "val_samples": 320,
+   "history": [
+    {
+     "epoch": 1,
+     "train_us": 433.8,
+     "val_us": 291.9,
+     "val_per_mode_us": {
+      "4": 210.5,
+      "5": 349.7
+     },
+     "seconds": 10.8,
+     "best": true
+    }
+   ]
+  },
+  "engine": {
+   "exit": 0,
+   "wall_s": 121.1
+  },
+  "onnx": {
+   "nodes": 718,
+   "mb": 59.5
+  },
+  "check": {
+   "exit": 0,
+   "wall_s": 33.1
+  }
+ },
+ "tcp": {
+  "mem_available_before_train_mb": 4388,
+  "train": {
+   "exit": 0,
+   "wall_s": 43.4,
+   "state": "done",
+   "best_val_us": 162.5,
+   "params_m": {
+    "total": 15.59,
+    "trainable": 15.59
+   },
+   "peak_mem_mb": 1347.4,
+   "duration_s": 28.9,
+   "train_samples": 320,
+   "val_samples": 320,
+   "history": [
+    {
+     "epoch": 1,
+     "train_us": 288.5,
+     "val_us": 162.5,
+     "val_per_mode_us": {
+      "4": 169.3,
+      "5": 157.7
+     },
+     "seconds": 10.8,
+     "best": true,
+     "train_loss": 2.97153,
+     "train_parts": {
+      "wp_m": 4.3857,
+      "ce": 2.01659
+     }
+    }
+   ]
+  },
+  "engine": {
+   "exit": 0,
+   "wall_s": 127.2
+  },
+  "onnx": {
+   "nodes": 746,
+   "mb": 59.6
+  },
+  "check": {
+   "exit": 0,
+   "wall_s": 53.7
+  }
+ },
+ "msfusion": {
+  "mem_available_before_train_mb": 4459,
+  "train": {
+   "exit": 0,
+   "wall_s": 47.5,
+   "state": "done",
+   "best_val_us": 129.7,
+   "params_m": {
+    "total": 18.92,
+    "trainable": 18.92
+   },
+   "peak_mem_mb": 1740.9,
+   "duration_s": 29.6,
+   "train_samples": 320,
+   "val_samples": 320,
+   "history": [
+    {
+     "epoch": 1,
+     "train_us": 149.4,
+     "val_us": 129.7,
+     "val_per_mode_us": {
+      "4": 146.6,
+      "5": 117.7
+     },
+     "seconds": 11.2,
+     "best": true
+    }
+   ]
+  },
+  "engine": {
+   "exit": 0,
+   "wall_s": 235.3
+  },
+  "onnx": {
+   "nodes": 1710,
+   "mb": 72.4
+  },
+  "check": {
+   "exit": 0,
+   "wall_s": 42.9
+  }
+ },
+ "dinov2": {
+  "mem_available_before_train_mb": 4476,
+  "train": {
+   "exit": 0,
+   "wall_s": 30.2,
+   "state": "done",
+   "best_val_us": 118.3,
+   "params_m": {
+    "total": 24.5,
+    "trainable": 2.87
+   },
+   "peak_mem_mb": 475.1,
+   "duration_s": 19.8,
+   "train_samples": 320,
+   "val_samples": 320,
+   "history": [
+    {
+     "epoch": 1,
+     "train_us": 141.2,
+     "val_us": 118.3,
+     "val_per_mode_us": {
+      "4": 131.8,
+      "5": 108.7
+     },
+     "seconds": 8.2,
+     "best": true
+    }
+   ]
+  },
+  "engine": {
+   "exit": 0,
+   "wall_s": 126.9
+  },
+  "onnx": {
+   "nodes": 1054,
+   "mb": 93.6
+  },
+  "check": {
+   "exit": 0,
+   "wall_s": 38.9
+  }
+ }
+}

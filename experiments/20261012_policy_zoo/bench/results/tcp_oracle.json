@@ -1,0 +1,240 @@
+{
+ "calibration": {
+  "steer": {
+   "lag_frames": 2,
+   "curv_bias": -0.018625362815473053,
+   "curv_per_us": 0.0034294415812523276,
+   "r2": 0.8718523368710136,
+   "n": 18720
+  },
+  "throttle": {
+   "lag_frames": 3,
+   "ff_a0": -20.16158555284932,
+   "ff_a1": 76.79515189479415,
+   "r2": 0.7337632887002509,
+   "n": 6567
+  },
+  "calib": {
+   "steer_center_us": 1441.0,
+   "curv_per_us": 0.0034294415812523276,
+   "curv_bias": -0.018625362815473053,
+   "throttle_neutral_us": 1496.0,
+   "ff_a0": -20.16158555284932,
+   "ff_a1": 76.79515189479415,
+   "steer_min_us": 1000.0,
+   "steer_max_us": 1900.0
+  }
+ },
+ "chosen": {
+  "t_look_s": 0.5,
+  "kp": 30.0,
+  "ki": 0.0,
+  "l_min_m": 0.6
+ },
+ "grid_train_subset": [
+  {
+   "l1_us": 51.0,
+   "t_look_s": 0.5,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 51.3,
+   "t_look_s": 0.5,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 51.4,
+   "t_look_s": 0.5,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 51.5,
+   "t_look_s": 0.5,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 51.5,
+   "t_look_s": 0.7,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 51.7,
+   "t_look_s": 0.5,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 51.7,
+   "t_look_s": 0.7,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 51.8,
+   "t_look_s": 0.5,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 51.9,
+   "t_look_s": 0.7,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 52.0,
+   "t_look_s": 0.7,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 52.1,
+   "t_look_s": 0.7,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 52.2,
+   "t_look_s": 0.7,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 56.8,
+   "t_look_s": 0.3,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 57.1,
+   "t_look_s": 0.3,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 57.2,
+   "t_look_s": 0.3,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 58.0,
+   "t_look_s": 0.3,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 58.4,
+   "t_look_s": 0.3,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 58.5,
+   "t_look_s": 0.3,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 60.5,
+   "t_look_s": 0.15,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 60.9,
+   "t_look_s": 0.15,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 61.0,
+   "t_look_s": 0.15,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.6
+  },
+  {
+   "l1_us": 69.3,
+   "t_look_s": 0.15,
+   "kp": 30.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 69.7,
+   "t_look_s": 0.15,
+   "kp": 30.0,
+   "ki": 20.0,
+   "l_min_m": 0.2
+  },
+  {
+   "l1_us": 69.8,
+   "t_look_s": 0.15,
+   "kp": 0.0,
+   "ki": 0.0,
+   "l_min_m": 0.2
+  }
+ ],
+ "oracle_val": {
+  "steer_l1_us": 62.1,
+  "throttle_l1_us": 52.2,
+  "l1_us": 57.2,
+  "hold_now_steer_l1_us": 75.9,
+  "hold_now_throttle_l1_us": 26.0,
+  "hold_now_l1_us": 51.0,
+  "n": 1503
+ },
+ "oracle_train": {
+  "steer_l1_us": 68.2,
+  "throttle_l1_us": 37.3,
+  "l1_us": 52.8,
+  "hold_now_steer_l1_us": 79.5,
+  "hold_now_throttle_l1_us": 25.6,
+  "hold_now_l1_us": 52.5,
+  "n": 5664
+ },
+ "oracle_val_long_look": {
+  "steer_l1_us": 62.1,
+  "throttle_l1_us": 52.2,
+  "l1_us": 57.2,
+  "hold_now_steer_l1_us": 75.9,
+  "hold_now_throttle_l1_us": 26.0,
+  "hold_now_l1_us": 51.0,
+  "n": 1503
+ },
+ "waypoint_label_val": {
+  "x_1s_m_median": 1.94,
+  "y_1s_m_abs_p90": 1.95,
+  "n": 1845
+ },
+ "cpu_timing": {
+  "controller_step_us": 31.3,
+  "temporal_ensemble_push_us": 67.3
+ }
+}

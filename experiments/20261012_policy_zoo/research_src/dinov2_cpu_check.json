@@ -1,0 +1,272 @@
+[
+ {
+  "file": "dinov2_vits14_pretrain.pth",
+  "registers": 0,
+  "params_M": 21.63,
+  "pos_embed_src_grid": 37,
+  "load_strict": "<All keys matched successfully>",
+  "ls_gamma_absmax": 9.778,
+  "blocks": [
+   {
+    "logit_absmax": 71.4,
+    "qk_absmax": 11.9,
+    "mlp_hidden_absmax": 8.2,
+    "resid_absmax": 0.9,
+    "resid_token_norm_max": 2.0
+   },
+   {
+    "logit_absmax": 75.2,
+    "qk_absmax": 12.0,
+    "mlp_hidden_absmax": 8.1,
+    "resid_absmax": 0.7,
+    "resid_token_norm_max": 1.2
+   },
+   {
+    "logit_absmax": 82.2,
+    "qk_absmax": 11.5,
+    "mlp_hidden_absmax": 13.0,
+    "resid_absmax": 1.6,
+    "resid_token_norm_max": 1.9
+   },
+   {
+    "logit_absmax": 384.2,
+    "qk_absmax": 38.5,
+    "mlp_hidden_absmax": 2.8,
+    "resid_absmax": 1.5,
+    "resid_token_norm_max": 1.8
+   },
+   {
+    "logit_absmax": 24.2,
+    "qk_absmax": 7.6,
+    "mlp_hidden_absmax": 2.7,
+    "resid_absmax": 1.5,
+    "resid_token_norm_max": 2.2
+   },
+   {
+    "logit_absmax": 18.1,
+    "qk_absmax": 7.8,
+    "mlp_hidden_absmax": 3.9,
+    "resid_absmax": 1.5,
+    "resid_token_norm_max": 2.2
+   },
+   {
+    "logit_absmax": 16.4,
+    "qk_absmax": 7.0,
+    "mlp_hidden_absmax": 4.5,
+    "resid_absmax": 3.0,
+    "resid_token_norm_max": 3.3
+   },
+   {
+    "logit_absmax": 20.1,
+    "qk_absmax": 7.5,
+    "mlp_hidden_absmax": 9.5,
+    "resid_absmax": 3.3,
+    "resid_token_norm_max": 6.5
+   },
+   {
+    "logit_absmax": 17.0,
+    "qk_absmax": 8.1,
+    "mlp_hidden_absmax": 4.3,
+    "resid_absmax": 5.5,
+    "resid_token_norm_max": 9.3
+   },
+   {
+    "logit_absmax": 23.8,
+    "qk_absmax": 9.7,
+    "mlp_hidden_absmax": 10.0,
+    "resid_absmax": 13.6,
+    "resid_token_norm_max": 14.8
+   },
+   {
+    "logit_absmax": 14.6,
+    "qk_absmax": 9.1,
+    "mlp_hidden_absmax": 5.9,
+    "resid_absmax": 19.6,
+    "resid_token_norm_max": 27.9
+   },
+   {
+    "logit_absmax": 35.0,
+    "qk_absmax": 18.2,
+    "mlp_hidden_absmax": 3.4,
+    "resid_absmax": 11.9,
+    "resid_token_norm_max": 24.1
+   }
+  ],
+  "max_over_blocks": {
+   "logit_absmax": 384.2,
+   "qk_absmax": 38.5,
+   "mlp_hidden_absmax": 13.0,
+   "resid_absmax": 19.6,
+   "resid_token_norm_max": 27.9
+  },
+  "fp16_max": 65504.0,
+  "high_norm_patch_frac(>4x median)": 0.0012,
+  "cpu_fp16_vs_fp32_cls_cos": 0.99998,
+  "cpu_fp16_nan": false,
+  "onnx": {
+   "nodes": 525,
+   "ops": {
+    "Constant": 127,
+    "Add": 85,
+    "MatMul": 72,
+    "Mul": 61,
+    "Transpose": 37,
+    "Squeeze": 36,
+    "Reshape": 25,
+    "LayerNormalization": 25,
+    "Split": 12,
+    "Softmax": 12,
+    "Div": 12,
+    "Erf": 12,
+    "Concat": 2,
+    "Conv": 1,
+    "Shape": 1,
+    "Slice": 1,
+    "ConstantOfShape": 1,
+    "Equal": 1,
+    "Where": 1,
+    "Expand": 1
+   },
+   "output_shape": [
+    1,
+    257,
+    384
+   ]
+  }
+ },
+ {
+  "file": "dinov2_vits14_reg4_pretrain.pth",
+  "registers": 4,
+  "params_M": 21.63,
+  "pos_embed_src_grid": 37,
+  "load_strict": "<All keys matched successfully>",
+  "ls_gamma_absmax": 14.818,
+  "blocks": [
+   {
+    "logit_absmax": 176.8,
+    "qk_absmax": 73.0,
+    "mlp_hidden_absmax": 19.9,
+    "resid_absmax": 2.7,
+    "resid_token_norm_max": 4.6
+   },
+   {
+    "logit_absmax": 91.0,
+    "qk_absmax": 13.8,
+    "mlp_hidden_absmax": 11.3,
+    "resid_absmax": 2.7,
+    "resid_token_norm_max": 4.3
+   },
+   {
+    "logit_absmax": 82.0,
+    "qk_absmax": 15.4,
+    "mlp_hidden_absmax": 5.7,
+    "resid_absmax": 2.6,
+    "resid_token_norm_max": 4.4
+   },
+   {
+    "logit_absmax": 57.9,
+    "qk_absmax": 12.0,
+    "mlp_hidden_absmax": 4.3,
+    "resid_absmax": 2.7,
+    "resid_token_norm_max": 4.5
+   },
+   {
+    "logit_absmax": 14.9,
+    "qk_absmax": 7.3,
+    "mlp_hidden_absmax": 86.2,
+    "resid_absmax": 102.1,
+    "resid_token_norm_max": 111.8
+   },
+   {
+    "logit_absmax": 55.1,
+    "qk_absmax": 13.0,
+    "mlp_hidden_absmax": 4.9,
+    "resid_absmax": 102.0,
+    "resid_token_norm_max": 111.0
+   },
+   {
+    "logit_absmax": 16.4,
+    "qk_absmax": 8.5,
+    "mlp_hidden_absmax": 9.9,
+    "resid_absmax": 102.0,
+    "resid_token_norm_max": 110.9
+   },
+   {
+    "logit_absmax": 16.0,
+    "qk_absmax": 8.4,
+    "mlp_hidden_absmax": 7.1,
+    "resid_absmax": 101.7,
+    "resid_token_norm_max": 112.0
+   },
+   {
+    "logit_absmax": 15.8,
+    "qk_absmax": 7.2,
+    "mlp_hidden_absmax": 3.4,
+    "resid_absmax": 101.5,
+    "resid_token_norm_max": 114.0
+   },
+   {
+    "logit_absmax": 17.6,
+    "qk_absmax": 9.5,
+    "mlp_hidden_absmax": 5.7,
+    "resid_absmax": 101.3,
+    "resid_token_norm_max": 118.4
+   },
+   {
+    "logit_absmax": 16.9,
+    "qk_absmax": 11.4,
+    "mlp_hidden_absmax": 5.3,
+    "resid_absmax": 101.8,
+    "resid_token_norm_max": 134.0
+   },
+   {
+    "logit_absmax": 45.5,
+    "qk_absmax": 17.1,
+    "mlp_hidden_absmax": 5.8,
+    "resid_absmax": 100.5,
+    "resid_token_norm_max": 161.0
+   }
+  ],
+  "max_over_blocks": {
+   "logit_absmax": 176.8,
+   "qk_absmax": 73.0,
+   "mlp_hidden_absmax": 86.2,
+   "resid_absmax": 102.1,
+   "resid_token_norm_max": 161.0
+  },
+  "fp16_max": 65504.0,
+  "high_norm_patch_frac(>4x median)": 0.0,
+  "cpu_fp16_vs_fp32_cls_cos": 0.99999,
+  "cpu_fp16_nan": false,
+  "onnx": {
+   "nodes": 544,
+   "ops": {
+    "Constant": 138,
+    "Add": 85,
+    "MatMul": 72,
+    "Mul": 62,
+    "Transpose": 37,
+    "Squeeze": 36,
+    "Reshape": 25,
+    "LayerNormalization": 25,
+    "Split": 12,
+    "Softmax": 12,
+    "Div": 12,
+    "Erf": 12,
+    "Slice": 3,
+    "Concat": 3,
+    "ConstantOfShape": 2,
+    "Equal": 2,
+    "Where": 2,
+    "Expand": 2,
+    "Conv": 1,
+    "Shape": 1
+   },
+   "output_shape": [
+    1,
+    261,
+    384
+   ]
+  }
+ }
+]

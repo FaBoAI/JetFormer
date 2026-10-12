@@ -1,0 +1,215 @@
+{
+ "name": "tcp_dec",
+ "export": {
+  "seconds": 1.8,
+  "onnx_mb": 53.0,
+  "nodes": 820,
+  "ops": {
+   "Constant": 206,
+   "Reshape": 95,
+   "Identity": 73,
+   "Transpose": 69,
+   "Add": 55,
+   "MatMul": 41,
+   "Relu": 29,
+   "Slice": 29,
+   "Conv": 25,
+   "Sqrt": 24,
+   "Gather": 23,
+   "Mul": 20,
+   "Shape": 18,
+   "Cast": 17,
+   "LayerNormalization": 16,
+   "Concat": 13,
+   "Gemm": 13,
+   "Unsqueeze": 11,
+   "Mod": 8,
+   "Squeeze": 8,
+   "Div": 8,
+   "Softmax": 8,
+   "ReduceSum": 3,
+   "MaxPool": 1,
+   "Greater": 1,
+   "Flatten": 1,
+   "ConstantOfShape": 1,
+   "Equal": 1,
+   "Where": 1,
+   "Expand": 1,
+   "CumSum": 1
+  },
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ],
+   "waypoints": [
+    1,
+    10,
+    2
+   ],
+   "speed_logits": [
+    1,
+    10
+   ]
+  },
+  "warnings": [
+   "DeprecationWarning: The feature will be removed. Please remove usage of this function",
+   "DeprecationWarning: You are using the legacy TorchScript-based ONNX export. Starting in PyTorch 2.9, the new torch.export-based ONNX exporter has become the default. Learn more about the new export logic: https://docs.py",
+   "TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means tha"
+  ],
+  "params_m": 15.59,
+  "trainable_params_m": 15.59
+ },
+ "build": {
+  "ok": true,
+  "seconds": 95.1,
+  "engine_mb": 28.0,
+  "trt_version": "10.16.1.11",
+  "layers_in_network": 1654,
+  "warnings": [],
+  "process_peak_rss_mb": 3669.0
+ },
+ "engine_io": {
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ],
+   "waypoints": [
+    1,
+    10,
+    2
+   ],
+   "speed_logits": [
+    1,
+    10
+   ]
+  }
+ },
+ "memory": {
+  "engine_activation_mb": 2.5,
+  "runner_load_delta_mb": 13.5,
+  "torch_peak_after_mb": 105.2
+ },
+ "accuracy": {
+  "actions": {
+   "trt_max_abs": 0.011436879634857178,
+   "trt_mean_abs": 0.002873626770451665,
+   "ref_std": 0.7905129194259644,
+   "ref_max_abs": 1.9876878261566162,
+   "trt_rel_max": 0.005753861274570227,
+   "torch_autocast_max_abs": 0.005153298377990723,
+   "trt_max_us": 5.718440055847168,
+   "trt_mean_us": 1.4368133544921875
+  },
+  "waypoints": {
+   "trt_max_abs": 0.09007763862609863,
+   "trt_mean_abs": 0.015489533543586731,
+   "ref_std": 3.4417779445648193,
+   "ref_max_abs": 12.34389877319336,
+   "trt_rel_max": 0.007297340780496597,
+   "torch_autocast_max_abs": 0.06598150730133057
+  },
+  "speed_logits": {
+   "trt_max_abs": 0.010498464107513428,
+   "trt_mean_abs": 0.0026811996940523386,
+   "ref_std": 0.5202882885932922,
+   "ref_max_abs": 1.4599989652633667,
+   "trt_rel_max": 0.007190734148025513,
+   "torch_autocast_max_abs": 0.005069412291049957
+  }
+ },
+ "latency": {
+  "gpu_mhz_before": 1020.0,
+  "trt_exec": {
+   "median_ms": 1.903,
+   "p90_ms": 1.95,
+   "p99_ms": 2.136,
+   "mean_ms": 1.912,
+   "max_ms": 2.248,
+   "n": 600
+  },
+  "trt_call": {
+   "median_ms": 2.33,
+   "p90_ms": 2.522,
+   "p99_ms": 2.61,
+   "mean_ms": 2.359,
+   "max_ms": 2.721,
+   "n": 600
+  },
+  "trt_run_numpy": {
+   "median_ms": 2.449,
+   "p90_ms": 2.496,
+   "p99_ms": 2.647,
+   "mean_ms": 2.457,
+   "max_ms": 2.996,
+   "n": 600
+  },
+  "gpu_mhz_after": 1020.0,
+  "torch_fp16": {
+   "median_ms": 19.547,
+   "p90_ms": 19.897,
+   "p99_ms": 22.144,
+   "mean_ms": 19.626,
+   "max_ms": 22.973,
+   "n": 200
+  }
+ },
+ "measure_done": "2026-10-12T10:47:09"
+}

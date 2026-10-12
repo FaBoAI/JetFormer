@@ -1,0 +1,15 @@
+{
+ "name": "dinov2_p1",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 375.9,
+ "train_step_ms_p90": 377.3,
+ "train_samples_per_s_gpu": 170.2,
+ "eval_batch_ms_median": 254.2,
+ "peak_allocated_mb": 961.0,
+ "peak_reserved_mb": 1055.0,
+ "warmup_s": 1.9,
+ "params_m": 24.55,
+ "trainable_params_m": 2.92,
+ "done": true
+}

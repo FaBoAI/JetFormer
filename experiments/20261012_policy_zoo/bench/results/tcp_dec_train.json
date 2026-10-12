@@ -1,0 +1,15 @@
+{
+ "name": "tcp_dec",
+ "batch": 64,
+ "amp": "fp16 autocast(GradScaler なし)",
+ "train_step_ms_median": 334.5,
+ "train_step_ms_p90": 340.0,
+ "train_samples_per_s_gpu": 191.3,
+ "eval_batch_ms_median": 111.8,
+ "peak_allocated_mb": 1412.0,
+ "peak_reserved_mb": 1728.0,
+ "warmup_s": 5.8,
+ "params_m": 15.59,
+ "trainable_params_m": 15.59,
+ "done": true
+}

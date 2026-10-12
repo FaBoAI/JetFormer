@@ -1,0 +1,168 @@
+{
+ "title": "JetFormer 10月12日\n4つのPolicyを比べる",
+ "log": "20261010-173445",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月12日のレポート",
+   "src_start": 180.2,
+   "src_end": 186.6,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "10月11日の結果",
+    "4つのPolicyを追加して比較",
+    "ベストモデルの判定",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。10月12日は、4つのPolicyを追加して比べました!",
+     "say": "ラピカです。10月12日は、4つのポリシーを追加して、比べました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_prev",
+   "kind": "clip",
+   "log": "20261010-172910",
+   "caption": "10/11の結果: 精度は上がらず",
+   "src_start": 49.0,
+   "src_end": 57.6,
+   "speed": 1.25,
+   "highlights": [],
+   "lines": [
+    {
+     "text": "10/11のオフライン強化学習では、机上の精度は上がりませんでした。",
+     "say": "10月11日のオフライン強化学習では、机上の精度は、上がりませんでした。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_arch",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "比べた5つのPolicy",
+   "src_start": 186.6,
+   "src_end": 200.1,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/policy_zoo_20261012/fig/zoo_arch_overview.png",
+   "lines": [
+    {
+     "text": "今のTransFuser軽量型(JetFormer v0)を基準に、4つのPolicyを作りました。",
+     "say": "今の、トランスフューザーけいりょうがた、ジェットフォーマー ブイゼロを基準に、4つのポリシーを作りました。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "ACT型、TCP型、TransFuser多段型、DINOv2型の4つです。",
+     "say": "エーシーティーがた、ティーシーピーがた、トランスフューザーただんがた、ダイノブイツーがたの、4つです。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_results",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "結果: 軽量型を超えず",
+   "src_start": 200.1,
+   "src_end": 210.9,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/policy_zoo_20261012/fig/zoo_results_overview.png",
+   "lines": [
+    {
+     "text": "結果、TransFuser軽量型を超えたものは無く、差は大きくても1.1µs。種を変えただけの差と同じくらいです。",
+     "say": "結果、トランスフューザーけいりょうがたを超えたものは無く、差は、大きくても1.1マイクロ秒。乱数のたねを変えただけの差と、同じくらいです。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_verdict",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "ベストモデルの判定",
+   "src_start": 222.9,
+   "src_end": 230.0,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/policy_zoo_20261012/video/fig/verdict_video.png",
+   "lines": [
+    {
+     "text": "先に決めた規則で判定すると、ベストは今のモデルB、TransFuser軽量型のままです。",
+     "say": "先に決めた規則で判定すると、ベストは、今のモデルビー、トランスフューザーけいりょうがたのままです。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 230.0,
+   "src_end": 237.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "4つのPolicyを追加し10本学習",
+    "全部TensorRTで走行タブから選べる",
+    "軽量型との差は最大1.1µs",
+    "種を変えただけの差と同じ大きさ",
+    "R1・DEでも良い方策は無し",
+    "ベストは軽量型(モデルB)のまま"
+   ],
+   "lines": [
+    {
+     "text": "4つとも管理画面で学習も走行もできますが、賢さは軽量型とほぼ同じでした。",
+     "say": "4つとも、管理画面で学習も走行もできますが、賢さは、けいりょうがたとほぼ同じでした。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s7_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 248.6,
+   "src_end": 259.0,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "机上だけ。実車での差は不明",
+    "種は2本で順位は付けられない",
+    "学習の条件が軽量型向けのまま",
+    "R1・DEの評価の通過が少ない",
+    "コードの指摘が6件残っている"
+   ],
+   "lines": [
+    {
+     "text": "課題は、実車での差がまだ分からないことと、種が2本だけで順位を付けられないことです。",
+     "say": "課題は、実車での差がまだ分からないことと、乱数のたねが2本だけで、順位を付けられないことです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

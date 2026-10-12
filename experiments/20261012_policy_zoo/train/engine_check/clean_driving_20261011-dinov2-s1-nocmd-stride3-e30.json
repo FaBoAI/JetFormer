@@ -1,0 +1,96 @@
+{
+ "run": "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30",
+ "checked_at": "2026-10-12 18:27:24",
+ "policy": "dinov2",
+ "model_info": {
+  "policy": "dinov2",
+  "policy_title": "DINOv2 の画像特徴(ViT-S/14 凍結)",
+  "drivable": true,
+  "why_not": "",
+  "inputs": [
+   "image",
+   "tof",
+   "imu",
+   "state",
+   "mode"
+  ],
+  "outputs": [
+   "actions"
+  ],
+  "num_modes": 6,
+  "trained_modes": [
+   4,
+   5
+  ],
+  "command_input": false,
+  "steer_center_us": 1441.0,
+  "throttle_neutral_us": 1496.0,
+  "best_val_us": 50.3,
+  "created_at": "2026-10-12T18:02:54",
+  "postprocess_kind": null
+ },
+ "torch_ref": {
+  "device": "cpu",
+  "frames": 64,
+  "seconds": 10.1,
+  "outputs": [
+   "actions"
+  ]
+ },
+ "check_io": {
+  "ok": true,
+  "why": "",
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ]
+  }
+ },
+ "load_s": 0.45,
+ "engine_mb": 51.6,
+ "accuracy": {
+  "actions_max_us": 2.854,
+  "actions_mean_us": 0.291,
+  "actions_p99_us": 1.684,
+  "gate_actions_2p5us": false,
+  "finite": true,
+  "torch_actions_spread_us": 135.78
+ },
+ "latency_ms": {
+  "run_numpy_median": 4.976,
+  "run_numpy_p99": 5.233,
+  "engine_median": 3.86,
+  "engine_p99": 4.07,
+  "gate_run_numpy": true
+ },
+ "all_gates": false
+}

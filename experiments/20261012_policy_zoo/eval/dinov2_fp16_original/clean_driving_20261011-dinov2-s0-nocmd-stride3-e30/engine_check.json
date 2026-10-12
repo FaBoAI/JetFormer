@@ -1,0 +1,19 @@
+{
+ "ok": true,
+ "accuracy_ok": true,
+ "speed_ok": true,
+ "actions_max_us": 2.456,
+ "actions_p99_us": 1.424,
+ "gate_us": 2.5,
+ "run_numpy_median_ms": 5.106,
+ "run_numpy_p99_ms": 5.3,
+ "checked_at": "2026-10-12 18:25:54",
+ "note": "dinov2 は種 1 が FP16 の精度の確認(2.5 µs)に落ちたため、方策の比較では走行の候補にしない(spec §5.1。先に決めた代わりの bf16・fp32 もだめ。FP16 + 正規化・Softmax だけ FP32 は事後の参考)",
+ "engine": {
+  "file": "jetformer_fp16.engine",
+  "size": 52094164,
+  "mtime_ns": 1791789495894814693
+ },
+ "source": "/home/jetson/jetformer_reports/policy_zoo_20261012/train/engine_check/clean_driving_20261011-dinov2-s0-nocmd-stride3-e30.json",
+ "method": "実フレーム 64 個で TensorRT(run_numpy)と PyTorch FP32(CPU・best.pth)の actions の差。速さは 100 回の空回しの後 600 回(train/engine_load_check.py)"
+}

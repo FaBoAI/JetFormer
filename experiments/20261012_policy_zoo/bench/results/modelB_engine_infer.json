@@ -1,0 +1,93 @@
+{
+ "name": "modelB_engine",
+ "engine_io": {
+  "inputs": {
+   "image": [
+    1,
+    3,
+    224,
+    224
+   ],
+   "tof": [
+    1,
+    2,
+    42,
+    54
+   ],
+   "imu": [
+    1,
+    10,
+    6
+   ],
+   "state": [
+    1,
+    3
+   ],
+   "mode": [
+    1,
+    6
+   ]
+  },
+  "outputs": {
+   "actions": [
+    1,
+    10,
+    2
+   ]
+  }
+ },
+ "memory": {
+  "engine_activation_mb": 2.5,
+  "runner_load_delta_mb": 115.8,
+  "torch_peak_after_mb": 97.2
+ },
+ "accuracy": {
+  "actions": {
+   "trt_max_abs": 0.0011796802282333374,
+   "trt_mean_abs": 0.0002834092010743916,
+   "ref_std": 0.38550037145614624,
+   "ref_max_abs": 0.9191231727600098,
+   "trt_rel_max": 0.0012834843946620822,
+   "torch_autocast_max_abs": 0.0013949424028396606,
+   "trt_max_us": 0.5898401141166687,
+   "trt_mean_us": 0.14170460402965546
+  }
+ },
+ "latency": {
+  "gpu_mhz_before": 1020.0,
+  "trt_exec": {
+   "median_ms": 1.525,
+   "p90_ms": 1.562,
+   "p99_ms": 1.713,
+   "mean_ms": 1.538,
+   "max_ms": 1.753,
+   "n": 600
+  },
+  "trt_call": {
+   "median_ms": 2.066,
+   "p90_ms": 2.093,
+   "p99_ms": 2.132,
+   "mean_ms": 2.052,
+   "max_ms": 2.94,
+   "n": 600
+  },
+  "trt_run_numpy": {
+   "median_ms": 2.371,
+   "p90_ms": 2.421,
+   "p99_ms": 2.51,
+   "mean_ms": 2.366,
+   "max_ms": 2.586,
+   "n": 600
+  },
+  "gpu_mhz_after": 1020.0,
+  "torch_fp16": {
+   "median_ms": 15.451,
+   "p90_ms": 15.572,
+   "p99_ms": 15.834,
+   "mean_ms": 15.466,
+   "max_ms": 16.017,
+   "n": 200
+  }
+ },
+ "measure_done": "2026-10-12T09:49:13"
+}

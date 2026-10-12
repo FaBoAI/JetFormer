@@ -1,0 +1,20 @@
+{
+ "checked_at": "2026-10-12T21:46:29",
+ "seconds": 44.1,
+ "zoo_eval_diffs": 0,
+ "zoo_eval_diff_examples": [],
+ "tables_identical": true,
+ "verdict": {
+  "candidates": [
+   "act",
+   "tcp"
+  ],
+  "rule2": [],
+  "rule3": [],
+  "rule3_valid": true,
+  "rule": 4,
+  "best": "jetformer_v0",
+  "note": "机上では v0 より良いと言えない(ベスト = jetformer_v0 = モデル B のまま)"
+ },
+ "note": "保存した予測から CPU で評価をやり直した結果と、保存済みの結果の比較(予測はやり直していない)"
+}

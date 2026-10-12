@@ -1,0 +1,156 @@
+{
+ "title": "管理画面への反映(走行タブの既定のモデル・推奨のモデル・精度の確認に落ちたエンジン)",
+ "checked_at": "2026-10-12T22:27:12",
+ "service_restart": {
+  "at": "2026-10-12T22:20:30",
+  "command": "sudo systemctl restart jetformer-web",
+  "before": "学習・収集・走行・収集セッションが動いていないことを API(/api/status・/api/train/status・/api/drive/status)とプロセスで確認してから"
+ },
+ "recommended": {
+  "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "reason": "方策の比較(policy_zoo_20261012)の評価: ベスト = JetFormer v0(規則 4)。モデル B のまま(今の走行の標準)",
+  "source": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/zoo_eval.json",
+  "decided_at": "2026-10-12T22:15:20"
+ },
+ "api_drive_models": {
+  "count": 21,
+  "first": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "first_recommended": true,
+  "zoo_runs": [
+   [
+    "act",
+    "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "act",
+    "clean_driving_20261011-act-s1-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "dinov2",
+    "clean_driving_20261011-dinov2-s0-nocmd-stride3-e30",
+    "fp16_norm_fp32",
+    true
+   ],
+   [
+    "dinov2",
+    "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30",
+    "fp16_norm_fp32",
+    true
+   ],
+   [
+    "jetformer_v0",
+    "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "jetformer_v0",
+    "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "msfusion",
+    "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "msfusion",
+    "clean_driving_20261011-msfusion-s1-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "tcp",
+    "clean_driving_20261011-tcp-s0-nocmd-stride3-e30",
+    "fp16",
+    true
+   ],
+   [
+    "tcp",
+    "clean_driving_20261011-tcp-s1-nocmd-stride3-e30",
+    "fp16",
+    true
+   ]
+  ],
+  "not_drivable": [],
+  "rl_do_not_drive_listed": []
+ },
+ "api_models_zoo": [
+  [
+   "act",
+   "clean_driving_20261011-act-s0-nocmd-stride3-e30"
+  ],
+  [
+   "act",
+   "clean_driving_20261011-act-s1-nocmd-stride3-e30"
+  ],
+  [
+   "dinov2",
+   "clean_driving_20261011-dinov2-s0-nocmd-stride3-e30"
+  ],
+  [
+   "dinov2",
+   "clean_driving_20261011-dinov2-s1-nocmd-stride3-e30"
+  ],
+  [
+   "jetformer_v0",
+   "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30"
+  ],
+  [
+   "jetformer_v0",
+   "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30"
+  ],
+  [
+   "msfusion",
+   "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30"
+  ],
+  [
+   "msfusion",
+   "clean_driving_20261011-msfusion-s1-nocmd-stride3-e30"
+  ],
+  [
+   "tcp",
+   "clean_driving_20261011-tcp-s0-nocmd-stride3-e30"
+  ],
+  [
+   "tcp",
+   "clean_driving_20261011-tcp-s1-nocmd-stride3-e30"
+  ]
+ ],
+ "ui_drive_tab": {
+  "selected": "clean_driving_20261011-nocmd-s3-20261011-024626",
+  "last_saved_run": "first_trial_20261010-s3-20261010-153629",
+  "note_shown": "前回のモデル(first_trial_20261010-s3-20261010-153629)ではなく、推奨のモデルを選びました",
+  "genre": 5,
+  "start_button_pressed": false,
+  "screenshot": "/home/jetson/jetformer_reports/policy_zoo_20261012/deploy/drive_tab_default_model.png",
+  "how": "headless Firefox(geckodriver)で本物の画面を開き、走行タブを表示しただけ(GET のみ。走行・センサーの開始はしない)"
+ },
+ "ui_train_tab": {
+  "policy_options": [
+   "jetformer_v0",
+   "act",
+   "tcp",
+   "msfusion",
+   "dinov2"
+  ],
+  "default": "jetformer_v0",
+  "run_cards": 28,
+  "how": "学習タブのボタンを押して表示しただけ(学習は始めない)"
+ },
+ "tests": {
+  "new": "tests/test_drive_model_select.py 10 passed",
+  "full_suite": "412 passed, 2 skipped (CPU, 139 s)"
+ },
+ "caveats": [
+  "今どのエンジンも精度の確認に落ちていない(dinov2 は fp16_norm_fp32 で作り直して合格)ので、画面で「選べない」表示は実データでは出ていない。テストで確かめた",
+  "走行タブのステアリング ゲインは保存値 1.5 のまま(カード 1 の前に 1.3 に選び直す)",
+  "推奨のモデルは前回のモデルより先に選ぶ(初回の表示)。人が選び直したモデルはそのページの中では保たれる"
+ ]
+}
