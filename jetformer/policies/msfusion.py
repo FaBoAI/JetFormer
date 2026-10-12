@@ -1,4 +1,4 @@
-"""msfusion — 本家 TransFuser に近い多段融合(spec.md §3.3、Chitta ほか IEEE TPAMI 2022 / Prakash ほか CVPR 2021)
+"""msfusion — TransFuser多段型: 本家 TransFuser に近い多段融合(spec.md §3.3、Chitta ほか IEEE TPAMI 2022 / Prakash ほか CVPR 2021)
 
 画像(ResNet-18 の4段)と ToF(同じチャンネル数の4段の CNN)を、各段で小さな Transformer に通して情報を交換し
 (TransFuser の GPT と同じ「平均で小さな格子のトークンにする → 注意 → 双線形で元の大きさに戻して各枝に足す」)、

@@ -835,7 +835,7 @@ function renderPolicySelect() {
   const sel = $('#tr-policy'), cur = sel.value || 'jetformer_v0';
   sel.innerHTML = state.policies.map((p) => `<option value="${esc(p.name)}" ${p.ready ? '' : 'disabled'}>${esc(p.title)}`
     + `${p.status === 'experimental' ? '(試験的)' : ''}${p.ready ? '' : ' — 使えません'}</option>`).join('')
-    || '<option value="jetformer_v0">JetFormer v0(今の標準)</option>';
+    || '<option value="jetformer_v0">TransFuser軽量型(JetFormer v0・今の標準)</option>';
   const ok = (v) => [...sel.options].some((o) => o.value === v && !o.disabled);
   sel.value = ok(cur) ? cur : 'jetformer_v0';
   renderPolicyInfo();

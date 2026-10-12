@@ -317,7 +317,7 @@ def build_policy(name, num_modes, cfg=None, pretrained=False):
 _V0_GENRES = {'embed': 'mode_embed.weight', 'heads': {'heads': FUTURE_STEPS * 2}}
 
 register(PolicySpec(
-    'jetformer_v0', 'JetFormer v0(今の標準)', 'jetformer.policies.jetformer_v0', 'v0',
+    'jetformer_v0', 'TransFuser軽量型(JetFormer v0・今の標準)', 'jetformer.policies.jetformer_v0', 'v0',
     'ResNet-18 の画像 49・ToF 42・IMU・操作値・ジャンルのトークンを Transformer の Encoder 4層で融合し、'
     '出力トークンからジャンル別のヘッドで 10 フレーム先までの操作を出す(今までのモデル)。',
     status='stable', defaults=V0_FROZEN_CFG, options=(),
@@ -325,7 +325,7 @@ register(PolicySpec(
     genre_keys=_V0_GENRES))
 
 register(PolicySpec(
-    'act', 'ACT 型(行動クエリの Decoder)', 'jetformer.policies.act', 'act',
+    'act', 'ACT型(行動クエリの Decoder)', 'jetformer.policies.act', 'act',
     'v0 と同じトークンを Encoder 4層で融合し、10 個の行動クエリ(1 クエリ = 1 フレーム先)の Decoder で操作列を出す'
     '(Action Chunking Transformer 型)。CVAE は既定オフ。',
     defaults={'dim': 256, 'enc_layers': 4, 'dec_layers': 2, 'heads': 8, 'ffn': 512, 'dropout': 0.1, 'cvae': False,
@@ -337,7 +337,7 @@ register(PolicySpec(
     genre_keys={'embed': 'mode_embed.weight', 'heads': {'heads': 2}}, train_only_keys=('kl_weight',)))
 
 register(PolicySpec(
-    'tcp', 'TCP / TransFuser++ 型(通過点 + 目標速度)', 'jetformer.policies.tcp', 'tcp',
+    'tcp', 'TCP型(通過点 + 目標速度。TCP・TransFuser++ を参考)', 'jetformer.policies.tcp', 'tcp',
     'v0 と同じトークンの Encoder の後、Decoder のクエリで通過点(0.1 秒刻みで 1 秒先まで)・目標速度・操作の 3 つを出す。'
     '走行の既定は操作の枝そのまま。走行タブで目標速度 → 制御器(速度の上限つき)に切り替えられる。',
     defaults={'dim': 256, 'enc_layers': 4, 'dec_layers': 2, 'heads': 8, 'ffn': 512, 'dropout': 0.1, 'wp_steps': 10,
@@ -349,7 +349,7 @@ register(PolicySpec(
     outputs=('actions', 'waypoints', 'speed_logits'), postprocess='tcp_controller', train_only_keys=('w_wp', 'w_speed')))
 
 register(PolicySpec(
-    'msfusion', '多段融合(TransFuser 型)', 'jetformer.policies.msfusion', 'msf',
+    'msfusion', 'TransFuser多段型(本家と同じ多段融合)', 'jetformer.policies.msfusion', 'msf',
     'ResNet-18 の 4 段と ToF の 4 段の CNN を、各段の小さな Transformer で融合してから(本家 TransFuser に近い形)、'
     '最終段のトークンを v0 型で融合する。',
     defaults={'dim': 256, 'scales': [1, 2, 3, 4], 'ex_layers': [2, 2, 2, 1], 'ex_heads': 4, 'ex_ffn': [4, 4, 4, 2],
@@ -362,7 +362,7 @@ register(PolicySpec(
     genre_keys=_V0_GENRES))
 
 register(PolicySpec(
-    'dinov2', 'DINOv2 の画像特徴(ViT-S/14 凍結)', 'jetformer.policies.dinov2', 'dino',
+    'dinov2', 'DINOv2型(凍結 ViT-S/14 の画像特徴)', 'jetformer.policies.dinov2', 'dino',
     '自己教師あり学習の DINOv2 ViT-S/14(凍結)の画像トークン 64 + CLS と、v0 の ToF・IMU・操作値・ジャンルのトークンを'
     ' v0 型の Encoder 4層で融合する。重み data/pretrained/dinov2_vits14_pretrain.pth が要る(自動では取らない)。',
     defaults={'variant': 'vits14', 'weights': 'data/pretrained/dinov2_vits14_pretrain.pth', 'pool': 2, 'use_cls': True,

@@ -61,8 +61,8 @@ CAR_CAM_TO_PWM_B_MS = 28.0
 # tcp の §5.5 の出し方(名前 → (tcp_mode, speed_cap m/s))
 TCP_SETTINGS = collections.OrderedDict([('control', (0, 0.0)), ('control_cap', (0, 2.75)), ('hybrid', (1, 0.0)),
                                         ('hybrid_cap', (1, 2.75)), ('trajectory', (3, 0.0))])
-LABELS = {'B': 'モデル B(今の走行)', 'jetformer_v0': 'JetFormer v0', 'act': 'ACT 型', 'tcp': 'TCP / TransFuser++ 型',
-          'msfusion': '多段融合(TransFuser 型)', 'dinov2': 'DINOv2 の画像特徴'}
+LABELS = {'B': 'モデル B(今の走行)', 'jetformer_v0': 'TransFuser軽量型(JetFormer v0)', 'act': 'ACT型', 'tcp': 'TCP型',
+          'msfusion': 'TransFuser多段型', 'dinov2': 'DINOv2型'}
 COLORS = {'B': '#52514e', 'jetformer_v0': '#2a78d6', 'act': '#eb6834', 'tcp': '#1baf7a', 'msfusion': '#eda100',
           'dinov2': '#e87ba4'}
 

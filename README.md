@@ -84,11 +84,11 @@ tar の中身は「エクスポート」と同じ nuScenes 形式で、別の Je
 
 | 名前 | 中身 |
 |---|---|
-| `jetformer_v0` | 今までのモデル(下の「モデル」) |
-| `act` | ACT 型: v0 と同じトークン → Encoder → 10 個の行動クエリの Decoder |
-| `tcp` | TCP / TransFuser++ 型: 通過点 + 目標速度 + 操作の枝。走行タブで目標速度 → 制御器・速度の上限を選べる(既定は操作の枝のまま。出し方 1〜3 は試験的で、起動のたび・モデルを替えたときに操作の枝に戻る。速度の上限は速度ゲインに関係なく効く) |
-| `msfusion` | 本家 TransFuser に近い多段融合(ResNet-18 と ToF の CNN を4段で融合) |
-| `dinov2` | DINOv2 ViT-S/14(凍結)の画像特徴。重み `data/pretrained/dinov2_vits14_pretrain.pth` が要る(自動では取らない) |
+| `jetformer_v0` | **TransFuser軽量型**: 今までのモデル(下の「モデル」)。TransFuser を参考に、融合を最後に1回だけにした軽量版 |
+| `act` | **ACT型**: v0 と同じトークン → Encoder → 10 個の行動クエリの Decoder |
+| `tcp` | **TCP型**(TCP・TransFuser++ を参考): 通過点 + 目標速度 + 操作の枝。走行タブで目標速度 → 制御器・速度の上限を選べる(既定は操作の枝のまま。出し方 1〜3 は試験的で、起動のたび・モデルを替えたときに操作の枝に戻る。速度の上限は速度ゲインに関係なく効く) |
+| `msfusion` | **TransFuser多段型**: 本家 TransFuser と同じ多段融合(ResNet-18 と ToF の CNN を4段で融合) |
+| `dinov2` | **DINOv2型**: DINOv2 ViT-S/14(凍結)の画像特徴。重み `data/pretrained/dinov2_vits14_pretrain.pth` が要る(自動では取らない) |
 
 どの種類も出力 `actions`(10 フレーム先までの [ステア, スロットル])を持つので、走行の安全の仕組み(ゲイン・トリム・先読み・ToF ガード・
 リカバリー・ラップ・CH3 の交代・センサーの途切れで中立)はそのまま効きます。まだ作っていない種類は「使えません」と出て選べません。

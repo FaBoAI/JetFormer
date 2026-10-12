@@ -1,4 +1,4 @@
-"""tcp — TCP / TransFuser++ 型(通過点 + 目標速度 + 操作の枝)。spec.md §3.2
+"""tcp — TCP型(TCP・TransFuser++ を参考)(通過点 + 目標速度 + 操作の枝)。spec.md §3.2
 
     blocks.sensor_tokens + pos [1,94,256] → Encoder 4層 → enc_norm = memory
     queries [1,21,256](通過点 10・速度 1・操作 10)→ Decoder 2層(クエリどうしの自己注意 + memory への交差注意)→ dec_norm → hs
