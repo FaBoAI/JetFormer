@@ -18,7 +18,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, drive, hf_export, modes, session, sound, tof_format
+from .. import actuator, config, dataset, drive, hf_export, model_export, modes, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..training import TrainingManager
@@ -723,6 +723,33 @@ def api_run_file(name: str, filename: str):
         return FileResponse(trainer.artifact_path(name, filename), filename='%s_%s' % (name, filename))
     except KeyError:
         raise HTTPException(404)
+
+
+# ---------------------------------------------------------------- API: 学習済みモデルの書き出し(エミュレーター用)
+@app.get('/api/models')
+def api_models():
+    """ONNX と model_config.json がある学習済みモデルの一覧(エミュレーターなど Jetson の外で使う用)"""
+    return model_export.list_models()
+
+
+@app.get('/api/models/{name}/io_spec')
+def api_model_io_spec(name: str):
+    """入力の作り方・出力の読み方"""
+    try:
+        return model_export.io_spec(name)
+    except KeyError:
+        raise HTTPException(404, 'モデルがありません')
+
+
+@app.get('/api/models/{name}/bundle.zip')
+def api_model_bundle(name: str, pth: bool = False):
+    """エミュレーター用の一式(ONNX・model_config.json・io_spec.json・README・動かす例。pth=true で best.pth も)を zip で"""
+    try:
+        body = model_export.iter_bundle_zip(name, pth=pth)
+    except KeyError:
+        raise HTTPException(404, 'モデルがありません')
+    return StreamingResponse(body, media_type='application/zip',
+                             headers={'Content-Disposition': 'attachment; filename="%s%s.zip"' % (name, '_pth' if pth else '')})
 
 
 # ---------------------------------------------------------------- API: AI走行

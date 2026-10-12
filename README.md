@@ -77,6 +77,23 @@ tar の中身は「エクスポート」と同じ nuScenes 形式で、別の Je
 再起動します(2026-10-10に1回発生)。そのため学習は空きが3.5GB未満なら始めず、TensorRTエンジンは別プロセスで作ります。
 ほかに大きなプログラム(JupyterのJetRacerのカーネルなど)が動いているときは止めてから学習してください。
 
+## 学習済みモデルを Jetson の外で使う(エミュレーター用の書き出し)
+
+学習タブの各モデルの「⬇ エミュレーター用(zip)」で、Mac などのエミュレーターで動かすための一式を zip で取れます
+(「＋重み(.pth)」は PyTorch の重みも入れる)。TensorRT のエンジンは Jetson 専用なので入れません。
+
+| zip の中身 | 内容 |
+|---|---|
+| `jetformer.onnx` | 推論用(バッチ 1 固定)。onnxruntime(CPU / CoreML)で動く |
+| `model_config.json` / `result.json` | 学習の設定・正規化の定数 / 学習の結果 |
+| `io_spec.json` | 入力の作り方(カメラ・ToF・IMU・操作値・ジャンル → 入力)と出力の読み方(µs・左右と前後の向き) |
+| `README.md` | 使い方 |
+| `run_onnx_example.py` | onnxruntime で動かす例(`tools/emulator_run_onnx.py`)。`JetFormerOnnx(フォルダ).predict(...)` をエミュレーターから呼べる |
+
+- 入力の作り方は Jetson の学習・走行(`jetformer/train_data.py` の `normalize_inputs`)と同じ。記録した実フレームで、入力は 2e-7 以内、
+  出力(onnxruntime と PyTorch)は 0.001µs 未満で一致することを確かめた
+- API: `GET /api/models`(一覧)・`GET /api/models/<名前>/io_spec`・`GET /api/models/<名前>/bundle.zip[?pth=true]`
+
 ## AI走行(管理画面の「走行」タブ)
 
 ```

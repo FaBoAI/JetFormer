@@ -902,7 +902,12 @@ async function loadRuns() {
   $('#run-list').innerHTML = runs.map((r) => {
     const [cls, txt] = label[r.state] || ['warn', r.state];
     const names = Object.fromEntries((r.modes || []).map((m) => [m.id, m.name]));
-    const files = (r.files || []).filter((f) => f !== 'run.json').map((f) =>
+    const emu = (r.files || []).includes('jetformer.onnx') && (r.files || []).includes('model_config.json')
+      ? `<a href="/api/models/${encodeURIComponent(r.name)}/bundle.zip" download="${esc(r.name)}.zip"
+           title="ONNX・model_config.json・入出力の仕様(io_spec.json)・README・onnxruntime で動かす例を1つの zip に(Mac のエミュレーター用)"><button class="primary small">⬇ エミュレーター用(zip)</button></a>
+         ${(r.files || []).includes('best.pth') ? `<a href="/api/models/${encodeURIComponent(r.name)}/bundle.zip?pth=true" download="${esc(r.name)}_pth.zip"
+           title="上の一式に PyTorch の重み(best.pth)も入れる"><button class="small">＋重み(.pth)</button></a>` : ''}` : '';
+    const files = emu + ' ' + (r.files || []).filter((f) => f !== 'run.json').map((f) =>
       `<a href="/api/runs/${encodeURIComponent(r.name)}/files/${f}" download><button class="small">⬇ ${f}</button></a>`).join(' ');
     return `<div class="ds">
       <h3>${esc(r.name)} <span class="badge ${cls}">${txt}</span></h3>
