@@ -99,3 +99,20 @@ def test_list_hub_datasets_kind_filter(monkeypatch):
     assert [d['repo_id'] for d in hf_export.list_hub_datasets(kind='real')] == ['a/real']
     hf_export.list_hub_datasets(kind='simulator')
     assert calls['filter'] == ['jetformer', 'simulator']
+
+
+def test_broken_dataset_is_listed_and_deletable(tmp_path, monkeypatch):
+    """作成の途中で電源が切れて dataset_card.json が空になったデータセットがあっても、一覧は止まらず、削除できる"""
+    _card(tmp_path, monkeypatch)
+    broken = tmp_path / 'half_built'
+    (broken / 'aligned').mkdir(parents=True)
+    (broken / 'dataset_card.json').write_text('', encoding='utf-8')
+    (tmp_path / '.building-other').mkdir()                         # 作成中のフォルダは一覧に出さない
+    (tmp_path / '.building-other' / 'dataset_card.json').write_text('{"name": "other"}', encoding='utf-8')
+    listed = {d['name']: d for d in dataset.list_datasets()}
+    assert set(listed) == {'ds', 'half_built'} and listed['half_built']['broken'] and not listed['ds'].get('broken')
+    dataset.delete_dataset('half_built')
+    assert not broken.exists()
+    for bad in ('../x', '.building-other', ''):
+        with pytest.raises(KeyError):
+            dataset.delete_dataset(bad)

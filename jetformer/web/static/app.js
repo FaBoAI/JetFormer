@@ -730,7 +730,10 @@ async function loadDatasets() {
   state.datasetList = list;
   if (state.hf === null) await loadHf(false);
   // 1つのデータセットの情報が欠けていても、一覧全体は表示する(検証用に作った特殊なデータセットなど)
-  const card = (d) => { try { return datasetCard(d); } catch (e) {
+  const card = (d) => { if (d.broken) return `<div class="ds"><h3>${esc(d.name)} <span class="badge warn">壊れています</span></h3>
+      <div class="err small">データセットの情報を読めません(作成の途中で電源が切れたなど): ${esc(d.error || '')}</div>
+      <div class="row"><span class="spacer"></span><button class="small danger" data-del="${esc(d.name)}">削除</button></div></div>`;
+    try { return datasetCard(d); } catch (e) {
     return `<div class="ds"><h3>${esc(d.name)}</h3><div class="err small">表示できません: ${esc(e.message)}</div>
       <div class="row"><span class="spacer"></span><button class="small danger" data-del="${esc(d.name)}">削除</button></div></div>`; } };
   $('#dataset-list').innerHTML = list.slice().reverse().map(card).join('') || '<div class="muted">まだありません</div>';
@@ -913,7 +916,7 @@ async function loadTrain() {
   try { state.datasets = await api('GET', '/api/datasets'); } catch (e) { return; }
   try { state.policies = await api('GET', '/api/policies'); } catch (e) { state.policies = []; }
   const sel = $('#tr-dataset'), cur = sel.value;
-  sel.innerHTML = state.datasets.slice().reverse().map((d) => `<option value="${esc(d.name)}">${d.source === 'simulator' ? '🎮 ' : d.source === 'mixed' ? '🎮+ ' : ''}${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム${d.source === 'simulator' ? '・シミュレーター' : d.source === 'mixed' ? '・実機+シミュレーター' : ''})</option>`).join('')
+  sel.innerHTML = state.datasets.filter((d) => !d.broken).slice().reverse().map((d) => `<option value="${esc(d.name)}">${d.source === 'simulator' ? '🎮 ' : d.source === 'mixed' ? '🎮+ ' : ''}${esc(d.name)}(${d.scenes}シーン / ${d.frames}フレーム${d.source === 'simulator' ? '・シミュレーター' : d.source === 'mixed' ? '・実機+シミュレーター' : ''})</option>`).join('')
     || '<option value="">データセットがありません</option>';
   if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
   renderPolicySelect();

@@ -115,3 +115,20 @@ def test_expand_refuses_foreign_log_and_bad_names(dirs):
     for bad in ('../x', 'a/b', 'missing'):
         with pytest.raises(KeyError):
             scene_import.dataset_to_scenes(bad)
+
+
+def test_build_dataset_uses_a_temporary_folder(dirs, monkeypatch):
+    """データセットは .building-<名前> に作ってから名前を付ける(途中で止まっても半端なものが一覧に出ない)"""
+    make_dataset(scenes=('s1',), n=40)
+    scene_import.dataset_to_scenes('sim_run_01')
+    seen = []
+    real_replace = dataset.os.replace
+
+    def spy(src, dst):
+        seen.append((str(src), str(dst)))
+        return real_replace(src, dst)
+    monkeypatch.setattr(dataset.os, 'replace', spy)
+    dataset.build_dataset('rebuilt2', ['ds-sim_run_01-0001'], val_ratio=0.0, min_duration=0.0)
+    assert any(src.endswith('.building-rebuilt2') and dst.endswith('/rebuilt2') for src, dst in seen)
+    assert (config.DATASET_DIR / 'rebuilt2' / 'dataset_card.json').stat().st_size > 0
+    assert not (config.DATASET_DIR / '.building-rebuilt2').exists()

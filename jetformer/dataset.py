@@ -49,9 +49,13 @@ def _np_default(o):
 
 
 def _write_json(path, obj, indent=None):
+    """一時ファイルに書き、ディスクに書き切って(fsync)から置き換える。電源断で中身が空のファイルを残さない
+    (2026-10-13、データセットの作成中の電源断で dataset_card.json と splits.json が 0 バイトになった)"""
     tmp = str(path) + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(obj, f, ensure_ascii=False, indent=indent, default=_np_default)
+        f.flush()
+        os.fsync(f.fileno())
     os.replace(tmp, path)
 
 
@@ -347,9 +351,13 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     tags: データセットのタグ(例 ['simulator'])。シーンのタグに simulator(別名を含む)があれば自動で付く"""
     if not name or any(c in name for c in '/\\.') or ' ' in name:
         raise ValueError('データセット名に使えない文字が含まれています')
-    root = config.DATASET_DIR / name
-    if root.exists():
+    final = config.DATASET_DIR / name
+    if final.exists():
         raise ValueError('同名のデータセットがあります: %s' % name)
+    # 途中のフォルダ(.building-<名前>)に作り、出来上がってから名前を付ける。途中で止まっても半端なデータセットが一覧に出ない
+    root = config.DATASET_DIR / ('.building-%s' % name)
+    if root.exists():
+        shutil.rmtree(root)
     metas, skipped_legacy = [], []
     for sn in scene_names:
         m = load_scene_meta(sn)
@@ -550,6 +558,8 @@ def build_dataset(name, scene_names, val_ratio=0.2, min_duration=5.0, seed=0, pr
     card_tags = normalize_tags(list(tags or []) + ([SIM_TAG] if n_sim else []))
     card.update(tags=card_tags, sim_scenes=n_sim, source=data_source(len(metas), n_sim, card_tags))
     _write_json(root / 'dataset_card.json', card, indent=1)
+    os.sync()                                         # 画像・npz もディスクに書き切ってから名前を付ける
+    os.replace(root, final)
     return card
 
 
@@ -626,8 +636,17 @@ def list_datasets():
     if config.DATASET_DIR.exists():
         for d in sorted(config.DATASET_DIR.iterdir()):
             card = d / 'dataset_card.json'
+            if d.name.startswith('.'):                    # 作成・取り込みの途中のフォルダ
+                continue
             if card.exists():
-                c = json.loads(card.read_text(encoding='utf-8'))
+                try:
+                    c = json.loads(card.read_text(encoding='utf-8'))
+                    c['name']
+                except (ValueError, KeyError, OSError) as e:
+                    # 壊れたデータセット(電源断で作成が途中など)。一覧に出して、削除できるようにする
+                    out.append({'name': d.name, 'broken': True, 'error': '%s: %s' % (type(e).__name__, e) if str(e) else type(e).__name__,
+                                'tags': [], 'source': 'real'})
+                    continue
                 exp = config.EXPORT_DIR / ('%s.tar' % c['name'])
                 c['export'] = {'file': exp.name, 'bytes': exp.stat().st_size} if exp.exists() else None
                 hf = d / 'hf_upload.json'                     # Hugging Face に上げた記録
@@ -651,7 +670,7 @@ def list_datasets():
 
 def delete_dataset(name):
     root = config.DATASET_DIR / name
-    if '..' in name or not (root / 'dataset_card.json').exists():
+    if not name or '..' in name or '/' in name or name.startswith('.') or not root.is_dir():
         raise KeyError(name)
     shutil.rmtree(root)
     exp = config.EXPORT_DIR / ('%s.tar' % name)
