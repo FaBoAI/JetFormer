@@ -1,0 +1,28 @@
+{
+ "heldout_json_human_clean_equals_clean_val": true,
+ "mix_val_equals_A_val_in_order": true,
+ "mix_train_in_val": [],
+ "mix_train_in_heldout_scenes": [],
+ "real_train_same_as_A": true,
+ "n_real_train": 41,
+ "n_sim_train": 60,
+ "sim_names_all_ds_prefix": true,
+ "held_scenes": 11,
+ "held_frames_all": 5865,
+ "ai_mix_held_equals_clean_val_arrays": false,
+ "C_train_frames_all": 57637,
+ "timestamp_overlap_heldout_vs_C_train": 0,
+ "cam_basename_overlap_heldout_vs_C_train": 0,
+ "val_recording_logs": 8,
+ "val_logs_also_in_train_logs": [
+  "20261010-135449",
+  "20261010-150424",
+  "20261010-152405",
+  "20261010-152707",
+  "20261010-193638",
+  "20261010-200916",
+  "20261010-201626",
+  "20261010-202633"
+ ],
+ "note_logs": "同じ録画(ログ)の別のシーンが学習と検証に分かれているのは A・C・C+FT・A+FT で同じ(腕の差にはならない)"
+}

@@ -1,0 +1,526 @@
+{
+ "title": "シミュレーターと実機を混ぜた学習(案 C)の実験の手順。学習の前に固定(結果を見て変えない)",
+ "version": 1,
+ "written_at": "2026-10-13T11:57:51",
+ "question": "シミュレーターのデータ(ジャンル 8)を実機のデータ(ジャンル 4・5)と一緒に学習し(C)、そのあと実機のデータだけで微調整すると(C+FT)、実機の保留データの精度は基準 A(実機だけ)より上がるか",
+ "model": "TransFuser軽量型(JetFormer v0)= jetformer_v0(既定の形 dim 256・layers 4・heads 8)。モデル B と同じ構造",
+ "data": {
+  "mix_dataset": "data/datasets/simreal_mix_20261013",
+  "real": "clean_driving_20261011 の 52 シーン(同じシーン)= 実機",
+  "sim": "jetformer-simulator-id8-20min_20261012-150956_b55616cf の 60 シーン(scene_import で展開した data/raw/ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf/)= シミュレーター",
+  "val": "clean_driving_20261011 の val の 11 シーンだけ(実機)。シミュレーターの 60 シーンはすべて学習 → 最良のエポックは実機だけで選ぶ(基準 A と同じ)",
+  "card": {
+   "scenes": 112,
+   "train_scenes": 101,
+   "val_scenes": 11,
+   "frames": 63502,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "num_modes": 9,
+   "mode_frames": {
+    "4": 10181,
+    "5": 17321,
+    "8": 36000
+   },
+   "expected_mode_frames": {
+    "4": 10181,
+    "5": 17321,
+    "8": 36000
+   },
+   "source": "mixed",
+   "tags": [
+    "simulator"
+   ],
+   "sim_scenes": 60,
+   "hours": 0.593,
+   "aligned_restored": true
+  },
+  "train_frames": {
+   "A": {
+    "train": 5912,
+    "val": 1559,
+    "num_modes": 6,
+    "mode_counts": {
+     "4": 2228,
+     "5": 3684
+    },
+    "action_reference": [
+     1441.0,
+     1496.0
+    ]
+   },
+   "C": {
+    "train": 17732,
+    "val": 1559,
+    "num_modes": 9,
+    "mode_counts": {
+     "4": 2228,
+     "5": 3684,
+     "8": 11820
+    },
+    "action_reference": [
+     1441.0,
+     1496.0
+    ]
+   },
+   "C+FT": {
+    "train": 5912,
+    "val": 1559,
+    "num_modes": 9,
+    "mode_counts": {
+     "4": 2228,
+     "5": 3684
+    },
+    "action_reference": [
+     1441.0,
+     1496.0
+    ]
+   }
+  },
+  "restore": "シミュレーターのシーンの aligned(future_actions・imu など)は元のシミュレーターのデータセットの値に戻した(作り直しだと future_actions が 1 フレームずれる所がある。restore_log.json)",
+  "checks_ok": {
+   "card_modes_4_5_8": true,
+   "card_source_mixed": true,
+   "card_counts": true,
+   "card_mode_frames": true,
+   "val_is_real_val": true,
+   "train_has_all_sim": true,
+   "train_real_same_as_A": true,
+   "real_aligned_equal": true,
+   "real_images_equal": true,
+   "sim_aligned_equal_original": true,
+   "sim_images_equal": true,
+   "sim_ref_scenes_12": true,
+   "C_val_same_frames_as_A": true,
+   "FT_train_same_frames_as_A": true,
+   "FT_val_same_frames_as_A": true,
+   "FT_no_sim_frames": true,
+   "C_has_sim_frames": true,
+   "C_real_counts_same_as_A": true,
+   "action_reference_same_as_A": true
+  },
+  "sim_ref_scenes": [
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0049",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0050",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0051",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0052",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0053",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0054",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0055",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0056",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0057",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0058",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0059",
+   "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0060"
+  ]
+ },
+ "files": {
+  "mix_dataset_card": {
+   "path": "/home/jetson/jetformer/data/datasets/simreal_mix_20261013/dataset_card.json",
+   "sha256": "5dc38bf7ad057f0c93bfc7f01e783a36b85311241fff59156fb5e609aeff0f79"
+  },
+  "mix_splits": {
+   "path": "/home/jetson/jetformer/data/datasets/simreal_mix_20261013/splits.json",
+   "sha256": "b8c11e09facbed42fba03c6b11e6b8b65e994baac63c8b2f8534dc0b102697c4"
+  },
+  "drop_mask": {
+   "path": "/home/jetson/jetformer/data/derived/simreal_mix_20261013/drop_sim_frames.npz",
+   "sha256": "0be4d19946c03811fbfe09be810b681715dc81df8f842c43f5fab309d96d7686"
+  },
+  "restore_log": {
+   "path": "/home/jetson/jetformer/data/derived/simreal_mix_20261013/restore_log.json",
+   "sha256": "b8583c44e303b9793fa1c676ef876d9afde871261c58ec08ef6894ff7317e123"
+  },
+  "prepare_check": {
+   "path": "/home/jetson/jetformer_reports/sim_cotrain_20261013/prepare_check.json",
+   "sha256": "92fdad482474fc611f73dbf8a29ea494cf10e39a6b513efae14aa2d5145a8093"
+  },
+  "zoo_eval": {
+   "path": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/zoo_eval.json",
+   "sha256": "fd3f0e2b73b3ce100844ba7277a16773c715d431cb06e90883a15886b45c3999"
+  },
+  "zoo_rules": {
+   "path": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/zoo_rules.json",
+   "sha256": "2ba738bdd31dfe435c166be52a07aa7fa54a35f72241de0b884038d7fc6e5c8d"
+  },
+  "zoo_eval_protocol": {
+   "path": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/eval_protocol.json",
+   "sha256": "96d8e10e4adda87721674af2f429b87ad1b531d2317bd9283e9567dc503393f5"
+  },
+  "real_splits": {
+   "path": "/home/jetson/jetformer/data/datasets/clean_driving_20261011/splits.json",
+   "sha256": "77feb3d45c0499becae37ae424a91095bf30c6b7a75ccd127dc9419c9adfe394"
+  },
+  "sim_splits": {
+   "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf/splits.json",
+   "sha256": "bd2aa1af305bf849c38e5fe4cd4f4e431e8b9e6e5a2a401d937422388e0353f4"
+  }
+ },
+ "arms": {
+  "A": {
+   "role": "基準(新しく学習しない)",
+   "runs": {
+    "0": "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+    "1": "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30"
+   },
+   "recipe": "実機だけ(clean_driving_20261011)・30 エポック・間引き 1/3・バッチ 64・lr 3e-4 cosine・AdamW wd 1e-4・今の操作値なし・衝突 2.5G の除外・ジャンル数 6",
+   "model_B": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "predictions": "10/12 の data/zoo/policy_zoo_20261012/pred/jetformer_v0_s{0,1}{,_last}.npz・B{,_last}.npz・pert/ をそのまま使う"
+  },
+  "C": {
+   "role": "主の腕: 混ぜて学習",
+   "recipe": "A と同じ(データだけ simreal_mix_20261013。ジャンル数 9 = 0〜8)",
+   "commands": {
+    "0": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 30 --lr 3e-4 --out data/runs/simreal_mix_20261013-cotrain-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 30 --lr 3e-4 --out data/runs/simreal_mix_20261013-cotrain-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simreal_mix_20261013-cotrain-s0"
+    },
+    "1": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 30 --lr 3e-4 --out data/runs/simreal_mix_20261013-cotrain-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 30 --lr 3e-4 --out data/runs/simreal_mix_20261013-cotrain-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simreal_mix_20261013-cotrain-s1"
+    }
+   }
+  },
+  "C+FT": {
+   "role": "主の腕: C のあと実機だけで微調整",
+   "recipe": "同じ種の C の best.pth から --init。simreal_mix_20261013 + ドロップの表(シミュレーターのフレームを全部外す)= 学習のフレームは A と同じ 5912(順番も同じ)・検証も同じ。lr 1e-4・12 エポック・cosine・同じ種。ジャンル数 9 のまま(model_config の trained_modes は [4, 5]。頭 8 の重みは C のまま残る)",
+   "commands": {
+    "0": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 12 --lr 1e-4 --init data/runs/simreal_mix_20261013-cotrain-s0/best.pth --drop-mask data/derived/simreal_mix_20261013/drop_sim_frames.npz --out data/runs/simreal_mix_20261013-cotrain-ft-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 12 --lr 1e-4 --init data/runs/simreal_mix_20261013-cotrain-s0/best.pth --drop-mask data/derived/simreal_mix_20261013/drop_sim_frames.npz --out data/runs/simreal_mix_20261013-cotrain-ft-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simreal_mix_20261013-cotrain-ft-s0"
+    },
+    "1": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 12 --lr 1e-4 --init data/runs/simreal_mix_20261013-cotrain-s1/best.pth --drop-mask data/derived/simreal_mix_20261013/drop_sim_frames.npz --out data/runs/simreal_mix_20261013-cotrain-ft-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/simreal_mix_20261013 --epochs 12 --lr 1e-4 --init data/runs/simreal_mix_20261013-cotrain-s1/best.pth --drop-mask data/derived/simreal_mix_20261013/drop_sim_frames.npz --out data/runs/simreal_mix_20261013-cotrain-ft-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simreal_mix_20261013-cotrain-ft-s1"
+    }
+   }
+  },
+  "A+FT": {
+   "role": "対照(副): 微調整を足しただけの効果を分ける",
+   "recipe": "同じ種の A の best.pth から、C+FT と同じ微調整(clean_driving_20261011・lr 1e-4・12 エポック・cosine)。ジャンル数 6 のまま",
+   "commands": {
+    "0": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 12 --lr 1e-4 --init data/runs/clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30/best.pth --out data/runs/clean_driving_20261011-jetformer_v0-s0-ft-real-lr1e-4-e12 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 12 --lr 1e-4 --init data/runs/clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30/best.pth --out data/runs/clean_driving_20261011-jetformer_v0-s0-ft-real-lr1e-4-e12 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "clean_driving_20261011-jetformer_v0-s0-ft-real-lr1e-4-e12"
+    },
+    "1": {
+     "train": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 12 --lr 1e-4 --init data/runs/clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30/best.pth --out data/runs/clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 12 --lr 1e-4 --init data/runs/clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30/best.pth --out data/runs/clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12"
+    }
+   },
+   "why": "C+FT は A より 12 エポック多く学習する。C+FT が A より良くても、それがシミュレーターのおかげか、追加の微調整のおかげかを分けるため(約 15 分)"
+  }
+ },
+ "gpu_order": [
+  "C s0",
+  "C s1",
+  "C+FT s0",
+  "C+FT s1",
+  "A+FT s0",
+  "A+FT s1",
+  "エンジン(各 best.pth、tools/build_engine.py、1 本ずつ)",
+  "予測(保留 10,985 フレーム × best・last、ずれ、シミュレーターの 12 シーン)",
+  "エンジンの確認(engine_load_check.py と同じ計算)"
+ ],
+ "gpu_rules": "GPU は 1 プロセスずつ(nvidia-smi・ps で確かめる。web の走行中は始めない)・バッチ ≤ 64・workers ≤ 4・nice。電源が落ちたら同じコマンドに --resume(last.pth から)。出来たもの(result.json の state=done、予測の npz)は飛ばす",
+ "evaluation": {
+  "frames": "10/12 と同じ: rl_evaluate.pred_table()(key 3d339512828b17195d568f1b93ee4a28208f2e85)の 10,985 フレームを予測し、主指標は part 0 の人の 11 シーン & future_valid & vehicle_valid & 2.5G の衝突の前後でない 4670 フレーム",
+  "prediction": "runtime.load_run(学習結果, best|last) → runtime.forward(PyTorch FP32・eval)。ジャンル = aligned の mode (4・5。rl_evaluate._genres と同じ)。tools/policy_zoo.py の _Frames・_predict_frames と同じ計算",
+  "note_val_selection": "主指標の 11 シーンは、A でも C でも最良のエポックを選ぶ検証のシーン(10/12 と同じ条件。D9 の甘さはどの腕も同じ形で入る)。last.pth の確認で、選び方による差を見る"
+ },
+ "primary": {
+  "L": "人のきれいな走行の L1 [µs] = |予測 − 人|(10 ステップ × [ステア, スロットル] の平均)のフレーム平均(10/12 と同じ)",
+  "arm_value": "腕の値 = 2 つの種の平均 L̄、[min, max]",
+  "reference": "A = v0 の種 0・1(best.pth: 49.146・49.457 µs、last.pth: 49.235・49.752 µs)。モデル B は別の行(49.144・49.091 µs)",
+  "spread": "A のばらつき s_A = {v0 種 0, v0 種 1, モデル B}(同じ作り方の 3 本)の L の範囲。best 0.313 µs・last 0.661 µs(種 2 本だけなら 0.311・0.517)",
+  "threshold_us": {
+   "best": 0.6260000000000048,
+   "last": 1.3220000000000027
+  },
+  "better": "「良い」= 腕の 2 つの種の両方が A の 2 つの種の両方より小さい(max_腕 < min_A)かつ 平均の改善 L̄_A − L̄_腕 > 2 × s_A(best 0.626 µs)",
+  "worse": "「悪い」= min_腕 > max_A かつ L̄_腕 − L̄_A > 2 × s_A",
+  "equivalent": "ほかは「同等」",
+  "ckpt_check": "last.pth の予測で同じ計算(閾値は last の 2 × s_A = 1.322 µs)。best で「良い」でも last で「良い」でなければ「同等」に下げる(10/12 と同じ)。「悪い」は best のまま",
+  "practical": "|L̄_A − L̄_腕| ≥ 10 µs なら「実用上の差」(10/12 の δ)。「良い」でも 10 µs 未満なら「小さいが一貫した差」と書く",
+  "code": "tools/sim_cotrain.py の judge_primary(arm, A, spread_mult=2, spread_floor=s_A)・final_verdict(best, last)"
+ },
+ "secondary_comparisons": {
+  "C+FT_vs_C": "同じ規則で、基準を C の種 0・1 にする(s = max(C の種の範囲, s_A))。微調整が C の上に足したもの",
+  "C+FT_vs_A+FT": "同じ規則で、基準を A+FT の種 0・1 にする(s = max(A+FT の種の範囲, s_A))。C+FT が A より「良い」とき、A+FT にも「良い」なら → シミュレーターの効果",
+  "paired": "種ごとの差(C+FT 種 i − C 種 i、C+FT 種 i − A+FT 種 i)も載せる(同じ種から始めた組)",
+  "own_spread": "腕の種の範囲が 2 × s_A を超えたら「ばらつきが大きい」と書く"
+ },
+ "secondary_metrics": {
+  "per_genre": "ジャンル 4(高速)・5(低速)別の L1・3 フレーム先のステア・スロットルの MAE・向きの正解率・前進の偏り fwd_bias(compare_models.metrics。主指標のフレーム)",
+  "speed_habit": "速さの癖が移ったか: ジャンル別の fwd_bias(種の平均)が A(種の平均)から 10 µs 以上ずれたら「速さの癖の移り」と書く(シミュレーターは速い: スロットルの中央値 1267 µs vs 実機 1315 µs)",
+  "r1_de": "10/12 と同じ(drive_outputs・ゲイン 1.3/1.0・先読み 3・各学習結果の model_config の中心と中立、R1 17 通過・DE 14 通過、通過の選び直し 10,000 回・種 0、R = A の種の平均、「良い」= (a) 99.375% 区間の下限 > 0 (b) 両方の種で > 0 (c) 4 組すべて ≥ 10 µs (d) 差の差の 99.375% 区間の下限 > 0、「悪い」= 95% 区間の上限 < 0)。10/12 の陰性対照で種どうしでも |d̄| が R1 7.7 µs・DE 2.8 µs あり、R1 の NC-B は「悪い」になった。それ以下の差は「ばらつきの内」と書く。判定には使わない(参考)",
+  "robustness": "10/12 と同じ 5 つのずれ(画像 3 行下・上、明るさ ×0.8・×1.2、ToF 1 行下)、同じ 1559 フレーム、best.pth。ΔL1 = ずれの L1 の平均 − ずれなしの L1。「ずれに強い」= ΔL1_腕(種の平均)≤ 0.8 × ΔL1_A(0.793 µs)かつ両方の種で ΔL1 ≤ ΔL1_A",
+  "collapse": "10/12 と同じ「崩れ」: 直線 542 フレームの前進の強さの低下 > 5%、fwd_bias < −30 µs、向きの正解率 < A − 0.01 のどれか。崩れた腕は「良い」でも推奨しない",
+  "sim_l1": "シミュレーターの L1(参考): 元のシミュレーターのデータセットの val の 12 シーン(混ぜたデータセットでは学習に入っている = 保留ではない。C・C+FT は「覚えたか・微調整で忘れたか」、A・A+FT は「実機だけの学習でシミュレーターをどれだけ当てられるか」の目安)。フレーム = future_valid & vehicle_valid & 2.5G の衝突の前後でない全フレーム。ジャンルの頭 8(C・C+FT)・4・5(全部の腕)で予測。ジャンルは one-hot で直接与え、rl_evaluate._genres の代用はしない(C+FT の model_config の trained_modes は [4, 5] になるが、頭 8 の重みは C から引き継いでいる。A・A+FT はジャンル数 6 で頭 8 が無いので 4・5 だけ)",
+  "latency": "各 best.pth の FP16 エンジン(tools/build_engine.py)を 10/12 と同じ道具(engine_load_check.py: 100 回の空回しの後 600 回の run_numpy、実フレーム 64 個で FP32 との差)で測る。ゲート: 精度 ≤ 2.5 µs・run_numpy 中央 ≤ 6.0 ms・p99 ≤ 8.0 ms・peak_mem ≤ 4,096 MB・NaN/Inf なし。A は 10/12 の値(中央 2.37・2.36 ms)",
+  "training": "学習の曲線(実機の検証 L1・ジャンル別)、最良のエポック、1 エポックの秒数、best − last"
+ },
+ "conclusion_rules": [
+  "1. C+FT・C のそれぞれを主指標で A と比べ、「良い / 同等 / 悪い」と実用上の差(10 µs)を書く",
+  "2. C+FT が「良い」で、C+FT vs A+FT も「良い」なら「シミュレーターを混ぜた事前学習 + 微調整で実機の精度が上がった」。C+FT vs A+FT が「同等」なら「微調整を足した効果と区別できない(シミュレーターの効果とは言えない)」",
+  "3. C だけ「良い」なら「混ぜるだけで上がった」。どちらも「同等」なら「シミュレーターを混ぜても実機の保留データの精度は上がらなかった(A と同じ)」。「悪い」はそのまま書く",
+  "4. 走行の推奨を変える(モデル B から替える)のは、「良い」かつ実用上の差(≥ 10 µs)かつ崩れなし・ゲート合格の腕だけ。「良い」でも 10 µs 未満なら机上の小さな改善として報告し、推奨はモデル B のまま(実車の A/B/A の候補には書く)",
+  "5. 机上の結論は実車の改善を示さない(10/12 の規則 7 のまま)。この結論は TransFuser軽量型(JetFormer v0)・この学習の条件(調整なし)・このシミュレーターのデータ(60 シーン・合成の先生)に限る"
+ ],
+ "deviations_from_task": [
+  "A+FT(対照)を足した: 追加の微調整だけの効果を分けるため。GPU が足りなければ最後に回し、無いときは結論 2 を「分けられない」と書く",
+  "ばらつき s_A は種 2 本ではなく {v0 種 0, 種 1, モデル B} の 3 本の範囲(best 0.313 µs。2 本なら 0.311 µs で、ほぼ同じ)",
+  "last.pth でも同じ判定をして、best だけの「良い」は「同等」に下げる(10/12 と同じ)",
+  "R1・DE の区間は 10/12 と同じ 99.375% のまま(比べる数は 4 つで 98.75% でよいが、10/12 と同じ数字にそろえた。厳しめ)",
+  "シミュレーターの L1 は、指示のとおり 60 シーンを全部学習に入れたので保留ではない(参考の数字)"
+ ],
+ "baseline_A": {
+  "L_us": {
+   "best": {
+    "jetformer_v0_s0": 49.146,
+    "jetformer_v0_s1": 49.457,
+    "B": 49.144
+   },
+   "last": {
+    "jetformer_v0_s0": 49.235,
+    "jetformer_v0_s1": 49.752,
+    "B": 49.091
+   }
+  },
+  "per_genre": {
+   "jetformer_v0_s0": {
+    "human_clean": {
+     "n": 4670,
+     "l1_us": 49.146,
+     "fwd_bias_us": 9.3,
+     "steer_sign_acc": 0.995,
+     "steer_mae_k3": 47.8,
+     "throttle_mae_k3": 45.8
+    },
+    "human_clean_genre4": {
+     "n": 1922,
+     "l1_us": 60.281,
+     "fwd_bias_us": 34.3,
+     "steer_sign_acc": 0.999,
+     "steer_mae_k3": 48.3,
+     "throttle_mae_k3": 68.7
+    },
+    "human_clean_genre5": {
+     "n": 2748,
+     "l1_us": 41.358,
+     "fwd_bias_us": -8.2,
+     "steer_sign_acc": 0.992,
+     "steer_mae_k3": 47.4,
+     "throttle_mae_k3": 29.8
+    }
+   },
+   "jetformer_v0_s1": {
+    "human_clean": {
+     "n": 4670,
+     "l1_us": 49.457,
+     "fwd_bias_us": 10.8,
+     "steer_sign_acc": 0.991,
+     "steer_mae_k3": 48.6,
+     "throttle_mae_k3": 45.8
+    },
+    "human_clean_genre4": {
+     "n": 1922,
+     "l1_us": 61.125,
+     "fwd_bias_us": 33.9,
+     "steer_sign_acc": 0.992,
+     "steer_mae_k3": 49.8,
+     "throttle_mae_k3": 69.4
+    },
+    "human_clean_genre5": {
+     "n": 2748,
+     "l1_us": 41.295,
+     "fwd_bias_us": -5.3,
+     "steer_sign_acc": 0.991,
+     "steer_mae_k3": 47.8,
+     "throttle_mae_k3": 29.3
+    }
+   },
+   "B": {
+    "human_clean": {
+     "n": 4670,
+     "l1_us": 49.144,
+     "fwd_bias_us": 9.7,
+     "steer_sign_acc": 0.991,
+     "steer_mae_k3": 48.5,
+     "throttle_mae_k3": 45.5
+    },
+    "human_clean_genre4": {
+     "n": 1922,
+     "l1_us": 60.732,
+     "fwd_bias_us": 33.3,
+     "steer_sign_acc": 0.994,
+     "steer_mae_k3": 49.4,
+     "throttle_mae_k3": 68.4
+    },
+    "human_clean_genre5": {
+     "n": 2748,
+     "l1_us": 41.038,
+     "fwd_bias_us": -6.7,
+     "steer_sign_acc": 0.989,
+     "steer_mae_k3": 47.9,
+     "throttle_mae_k3": 29.4
+    }
+   }
+  },
+  "r1_window_mean_us": {
+   "best": {
+    "jetformer_v0_s0": 1330.3,
+    "jetformer_v0_s1": 1340.4,
+    "B": 1335.1
+   },
+   "last": {
+    "jetformer_v0_s0": 1336.0,
+    "jetformer_v0_s1": 1342.5,
+    "B": 1331.9
+   }
+  },
+  "de_window_mean_us": {
+   "best": {
+    "jetformer_v0_s0": 1495.2,
+    "jetformer_v0_s1": 1491.9,
+    "B": 1494.0
+   },
+   "last": {
+    "jetformer_v0_s0": 1496.7,
+    "jetformer_v0_s1": 1491.0,
+    "B": 1493.7
+   }
+  },
+  "nc_d_mean_us": {
+   "r1": {
+    "NC-A": 7.6948,
+    "NC-B": -7.4651
+   },
+   "de": {
+    "NC-A": -2.7762,
+    "NC-B": 2.3164
+   }
+  },
+  "nc_bad": {
+   "r1": {
+    "NC-A": false,
+    "NC-B": true
+   },
+   "de": {
+    "NC-A": false,
+    "NC-B": false
+   }
+  },
+  "robust_dL1_us": {
+   "jetformer_v0_s0": 0.699,
+   "jetformer_v0_s1": 0.887,
+   "B": 0.791
+  },
+  "robust_per_pert_dL1_us": {
+   "jetformer_v0_s0": {
+    "img_down3": 1.395,
+    "img_up3": 1.52,
+    "bright_0.8": 0.257,
+    "bright_1.2": 0.109,
+    "tof_down1": 0.214
+   },
+   "jetformer_v0_s1": {
+    "img_down3": 2.449,
+    "img_up3": 0.939,
+    "bright_0.8": 0.295,
+    "bright_1.2": -0.036,
+    "tof_down1": 0.787
+   },
+   "B": {
+    "img_down3": 1.238,
+    "img_up3": 0.869,
+    "bright_0.8": 0.203,
+    "bright_1.2": -0.089,
+    "tof_down1": 1.733
+   }
+  },
+  "robust_frames": 1559,
+  "collapse": {
+   "jetformer_v0_s0": {
+    "straight_fwd_strength_us": 204.4,
+    "fwd_bias_us": 9.3,
+    "steer_sign_acc": 0.995
+   },
+   "jetformer_v0_s1": {
+    "straight_fwd_strength_us": 203.3,
+    "fwd_bias_us": 10.8,
+    "steer_sign_acc": 0.991
+   },
+   "B": {
+    "straight_fwd_strength_us": 203.9,
+    "fwd_bias_us": 9.7,
+    "steer_sign_acc": 0.991
+   }
+  },
+  "latency": {
+   "jetformer_v0_s0": {
+    "run_numpy_median_ms": 2.374,
+    "run_numpy_p99_ms": 2.654,
+    "engine_median_ms": 1.494,
+    "loop_estimate_ms": 5.6,
+    "cam_to_pwm_estimate_ms": 28.0,
+    "params_total_m": 14.08,
+    "params_trainable_m": 14.08
+   },
+   "jetformer_v0_s1": {
+    "run_numpy_median_ms": 2.362,
+    "run_numpy_p99_ms": 2.56,
+    "engine_median_ms": 1.519,
+    "loop_estimate_ms": 5.58,
+    "cam_to_pwm_estimate_ms": 28.0,
+    "params_total_m": 14.08,
+    "params_trainable_m": 14.08
+   },
+   "B": {
+    "run_numpy_median_ms": 2.377,
+    "run_numpy_p99_ms": 2.783,
+    "engine_median_ms": 1.497,
+    "loop_estimate_ms": 5.6,
+    "cam_to_pwm_estimate_ms": 28.0,
+    "params_total_m": 14.08,
+    "params_trainable_m": 14.08
+   }
+  },
+  "frames": {
+   "pred_table": 10985,
+   "human_clean": 4670,
+   "pred_table_key": "3d339512828b17195d568f1b93ee4a28208f2e85"
+  },
+  "spread_us": {
+   "best": 0.3130000000000024,
+   "last": 0.6610000000000014,
+   "best_two_seeds": 0.31099999999999994,
+   "last_two_seeds": 0.517000000000003
+  },
+  "ref_mean_us": {
+   "best": 49.301500000000004,
+   "last": 49.4935
+  },
+  "robust_ref_dL1_us": 0.7929999999999999,
+  "nc_abs_max_us": {
+   "r1": 7.6948,
+   "de": 2.7762
+  }
+ },
+ "gpu_time_estimate": null
+}

@@ -1,0 +1,191 @@
+{
+ "dataset": "simreal_mix_20261013",
+ "checked_at": "2026-10-13T11:48:41",
+ "ok": {
+  "card_modes_4_5_8": true,
+  "card_source_mixed": true,
+  "card_counts": true,
+  "card_mode_frames": true,
+  "val_is_real_val": true,
+  "train_has_all_sim": true,
+  "train_real_same_as_A": true,
+  "real_aligned_equal": true,
+  "real_images_equal": true,
+  "sim_aligned_equal_original": true,
+  "sim_images_equal": true,
+  "sim_ref_scenes_12": true,
+  "C_val_same_frames_as_A": true,
+  "FT_train_same_frames_as_A": true,
+  "FT_val_same_frames_as_A": true,
+  "FT_no_sim_frames": true,
+  "C_has_sim_frames": true,
+  "C_real_counts_same_as_A": true,
+  "action_reference_same_as_A": true
+ },
+ "card": {
+  "scenes": 112,
+  "train_scenes": 101,
+  "val_scenes": 11,
+  "frames": 63502,
+  "mode_ids": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8
+  ],
+  "num_modes": 9,
+  "mode_frames": {
+   "4": 10181,
+   "5": 17321,
+   "8": 36000
+  },
+  "expected_mode_frames": {
+   "4": 10181,
+   "5": 17321,
+   "8": 36000
+  },
+  "source": "mixed",
+  "tags": [
+   "simulator"
+  ],
+  "sim_scenes": 60,
+  "hours": 0.593,
+  "aligned_restored": true
+ },
+ "real_scenes": {
+  "compared": 52,
+  "keys": [
+   "timestamps_us",
+   "cam_files",
+   "tof",
+   "tof_age_ms",
+   "imu",
+   "vehicle",
+   "vehicle_valid",
+   "vehicle_age_ms",
+   "future_actions",
+   "future_valid",
+   "erpm_valid",
+   "mode"
+  ],
+  "different": [],
+  "diffs": {},
+  "images_checked": 156,
+  "images_different": []
+ },
+ "sim_scenes": {
+  "compared": 60,
+  "keys": [
+   "timestamps_us",
+   "tof",
+   "tof_age_ms",
+   "imu",
+   "vehicle",
+   "vehicle_valid",
+   "vehicle_age_ms",
+   "future_actions",
+   "future_valid",
+   "erpm_valid",
+   "mode"
+  ],
+  "different": [],
+  "diffs": {},
+  "image_names_different": [],
+  "images_checked": 180,
+  "images_different": []
+ },
+ "rebuild_without_restore": {
+  "note": "置き換えの前(build_dataset で作り直しただけ)の、元のシミュレーターのデータセットとの違い",
+  "future_actions_max_abs_us": 197.0152587890625,
+  "future_actions_frames_gt_1us": 24000,
+  "frames": 36000,
+  "imu_max_abs": 7.199907064437866
+ },
+ "sim_ref_scenes": [
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0049",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0050",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0051",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0052",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0053",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0054",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0055",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0056",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0057",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0058",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0059",
+  "ds-jetformer-simulator-id8-20min_20261012-150956_b55616cf-0060"
+ ],
+ "train_frames": {
+  "A": {
+   "train": 5912,
+   "val": 1559,
+   "num_modes": 6,
+   "mode_counts": {
+    "4": 2228,
+    "5": 3684
+   },
+   "impact_masked": [
+    3522,
+    1083
+   ],
+   "action_reference": [
+    1441.0,
+    1496.0
+   ]
+  },
+  "C": {
+   "train": 17732,
+   "val": 1559,
+   "num_modes": 9,
+   "mode_counts": {
+    "4": 2228,
+    "5": 3684,
+    "8": 11820
+   },
+   "impact_masked": [
+    3522,
+    1083
+   ],
+   "action_reference": [
+    1441.0,
+    1496.0
+   ],
+   "stopped_frames_in_train": 1049
+  },
+  "C+FT": {
+   "train": 5912,
+   "val": 1559,
+   "num_modes": 9,
+   "mode_counts": {
+    "4": 2228,
+    "5": 3684
+   },
+   "dropped": [
+    35400,
+    0
+   ],
+   "impact_masked": [
+    3522,
+    1083
+   ],
+   "action_reference": [
+    1441.0,
+    1496.0
+   ]
+  }
+ },
+ "drop_mask": {
+  "path": "/home/jetson/jetformer/data/derived/simreal_mix_20261013/drop_sim_frames.npz",
+  "sha256": "0be4d19946c03811fbfe09be810b681715dc81df8f842c43f5fab309d96d7686",
+  "rows": 63502,
+  "drop": 36000,
+  "scenes": 112,
+  "drop_scenes": 60
+ },
+ "all_ok": true
+}

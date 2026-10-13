@@ -1,0 +1,39 @@
+{
+ "note": "README の参考の数字。判定には使わない。画像は 224x224、300 枚ずつ(random.Random(0))の中央値。",
+ "images": {
+  "sim": {
+   "brightness": 112.8,
+   "contrast_gray_std": 60.9,
+   "saturation": 50.0,
+   "edge_strength": 16.1,
+   "top_third_brightness": 155.6,
+   "bottom_third_brightness": 84.0
+  },
+  "real": {
+   "brightness": 104.9,
+   "contrast_gray_std": 34.8,
+   "saturation": 12.9,
+   "edge_strength": 7.2,
+   "top_third_brightness": 117.1,
+   "bottom_third_brightness": 100.1
+  },
+  "frames_available": {
+   "sim": 36000,
+   "real": 27502
+  }
+ },
+ "sim_trajectory_spread": {
+  "scenes": 60,
+  "frames": 600,
+  "steer": {
+   "mean_abs_dev_from_mean_traj_us": 7.6,
+   "max_scene_dev_us": 18.1,
+   "within_scene_std_over_time_us": 219.9
+  },
+  "throttle": {
+   "mean_abs_dev_from_mean_traj_us": 3.8,
+   "max_scene_dev_us": 9.2,
+   "within_scene_std_over_time_us": 68.5
+  }
+ }
+}

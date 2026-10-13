@@ -1,0 +1,184 @@
+{
+ "title": "JetFormer 10月13日\nシミュレーターを足すと精度は上がる?",
+ "log": "20261010-173445",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月13日のレポート",
+   "src_start": 160.6,
+   "src_end": 165.9,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "実機だけの学習は49µsで止まる",
+    "シミュレーターと混ぜて学習→実機で仕上げ",
+    "モデル: TransFuser軽量型(JetFormer v0)",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。今日は、シミュレーターのデータで精度が上がるか試しました!",
+     "say": "ラピカです。今日は、シミュレーターのデータで、精度が上がるか試しました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_why",
+   "kind": "clip",
+   "log": "20261010-172910",
+   "caption": "実機だけだと49µsで止まる",
+   "src_start": 38.4,
+   "src_end": 49.4,
+   "speed": 1,
+   "highlights": [],
+   "lines": [
+    {
+     "text": "実機だけで学ぶと、学習の誤差は15µsほどまで下がるのに、新しい周では49µsで止まります。",
+     "say": "実機だけで学ぶと、学習の誤差は15マイクロ秒ほどまで下がるのに、新しい周では、49マイクロ秒で止まります。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "データが足りないのかも。",
+     "say": "データが足りないのかも。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s3_method",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "混ぜて学習→実機で仕上げ",
+   "src_start": 166.0,
+   "src_end": 177.2,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_cotrain_20261013/fig/summary_method.png",
+   "lines": [
+    {
+     "text": "そこで、シミュレーターと実機を混ぜて学び、そのあと実機だけでfinetuningしました。",
+     "say": "そこで、シミュレーターと実機を混ぜて学び、そのあと、実機だけでファインチューニングしました。",
+     "expression": "normal",
+     "pose": "point"
+    },
+    {
+     "text": "シミュレーターの速く走る癖は、ジャンル別の頭で分けます。",
+     "say": "シミュレーターの速く走るくせは、ジャンル別のあたまで分けます。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_results",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "結果: 精度は上がらず",
+   "src_start": 177.2,
+   "src_end": 188.45,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_cotrain_20261013/fig/summary_results.png",
+   "lines": [
+    {
+     "text": "結果、実機の精度は上がりませんでした。差は0.4µsで、区別できない大きさです。",
+     "say": "結果、実機の精度は、上がりませんでした。差は0.4マイクロ秒で、区別できない大きさです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "小さな入力のずれには、少し強くなりました。",
+     "say": "小さな入力のずれには、少し強くなりました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_whynot",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "上がらなかった理由(仮説)",
+   "src_start": 188.5,
+   "src_end": 194.85,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "60シーンはほぼ同じ20秒の走り",
+    "シーンどうしのずれは7.6µsだけ",
+    "カメラの見た目が大きく違う",
+    "49µsは人の操作の揺れの底かも"
+   ],
+   "lines": [
+    {
+     "text": "調べると、シミュレーターの60シーンは、ほぼ同じ走りのくり返しでした。",
+     "say": "調べると、シミュレーターの60シーンは、ほぼ同じ走りの、くり返しでした。",
+     "expression": "surprised",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 194.9,
+   "src_end": 201.05,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "シミュレーターと実機を混ぜて学習",
+    "そのあと実機でfinetuning",
+    "精度は実機だけと同等(差0.4µs)",
+    "ずれへの強さは少し上がった",
+    "走行はモデルBのまま"
+   ],
+   "lines": [
+    {
+     "text": "混ぜても仕上げても、実機の精度は変わらず、走行はモデルBのままです。",
+     "say": "混ぜても、仕上げても、実機の精度は変わらず、走行は、モデルビーのままです。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s7_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 213.5,
+   "src_end": 224.85,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "シミュレーターの場面を散らす",
+    "画像を実機の見た目に近づける",
+    "人の揺れで決まる誤差の底を測る",
+    "実機データを増やす価値を確かめる",
+    "机上の比較だけ。実車では未確認"
+   ],
+   "lines": [
+    {
+     "text": "課題は、シミュレーターの場面を散らすこと、画像を実機に近づけること、誤差の底を測ることです。",
+     "say": "課題は、シミュレーターの場面を散らすこと、画像を実機に近づけること、そして、誤差の底を測ることです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

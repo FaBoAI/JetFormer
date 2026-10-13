@@ -1,0 +1,136 @@
+{
+ "frames": {
+  "clean": 4670,
+  "g4": 1922,
+  "g5": 2748
+ },
+ "L": {
+  "A_s0_best": 49.1459,
+  "A_s0_last": 49.2349,
+  "A_s1_best": 49.4565,
+  "A_s1_last": 49.7522,
+  "B_s0_best": 49.1435,
+  "B_s0_last": 49.0909,
+  "C_s0_best": 49.9674,
+  "C_s0_last": 50.2134,
+  "C_s1_best": 49.4907,
+  "C_s1_last": 50.2856,
+  "C+FT_s0_best": 50.0871,
+  "C+FT_s0_last": 50.2655,
+  "C+FT_s1_best": 49.34,
+  "C+FT_s1_last": 50.0329,
+  "A+FT_s0_best": 48.9711,
+  "A+FT_s0_last": 49.1762,
+  "A+FT_s1_best": 49.5159,
+  "A+FT_s1_last": 49.7172
+ },
+ "s_A_recomputed": {
+  "best": 0.313,
+  "last": 0.6613
+ },
+ "arm_mean": {
+  "A": {
+   "best": 49.3012,
+   "last": 49.4936
+  },
+  "C": {
+   "best": 49.729,
+   "last": 50.2495
+  },
+  "C+FT": {
+   "best": 49.7136,
+   "last": 50.1492
+  },
+  "A+FT": {
+   "best": 49.2435,
+   "last": 49.4467
+  }
+ },
+ "seed_range_best": {
+  "A": 0.3106,
+  "C": 0.4767,
+  "C+FT": 0.7472,
+  "A+FT": 0.5448
+ },
+ "verdicts": {
+  "C_vs_A": {
+   "final": "equivalent",
+   "class_best": "equivalent",
+   "class_last": "equivalent",
+   "diff_best": 0.428,
+   "thr_best": 0.626,
+   "diff_last": 0.756,
+   "thr_last": 1.322
+  },
+  "C+FT_vs_A": {
+   "final": "equivalent",
+   "class_best": "equivalent",
+   "class_last": "equivalent",
+   "diff_best": 0.412,
+   "thr_best": 0.626,
+   "diff_last": 0.656,
+   "thr_last": 1.322
+  },
+  "A+FT_vs_A": {
+   "final": "equivalent",
+   "class_best": "equivalent",
+   "class_last": "equivalent",
+   "diff_best": -0.058,
+   "thr_best": 0.626,
+   "diff_last": -0.047,
+   "thr_last": 1.322
+  },
+  "C+FT_vs_C": {
+   "final": "equivalent",
+   "class_best": "equivalent",
+   "class_last": "equivalent",
+   "diff_best": -0.015,
+   "thr_best": 0.953,
+   "diff_last": -0.1,
+   "thr_last": 1.322
+  },
+  "C+FT_vs_A+FT": {
+   "final": "equivalent",
+   "class_best": "equivalent",
+   "class_last": "equivalent",
+   "diff_best": 0.47,
+   "thr_best": 1.09,
+   "diff_last": 0.702,
+   "thr_last": 1.322
+  }
+ },
+ "seed_order_vs_A": {
+  "C": {
+   "best": {
+    "all_above_A": true,
+    "all_below_A": false
+   },
+   "last": {
+    "all_above_A": true,
+    "all_below_A": false
+   }
+  },
+  "C+FT": {
+   "best": {
+    "all_above_A": false,
+    "all_below_A": false
+   },
+   "last": {
+    "all_above_A": true,
+    "all_below_A": false
+   }
+  },
+  "A+FT": {
+   "best": {
+    "all_above_A": false,
+    "all_below_A": false
+   },
+   "last": {
+    "all_above_A": false,
+    "all_below_A": false
+   }
+  }
+ },
+ "pairs_mixed_gt_realonly_best": "17/20",
+ "mismatch_vs_evaluation_json": []
+}

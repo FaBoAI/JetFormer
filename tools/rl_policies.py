@@ -63,7 +63,9 @@ GPU_PATTERNS = ('tools/train.py', 'build_engine.py', 'offline_rl.py features', '
                 'tools/evaluate.py', 'rl_policies.py check-engines', 'rl_policies.py common-val',
                 'rl_evaluate.py predict', 'rl_evaluate.py crosscheck', 'rl_evaluate.py engine-check',
                 # 方策の比較(policy zoo)・推論の速さの計測
-                'benchmark_model.py', 'policy_zoo.py train', 'policy_zoo.py predict', 'policy_zoo.py engine-check')
+                'benchmark_model.py', 'policy_zoo.py train', 'policy_zoo.py predict', 'policy_zoo.py engine-check',
+                # シミュレーターと実機を混ぜた学習(2026-10-13)の評価の予測
+                'sim_cotrain_eval.py predict', 'sim_cotrain_eval.py crosscheck')
 DISABLED_ENGINE_SUFFIX = '.do_not_drive'   # 走らせない方策のエンジン(管理画面の一覧から外すために名前を変えたもの)
 
 

@@ -1,0 +1,187 @@
+{
+ "rows": 63502,
+ "drop_true": 36000,
+ "sim_rows": 36000,
+ "sim_frames_in_mix": 36000,
+ "drop_equals_sim_rows": true,
+ "sim_rows_cover_all_frames": true,
+ "FT_train_same_as_A_incl_order": true,
+ "FT_sim_samples": 0,
+ "FT_train": 5912,
+ "FT_dropped_before_stride": 35400,
+ "C_train": 17732,
+ "C_sim_samples": 11820,
+ "C_real_part_same_as_A": true,
+ "mode_counts": {
+  "A": {
+   "5": 3684,
+   "4": 2228
+  },
+  "C": {
+   "5": 3684,
+   "4": 2228,
+   "8": 11820
+  },
+  "FT": {
+   "5": 3684,
+   "4": 2228
+  }
+ },
+ "val_same_C_FT_A": true,
+ "val_samples": 1559,
+ "optimizer_steps_per_run": {
+  "A": 2790,
+  "C": 8340,
+  "FT": 1116
+ },
+ "real_samples_seen": {
+  "A": 177360,
+  "C": 177360,
+  "C+FT": 248304,
+  "A+FT": 248304
+ },
+ "inits": {
+  "C+FT_s0": {
+   "init": "data/runs/simreal_mix_20261013-cotrain-s0/best.pth",
+   "init_is_C_s0_best": true,
+   "sha1_recorded": "d21010f22b2a",
+   "sha1_now": "d21010f22b2a",
+   "drop_mask": "data/derived/simreal_mix_20261013/drop_sim_frames.npz",
+   "dropped_train": 35400,
+   "sha1_match": true
+  },
+  "C+FT_s1": {
+   "init": "data/runs/simreal_mix_20261013-cotrain-s1/best.pth",
+   "init_is_C_s1_best": true,
+   "sha1_recorded": "7b142c2d4cdc",
+   "sha1_now": "7b142c2d4cdc",
+   "drop_mask": "data/derived/simreal_mix_20261013/drop_sim_frames.npz",
+   "dropped_train": 35400,
+   "sha1_match": true
+  },
+  "A+FT_s0": {
+   "init": "data/runs/clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30/best.pth",
+   "init_is_A_s0_best": true,
+   "sha1_recorded": "bb12216c7919",
+   "sha1_now": "bb12216c7919",
+   "drop_mask": null,
+   "dropped_train": 0,
+   "sha1_match": true
+  },
+  "A+FT_s1": {
+   "init": "data/runs/clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30/best.pth",
+   "init_is_A_s1_best": true,
+   "sha1_recorded": "161f472c2182",
+   "sha1_now": "161f472c2182",
+   "drop_mask": null,
+   "dropped_train": 0,
+   "sha1_match": true
+  }
+ },
+ "hyper": {
+  "A_s0": {
+   "epochs_done": 30,
+   "lr": 0.0003,
+   "batch": 64,
+   "stride": 3,
+   "seed": 0,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 25,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "clean_driving_20261011"
+  },
+  "A_s1": {
+   "epochs_done": 30,
+   "lr": 0.0003,
+   "batch": 64,
+   "stride": 3,
+   "seed": 1,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 25,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "clean_driving_20261011"
+  },
+  "C_s0": {
+   "epochs_done": 30,
+   "lr": 0.0003,
+   "batch": 64,
+   "stride": 3,
+   "seed": 0,
+   "train_samples": 17732,
+   "val_samples": 1559,
+   "best_epoch": 25,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "simreal_mix_20261013"
+  },
+  "C_s1": {
+   "epochs_done": 30,
+   "lr": 0.0003,
+   "batch": 64,
+   "stride": 3,
+   "seed": 1,
+   "train_samples": 17732,
+   "val_samples": 1559,
+   "best_epoch": 16,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "simreal_mix_20261013"
+  },
+  "C+FT_s0": {
+   "epochs_done": 12,
+   "lr": 0.0001,
+   "batch": 64,
+   "stride": 3,
+   "seed": 0,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 6,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "simreal_mix_20261013"
+  },
+  "C+FT_s1": {
+   "epochs_done": 12,
+   "lr": 0.0001,
+   "batch": 64,
+   "stride": 3,
+   "seed": 1,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 8,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "simreal_mix_20261013"
+  },
+  "A+FT_s0": {
+   "epochs_done": 12,
+   "lr": 0.0001,
+   "batch": 64,
+   "stride": 3,
+   "seed": 0,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 8,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "clean_driving_20261011"
+  },
+  "A+FT_s1": {
+   "epochs_done": 12,
+   "lr": 0.0001,
+   "batch": 64,
+   "stride": 3,
+   "seed": 1,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "best_epoch": 8,
+   "command_input": false,
+   "impact_g": 2.5,
+   "dataset": "clean_driving_20261011"
+  }
+ }
+}
