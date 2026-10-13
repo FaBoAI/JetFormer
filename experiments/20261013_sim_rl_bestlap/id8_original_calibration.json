@@ -1,0 +1,136 @@
+{
+ "source": "/home/jetson/jetformer/data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf/simulation/collection.json",
+ "source_sha256": "69aa2e30e156ac2219c37711ded81a2e2a891473ab2524403e784e0f21c1ecf7",
+ "note": "20分・60シーン(ID8)の収集時にブリッジへ接続されていたモデルの校正・設定(collection.json の contract からそのまま)。PWM換算(操舵中心1442µs・スロットル中立1498µs・最大0.52rad・7.24m/s)を元のデータと揃えるためだけに使う。",
+ "calibration": {
+  "schema": "jetformer-simulator-calibration-v1",
+  "provisional": true,
+  "steering_sign": 1,
+  "max_steering_rad": 0.52,
+  "max_speed_mps": 7.24,
+  "max_reverse_speed_mps": 0.8,
+  "erpm_per_mps": 2000.0,
+  "erpm_forward_sign": -1,
+  "pwm_min_us": 1000.0,
+  "pwm_max_us": 2000.0,
+  "fps": 30.0,
+  "jpeg_quality": 92,
+  "note": "シミュレーター用の仮設定です。PWMと実舵角・実速度・eRPMの対応、操舵方向は現物で確認し、UIのmaxSteer/maxSpeedと合わせてください。中心と中立はモデルと対になるmodel_config.jsonから読みます。",
+  "mode_id": 4,
+  "steer_gain": 0.95,
+  "throttle_gain": 1,
+  "steer_trim_us": 0,
+  "lookahead": 1,
+  "bundle_default_profile": "model_config.recommended_inference with model_config.simulator_calibration; physics mapping remains provisional"
+ },
+ "model_config": {
+  "steer_center_us": 1442.0,
+  "throttle_neutral_us": 1498.0,
+  "num_modes": 6,
+  "modes": [
+   {
+    "id": 0,
+    "name": "未設定",
+    "description": "ジャンル未設定(学習には使わない)"
+   },
+   {
+    "id": 1,
+    "name": "駐車(1)",
+    "description": ""
+   },
+   {
+    "id": 2,
+    "name": "駐車(2)",
+    "description": ""
+   },
+   {
+    "id": 3,
+    "name": "駐車(3)",
+    "description": ""
+   },
+   {
+    "id": 4,
+    "name": "高速走行",
+    "description": ""
+   },
+   {
+    "id": 5,
+    "name": "低速走行",
+    "description": ""
+   }
+  ],
+  "future_steps": 10,
+  "inputs": [
+   "image",
+   "tof",
+   "imu",
+   "state",
+   "mode"
+  ],
+  "tof_channels": 2,
+  "pwm_center": 1500,
+  "pwm_scale": 500,
+  "tof_max_mm": 4000,
+  "erpm_scale": 20000,
+  "dataset": "simulator-speed-mode4-finetune",
+  "stride": 1,
+  "trained_modes": [
+   4
+  ],
+  "train_mode_counts": {
+   "4": 3733
+  },
+  "command_input": false,
+  "mask_impacts": true,
+  "simulator_finetuned": true,
+  "parent_onnx_sha256": "82d62c21139580911f2a755ac142cd9062d4f0aebe47c970aa83572183bb0928",
+  "simulator_sensor_profile": "measured-height-approx",
+  "simulator_world_version": "indoor-course-eval-3-turf-board-removed",
+  "evaluation_route": "local-ordered-loop-mandatory-shortcut-not-official-competition",
+  "required_route_event": "shortcut",
+  "recommended_inference": {
+   "steering_gain": 0.95,
+   "throttle_gain": 1,
+   "lookahead": 1
+  },
+  "training_label_units": "post-gain applied PWM us; evaluation steering gain 0.95, throttle gain 1.0, lookahead 1 selected after training",
+  "warning": "Simulation-specific fine-tune and selected inference settings. Sensor heights are user-reported; angles, body geometry, mounting offsets and dynamics remain approximate. max_speed_mps=7.24 is a provisional PWM extrapolation, not measured maximum speed. No real-vehicle or new-course validation.",
+  "warm_start_onnx_sha256": "5f8e3b8731b13daaf1eae98dc42ef82f4dacc5631d445197fde34ab9636c2976",
+  "simulator_calibration": {
+   "schema": "jetformer-simulator-calibration-v1",
+   "steering_sign": 1,
+   "max_steering_rad": 0.52,
+   "max_speed_mps": 7.24,
+   "max_reverse_speed_mps": 0.8,
+   "erpm_per_mps": 2000,
+   "erpm_forward_sign": -1,
+   "pwm_min_us": 1000,
+   "pwm_max_us": 2000,
+   "fps": 30,
+   "jpeg_quality": 92,
+   "mode_id": 4,
+   "provisional": true,
+   "steer_gain": 0.95,
+   "throttle_gain": 1,
+   "steer_trim_us": 0,
+   "lookahead": 1
+  },
+  "simulator_physics": {
+   "acceleration": 1.2,
+   "steer_rate": 1.2
+  },
+  "simulator_sensors": {
+   "camera_height_m": 0.25,
+   "camera_pitch_deg": 11.8,
+   "camera_vertical_fov_deg": 36.4,
+   "camera_forward_m": -0.15,
+   "camera_left_m": 0,
+   "tof_height_m": 0.2,
+   "tof_pitch_deg": 16,
+   "tof_vertical_fov_deg": 36.46,
+   "tof_horizontal_fov_deg": 56.16,
+   "tof_forward_m": -0.15,
+   "tof_left_m": 0
+  }
+ }
+}

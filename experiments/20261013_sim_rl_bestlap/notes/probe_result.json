@@ -1,0 +1,2060 @@
+{
+ "schema": "sim-rl-bestlap-headless-probe/v1",
+ "node": "v24.19.0",
+ "world_version": "indoor-course-eval-3-turf-board-removed",
+ "world_load_ms": 194.161411,
+ "world_sha256": "2cbfaf5a12ec164a22db3339149845043d2138ad30d261e1e107aa693164c976",
+ "world_summary": {
+  "segments": 51,
+  "disks": 94,
+  "surfaces": [
+   [
+    "carpet",
+    0.8
+   ],
+   [
+    "blue-mat",
+    0.65
+   ],
+   [
+    "turf",
+    0.6
+   ],
+   [
+    "ptfe",
+    0.22
+   ],
+   [
+    "shortcut",
+    0.7
+   ]
+  ],
+  "bounds": {
+   "minX": -5.425,
+   "maxX": 5.425,
+   "minZ": -3.25,
+   "maxZ": 3.55
+  },
+  "gates": 33,
+  "spawn": {
+   "x": -0.85,
+   "z": 2.1,
+   "yaw": 0
+  },
+  "required_crossings": [
+   {
+    "id": "shortcut",
+    "surface_id": "shortcut",
+    "minX": 1.26,
+    "maxX": 2.36,
+    "z": 0,
+    "direction": -1
+   }
+  ]
+ },
+ "gates": [
+  {
+   "index": 0,
+   "x": 0.5,
+   "z": 2.1,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 1.35
+  },
+  {
+   "index": 1,
+   "x": 1.8,
+   "z": 2.1,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 1.3
+  },
+  {
+   "index": 2,
+   "x": 3.35,
+   "z": 2.1,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 1.55
+  },
+  {
+   "index": 3,
+   "x": 3.85,
+   "z": 1.93,
+   "normal": [
+    0.946773,
+    -0.321903
+   ],
+   "segment_m": 0.52811
+  },
+  {
+   "index": 4,
+   "x": 4.04,
+   "z": 1.4,
+   "normal": [
+    0.337461,
+    -0.941339
+   ],
+   "segment_m": 0.563028
+  },
+  {
+   "index": 5,
+   "x": 3.85,
+   "z": 0.87,
+   "normal": [
+    -0.337461,
+    -0.941339
+   ],
+   "segment_m": 0.563028
+  },
+  {
+   "index": 6,
+   "x": 3.35,
+   "z": 0.7,
+   "normal": [
+    -0.946773,
+    -0.321903
+   ],
+   "segment_m": 0.52811
+  },
+  {
+   "index": 7,
+   "x": 2.51,
+   "z": 0.7,
+   "normal": [
+    -1,
+    0
+   ],
+   "segment_m": 0.84
+  },
+  {
+   "index": 8,
+   "x": 2.16,
+   "z": 0.6062,
+   "normal": [
+    -0.965914,
+    -0.258865
+   ],
+   "segment_m": 0.362351
+  },
+  {
+   "index": 9,
+   "x": 1.9038,
+   "z": 0.35,
+   "normal": [
+    -0.707107,
+    -0.707107
+   ],
+   "segment_m": 0.362322
+  },
+  {
+   "index": 10,
+   "x": 1.81,
+   "z": 0,
+   "normal": [
+    -0.258865,
+    -0.965914
+   ],
+   "segment_m": 0.362351
+  },
+  {
+   "index": 11,
+   "x": 1.9038,
+   "z": -0.35,
+   "normal": [
+    0.258865,
+    -0.965914
+   ],
+   "segment_m": 0.362351
+  },
+  {
+   "index": 12,
+   "x": 2.16,
+   "z": -0.6062,
+   "normal": [
+    0.707107,
+    -0.707107
+   ],
+   "segment_m": 0.362322
+  },
+  {
+   "index": 13,
+   "x": 2.51,
+   "z": -0.7,
+   "normal": [
+    0.965914,
+    -0.258865
+   ],
+   "segment_m": 0.362351
+  },
+  {
+   "index": 14,
+   "x": 3.5,
+   "z": -0.7,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 0.99
+  },
+  {
+   "index": 15,
+   "x": 3.85,
+   "z": -0.95,
+   "normal": [
+    0.813733,
+    -0.581238
+   ],
+   "segment_m": 0.430116
+  },
+  {
+   "index": 16,
+   "x": 3.98,
+   "z": -1.45,
+   "normal": [
+    0.251634,
+    -0.967823
+   ],
+   "segment_m": 0.516624
+  },
+  {
+   "index": 17,
+   "x": 3.83,
+   "z": -1.93,
+   "normal": [
+    -0.298275,
+    -0.95448
+   ],
+   "segment_m": 0.502892
+  },
+  {
+   "index": 18,
+   "x": 3.35,
+   "z": -2.25,
+   "normal": [
+    -0.83205,
+    -0.5547
+   ],
+   "segment_m": 0.576888
+  },
+  {
+   "index": 19,
+   "x": 2.3,
+   "z": -2.4,
+   "normal": [
+    -0.989949,
+    -0.141421
+   ],
+   "segment_m": 1.06066
+  },
+  {
+   "index": 20,
+   "x": 0.8,
+   "z": -2.4,
+   "normal": [
+    -1,
+    0
+   ],
+   "segment_m": 1.5
+  },
+  {
+   "index": 21,
+   "x": -0.5,
+   "z": -2.42,
+   "normal": [
+    -0.999882,
+    -0.015383
+   ],
+   "segment_m": 1.300154
+  },
+  {
+   "index": 22,
+   "x": -1.6,
+   "z": -2.42,
+   "normal": [
+    -1,
+    0
+   ],
+   "segment_m": 1.1
+  },
+  {
+   "index": 23,
+   "x": -2.65,
+   "z": -2.4,
+   "normal": [
+    -0.999819,
+    0.019044
+   ],
+   "segment_m": 1.05019
+  },
+  {
+   "index": 24,
+   "x": -3.6,
+   "z": -2.3,
+   "normal": [
+    -0.994505,
+    0.104685
+   ],
+   "segment_m": 0.955249
+  },
+  {
+   "index": 25,
+   "x": -4.2,
+   "z": -1.9,
+   "normal": [
+    -0.83205,
+    0.5547
+   ],
+   "segment_m": 0.72111
+  },
+  {
+   "index": 26,
+   "x": -4.45,
+   "z": -1.3,
+   "normal": [
+    -0.384615,
+    0.923077
+   ],
+   "segment_m": 0.65
+  },
+  {
+   "index": 27,
+   "x": -4.45,
+   "z": 0,
+   "normal": [
+    0,
+    1
+   ],
+   "segment_m": 1.3
+  },
+  {
+   "index": 28,
+   "x": -4.4,
+   "z": 1.2,
+   "normal": [
+    0.041631,
+    0.999133
+   ],
+   "segment_m": 1.201041
+  },
+  {
+   "index": 29,
+   "x": -4.15,
+   "z": 1.8,
+   "normal": [
+    0.384615,
+    0.923077
+   ],
+   "segment_m": 0.65
+  },
+  {
+   "index": 30,
+   "x": -3.5,
+   "z": 2.1,
+   "normal": [
+    0.907959,
+    0.419058
+   ],
+   "segment_m": 0.715891
+  },
+  {
+   "index": 31,
+   "x": -2.2,
+   "z": 2.1,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 1.3
+  },
+  {
+   "index": 32,
+   "x": -0.85,
+   "z": 2.1,
+   "normal": [
+    1,
+    0
+   ],
+   "segment_m": 1.35
+  }
+ ],
+ "route_length_m": 27.267139,
+ "rc_teacher_continuous": {
+  "scenes": 60,
+  "total_frames": 36000,
+  "wall_ms": 21551.741642,
+  "all_two_laps": true,
+  "collisions_total": 0,
+  "reasons": [
+   "collection_duration_complete"
+  ],
+  "lap1_min_s": 8.709693610681859,
+  "lap1_max_s": 8.758448640205728,
+  "lap2_min_s": 8.358862041910367,
+  "lap2_max_s": 8.406762681129095,
+  "readme_lap1": [
+   8.71,
+   8.758
+  ],
+  "readme_lap2": [
+   8.359,
+   8.407
+  ],
+  "nominal_scene": {
+   "name": "rc20-mode8-train-00",
+   "split": "train",
+   "frames": 600,
+   "reason": "collection_duration_complete",
+   "collisions": 0,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed_s": 8.75841899184614,
+     "gates": 33,
+     "shortcut_t": 2.897324600112158
+    },
+    {
+     "lap": 2,
+     "elapsed_s": 8.370092214503968,
+     "gates": 33,
+     "shortcut_t": 11.287814844475749
+    }
+   ],
+   "final_speed": 2.1555076806928284,
+   "current_lap_gates": 12
+  },
+  "scenes_detail": [
+   {
+    "name": "rc20-mode8-train-00",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.75841899184614,
+      "gates": 33,
+      "shortcut_t": 2.897324600112158
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.370092214503968,
+      "gates": 33,
+      "shortcut_t": 11.287814844475749
+     }
+    ],
+    "final_speed": 2.1555076806928284,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-01",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.746947287420895,
+      "gates": 33,
+      "shortcut_t": 2.897286290852334
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.399531736929244,
+      "gates": 33,
+      "shortcut_t": 11.291047745676098
+     }
+    ],
+    "final_speed": 2.051017560050594,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-02",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.746050433261708,
+      "gates": 33,
+      "shortcut_t": 2.897973118599023
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.385006511780556,
+      "gates": 33,
+      "shortcut_t": 11.289318084291454
+     }
+    ],
+    "final_speed": 2.1133930130922494,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-03",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744166890120557,
+      "gates": 33,
+      "shortcut_t": 2.8980457248331195
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371468747191965,
+      "gates": 33,
+      "shortcut_t": 11.282574176174489
+     }
+    ],
+    "final_speed": 2.170560188703188,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-04",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.711124792015708,
+      "gates": 33,
+      "shortcut_t": 2.896704623315988
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365435011205049,
+      "gates": 33,
+      "shortcut_t": 11.249852628005064
+     }
+    ],
+    "final_speed": 2.2356054535811722,
+    "current_lap_gates": 13
+   },
+   {
+    "name": "rc20-mode8-train-05",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744335668918247,
+      "gates": 33,
+      "shortcut_t": 2.8981963645055986
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.36170539838233,
+      "gates": 33,
+      "shortcut_t": 11.282838443994466
+     }
+    ],
+    "final_speed": 2.174546963827032,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-06",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.739630908824578,
+      "gates": 33,
+      "shortcut_t": 2.89784349057421
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.389172577150378,
+      "gates": 33,
+      "shortcut_t": 11.28604534775752
+     }
+    ],
+    "final_speed": 2.156058353679779,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-07",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744490997889704,
+      "gates": 33,
+      "shortcut_t": 2.897411051048779
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362458281087688,
+      "gates": 33,
+      "shortcut_t": 11.283114963439626
+     }
+    ],
+    "final_speed": 2.1482492806789186,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-08",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744582582078454,
+      "gates": 33,
+      "shortcut_t": 2.898384869885966
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.366111727167397,
+      "gates": 33,
+      "shortcut_t": 11.28334258687785
+     }
+    ],
+    "final_speed": 2.143366106121014,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-09",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744733822717826,
+      "gates": 33,
+      "shortcut_t": 2.8978358232969286
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371244201299401,
+      "gates": 33,
+      "shortcut_t": 11.283581490554484
+     }
+    ],
+    "final_speed": 2.1712033672037627,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-10",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.739528096241816,
+      "gates": 33,
+      "shortcut_t": 2.897598107397399
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.38994930953195,
+      "gates": 33,
+      "shortcut_t": 11.285773447657148
+     }
+    ],
+    "final_speed": 2.1497041968263724,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-11",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744199251153354,
+      "gates": 33,
+      "shortcut_t": 2.8987322828517152
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371446669929025,
+      "gates": 33,
+      "shortcut_t": 11.2826550571396
+     }
+    ],
+    "final_speed": 2.17058009454255,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-12",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.711869526858772,
+      "gates": 33,
+      "shortcut_t": 2.8971048361594622
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.38355315332255,
+      "gates": 33,
+      "shortcut_t": 11.253248736939344
+     }
+    ],
+    "final_speed": 2.2102056215382886,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-13",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.758434976914616,
+      "gates": 33,
+      "shortcut_t": 2.896884678594346
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.370420470528698,
+      "gates": 33,
+      "shortcut_t": 11.287922426228167
+     }
+    ],
+    "final_speed": 2.153669758275025,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-14",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.75843095761453,
+      "gates": 33,
+      "shortcut_t": 2.898365086196489
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.370417206913695,
+      "gates": 33,
+      "shortcut_t": 11.287930990828993
+     }
+    ],
+    "final_speed": 2.1537075545049027,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-15",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744517526662342,
+      "gates": 33,
+      "shortcut_t": 2.8979005786969454
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365382368447861,
+      "gates": 33,
+      "shortcut_t": 11.283180126435798
+     }
+    ],
+    "final_speed": 2.194860945390509,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-16",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.758448640205728,
+      "gates": 33,
+      "shortcut_t": 2.896705578197411
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.370282976908236,
+      "gates": 33,
+      "shortcut_t": 11.287866740254566
+     }
+    ],
+    "final_speed": 2.1543141758588686,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-17",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74463526735392,
+      "gates": 33,
+      "shortcut_t": 2.898825859904861
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362473993064816,
+      "gates": 33,
+      "shortcut_t": 11.283474374245394
+     }
+    ],
+    "final_speed": 2.145459252246989,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-18",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.716265435602246,
+      "gates": 33,
+      "shortcut_t": 2.8973722209798622
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.393734478747866,
+      "gates": 33,
+      "shortcut_t": 11.252377147429746
+     }
+    ],
+    "final_speed": 2.1973744800598323,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-19",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74413414440148,
+      "gates": 33,
+      "shortcut_t": 2.8973632506400286
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371486277480928,
+      "gates": 33,
+      "shortcut_t": 11.282492376645287
+     }
+    ],
+    "final_speed": 2.1705294414025365,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-20",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744754720529967,
+      "gates": 33,
+      "shortcut_t": 2.897862684989176
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371205185869902,
+      "gates": 33,
+      "shortcut_t": 11.283634320170966
+     }
+    ],
+    "final_speed": 2.171159433807918,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-21",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.747506466400518,
+      "gates": 33,
+      "shortcut_t": 2.8973302050872265
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.39922037763708,
+      "gates": 33,
+      "shortcut_t": 11.291136378560259
+     }
+    ],
+    "final_speed": 2.0516152759835986,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-22",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.743162974986387,
+      "gates": 33,
+      "shortcut_t": 2.8964908651153145
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362992311555857,
+      "gates": 33,
+      "shortcut_t": 11.283016676513826
+     }
+    ],
+    "final_speed": 2.1431619147020515,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-23",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744564002843449,
+      "gates": 33,
+      "shortcut_t": 2.8984498684148026
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365900975988017,
+      "gates": 33,
+      "shortcut_t": 11.283296300499428
+     }
+    ],
+    "final_speed": 2.1448613932926053,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-24",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.709859657665378,
+      "gates": 33,
+      "shortcut_t": 2.896971680241402
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.37234536966506,
+      "gates": 33,
+      "shortcut_t": 11.248996043246569
+     }
+    ],
+    "final_speed": 2.2226289867161517,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-25",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74773200444755,
+      "gates": 33,
+      "shortcut_t": 2.8968301831786465
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.399948276725835,
+      "gates": 33,
+      "shortcut_t": 11.291644871572874
+     }
+    ],
+    "final_speed": 2.0506007250529086,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-26",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.7470365554253,
+      "gates": 33,
+      "shortcut_t": 2.898372762666784
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.399716957793558,
+      "gates": 33,
+      "shortcut_t": 11.291210556589922
+     }
+    ],
+    "final_speed": 2.0515059261574216,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-27",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744506408452938,
+      "gates": 33,
+      "shortcut_t": 2.8980935155114844
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.36526115114745,
+      "gates": 33,
+      "shortcut_t": 11.283153469058954
+     }
+    ],
+    "final_speed": 2.196152593560371,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-28",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.73908018012214,
+      "gates": 33,
+      "shortcut_t": 2.8974019191331215
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.376598559533885,
+      "gates": 33,
+      "shortcut_t": 11.282226305103952
+     }
+    ],
+    "final_speed": 2.1706508621630634,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-29",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.745904567576922,
+      "gates": 33,
+      "shortcut_t": 2.898785348207441
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.385059408313406,
+      "gates": 33,
+      "shortcut_t": 11.288512451760507
+     }
+    ],
+    "final_speed": 2.1135895882051354,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-30",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.743138154489884,
+      "gates": 33,
+      "shortcut_t": 2.896911959077101
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362965310433456,
+      "gates": 33,
+      "shortcut_t": 11.282968687467587
+     }
+    ],
+    "final_speed": 2.144366355713879,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-31",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74420245759697,
+      "gates": 33,
+      "shortcut_t": 2.8976067783020736
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371445255427172,
+      "gates": 33,
+      "shortcut_t": 11.282663069600678
+     }
+    ],
+    "final_speed": 2.170583758283453,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-32",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744367820299614,
+      "gates": 33,
+      "shortcut_t": 2.8979111633323544
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.361750009240465,
+      "gates": 33,
+      "shortcut_t": 11.282916880057021
+     }
+    ],
+    "final_speed": 2.1436085112300067,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-33",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744259347715408,
+      "gates": 33,
+      "shortcut_t": 2.8986983629473646
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371384109868027,
+      "gates": 33,
+      "shortcut_t": 11.28264479656526
+     }
+    ],
+    "final_speed": 2.170575074506452,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-34",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.7411379333,
+      "gates": 33,
+      "shortcut_t": 2.896231516489885
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.406762681129095,
+      "gates": 33,
+      "shortcut_t": 11.290533586139905
+     }
+    ],
+    "final_speed": 2.0512390966176475,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-35",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744480433761147,
+      "gates": 33,
+      "shortcut_t": 2.8991466740160527
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362332682477344,
+      "gates": 33,
+      "shortcut_t": 11.283089009718994
+     }
+    ],
+    "final_speed": 2.1515085207193216,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-36",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.711775021723785,
+      "gates": 33,
+      "shortcut_t": 2.8973958673927678
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.383824465114824,
+      "gates": 33,
+      "shortcut_t": 11.253047000108257
+     }
+    ],
+    "final_speed": 2.2094586145560524,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-37",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74748953098652,
+      "gates": 33,
+      "shortcut_t": 2.8970407882791367
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.399353546629875,
+      "gates": 33,
+      "shortcut_t": 11.291102882922143
+     }
+    ],
+    "final_speed": 2.051836799076431,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-38",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.758447824388412,
+      "gates": 33,
+      "shortcut_t": 2.8981328192866207
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.370252833928316,
+      "gates": 33,
+      "shortcut_t": 11.287862701974182
+     }
+    ],
+    "final_speed": 2.1544791530418532,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-39",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744548093571227,
+      "gates": 33,
+      "shortcut_t": 2.898001275510256
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365721780975052,
+      "gates": 33,
+      "shortcut_t": 11.283256878082362
+     }
+    ],
+    "final_speed": 2.1504338963355445,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-40",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.709693610681859,
+      "gates": 33,
+      "shortcut_t": 2.8967273664288373
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362982233292913,
+      "gates": 33,
+      "shortcut_t": 11.24863718358817
+     }
+    ],
+    "final_speed": 2.2032307734773418,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-41",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744603580678055,
+      "gates": 33,
+      "shortcut_t": 2.898115510734076
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.366355291293198,
+      "gates": 33,
+      "shortcut_t": 11.283396102407412
+     }
+    ],
+    "final_speed": 2.1416711322418234,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-42",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.739512706977877,
+      "gates": 33,
+      "shortcut_t": 2.8976966997802123
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.390072082889823,
+      "gates": 33,
+      "shortcut_t": 11.285732841744567
+     }
+    ],
+    "final_speed": 2.112280844218312,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-43",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.746686870898866,
+      "gates": 33,
+      "shortcut_t": 2.8969795679000963
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.40034027643733,
+      "gates": 33,
+      "shortcut_t": 11.290489255716095
+     }
+    ],
+    "final_speed": 2.0585078241203236,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-44",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74497172369439,
+      "gates": 33,
+      "shortcut_t": 2.898077565005768
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.383328292742751,
+      "gates": 33,
+      "shortcut_t": 11.285930677659143
+     }
+    ],
+    "final_speed": 2.1563257218744636,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-45",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.743781216846441,
+      "gates": 33,
+      "shortcut_t": 2.8974927421901024
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.3623880810741,
+      "gates": 33,
+      "shortcut_t": 11.281641152107273
+     }
+    ],
+    "final_speed": 2.14210196593399,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-46",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.743155883469406,
+      "gates": 33,
+      "shortcut_t": 2.8966151983939437
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362970201696385,
+      "gates": 33,
+      "shortcut_t": 11.282989117620012
+     }
+    ],
+    "final_speed": 2.1435099788947567,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-train-47",
+    "split": "train",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744481489346345,
+      "gates": 33,
+      "shortcut_t": 2.8988274159440133
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362338432722616,
+      "gates": 33,
+      "shortcut_t": 11.283089917927722
+     }
+    ],
+    "final_speed": 2.151442044579291,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-48",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.75843768398847,
+      "gates": 33,
+      "shortcut_t": 2.89720394037275
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.36999542660618,
+      "gates": 33,
+      "shortcut_t": 11.28780936527263
+     }
+    ],
+    "final_speed": 2.155912945209884,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-49",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.747305805913086,
+      "gates": 33,
+      "shortcut_t": 2.8969463162370745
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.3992313620268,
+      "gates": 33,
+      "shortcut_t": 11.290698891506342
+     }
+    ],
+    "final_speed": 2.051609222095216,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-50",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.746452651912243,
+      "gates": 33,
+      "shortcut_t": 2.897582570877404
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.400184409761312,
+      "gates": 33,
+      "shortcut_t": 11.289851560849836
+     }
+    ],
+    "final_speed": 2.0511000336982192,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-51",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.7442001905591,
+      "gates": 33,
+      "shortcut_t": 2.897488204015512
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371420830599325,
+      "gates": 33,
+      "shortcut_t": 11.282496653142514
+     }
+    ],
+    "final_speed": 2.1705306634756645,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-52",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.739045065982866,
+      "gates": 33,
+      "shortcut_t": 2.8972700597659915
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.376622454834946,
+      "gates": 33,
+      "shortcut_t": 11.282128479424436
+     }
+    ],
+    "final_speed": 2.1706279054263575,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-53",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744546997576446,
+      "gates": 33,
+      "shortcut_t": 2.898822692499895
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365712011011546,
+      "gates": 33,
+      "shortcut_t": 11.28325485906242
+     }
+    ],
+    "final_speed": 2.150732439089301,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-54",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.754546018060488,
+      "gates": 33,
+      "shortcut_t": 2.8981756621126507
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.358862041910367,
+      "gates": 33,
+      "shortcut_t": 11.273234184151024
+     }
+    ],
+    "final_speed": 2.109001573658636,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-55",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.74447771444867,
+      "gates": 33,
+      "shortcut_t": 2.897559810644435
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362298107424351,
+      "gates": 33,
+      "shortcut_t": 11.283081808373918
+     }
+    ],
+    "final_speed": 2.151295977036105,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-56",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744505499000699,
+      "gates": 33,
+      "shortcut_t": 2.898025392793256
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.365250454787539,
+      "gates": 33,
+      "shortcut_t": 11.283151073972368
+     }
+    ],
+    "final_speed": 2.196266408922057,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-57",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.746087657700718,
+      "gates": 33,
+      "shortcut_t": 2.897505296256398
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.385245735372079,
+      "gates": 33,
+      "shortcut_t": 11.289157602907585
+     }
+    ],
+    "final_speed": 2.1129335123678246,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-58",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.743075881794889,
+      "gates": 33,
+      "shortcut_t": 2.8964313389517455
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.362759956270734,
+      "gates": 33,
+      "shortcut_t": 11.282889436851367
+     }
+    ],
+    "final_speed": 2.199403296231644,
+    "current_lap_gates": 12
+   },
+   {
+    "name": "rc20-mode8-val-59",
+    "split": "val",
+    "frames": 600,
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "laps": [
+     {
+      "lap": 1,
+      "elapsed_s": 8.744781249452975,
+      "gates": 33,
+      "shortcut_t": 2.8983523691973208
+     },
+     {
+      "lap": 2,
+      "elapsed_s": 8.371155827616684,
+      "gates": 33,
+      "shortcut_t": 11.283698957604715
+     }
+    ],
+    "final_speed": 2.1711042962872313,
+    "current_lap_gates": 12
+   }
+  ]
+ },
+ "rc_teacher_single_lap": {
+  "elapsed_s": 8.93078380923196,
+  "reason": "route_complete",
+  "success": true,
+  "gates": 33,
+  "collisions": 0,
+  "frames": 268,
+  "shortcut": {
+   "id": "shortcut",
+   "surface_id": "shortcut",
+   "time": 3.1111692087065954,
+   "frame": 93,
+   "x": 1.8976491408538672,
+   "z": 0,
+   "yaw": 2.0257779067299073,
+   "direction": -1
+  },
+  "metadata_nominal_single_lap_s": 8.93078380923196,
+  "max_lateral_acceleration": 7.845320000000001,
+  "traction_limited_steps": 1125,
+  "distance_m": 26.48955334732264
+ },
+ "rc_teacher_single_lap_delay1": {
+  "elapsed_s": 7.259719455532158,
+  "reason": "collision",
+  "gates": 16,
+  "collisions": 1,
+  "collision_events": [
+   {
+    "time": 7.259719455532158,
+    "frame": 217,
+    "collider": "disk-8",
+    "kind": "post-foot",
+    "x": 0.06175929112034548,
+    "z": -2.5808468823556527
+   }
+  ]
+ },
+ "optimized_reference_single_lap": {
+  "physics": "constant-acceleration-v1 (1.2 m/s2)",
+  "elapsed_s": 10.090853945348913,
+  "reason": "route_complete",
+  "gates": 33,
+  "collisions": 0,
+  "reference_points": 1092,
+  "reference_length_m": 26.55942979084515,
+  "planned_time_s": 9.990298447200246,
+  "reference_max_speed": 4.727922010890429
+ },
+ "optimized_reference_on_rc_physics": {
+  "elapsed_s": 11.123087856923958,
+  "reason": "route_complete",
+  "gates": 33,
+  "collisions": 0,
+  "collision_events": []
+ },
+ "learned_onnx_replay": {
+  "source": "/home/jetson/sim/extracted/course-simulator/results/shortcut-rc-learned-lap.json",
+  "frames": 269,
+  "elapsed_s": 8.964117142565293,
+  "saved_elapsed_s": 8.964117142565293,
+  "reason": "route_complete",
+  "gates": 33,
+  "collisions": 0,
+  "shortcut": {
+   "id": "shortcut",
+   "surface_id": "shortcut",
+   "time": 2.827584578229041,
+   "frame": 84,
+   "x": 1.829140812703369,
+   "z": 0,
+   "yaw": 2.2964012033365844,
+   "direction": -1
+  },
+  "max_trace_abs_diff": 3.0850322296771537e-13,
+  "report_world_equals_current_scene": true,
+  "config": {
+   "vehicleLength": 0.42,
+   "vehicleWidth": 0.19,
+   "wheelbase": 0.26,
+   "maxSpeed": 7.24,
+   "maxSteer": 0.52,
+   "acceleration": 1.2,
+   "steerRate": 1.2,
+   "frictionMultiplier": 1,
+   "noiseStd": 0,
+   "seed": 12345,
+   "timeLimit": 120,
+   "stopOnCollision": true,
+   "dt": 0.03333333333333333,
+   "substep": 0.01,
+   "rayCount": 13,
+   "rayRange": 3,
+   "sensorHeight": 0.08,
+   "gateHalfWidth": 0.65,
+   "longitudinalModel": "real-drive-response-estimate-v1",
+   "driveTau": 0.4,
+   "driveAccelerationCap": 6,
+   "brakeDeceleration": 1.2
+  },
+  "delay": {
+   "mode": "lockstep",
+   "simulates_inference_delay": true,
+   "control_delay": {
+    "schema": "fixed-control-delay-v1",
+    "ticks": 1,
+    "seconds": 0.03333333333333333,
+    "status": "estimated-fixed-not-measured-latency",
+    "initial_command": "neutral",
+    "reset_policy": "episode-and-pause-resume",
+    "evaluation_only": true,
+    "queue_resets": [
+     {
+      "frame": 0,
+      "sim_time": 0,
+      "epoch": 3,
+      "reason": "episode-reset"
+     },
+     {
+      "frame": 0,
+      "sim_time": 0,
+      "epoch": 4,
+      "reason": "run-or-resume"
+     },
+     {
+      "frame": 269,
+      "sim_time": 8.964117142565293,
+      "epoch": 5,
+      "reason": "pause-or-stop"
+     }
+    ]
+   }
+  },
+  "start_variation": {
+   "gate": 0,
+   "left_offset_m": 0,
+   "left_yaw_deg": 0
+  }
+ },
+ "full_throttle_straight": {
+  "reason": "collision",
+  "time_s": 1.375462040732948,
+  "frame": 42,
+  "speed_at_end": 0,
+  "collision": {
+   "time": 1.375462040732948,
+   "frame": 41,
+   "collider": "segment-42",
+   "kind": "curtain",
+   "x": 4.495977522564975,
+   "z": 2.1
+  },
+  "gates": 4,
+  "x": 4.488652995715974,
+  "z": 2.1
+ },
+ "idle": {
+  "reason": "time_limit",
+  "time_s": 2,
+  "frame": 60
+ },
+ "initial_state_resume": {
+  "initialState": {
+   "x": 3.1446811978351588,
+   "z": -1.0223099747879305,
+   "yaw": -0.044669985819640635,
+   "speed": 2.3080323819866293,
+   "steering": 0.06655320410759653,
+   "routeIndex": 14
+  },
+  "after_frames": 120,
+  "reason": "recovery_segment_complete",
+  "success": false,
+  "passed_gates_in_episode": 19,
+  "route_index": 33,
+  "elapsed_s": 4.930783809231974,
+  "start_frame": 0,
+  "total_from_stop_s": 8.930783809231974,
+  "required_crossing_events": 0,
+  "continuous_refused": "Continuous laps cannot restore a dynamic recovery state"
+ },
+ "deterministic": true,
+ "bench": [
+  {
+   "label": "教師+step(20秒連続エピソード×20)",
+   "steps": 12000,
+   "wall_ms": 7427.738166,
+   "steps_per_s": 1616,
+   "rss_mb": 261.453125,
+   "heap_used_mb_delta": 54.642403
+  },
+  {
+   "label": "stepのみ(衝突なし・stopOnCollision=false)",
+   "steps": 12000,
+   "wall_ms": 297.74852,
+   "steps_per_s": 40302,
+   "rss_mb": 260.65625,
+   "heap_used_mb_delta": 37.573082
+  },
+  {
+   "label": "step+observe(13レイ)",
+   "steps": 3000,
+   "wall_ms": 2281.654236,
+   "steps_per_s": 1315,
+   "rss_mb": 260.78125,
+   "heap_used_mb_delta": 54.801277
+  }
+ ],
+ "create_simulation_ms": 0.502433,
+ "reset_ms": 0.02883,
+ "create_rc_teacher_ms": 9.689663,
+ "substep": {
+  "max_motion_rate_mps": 10.914828553801222,
+  "h_s": 0.0010994217582850493,
+  "substeps_per_frame": 31,
+  "note": "maxSpeed=7.24 のとき 1フレーム(33.3 ms)を約1.1 msの小区間に分けて衝突・ゲートを判定",
+  "substeps_if_maxspeed_1_6": 7
+ },
+ "memory_final": {
+  "rss": 262.65625,
+  "heapTotal": 154.066406,
+  "heapUsed": 33.092308,
+  "external": 4.833881,
+  "arrayBuffers": 0.149169
+ },
+ "defaults": {
+  "vehicleLength": 0.42,
+  "vehicleWidth": 0.19,
+  "wheelbase": 0.26,
+  "maxSpeed": 1.6,
+  "maxSteer": 0.52,
+  "acceleration": 1.2,
+  "steerRate": 1.2,
+  "frictionMultiplier": 1,
+  "noiseStd": 0,
+  "seed": 12345,
+  "timeLimit": 120,
+  "stopOnCollision": true,
+  "dt": 0.03333333333333333,
+  "substep": 0.01,
+  "rayCount": 13,
+  "rayRange": 3,
+  "sensorHeight": 0.08,
+  "gateHalfWidth": 0.65
+ }
+}

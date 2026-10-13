@@ -1,0 +1,112 @@
+{
+ "optimized": {
+  "label": "optimized-reference(一定加減速の物理用)",
+  "points": 1092,
+  "length_m": 26.559,
+  "ds_median_m": 0.025,
+  "speed_max": 4.728,
+  "speed_mean": 3.111,
+  "lateral_acc_max": 7.845,
+  "lateral_acc_over_mu_g_max": 1,
+  "steering_abs_max_rad": 0.453,
+  "mu_point_counts": {
+   "0.8": 906,
+   "0.7": 32,
+   "0.22": 41,
+   "0.6": 113
+  },
+  "metadata_time_s": 10.090853945348913
+ },
+ "single-lap": {
+  "label": "RC教師 single-lap",
+  "points": 1092,
+  "length_m": 26.119,
+  "ds_median_m": 0.0244,
+  "speed_max": 4.435,
+  "speed_mean": 3.27,
+  "lateral_acc_max": 7.453,
+  "lateral_acc_over_mu_g_max": 0.95,
+  "steering_abs_max_rad": 0.44,
+  "mu_point_counts": {
+   "0.8": 889,
+   "0.7": 30,
+   "0.22": 41,
+   "0.6": 113,
+   "0.65": 19
+  },
+  "planned_time_s": 8.865,
+  "options": {
+   "tractionFraction": 0.95,
+   "rateFraction": 2,
+   "speedScale": 1,
+   "speedCeiling": 4.5,
+   "previewSeconds": 0,
+   "crossTrackGain": 2,
+   "headingGain": 2,
+   "speedPreview": 0,
+   "commandCeiling": 4.5,
+   "speedGain": 2,
+   "feedforward": 1,
+   "seamWidth": 1.5,
+   "referenceLaps": 4
+  },
+  "run": {
+   "frames": 268,
+   "reason": "route_complete",
+   "max_speed_command": 4.5,
+   "frames_command_gt_speed_plus_0_5": 71,
+   "laps": [],
+   "elapsed": 8.931,
+   "traction_limited_steps": 1125,
+   "max_lateral_acceleration": 7.845
+  }
+ },
+ "continuous-laps-v1": {
+  "label": "RC教師 continuous-laps-v1",
+  "points": 4365,
+  "length_m": 104.479,
+  "ds_median_m": 0.0244,
+  "speed_max": 4.435,
+  "speed_mean": 3.358,
+  "lateral_acc_max": 7.453,
+  "lateral_acc_over_mu_g_max": 0.95,
+  "steering_abs_max_rad": 0.44,
+  "mu_point_counts": {
+   "0.8": 3553,
+   "0.7": 120,
+   "0.22": 164,
+   "0.6": 452,
+   "0.65": 76
+  },
+  "planned_time_s": 33.559,
+  "options": {
+   "tractionFraction": 0.95,
+   "rateFraction": 2,
+   "speedScale": 1,
+   "speedCeiling": 4.5,
+   "previewSeconds": 0,
+   "crossTrackGain": 2,
+   "headingGain": 2,
+   "speedPreview": 0,
+   "commandCeiling": 4.5,
+   "speedGain": 2,
+   "feedforward": 1,
+   "seamWidth": 1.5,
+   "referenceLaps": 4
+  },
+  "run": {
+   "frames": 600,
+   "reason": "collection_duration_complete",
+   "max_speed_command": 4.5,
+   "frames_command_gt_speed_plus_0_5": 126,
+   "laps": [
+    8.758,
+    8.37
+   ],
+   "elapsed": 20,
+   "traction_limited_steps": 1635,
+   "max_lateral_acceleration": 7.845
+  },
+  "loop_length_m": 26.12
+ }
+}

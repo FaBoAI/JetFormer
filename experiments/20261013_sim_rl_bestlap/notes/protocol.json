@@ -1,0 +1,917 @@
+{
+ "title": "シミュレーターの強化学習ベストラップ → JetFormer の学習(sim_rl_bestlap_20261013)の手順。結果を見る前に固定(書き換えない)",
+ "version": 1,
+ "written_at": "2026-10-13T16:47:26",
+ "request": "シミュレーターは強化学習でベストラップの走行を実現したいです。それをシミュレーターデータとして学習させたい",
+ "questions": {
+  "H1": "RL(PPO)は、作者の RC 教師より速い有効なラップ(停止から 1 周・フライングラップ)を、同じ物理・同じ判定で走れるか",
+  "H2": "RL のラップを 20 分データと同じ形式で記録して JetFormer を学習すると(S-R)、閉ループでそのラップに近い速さで完走し、教師データで学習した JetFormer(S-T)より速いか"
+ },
+ "design": "design.md(同じフォルダー。sha256 は files.design_md)",
+ "environment": {
+  "engine": "Node v24 のワーカー(rl/env_worker.mjs)で fast-sim-core.mjs(元の dist/sim-core.js と 101 件で完全一致)+ world-v3.json を進める。three.js は読まない",
+  "workers": 4,
+  "envs_per_worker": 16,
+  "n_envs": 64,
+  "transport": "標準入出力のバイナリ(Float32)。行動 n×2 → 観測 n×79 + 報酬・終了・打ち切り。エピソードの要約は JSON 行。自動リセットはワーカー側(終了前の最後の観測も返す)",
+  "features_module": "rl/features.mjs(Node の環境とブラウザの差し込みモジュールで同じファイル)",
+  "spawn": "アプリの reset と同じ(経路をゲート k で回し、左へ off、向き +turn)。invalid_spawn は引き直す",
+  "physics": {
+   "dt": 0.03333333333333333,
+   "maxSpeed": 7.24,
+   "maxSteer": 0.52,
+   "acceleration": 1.2,
+   "steerRate": 1.2,
+   "vehicleLength": 0.42,
+   "vehicleWidth": 0.19,
+   "wheelbase": 0.26,
+   "stopOnCollision": true,
+   "frictionMultiplier": 1,
+   "noiseStd": 0,
+   "timeLimit": 20,
+   "episodeMode": "continuous-laps-v1",
+   "longitudinalModel": "real-drive-response-estimate-v1",
+   "driveTau": 0.4,
+   "driveAccelerationCap": 6,
+   "brakeDeceleration": 1.2,
+   "control_delay_frames": 0,
+   "forward_gain": 1.0,
+   "course": "indoor-course-eval-3-turf-board-removed"
+  },
+  "final_checks_core": "元の dist/sim-core.js(sha256 は files.sim_core_original)"
+ },
+ "observation": {
+  "dim": 79,
+  "reference_loop": "RC 教師の単周の参照軌跡(createRcTrainingTeacher の標準の開始、reference.points 1,092 点・約 26.12 m)を閉じたもの。座標の物差しと先読みだけに使い、沿うことへの報酬はない。点の列は JSON にして sha256 を記録",
+  "progress_projection": "前のフレームの s の −0.5〜+1.5 m だけを探す射影(周をまたいで増え続ける s)。リセット時は今の目標ゲートの前後の区間で最も近い点",
+  "components": [
+   {
+    "idx": "1-3",
+    "what": "速さ v・実際の舵角 δ・ヨーレート ω = clamp(v·tanδ/0.26, ±μg/|v|)",
+    "scale": [
+     4.5,
+     0.52,
+     4.0
+    ]
+   },
+   {
+    "idx": "4-5",
+    "what": "前回の行動 a0, a1(フレーム 0 は 0)",
+    "scale": 1
+   },
+   {
+    "idx": "6-8",
+    "what": "参照ループからの横ずれ e_y、向きのずれの sin・cos",
+    "scale": [
+     0.5,
+     1,
+     1
+    ]
+   },
+   {
+    "idx": "9-40",
+    "what": "参照ループ上 Δs = 0.25..4.0 m(0.25 おき 16 点)の位置(車の座標系 前・左)",
+    "scale": 4.0
+   },
+   {
+    "idx": "41-56",
+    "what": "その 16 点の路面 μ",
+    "scale": 0.8
+   },
+   {
+    "idx": "57-75",
+    "what": "車体中心から −90°〜+90°・10° おき 19 本の距離。高さに関係なく全障害物(支柱の脚・ゲートの脚を含む)。最大 3 m",
+    "scale": 3.0
+   },
+   {
+    "idx": "76",
+    "what": "車体中心の路面 μ",
+    "scale": 0.8
+   },
+   {
+    "idx": "77-78",
+    "what": "今の目標ゲートの線に対する along・lateral(gateStatus と同じ定義)",
+    "scale": [
+     2.0,
+     0.65
+    ]
+   },
+   {
+    "idx": "79",
+    "what": "車体の長方形と全障害物(半径つき線分・円・軸平行の四角・外枠)の最小距離 d_min(0.5 m で切る)",
+    "scale": 0.5
+   }
+  ],
+  "normalization": "移動平均・分散で正規化し ±5 で切る。書き出し時に固定",
+  "not_used": [
+   "sim.observe() のレイ(8 cm 未満の障害物が映らない)",
+   "時刻",
+   "カメラ・ToF の画像"
+  ]
+ },
+ "action": {
+  "policy_output": "a ∈ ℝ² のガウス分布(展開時は平均)を [-1, 1] に切る",
+  "steering_rad": "0.52·a0(正が左)",
+  "speed_target_mps": {
+   "main": "4.5·(a1+1)/2(0〜4.5)",
+   "open": "7.24·(a1+1)/2(0〜7.24)"
+  },
+  "reverse": false,
+  "pwm_labels": {
+   "steer_us": "1442 + a0·558(a0 ≥ 0、左)/ 1442 + a0·442(a0 < 0、右)",
+   "throttle_us": "1498 − (v_cmd/7.24)·498 → main は 1188.5〜1498",
+   "ch3_us": 1500,
+   "erpm": "−2000·v",
+   "labels": "future_actions[k][j] = vehicle[k+1+j](j = 0..9)。最後の 10 フレームは無効"
+  }
+ },
+ "reward": {
+  "per_step": {
+   "progress_m": "clip(s_t − s_{t−1}, −0.3, v_t·dt + 0.05)",
+   "smooth_steer": -0.02,
+   "smooth_steer_term": "(a0_t − a0_{t−1})²",
+   "smooth_speed": -0.01,
+   "smooth_speed_term": "(a1_t − a1_{t−1})²",
+   "traction_excess": -0.02,
+   "traction_term": "max(0, ρ − 1.1)、ρ = v²·|tanδ|/(0.26·μ·g)(ステップ後の実際の v・δ)",
+   "clearance": -0.05,
+   "clearance_term": "max(0, (0.05 − d_min)/0.05)"
+  },
+  "terminal": {
+   "collision": -10,
+   "gate_miss": -10,
+   "required_crossing_or_lap_distance_violation": -10,
+   "stall": -5,
+   "wrong_way": -5
+  },
+  "terminal_definitions": {
+   "gate_miss": "今のゲートの線を越えた(along ≥ 0)のに |lateral| > 0.65",
+   "stall": "sim_time ≥ 1 s で速さ < 0.2 m/s が 2 秒続く",
+   "wrong_way": "s が直近の最大から 1 m 以上戻る",
+   "required_crossing_or_lap_distance_violation": "sim の終了理由 required_crossing_missing・lap_distance_insufficient"
+  },
+  "truncation": "20 秒(collection_duration_complete)は罰なしで打ち切り、最後の観測の価値で補う",
+  "lap_bonus": null,
+  "allowed_tuning": "パイロットのあとに 1 回だけ係数・罰・lr・log σ の初期値を直してよい(deviations.md に記録)。本番の種を始めたら変えない"
+ },
+ "episode": {
+  "length_frames": 600,
+  "mode": "continuous-laps-v1",
+  "start": "停止から",
+  "start_distribution": {
+   "gate0_fraction": 0.5,
+   "random_gate_fraction": 0.5,
+   "random_gate_range": [
+    0,
+    32
+   ],
+   "left_offset_m_uniform": [
+    -0.12,
+    0.12
+   ],
+   "left_yaw_deg_uniform": [
+    -8,
+    8
+   ]
+  },
+  "initial_state_used": false
+ },
+ "algorithm": {
+  "name": "PPO(自前の実装、PyTorch、CPU)",
+  "python_env": "conda jetracer(Python 3.13・torch 2.10 を CPU で使う。CUDA_VISIBLE_DEVICES= 。何も pip install しない)",
+  "actor": "MLP 79→256→256→2(tanh)+ 状態によらない log σ(初期値 −0.7)",
+  "critic": "MLP 79→256→256→1(tanh)",
+  "rollout_steps_per_env": 256,
+  "batch_per_update": 16384,
+  "epochs": 5,
+  "minibatch": 4096,
+  "lr": {
+   "start": 0.0003,
+   "end": 3e-05,
+   "schedule": "linear"
+  },
+  "clip": 0.2,
+  "vf_coef": 0.5,
+  "ent_coef": 0.0,
+  "max_grad_norm": 0.5,
+  "target_kl_early_stop": 0.03,
+  "gamma": 0.995,
+  "gae_lambda": 0.95,
+  "adv_norm": "minibatch",
+  "torch_threads": 2,
+  "bc_warm_start": "main では使わない。予備策 1 のときだけ",
+  "checkpoint_every_steps": 2000000,
+  "resume": "最後のチェックポイントから(方策・価値・最適化・正規化・ステップ数・乱数)。再開したことを記録",
+  "deploy_policy": "JS の関数(rl/policy_forward.mjs + 重みの ESM)。Node とブラウザで同じファイル。JS と Python の差 ≤ 1e-4(1 万状態)。周回時間・妥当性の数字はすべて JS の方策で測る",
+  "run_wrapper": "jf-heavy --mem 2G --lock rl -- ..."
+ },
+ "pilot": {
+  "seed": 100,
+  "steps": 3000000,
+  "counts_as_result": false,
+  "checks": [
+   "steps/s",
+   "周の完走が出るか",
+   "射影の飛び",
+   "舵の振り切りの連続",
+   "すき間の削り"
+  ]
+ },
+ "budget": {
+  "rule": "B = min(30,000,000, floor(パイロットの steps/s × 50 分 / 5,000,000) × 5,000,000)。B < 10,000,000 なら 10,000,000",
+  "runs": [
+   {
+    "variant": "main",
+    "seed": 0,
+    "steps": "B"
+   },
+   {
+    "variant": "main",
+    "seed": 1,
+    "steps": "B"
+   },
+   {
+    "variant": "main",
+    "seed": 2,
+    "steps": "B"
+   },
+   {
+    "variant": "open",
+    "seed": 0,
+    "steps": "B",
+    "note": "参考。時間が足りなければ最初に削る。記録しない"
+   }
+  ],
+  "order": "1 本ずつ順番に(lock rl)",
+  "total_rl_hours_target": "約 3.5(3〜5 の範囲)"
+ },
+ "fallbacks_rl": {
+  "bc_warm_start": {
+   "trigger": "パイロットまたは main 種 0 が 5,000,000 ステップで 1 周も完走しない / main の 3 本とも選べるチェックポイントが無い / 選べる方策が教師より遅い(H1 不成立)",
+   "method": "RC 教師の行動で方策を初期化(教師の状態 + 学習中の方策で訪れた状態に教師の行動を付ける DAgger 風。ゲート 0・±3 cm・±3° だけ)→ log σ −1.6 から同じ報酬で PPO 15,000,000 ステップ。選び方は同じ。報告では BC の前後と学習曲線を示す",
+   "max_times": 1
+  },
+  "if_still_slower": "選べる方策のうち最速を記録に使い、「RL は教師を超えなかった」と報告する"
+ },
+ "evaluation_sets_rl": {
+  "REC60": "記録の 60 条件(files.collection_plan_60 の開始・種・雑音)。連続周回 20 秒",
+  "STD": {
+   "gate": 0,
+   "left_offset_m": 0,
+   "left_yaw_deg": 0,
+   "runs": [
+    "単周(停止から 1 周)",
+    "連続周回 20 秒"
+   ]
+  },
+  "ROB24": [
+   {
+    "gate": 0,
+    "left_offset_m": -0.1,
+    "left_yaw_deg": -6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": -0.1,
+    "left_yaw_deg": 6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": 6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": -6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": 0.1,
+    "left_yaw_deg": -6
+   },
+   {
+    "gate": 0,
+    "left_offset_m": 0.1,
+    "left_yaw_deg": 6
+   },
+   {
+    "gate": 4,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 4,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 8,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 8,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 12,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 12,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 16,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 16,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 20,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 20,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 24,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 24,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 28,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 28,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   },
+   {
+    "gate": 31,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 3
+   },
+   {
+    "gate": 31,
+    "left_offset_m": -0.05,
+    "left_yaw_deg": -3
+   }
+  ],
+  "ROB24_invalid_spawn_rule": "開始が障害物と重なるゲートは次の番号のゲートに置き換える",
+  "cadence": "2,000,000 ステップごとと最後。決定的な JS の方策、Node の高速版のコア"
+ },
+ "selection": {
+  "eligible": [
+   "REC60 の 60/60 で衝突 0・2 周以上完走・全周が有効(33 ゲート・黒シート 1 回)",
+   "REC60 全体で最小すき間 ≥ 0.03 m",
+   "STD の単周が完走",
+   "ROB24 の 22/24 以上で衝突 0・2 周以上完走"
+  ],
+  "score": "REC60 の (1 周目 + 2 周目) の平均(小さいほど良い。同点は後のチェックポイント)",
+  "per_seed": "種ごとに一番良い選べるチェックポイント",
+  "final": "種の中で一番良いもの = 記録に使う方策。全種の値を報告",
+  "confirm_with_original_core": "選んだ方策で REC60・STD・ROB24 を元の sim-core.js でやり直し、周回時間の差 ≤ 1e-9 秒。違えば元の値を使い deviations.md に記録"
+ },
+ "best_lap_definition": {
+  "lap_from_stop": "単周モード・標準の開始・停止から。reason route_complete・33/33 ゲート・黒シートの有効な横断ちょうど 1 回・衝突 0・距離条件。時間 = metrics.elapsed",
+  "flying_lap": "連続周回 20 秒・標準の開始の lap_events[1].elapsed(その周の衝突 0・黒シート 1 回・33 ゲート)。REC60 の 2 周目の中央値・最小値も載せる",
+  "verification": "保存した操作列を元の sim-core.js で再生(差 ≤ 1e-9)+ 再生した軌跡から自前のコードでゲート(順番・±0.65 m)・黒シートの車幅条件・衝突を数え直し、sim の集計と一致(verify_recording.mjs を拡張)。RL の周はユーザーの verify-learned-lap.mjs の対象外(外部 ONNX・単周・標準の開始だけを数えるため)",
+  "robustness": "REC60 60/60 と ROB24 22/24 以上",
+  "margin": "最小すき間 ≥ 0.03 m",
+  "teacher_references_s": {
+   "single_lap_from_stop": 8.930784,
+   "continuous_lap1_standard": 8.7584,
+   "continuous_lap1_range": [
+    8.709694,
+    8.758449
+   ],
+   "continuous_lap2_standard": 8.3701,
+   "continuous_lap2_range": [
+    8.358862,
+    8.406763
+   ],
+   "learned_onnx_from_stop": 8.964117
+  },
+  "reported_not_judged": [
+   "遅延 1 フレームでの STD の単周",
+   "3 本の種それぞれの結果",
+   "open(7.24 m/s)の結果"
+  ]
+ },
+ "realism_metrics": {
+  "populations": [
+   "RL main(REC60・STD)",
+   "RL open",
+   "教師(Node で REC60 を再現)",
+   "実車 clean_driving_20261011 の aligned(走行中 = 0.3 m/s 超、速さ = −eRPM×0.5e-3)"
+  ],
+  "metrics": [
+   "最高速",
+   "速さの 99% 点",
+   "4 m/s 超の時間の割合",
+   "横加速度 v·ω の最大と 95% 点",
+   "ρ > 1(横の頭打ち)の時間の割合",
+   "舵の指令の変化の速さ |Δδ_cmd|·30 の 95% 点",
+   "実際の舵角の変化の速さの 95% 点",
+   "舵の指令が端(|δ_cmd| ≥ 0.494 rad)の割合",
+   "スロットル PWM の 1% 点",
+   "最小すき間"
+  ],
+  "flag_rule": "main の横加速度の 95% 点、または舵が端の割合が教師より 25% 以上大きければ「教師より荒い」と明記(学習し直しはしない)"
+ },
+ "variants": {
+  "main": "記録に使う。速度の上限 4.5 m/s(= 教師の上限・実車の 99% 点、PWM ≥ 1188.5 µs)、横は物理の μg。これを「実車でできる範囲のベストラップ」とする",
+  "open": "参考だけ(記録しない)。速度の上限 7.24 m/s(物理の上限)。上限 4.5 で失う時間を示す",
+  "real_feasible_capped_variant": "作らない。main がすでに速度・横とも実車の範囲で、横にさらに上限を付けると教師より遅くなるため(design.md 3.5 節)"
+ },
+ "acceptance_H1": {
+  "all_of": [
+   "STD の停止から 1 周 ≤ 8.831 秒(教師 8.931 − 0.10)",
+   "REC60 の 1 周目の平均 ≤ 教師の REC60 の 1 周目の平均 − 0.10 秒、2 周目の平均も 0.10 秒以上速い",
+   "main の 3 本のうち 2 本以上に選べるチェックポイントがあり、その STD の停止から 1 周が 8.931 秒より速い"
+  ],
+  "teacher_rec60_means": "RL の段が Node で教師の REC60 を再現して計算する(決定的)"
+ },
+ "recording": {
+  "method": "rl.html の import map で ./rc-speed-controller.js を ./rl/rl-teacher-bestlap.js に置き換え、アプリの RC 教師の差し込み口で RL の方策(JS)を動かす。app.js・sim-core.js・dataset_recorder.py・combine_scene_datasets.py は元のまま",
+  "site": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/sim/dist/(元とバイト単位で同じことを毎回確かめる)",
+  "wrapper_requirements": [
+   "createRcTrainingTeacher が {action, reference:{length, planned_time_s}, options, metadata} を返す",
+   "action(snapshot) は同じフレーム番号なら同じ値(フレーム番号で覚える)。乱数・時刻を使わない",
+   "assertRcTeacherContract は元の検査を標準の開始で通し、開始の範囲は元と同じ(ゲート 0・±3 cm・±3°)",
+   "metadata は全シーンで同じ小さな JSON"
+  ],
+  "metadata": {
+   "id": "rl-bestlap-ppo-v1",
+   "fields": [
+    "variant",
+    "seed",
+    "checkpoint_steps",
+    "policy_sha256",
+    "weights_sha256",
+    "features_sha256",
+    "reference_loop_sha256",
+    "action_limits {steering_rad 0.52, speed_mps [0, 4.5]}",
+    "control_delay_frames 0",
+    "protocol_sha256"
+   ]
+  },
+  "plan": "files.collection_plan_60 の 60 条件をそのまま写し、name だけ rlbest20-mode8-{train|val}-NN に変える(開始・種・baseline/noise の交互・train 0〜47 / val 48〜59・センサー・物理・controller demo・teacher-profile speed-rc・連続周回 20 秒・ジャンル 8・自動ラベルは同じ)",
+  "collection_name": "jetformer-simulator-rl-bestlap-20min",
+  "bridge": "python -I run_bridge.py --port 8791 --no-browser --policy calibration_only_policy.py(PWM 1442/1498)",
+  "browser": "DISPLAY=:0、XAUTHORITY=/run/user/1000/gdm/Xauthority、geckodriver 4445、専用プロファイル sim/ff_profile_rl。jf-heavy --mem 2500M --lock big -- python -I browser_collect.py ...(snap のスコープにも MemoryMax 2500M)。空きメモリ 2 GB 以上・ほかの Firefox なしを確かめてから",
+  "resume": "途中で止まったら残りの条件の計画で続きを集め、60 シーンのセッション ID で /api/datasets/collection にまとめる",
+  "pre_recording_prediction": "lib/app_emulation.mjs + 同じ差し込みモジュール + 元の sim-core.js で 60 条件を走らせ、シーンごとの周回時間・衝突・すき間を予想として保存",
+  "validation": [
+   "check_collection_zip.py: 60 シーン・36,000 フレーム・学習 35,400・train 48 / val 12・noise 30・形式が元の 20 分データと同じ・ジャンル 8・num_modes 9・PWM の再計算の差 0 µs・マニフェストの sha256",
+   "verify_recording.mjs --teacher: 全 60 シーンで再生の一致 ≤ 1e-9・方策の再計算の一致 ≤ 1e-9・周回の集計が予想と一致",
+   "全シーンで衝突 0・2 周以上・全周が有効",
+   "画像の点検(RGB の平均・標準偏差が 0 でない、ToF の当たりの割合が教師データ ±10%、最初と最後のシーンの 1 フレームを目視)"
+  ],
+  "gate_to_import": "上の 1〜3 が通らなければ取り込まない(直して記録し直し、deviations.md に記録)",
+  "import": "python -I で jetformer.dataset_import.import_archive(zip, simulator=True) → jetformer.dataset.set_dataset_tags(name, ['simulator', 'rl-bestlap'])。名前を rl_dataset.json に書く"
+ },
+ "genre": {
+  "decision": "ジャンル 8(シミュレーター)のまま。新しいジャンル 9 は作らない。data/modes.json は変えない",
+  "reasons": [
+   "シミュレーターの推論アダプター jetformer_policy.py は num_modes > 9 を拒否する(ID 0〜8 だけ)。9 を足すとモデルが num_modes 10 になり、シミュレーターで評価できない",
+   "シミュレーターの記録画面の dataset-mode の選択肢は 0〜5・8 だけ",
+   "実車の走行・収集画面のジャンルの一覧と、以後の学習の num_modes を変えない",
+   "いまシミュレーターの統合をしている別の作業とぶつからない"
+  ],
+  "style_separation": "学習の腕(モデル)を分ける: S-T は教師だけ、S-R は RL だけ。S-TR は教師のフレームを学習のときだけジャンル 4 に付け替え",
+  "real_car_ui_effect": "なし。シミュレーター専用のモデルは run.json のメモに「シミュレーター専用(ジャンル 8)。実車では使わない」と書く"
+ },
+ "training_arms": {
+  "S-T": {
+   "role": "教師のシミュレーターデータだけ",
+   "data": "jetformer-simulator-id8-20min_20261012-150956_b55616cf",
+   "val": "教師データの val 12 シーン",
+   "seeds": [
+    0,
+    1
+   ],
+   "priority": {
+    "0": 1,
+    "1": 2
+   },
+   "init": "ImageNet",
+   "may_start": "protocol 固定の直後(RL を待たない)",
+   "commands": {
+    "0": {
+     "train": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-ST-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-ST-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simrl-bestlap-ST-s0"
+    },
+    "1": {
+     "train": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-ST-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-ST-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simrl-bestlap-ST-s1"
+    }
+   }
+  },
+  "S-R": {
+   "role": "RL のベストラップのシミュレーターデータだけ",
+   "data": "<RL_DATASET>(取り込みの段が rl_dataset.json に書く名前)",
+   "val": "RL データの val 12 シーン",
+   "seeds": [
+    0,
+    1
+   ],
+   "priority": {
+    "0": 1,
+    "1": 2
+   },
+   "init": "ImageNet",
+   "may_start": "記録・検証・取り込みのあと",
+   "commands": {
+    "0": {
+     "train": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/<RL_DATASET> --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-SR-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/<RL_DATASET> --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-SR-s0 --seed 0 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simrl-bestlap-SR-s0"
+    },
+    "1": {
+     "train": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/<RL_DATASET> --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-SR-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5",
+     "resume": "cd ~/jetformer && jf-heavy --mem 3G --lock big -- nice -n 10 python -u tools/train.py --policy jetformer_v0 --data data/datasets/<RL_DATASET> --epochs 30 --lr 3e-4 --out data/runs/simrl-bestlap-SR-s1 --seed 1 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --resume",
+     "run": "simrl-bestlap-SR-s1"
+    }
+   }
+  },
+  "S-TR": {
+   "role": "任意(優先 3)。両方を混ぜ、教師のフレームは学習のときだけジャンル 4 に付け替え(--mode-remap-npz)、RL のフレームはジャンル 8",
+   "data": "tools/sim_cotrain.py と同じ方法で作る混合データ(シミュレーターのシーンの aligned は元に戻す)。val は RL の 12 シーン",
+   "seeds": [
+    0
+   ],
+   "priority": {
+    "0": 3
+   },
+   "init": "ImageNet",
+   "run": "simrl-bestlap-STR-s0",
+   "extra_args": "--mode-remap-npz <教師のフレーム=4、RL のフレーム=-1 の表>"
+  }
+ },
+ "training_common": {
+  "recipe": "jetformer_v0(既定の形)、ImageNet から、30 エポック、lr 3e-4 cosine、AdamW wd 1e-4、間引き 3、バッチ 64、workers 4、今の操作値なし、衝突 2.5G の除外。best は各データ自身の val",
+  "estimate_minutes_per_run": 35,
+  "gpu_rules": "1 本ずつ。始める前に pgrep -af \"train.py|build_engine|trtexec\" で他の GPU の処理がないこと。jf-heavy --mem 3G --lock big",
+  "oom_cap_fallback": "メモリ上限で止まったら同じ種を --workers 2 で続きから(deviations.md に記録)",
+  "engines": "作らない(シミュレーター専用のため)"
+ },
+ "eval_bundle": {
+  "source": "data/runs/<run>/jetformer.onnx・model_config.json + jetformer.model_export.io_spec(run)。data/runs の元は変えない",
+  "model_config_patch": {
+   "steer_center_us": 1442,
+   "throttle_neutral_us": 1498,
+   "copy_from_external_ref": [
+    "simulator_physics",
+    "simulator_sensors",
+    "simulator_world_version",
+    "simulator_sensor_profile",
+    "evaluation_route",
+    "required_route_event"
+   ],
+   "simulator_execution": {
+    "control_delay_frames": 1
+   },
+   "simulator_calibration": "作者の値で mode_id 8・steer_gain 1.0・throttle_gain 1.0・lookahead 1",
+   "recommended_inference": {
+    "steering_gain": 1.0,
+    "throttle_gain": 1.0,
+    "lookahead": 1
+   }
+  },
+  "external_reference": {
+   "model": "models/shortcut-rc-finetuned(そのまま)",
+   "mode": 4,
+   "lookahead": 1,
+   "steer_gain": 1.0,
+   "throttle_gain": 1.01,
+   "control_delay_frames": 1
+  },
+  "bridge_python": "専用の venv experiments/20261013_sim_rl_bestlap/.venv-bridge(conda の Python 3.13 から)。numpy 2.2.6・opencv-python-headless 4.13.0.92・onnxruntime 1.31.0(ユーザーの requirements-model.txt と同じ)。jetracer 環境には入れない",
+  "bridge_port": 8792,
+  "load": "/api/models/bundle → /api/models/activate"
+ },
+ "closed_loop_eval": {
+  "where": "ブラウザ DISPLAY :0 のアプリの「連続試験」(controller external)",
+  "settings": {
+   "control-delay-frames": 1,
+   "model-lookahead": 1,
+   "model-steer-gain": 1.0,
+   "model-throttle-gain": 1.0,
+   "model-mode": 8,
+   "physics_and_sensors": "REC60 と同じ",
+   "single_lap_limit_s": 15
+  },
+  "starts_single_lap": [
+   {
+    "name": "E0",
+    "gate": 0,
+    "left_offset_m": 0.0,
+    "left_yaw_deg": 0.0,
+    "role": "標準(主)。ユーザーの verify-learned-lap.mjs で確認"
+   },
+   {
+    "name": "E1",
+    "gate": 0,
+    "left_offset_m": 0.03,
+    "left_yaw_deg": 3.0,
+    "role": "学習データの範囲の端"
+   },
+   {
+    "name": "E2",
+    "gate": 0,
+    "left_offset_m": -0.03,
+    "left_yaw_deg": -3.0,
+    "role": "学習データの範囲の端"
+   },
+   {
+    "name": "E3",
+    "gate": 0,
+    "left_offset_m": 0.08,
+    "left_yaw_deg": -5.0,
+    "role": "学習データの外"
+   },
+   {
+    "name": "E4",
+    "gate": 0,
+    "left_offset_m": -0.08,
+    "left_yaw_deg": 5.0,
+    "role": "学習データの外"
+   },
+   {
+    "name": "E5",
+    "gate": 20,
+    "left_offset_m": 0.0,
+    "left_yaw_deg": 0.0,
+    "role": "学習データにない場所(長い直線)からの発進"
+   }
+  ],
+  "flying_lap_runs": [
+   {
+    "start": "E0",
+    "mode": "continuous-laps-v1",
+    "seconds": 20
+   },
+   {
+    "start": "E1",
+    "mode": "continuous-laps-v1",
+    "seconds": 20
+   }
+  ],
+  "models": [
+   "S-T 種 0",
+   "S-T 種 1",
+   "S-R 種 0",
+   "S-R 種 1",
+   "外部の参照 shortcut-rc-finetuned",
+   "(作れば)S-TR 種 0"
+  ],
+  "references_in_node": "RL の方策(JS・元のコア)を 6 条件で、教師を E0〜E2 で走らせ T_RL(e) などにする",
+  "determinism_check": "S-R 種 0 の E0 を 2 回。違えば全モデルの E0 を 3 回ずつの中央値(deviations.md に記録)",
+  "verification": "E0 の単周はユーザーの qa/verify-learned-lap.mjs <結果> --model <onnx> が PASS。ほかは best_lap_definition.verification と同じ同等の検証",
+  "positive_control": "外部の参照の E0 が完走しない・検証器が通らないときは評価のしくみを先に直す",
+  "estimate": "約 6 フレーム/秒、1 モデル約 10 分"
+ },
+ "offline_eval": {
+  "splits": [
+   "RL データの val 12 シーン",
+   "教師データの val 12 シーン"
+  ],
+  "frames": "future_valid の全フレーム(間引きなし)",
+  "metric": "L1 [µs]、舵・スロットル別、1 ステップ目と 10 ステップの平均",
+  "models": [
+   "S-T 種 0・1",
+   "S-R 種 0・1",
+   "(作れば)S-TR"
+  ],
+  "how": "PyTorch、runtime.load_run(best)、GPU(短い処理、jf-heavy big)",
+  "external_reference": "任意(ONNX を CPU、ジャンル 4)",
+  "judged": false
+ },
+ "acceptance_H2": {
+  "T_definition": "T(m, e) = モデル m の開始 e での停止から 1 周の時間(完走し検証が通ったときだけ)",
+  "a_completion": "S-R の種 0・1 がどちらも E0 を完走し、ユーザーの検証器が PASS。かつ 6 条件 × 2 種 = 12 回のうち 9 回以上完走",
+  "b_close_to_rl": "S-R の完走した回の T(S-R, e)/T_RL(e) の中央値 ≤ 1.05",
+  "c_faster_than_teacher_trained": "S-R と S-T の両方が完走した(種、開始)の組で T(S-T) − T(S-R) の中央値 > Δ。Δ = max(0.10 秒, 2 × 種のばらつき)、種のばらつき = 腕ごとの |中央値_e T(腕,種0,e) − 中央値_e T(腕,種1,e)| の大きいほう",
+  "c_fallback": "組が 3 つ未満なら、S-R の E0 の時間が両方の種とも外部の参照の E0 の時間 − 0.10 秒より速いこと",
+  "verdict": {
+   "学習できた": "(a)(b)(c) すべて",
+   "一部できた": "(a) かつ [(b) または (c)]",
+   "できなかった": "それ以外"
+  },
+  "reported_not_judged": [
+   "フライングラップ",
+   "オフライン L1",
+   "S-TR",
+   "外部の参照との差",
+   "S-R 種 0 の E0 でゲインを変えた結果(前進 1.01、舵 0.95・1.05)"
+  ]
+ },
+ "risks_and_fallbacks": {
+  "webgl": "DISPLAY :0 の Firefox(確認済み)。だめなら webgl_probe.py で確かめ直す。それでもだめなら Node でカメラ画像を描く代わりはしない。RL は最後まで行い、記録用の一式と Mac での手順書を渡す",
+  "onnxruntime": "専用 venv に入らなければ閉ループ評価はせず、記録・学習・オフライン評価まで行い、評価用の一式と手順を渡す",
+  "oom": "jf-heavy(RL 2G・Firefox 2500M + snap スコープ・GPU 3G)。Firefox は 1 つ。RL と GPU 学習は同時に可(空き 3.5 GB 以上で開始)。RL と Firefox は同時にしない。各段の終わりに自分が起動したものを止める",
+  "power_loss": "RL は 200 万ステップごと、学習は last.pth、記録はシーンごとの ZIP から続ける。0 バイト・読めないファイルは作り直す",
+  "student_fails": "そのまま報告する。基準は変えない"
+ },
+ "time_plan": [
+  {
+   "from": "16:45",
+   "to": "17:10",
+   "stage": "設計・手順の固定"
+  },
+  {
+   "from": "17:10",
+   "to": "18:40",
+   "stage": "RL の実装と試験 + パイロット"
+  },
+  {
+   "from": "17:15",
+   "to": "18:35",
+   "stage": "(並行)S-T 種 0・1 の学習(GPU)"
+  },
+  {
+   "from": "18:40",
+   "to": "22:10",
+   "stage": "RL 本番 main 種 0・1・2 + open 種 0(並行して評価用の venv・bundle・計画)"
+  },
+  {
+   "from": "22:10",
+   "to": "22:40",
+   "stage": "選定・元のコアで確認・学習曲線・現実味の指標"
+  },
+  {
+   "from": "22:40",
+   "to": "00:10",
+   "stage": "記録 60 シーン + 検証 + 取り込み"
+  },
+  {
+   "from": "00:10",
+   "to": "01:30",
+   "stage": "S-R 種 0・1 の学習(GPU)"
+  },
+  {
+   "from": "01:30",
+   "to": "02:40",
+   "stage": "閉ループ評価(5 モデル)+ オフライン L1"
+  },
+  {
+   "from": "02:40",
+   "to": "03:30",
+   "stage": "集計・図・報告(最後にメインのセッションが約 1 分のナレーション動画)"
+  }
+ ],
+ "cut_order_if_late": [
+  "open",
+  "S-TR",
+  "各腕の種 1",
+  "フライングラップの評価",
+  "ゲインの感度"
+ ],
+ "never_cut": [
+  "RL main",
+  "記録",
+  "S-R 種 0・S-T 種 0",
+  "E0〜E5 の閉ループ評価"
+ ],
+ "stages": {
+  "A": "RL の実装(特徴・ワーカー・PPO・JS の方策・一致の試験)+ パイロット",
+  "B": "RL の学習と選定・元のコアで確認・現実味の指標・学習曲線",
+  "C": "記録・検証・取り込み",
+  "D": "JetFormer の学習(S-T は A と並行で可)",
+  "E": "評価用の bundle・閉ループ評価・オフライン L1・判定",
+  "F": "報告"
+ },
+ "paths": {
+  "code": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap",
+  "reports": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013",
+  "rl_runs": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/<variant>-s<seed>/",
+  "recording_check": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/recording/",
+  "eval": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/",
+  "runs": "/home/jetson/jetformer/data/runs/simrl-bestlap-*"
+ },
+ "invariants": [
+  "ユーザーの /home/jetson/sim/extracted/course-simulator を変えない(コピーが元とバイト単位で同じことを確かめる)。展開物を読む Python は -I",
+  "jetformer/web/*・jetformer/sim*・data/sim*・data/modes.json を変えない。jetformer-web を再起動しない。git にコミットしない",
+  "実車・PCA9685・I2C に触らない。GPU は一度に 1 つ。ブリッジは 8791〜8799、geckodriver は 4445、Firefox は専用プロファイル",
+  "重い処理は /home/jetson/bin/jf-heavy を通す"
+ ],
+ "deviation_policy": "protocol.json は書き換えない。違うことをしたら deviations.md に「いつ・何を・なぜ・結果への影響」を追記する",
+ "files": {
+  "collection_plan_60": {
+   "path": "/home/jetson/sim/extracted/course-simulator/qa/rc-collection-plan-60.json",
+   "sha256": "1c5bb22087b5913531e6ebc76e6ae3da99c04ef1feaebfb1f2e74eaa68160dfb"
+  },
+  "sim_core_original": {
+   "path": "/home/jetson/sim/extracted/course-simulator/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e"
+  },
+  "sim_core_copy_reports": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/sim/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e"
+  },
+  "sim_core_copy_experiments": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e"
+  },
+  "rc_speed_controller": {
+   "path": "/home/jetson/sim/extracted/course-simulator/dist/rc-speed-controller.js",
+   "sha256": "4a32ab56369b3d0c9a76f16fe7144eb895677b72ceeefc8483645f91ae96f417"
+  },
+  "app_js": {
+   "path": "/home/jetson/sim/extracted/course-simulator/dist/app.js",
+   "sha256": "4a43205fbca16f17e4b2c5352209c467b3be98a66709afa972e1504c42a7307c"
+  },
+  "verify_learned_lap": {
+   "path": "/home/jetson/sim/extracted/course-simulator/qa/verify-learned-lap.mjs",
+   "sha256": "506674aa160f94d0f24bdc51801783c58367f27b235a1883ddb077eeaf0e740b"
+  },
+  "jetformer_policy_adapter": {
+   "path": "/home/jetson/sim/extracted/course-simulator/jetformer_policy.py",
+   "sha256": "8680de16550da0b098c7aa3c1bd816a0711b76c44ae611e6a06c564ff93d8e22"
+  },
+  "dataset_recorder": {
+   "path": "/home/jetson/sim/extracted/course-simulator/dataset_recorder.py",
+   "sha256": "5c968ca36e3d59f042e896a7a8f13ef141dc55ef5e929b319e347b68c84949ba"
+  },
+  "requirements_model": {
+   "path": "/home/jetson/sim/extracted/course-simulator/requirements-model.txt",
+   "sha256": "0374ef5d1ffe8b897137b08cc71c169b07631f57f10a4cfd760fdc51c91db46b"
+  },
+  "external_ref_onnx": {
+   "path": "/home/jetson/sim/extracted/course-simulator/models/shortcut-rc-finetuned/jetformer.onnx",
+   "sha256": "e8cf0453f21f6f8ee11e1b9feb6878e4f7cb9e23883f9f0dc837fba01b04efb5"
+  },
+  "external_ref_model_config": {
+   "path": "/home/jetson/sim/extracted/course-simulator/models/shortcut-rc-finetuned/model_config.json",
+   "sha256": "27641631691d346b5add83504b343d5c575ce0e539fad45ba0bc9d5e79a26103"
+  },
+  "external_ref_calibration": {
+   "path": "/home/jetson/sim/extracted/course-simulator/models/shortcut-rc-finetuned/calibration.json",
+   "sha256": "61bdbf942e47caf7936bf670f39de01e079f404562f8895c2c3a8844ad600c16"
+  },
+  "fast_sim_core": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/fast-sim-core.mjs",
+   "sha256": "227ceccc7970ebf1aea98e4ea8686b612397b212e77382c216e5ec85096df0cc"
+  },
+  "world_v3": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/world-v3.json",
+   "sha256": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2"
+  },
+  "calibration_only_policy": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/calibration_only_policy.py",
+   "sha256": "cb8d6a9973a9d8d99d3f19a5b9ac6286ce025f47f12943c13cbbfd1e2aa31ef9"
+  },
+  "id8_original_calibration": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/id8_original_calibration.json",
+   "sha256": "c03fdfc6141bc54352e2a878ca394866250a487561ecc54594ae20c1cda37a20"
+  },
+  "teacher_dataset_card": {
+   "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf/dataset_card.json",
+   "sha256": "9ebba84daabb85287dd129284f87098aa5eebcde6b2f81002f471bf00ffae10b"
+  },
+  "teacher_dataset_splits": {
+   "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-id8-20min_20261012-150956_b55616cf/splits.json",
+   "sha256": "bd2aa1af305bf849c38e5fe4cd4f4e431e8b9e6e5a2a401d937422388e0353f4"
+  },
+  "jetformer_train_py": {
+   "path": "/home/jetson/jetformer/tools/train.py",
+   "sha256": "3deb9e35df9e2997d9f3b1fa3df9720a5f764d1083e090e90083b942c2389b0a"
+  },
+  "design_md": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/design.md",
+   "sha256": "1ddfe14ca95a00f4458de6efa8aff1f7d701e94bb2baa02a7568f8aa065eb2f3"
+  }
+ }
+}

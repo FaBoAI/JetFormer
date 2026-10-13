@@ -1,0 +1,40 @@
+{
+ "schema": "fast-sim-core-equivalence/v1",
+ "cases": 101,
+ "mismatches": [],
+ "timing": {
+  "元: step(snapshot付き)": {
+   "steps": 6000,
+   "ms": 3481,
+   "steps_per_s": 1724
+  },
+  "高速: step(snapshot付き)": {
+   "steps": 6000,
+   "ms": 461,
+   "steps_per_s": 13006
+  },
+  "高速: step(lite)+peek": {
+   "steps": 18000,
+   "ms": 823,
+   "steps_per_s": 21864
+  },
+  "高速: step(lite)+peek+RC教師action": {
+   "steps": 6000,
+   "ms": 481,
+   "steps_per_s": 12486
+  },
+  "高速: step(lite)+observe(13レイ)": {
+   "steps": 3000,
+   "ms": 472,
+   "steps_per_s": 6361
+  }
+ },
+ "pass": true,
+ "memory_mb": {
+  "rss": 305,
+  "heapTotal": 205,
+  "heapUsed": 88,
+  "external": 5,
+  "arrayBuffers": 0
+ }
+}
