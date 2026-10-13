@@ -1,0 +1,18 @@
+/* JetFormer の差し込み(シミュレーターのページの上の帯) */
+.jf-simbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 6px 16px; background: #111827; color: #e5e7eb;
+  font: 12px/1.5 -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif; position: sticky; top: 0; z-index: 50; }
+.jf-simbar a { color: #93c5fd; text-decoration: none; }
+.jf-simbar a:hover { text-decoration: underline; }
+.jf-simbar .jf-home { font-weight: 600; }
+.jf-simbar label.jf-course { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: #d1d5db; }
+.jf-simbar select { width: auto; max-width: 340px; padding: 2px 6px; border-radius: 6px; border: 1px solid #4b5563; background: #1f2937; color: #fff; font-size: 12px; }
+.jf-simbar .jf-pill { padding: 1px 9px; border-radius: 10px; background: #374151; }
+.jf-simbar .jf-running { background: #166534; }
+.jf-simbar .jf-starting, .jf-simbar .jf-stopping { background: #92400e; }
+.jf-simbar .jf-failed { background: #991b1b; }
+.jf-simbar .jf-btn { padding: 2px 10px; font-size: 12px; border-radius: 6px; }
+.jf-simbar .jf-model { color: #d1d5db; }
+.jf-simbar .jf-note { color: #fde68a; }
+.jf-simbar .jf-warn { color: #fde68a; }
+.jf-simbar .jf-error { color: #fca5a5; }
+.jf-hint { display: block; font-size: 10px; color: #6b7c75; margin-top: 3px; }

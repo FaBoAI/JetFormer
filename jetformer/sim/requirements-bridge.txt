@@ -1,0 +1,8 @@
+# シミュレーターのブリッジ用(Python 3.13 / aarch64)。シミュレーターの requirements-model.txt の版に合わせる。
+# data/sim/venv にだけ入れる(jetracer env には入れない)。pip install --require-hashes --only-binary=:all: --no-deps
+numpy==2.2.6 --hash=sha256:f92729c95468a2f4f15e9bb94c432a9229d0d50de67304399627a943201baa2f
+opencv-python-headless==4.13.0.92 --hash=sha256:eb60e36b237b1ebd40a912da5384b348df8ed534f6f644d8e0b4f103e272ba7d
+onnxruntime==1.31.0 --hash=sha256:ad663106f6eeff3d454f24a786450459d07f30e74863851104fc1b8b3f368127
+protobuf==7.36.2 --hash=sha256:e11e1f0180583a2af89db6a2ecd9e8dc40aa6d2988ca175bfd0e6d12ea72d74e
+flatbuffers==25.12.19 --hash=sha256:7634f50c427838bb021c2d66a3d1168e9d199b0607e6329399f04846d42e20b4
+packaging==26.3 --hash=sha256:d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c

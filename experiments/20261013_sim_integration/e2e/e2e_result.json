@@ -1,0 +1,215 @@
+{
+ "steps": [
+  {
+   "name": "1 status: 導入済み・inbox に本体",
+   "ok": true,
+   "release": "20261013-144013-6f610dd5",
+   "inbox": [
+    "course-simulator-complete.zip"
+   ],
+   "env_ready": true,
+   "bridge": "stopped"
+  },
+  {
+   "name": "2 install: job done・already_installed・dataset-downloads なし・~/sim は変わらない",
+   "ok": true,
+   "result": {
+    "release_id": "20261013-144013-6f610dd5",
+    "files": 851,
+    "bytes": 253683865,
+    "already_installed": true
+   },
+   "error": null
+  },
+  {
+   "name": "3 setup: 版が一致・self-test 済み",
+   "ok": true,
+   "packages": {
+    "numpy": "2.2.6",
+    "opencv-python-headless": "4.13.0.92",
+    "onnxruntime": "1.31.0",
+    "protobuf": "7.36.2",
+    "flatbuffers": "25.12.19",
+    "packaging": "26.3"
+   },
+   "python": "3.13.14",
+   "job": "done",
+   "already": true
+  },
+  {
+   "name": "4 bridge start: running・127.0.0.1 だけで待ち受け",
+   "ok": true,
+   "seconds": 1.3,
+   "port": 36369,
+   "pid": 36584,
+   "rss_mb": 54.9,
+   "ss": "LISTEN 0      5      127.0.0.1:36369 0.0.0.0:*"
+  },
+  {
+   "name": "5 proxy: /sim/bridge/api/status 200(LAN の Host でも)・ブリッジのポートに LAN からつながらない",
+   "ok": true,
+   "status": 200,
+   "lan_host_status": 200,
+   "lan_ip": "192.168.5.14",
+   "lan_refused": true
+  },
+  {
+   "name": "7 course upload: data で登録・再送は登録済み・形違いは 409・../ は 400",
+   "ok": true,
+   "course": {
+    "id": "e2e-course-1",
+    "kind": "data",
+    "world_hash": "b0d462cd",
+    "stats": {
+     "segments": 52,
+     "disks": 94,
+     "surfaces": 5,
+     "gates": 33,
+     "crossings": 1
+    }
+   },
+   "again": 200,
+   "conflict": 409,
+   "attack": 400,
+   "attack_detail": "「..」や空の要素を含むパスがあります: ../physics-world.json"
+  },
+  {
+   "name": "6 pages: shim 入り・scene/world の sha256・carpet.jpg",
+   "ok": true,
+   "pages": {
+    "default": {
+     "shim": true,
+     "scene": true,
+     "world": true,
+     "carpet": true,
+     "config": true
+    },
+    "indoor-course-eval-2-shortcut": {
+     "shim": true,
+     "scene": true,
+     "world": true,
+     "carpet": true,
+     "config": true
+    },
+    "e2e-course-1": {
+     "shim": true,
+     "scene": true,
+     "world": true,
+     "carpet": true,
+     "config": true
+    }
+   }
+  },
+  {
+   "name": "6b Default は既知の v3(hash 0a464384)",
+   "ok": true,
+   "world_hash": "0a464384"
+  },
+  {
+   "name": "8 model: bundle → activate → policy_loaded・predict 200",
+   "ok": true,
+   "run": "clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12",
+   "load": {
+    "ok": true,
+    "run": "clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12",
+    "policy_loaded": true,
+    "name": "JetFormer · clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12",
+    "mode_id": 5
+   },
+   "load_s": 8.1,
+   "predict_status": 200,
+   "predict": {
+    "steering": 0.34890128769985473,
+    "speed": 0.2040830550655242,
+    "info": {
+     "adapter": "JetFormer ONNX",
+     "mode_id": 5,
+     "lookahead": 3,
+     "command_input": false,
+     "raw_pwm_us": [
+      1729.5145263671875,
+      1432.7342529296875
+     ],
+     "steering_pwm": 1816.0688842773438,
+     "throttle_pwm": 1432.7342529296875,
+     "preprocess_ms": 3.4895679996225226,
+     "ort_inference_ms": 57.17501599974639,
+     "adapter_total_ms": 60.92789200010884,
+     "calibration_provisional": true,
+     "chunk_selection": "latest-chunk/lookahead; no temporal averaging",
+     "synthetic_sensors": true
+    }
+   },
+   "latency_ms": [
+    119,
+    82,
+    73,
+    73,
+    72
+   ]
+  },
+  {
+   "name": "9 dataset: start → frame×15 → finish → 一覧 → 取り込み",
+   "ok": true,
+   "session": "cdb89adb8ba24420990c9b0efcc6ae56",
+   "finish": {
+    "filename": "e2e_sim_164615_20261013-074615_cdb89adb.zip",
+    "bytes": 34509,
+    "training_frames": 5
+   },
+   "download_bytes": 34509,
+   "listed": {
+    "kind": "scene",
+    "frames": 15,
+    "dataset_name": "e2e_sim_164615_20261013-074615_cdb89adb"
+   },
+   "job": "done",
+   "job_error": null,
+   "imported_name": "e2e_sim_164615_20261013-074615_cdb89adb",
+   "scenes": {
+    "log": "ds-e2e_sim_164615_20261013-074615_cdb89adb",
+    "created": [
+     "ds-e2e_sim_164615_20261013-074615_cdb89adb-0001"
+    ],
+    "skipped": []
+   }
+  },
+  {
+   "name": "9b runtime の片付け",
+   "ok": true,
+   "status": 200
+  },
+  {
+   "name": "11 bridge stop: stopped・子プロセスなし",
+   "ok": true,
+   "state": "stopped",
+   "pgrep": ""
+  }
+ ],
+ "started": "2026-10-13 16:46:05",
+ "bridge_log_tail": {
+  "lines": [
+   "16:46:06 [jetformer] ブリッジを起動します(起動)",
+   "16:46:06 [jetformer] 127.0.0.1:36369 で待ち受けています(pid 36584)",
+   "16:46:06 [bridge] GET /api/status -> 200",
+   "16:46:07 [bridge] GET /api/status -> 200",
+   "16:46:07 [bridge] GET /api/status -> 200",
+   "16:46:07 [bridge] GET /api/status -> 200",
+   "16:46:14 [bridge] POST /api/models/bundle -> 200",
+   "16:46:15 [bridge] POST /api/models/activate -> 200",
+   "16:46:15 [bridge] GET /api/status -> 200",
+   "16:46:15 [bridge] POST /api/datasets/start -> 200",
+   "16:46:16 [bridge] POST /api/datasets/finish -> 200",
+   "16:46:16 [bridge] GET /api/datasets/download/cdb89adb8ba24420990c9b0efcc6ae56 -> 200",
+   "16:46:16 [bridge] GET /api/status -> 200",
+   "16:46:16 [bridge] GET /api/status -> 200",
+   "16:46:16 [bridge] GET /api/status -> 200"
+  ],
+  "suppressed": {
+   "predict": 5,
+   "frame": 15
+  }
+ },
+ "ok": true,
+ "finished": "2026-10-13 16:46:17"
+}

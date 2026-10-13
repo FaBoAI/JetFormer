@@ -156,6 +156,7 @@ function showTab(name) {
   if (name === 'train') loadTrain();
   if (name === 'drive') loadDrive();
   if (name === 'datasets') { loadDatasets(); loadJobs(); updateDsSelected(); }
+  if (name === 'sim') loadSim();
 }
 document.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
 
@@ -1405,6 +1406,235 @@ function tcpLiveText(q) {
     + ` ・ 今 ${v(q.v_now)}${e(q.v_now)} ・ 曲がれる目安 ${v(q.v_curv)} ・ ${esc(TCP_MODES[q.mode] || String(q.mode))}(${esc(q.branch || '')})`;
 }
 
+// ------------------------------------------------------------ シミュレーター(CourseLab)
+state.sim = { timer: null, st: null, courses: [], models: [], defaultCourse: 'default' };
+const SIM_BRIDGE_LABEL = { stopped: '停止中', starting: '起動中…', running: '動作中', stopping: '停止中…', failed: '失敗' };
+const SIM_KIND_LABEL = { release: '標準', snapshot: '同梱', 'trusted-js': 'アップロード', data: 'アップロード・簡易描画' };
+const simMB = (b) => (b / 1e6).toFixed(b >= 1e8 ? 0 : 1) + ' MB';
+const simJsonError = (xhr) => { try { const d = JSON.parse(xhr.responseText); return d.errors || [d.detail || xhr.statusText]; } catch (e) { return [xhr.responseText || ('HTTP ' + xhr.status)]; } };
+
+async function loadSim() {
+  await Promise.all([loadSimStatus(), loadSimCourses(), loadSimModels(), loadSimDatasets(), loadSimJobs()]);
+  clearTimeout(state.sim.timer);
+  const tick = async () => {
+    if (state.tab !== 'sim') return;
+    await loadSimStatus(); await loadSimJobs();
+    if ($('#sim-log-box').open) loadSimLog();
+    state.sim.timer = setTimeout(tick, 2000);
+  };
+  state.sim.timer = setTimeout(tick, 2000);
+}
+async function loadSimStatus() {
+  let s;
+  try { s = await api('GET', '/api/sim/status'); } catch (e) { $('#sim-release').textContent = '状態を取得できません: ' + e.message; return; }
+  const prev = state.sim.st; state.sim.st = s;
+  renderSimRelease(s); renderSimEnv(s); renderSimBridge(s);
+  if (prev && prev.release.id !== s.release.id) loadSimCourses();
+}
+function renderSimRelease(s) {
+  const r = s.release;
+  $('#sim-inbox-dir').textContent = s.inbox_dir;
+  $('#sim-rel-pill').innerHTML = r.installed ? '<span class="badge ok">導入済み</span>' : '<span class="badge warn">未導入</span>';
+  $('#sim-release').innerHTML = r.installed
+    ? `使っている版: <b>${esc(r.id)}</b>(${esc((r.created_at || '').slice(0, 16).replace('T', ' '))} 作成・${esc((r.installed_at || '').slice(0, 16).replace('T', ' '))} 導入)<br>`
+      + `Default コース: ${esc(r.default_world_version || '?')}` + (r.warnings && r.warnings.length ? `<div class="muted">${r.warnings.map(esc).join('<br>')}</div>` : '')
+    : 'まだ導入していません。下の ZIP の「導入」を押してください。';
+  const inbox = s.inbox || [];
+  $('#sim-inbox').innerHTML = `<div class="card-title" style="margin-top:8px"><small>${esc(s.inbox_dir)} にある ZIP</small></div>` + (inbox.map((z) => `
+    <div class="sim-row"><span class="grow"><b>${esc(z.file)}</b> <span class="muted">${simMB(z.bytes)}</span>
+      ${z.kind === 'simulator' ? `<span class="badge sim">シミュレーター本体 ${esc(z.release_id)}</span>` : `<span class="badge tag">対象外</span>`}
+      ${z.problem ? `<div class="muted small">${esc(z.problem)}</div>` : ''}</span>
+      ${z.kind === 'simulator' ? (z.installed ? '<span class="badge ok">導入済み</span>'
+        : `<button class="small primary" data-sim-install="${esc(z.file)}" ${s.op_running ? 'disabled' : ''}>導入</button>`) : ''}</div>`).join('')
+    || '<div class="muted small">ZIP がありません(Jetson のこのフォルダーにシミュレーターの ZIP を置いてください)</div>');
+  const rels = s.releases || [];
+  $('#sim-releases').innerHTML = rels.length < 2 ? '' : '<div class="card-title" style="margin-top:8px"><small>導入済みの版</small></div>' + rels.map((x) => `
+    <div class="sim-row"><span class="grow">${esc(x.id)} ${x.active ? '<span class="badge ok">使用中</span>' : ''} <span class="muted small">${x.bytes ? simMB(x.bytes) : ''}</span></span>
+      ${x.active ? '' : `<button class="small" data-sim-activate="${esc(x.id)}">この版を使う</button><button class="small danger" data-sim-delrel="${esc(x.id)}">削除</button>`}</div>`).join('');
+}
+function renderSimEnv(s) {
+  const e = s.env;
+  const p = e.packages || {};
+  $('#sim-env-pill').innerHTML = e.ready ? '<span class="badge ok">準備済み</span>' : e.problem ? '<span class="badge bad">要対応</span>' : '<span class="badge warn">未準備</span>';
+  $('#sim-env').innerHTML = e.ready
+    ? `Python ${esc(e.python_version)} / onnxruntime ${esc(p.onnxruntime)} / numpy ${esc(p.numpy)} / opencv ${esc(p['opencv-python-headless'])}`
+      + `<span class="muted">(${esc((e.created_at || '').slice(0, 16).replace('T', ' '))} ${e.source === 'offline' ? '・手元の wheel から' : ''})</span>`
+    : (e.problem ? `<span class="warn-text">${esc(e.problem)}</span>` : '未準備です。「準備する」を押してください(本体の導入が先です)。');
+  const busy = s.op_running || ['starting', 'running', 'stopping'].includes(s.bridge.state);
+  $('#btn-sim-setup').classList.toggle('hidden', e.ready);
+  $('#btn-sim-setup').disabled = busy || !s.release.installed;
+  $('#btn-sim-resetup').disabled = busy || !s.release.installed;
+}
+function renderSimBridge(s) {
+  const b = s.bridge;
+  const cls = { running: 'run', failed: 'bad', starting: 'warn', stopping: 'warn' }[b.state] || 'tag';
+  $('#sim-bridge-pill').innerHTML = `<span class="badge ${cls}">${esc(SIM_BRIDGE_LABEL[b.state] || b.state)}</span>`;
+  const up = b.started_at ? Math.round(Date.now() / 1000 - b.started_at) : null;
+  const lines = [];
+  if (b.state === 'running') {
+    lines.push(`127.0.0.1:${b.port} ・ PID ${b.pid} ・ 動作 ${up >= 3600 ? (up / 3600).toFixed(1) + ' 時間' : up >= 60 ? Math.round(up / 60) + ' 分' : up + ' 秒'}${b.rss_mb ? ' ・ メモリ ' + Math.round(b.rss_mb) + ' MB' : ''}`);
+    lines.push(b.policy_loaded ? `モデル: <b>${esc(b.policy_name || '')}</b>` : 'モデル: 未読み込み(シミュレーターの画面で読み込みます)');
+    if (b.recording) lines.push(`<span class="warn-text">収集中(${esc(b.frames ?? '')} フレーム)</span>`);
+  }
+  if (b.restarts) lines.push(`<span class="warn-text">異常終了のため ${b.restarts} 回起動し直しました</span>`);
+  if (b.last_error) lines.push(`<span class="warn-text">${esc(b.last_error)}</span>`);
+  if (!s.release.installed) lines.push('先にシミュレーター本体を導入してください。');
+  else if (!s.env.ready) lines.push('先に Python 環境を準備してください。');
+  if (s.busy && s.busy.training && b.state === 'running') lines.push('<span class="muted">学習中は推論が遅くなります。</span>');
+  $('#sim-bridge').innerHTML = lines.join('<br>');
+  $('#btn-sim-start').disabled = !(s.release.installed && s.env.ready) || ['starting', 'running', 'stopping'].includes(b.state);
+  $('#btn-sim-stop').disabled = !['starting', 'running', 'failed'].includes(b.state);
+}
+async function loadSimLog() {
+  try {
+    const r = await api('GET', '/api/sim/bridge/log?lines=200');
+    const sup = r.suppressed || {};
+    $('#sim-log').textContent = r.lines.join('\n') + `\n(毎フレームの記録は省略: 推論 ${sup.predict || 0} 件・収集 ${sup.frame || 0} 件)`;
+  } catch (e) { $('#sim-log').textContent = e.message; }
+}
+$('#sim-log-box').addEventListener('toggle', () => { if ($('#sim-log-box').open) loadSimLog(); });
+async function loadSimCourses() {
+  let r;
+  try { r = await api('GET', '/api/sim/courses'); } catch (e) { $('#sim-courses').textContent = e.message; return; }
+  state.sim.courses = r.courses; state.sim.defaultCourse = r.default;
+  $('#sim-courses').innerHTML = r.courses.map((c) => {
+    const st = c.stats || {};
+    return `<div class="sim-course ${c.is_default ? 'default' : ''}">
+      <div><b>${esc(c.name)}</b> ${c.is_default ? '<span class="badge ok">既定</span>' : ''}
+        <span class="badge ${c.renderer === 'generic' ? 'warn' : 'sim'}">${esc(SIM_KIND_LABEL[c.kind] || c.kind)}</span></div>
+      <div class="meta">${esc(c.world_version || '')} ・ hash ${esc(c.world_hash || '未計算')}
+        ${st.segments != null ? ` ・ 線分 ${st.segments}・柱 ${st.disks}・路面 ${st.surfaces}・ゲート ${st.gates}` : ''}
+        ${c.size_m ? ` ・ ${Number(c.size_m[0]).toFixed(2)} × ${Number(c.size_m[1]).toFixed(2)} m` : ''}</div>
+      <div class="meta">使える教師: ${esc((c.features.teachers || []).join('・'))}${c.features.collection_plan ? ' ・ 20分・60シーンの収集条件' : ''}</div>
+      ${(c.warnings || []).map((w) => `<div class="warn-text">${esc(w)}</div>`).join('')}
+      <div class="row tight">
+        <button class="small primary" data-sim-open="${esc(c.id)}">開く</button>
+        ${c.is_default ? '' : `<button class="small" data-sim-default="${esc(c.id)}">既定にする</button>`}
+        <a class="small" href="/api/sim/courses/${encodeURIComponent(c.id)}/package.zip" download>書き出し(雛形)</a>
+        ${c.deletable ? `<button class="small danger" data-sim-delcourse="${esc(c.id)}">削除</button>` : ''}
+      </div></div>`;
+  }).join('') || '<div class="muted small">コースがありません(シミュレーター本体を導入すると Default が出ます)</div>';
+  const sel = $('#sim-open-course'), cur = sel.value;
+  sel.innerHTML = r.courses.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}${c.renderer === 'generic' ? '(簡易描画)' : ''}${c.is_default ? ' ★' : ''}</option>`).join('');
+  sel.value = r.courses.some((c) => c.id === cur) ? cur : r.default;
+  updateSimOpenNote();
+}
+async function loadSimModels() {
+  try { state.sim.models = await api('GET', '/api/sim/models'); } catch (e) { state.sim.models = []; }
+  const sel = $('#sim-open-model'), cur = sel.value;
+  sel.innerHTML = '<option value="">なし(手動・デモ・あとで読み込む)</option>' + state.sim.models.map((m) =>
+    `<option value="${esc(m.name)}" ${m.sim_compatible ? '' : 'disabled'}>${esc(m.name)}${m.sim_compatible ? '' : '(' + esc(m.reason) + ')'}</option>`).join('');
+  if ([...sel.options].some((o) => o.value === cur && !o.disabled)) sel.value = cur;
+}
+function updateSimOpenNote() {
+  const c = state.sim.courses.find((x) => x.id === $('#sim-open-course').value);
+  $('#sim-open-note').textContent = !c ? '' : c.renderer === 'generic'
+    ? '簡易描画のコースです(JetFormer の汎用描画。カメラ画像は Default と同じにはなりません)。使える教師は低速・高速だけです。'
+    : c.id === 'default' ? '' : '使える教師は低速・高速だけです(RC 加速教師・軌跡最適化教師・20分の収集条件は Default 専用)。';
+}
+$('#sim-open-course').addEventListener('change', updateSimOpenNote);
+function openSim(cid, run) {
+  const s = state.sim.st;
+  if (s && s.release.installed && s.env.ready && ['stopped', 'failed'].includes(s.bridge.state)) {
+    api('POST', '/api/sim/bridge/start').then(loadSimStatus).catch((e) => toast('ブリッジを起動できません: ' + e.message, true));
+  }
+  window.open(`/sim/c/${encodeURIComponent(cid)}/` + (run ? `?model=${encodeURIComponent(run)}` : ''), '_blank', 'noopener');
+}
+$('#btn-sim-open').addEventListener('click', () => {
+  if (!state.sim.st || !state.sim.st.release.installed) { toast('先にシミュレーター本体を導入してください', true); return; }
+  openSim($('#sim-open-course').value || state.sim.defaultCourse, $('#sim-open-model').value);
+});
+async function loadSimDatasets() {
+  let r;
+  try { r = await api('GET', '/api/sim/datasets'); } catch (e) { $('#sim-datasets').textContent = e.message; return; }
+  const rows = r.datasets.map((d) => `
+    <div class="sim-row"><span class="grow"><b>${esc(d.filename)}</b>
+      <span class="badge ${d.kind === 'collection' ? 'sim' : 'tag'}">${d.kind === 'collection' ? 'まとめ' : 'シーン'}</span>
+      ${d.imported ? `<span class="badge ok">取り込み済み: ${esc(d.import_name)}</span>` : ''}
+      <div class="muted small">${simMB(d.bytes)} ・ ${esc(d.created_at.replace('T', ' '))}${d.scenes != null ? ` ・ ${d.scenes} シーン` : ''}${d.frames != null ? ` ・ ${d.frames} フレーム` : ''}${d.duration_s != null ? ` ・ ${d.duration_s} 秒` : ''}</div></span>
+      <button class="small primary" data-sim-import="${esc(d.session_id)}" ${d.imported ? 'disabled' : ''}>JetFormer に取り込む</button>
+      <button class="small danger" data-sim-deldata="${esc(d.session_id)}">削除</button></div>`).join('');
+  const inc = r.incomplete.filter((x) => !x.recording);
+  const incRows = inc.length ? `<div class="muted small" style="margin-top:6px">保存されていない作業フォルダー ${inc.length} 件(${simMB(inc.reduce((a, x) => a + x.bytes, 0))}):
+      ${inc.map((x) => `<button class="small" data-sim-deldata="${esc(x.session_id)}">${esc(x.session_id.slice(0, 8))} を削除</button>`).join(' ')}</div>` : '';
+  $('#sim-datasets').innerHTML = (rows || '<div class="muted small">まだありません(シミュレーターの「データセット収集」で作ると、ここに出ます)</div>') + incRows
+    + (r.free_gb != null ? `<div class="muted small">空き ${r.free_gb} GB(シミュレーターのまとめ ZIP は「20 GiB + 元データの 2 倍」の空きが必要です)</div>` : '');
+}
+async function loadSimJobs() {
+  let list = [];
+  try { list = await api('GET', '/api/jobs'); } catch (e) { return; }
+  const mine = list.filter((j) => ['sim_install', 'sim_setup', 'import'].includes(j.kind)).slice(0, 6);
+  $('#sim-jobs').innerHTML = mine.map((j) => `
+    <div class="job"><b>${esc(j.title)}</b> <span class="muted">${j.state === 'running' ? '実行中' : j.state === 'done' ? '完了' : 'エラー'}</span>
+      <div class="progress blue"><div class="bar" style="width:${Math.round(j.progress * 100)}%"></div></div>
+      <div class="muted">${esc(j.message)}</div>${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}</div>`).join('')
+    || '<div class="muted small">ありません</div>';
+  const running = mine.some((j) => j.state === 'running');
+  if (state.sim.jobsRunning && !running) { loadSimCourses(); loadSimDatasets(); }
+  state.sim.jobsRunning = running;
+}
+async function simAction(fn, okMsg) {
+  try { await fn(); if (okMsg) toast(okMsg); } catch (e) { toast(e.message, true); }
+  loadSimStatus(); loadSimJobs();
+}
+$('#btn-sim-setup').addEventListener('click', () => simAction(() => api('POST', '/api/sim/setup', { force: false }), '準備を始めました(処理状況に進み具合が出ます)'));
+$('#btn-sim-resetup').addEventListener('click', () => {
+  if (!confirm('ブリッジ用の Python 環境(data/sim/venv)を消して作り直します。よろしいですか?')) return;
+  simAction(() => api('POST', '/api/sim/setup', { force: true }), '作り直しを始めました');
+});
+$('#btn-sim-start').addEventListener('click', () => simAction(() => api('POST', '/api/sim/bridge/start'), 'ブリッジを起動しています'));
+$('#btn-sim-stop').addEventListener('click', async () => {
+  try { await api('POST', '/api/sim/bridge/stop', {}); toast('ブリッジを止めました'); }
+  catch (e) {
+    if (!confirm(e.message + '\n\nそれでも止めますか?')) return;
+    try { await api('POST', '/api/sim/bridge/stop', { force: true }); toast('ブリッジを止めました'); } catch (e2) { toast(e2.message, true); }
+  }
+  loadSimStatus();
+});
+$('#sim-course-file').addEventListener('change', (e) => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  const out = $('#sim-course-upload');
+  const xhr = new XMLHttpRequest();
+  xhr.open('PUT', `/api/sim/courses/import?filename=${encodeURIComponent(f.name)}&replace=${$('#sim-course-replace').checked ? 1 : 0}`);
+  xhr.upload.onprogress = (ev) => { out.textContent = `送信中 ${Math.round(100 * ev.loaded / (ev.total || 1))}%`; };
+  xhr.onload = () => {
+    if (xhr.status < 300) {
+      const r = JSON.parse(xhr.responseText); const c = r.course;
+      out.innerHTML = `<span class="badge ok">${r.already_registered ? '登録済みでした' : '登録しました'}</span> ${esc(c.name)}(${esc(c.world_version)}・hash ${esc(c.world_hash)}・${esc(SIM_KIND_LABEL[c.kind] || c.kind)})`
+        + (c.warnings || []).map((w) => `<div class="warn-text">${esc(w)}</div>`).join('');
+      loadSimCourses();
+    } else {
+      out.innerHTML = '<span class="badge bad">登録できません</span><ul class="sim-errors">' + simJsonError(xhr).map((m) => `<li>${esc(m)}</li>`).join('') + '</ul>';
+    }
+  };
+  xhr.onerror = () => { out.textContent = '送信できませんでした(接続が切れた)'; };
+  xhr.setRequestHeader('Content-Type', 'application/zip');
+  xhr.send(f);
+});
+$('#tab-sim').addEventListener('click', async (e) => {
+  const t = (sel) => e.target.closest(sel);
+  let b;
+  if ((b = t('[data-sim-install]'))) { simAction(() => api('POST', '/api/sim/install', { file: b.dataset.simInstall, activate: true }), '導入を始めました(処理状況に進み具合が出ます)'); }
+  else if ((b = t('[data-sim-activate]'))) { await simAction(() => api('POST', `/api/sim/releases/${encodeURIComponent(b.dataset.simActivate)}/activate`), 'この版を使います'); loadSimCourses(); }
+  else if ((b = t('[data-sim-delrel]'))) { if (confirm(`導入済みの版 ${b.dataset.simDelrel} を削除します。`)) simAction(() => api('DELETE', `/api/sim/releases/${encodeURIComponent(b.dataset.simDelrel)}`), '削除しました'); }
+  else if ((b = t('[data-sim-open]'))) { openSim(b.dataset.simOpen, $('#sim-open-model').value); }
+  else if ((b = t('[data-sim-default]'))) { try { await api('POST', `/api/sim/courses/${encodeURIComponent(b.dataset.simDefault)}/default`); loadSimCourses(); } catch (err) { toast(err.message, true); } }
+  else if ((b = t('[data-sim-delcourse]'))) {
+    if (!confirm(`コース ${b.dataset.simDelcourse} を削除します(開いているシミュレーターは、次に読み込むときに使えなくなります)。`)) return;
+    try {
+      await api('DELETE', `/api/sim/courses/${encodeURIComponent(b.dataset.simDelcourse)}`);
+      $('#sim-course-upload').textContent = '';           // 「登録しました」の表示を残さない
+      toast(`コース ${b.dataset.simDelcourse} を削除しました`); loadSimCourses();
+    } catch (err) { toast(err.message, true); }
+  }
+  else if ((b = t('[data-sim-import]'))) { await simAction(() => api('POST', `/api/sim/datasets/${b.dataset.simImport}/import`), '取り込みを始めました(処理状況に進み具合が出ます)'); }
+  else if ((b = t('[data-sim-deldata]'))) {
+    if (!confirm('シミュレーターの作業フォルダー(ZIP・展開したもの)を削除します。JetFormer に取り込んだデータセットは残ります。')) return;
+    try { await api('DELETE', `/api/sim/datasets/${b.dataset.simDeldata}`); loadSimDatasets(); } catch (err) { toast(err.message, true); }
+  }
+});
+
 // ------------------------------------------------------------ 起動
 loadModes();
 loadSound();
@@ -1415,7 +1645,7 @@ loadScenes();
 
 // デバッグ・自動テスト用(ブラウザのコンソールから操作できるように)
 window.jetformer = { state, showTab, loadSound, openScene, showFrame, closeModal, loadScenes, loadDatasets, loadJobs, loadModes, loadTrain, pollTrain,
-                     loadDrive, pollDrive, stopDrive };
+                     loadDrive, pollDrive, stopDrive, loadSim };
 
 
 // ------------------------------------------------------------ センサーの向きの点検(ロードマップ S0)

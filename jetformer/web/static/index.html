@@ -16,6 +16,7 @@
     <button class="tab" data-tab="datasets">データセット</button>
     <button class="tab" data-tab="train">学習</button>
     <button class="tab" data-tab="drive">走行</button>
+    <button class="tab" data-tab="sim">シミュレーター</button>
   </nav>
   <div class="header-status">
     <span id="rec-indicator" class="rec-off">待機中</span>
@@ -428,6 +429,83 @@
         <div class="card video-card">
           <div class="card-title">カメラ | ToF距離</div>
           <img id="drive-video" alt="drive">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= シミュレーター ======================= -->
+  <section id="tab-sim" class="tab-page">
+    <div class="sim-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">🎮 シミュレーター本体 <span id="sim-rel-pill"></span></div>
+          <div id="sim-release" class="small"></div>
+          <p class="muted small">Jetson の <code id="sim-inbox-dir">~/sim</code> に置いたシミュレーターの ZIP(course-simulator-complete.zip など)から導入します。
+            ZIP の全ファイルを COMPLETE-MANIFEST.json と照合し、取り込み済みの大きなデータ(dataset-downloads/)は入れません。
+            本体(Python・JS)はブラウザからは入れられません。</p>
+          <div id="sim-inbox"></div>
+          <div id="sim-releases"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Python 環境(ブリッジ用) <span id="sim-env-pill"></span></div>
+          <div id="sim-env" class="small"></div>
+          <div class="row buttons">
+            <button id="btn-sim-setup" class="primary small">準備する</button>
+            <button id="btn-sim-resetup" class="small">準備し直す</button>
+          </div>
+          <p class="muted small">data/sim/venv に numpy・opencv(ヘッドレス)・onnxruntime(CPU 版)を、版とハッシュを固定して入れます(数分・約 290 MB)。
+            JetFormer の Python 環境には何も入れません。最後にブリッジの自己診断を行います。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">ブリッジ <span id="sim-bridge-pill"></span></div>
+          <div id="sim-bridge" class="small"></div>
+          <div class="row buttons">
+            <button id="btn-sim-start" class="primary small">起動</button>
+            <button id="btn-sim-stop" class="small">停止</button>
+          </div>
+          <details id="sim-log-box" class="small"><summary>ログ</summary><pre class="log" id="sim-log"></pre></details>
+          <p class="muted small">ブリッジは学習済みモデルの推論(ONNX)と、集めたデータの保存を受け持ちます。推論は Jetson の CPU で動きます(GPU は使いません)。学習中は遅くなります。<br>
+            管理画面(jetformer-web)を再起動すると、ブリッジも止まり、収集中のデータは失われます(起動し直すにはこのボタンを押します)。</p>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">シミュレーターを開く</div>
+          <label>コース<select id="sim-open-course"></select></label>
+          <label>モデル(JetFormer の学習済み。読み込んだ状態で開く)<select id="sim-open-model"></select></label>
+          <div id="sim-open-note" class="muted small"></div>
+          <div class="row buttons"><button id="btn-sim-open" class="primary">新しいタブで開く</button></div>
+          <p class="muted small">描画はこのブラウザ(WebGL)、推論とデータの保存は Jetson のブリッジが行います。
+            同時に AI で走らせられるのは 1 つのタブだけです(ブリッジのモデルは 1 つ)。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">コース</div>
+          <div id="sim-courses"></div>
+          <div class="card-title" style="margin-top:12px">コースを追加(ZIP をアップロード)</div>
+          <label class="file-btn">ZIP を選ぶ<input type="file" id="sim-course-file" accept=".zip,application/zip" hidden></label>
+          <label class="inline"><input type="checkbox" id="sim-course-replace"> 同じ ID のアップロード済みコースを置き換える</label>
+          <div id="sim-course-upload" class="small"></div>
+          <details class="small"><summary>コースの ZIP の形式・作り方</summary>
+            <p>受け付ける形式は 2 つです(どちらも ZIP。中身が 1 つのフォルダーの下にあってもかまいません)。</p>
+            <ul>
+              <li><b>JetFormer 形式</b>: <code>course.json</code>({"format":"jetformer-sim-course/v1", "name", "world_version", ["id"], ["description"], ["visual"]})+ <code>physics-world.json</code> + 任意の <code>assets/*.jpg|png</code></li>
+              <li><b>シミュレーターのスナップショット形式</b>(qa/course-snapshots と同じ): <code>manifest.json</code> + <code>physics-world.json</code> [+ scene.js・world.js]</li>
+            </ul>
+            <p>いちばん簡単な作り方: コースの「書き出し」で雛形の ZIP を取り、<code>physics-world.json</code>(壁・柱・路面・ゲート列・開始位置)を編集し、
+              <code>course.json</code> の world_version と id を新しい名前に変え、world_hash の行を消してからアップロードします。world_version はコースごとに一意にしてください。</p>
+            <p><b>アップロードした JS(scene.js・world.js)は実行しません。</b>シミュレーターのページは JetFormer と同じアドレスで動くため、JS は実車の走行 API も呼べてしまうからです。
+              アップロードしたコースは JetFormer の汎用描画(簡易描画)で表示します。カメラ画像は Default とは同じにならないので、AI の評価結果は Default と直接は比べられません。
+              JS は、導入済みのシミュレーター本体のファイルと完全に一致するときだけ使います。</p>
+          </details>
+        </div>
+        <div class="card">
+          <div class="card-title">シミュレーターで集めたデータセット</div>
+          <div id="sim-datasets"></div>
+          <p class="muted small">ここでの取り込みは、ブリッジの ZIP をそのまま JetFormer のデータセットにします(送り直さないので速く、容量も少なくて済みます)。
+            シミュレーターの中の「JetFormerへ送る」も使えます。まとめ ZIP(20 秒シーンの集約)を作り終えてから元のシーンを消してください。</p>
+          <div class="card-title" style="margin-top:12px">処理状況</div>
+          <div id="sim-jobs"></div>
         </div>
       </div>
     </div>

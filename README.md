@@ -18,6 +18,7 @@ sudo systemctl restart jetformer-web    # コードを更新したとき
 - **データセット**:選んだシーンからnuScenes形式を作成 → tarでエクスポート(SHA256付き)→ ダウンロード / Hugging Face へアップロード(下記)
 - **学習**:データセットと間引き率を選んで、このJetsonのGPUで学習(下記)
 - **走行**:学習結果のモデルで車を走らせる。ステアリング・速度のゲインを走行中に調整、走行中の収集(評価用)も選べる(下記)
+- **シミュレーター**:コースのシミュレーター(CourseLab)の導入・ブリッジの起動・コースの選択とアップロード・モデルを読み込んで開く・集めたデータの取り込み(下記)
 
 JupyterLab(8888番)とは別ポートです。カメラは同時に1つのプロセスしか使えないので、
 JetRacerのノートブックでカメラを使っている間は収集できません。
@@ -157,6 +158,66 @@ mv data/pretrained/dinov2_vits14_pretrain.pth.part data/pretrained/dinov2_vits14
 - 入力の作り方は Jetson の学習・走行(`jetformer/train_data.py` の `normalize_inputs`)と同じ。記録した実フレームで、入力は 2e-7 以内、
   出力(onnxruntime と PyTorch)は 0.001µs 未満で一致することを確かめた
 - API: `GET /api/models`(一覧)・`GET /api/models/<名前>/io_spec`・`GET /api/models/<名前>/bundle.zip[?pth=true]`
+
+## シミュレーター(管理画面の「シミュレーター」タブ)
+
+ユーザーのコースのシミュレーター(CourseLab。`course-simulator-complete.zip`)を、管理画面から使えるようにしたもの。
+描画(WebGL)は Mac などのブラウザ、学習済みモデルの推論(onnxruntime の CPU 版)とデータの保存は Jetson の「ブリッジ」が行う。
+GPU は使わない。シミュレーターのファイルは変えない(JetFormer が写しを持ち、その写しも変えない)。
+
+**使い方**
+
+1. シミュレーターの ZIP を Jetson の `~/sim/` に置く(`JETFORMER_SIM_INBOX` で変えられる)→ タブの「導入」。
+   全ファイルを ZIP の `COMPLETE-MANIFEST.json` の sha256 と照合して `data/sim/releases/<版>/` に入れる
+   (取り込み済みの大きなデータ `dataset-downloads/` と `runtime/` は入れない)。新しい版も同じ手順で並べて入れ、「この版を使う」で切り替える。
+2. 「準備する」:ブリッジ用の Python 環境 `data/sim/venv` を作る(JetFormer の Python 3.13 から。numpy・opencv-python-headless・onnxruntime を
+   `jetformer/sim/requirements-bridge.txt` の版とハッシュで入れる。`data/sim/wheels/` に wheel があればオフラインで入る)。jetracer env には何も入れない。
+3. 「起動」:ブリッジを子プロセスとして起動する(127.0.0.1 の空きポートだけで待ち受け、nice 10・ONNX は 4 スレッド)。
+   異常終了したら 10 分間に 3 回まで起動し直す。管理画面を再起動するとブリッジも止まる(自動では起動しない)。
+4. 「シミュレーターを開く」でコースとモデルを選び、新しいタブで開く(`http://<jetson>:8080/sim/c/<コースID>/`、モデルは `?model=<学習結果>`)。
+   ページ上の帯でコースを切り替えられる。モデルは JetFormer の `bundle.zip` をシミュレーターの「ZIPからモデルを読み込む」に自動で渡す
+   (対応は TransFuser軽量型 `jetformer_v0` だけ)。
+5. シミュレーターの「データセット収集」で作ったデータは、タブの「JetFormer に取り込む」でそのまま取り込める(シーンタブにも展開される)。
+   シミュレーター内の「JetFormerへ送る」も使える(送り先は自動でこの Jetson の JetFormer になる)。
+
+**コース**
+
+| 種類 | 内容 |
+|---|---|
+| Default(標準) | 導入した版の `dist/` のコース(今は v3 `indoor-course-eval-3-turf-board-removed`、world hash `0a464384`) |
+| 同梱 | 版に入っている `qa/course-snapshots/`(旧 v2 `indoor-course-eval-2-shortcut`、`547d7e80`)。sha256 が合うものだけ |
+| アップロード | タブからコースの ZIP を登録したもの(下記)。既定のコースにも、削除もできる |
+
+- コースの ZIP は 2 つの形式を受け付ける:JetFormer 形式(`course.json` {"format":"jetformer-sim-course/v1", "name", "world_version", ["id"], ["visual"]} +
+  `physics-world.json` + 任意の `assets/*.jpg|png`)と、シミュレーターのスナップショット形式(`manifest.json` + `physics-world.json` [+ JS])。
+  `physics-world.json` は sim-core の `makeWorld(buildCourse().physics)` と同じ形(segments・disks・surfaces・bounds・route・requiredCrossings・spawn)。
+  値は丸めずに厳しく確かめ(範囲外・NaN・路面にない必須横断・壁に重なる開始位置などはエラー)、world hash(sim-core と同じ FNV-1a。
+  `jetformer/sim/worldhash.py`)を計算して記録する。world_version はコースごとに一意にする(データセットや学習の記録がこれでコースを見分ける)。
+- 作り方:コースの「書き出し(雛形)」で ZIP を取り、`physics-world.json` を編集し、`course.json` の world_version と id を変え、world_hash の行を消してアップロード。
+- **アップロードした JS は実行しない。** シミュレーターのページは JetFormer と同じオリジンで動くので、JS は JetFormer の API(実車の走行も)を呼べてしまうため。
+  アップロードしたコースは JetFormer の汎用描画(`jetformer/sim/static/course-scene.js`)で、衝突物をその高さのまま描く(ToF にも写る)。
+  見た目は本来のコースと違う(部屋・LED 矢印・テープなどがない)ので、カメラを使う AI の評価は Default と直接は比べられない。
+  JS は、導入済みの版のファイルと sha256 が一致するときだけ使う。
+- RC 加速教師・軌跡最適化教師・高速改善教師・「20分・60シーンの収集条件」は Default 専用(ほかのコースでは隠す)。
+
+**制限・注意**
+
+- ブリッジは全体で 1 つ、読み込めるモデルも 1 つ。2 つのページで同時に AI 評価をすると、モデルの「前の出力」の記憶が互いに消し合い、
+  結果が正しくない(別のページでモデルを読み込み直すと、もう一方は「モデルが変わった」エラーになる)。AI 評価は 1 ページずつ。収集も同時に 1 つだけ(ブリッジが断る)。
+- ブリッジが異常終了して起動し直したとき・管理画面を再起動したときは、モデルを読み込み直す(ブリッジは自動では起動しない)。収集中だったシーンは失われる。
+- コースを削除すると、そのコースを開いているページは次の読み込みから動かない。
+- 電源断・強制終了のあと: 作業途中のファイルは次の起動(とコースの登録)のときに片付く。置き換えの途中だったコースは前のものに戻る。
+  導入・準備・コースの登録は、中身をディスクに書き切ってから「済み」の記録を書く。
+
+**しくみ**
+
+- `/sim/c/<cid>/` は `dist/index.html` に JetFormer の設定(`_jf/config.js`)と差し込みスクリプト(`jetformer/sim/static/sim-shim.js`)を足して返す。
+  `scene.js`・`world.js`・`assets/` だけをコースごとに差し替え、ほかは `dist/` から返す。
+- shim はシミュレーターのブリッジ宛ての通信(`http://127.0.0.1:8766/api/...`)を同じオリジンの `/sim/bridge/api/...` に書き換え、
+  JetFormer がブリッジに中継する(決まった API だけ・Host を書き換え・Origin などを捨てる・本文はためずに流す・`/api/jetformer/*` の送り先は
+  この Jetson の JetFormer に固定)。JetFormer の管理 API は `/api/sim/*`。どちらも既存の `/api/datasets/*`・`/api/models/*` とは重ならない。
+- データ:`data/sim/`(releases/・active.json・venv/・venv.json・wheels/・runtime/(ブリッジの作業場所)・logs/bridge.log)、`data/sim_courses/`(アップロードしたコースと settings.json)。
+- コード:`jetformer/sim/`(install・env・bridge_runner・bridge_proc・proxy・courses・worldhash・datasets・web)、テストは `tests/test_sim_*.py`。
 
 ## AI走行(管理画面の「走行」タブ)
 

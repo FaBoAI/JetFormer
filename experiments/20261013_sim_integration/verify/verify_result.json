@@ -1,0 +1,375 @@
+{
+ "started": "2026-10-13 17:49:49",
+ "base": "http://127.0.0.1:8080",
+ "display": ":0",
+ "model": "clean_driving_20261011-nocmd-s3-20261011-024626",
+ "checks": [
+  {
+   "name": "0 前提: 学習・走行・収集・ジョブが動いていない",
+   "ok": true,
+   "training": false,
+   "driving": false,
+   "drive_phase": "idle",
+   "recording": false,
+   "session": false,
+   "running_jobs": []
+  },
+  {
+   "name": "1 シミュレーター タブ: 版・Python 環境・ブリッジの状態・コース Default と v2・モデル B が選べる",
+   "ok": true,
+   "seconds": 0.1,
+   "release": "使っている版: 20261013-144013-6f610dd5(2026-10-13 14:40 作成・2026-10-13 16:41 導入)\nDefault コース: indoor-course-eval-3-turf-board-r",
+   "env": "Python 3.13.14 / onnxruntime 1.31.0 / numpy 2.2.6 / opencv 4.13.0.92(2026-10-13 16:41 ・手元の wheel から)",
+   "bridge_pill": "停止中",
+   "courses": [
+    "Default(標準コース)",
+    "旧コース v2(芝生の白い板あり)"
+   ],
+   "course_meta": [
+    "indoor-course-eval-3-turf-board-removed ・ hash 0a464384・ 線分 51・柱 94・路面 5・ゲート 33・ 10.85 × 6.80 m",
+    "indoor-course-eval-2-shortcut ・ hash 547d7e80・ 線分 52・柱 98・路面 5・ゲート 33・ 10.85 × 6.80 m"
+   ],
+   "open_courses": [
+    "default",
+    "indoor-course-eval-2-shortcut"
+   ],
+   "models": 24,
+   "models_disabled": 8
+  },
+  {
+   "name": "2 画面の「起動」でブリッジが動作中になる(127.0.0.1 だけで待ち受け・中継は LAN の Host でも 200)",
+   "ok": true,
+   "seconds": 1.8,
+   "bridge_text": "127.0.0.1:40681 ・ PID 203426 ・ 動作 1 秒 ・ メモリ 52 MB\nモデル: 未読み込み(シミュレーターの画面で読み込みます)",
+   "port": 40681,
+   "pid": 203426,
+   "rss_mb": 52.4,
+   "ss": "LISTEN 0      5      127.0.0.1:40681 0.0.0.0:*",
+   "lan_ip": "192.168.5.14",
+   "lan_refused": true,
+   "proxy_status": 200,
+   "proxy_lan_host_status": 200,
+   "policy_loaded": false
+  },
+  {
+   "name": "3a 配信: scene.js・world.js の sha256 がリリース/スナップショットと一致し、shim が入っている",
+   "ok": true,
+   "served": {
+    "default": {
+     "scene_sha_ok": true,
+     "world_sha_ok": true,
+     "shim": true
+    },
+    "indoor-course-eval-2-shortcut": {
+     "scene_sha_ok": true,
+     "world_sha_ok": true,
+     "shim": true
+    }
+   }
+  },
+  {
+   "name": "3b /sim/ → /sim/c/default/: WebGL で描画・world hash 0a464384・教師 5 つ・帯とコース選択",
+   "ok": true,
+   "seconds": 0.6,
+   "href": "/sim/c/default/",
+   "webgl2": true,
+   "hash": "0a464384",
+   "version": "indoor-course-eval-3-turf-board-removed",
+   "teachers": [
+    "slow",
+    "speed",
+    "speed-fast",
+    "speed-rc",
+    "speed-optimized"
+   ],
+   "options": [
+    "default",
+    "indoor-course-eval-2-shortcut"
+   ],
+   "label": "Default(標準コース)",
+   "conn": "ブリッジ接続済み / モデル未読み込み",
+   "bad": [],
+   "camera": {
+    "file": "03_default_camera.png",
+    "shape": [
+     224,
+     224,
+     3
+    ],
+    "std": 60.7,
+    "mean": 88.2
+   },
+   "bar": "← JetFormer に戻る\nコース\nブリッジ: 動作中"
+  },
+  {
+   "name": "4a 旧 v2: WebGL で描画・world hash 547d7e80・教師は slow/speed・20分の収集条件を隠す",
+   "ok": true,
+   "seconds": 0.6,
+   "hash": "547d7e80",
+   "version": "indoor-course-eval-2-shortcut",
+   "teachers": [
+    "slow",
+    "speed"
+   ],
+   "label": "旧コース v2(芝生の白い板あり)",
+   "title": "Course Lab — AI走行評価 — 旧コース v2(芝生の白い板あり)",
+   "bad": [],
+   "camera": {
+    "file": "04_v2_camera.png",
+    "shape": [
+     224,
+     224,
+     3
+    ],
+    "std": 60.7,
+    "mean": 88.2
+   }
+  },
+  {
+   "name": "4b 帯のコース選択で v2 → Default に切り替わる",
+   "ok": true,
+   "seconds": 2.6,
+   "href": "/sim/c/default/",
+   "hash": "0a464384"
+  },
+  {
+   "name": "5a モデル B を ?model= で受け渡し、ブリッジに読み込まれる(ZIP → bundle → activate)",
+   "ok": true,
+   "seconds_app": 2.4,
+   "seconds_model": 4.3,
+   "policy_name": "JetFormer · clean_driving_20261011-nocmd-s3-20261011-024626",
+   "upload": "読み込み完了。評価を開始すると、選択した学習済みモデルで走行します。",
+   "model_bar": "モデル clean_driving_20261011-nocmd-s3-20261011-024626: 読み込み完了。評価を開始すると、選択した学習済みモデルで走行します。",
+   "conn": "接続済み: JetFormer · clean_driving_20261011-nocmd-s3-20261011-024626",
+   "href": "/sim/c/default/"
+  },
+  {
+   "name": "5b AI 評価を約 8 秒: 推論が中継経由でブリッジに届き、予測が返って車が動く",
+   "ok": true,
+   "predicts": 12,
+   "inference_log": 12,
+   "frames": 16,
+   "moved_m": 0.066,
+   "elapsed": "0.40",
+   "status": "走行評価中。センサー入力と操作出力を同じフレームに揃えます。",
+   "run_text": "Ⅱ 一時停止",
+   "camera": {
+    "file": "05b_model_b_camera.png",
+    "shape": [
+     224,
+     224,
+     3
+    ],
+    "std": 61.0,
+    "mean": 88.1
+   }
+  },
+  {
+   "name": "6a 収集 A(経路追従デモ・自動走行の教師値を使う・約 5 秒)→ ZIP 作成・保存リンクは /sim/bridge/api/datasets/download/<id>",
+   "ok": true,
+   "record_start": "● 収集待機 · 0フレーム / 走行開始で記録します",
+   "record": "収集完了 · 16フレーム",
+   "seconds": 0.8,
+   "href": "/sim/bridge/api/datasets/download/f86db70908b24e998f898a1d1a75de2e",
+   "download_status": 200,
+   "download_bytes": 300094
+  },
+  {
+   "name": "6b シミュレーター内の「JetFormerへ送る」(接続先は shim が http://127.0.0.1:8080 に固定)で JetFormer に取り込まれる",
+   "ok": true,
+   "jetformer_url": "http://127.0.0.1:8080",
+   "check_status": "接続OK · 1シーン / 16フレーム / 0.3 MiB。「選択したZIPを送信」で http://127.0.0.1:8080 に取り込みます。",
+   "seconds_check": 0.7,
+   "final_status": "取り込み完了 · verify-sim-a-174949_20261013-085050_f86db709 · 1シーン / 学習に使える 6フレーム。JetFormerの「データセット」「学習」タブから利用できます。",
+   "seconds_upload": 8.9,
+   "imported_name": "verify-sim-a-174949_20261013-085050_f86db709"
+  },
+  {
+   "name": "7a 収集 B(同じ条件・約 5 秒)→ ZIP 作成",
+   "ok": true,
+   "record": "収集完了 · 21フレーム",
+   "seconds": 2.1,
+   "href": "/sim/bridge/api/datasets/download/de150a1a3c5b4b05963754fe5006ffcb"
+  },
+  {
+   "name": "7b タブの「JetFormer に取り込む」でジョブが完了し、一覧が「取り込み済み」になる",
+   "ok": true,
+   "seconds": 1.0,
+   "imported_name": "verify-sim-b-174949_20261013-085116_de150a1a",
+   "job": {
+    "title": "シミュレーターから取り込み: verify-sim-b-174949_20261013-085116_de150a1a.zip(0.4 MB)",
+    "state": "done",
+    "message": "取り込みました: verify-sim-b-174949_20261013-085116_de150a1a(1 シーン・学習に使えるフレーム 11・シーンタブに 1 シーン)"
+   },
+   "tab_text": "verify-sim-b-174949_20261013-085116_de150a1a.zip シーン\n0.4 MB ・ 2026-10-13 17:51:23 ・ 1 シーン ・ 21 フレーム ・ 0.7 秒\nJetFormer に取り込む\n削除\nverify-sim-a-174949_20261013-085050_f86db709.zip シーン 取り込み済み: verify-sim-a-174949_20261013-085050_f86db709\n0.3 MB ・ 2026-10-13 17:50:58 ・ 1 シーン ・ 16 フレーム ・ 0.5 秒\nJetFormer に取り込む\n削除\n空き 24.5 GB(シミュレーターのまとめ ZIP は「20 GiB + 元データの 2 倍」の空きが必要です)"
+  },
+  {
+   "name": "8a データセット タブに 2 つとも出る(シミュレーターの印つき)",
+   "ok": true,
+   "datasets": {
+    "verify-sim-a-174949_20261013-085050_f86db709": {
+     "scenes": 1,
+     "frames": 16,
+     "source": "simulator",
+     "tags": [
+      "simulator"
+     ]
+    },
+    "verify-sim-b-174949_20261013-085116_de150a1a": {
+     "scenes": 1,
+     "frames": 21,
+     "source": "simulator",
+     "tags": [
+      "simulator"
+     ]
+    }
+   }
+  },
+  {
+   "name": "8b シーン タブに展開されたシーン(ds-<データセット名>-0001)が出る",
+   "ok": true,
+   "scenes": [
+    "ds-verify-sim-a-174949_20261013-085050_f86db709-0001",
+    "ds-verify-sim-b-174949_20261013-085116_de150a1a-0001"
+   ]
+  },
+  {
+   "name": "9 確認用のデータセット・シーン・ブリッジの作業フォルダーを消した",
+   "ok": true,
+   "deleted": {
+    "dataset verify-sim-a-174949_20261013-085050_f86db709": 200,
+    "dataset verify-sim-b-174949_20261013-085116_de150a1a": 200,
+    "scene ds-verify-sim-a-174949_20261013-085050_f86db709-0001": 200,
+    "scene ds-verify-sim-b-174949_20261013-085116_de150a1a-0001": 200,
+    "sim f86db709": 200,
+    "sim de150a1a": 200
+   },
+   "left": [
+    [],
+    [],
+    [],
+    []
+   ]
+  },
+  {
+   "name": "10a 画面からコースの ZIP(v2 の写し)をアップロード → 登録・一覧と選択肢に出る",
+   "ok": true,
+   "seconds": 0.5,
+   "upload": "登録しました v2-copy-verify-174949(v2-copy-verify-174949・hash 547d7e80・アップロード)\n同じ形のコース「旧コース v2(芝生の白い板あり)」があります",
+   "course": {
+    "id": "v2-copy-verify-174949",
+    "name": "v2-copy-verify-174949",
+    "kind": "trusted-js",
+    "renderer": "simulator",
+    "world_hash": "547d7e80",
+    "stats": {
+     "segments": 52,
+     "disks": 98,
+     "surfaces": 5,
+     "gates": 33,
+     "crossings": 1
+    },
+    "warnings": [
+     "同じ形のコース「旧コース v2(芝生の白い板あり)」があります"
+    ],
+    "features": {
+     "teachers": [
+      "slow",
+      "speed"
+     ],
+     "collection_plan": false
+    }
+   },
+   "open_courses": [
+    "default",
+    "indoor-course-eval-2-shortcut",
+    "v2-copy-verify-174949"
+   ]
+  },
+  {
+   "name": "10b 選んだコースを開く: WebGL で描画・world hash 547d7e80・帯にコース名",
+   "ok": true,
+   "seconds": 2.6,
+   "href": "/sim/c/v2-copy-verify-174949/",
+   "course": "v2-copy-verify-174949",
+   "renderer": "simulator",
+   "hash": "547d7e80",
+   "version": "indoor-course-eval-2-shortcut",
+   "label": "v2-copy-verify-174949",
+   "teachers": [
+    "slow",
+    "speed"
+   ],
+   "options": [
+    "default",
+    "indoor-course-eval-2-shortcut",
+    "v2-copy-verify-174949"
+   ],
+   "open_note": "使える教師は低速・高速だけです(RC 加速教師・軌跡最適化教師・20分の収集条件は Default 専用)。",
+   "bad": [],
+   "camera": {
+    "file": "10b_uploaded_course_open_camera.png",
+    "shape": [
+     224,
+     224,
+     3
+    ],
+    "std": 60.7,
+    "mean": 88.2
+   }
+  },
+  {
+   "name": "10c 画面の「削除」(確認ダイアログ)でコースが消える・ページも 404・「登録しました」の表示が消える",
+   "ok": true,
+   "alert": "コース v2-copy-verify-174949 を削除します(開いているシミュレーターは、次に読み込むときに使えなくなります)。",
+   "seconds": 0.5,
+   "api_status": 404,
+   "page_status": 404,
+   "upload_msg": ""
+  },
+  {
+   "name": "11 画面の「停止」でブリッジが止まり、子プロセスが残らない",
+   "ok": true,
+   "seconds": 0.5,
+   "pgrep": ""
+  }
+ ],
+ "busy_before": {
+  "training": false,
+  "driving": false,
+  "drive_phase": "idle",
+  "recording": false,
+  "session": false,
+  "running_jobs": []
+ },
+ "sim_status_before": {
+  "release": "20261013-144013-6f610dd5",
+  "env_ready": true,
+  "bridge": "stopped"
+ },
+ "browser": {
+  "browserVersion": "157.0.1",
+  "moz:headless": false
+ },
+ "memory_cap": {
+  "scope": "snap.firefox.geckodriver-c0bce1e2-a46f-4cbe-9bbd-7d22b9888b5f.scope",
+  "returncode": 0,
+  "stderr": "",
+  "show": [
+   "MemoryCurrent=460615680",
+   "MemoryMax=2621440000"
+  ]
+ },
+ "jetformer_upload_clicked": true,
+ "leftover_processes": "",
+ "busy_after": {
+  "training": false,
+  "driving": false,
+  "drive_phase": "idle",
+  "recording": false,
+  "session": false,
+  "running_jobs": []
+ },
+ "ok": true,
+ "finished": "2026-10-13 17:51:46"
+}

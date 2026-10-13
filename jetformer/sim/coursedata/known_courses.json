@@ -1,0 +1,35 @@
+{
+  "format": "jetformer-sim-known-courses/v1",
+  "note": "シミュレーター本体のコース(scene.js・world.js の sha256 で見分ける)。表示名・world_version・hash・統計・大きさ。hash は jetformer/sim/worldhash.py で確認済み",
+  "courses": [
+    {
+      "key": "v3",
+      "label": "Default(標準コース)",
+      "description": "芝生の中の白い板を取り除いた評価コース v3。ショートカット(黒いシート)の通過が必須",
+      "world_version": "indoor-course-eval-3-turf-board-removed",
+      "world_hash": "0a464384",
+      "canonical_sha256": "685bbd745ebf398356346f47cf0c4650371024c53cf85993e4c6a0e192ff0f90",
+      "scene_sha256": "878fc934af2890c4db152041182b8914033224f65a2482bcc46265cdc7d0c806",
+      "world_sha256": "4099860131f444f7eb061d0fef34b22fac0f7ba6dbc53ca31b07058dc7573655",
+      "physics_file": "default-v3-physics-world.json",
+      "stats": {"segments": 51, "disks": 94, "surfaces": 5, "gates": 33, "crossings": 1},
+      "size_m": [10.85, 6.8],
+      "has_shortcut": true
+    },
+    {
+      "key": "v2",
+      "id": "indoor-course-eval-2-shortcut",
+      "label": "旧コース v2(芝生の白い板あり)",
+      "description": "白い板を取り除く前のコース。シミュレーター同梱のスナップショット(qa/course-snapshots)",
+      "world_version": "indoor-course-eval-2-shortcut",
+      "world_hash": "547d7e80",
+      "canonical_sha256": "d41f3baaac4555db962d27a79bdd526e15f6d48d039c8ec5be2cde051b091db3",
+      "scene_sha256": "6e4a72655f5a9191516e237e4d0a0beeb7ac1a9ad43bd5e87079c98fb3e5c824",
+      "world_sha256": "ec3a813d7d4e9b3c80bba895c6aa7eb788a14c398d80f03654a8a3ae648265e6",
+      "physics_sha256": "a2596189f0efd19e9ac59dfdc70b35144230ac7d859bce4b3a33865e5bcbba63",
+      "stats": {"segments": 52, "disks": 98, "surfaces": 5, "gates": 33, "crossings": 1},
+      "size_m": [10.85, 6.8],
+      "has_shortcut": true
+    }
+  ]
+}

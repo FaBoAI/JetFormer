@@ -1,0 +1,9 @@
+{
+ "tag": "before",
+ "samples": [],
+ "before": "http://127.0.0.1:8080/",
+ "leftover": "53622 [geckodriver] <defunct>",
+ "set_error": "timed out(href を変える 1 行の execute が 8 秒で返らなかった)",
+ "hung": true,
+ "note": "修正前の sim-shim.js で実行。ページが固まり Firefox は gd.kill で止めた"
+}

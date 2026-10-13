@@ -1,0 +1,116 @@
+{
+ "checks": [
+  {
+   "name": "0 管理画面のシミュレーター タブが表示される",
+   "ok": true,
+   "tab": {
+    "release": "使っている版: 20261013-144013-6f610dd5(2026-10-13 14:40 作成・2026-10-13 16:41 導入)Default コース: indoor-course-eval-3-turf-board-removedCOMPLETE-MANIFEST.json にない説明ファイルを入れました: 最初にお読みください.txt",
+    "courses": 2,
+    "env": "Python 3.13.14 / onnxruntime 1.31.0 / numpy 2.2.6 / opencv 4.13.0.92(2026-10-13 16:41 ・手元の wheel から)",
+    "open": [
+     "default",
+     "indoor-course-eval-2-shortcut"
+    ],
+    "models": 33
+   }
+  },
+  {
+   "name": "1a 簡易描画のコースのページが動く(全モジュールを読み込む)",
+   "ok": true,
+   "seconds": 0.4,
+   "fatal": ""
+  },
+  {
+   "name": "1b 読み込んだファイルがすべて 200(scene.js・world.js・_jf/course-data.js を含む)",
+   "ok": false,
+   "resources": 30,
+   "bad": [
+    [
+     "/favicon.ico",
+     404
+    ]
+   ]
+  },
+  {
+   "name": "1c テクスチャを読み終えて「評価を開始」が使える(assetsReady)",
+   "ok": true,
+   "seconds": 0.0
+  },
+  {
+   "name": "1d world hash が登録時と同じ",
+   "ok": true,
+   "page": "b0d462cd",
+   "registered": "b0d462cd"
+  },
+  {
+   "name": "1e 帯・コース名・教師の制限・収集条件を隠す・接続先は読み取り専用",
+   "ok": true,
+   "label": "ブラウザ確認コース",
+   "teachers": [
+    "slow",
+    "speed"
+   ],
+   "options": [
+    "default",
+    "indoor-course-eval-2-shortcut",
+    "browser-course-1"
+   ],
+   "title": "Course Lab — AI走行評価 — ブラウザ確認コース",
+   "size": "10.85 × 6.80 m"
+  },
+  {
+   "name": "1f ?model= の学習済みモデルが自動で読み込まれる(ZIP → bundle → activate)",
+   "ok": true,
+   "seconds": 7.3,
+   "upload": "読み込み完了。評価を開始すると、選択した学習済みモデルで走行します。",
+   "model_bar": "モデル clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12: 読み込み完了。評価を開始すると、選択した学習済みモデルで走行します。",
+   "conn": "接続済み: JetFormer · clean_driving_20261011-jetformer_v0-s1-ft-real-lr1e-4-e12"
+  },
+  {
+   "name": "1g 接続先の /api/ だけを /sim/bridge/api/ に書き換える",
+   "ok": true,
+   "rewrite": [
+    "http://127.0.0.1:18080/sim/bridge/api/status",
+    null
+   ]
+  },
+  {
+   "name": "2 AI 評価で走る(推論が中継経由でブリッジに届く)",
+   "ok": true,
+   "predicts": 38,
+   "sim_elapsed_s": "1.27",
+   "status": "走行評価中。センサー入力と操作出力を同じフレームに揃えます。"
+  },
+  {
+   "name": "3 default が動き world hash が 0a464384",
+   "ok": true,
+   "seconds": 1.2,
+   "hash": "0a464384",
+   "teachers": [
+    "slow",
+    "speed",
+    "speed-fast",
+    "speed-rc",
+    "speed-optimized"
+   ],
+   "label": "Default(標準コース)"
+  },
+  {
+   "name": "3 indoor-course-eval-2-shortcut が動き world hash が 547d7e80",
+   "ok": true,
+   "seconds": 0.4,
+   "hash": "547d7e80",
+   "teachers": [
+    "slow",
+    "speed"
+   ],
+   "label": "旧コース v2(芝生の白い板あり)"
+  }
+ ],
+ "display": ":0",
+ "browser": {
+  "browserVersion": "157.0.1",
+  "moz:headless": false
+ },
+ "ok": false
+}

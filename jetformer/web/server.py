@@ -23,6 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from .. import actuator, config, dataset, dataset_import, drive, hf_export, model_export, modes, policies, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
+from ..sim import web as sim_web
 from ..training import TrainingManager
 from ..training import start_args as training_start_args
 
@@ -87,6 +88,7 @@ async def lifespan(_app):
             trainer.stop()
         except RuntimeError:
             pass
+    sim_web.shutdown()              # シミュレーターのブリッジ(子プロセス)を止める
     print('JetFormer: 終了処理が完了しました(走行停止・収集の保存・センサー停止)', flush=True)
 
 
@@ -193,6 +195,11 @@ class Jobs(object):
 
 
 jobs = Jobs()
+
+# シミュレーター(CourseLab)の統合: /sim/*(ページ・ブリッジの中継)と /api/sim/*(導入・準備・コース・データ)
+sim_web.init(jobs=jobs, busy=lambda: {'training': trainer.running, 'driving': driver.running,
+                                      'recording': bool(recorder.recording or collect.active)})
+app.include_router(sim_web.router)
 
 
 # ---------------------------------------------------------------- 画像ユーティリティ
