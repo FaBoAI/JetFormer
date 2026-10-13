@@ -198,3 +198,35 @@ def test_shim_link_fix_does_not_loop(tmp_path, origin):
     assert out['open'] == origin + '/'
     assert out['download'] == origin + '/sim/bridge/api/datasets/download/0123456789abcdef0123456789abcdef'
     assert out['sets']['jetformer-open'] - out['before']['jetformer-open'] <= 2
+
+
+def test_shim_adds_random_uuid_on_insecure_pages(tmp_path):
+    """http://<Jetson の IP>:8080 は安全な接続ではないので crypto.randomUUID が無い。app.js が最初に呼ぶので shim が補う"""
+    out = run_node(tmp_path, '''
+import fs from 'fs';
+import vm from 'vm';
+import { webcrypto } from 'crypto';
+const insecure = { getRandomValues: (a) => webcrypto.getRandomValues(a) };          // randomUUID の無い crypto
+const secure = { getRandomValues: (a) => webcrypto.getRandomValues(a), randomUUID: () => 'native' };
+const res = {};
+for (const [name, crypto] of [['insecure', insecure], ['secure', secure]]) {
+  class Storage { getItem() { return null; } setItem() {} removeItem() {} }
+  const ctx = { console: { warn() {} }, URL, URLSearchParams, setTimeout, setInterval: () => 0, crypto,
+    Storage, localStorage: new Storage(), XMLHttpRequest: class { open() {} },
+    fetch: () => Promise.resolve({ ok: false, json: async () => ({}) }),
+    location: { origin: 'http://192.168.55.1:8080', search: '', pathname: '/sim/c/default/', hash: '' },
+    document: { readyState: 'loading', addEventListener() {}, getElementById() { return null; } },
+    JETFORMER_SIM: { course: { id: 'default', world_version: 'wv' }, bridge: '/sim/bridge', jetformer_port: 8080 } };
+  ctx.window = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync('%s', 'utf8'), ctx);
+  res[name] = [crypto.randomUUID(), crypto.randomUUID()];
+}
+console.log(JSON.stringify(res));
+''' % str(paths.STATIC / 'sim-shim.js').replace('\\', '/'))
+    r = json.loads(out)
+    a, b = r['insecure']
+    assert a != b
+    for u in (a, b):
+        assert len(u) == 36 and u[14] == '4' and u[19] in '89ab' and [len(x) for x in u.split('-')] == [8, 4, 4, 4, 12]
+    assert r['secure'] == ['native', 'native']                 # もともと使えるページでは触らない

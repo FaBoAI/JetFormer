@@ -74,7 +74,10 @@ def child_env():
 
 
 class BridgeProcess(object):
-    def __init__(self, *, python=None, runner=None, sim_dir=None, runtime_root=None, log_path=None, ort_threads=4, nice=10,
+    # nice は 0(優先度を下げない)。シミュレーターは推論の応答を 5 秒で打ち切る(app.js の fetchJSON)ので、
+    # 裏で強化学習などが CPU を使い切っていると、下げたブリッジは「The operation timed out.」で評価が止まる(2026-10-13)。
+    # 重い学習のほうを nice で下げる。
+    def __init__(self, *, python=None, runner=None, sim_dir=None, runtime_root=None, log_path=None, ort_threads=4, nice=0,
                  port=0, restart_limit=3, restart_window_s=600, backoff_s=(2, 5, 15), health_timeout_s=15,
                  listen_timeout_s=20, popen=subprocess.Popen, clock=time.monotonic, sleep=time.sleep,
                  min_mem_bytes=1 << 30, mem_available=mem_available, health_check=health_check, preflight=None,

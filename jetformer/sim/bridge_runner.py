@@ -3,7 +3,7 @@
 ブリッジ用の venv(data/sim/venv)の Python で、-I -B を付けて動かす。JetFormer のコードは import しない。
 
     data/sim/venv/bin/python -I -B jetformer/sim/bridge_runner.py \\
-        --sim-dir data/sim/releases/<id> --runtime-root data/sim/runtime [--port 0] [--ort-threads 4] [--nice 10]
+        --sim-dir data/sim/releases/<id> --runtime-root data/sim/runtime [--port 0] [--ort-threads 4] [--nice 0]
         [--parent-pid <JetFormer の pid>] [--oom-score-adj 500] [--self-test]
 
 - bridge.BridgeServer を直接作る(main() は使わない: ブラウザを開かず、--policy も使わず、runtime をユーザーのフォルダーに置かない)。
@@ -109,7 +109,7 @@ def main(argv=None):
     ap.add_argument('--runtime-root', required=True)
     ap.add_argument('--port', type=int, default=0)
     ap.add_argument('--ort-threads', type=int, default=4)
-    ap.add_argument('--nice', type=int, default=10)
+    ap.add_argument('--nice', type=int, default=0)        # 推論は 5 秒で打ち切られるので下げない(bridge_proc.py)
     ap.add_argument('--parent-pid', type=int, default=0)
     ap.add_argument('--oom-score-adj', type=int, default=0)
     ap.add_argument('--self-test', action='store_true')

@@ -16,6 +16,24 @@
   const notes = [];
   const warn = (msg) => { notes.push(msg); try { console.warn('[JetFormer]', msg); } catch (e) { /* なし */ } };
 
+  // ---------------------------------------------------------------- 0. 安全でない接続でも動くように
+  // crypto.randomUUID は https か localhost(127.0.0.1)のページでしか使えない。Mac などから http://<Jetson の IP>:8080 で
+  // 開くと、app.js が読み込みの最初(const pageSession=crypto.randomUUID())で止まり、画面が動かない。
+  // どのページでも使える getRandomValues で、同じ形の UUID(v4)を作って補う。
+  try {
+    const c = window.crypto;
+    if (c && typeof c.randomUUID !== 'function' && typeof c.getRandomValues === 'function') {
+      Object.defineProperty(c, 'randomUUID', { configurable: true, writable: true, value: function randomUUID() {
+        const b = c.getRandomValues(new Uint8Array(16));
+        b[6] = (b[6] & 0x0f) | 0x40;                                         // 版 4
+        b[8] = (b[8] & 0x3f) | 0x80;                                         // 変種 10xx
+        const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+        return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+      } });
+      try { console.info('[JetFormer] 安全でない接続(http)で開いたため、crypto.randomUUID を補いました'); } catch (e) { /* なし */ }
+    }
+  } catch (e) { /* 補えなければそのまま */ }
+
   // ---------------------------------------------------------------- 1. 通信の書き換え
   function endpointOrigin() {
     try { const el = document.getElementById('endpoint'); if (el && el.value) return new URL(el.value).origin; } catch (e) { /* 既定 */ }
