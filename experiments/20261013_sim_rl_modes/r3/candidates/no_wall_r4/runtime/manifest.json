@@ -1,0 +1,79 @@
+{
+ "schema": "jf-sim-rl-web-bundle/v1",
+ "created_at": "2026-10-13T23:57:31.203Z",
+ "runtime_version": "jf-sim-rl-mode-runtime/v1",
+ "entry": "mode_runtime.mjs",
+ "export": "createModeTeacher(world, config, variation, {mode, weights, params, policySha256, obstacleSet})",
+ "features_version": "rl-bestlap-features-v1",
+ "reference_loop_sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+ "catalogue_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "room_table_sha256": "693358617d50462319c811f652f6aa093a443c34bec3a2e4bcda2ce7fb4b8d4a",
+ "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/rl/runtime",
+ "note": "teacher.js(統合の段)は ./rc-speed-controller.js の差し替えとして、このフォルダーの mode_runtime.mjs を import する。重みは /api/sim/rl/modes/<key>/policy.json を fetch して渡す",
+ "files": {
+  "catalogue.mjs": {
+   "sha256": "e6ff082462c7cb4cd22886a5c7d23fa4661d713f4257207a9baba23168197ef9",
+   "bytes": 32092
+  },
+  "features.mjs": {
+   "sha256": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+   "bytes": 25138
+  },
+  "layouts.mjs": {
+   "sha256": "a3d7051a563d7fc648a541753c3f71ab35c214b759da664ef8e2359fb69cebc4",
+   "bytes": 11279
+  },
+  "line_profiles.mjs": {
+   "sha256": "f7b4d330c0032dae73f7fc7d67f92e4f3933f9e2d539eddebe89c8338742d848",
+   "bytes": 9974
+  },
+  "line_v2_table.json": {
+   "sha256": "39e1b1c427b1246fcfe4008761b175d500ec83b2c926eee1d46b7005ad2378da",
+   "bytes": 18328
+  },
+  "line_v2_table.mjs": {
+   "sha256": "2016c7dda6607ea20cf57be6d2b76006ecbf2c911fde21e004d18e777433ae9e",
+   "bytes": 18657
+  },
+  "mode_runtime.mjs": {
+   "sha256": "50de50e7d490f954d0ff13a7de8b20dfb27f15601d6e6a18755e9763f7638f0d",
+   "bytes": 12512
+  },
+  "obs_modes.mjs": {
+   "sha256": "e72f638942f286a250175b5039c868eb759d5f97e17507c1e28106c4dfb49a69",
+   "bytes": 6541
+  },
+  "perturb.mjs": {
+   "sha256": "5bb84250e840dd18af7f7b839d3e92c45a4b74e13ab516f7b0ec09203742bed5",
+   "bytes": 9552
+  },
+  "policy_forward.mjs": {
+   "sha256": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+   "bytes": 3789
+  },
+  "reference_loop.json": {
+   "sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "bytes": 64180
+  },
+  "reference_loop.mjs": {
+   "sha256": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+   "bytes": 64471
+  },
+  "rng.mjs": {
+   "sha256": "abbf0c60f7f082ba12a3cde053a91ff83f3680b87ce7058b6361b1e772cff23b",
+   "bytes": 1889
+  },
+  "room_table.json": {
+   "sha256": "693358617d50462319c811f652f6aa093a443c34bec3a2e4bcda2ce7fb4b8d4a",
+   "bytes": 31231
+  },
+  "room_table.mjs": {
+   "sha256": "91e0dac4840f081c1355be809ddb5783811e4d9191e8705e2d14531791a67663",
+   "bytes": 31540
+  },
+  "shield.mjs": {
+   "sha256": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76",
+   "bytes": 24985
+  }
+ }
+}

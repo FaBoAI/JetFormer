@@ -1,0 +1,396 @@
+{
+ "name": "sim-rl-no_wall_20261014-1125",
+ "version": "v1.0-sim-rl-no_wall_20261014-1125",
+ "created_at": "2026-10-14T03:29:31.293814+00:00",
+ "scenes": 15,
+ "train_scenes": 12,
+ "val_scenes": 3,
+ "frames": 9000,
+ "tof_frames": 9000,
+ "hours": 0.08333333333333333,
+ "synthetic": true,
+ "source": "simulator",
+ "source_scenes": [
+  "20261014-025717-48a99404-0001",
+  "20261014-025958-b5b4bb1b-0001",
+  "20261014-030216-2c472965-0001",
+  "20261014-030437-afe02854-0001",
+  "20261014-030652-3ff2f295-0001",
+  "20261014-030902-ace26791-0001",
+  "20261014-031107-8f1904df-0001",
+  "20261014-031309-fd606445-0001",
+  "20261014-031509-e0cc7bdf-0001",
+  "20261014-031712-00fbda5d-0001",
+  "20261014-031911-7fc44e0b-0001",
+  "20261014-032109-cddc4cd9-0001",
+  "20261014-032311-7836bb33-0001",
+  "20261014-032514-89f3cc80-0001",
+  "20261014-032715-ad41deb1-0001"
+ ],
+ "controller": "demo",
+ "training_label_mode": "synthetic_controller",
+ "training_frames": 8850,
+ "include_automated_labels": true,
+ "modes": [
+  {
+   "id": 0,
+   "name": "未設定"
+  },
+  {
+   "id": 1,
+   "name": "駐車1"
+  },
+  {
+   "id": 2,
+   "name": "駐車2"
+  },
+  {
+   "id": 3,
+   "name": "駐車3"
+  },
+  {
+   "id": 4,
+   "name": "高速走行"
+  },
+  {
+   "id": 5,
+   "name": "低速走行"
+  },
+  {
+   "id": 6,
+   "name": "未使用（予約）"
+  },
+  {
+   "id": 7,
+   "name": "未使用（予約）"
+  },
+  {
+   "id": 8,
+   "name": "シミュレーター"
+  }
+ ],
+ "num_modes": 9,
+ "mode_frames": {
+  "8": 9000
+ },
+ "vehicle_quality": [
+  "synthetic_snapshot"
+ ],
+ "sensors": {
+  "CAM_FRONT": {
+   "width": 224,
+   "height": 224,
+   "fps": 30,
+   "format": "jpg BGR (OpenCV)",
+   "pipeline": "WebGL RGB, full-frame stretch, JPEG"
+  },
+  "TOF_FRONT": {
+   "zones": "54x42",
+   "format": "uint16 PNG; bits0..12=radial mm,8191=invalid;bits13..15=synthetic confidence"
+  },
+  "IMU": {
+   "rate_hz": 100,
+   "accel": "m/s^2",
+   "gyro": "rad/s",
+   "axes": "x-right y-forward z-up",
+   "synthetic": true
+  },
+  "VEHICLE": {
+   "pwm": "us [steering,throttle,mode]",
+   "mode_us": "synthetic fixed1500; semantic mode is aligned.mode",
+   "erpm": "synthetic speed*erpm_per_mps*erpm_forward_sign",
+   "ai_driving": "external/demo are not human. Excluded labels unless explicitly enabled"
+  }
+ },
+ "aligned_npz": {
+  "timestamps_us": "[N] int64 camera time",
+  "cam_files": "[N] relative JPEG path",
+  "tof": "[N,42,54] uint16 packed",
+  "tof_age_ms": "[N] float32 zero, synchronous synthetic sensor",
+  "imu": "[N,10,6] float32 causal accel(m/s2)+gyro(rad/s)",
+  "vehicle": "[N,4] float32 PWM,PWM,CH3,eRPM",
+  "vehicle_valid": "[N] bool supervised label eligibility",
+  "erpm_valid": "[N] bool (synthetic conversion present)",
+  "future_actions": "[N,10,2] float32 actual commands1..10 camera frames ahead",
+  "future_valid": "[N] bool; final10 rows false",
+  "mode": "[N] int16",
+  "human_control": "[N] bool manual keyboard input",
+  "synthetic": "[N] bool always true",
+  "imu_timestamps_us": "[N,10] int64, all <= camera"
+ },
+ "upstream": {
+  "url": "https://github.com/FaBoAI/JetFormer",
+  "commit": "2b9774e6af953083116d81ad3ea378e681bf9065",
+  "reader": "jetformer.train_data.JetFormerDataset"
+ },
+ "notes": [
+  "All data are synthetic. PWM/speed/eRPM and camera calibration are provisional unless independently calibrated.",
+  "The current vehicle command is the zero-latency action applied for the camera step. Future targets use subsequent steps, never the same step.",
+  "Automated recordings retain commands for evaluation but default to vehicle_valid=false and future_valid=false.",
+  "Each recording is one scene. Choose one split; frames from the same scene are never split between train and val.",
+  "IMU negative episode timestamps are simulator reset padding, marked in simulation/frames.jsonl.",
+  "This is the ready-to-train exported dataset format, not JetFormer's data/raw recorder layout.",
+  "Genre ID8 is the simulator tag and is preserved in aligned.mode. It requires a nine-slot mode input; existing six-mode models cannot accept it directly. No mode4 relabeling is applied to this export.",
+  "JetFormer がシーン ZIP をまとめて取り込んだもの(sim/rl_import.py)。各シーンの記録は simulation/scenes/<シーン>/。",
+  "強化学習モードのシーンでは、乱した操作(frames.jsonl の action_info.jf.l = 0)を正解に含むフレームを学習から外してある(dataset_card.json の label_mask)。"
+ ],
+ "test_scenes": 0,
+ "collection_schema": "jetformer-sim-rl-collection/v1",
+ "scene_duration_s": 20.0,
+ "continuous_frames_per_scene": 600,
+ "split_scope": "シーン(20 秒の連続した走り)ごとの分け方。開始姿勢は train と val で重ならない(同じコース・同じ教師の方策)",
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-no_wall",
+  "sim-safe"
+ ],
+ "rl": {
+  "mode": "no_wall",
+  "name": "強化学習モード(絶対壁にぶつからない)",
+  "state": "not_accepted",
+  "policy_sha256": "153c709c52151c5e2ff15326ce6a307ecda67d9888c29c678d5afdcffb85d1ff",
+  "plan": "20261014-112531-d4d791",
+  "scenes": 15,
+  "planned_scenes": 15,
+  "minutes": 5.0,
+  "calibration": {
+   "policy_loaded": false,
+   "policy_name": null,
+   "steer_center_us": 1441,
+   "throttle_neutral_us": 1496,
+   "source": "recorder-default"
+  },
+  "teacher_id": "jf-rl-no_wall-v1"
+ },
+ "label_mask": {
+  "schema": "jetformer-sim-label-mask/v1",
+  "source": "frames.jsonl action_info.jf.l",
+  "horizon": 10,
+  "fail_closed": true,
+  "rule": "l = 0 の操作 j を正解(k+1〜k+10)に含む観測 k と観測 j 自身(k ∈ [j − 10, j])を future_valid = False・mode = 0。jf の無い行は l = 0 とみなす",
+  "rule_id": "k ∈ [j − 10, j]",
+  "masked_frames": 0,
+  "scenes": 15,
+  "per_scene": {
+   "20261014-025717-48a99404-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-025958-b5b4bb1b-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-030216-2c472965-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-030437-afe02854-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-030902-ace26791-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-031107-8f1904df-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-031309-fd606445-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-031509-e0cc7bdf-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-031911-7fc44e0b-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-032109-cddc4cd9-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-032311-7836bb33-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-032514-89f3cc80-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-030652-3ff2f295-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-031712-00fbda5d-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   },
+   "20261014-032715-ad41deb1-0001": {
+    "frames": 600,
+    "masked": 0,
+    "newly_masked": 0,
+    "learn0_frames": 0,
+    "teacher_mode": "no_wall",
+    "teacher_id": "jf-rl-no_wall-v1",
+    "rows": 600,
+    "missing_jf": 0,
+    "bad_l": 0,
+    "l0": 0,
+    "missing_frames": 0,
+    "out_of_range": 0
+   }
+  },
+  "before": {
+   "training_frames": 8850,
+   "mode_frames": {
+    "8": 9000
+   }
+  },
+  "warnings": []
+ },
+ "scene_log": "ds-sim-rl-no_wall_20261014-1125"
+}

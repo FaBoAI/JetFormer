@@ -1,0 +1,257 @@
+{
+ "schema": "jf-sim-rl-line-shield/v3",
+ "mode": "line",
+ "version": "jf-shield/v5",
+ "select": "v5b",
+ "mode_runtime": {
+  "shield": true,
+  "shield_params": {
+   "H": 24,
+   "c_nominal": 0.04,
+   "c_pessimistic": -1,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": false
+   },
+   "governor": {
+    "enabled": false
+   },
+   "worst": {
+    "enabled": false
+   },
+   "unstick": {
+    "enabled": false
+   },
+   "backups": [
+    {
+     "la": 0.6,
+     "k": 0.2
+    },
+    {
+     "la": 0.6,
+     "k": 0
+    },
+    {
+     "hold": true
+    }
+   ],
+   "keep_nominal": true,
+   "pess_fc": false,
+   "pess_speedGain": 1,
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ],
+   "stop": {
+    "enabled": true,
+    "E": true,
+    "Q": false,
+    "H_max": 240,
+    "v_stop": 0.02
+   },
+   "select": "v5b",
+   "cont_candidates": true,
+   "escape": {
+    "enabled": true,
+    "after": 3,
+    "v_still": 0.1,
+    "fwd_steers": [
+     -0.52,
+     -0.39,
+     -0.26,
+     -0.13,
+     0,
+     0.13,
+     0.26,
+     0.39,
+     0.52
+    ],
+    "fwd_speed": 0.5,
+    "fwd_frames": 30,
+    "turn_frames": [
+     0,
+     8
+    ],
+    "rev_steers": [
+     -0.52,
+     -0.26,
+     0,
+     0.26,
+     0.52
+    ],
+    "rev_speed": -0.4,
+    "rev_frames": [
+     12,
+     24
+    ],
+    "min_progress": 0.1,
+    "retry_every": 15
+   }
+  }
+ },
+ "what_ja": "経路いろいろの走行中のすき間シールド v5b(標準の物理の模型で、すき間 4 cm を守る安全網。止まれることを合格の条件にし、合格する候補が無いときはブレーキ(速さ 0)の候補だけから選び、方策の指令をそのまま通さない。止まったまま進めないときは決まった操縦の表で抜け出す。悲観の模型は衝突の予想だけに使い、速さの見張り・模型 Q・見積もりは使わない)",
+ "labels_ja": "シールドが替えた指令は正解ラベル(l = 1、sh = 1)。後ろへ動いたフレームのあるシーンは記録の前の確かめで替える",
+ "implementation": {
+  "files": "runtime/(r3/line4b/rt4b の全部の写し)。共有の web/rl と同じもの: catalogue.mjs, features.mjs, layouts.mjs, line_profiles.mjs, line_v2_table.json, line_v2_table.mjs, obs_modes.mjs, perturb.mjs, policy_forward.mjs, reference_loop.json, reference_loop.mjs, rng.mjs, room_table.json, room_table.mjs",
+  "shield_mjs_sha256": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+  "mode_runtime_sha256": "2fa7146d72310b9bb3605b14af9f4de31a9068c1001f3e7c46687d2d47da65cd",
+  "diffs": {
+   "shield.mjs.web_rl.diff": {
+    "base_sha256": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76",
+    "new_sha256": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+    "lines": 530
+   },
+   "shield.mjs.rl_runtime.diff": {
+    "base_sha256": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76",
+    "new_sha256": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+    "lines": 530
+   },
+   "mode_runtime.mjs.web_rl.diff": {
+    "base_sha256": "50de50e7d490f954d0ff13a7de8b20dfb27f15601d6e6a18755e9763f7638f0d",
+    "new_sha256": "2fa7146d72310b9bb3605b14af9f4de31a9068c1001f3e7c46687d2d47da65cd",
+    "lines": 48
+   },
+   "mode_runtime.mjs.rl_runtime.diff": {
+    "base_sha256": "50de50e7d490f954d0ff13a7de8b20dfb27f15601d6e6a18755e9763f7638f0d",
+    "new_sha256": "2fa7146d72310b9bb3605b14af9f4de31a9068c1001f3e7c46687d2d47da65cd",
+    "lines": 48
+   }
+  },
+  "v5_compat_test": {
+   "file": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/line_r4b/dev/test_shield_v5b.json",
+   "summary": {
+    "cases": 26,
+    "identical": 26,
+    "pass": true
+   },
+   "note_ja": "select 'v5'(と既定)のときの操作の列が no_wall r4 の v5(8ece9be4…)と同じ(26 回)。昇格の段は no_wall にもこの shield.mjs を使える"
+  }
+ },
+ "promote": {
+  "teacher_js_diff": "promote/teacher.js.diff(createModeTeacher に modeRuntime: entry.runtime を渡す)",
+  "sim_rl_js_diff": "promote/sim-rl.js.diff(登録簿の runtime を RL.modes[key].runtime に残す)",
+  "base_sha256_now": {
+   "sim-rl.js": "a2b309983df93549422825a865076c67ed92d548da578e74e7df822271448cd3",
+   "teacher.js": "93dbeeb879ea4f304f777193e0eb54b72fdb4bdb10edfee59ec7918dac09685d"
+  },
+  "base_sha256_when_made": {
+   "sim-rl.js": "a2b309983df93549422825a865076c67ed92d548da578e74e7df822271448cd3",
+   "teacher.js": "93dbeeb879ea4f304f777193e0eb54b72fdb4bdb10edfee59ec7918dac09685d"
+  },
+  "applies_to_current": true
+ },
+ "promote_note_ja": "昇格の段で: (1) 共有の rl/runtime/shield.mjs・web/rl/shield.mjs・jetformer/sim/static/rl/shield.mjs をこの runtime/shield.mjs に(select を渡さなければ no_wall r4 の v5 と同じ動き)、(2) mode_runtime.mjs を runtime/mode_runtime.mjs に(差分 runtime/mode_runtime.mjs.web_rl.diff。mode.json の runtime.shield・shield_params でシールドを切り替え、metadata.shield に値の全部を入れる)、(3) promote/teacher.js.diff・sim-rl.js.diff を当てる、(4) bundle/line/ を mode.json(runtime.shield = true・shield_params 全部・記録の前の確かめの鍵)で置き換え、web/rl の manifest を作り直す、(5) 取り込んだあとのページの teacher.js を通して、この F-ID(fid_*.json)が Node・ブラウザで差 0 であることを確かめる(この段の確かめは browser_fid.json)、(6) 記録の前の確かめで後ろへ動いたシーンを替える",
+ "protocol_line_r4b_sha256": "c7a1f67706c1c5cd02f143ca4f364238bbc082da361e9456d6cf1ebe6887d17c",
+ "fids": {
+  "fid_std_left08.json": {
+   "out": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/r3/candidates/line_r4/fid_std_left08.json",
+   "start": {
+    "gate": 0,
+    "left_offset_m": 0,
+    "left_yaw_deg": 0,
+    "seed": 1
+   },
+   "frames": 600,
+   "shield_frames": 0,
+   "negative_speed_cmds": 0,
+   "shield_at": [],
+   "reason": "collection_duration_complete",
+   "laps": [
+    9.276,
+    8.994
+   ],
+   "metadata_shield": true
+  },
+  "fid_ln_g30r120_r4b_g8_shield.json": {
+   "out": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/r3/candidates/line_r4/fid_ln_g30r120_r4b_g8_shield.json",
+   "start": {
+    "gate": 29,
+    "left_offset_m": 0.17764551947824658,
+    "left_yaw_deg": 14.293575991876423,
+    "seed": 9300008
+   },
+   "frames": 600,
+   "shield_frames": 3,
+   "negative_speed_cmds": 0,
+   "shield_at": [
+    100,
+    370,
+    371
+   ],
+   "reason": "collection_duration_complete",
+   "laps": [
+    9.378,
+    8.971
+   ],
+   "metadata_shield": true,
+   "test": "LN-G30R120-R4B",
+   "id": "G8"
+  }
+ },
+ "fid_check_node": [
+  {
+   "file": "fid_std_left08.json",
+   "frames": 600,
+   "same": 600,
+   "diff": 0,
+   "first_diff": null,
+   "metadata_same": true,
+   "shield_frames": 0
+  },
+  {
+   "file": "fid_ln_g30r120_r4b_g8_shield.json",
+   "frames": 600,
+   "same": 600,
+   "diff": 0,
+   "first_diff": null,
+   "metadata_same": true,
+   "shield_frames": 3
+  }
+ ],
+ "fid_check_browser": {
+  "pass": true,
+  "where": "http://192.168.55.1:8080/sim/c/default/(Firefox 157.0.1・DISPLAY :0。候補の runtime/ を 192.168.55.1:8457 から import)",
+  "checked_at": "2026-10-14T23:40:57",
+  "files": {
+   "fid_ln_g30r120_r4b_g8_shield.json": {
+    "frames": 600,
+    "exact_same": 154,
+    "max_abs_steering": 5.273559366969494e-16,
+    "max_abs_speed": 2.4424906541753444e-15,
+    "info_mismatch": 0,
+    "sh_same_frames": 600,
+    "metadata_same": true,
+    "shield_frames": 3,
+    "shield_frames_node": 3,
+    "ms_mean": 10.718333333333334,
+    "ms_p95": 18,
+    "pass": true
+   },
+   "fid_std_left08.json": {
+    "frames": 600,
+    "exact_same": 122,
+    "max_abs_steering": 3.3306690738754696e-16,
+    "max_abs_speed": 2.6645352591003757e-15,
+    "info_mismatch": 0,
+    "sh_same_frames": 600,
+    "metadata_same": true,
+    "shield_frames": 0,
+    "shield_frames_node": 0,
+    "ms_mean": 9.03,
+    "ms_p95": 12,
+    "pass": true
+   }
+  },
+  "rule_ja": "統合の段と同じ: 操作の |Δ| ≤ 1e-6・info が文字列として同じ・metadata が同じ + シールドの替え(sh)がどのフレームも同じ。文字列として全部同じでないフレームは Node と Firefox の Math の最後の桁(1e-16 ほど)の違い",
+  "file": "browser_fid.json"
+ },
+ "runtime_manifest_note_ja": "runtime/manifest.json は web/rl から写したときのまま(shield.mjs・mode_runtime.mjs の sha256 は合わない)。昇格の段が rl/make_web_bundle.mjs で作り直す"
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "jf-sim-rl-obstacle-r2-selection-eval/v1",
+ "created_at": "2026-10-13T23:22:41.147Z",
+ "mode": "obstacle",
+ "set": "selection(OB-V100-R2、試験の組ではない)",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/obstacle/r2/r2b/main/policies/step_008011776.json",
+  "sha256": "3cffd1d233fc206756917cc9db10466d98088cca7bc85ea136ffb437aad1f2fa",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 95
+ },
+ "judged": {
+  "O1_valid": {
+   "value": "66/100",
+   "n": 66,
+   "pass": false
+  },
+  "O2_clearance": {
+   "value": 0.00030273428985743854,
+   "pass": false
+  },
+  "O3_lap1_median": {
+   "value": 9.018977086489027,
+   "pass": true
+  },
+  "O4_empty": {
+   "value": 8.914292482857684,
+   "pass": true
+  }
+ },
+ "all_judged_pass": false,
+ "reported": {
+  "var6": {
+   "laps": {
+    "L+3cm": 9.01759074813254,
+    "L-3cm": 8.883157993040921,
+    "yaw+3": 8.93078380923196,
+    "yaw-3": 8.797450475898627,
+    "L+3cm_yaw-3": 8.918690169890825,
+    "L-3cm_yaw+3": 8.997450475898626
+   },
+   "max": 9.01759074813254,
+   "all_le_9": false
+  },
+  "failures": {
+   "n": 34,
+   "reasons": {
+    "collision": 34
+   },
+   "collision_kinds": {
+    "obstacle": 31,
+    "post-foot": 2,
+    "rail": 1
+   },
+   "early_le_2_1s": 12,
+   "ids": [
+    "selection-006-STD",
+    "selection-006-H",
+    "selection-007-STD",
+    "selection-007-H",
+    "selection-012-STD",
+    "selection-012-H",
+    "selection-013-STD",
+    "selection-013-H",
+    "selection-015-STD",
+    "selection-015-H",
+    "selection-016-STD",
+    "selection-016-H",
+    "selection-018-STD",
+    "selection-019-H",
+    "selection-022-STD",
+    "selection-022-H",
+    "selection-024-STD",
+    "selection-024-H",
+    "selection-025-STD",
+    "selection-028-STD",
+    "selection-028-H",
+    "selection-031-STD",
+    "selection-032-H",
+    "selection-035-STD",
+    "selection-035-H",
+    "selection-038-STD",
+    "selection-041-STD",
+    "selection-042-STD",
+    "selection-043-STD",
+    "selection-043-H",
+    "selection-046-STD",
+    "selection-046-H",
+    "selection-048-STD",
+    "selection-048-H"
+   ]
+  },
+  "valid_by_start": {
+   "STD": "31/50",
+   "H": "35/50"
+  },
+  "valid_by_count": [
+   "22/28",
+   "13/20",
+   "19/28",
+   "12/24"
+  ],
+  "valid_min_clearances_lowest": [
+   0.00030273428985743854,
+   0.0006299367518722501,
+   0.0013786240193543187,
+   0.0022287824351823193,
+   0.00982972245035632
+  ],
+  "valid_below_3cm": 15,
+  "passages": {
+   "passes": 359,
+   "left": 71,
+   "right": 288,
+   "clearance_min_m": 0.0027,
+   "clearance_p05_m": 0.03181,
+   "clearance_median_m": 0.1466,
+   "speed_at_pass_median_mps": 3.141,
+   "lateral_gap_abs_median_m": 0.3542
+  },
+  "lap1_valid": {
+   "median": 9.018977086489027,
+   "max": 9.651464302618335
+  }
+ },
+ "protocol_validation_27": {
+  "O1": "19/26",
+  "O2": 0.005830269474924293,
+  "O3": 9.058235686108635,
+  "O4": 8.914292482857684,
+  "all_pass": false
+ },
+ "runs": 107,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "note_ja": "選びの組(試験と同じ大きさの新しい配置 50 × 2 開始)の結果。試験の組 OB-T100 は、選んだものが選びの組で合格しなかったので使っていない(2 回の枠が残っている)。画面の数字には使わない"
+}

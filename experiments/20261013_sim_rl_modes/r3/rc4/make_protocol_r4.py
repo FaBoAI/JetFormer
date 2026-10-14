@@ -1,0 +1,217 @@
+"""離脱復活 r4 の追補の決まり protocol_recover_r4.json を書く(2026-10-14、学習の段 recover r4)。学習の前に 1 回だけ書いて sha256 を固める。
+
+    python3 -I r3/rc4/make_protocol_r4.py --out <protocol_recover_r4.json> [--freeze <protocol_recover_r4.sha256>]
+
+--freeze を付けると、書いた JSON の sha256 と、固定のときのコードの sha256(files.code_sha256_at_freeze)を sha256 のファイルに書く。
+固定したあとは書き直さない(固定のファイルがあれば止まる)。
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from datetime import datetime
+from pathlib import Path
+
+EXP = Path("/home/jetson/jetformer/experiments/20261013_sim_rl_modes")
+R3 = Path("/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3")
+REP = Path("/home/jetson/jetformer_reports/sim_rl_modes_20261013")
+
+
+def sha(p: Path) -> str:
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+CODE = ["r3/rc4/build_recoverable_table_v2.mjs", "r3/rc4/merge_recoverable_table_v2.py", "r3/rc4/run_chain_rc4.sh", "r3/rc4/eval_rc4.mjs",
+        "r3/rc4/episode_rc4.mjs", "r3/rc4/gate_miss_rc4.mjs", "r3/rc4/variation_metrics_rc4.mjs", "r3/rc4/rt/mode_runtime.mjs", "r3/rc4/rt/perturb_v2.mjs",
+        "r3/rc4/rt/perturb.mjs", "r3/rc4/rt/shield.mjs", "r3/rc4/rt/obs_modes.mjs", "r3/rc4/rt/features.mjs", "r3/rc4/train/env_rc4.mjs",
+        "r3/rc4/train/env_worker_rc4.mjs", "r3/rc4/train/vec_env_rc4.py", "r3/rc4/train/ppo_modes.py", "r3/rc4/train/train_rc4.py",
+        "r3/rc4/select_rc4.py", "r3/rc4/nominal_line_train_rc4.mjs", "r3/rc4/ref/recover_r3_policy.json", "r3/rc4/ref/fastest_policy.json",
+        "r3/rc/core_oracle.mjs", "r3/rc4/predict_scenes_rc4.mjs", "r3/rc4/make_protocol_r4.py", "r3/rc4/diag/dev_shield_rc4.mjs"]
+
+
+def protocol() -> dict:
+    return {
+        "title": "離脱復活(recover)第 4 回の追補の決まり — protocol.json・modes.json・protocol_recover_r3.json を変えずに、recover の r4 だけに足す・置き換える項目",
+        "version": "recover-r4-1",
+        "written_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "written_by": "r4 の学習の段(sim_rl_modes_20261013、recover r4。学習・試験の前に固定)",
+        "base_protocol_sha256": sha(REP / "protocol.json"),
+        "base_modes_json_sha256": sha(REP / "modes.json"),
+        "protocol_recover_r3_sha256": sha(R3 / "protocol_recover_r3.json"),
+        "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。"
+                   "強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)。"
+                   "2026-10-14 08:30「作業を引き続き実施」",
+        "why": [
+            "確認 recover r3(check_recover_r3.md)は pass = false。r1・r2 の主な不合格(有効な回・出来事の成功・出来事の数)は直ったが、次の 6 つが must fix として残った。",
+            "(1) C5_r3 キック 30/34・30/34 = 0.882。新しい時刻 73/80、新しい開始の横 45/51。落ちた 33 回は全部 右向きのキックで、s 0.39〜3.63 m(スタートのゲートの柱・カーテン・柵の区間)・3.0〜4.2 m/s。区間の外は 266/266。"
+            "キックのあとの 104 通りの操縦でも逃げ道 0 = 方策がキックの前に右に余地を残していない(決まりの穴ではない)→ 学習でこの区間の右の余地を求め、この区間にキックを集める",
+            "(2) C6_r3 は RC-U60-R3 の U56 の開始のすき間 1.89 cm のため、どの方策でも満たせない → 乱しなしの組の開始は開始のすき間 ≥ 3 cm に限る(新しい試験の組)",
+            "(3) ゲートの外し: 乱しありの有効な回の 28〜39% が 1 つゲートを外す(同じ開始・同じ乱しで最速の方策は 4/96)→ 立て直せる表の成功の条件と学習の報酬に「ゲートを通る」を足し、判定 C8 を足す。"
+            "記録の段は記録したブラウザのシーンそのもので止まり・進み・ゲートの外しを確かめ直す(Node の予想だけに頼らない。昇格の段の手当て)",
+            "(4)(5) 取り込みの学習除外: dataset_frame_index.patch の説明の誤り(実機の VEHICLE も quality = 'snapshot')と実機の形の試験が無いこと、"
+            "scene_import.dataset_to_scenes が mode 0 の区間を全部 unset_segments に書く(ジャンル 8 の無い Jetson では展開したシーン全体が未設定のまま)と、試験がこの Jetson の modes.json に頼ること → 昇格の段の差分と試験を直す",
+            "(6) 止まりの多くはシールドが作る(開始のすき間 0.6〜4.6 cm、ゲート 16・右 0.2 m・+15° の 0.49 m の開始)→ 下調べで「すくみをほどく」を確かめて決め、残る止まり(開始のすき間 < 3.5 cm の開始でどの候補もシールドを満たさないもの)は画面の説明に書く",
+            "r3 の試験の組(RC-P100-R3・RC-KICK-R3・RC-U60-R3)は r3 の候補で使ったので、r4 は新しい試験の組で 1 回だけ試験する",
+        ],
+        "unchanged": [
+            "判定のしきい値: C1 ≥ 90/100(valid_episode_r3)・C2 ≥ 0.95・C3 中央値 ≤ 1.2 秒・90% 点 ≤ 2.5 秒・C4 ≥ 3.5 回/回・外す割合 0.10〜0.40・C5 ≥ 0.90(向き・横それぞれ)・"
+            "C6 停止から 1 周 ≤ 9.0 秒・REC60 と乱しなしの組の全部が有効・最小すき間 ≥ 0.03 m・C7 強さ各 ≥ 15%・種類各 ≥ 10%",
+            "定義: protocol.json の recovered・recovery_success・mask_rule・nominal_line・clearance・判定のコア、protocol_recover_r3.json definitions_added の stall・progress・valid_episode_r3・kick_survival_r3",
+            "乱しの種類・3 つの強さの中身(modes.json common.perturbation_recording.classes)・予定・始めてよい位置の幅の決まり、乱し v2 の scheduler(頼んだ組・替え方・散らし。r3/rc4/rt/perturb_v2.mjs は r3/rc/rt/perturb_v2.mjs と同じ中身)",
+            "乱した操作は学習に使わない(info.jf.l = 0)。シールドが替えた指令は正解ラベル(l = 1・sh = 1)。乱しのフレームはシールドを通さない",
+        ],
+        "definitions_added": {
+            "gate_miss_real": "本当のゲートの外し(r3 の gate_miss_rc3.mjs と同じ): sim の passed_gates と completed_laps が変わらないまま R 上の s がゲートの間の最大 1.519 m + 0.5 m = 2.019 m より先へ進んだ",
+            "gate_rule_table": "立て直せる表 v2 の枝のゲートの決まり: 枝の [ps, pe + 3 秒] のどのフレームでも、R 上の s(自前の射影)が sim の次のゲート(passed_gates で進める)の s + 0.30 m を越えない"
+                               "(走行中の観測の包み base79v の仮想の外しと同じ数え方)、かつ pe のあと pe + 3 秒までに passed_gates が 1 つ以上増える(20 秒の終わりで切れたときは外していなければよい)",
+            "start_band": "スタートのゲートの区間 = R 上の s mod L が 0.30〜3.70 m(確認 r3 で落ちたキックの s 0.39〜3.63 m を含む)",
+        },
+        "perturbation_r4": {
+            "id": "jf-perturb-record/v2(表だけ v2)",
+            "what": "乱し v2 の scheduler(r3 と同じ)で、立て直せる表を v2 に替える",
+            "recoverable_table": {
+                "file": "r3/rc4/recoverable_table_v2.json(学習の段の最初に lock rl の下で作り、学習を始める前に sha256 を r3/protocol_recover_r4_table.sha256 に固定。以後、学習・検証・試験・記録で同じ表)。"
+                        "ブラウザでも読める形 r3/rc4/rt/recoverable_table.mjs",
+                "builder": "r3/rc4/build_recoverable_table_v2.mjs(r3 の build_recoverable_table.mjs の写し。乱数を使わない決定的な手順。(driver, 開始) の組ごとに続きから作れる)",
+                "reference_drivers": ["離脱復活 r3 の方策(candidates/recover_r3/policy.json、8d686076…、r4 の学習の初期化元)を乱しなし・シールドなしで",
+                                      "最速の方策(bundle/fastest/policy.json、7c43cb53…)", "r3 の方策に速さの上限 3.0 m/s", "r3 の方策に速さの上限 2.2 m/s"],
+                "starts": "r3 と同じ(STD + mulberry32(0x7ab1e001) の記録の開始の分布 7 つ、種 3,240,000 + n、元の sim-core.js、標準の物理)",
+                "states": "各回のフレーム 30〜590 を 4 フレームおき(最初の衝突・最初のゲートの外しより前だけ)",
+                "combos": "r3 と同じ 18 通り(クラスの上限 = 悪い側。わざと外すはその側の幅が d + 0.05 m に足りなければ表に入れない)",
+                "oracle": "乱しを差し込み、そのあと次のどれか 1 つで立て直せれば「立て直せる」: (a) r3 と同じ 24 通りの操縦(ブレーキ/踏み込みは 12 通り)、(b) その driver の方策で続ける、"
+                          "(c) 離脱復活 r3 の方策で続ける(driver が r3 そのものなら (b) と同じなので省く)",
+                "success": "r3 の条件(ps から pe + 3 秒まで衝突なし・フレームの終わりのすき間 ≥ 0.02 m・最後に前へ 0.5 m/s 以上・|e_y − emid(s)| ≤ 0.20 m・|向きのずれ| ≤ 0.30 rad)"
+                           "かつ definitions_added.gate_rule_table",
+                "cell": "r3 と同じ(s 0.25 m × 速さ 0.5 m/s × 18 通り。サンプル 3 つ以上で、記録・試験は立て直せる割合 ≥ 0.95、学習は ≥ 0.80 のマスだけ使える)",
+            },
+        },
+        "runtime": {
+            "shield": {
+                "what": "r3 と同じく乱しのフレーム以外に標準の物理の模型のすき間シールド(c_nominal 0.035・悲観・見張り・見積もり・模型 Q は切る・H 24・keep_nominal)。"
+                        "r4 で「すくみをほどく」を入れるかどうかと値は shield_r4 のとおり(下調べ r3/rc4/diag/dev_shield_rc4.mjs で決めた。試験の組は使っていない)",
+                "shield_r4": "SHIELD_R4_PLACEHOLDER",
+                "labels": "シールドが替えた指令(すくみをほどくを含む)は正解ラベル(l = 1、sh = 1)。乱しのフレームはシールドを通さない",
+                "ui_note": "開始のすき間が 3.5 cm より小さい開始(壁を向いた開始)では、どの候補もシールドの 3.5 cm を守れず、車は止まったまま動かないことがある。"
+                           "記録の前の確かめ(valid_episode_r3)でその開始は次の候補に替わるので記録には入らないが、ブラウザで手で走らせると 20 秒止まったままに見える(画面の説明に書く)",
+            },
+        },
+        "sets": {
+            "test": {
+                "RC-P100-R4": {"halton_from": 80001, "count": 100, "seed_base": 8120000,
+                               "rule": "Halton 80,001 番から(どの段でも使っていない番号)。recover の記録の開始の分布で開始のすき間 > 0 を満たさない番号は飛ばして 100 個。回 i の種 = 8,120,000 + i。"
+                                       "乱しは perturbation_r4(強さは auto)、標準の物理・連続 20 秒・シールドあり(r4)・元の sim-core.js"},
+                "RC-KICK-R4": {"seed_base": 8121000,
+                               "rule": "STD の開始・連続 20 秒・乱しなし。キックの時刻 1.05 + 0.5·k 秒と 1.30 + 0.5·k 秒(k = 0〜35。protocol の 1.0・r3 試験の 1.25・r3 検証の 1.4・確認 r3 の 1.1・1.35 と重ならない)"
+                                       " × 左右 × {向き 0.3 rad, 横 0.15 m} = 288 回。判定に使うのはキックの瞬間の位置が v1 の始めてよい位置の回だけ。高速版(状態の書き換え)"},
+                "RC-KICKR-R4": {"seed_base": 8123000, "count": 100,
+                                "rule": "新しい開始のキック: mulberry32(0x6b1c4004) で記録の開始の分布から開始(開始のすき間 ≥ 0.03 m まで引き直す)、同じ乱数の続きで時刻 U(1.5, 19.0) 秒・向き(u < 0.5 なら左)。"
+                                        "回 i が偶数なら向き 0.3 rad、奇数なら横 0.15 m。乱しなし・連続 20 秒・判定に使うのは始めてよい位置の回だけ。高速版"},
+                "RC-STD": "protocol.json のまま",
+                "RC-REC60": "protocol.json のまま(60 条件)",
+                "RC-U60-R4": {"seed_base": 8122000, "count": 60,
+                              "rule": "乱しなし・連続 20 秒。RC-P100-R4 の続きの Halton 番号から、開始のすき間 ≥ 0.03 m の開始 60 個(確認 r3 の指摘 2: 開始のフレームで 3 cm を割る開始を除く)"},
+            },
+            "validation": {
+                "rule": "RC-V100-R4 = Halton 85,001 番から 100 回(開始のすき間 > 0、種 8,220,000 + i、乱しあり)+ RC-VKICK-R4(STD、時刻 1.4 + 0.5·k、k = 0〜35、× 左右 × 2 種類、種 8,221,000 + i)"
+                        "+ RC-VKICKR-R4(mulberry32(0x6b1c5005)、60 回、種 8,223,000 + i、RC-KICKR-R4 と同じ作り方)+ RC-STD + RC-REC60 の最初の 15 + RC-VU30-R4(乱しなし、RC-V100-R4 の続きの Halton で開始のすき間 ≥ 0.03 m、30 回、種 8,222,000 + i)。"
+                        "高速版でよい。チェックポイントを選ぶためだけに使う",
+            },
+            "fresh_report": {"rule": "mulberry32(0x3c3c0004) の一様乱数の新しい開始 150 回(記録の開始の分布・開始のすき間 > 0・乱しあり・種 8,320,000 + i)を、試験の組のあとに 1 回だけ走らせて報告する"},
+            "reported_only": {
+                "RC-P100-R4-V1": "RC-P100-R4 と同じ開始・種を元の乱し v1 で(作り直しの効果)",
+                "FASTEST": "最速の方策(bundle/fastest、7c43cb53…)を同じ走行中の仕組みで RC-P100-R4・RC-KICK-R4・RC-KICKR-R4(比べる)",
+                "R3": "r3 の候補(8d686076…)を同じ組で(r3 からの変化)",
+            },
+            "code": "r3/rc4/eval_rc4.mjs buildJobs(固定のときの sha256 は files.code_sha256_at_freeze)",
+        },
+        "acceptance": {
+            "C1_r3": "RC-P100-R4 の 90/100 以上が valid_episode_r3",
+            "C2": "RC-P100-R4 の全部の出来事の recovery_success の割合 ≥ 0.95(protocol.json のまま)",
+            "C3": "protocol.json のまま",
+            "C4": "RC-P100-R4 の出来事の数の平均 ≥ 3.5/回、外すフレームの割合の平均 0.10〜0.40",
+            "C5_r4": "RC-KICK-R4 と RC-KICKR-R4 のそれぞれで、判定に使う回の向き・横の kick_survival_r3 ≥ 0.90(4 つとも。r3 は時刻の格子の 2 つだけ。きびしくする向き)",
+            "C6_r4": "RC-STD が完走し停止から 1 周 ≤ 9.0 秒。RC-REC60 と RC-U60-R4 の全部が valid_episode_r3 で最小すき間 ≥ 0.03 m(開始のフレームも数える)",
+            "C7": "RC-P100-R4 の当てた組の強さ 弱・中・強 が各 15% 以上、種類 舵のパルス・わざと外す・ブレーキ/踏み込み が各 10% 以上(r3 のまま)",
+            "C8_new": "RC-P100-R4 の有効な回(valid_episode_r3)のうち gate_miss_real のある回 ≤ 10%、かつ RC-REC60 と RC-U60-R4 の gate_miss_real 0(新しく足した。きびしくする向き。最速の方策は r3 の確認で 4/96)",
+            "reported": ["頼んだ組と当てた組・始まりの位置・強さと種類ごとの成功", "スタートのゲートの区間の右向き・左向き・区間の外のキックの生き残り", "シールドの作動(すくみをほどくの数を含む)",
+                         "RC-P100-R4-V1・最速の方策・r3 の候補の同じ組", "VM7・VM3", "表 v2 の使えるマスの数と r3 の表との差"],
+            "thresholds_relaxed": "無し",
+        },
+        "training": {
+            "run": "recover_r4(r3/rc4/train/train_rc4.py、環境 r3/rc4/train/env_rc4.mjs。観測 base79v のまま)",
+            "init": "離脱復活 r3 の選んだチェックポイント(r3/rc3/train/main/checkpoints/step_005013504.pt、sha256 " + sha(R3 / "rc3/train/main/checkpoints/step_005013504.pt") + "、方策 8d686076…)",
+            "seed": 33,
+            "seed_note": "protocol allowed_tuning.retry(1 回)は r3 の種 32 で使った。r4 の学び直しは retry の外(deviations.md に書く。no_wall r3・r4、line r3・r4 と同じ扱い)",
+            "steps_max": 6000000,
+            "early_stop": "200 万ステップ以降、続けて 3 つのチェックポイント(100 万ごと)が検証の組で全部合格したら止める",
+            "ppo": "r3 と同じ(64 環境 × 256、5 エポック、ミニバッチ 4,096、clip 0.2、γ 0.995、λ 0.95、target_kl 0.03、lr 1e-4 → 3e-5、torch 4 スレッド)。差し込んだ行動のステップは方策の損失から外す",
+            "perturbation": "乱し v2 の scheduler(表 v2、学習では立て直せる割合 ≥ 0.80 のマスも使う)+ 状態のキック 25%(TRAIN_SPEC のまま、5 cm 未満になるキックは戻す)。強さの倍率 1.0 で一定(初期化元の r3 は 1.0 まで学んだ)",
+            "start_band_kicks": "スタートのゲートの区間を通るたびに 50% で 1 回、区間の中の一様な s(0.35〜3.65 m)で、向き ±U(0.20, 0.35) rad か 横 ±U(0.10, 0.18) m(半々、右 70%)のキック。"
+                                "フレーム 30 より前と乱しの出来事の間は入れない。すき間が小さくなっても戻さない(ぶつかれば衝突で −10 で終わる)。乱数はシーンの種から(乱しの乱数とは別)",
+            "reward": {
+                "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+                "gate_miss": "ゲートの外し(base79v の仮想の外し: s が sim の次のゲートの s + 0.30 m を越えた)は −10 で終わる(r3 は −3 で続けた)",
+                "recovery": "r3 と同じ(+1.0 / +0.5 / −1.0)。線は初期化元 = r3 の方策の乱しなしの線(r3/rc4/nominal_line_r3.json、sha256 " + sha(R3 / "rc4/nominal_line_r3.json") + ")",
+                "clearance_barrier": "r3 と同じ(d_min < 0.05 m で −0.3·min(4, ((0.05 − d)/0.02)²)、乱しの区間の中は 0)",
+                "start_band_room": "スタートのゲートの区間で、右の余地 r = e_y + ρR(s)(room_table)が m = min(0.30, (ρL(s) + ρR(s))/2) より小さいと −0.1·min(4, ((m − r)/0.10)²)(乱しの区間の中は 0)",
+                "terminal": "衝突・停止・逆走・黒シート違反・周の距離不足・ゲートの外しは −10 で終了 + 止まりの見張り(r3 と同じ)",
+            },
+            "start_distribution": "modes.json recover.training.start_distribution のまま",
+            "shield_in_training": "使わない。検証・試験・記録はシールドあり(r4)",
+            "lock": "jf-heavy --mem 2G --lock rl -- nice -n 15(r3/rc4/run_chain_rc4.sh。表づくり → 表の固定 → この決まりの固定を待つ → 学習。チェックポイント・last.pt から続きから)",
+        },
+        "selection": {
+            "rule": "検証の組(シールドあり)で C1_r3・C2・C3・C4・C5_r4・C6_r4・C7・C8 を全部満たすチェックポイントのうち一番後のもの。無ければ満たす数が一番多いもの、"
+                    "同じなら C5_r4 の 4 つの最小が高いもの、それも同じなら C2 が高いもの(それも同じなら後のもの)",
+            "test_runs": "試験の組は選んだ 1 つにだけ 1 回使う。試験の結果を見て選び直さない",
+        },
+        "recording": {
+            "prefilter": "記録の前の予想 r3/rc4/predict_scenes_rc4.mjs(valid_episode_r3 かつ gate_miss_real 0)で外れた候補は次の候補に替える",
+            "post_record_check": "記録したブラウザのシーンそのもの(frames.jsonl の位置・速さ・sim のゲートの数え)で、止まり・進み・ゲートの外しを確かめ直し、外れたシーンは取り込まない"
+                                 "(確認 r3: Node で「有効・外しなし」と予想した 42 のうち 3 がブラウザで外しあり)。昇格の段の手当て r3/rc4/promote/",
+        },
+        "label_mask_fixes_for_promote": [
+            "(a) 正解のフレームの番号の差分(dataset_frame_index)の説明を「展開したシミュレーターのシーンの見分けは quality = 'snapshot' ではなく、操作がカメラのフレームと 1 対 1 であること"
+            "(実機の VEHICLE.npz も quality = 'snapshot'、100 Hz)」に直し、実機の形(quality = 'snapshot'・VEHICLE 100 Hz・カメラ 30 Hz)が差分の前後でビット単位で同じになる試験を足す",
+            "(b) scene_import.dataset_to_scenes が label_mask.unset_segments に書くのは、乱し(とその前の 10 フレーム)で外した観測の区間だけにする(データセットの card の label_mask.per_scene か、"
+            "強化学習の印 info.jf の l = 0 から作る)。ジャンルがこの Jetson に無いだけで 0 になった区間は書かない。試験 test_import_merges_scenes_with_mask_and_tags は一時フォルダーのジャンル表で閉じる",
+            "どちらも JetFormer の写しで pytest 一式(jf-heavy --mem 2500M --lock big)を通してから、昇格の段が本体に当てる",
+        ],
+        "publication": "合否にかかわらず候補の一式を experiments/…/r3/candidates/recover_r4/ に書き出す(bundle は昇格の段)。合格なら status accepted、不合格なら「不合格(参考)」",
+        "deviations": [
+            "新しい試験の組(r3 の試験の組は r3 の候補で使った)。RC-KICKR-R4・C8 を足した(きびしくする向き)。RC-U60-R4 の開始は開始のすき間 ≥ 3 cm(r3 の決まりの穴を塞ぐ。C6 のしきい値は同じ)",
+            "学び直しの種 33 は allowed_tuning.retry の外",
+            "表 v2 は、この決まりを書いている間に lock rl の下で作り始めた(作り方のコードの sha256 は files.code_sha256_at_freeze。表の sha256 は学習の前に固定)",
+        ],
+        "files": {
+            "code_dir": "experiments/20261013_sim_rl_modes/r3/rc4/",
+            "results_dir": "jetformer_reports/sim_rl_modes_20261013/r3/rc4/",
+            "notes": "jetformer_reports/sim_rl_modes_20261013/r3/train_recover_r4.md",
+            "sources": "experiments/…/r3/rc4/sources_sha256_recover_r4.txt(写した元の sha256)",
+            "code_sha256_at_freeze": {p: sha(EXP / p) for p in CODE if (EXP / p).exists()},
+        },
+    }
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--freeze", type=Path, default=None)
+    ap.add_argument("--shield-r4", default=None, help="SHIELD_R4 の値(JSON)。mode_runtime.mjs の SHIELD_R4 と同じ値を書く")
+    a = ap.parse_args()
+    if a.freeze and a.freeze.exists():
+        raise SystemExit(f"{a.freeze} はもうあります(固定したあとは書き直さない)")
+    d = protocol()
+    if a.shield_r4:
+        d["runtime"]["shield"]["shield_r4"] = json.loads(a.shield_r4)
+    body = json.dumps(d, ensure_ascii=False, indent=1) + "\n"
+    a.out.write_text(body)
+    h = hashlib.sha256(body.encode()).hexdigest()
+    print(h)
+    if a.freeze:
+        a.freeze.write_text(f"{h}  protocol_recover_r4.json\n")
+
+
+if __name__ == "__main__":
+    main()

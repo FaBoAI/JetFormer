@@ -1,0 +1,65 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "speed",
+ "name_ja": "強化学習モード(速さいろいろ)",
+ "short_ja": "最速の 50〜100% の速さの上限(5 段)で走る。遅い段でも柱・壁から余裕をもって通るよう学び直した(第 2 回)。記録のシーンは開始のすき間 12 cm 以上で、前もって走らせてすき間が 3 cm 未満・止まったままのものは替える",
+ "order": 5,
+ "priority": 2,
+ "course": "default",
+ "obs_wrapper": "cond97",
+ "runtime": {
+  "shield": false,
+  "perturbation": null,
+  "conditioning": {
+   "line": "const c0 = 0(R = 教師の線を目標)",
+   "c_v": "シーンごとに 1 つ(フレーム 0 の p に記録)"
+  },
+  "gate_index": "virtual"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "sequence": "Halton",
+   "prefilter": true,
+   "min_initial_clearance_m": 0.12
+  },
+  "per_scene_params": {
+   "c_v_plan_15": {
+    "1.0": 3,
+    "0.875": 3,
+    "0.75": 3,
+    "0.625": 3,
+    "0.5": 3
+   }
+  },
+  "prefilter_min_clearance_m": 0.03,
+  "prefilter_min_valid_laps": 1
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-speed",
+  "sim-speed"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "6f4d5e8d245f4f3e076c4a5db94c9da684b5bb0ba061b999d372ab6098898ac0",
+ "policy_source": "speed r2: train/speed/r2/main/policies/step_002015232.json(run speed、種 43、初期化 cond の 401 万 + 201.5 万ステップ。selection: train/speed/r2/selection.json、protocol_speed_r2.json 5550adcf…)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_speed_r2_sha256": "5550adcf00e4879dd9021151b87b77b7ffa381e19c528dc07a85d8858c5b1d62",
+ "round": "speed r2(train/speed/r2/、protocol_speed_r2.json)",
+ "overrides_from_modes_json": [
+  "protocol_speed_r2_sha256",
+  "recording",
+  "round",
+  "short_ja"
+ ]
+}

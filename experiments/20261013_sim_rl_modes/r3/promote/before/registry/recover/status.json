@@ -1,0 +1,21 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "recover",
+ "state": "not_accepted",
+ "label_ja": "不合格(参考)",
+ "failed": [
+  "C1_valid",
+  "C2_success",
+  "C4_events_mask",
+  "C5_kick",
+  "C6_unperturbed"
+ ],
+ "pending": [],
+ "from_training_status": {
+  "state": "not_accepted",
+  "label_ja": "不合格(参考)",
+  "updated_at": "2026-10-14T04:26:41"
+ },
+ "verdict_ja": "check_recover_r2.md: 新しい乱し 150 回で有効 51/150・成功 75%。合格の基準(90/100・95%)に届かない",
+ "updated_at": "2026-10-14T11:11:59"
+}

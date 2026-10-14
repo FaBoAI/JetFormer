@@ -1,0 +1,264 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T22:21:06.804Z",
+ "mode": "line",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/line/r2/main/policies/step_008011776.json",
+  "sha256": "1ae6be0793914094dbabfbdc325905ab8af01f12ea3bc7b2638b05c6bd0167ae",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 97
+ },
+ "judged": {
+  "L1_valid": {
+   "value": "59/60",
+   "pass": true
+  },
+  "L2_clearance": {
+   "value": 0.013284931651057888,
+   "pass": false
+  },
+  "L3_tracking": {
+   "value": {
+    "median": 0.0168,
+    "p95": 0.09008999999999996
+   },
+   "pass": true
+  },
+  "L4_distinct": {
+   "value": {
+    "left_right_mean": 0.330037164750958,
+    "inside_outside_mean": 0.15550919540229904,
+    "min_pair_max_1m_avg": 0.08250999999999999,
+    "bins": 522
+   },
+   "pairs": [
+    {
+     "a": "c-0.8",
+     "b": "c0",
+     "max_1m_avg": 0.47553499999999993
+    },
+    {
+     "a": "c-0.8",
+     "b": "c+0.8",
+     "max_1m_avg": 0.6081799999999997
+    },
+    {
+     "a": "c-0.8",
+     "b": "inside",
+     "max_1m_avg": 0.5690249999999999
+    },
+    {
+     "a": "c-0.8",
+     "b": "outside",
+     "max_1m_avg": 0.31129499999999993
+    },
+    {
+     "a": "c-0.8",
+     "b": "late_apex",
+     "max_1m_avg": 0.562445
+    },
+    {
+     "a": "c0",
+     "b": "c+0.8",
+     "max_1m_avg": 0.4746400000000001
+    },
+    {
+     "a": "c0",
+     "b": "inside",
+     "max_1m_avg": 0.16573999999999997
+    },
+    {
+     "a": "c0",
+     "b": "outside",
+     "max_1m_avg": 0.32774000000000003
+    },
+    {
+     "a": "c0",
+     "b": "late_apex",
+     "max_1m_avg": 0.16275
+    },
+    {
+     "a": "c+0.8",
+     "b": "inside",
+     "max_1m_avg": 0.45082000000000005
+    },
+    {
+     "a": "c+0.8",
+     "b": "outside",
+     "max_1m_avg": 0.488345
+    },
+    {
+     "a": "c+0.8",
+     "b": "late_apex",
+     "max_1m_avg": 0.43925000000000003
+    },
+    {
+     "a": "inside",
+     "b": "outside",
+     "max_1m_avg": 0.45473500000000006
+    },
+    {
+     "a": "inside",
+     "b": "late_apex",
+     "max_1m_avg": 0.08250999999999999
+    },
+    {
+     "a": "outside",
+     "b": "late_apex",
+     "max_1m_avg": 0.44747000000000015
+    }
+   ],
+   "pass": true,
+   "fam6_valid": true
+  },
+  "L5_vm3": {
+   "value": 0.09324181330286728,
+   "pass": true
+  },
+  "L6_lap": {
+   "value": 8.928660239433302,
+   "pass": true
+  }
+ },
+ "all_judged_pass": false,
+ "reported": {
+  "by_family": {
+   "const_left": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.016,
+    "lap1": 9.225419717358992,
+    "tracking_p95": 0.08030999999999994
+   },
+   "const_right": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0141,
+    "lap1": 9.239364337898266,
+    "tracking_p95": 0.1418
+   },
+   "const_center": {
+    "n": 4,
+    "valid": 4,
+    "tracking_median": 0.0122,
+    "lap1": 8.976597264842216,
+    "tracking_p95": 0.06468499999999999
+   },
+   "inside": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0184,
+    "lap1": 8.82442733451276,
+    "tracking_p95": 0.08432499999999996
+   },
+   "outside": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0175,
+    "lap1": 9.304122948268777,
+    "tracking_p95": 0.10989499999999976
+   },
+   "late_apex": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.018099999999999998,
+    "lap1": 8.777718208834905,
+    "tracking_p95": 0.08899499999999998
+   },
+   "early_apex": {
+    "n": 4,
+    "valid": 4,
+    "tracking_median": 0.0172,
+    "lap1": 8.881452915300823,
+    "tracking_p95": 0.0909
+   },
+   "random": {
+    "n": 12,
+    "valid": 11,
+    "tracking_median": 0.0197,
+    "lap1": 9.100520224395572,
+    "tracking_p95": 0.0835
+   }
+  },
+  "collided": [
+   {
+    "id": "P43",
+    "family": "random",
+    "frames": 303,
+    "gate": 32
+   }
+  ],
+  "below_5cm": [
+   {
+    "id": "P43",
+    "test": "LN-P60",
+    "family": "random",
+    "min_clearance": 0.0003430681655437312,
+    "t_s": 10.066666666666666,
+    "valid": false
+   },
+   {
+    "id": "P45",
+    "test": "LN-P60",
+    "family": "const_left",
+    "min_clearance": 0.013284931651057888,
+    "t_s": 1.9666666666666666,
+    "valid": true
+   }
+  ],
+  "start_1p5s_min_clearance": 0.07978981319205297,
+  "tracking_gt12": {
+   "frac": 0.023082062807507745,
+   "n": 380,
+   "share_in_S_zones": 0.9763157894736842,
+   "S_zones_s": [
+    [
+     2,
+     4.5
+    ],
+    [
+     8,
+     12.5
+    ]
+   ]
+  },
+  "protocol_line_r2_sha256": "82de57e2a66e846a99df01a270433220dd474b9f469d64fa9e19946f6c9e3c61",
+  "variation": {
+   "rows": 65,
+   "VM1_us": 170.17921580876825,
+   "VM2_us": {
+    "mean_abs_dev": 39.124215121630684,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.09403654882223667,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.09707934163095995,
+    "bins_used": 522
+   },
+   "VM7_cells": 1170,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 66,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_line_r2_sha256": "82de57e2a66e846a99df01a270433220dd474b9f469d64fa9e19946f6c9e3c61",
+ "set_spec": {
+  "name": "LN-P60-R2 + LN-FAM6",
+  "halton_from": 26001,
+  "count": 60,
+  "seed_base": 904500,
+  "episode": "連続 20 秒(600 フレーム)、元の sim-core.js",
+  "rule": "Halton 26,001 番から(protocol seeds.halton の試験の範囲 20,001〜29,999 の中。line r1 の 20,001〜20,062・speed r2 の 25,001〜 と重ならない)、開始のすき間 ≥ 0.12 m を満たさない番号は飛ばして 60 個。回 i の種 = 904500 + i。経路の形は family_plan_15 の順(const_left 2・const_right 2・const_center 1・inside 2・outside 2・late_apex 2・early_apex 1・random 3)を 4 回、強さ・c0・random の種・c_v は createRng(mix32(種, 0x11e)) から(r1 と同じ作り方)。+ LN-FAM6(protocol.json のまま)"
+ },
+ "options": {
+  "shieldC": null,
+  "classes": null,
+  "speedCaps": false,
+  "protocol": "line_r2"
+ }
+}

@@ -10,6 +10,11 @@
     python integrate/publish_registry.py [--registry /home/jetson/jetformer/data/sim_rl/modes] [--static /home/jetson/jetformer/jetformer/sim/static/rl]
            [--browser-fid integrate/browser_fid.json] [--dry-run]
 
+2026-10-15 昇格の段(r3/promote): no_wall・recover・line を第 4 回(r4・r4b)の一式(bundle/<key>/、status accepted・確認 r4 合格)に替えた。
+  VERDICTS・カードは r4 の試験と確認 r4 の数字。line は bundle/line/ から出す(選べる)。bundle の status.json の round・judged_by・test・check・caveats_ja・
+  runtime を登録簿の status.json に写す。登録簿の eval.json は bundle の eval.json から回ごとの行(tests・full_result)を除いたもの(line は 0.85 MB あり、
+  API が毎回読むため)。除く前の sha256 を eval_full_sha256 に残す。前の版の写しは r3/promote/before/publish_registry.py。
+
 --browser-fid: 8080 のブラウザで F-ID(Node の操作とブラウザの操作の一致)を確かめた結果。最速の F4(ブラウザの同一性)をこれで判定する。
 """
 from __future__ import annotations
@@ -75,15 +80,17 @@ def sync_static(static: Path, dry: bool) -> dict:
 # 確認の段(独立の再現・新しい開始)の判定。学習の段の status.json より優先する(確認で反証されたものは「不合格(参考)」)
 VERDICTS = {
     'fastest': {'source': '学習しない(ベストラップの作業の確認 r1・r3 で本物と判定された main 種 1・1,000 万ステップ 7c43cb53…)'},
+    # 2026-10-15 昇格の段: no_wall・recover・line は第 4 回(r4・r4b)。学習の段の試験(1 回だけ)で全部合格し、確認 r4(学習・評価のコードを使わない反証)でも合格
     'no_wall': {
-        'state': 'not_accepted',
-        'why': 'check_no_wall_r2.md: 凍結した試験 340 回は全部合格だが、試験した物理の範囲の中の角(摩擦円・μ×0.85・ブレーキ 0.7・舵の速さ 1.8・前進ゲイン 1.04)'
-               'では 33 回中 30 回ぶつかる。標準の物理の新しい開始 600 回では最小すき間 7.0 cm(N2 の 8 cm は試験の組の引きがよかった)',
-        'failed_add': ['check_r2_corner_collisions', 'check_r2_N2_fresh'],
+        'state': 'accepted',
+        'why': 'check_no_wall_r4.md: 合格。r4 の試験 3,038 回(衝突 0・標準の物理の最小 8.10 cm・物理のずれ 8.16 cm)を作り直して一致し、新しい組 6,429 回'
+               '(範囲の中・シールドあり 5,749 回)でも衝突 0・標準の物理の最小 8.10 cm・物理のずれの最小 7.03 cm',
     },
-    'recover': {'state': 'not_accepted', 'why': 'check_recover_r2.md: 新しい乱し 150 回で有効 51/150・成功 75%。合格の基準(90/100・95%)に届かない'},
+    'recover': {'state': 'accepted', 'why': 'check_recover_r4.md: 合格。r4 の試験(乱しつき 100 回で 99 回走り切り・立て直しの成功 0.993)を作り直して一致し、'
+                                            '新しい開始 200 回でも有効 200/200・成功 0.977・ゲートの外し 0、Firefox の閉ループ 100 回で有効 100/100'},
     'speed': {'state': 'accepted', 'why': 'check_speed_r2.md: 凍結した試験を独立に再現して全部一致、新しい開始 1,500 回で衝突 0'},
-    'line': {'state': 'not_published', 'why': 'check_line_r2.md: L2(最小すき間 ≥ 3 cm)が 1.33 cm で不合格(優先 2 なので出さない)'},
+    'line': {'state': 'accepted', 'why': 'check_line_r4.md: 合格(反証できなかった)。r4b の試験 542 回(衝突 0・止まり 0・最小 4.13 cm)を作り直して同じ値、'
+                                         '新しい組 1,717 回 + 攻めの組 360 回(シールドあり)でも衝突 0・最小 4.0 cm'},
     'obstacle': {'state': 'not_published', 'why': 'check_obstacle_r2.md: O1 66/100・O2 0.03 cm で不合格(優先 3 なので出さない)'},
 }
 
@@ -107,44 +114,60 @@ def card_fastest(ev, browser):
 
 
 def card_no_wall(ev, browser):
-    j = ev['judged']
+    # 2026-10-15 昇格の段: r4(protocol_no_wall_r4.json の試験 + 確認 r4)
+    j, rep = ev['judged'], ev['reported']
+    ui = rep['ui_numbers']
     return {
-        'headline_ja': '試験 %s 回で衝突 0。新しい開始 600 回(標準の物理)の最小すき間 7.0 cm。停止から 1 周 %.2f 秒' % (j['N1_no_collision']['runs'], j['N4_lap_from_stop']['value']),
-        'lap_from_stop_s': j['N4_lap_from_stop']['value'], 'flying_lap_s': None,
-        'tests': {'runs': j['N1_no_collision']['runs'], 'collisions': 0, 'text_ja': '%d 回の試験(標準の物理 + 物理のずれ)で衝突 0' % j['N1_no_collision']['runs']},
-        'min_clearance_cm': {'value': 7.0, 'text_ja': '新しい開始 600 回(標準の物理)の最小。試験の組では 11.7 cm(標準)・7.0 cm(物理のずれ)'},
-        'main': [{'label_ja': '安全シールドの作動', 'value_ja': '標準の物理 0%(物理をずらした R200 で 18% のフレーム。ほとんど速さの見張り)'},
-                 {'label_ja': '走る速さ', 'value_ja': '平均 2.7 m/s(最速 3.3 m/s)'}],
+        'headline_ja': '試験 %d 回で衝突 0・最小すき間 %.1f cm(標準の物理。シールドのしきい値)・%.1f cm(物理のずれ)。停止から 1 周 %.2f 秒'
+                       % (ui['runs'], 100 * ui['min_clearance_nominal_m'], 100 * ui['min_clearance_randomised_m'], j['N4']['value']),
+        'lap_from_stop_s': j['N4']['value'], 'flying_lap_s': None,
+        'tests': {'runs': ui['runs'], 'collisions': 0, 'text_ja': '%d 回の試験(標準の物理 %d + 物理のずれ)で衝突 0。確認 r4 の新しい組 5,749 回でも衝突 0'
+                  % (ui['runs'], ui['min_clearance_nominal_runs'])},
+        'min_clearance_cm': {'value': round(100 * ui['min_clearance_nominal_m'], 1),
+                             'text_ja': '標準の物理(記録の開始から一様 1,000 回も同じ)。8.1 cm はシールドのしきい値で、方策だけでは 4.5 cm まで寄る'},
+        'main': [{'label_ja': '物理のずれの最小すき間', 'value_ja': '試験の組 %.1f cm・確認 r4 の隅のまわり 7.0 cm' % (100 * ui['min_clearance_randomised_m'])},
+                 {'label_ja': '安全シールドの作動', 'value_ja': '%.2f%% のフレーム(回ごとの最大 %.1f%%)。柱の前で動けないときは少し下がってから抜ける'
+                  % (100 * j['N7_r4']['value']['fraction'], 100 * j['N7_r4']['value']['run_max'])},
+                 {'label_ja': '最速との違い', 'value_ja': '線の違い 平均 %.0f cm・速さ %.2f m/s 遅い・最速は 8 cm 未満に寄る回が 150 回中 %d 回(このモードは 0)'
+                  % (rep['fastest_compare']['line_diff_mean_cm'], -rep['fastest_compare']['speed_diff_mean_mps'], rep['fastest_compare']['fastest_below_8cm'])}],
         'checks': [{'id': k, 'label_ja': lab, 'pass': j[k]['pass']} for k, lab in (
-            ('N1_no_collision', '試験 340 回で衝突 0'), ('N2_clearance_nominal', '標準の物理ですき間 ≥ 8 cm(試験の組)'),
-            ('N3_clearance_randomised', '物理のずれですき間 ≥ 5 cm'), ('N4_lap_from_stop', '停止から 1 周 ≤ 12 秒'),
-            ('N5_completion', '完走'), ('N6_friction', '無理のない加減速'), ('N7_shield', 'シールドの作動 ≤ 5%'))]
-            + [{'id': 'check_r2', 'label_ja': '確認(新しい開始・物理の範囲の端)', 'pass': False}],
-        'notes_ja': ['不合格(参考): 確認で、物理の範囲の端(摩擦円・μ×0.85・弱いブレーキ・遅い舵などの組み合わせ)ではぶつかることが分かった。'
-                     'シミュレーターの標準の物理(記録で使う条件)では新しい開始 600 回でも衝突 0',
-                     '「絶対」はシミュレーターの中の試験の結果で、実車の保証ではない。安全シールドは外せない(方策だけでは標準の物理でも 600 回に 1 回ぶつかる)',
-                     '記録のシーンは前もって Node で走らせ、すき間 8 cm 未満・止まったまま・ゲートの外しのものを替えてある'],
+            ('N1_r4', '試験 3,038 回で衝突 0'), ('N2_r4', '標準の物理ですき間 ≥ 8 cm(記録の開始から一様 1,000 回を含む)'),
+            ('N3_r4', '物理のずれですき間 ≥ 5 cm'), ('N4', '停止から 1 周 ≤ 12 秒'),
+            ('N5_r4', '完走(止まり・有効な周なしは不合格)'), ('N6', '無理のない加減速'), ('N7_r4', 'シールドの作動 ≤ 5%'))]
+            + [{'id': 'check_r4', 'label_ja': '確認 r4(学習・評価のコードを使わない作り直し 6,429 回)', 'pass': True}],
+        'notes_ja': ['「絶対」はシミュレーターの中の試験の結果で、実車の保証ではない。安全シールド v5 は外せない(8.1 cm は方策の余裕ではなく、シールドの仕組みで守っている)',
+                     '記録の開始の範囲(左右 ±0.2 m・向き ±15°・開始のすき間 12 cm 以上)の外から走らせると、止まったまま動かないことがある(確認 r4: 200 回中 6 回、衝突 0)',
+                     '物理のずれの隅(舵の速さ 0.8 で柱へ向いた開始など)では 7.0 cm まで寄り、まれに止まる(記録は標準の物理だけ)',
+                     '記録のシーンは前もって Node で走らせ、すき間 8 cm 未満・止まり・有効な周なし・シールドの作動 25% 超・後ろへ動いたものを替えてある',
+                     '最速と比べて遅く、壁から離れた 1 本の線に集まる(モードの中の線のばらつきは小さい)'],
     }
 
 
 def card_recover(ev, browser):
+    # 2026-10-15 昇格の段: r4(protocol_recover_r4.json の試験 + 確認 r4)
     j = ev['judged']
-    c3 = j['C3_recovery_time']['value']
+    c3, c4, c5, c6 = j['C3']['value'], j['C4']['value'], j['C5_r4']['value'], j['C6_r4']['value']
     return {
-        'headline_ja': '乱した 100 回のうち %s 回が 20 秒を走り切った(合格は 90 回)。立て直しの成功 %d%%・立て直しの時間 中央値 %.2f 秒'
-                       % (j['C1_valid']['value'].split('/')[0], round(100 * j['C2_success']['value']), c3['median']),
-        'lap_from_stop_s': j['C6_unperturbed']['value']['lap_from_stop'], 'flying_lap_s': None,
-        'tests': {'runs': 100, 'collisions': 62, 'text_ja': '乱しつきの 100 回のうち 62 回で衝突(乱しのあと)'},
-        'min_clearance_cm': {'value': round(100 * j['C6_unperturbed']['value']['rec60_min_clearance'], 1), 'text_ja': '乱しなし REC60 の最小すき間'},
-        'main': [{'label_ja': '立て直しの成功', 'value_ja': '%d%%(%d 回の乱し)' % (round(100 * j['C2_success']['value']), j['C2_success']['events'])},
-                 {'label_ja': '立て直しの時間', 'value_ja': '中央値 %.2f 秒・90%% 点 %.2f 秒' % (c3['median'], c3['p90'])},
-                 {'label_ja': '乱し', 'value_ja': '1 シーン %.1f 回・学習から外すフレーム %d%%' % (j['C4_events_mask']['value']['events_per_episode'], round(100 * j['C4_events_mask']['value']['masked_fraction']))}],
+        'headline_ja': '乱した 100 回のうち %s 回が 20 秒を走り切った。立て直しの成功 %d%%(%d 回の乱し)・立て直しの時間 90%% 点 %.2f 秒(中央値 %.1f 秒 = 半分以上の乱しは線の帯から出ない)'
+                       % (j['C1_r3']['value'].split('/')[0], round(100 * j['C2']['value']), j['C2']['events'], c3['p90'], c3['median']),
+        'lap_from_stop_s': c6['lap_from_stop'], 'flying_lap_s': None,
+        'tests': {'runs': 100, 'collisions': 0, 'text_ja': '乱しつきの 100 回で衝突 0(走り切り 99・止まり 1)。確認 r4 の新しい開始 200 回で有効 200/200・Firefox の閉ループ 100/100'},
+        'min_clearance_cm': {'value': round(100 * c6['min_clearance'], 1), 'text_ja': '乱しなし(開始のすき間 3 cm 以上の 60 回)の最小。乱しのフレーム以外のシールド 3.5 cm でそろう'},
+        'main': [{'label_ja': '立て直しの成功', 'value_ja': '%d%%(%d 回の乱し)。確認 r4 の新しい開始では 98%%' % (round(100 * j['C2']['value']), j['C2']['events'])},
+                 {'label_ja': '押されたあとの生き残り', 'value_ja': '時刻の格子 %s・%s、新しい開始 %s・%s' % (c5['grid_yaw'], c5['grid_lateral'], c5['random_yaw'], c5['random_lateral'])},
+                 {'label_ja': '乱し', 'value_ja': '1 シーン %.1f 回・学習から外すフレーム %d%%・ゲートの外し %s' % (c4['events_per_episode'], round(100 * c4['masked_fraction']),
+                                                                                         j['C8']['value']['perturbed_valid_with_miss'])}],
         'checks': [{'id': k, 'label_ja': lab, 'pass': j[k]['pass']} for k, lab in (
-            ('C1_valid', '乱しつき 100 回で 90 回以上走り切る'), ('C2_success', '立て直しの成功 95% 以上'), ('C3_recovery_time', '立て直しの時間'),
-            ('C4_events_mask', '乱しの数・外す割合'), ('C5_kick', '押されたあとの生き残り'), ('C6_unperturbed', '乱しなしの走り'))],
-        'notes_ja': ['不合格(参考): 乱しのあとにぶつかる開始が多い。記録のシーンは前もって Node で走らせ、20 秒を走り切るもの(候補の約 3 割)だけを使う',
-                     '黒シートの出口での右への舵のパルスはほとんど戻れない。走り切ったシーンの約 4 割にシミュレーターのゲートの外しがある',
-                     '乱した操作は記録に印(info.jf.l = 0)が付き、JetFormer の取り込みで学習から外す(シーンタブでジャンルを付け直しても外したまま)'],
+            ('C1_r3', '乱しつき 100 回で 90 回以上走り切る(止まり・進みの不足も不合格)'), ('C2', '立て直しの成功 95% 以上'), ('C3', '立て直しの時間'),
+            ('C4', '乱しの数・外す割合'), ('C5_r4', '押されたあとの生き残り(4 つとも 90% 以上)'), ('C6_r4', '乱しなしの走り(停止から 1 周 ≤ 9 秒・すき間 ≥ 3 cm)'),
+            ('C7', '乱しの強さ・種類の割合'), ('C8', 'ゲートの外し'))]
+            + [{'id': 'check_r4', 'label_ja': '確認 r4(学習・評価のコードを使わない作り直し 4,060 回 + Firefox 100 回)', 'pass': True}],
+        'notes_ja': ['乱しは「立て直せる組」だけ(乱し v2・表 v2)。乱した操作は記録に印(info.jf.l = 0)が付き、JetFormer の取り込みで学習から外す'
+                     '(シーンタブでジャンルを付け直しても外したまま)',
+                     '開始のすき間が 5 cm より小さい開始と、ゲート 7 の右寄りの開始では、車が止まったまま動かないことがある(記録の前の確かめで替わるので記録には入らない)',
+                     '余裕は小さい: 停止から 1 周 %.2f 秒(基準 9.0 秒)・乱しなしの最小すき間 %.1f cm(基準 3 cm)' % (c6['lap_from_stop'], 100 * c6['min_clearance']),
+                     '乱しの強さを「強」に固定すると立て直しの成功は 96%(線の帯から出た出来事だけでは 94%)。既定の自動では 98%',
+                     '前の版(r1)で記録したデータセット sim-rl-recover_20261014-1025・-1125 は古い方策で、ゲートを外したシーンがある(2/3・6/15)'],
     }
 
 
@@ -171,22 +194,32 @@ def card_speed(ev, browser):
 CHECK_LABELS_JA = {
     'L1_valid': '60 回のうち 57 回以上走り切る', 'L2_clearance': 'すき間 ≥ 3 cm', 'L3_tracking': '線の追従(中央値 ≤ 5 cm・95% 点 ≤ 12 cm)',
     'L4_distinct': '線の形を描き分けられる(左右・イン/アウト)', 'L5_vm3': '線のばらつき ≥ 8 cm', 'L6_lap': '真ん中の線で 1 周目 ≤ 10 秒',
+    'L1_r4': '組ごとに 95% 以上走り切る(大きく横を向いた開始・範囲の端・角を含む)', 'L2_r4': 'すき間 ≥ 3 cm(全部の組)',
+    'L7_shield': 'シールドの作動 ≤ 2%', 'L8_no_collision': '衝突 0', 'L9_no_stall': '止まり 0', 'L10_no_reverse_P_FAM6': '後ろへ動かない',
+    'L11_escape_r4b': 'シールドの抜け出し ≤ 1%',
     'O1_valid': '障害物のある 100 回のうち 95 回以上走り切る', 'O2_clearance': 'すき間 ≥ 3 cm(足した障害物も)',
     'O3_lap1_median': '1 周目の中央値 ≤ 10.5 秒', 'O4_empty': '障害物なしで停止から 1 周 ≤ 9 秒'}
 
 
 def card_line(ev, browser):
-    j = ev['judged']
+    # 2026-10-15 昇格の段: r4b(protocol_line_r4b.json の試験 + 確認 r4)。選べる
+    j, rep = ev['judged'], ev['reported']
+    l3, l4 = j['L3_tracking']['value'], j['L4_distinct']['value']
     return {
-        'headline_ja': '試験で 1 回だけ柱から %.1f cm まで寄った(合格は 3 cm 以上)ので出していません' % (100 * j['L2_clearance']['value']),
+        'headline_ja': '試験 542 回で衝突 0・止まり 0・最小すき間 %.1f cm。左右の線の差 %.0f cm・イン/アウト %.0f cm・線のばらつき %.1f cm'
+                       % (100 * j['L2_r4']['value'], 100 * l4['left_right_mean'], 100 * l4['inside_outside_mean'], 100 * j['L5_vm3']['value']),
         'lap_from_stop_s': j['L6_lap']['value'], 'flying_lap_s': None,
-        'tests': {'runs': 66, 'collisions': 1, 'text_ja': '66 回の試験で 1 回衝突'},
-        'min_clearance_cm': {'value': round(100 * j['L2_clearance']['value'], 2), 'text_ja': '試験の組の最小すき間'},
-        'main': [{'label_ja': '線の追従', 'value_ja': '中央値 %.1f cm・95%% 点 %.1f cm' % (100 * j['L3_tracking']['value']['median'], 100 * j['L3_tracking']['value']['p95'])},
-                 {'label_ja': '線の違い', 'value_ja': '左右 %.0f cm・イン/アウト %.0f cm' % (100 * j['L4_distinct']['value']['left_right_mean'], 100 * j['L4_distinct']['value']['inside_outside_mean'])}],
-        'checks': [{'id': k, 'label_ja': CHECK_LABELS_JA.get(k, k), 'pass': v['pass']} for k, v in j.items()],
-        'notes_ja': ['経路(左寄り・右寄り・イン・アウトなど)は描き分けられているが、参照の線から大きく向きがずれた開始(全体の約 7%)で危ないことがある。'
-                     '優先 2 のモードで不合格なので、選べるようにしていない(次の学習で直す)'],
+        'tests': {'runs': 542, 'collisions': 0, 'text_ja': '542 回の試験(シールドあり)で衝突 0。確認 r4 の新しい組 1,717 回 + 攻めの組 360 回でも衝突 0'},
+        'min_clearance_cm': {'value': round(100 * j['L2_r4']['value'], 2), 'text_ja': '試験の組の最小(走行中のシールドが 4 cm を守る)'},
+        'main': [{'label_ja': '線の追従', 'value_ja': '中央値 %.1f cm・95%% 点 %.1f cm' % (100 * l3['median'], 100 * l3['p95'])},
+                 {'label_ja': '線の違い', 'value_ja': '左右 %.0f cm・イン/アウト %.0f cm(最速との線の差 平均 16 cm)' % (100 * l4['left_right_mean'], 100 * l4['inside_outside_mean'])},
+                 {'label_ja': 'シールドの作動', 'value_ja': '%.2f%% のフレーム' % (100 * j['L7_shield']['value']['P_fraction'])}],
+        'checks': [{'id': k, 'label_ja': CHECK_LABELS_JA.get(k, k), 'pass': v['pass']} for k, v in j.items()]
+            + [{'id': 'check_r4', 'label_ja': '確認 r4(学習・評価のコードを使わない作り直し 542 回 + 新しい組 2,077 回)', 'pass': True}],
+        'notes_ja': ['線の形(左寄り・右寄り・中央・イン・アウト・レイト/アーリーエイペックス・ランダム)はシーンの種から決まる',
+                     '走行中は壁・柱から 4 cm を守るシールド v5b つき。方策だけでは角の一部(ゲート 32 の左寄りの端など)でまだ崩れる(確認 r4: シールドなしの攻めの組で 23/360 衝突、シールドありでは 0)',
+                     '右寄り・アウトの線は追従の 95% 点が 15〜18 cm(全体は 9 cm)。ゲート 11 の開始では黒シートの横断が数えられないことがある(記録の前の確かめで替える)',
+                     '記録のシーンは前もって Node で走らせ、すき間 3 cm 未満・止まり・有効な周なし・シールドの作動 10% 超・後ろへ動いたものを替えてある'],
     }
 
 
@@ -206,7 +239,7 @@ def card_obstacle(ev, browser):
 CARDS = {'fastest': card_fastest, 'no_wall': card_no_wall, 'recover': card_recover, 'speed': card_speed, 'line': card_line, 'obstacle': card_obstacle}
 SOURCES = {
     'fastest': EXP / 'bundle/fastest', 'no_wall': EXP / 'bundle/no_wall', 'recover': EXP / 'bundle/recover',
-    'speed': REPORTS / 'train/speed/r2/export', 'line': EXP / 'candidates/line_r2', 'obstacle': EXP / 'candidates/obstacle',
+    'speed': REPORTS / 'train/speed/r2/export', 'line': EXP / 'bundle/line', 'obstacle': EXP / 'candidates/obstacle',
 }
 
 
@@ -232,7 +265,18 @@ def build_mode(key: str, browser: dict | None) -> dict:
     status = {'schema': 'jf-sim-rl-mode-status/v1', 'key': key, 'state': state, 'label_ja': label, 'failed': failed, 'pending': pending,
               'from_training_status': {k: st0.get(k) for k in ('state', 'label_ja', 'updated_at')}, 'verdict_ja': card['verdict_ja'],
               'updated_at': datetime.now().isoformat(timespec='seconds')}
-    files = {'mode.json': mode, 'eval.json': ev, 'status.json': status, 'card.json': card}
+    # 2026-10-15 昇格の段: bundle の status.json の r4 の中身(試験・確認・注意・走行中の仕組み)を写す
+    for k in ('round', 'judged_by', 'test', 'check', 'caveats_ja', 'runtime', 'replaces'):
+        if k in st0:
+            status[k] = st0[k]
+    if st0.get('caveats_ja'):
+        card['caveats_ja'] = st0['caveats_ja']
+    # 登録簿の eval.json は回ごとの行を除く(API が毎回読む)。除く前の sha256 を残す
+    ev_reg = ev
+    if any(k in ev for k in ('tests', 'full_result')):
+        ev_reg = {k: v for k, v in ev.items() if k not in ('tests', 'full_result')}
+        ev_reg['eval_full'] = {'path': str(src / 'eval.json'), 'sha256': sha256(src / 'eval.json'), 'removed_keys': [k for k in ('tests', 'full_result') if k in ev]}
+    files = {'mode.json': mode, 'eval.json': ev_reg, 'status.json': status, 'card.json': card}
     out = {'key': key, 'state': state, 'files': files, 'policy': None, 'pool': None}
     if state != 'not_published':
         pol = src / 'policy.json'

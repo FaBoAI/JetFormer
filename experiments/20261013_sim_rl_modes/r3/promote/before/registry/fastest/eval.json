@@ -1,0 +1,54 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T13:41:25.895Z",
+ "mode": "fastest",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/best/main/policy.json",
+  "sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+  "schema": "rl-bestlap-policy/v1",
+  "obs_dim": 79
+ },
+ "judged": {
+  "F2_lap": {
+   "value": 8.091953367107205,
+   "reference": 8.091953367107205,
+   "pass": true,
+   "note": "7c43cb53… の値(ベストラップの確認 r1)。別の方策なら、その作業の報告の値と比べる"
+  },
+  "F3_rec60": {
+   "value": "60/60",
+   "pass": true
+  },
+  "F4_identity": {
+   "pass": null,
+   "note": "ブラウザ(8080)の確認で判定する。--fid で Node 側の列を作る"
+  }
+ },
+ "all_judged_pass": true,
+ "reported": {
+  "flying_lap": 7.656318984241537,
+  "rec60_min_clearance": 0.05688264947803032,
+  "variation": {
+   "rows": 60,
+   "VM1_us": 40.40832081007761,
+   "VM2_us": {
+    "mean_abs_dev": 0.03441696924223056,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.008050955300127711,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.017881293103448586,
+    "bins_used": 522
+   },
+   "VM7_cells": 487,
+   "note": "VM2 は舵の指令 [rad] の平均 |差|(PWM ではない)。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 62,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

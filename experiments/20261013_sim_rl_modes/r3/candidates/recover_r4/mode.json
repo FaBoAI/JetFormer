@@ -1,0 +1,107 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "recover",
+ "name_ja": "強化学習モード(離脱復活)",
+ "short_ja": "走っている途中で、わざと線を外したり舵・アクセルを乱したりして、そこからコースへ戻る走りを集める。乱した操作は学習に使わない",
+ "order": 3,
+ "priority": 1,
+ "course": "default",
+ "obs_wrapper": "base79v",
+ "runtime": {
+  "shield": true,
+  "shield_params": {
+   "c_nominal": 0.035,
+   "c_pessimistic": -1,
+   "governor": {
+    "enabled": false
+   },
+   "identify": {
+    "enabled": false
+   },
+   "worst": {
+    "enabled": false
+   },
+   "unstick": {
+    "enabled": true,
+    "after": 15,
+    "speeds": [
+     0.5,
+     1.0
+    ],
+    "c": 0.03,
+    "hold": 90,
+    "exit_margin": 0.01
+   },
+   "H": 24,
+   "keep_nominal": true,
+   "note": "r3 の値 + すくみをほどく(下調べ: 開始のすき間 4.0・4.6 cm の止まり 2 つが直り、最小すき間 3.02・3.13 cm。ふつうの開始 24 回は全部同じ)"
+  },
+  "shield_skip_perturb": true,
+  "perturbation": "jf-perturb-record/v2",
+  "perturbation_table": "recoverable_table_v2",
+  "perturbation_table_sha256": "8735365cf6bcd6f02ebe66f56fe43cfa8829c858569458f68ffb78a8e9dc433f",
+  "perturbation_min_rate": 0.95,
+  "conditioning": null,
+  "gate_index": "base79v"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "sequence": "Halton",
+   "prefilter": true
+  },
+  "per_scene_params": {
+   "perturb_class": "auto(出来事ごとに 弱・中・強)"
+  },
+  "prefilter": true,
+  "prefilter_required_ja": "記録の前に、プランの全シーンを Node(元の sim-core.js・r4 の mode_runtime.mjs)で走らせ(promote/../predict_scenes_rc4.mjs と同じ決まり)、valid_episode_r3 でない開始・本当のゲートの外しのある開始は次の候補に替える",
+  "expected_completion_rate": null,
+  "candidates_for_15_scenes": null,
+  "candidates_note_ja": "r4 の値は train_recover_r4.md(試験の組・新しい開始 150 回)",
+  "post_record_check_ja": "記録したブラウザのシーンは、取り込む前に promote/check_recorded_scenes_rc4.mjs で止まり・進み・ゲートの外しを確かめ直し、外れたものは取り込まない(ブラウザと Node は閉ループで分かれるため)"
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-recover",
+  "sim-recover"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "68e321e40309e6fa0d8c05cc3419ca8ef8a1d2c3191aeb91411b3a1cd93990ef",
+ "policy_source": "離脱復活 r4(2026-10-14): PPO・初期化 r3 の 5,013,504 ステップ(8d686076…)・種 33・乱し v2(立て直せる表 v2: ゲートを外さない条件つき)・スタートのゲートの区間のキックと右の余地の壁・ゲートの外しで終わる。検証の組で選んだ 5439488 ステップ。試験の組 RC-P100-R4 で有効 99/100・出来事の成功 0.993",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "dataset_card": {
+  "schema": "jf-sim-rl-dataset-card-notes/v1",
+  "notes_ja": [
+   "乱しは「立て直せる組」だけ(乱し v2・表 v2): 4 つの参照の走り × 8 開始で作った表で、その位置・速さで方策を使わない操縦か方策で 95% 以上、ゲートを外さずに立て直せた組だけを使う。頼んだ組が使えなければ 逆の向き → 同じ強さのわざと外す → 同じ強さのブレーキ → 1 つ弱く の順で替える",
+   "替えた出来事の割合 0.6764705882352942(試験の組)。強さ・種類の割合は eval.json の C7",
+   "乱しのフレーム以外にすき間シールド(3.5 cm、すくみをほどくあり)。シールドが替えた操作は学習に使う(sh = 1)",
+   "乱した操作(l = 0)は取り込みで学習から外す(外す範囲 [ps − 10, pe − 1])"
+  ]
+ },
+ "import_requirements": {
+  "label_mask": "required",
+  "fail_closed": true,
+  "rule_ja": "info.jf.l = 0 の操作を正解(k+1〜k+10)に含む観測 k を future_valid = False・mode = 0。jf・jf.l の無い行と frames.jsonl に無いフレームも学習しないものとして外す",
+  "implemented_in": "jetformer/sim/label_mask.py(jetformer/dataset_import.py の import_archive から呼ぶ。2026-10-14 recover r2)"
+ },
+ "overrides_from_modes_json": [
+  "dataset_card",
+  "import_requirements",
+  "recording",
+  "runtime"
+ ],
+ "round": "r4",
+ "status_label_ja": "合格",
+ "protocol_recover_r4_sha256": "1b6bd8ad32bf7010271864b94cbf3a4590bddca9aaed2bfe9c462302e7468172",
+ "ui_note_ja": "開始のすき間が 3.5 cm より小さい開始(壁を向いた開始)では、どの候補もシールドの 3.5 cm を守れず、車は止まったまま動かないことがある。記録の前の確かめ(valid_episode_r3)でその開始は次の候補に替わるので記録には入らないが、ブラウザで手で走らせると 20 秒止まったままに見える(画面の説明に書く)"
+}

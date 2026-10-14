@@ -24,6 +24,15 @@
   const rawFetch = (...a) => window.fetch(...a);
   const ui = {};
   const PH = {drive: '走行', perturb: '乱し中', shield: 'シールド作動'};
+  // 経路いろいろの線の形の呼び名(2026-10-15 昇格の段。c0 > 0 が左寄り)
+  const LINE_NAME = {inside: 'イン', outside: 'アウト', late_apex: 'レイトエイペックス', early_apex: 'アーリーエイペックス', random: 'ランダム'};
+  function lineName(l) {
+    if (!l) return '';
+    if (l.family === 'const') return (l.c0 > .5 ? '左寄り' : l.c0 < -.5 ? '右寄り' : '中央') + '(c0 ' + (Math.round(l.c0 * 100) / 100) + ')';
+    return LINE_NAME[l.family] || l.family;
+  }
+  // シールドがあるモード(mode.json の runtime.shield。登録簿が無いときは no_wall だけ)
+  function hasShield(key) { const m = RL.modes?.[key]; return m?.runtime ? !!m.runtime.shield : key === 'no_wall'; }
   const KEEP = new Set(['name', 'dataset-split', 'seed', 'start-gate', 'spawn-offset', 'spawn-yaw', 'scenario', 'execution-speed', 'dataset-mode']);
 
   async function getJSON(url, opt) {
@@ -62,7 +71,7 @@
       if (!w || !Array.isArray(w.layers) || !Number.isInteger(w.obs_dim)) throw new Error('方策のファイルの形が違います');
       RL.weights[key] = w;
     }
-    RL.modes[key] = {name: m.name, policy_sha256: m.policy_sha256, planned_time_s: m.planned_time_s ?? null, state: m.state};
+    RL.modes[key] = {name: m.name, policy_sha256: m.policy_sha256, planned_time_s: m.planned_time_s ?? null, state: m.state, runtime: m.runtime ?? null};   // line r4: mode.json の runtime(シールドの切り替え)
     return m;
   }
 
@@ -140,6 +149,8 @@
     ui.info.appendChild(head);
     const c = m.card || {};
     for (const line of [c.headline_ja, ...(c.notes_ja || []).slice(0, 2)]) if (line) ui.info.appendChild(el('div', 'jf-rl-muted', line));
+    // 2026-10-15 昇格の段: 手で走らせるときの注意(mode.json の ui_note_ja。止まったまま動かない開始など)
+    if (m.ui_note) ui.info.appendChild(el('div', 'jf-rl-muted jf-rl-note', '注意: ' + m.ui_note));
   }
 
   function renderOptions() {
@@ -174,7 +185,8 @@
     if (!v || !RL.mode || RL.mode === 'rc' || v.mode !== RL.mode) { ui.live.textContent = ''; return; }
     const parts = ['フレーム ' + v.frame, PH[v.ph] || v.ph];
     if (v.cl_mm != null) parts.push('すき間 ' + (v.cl_mm / 10).toFixed(1) + ' cm(最小 ' + (v.min_cl_mm / 10).toFixed(1) + ' cm)');
-    if (RL.mode === 'no_wall') parts.push('シールド ' + v.shield_frames + ' フレーム');
+    if (hasShield(RL.mode)) parts.push('シールド ' + v.shield_frames + ' フレーム');
+    if (RL.mode === 'line' && v.params?.line) parts.push('線 ' + lineName(v.params.line));
     if (RL.mode === 'recover') parts.push('乱し ' + v.events + ' 回・学習から外す操作 ' + v.perturb_frames + ' フレーム');
     if (v.params?.c_v != null) parts.push('速さの倍率 ' + Math.round(v.params.c_v * 1000) / 10 + '%');
     if (v.params?.perturb_class) parts.push('強さ ' + v.params.perturb_class);

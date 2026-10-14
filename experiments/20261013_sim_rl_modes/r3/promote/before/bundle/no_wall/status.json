@@ -1,0 +1,21 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "no_wall",
+ "state": "not_accepted",
+ "label_ja": "不合格(参考)",
+ "failed": [
+  "check_r2_corner_collisions",
+  "check_r2_N2_fresh",
+  "check_r2_N5_stall"
+ ],
+ "pending": [],
+ "from_training_status": {
+  "state": "accepted",
+  "label_ja": "合格",
+  "updated_at": "2026-10-14T05:29:16"
+ },
+ "verdict_ja": "check_no_wall_r2.md: 凍結した試験 340 回は全部合格だが、試験した物理の範囲の中の角(摩擦円・μ×0.85・ブレーキ 0.7・舵の速さ 1.8・前進ゲイン 1.04)では 33 回中 30 回ぶつかる。標準の物理の新しい開始 600 回では最小すき間 7.0 cm(N2 の 8 cm は試験の組の引きがよかった)",
+ "note_ja": "r2 の学習の段の試験(340 回)は合格だったが、確認 r2(check_no_wall_r2.md)で不合格: DR-T の範囲の中の隅(速い舵・弱いブレーキ・μ 0.85・摩擦円・前進のゲイン 1.04)で衝突、標準の物理の新しい開始で 7.0 cm(N2 は試験の組の引き当て)、止まったまま(有効な周 0)のシーンが記録の前の確かめを通る。登録簿(data/sim_rl/modes/no_wall/status.json)と同じにした",
+ "written_by": "審査の段(sim_rl_modes_20261013、2026-10-14)。r3 の no_wall_r3/bundle_status_fix.json と同じ中身",
+ "updated_at": "2026-10-14T13:55:40"
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "line",
+ "state": "accepted",
+ "label_ja": "合格",
+ "failed": [],
+ "pending": [],
+ "round": "r4b",
+ "judged_by": "protocol_line_r4b.json(sha256 c7a1f677…)の L1_r4〜L11_escape_r4b。試験の組は 1 回だけ(542 回)",
+ "test": {
+  "L1_r4": {
+   "LN-P60-R4": "60/60",
+   "LN-HEAD60-R4": "60/60",
+   "LN-EXT60-R4": "60/60",
+   "LN-CORNER-R4": "115/116",
+   "LN-BOX120-R4": "120/120",
+   "LN-G30R120-R4B": "120/120"
+  },
+  "L2_r4": 0.04126836025988298,
+  "L3_tracking": {
+   "median": 0.0153,
+   "p95": 0.09092499999999999,
+   "frames": 16756
+  },
+  "L4_distinct": {
+   "left_right_mean": 0.3385049808429119,
+   "inside_outside_mean": 0.15540957854406132,
+   "min_pair_max_1m_avg": 0.11614500000000001,
+   "bins": 522
+  },
+  "L5_vm3": 0.09913465272456383,
+  "L6_lap": 8.808268974746007,
+  "L7_shield": {
+   "P_fraction": 0.0011111111111111111,
+   "max_per_run_P_FAM6": 0.005
+  },
+  "L8_no_collision": "542/542",
+  "L9_no_stall": "542/542",
+  "L10_no_reverse_P_FAM6": 0,
+  "L11_escape_r4b": "0/542"
+ },
+ "check": {
+  "pass": true,
+  "report": "jetformer_reports/sim_rl_modes_20261013/r3/check_line_r4.md",
+  "runs_new": 2077,
+  "summary_ja": "確認 r4 合格(反証できなかった)。試験の組 542 回を自前に作り直して同じ値。新しい組 1,717 回 + 攻めの組 360 回(シールドあり)で衝突・止まり・抜け出し・後ろへの動き 0、最小 3.995 cm(4 cm 未満は 2 回)。ラベルの問題 0(1,571,004 フレーム)",
+  "numbers": {
+   "fresh_runs": 1717,
+   "adv_runs": 360,
+   "collisions": 0,
+   "min_cm": 3.995,
+   "noshield_adv_collisions": "23/360",
+   "vs_fastest_line_gap_cm": 15.8,
+   "lap1_line_vs_fastest_s": "8.99 vs 8.13"
+  }
+ },
+ "caveats_ja": [
+  "方策だけ(シールドなし)では、ゲート 32 (−,−) × 左寄りの端など角の一部でまだ崩れる(攻めの組で 23 回衝突)。シールドありでは全部有効・4.0 cm 以上",
+  "シールドの proposal_nominal(0.8 秒の先読みでは合格・止まるまでの先読みでは不合格の提案を通す)は試験・新・攻めで 3,896・12,970・3,978 フレーム。崩れは 0",
+  "右寄り・アウトの線の追従の 95% 点 17.9・15.3 cm(12 cm を越える。全体の L3 は合格)",
+  "ゲート 11 の開始で黒シートの横断が数えられず無効になることがある(1/1,717・1/542)"
+ ],
+ "replaces": {
+  "previous": "出していなかった(r2 は L2 1.33 cm で不合格・not_published)"
+ },
+ "candidate": "experiments/20261013_sim_rl_modes/r3/candidates/line_r4/",
+ "runtime": {
+  "shared_runtime": "experiments/20261013_sim_rl_modes/rl/runtime(= web/rl = jetformer/sim/static/rl)",
+  "web_manifest_sha256": "5e6cf47815469381c18427755a96d74d0ab8097e8e1af587de7c022153f39307",
+  "runtime_version": "jf-sim-rl-mode-runtime/v1",
+  "files": {
+   "mode_runtime.mjs": "f59b195596bca037b930b6295df4e86edb7f93beca090b4d2b8a27a487e6aea9",
+   "perturb_v2.mjs": "bb7e58f71e7467e043567570eab7a1a861b427ed3a1bc0423e6049356e89ac0f",
+   "recoverable_table.mjs": "4ac6b6823dfba42bce5f9721c610264afca8dfcb4464305c86c42f6bbfddbe59",
+   "shield.mjs": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+   "shield_v4p.mjs": "29c9d111596a2708311b72a0e22d19a70258c533d76283b6ff6dc02f64b83dd0"
+  },
+  "equivalence": {
+   "how_ja": "試験に使った候補の runtime と、まとめた runtime を同じ開始・種・物理で閉ループに走らせ、全フレームの操作・info.jf・metadata・乱しの出来事を比べた(r3/promote/equiv_runtime.mjs)。保存した F-ID も与えた",
+   "cases": 139,
+   "same": 139,
+   "fids": 14,
+   "fids_pass": 14,
+   "by_mode": {
+    "no_wall": {
+     "cases": 58,
+     "same": 58,
+     "runs_with_reverse": 0
+    },
+    "recover": {
+     "cases": 29,
+     "same": 29,
+     "runs_with_reverse": 0
+    },
+    "fastest": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "speed": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "obstacle": {
+     "cases": 2,
+     "same": 2,
+     "runs_with_reverse": 0
+    },
+    "line": {
+     "cases": 40,
+     "same": 40,
+     "runs_with_reverse": 0
+    }
+   }
+  }
+ },
+ "note_ja": "r4b の試験(protocol_line_r4b.json、1 回だけ)で L1〜L11 すべて合格し、確認 r4 でも反証できなかった。昇格の段(2026-10-15)が bundle/line/ に置き、登録簿で選べるようにした",
+ "updated_at": "2026-10-15T02:44:57"
+}

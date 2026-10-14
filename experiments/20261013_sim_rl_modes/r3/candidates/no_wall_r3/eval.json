@@ -1,0 +1,985 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-14T03:37:21.458413+00:00",
+ "mode": "no_wall",
+ "set": "test",
+ "core": "original",
+ "core_note": "元の sim-core.js(リリースの dist/sim-core.js、sha256 aaeb2379…)。摩擦円の回だけ protocol definitions.core_judged のとおり高速版の写し(r3/nw/fast_core_nw3.mjs)",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/no_wall_r3/train/policies/step_006012928.json",
+  "sha256": "3b099f9be4beed0b6cf885af7aed60eeb64ba20671e264bc1ee0c20aad2eb779",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 79
+ },
+ "judged": {
+  "N1_r3": {
+   "value": "1810/1810",
+   "runs": 1810,
+   "collisions": 0,
+   "pass": true
+  },
+  "N2_r3": {
+   "value": 0.08470640649437253,
+   "runs": 806,
+   "where": "GR-g23o0.05y12",
+   "pass": true
+  },
+  "N3_r3": {
+   "value": 0.08027183978780772,
+   "runs": 1004,
+   "where": "R97",
+   "pass": true
+  },
+  "N4": {
+   "value": 9.758620033773866,
+   "pass": true
+  },
+  "N5_r3": {
+   "value": {
+    "all_required": "834/835",
+    "not_valid": [
+     "GR-g23o0.05y12"
+    ],
+    "NW-R200-R3": "200/200(要 190)",
+    "NW-VX-R3": "300/300(要 285)",
+    "NW-KX-R3": "396/396(要 376)"
+   },
+   "pass": false
+  },
+  "N6": {
+   "value": {
+    "rho_req_gt1": 0.0003840844317776986,
+    "rho_comb_gt1": 0.0038575436408977556
+   },
+   "pass": true
+  },
+  "N7_r3": {
+   "value": {
+    "fraction": 0.0015222222222222221,
+    "run_max": 0.006666666666666667
+   },
+   "pass": true
+  }
+ },
+ "judged_keys": [
+  "N1_r3",
+  "N2_r3",
+  "N3_r3",
+  "N4",
+  "N5_r3",
+  "N6",
+  "N7_r3"
+ ],
+ "all_judged_pass": false,
+ "runs": 2782,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_no_wall_r3_sha256": "73a5a7193d42266b72f33b3a26b60679bc019e4ee5dafb80d87d9a6fffd55ecb",
+ "shield": {
+  "version": "jf-shield/v4.1",
+  "shield_mjs_sha256": "9dc3a64bc4cd4e869534a6cf08b704a0ffbcafb05e2ce94f54b2340bd9b0a9b0",
+  "params_protocol": {
+   "H": 24,
+   "c_nominal": 0.08,
+   "c_pessimistic": 0.05,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": true,
+    "gain": [
+     0.9,
+     1.1
+    ],
+    "delays": [
+     0,
+     1,
+     2
+    ],
+    "tol": 1e-07
+   },
+   "governor": {
+    "enabled": true,
+    "theta_rad": 0.35,
+    "v_max": 4.5,
+    "min_frame": 3,
+    "brake": true,
+    "weak_extra": 0.92
+   },
+   "worst": {
+    "enabled": true,
+    "frictionCircle": true,
+    "frictionMultiplier": 0.85,
+    "speedGain": 1.04,
+    "brakeUnknown": 0.7,
+    "H": 45,
+    "c": 0.07
+   },
+   "unstick": {
+    "enabled": false
+   },
+   "keep_nominal": true,
+   "backups": "v3 のまま(pure pursuit 0.6 + 0.2·|v|・0.6・提案の舵を保ってブレーキ)",
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ]
+  },
+  "params_used": {
+   "H": 24,
+   "c_nominal": 0.08,
+   "c_pessimistic": 0.05,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": true,
+    "gain": [
+     0.9,
+     1.1
+    ],
+    "delays": [
+     0,
+     1,
+     2
+    ],
+    "tol": 1e-07
+   },
+   "governor": {
+    "enabled": true,
+    "theta_rad": 0.35,
+    "v_max": 4.5,
+    "min_frame": 3,
+    "brake": true,
+    "weak_extra": 0.92,
+    "brake_without_known": true,
+    "brake_probe": {
+     "enabled": true,
+     "v_min": 2.0,
+     "factor": 0.85,
+     "every": 15
+    }
+   },
+   "worst": {
+    "enabled": true,
+    "frictionCircle": true,
+    "frictionMultiplier": 0.85,
+    "speedGain": 1.04,
+    "brakeUnknown": 0.7,
+    "H": 45,
+    "c": 0.07
+   },
+   "unstick": {
+    "enabled": false
+   },
+   "keep_nominal": true,
+   "backups": "v3 のまま(pure pursuit 0.6 + 0.2·|v|・0.6・提案の舵を保ってブレーキ)",
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ]
+  },
+  "deviation": "jf-shield/v4.1 = 決まりの v4 + governor の 2 つの鍵(brake_without_known・brake_probe)。deviations.md・train_no_wall_r3.md"
+ },
+ "reported": {
+  "ui_text": "1810 回の試験で衝突 0・最小すき間 8.5 cm(標準の物理)/ 8.0 cm(物理のずれ)・不合格(参考)",
+  "ui_numbers": {
+   "runs": 1810,
+   "collisions": 0,
+   "min_clearance_nominal_m": 0.08470640649437253,
+   "min_clearance_randomised_m": 0.08027183978780772
+  },
+  "NW_OFF_R3": {
+   "NW-N300-R3": {
+    "n": 300,
+    "collisions": 0,
+    "errors": 0,
+    "min_clearance_m": 0.10016821204580818,
+    "min_clearance_id": "NW-N300-R3:N151",
+    "median_clearance_m": 0.13947515897911375,
+    "below_5cm": 0,
+    "below_8cm": 0,
+    "valid_episode": 300,
+    "valid_episode_r3": 300,
+    "stall": 0,
+    "stall_ids": [],
+    "zero_valid_laps": 0,
+    "shield_fraction": 0.0,
+    "shield_fraction_governor": 0.0,
+    "shield_fraction_q_below": 0.0,
+    "shield_fraction_e_below": 0.0,
+    "shield_run_max": 0.0,
+    "lap1_median_s": 9.793701676474601,
+    "lap1_max_s": 10.227288773288432,
+    "lap1_n": 300,
+    "mean_running_speed_mps": 2.7077446938038334,
+    "ctrl_ms_per_frame_median": 1.6591245558333334,
+    "ctrl_ms_per_frame_p99": 6.218776855683332,
+    "collision_ids": []
+   },
+   "NW-R200-R3": {
+    "n": 200,
+    "collisions": 0,
+    "errors": 0,
+    "min_clearance_m": 0.04546135599004813,
+    "min_clearance_id": "NW-R200-R3:R156",
+    "median_clearance_m": 0.13914353869762133,
+    "below_5cm": 1,
+    "below_8cm": 2,
+    "valid_episode": 200,
+    "valid_episode_r3": 200,
+    "stall": 0,
+    "stall_ids": [],
+    "zero_valid_laps": 0,
+    "shield_fraction": 0.0,
+    "shield_fraction_governor": 0.0,
+    "shield_fraction_q_below": 0.0,
+    "shield_fraction_e_below": 0.0,
+    "shield_run_max": 0.0,
+    "lap1_median_s": 9.930193672326219,
+    "lap1_max_s": 10.408531219090472,
+    "lap1_n": 200,
+    "mean_running_speed_mps": 2.691827567467537,
+    "ctrl_ms_per_frame_median": 1.94769972,
+    "ctrl_ms_per_frame_p99": 5.431830528583333,
+    "collision_ids": []
+   },
+   "NW-VX-R3": {
+    "n": 300,
+    "collisions": 1,
+    "errors": 0,
+    "min_clearance_m": -0.0040830215478506095,
+    "min_clearance_id": "NW-VX-R3:VX178",
+    "median_clearance_m": 0.1363472181516614,
+    "below_5cm": 1,
+    "below_8cm": 1,
+    "valid_episode": 299,
+    "valid_episode_r3": 299,
+    "stall": 0,
+    "stall_ids": [],
+    "zero_valid_laps": 0,
+    "shield_fraction": 0.0,
+    "shield_fraction_governor": 0.0,
+    "shield_fraction_q_below": 0.0,
+    "shield_fraction_e_below": 0.0,
+    "shield_run_max": 0.0,
+    "lap1_median_s": 9.932814392967282,
+    "lap1_max_s": 10.854139377093265,
+    "lap1_n": 300,
+    "mean_running_speed_mps": 2.706266516090855,
+    "ctrl_ms_per_frame_median": 1.7258949991666666,
+    "ctrl_ms_per_frame_p99": 3.770893890733331,
+    "collision_ids": [
+     {
+      "id": "NW-VX-R3:VX178",
+      "t": 10.72528670044053,
+      "with": "segment-27",
+      "gate": 7,
+      "dr": {
+       "physics": {
+        "steerRate": 1.8,
+        "brakeDeceleration": 0.7,
+        "driveTau": 0.28,
+        "driveAccelerationCap": 3.5,
+        "frictionMultiplier": 0.85
+       },
+       "delay": 1,
+       "steerGain": 1.06,
+       "speedGain": 1.04,
+       "frictionCircle": true,
+       "kind": "vertex"
+      }
+     }
+    ]
+   }
+  },
+  "shield_pairs": {
+   "pairs": 800,
+   "saved": 1,
+   "caused": 0
+  },
+  "NW_G_OUT": [
+   {
+    "id": "G11-single",
+    "name": "ブレーキ 0.6 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.14010688745224692
+   },
+   {
+    "id": "G11-continuous",
+    "name": "ブレーキ 0.6 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13845755386258274
+   },
+   {
+    "id": "G19-single",
+    "name": "ブレーキ 2.5 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.1437408490474034
+   },
+   {
+    "id": "G19-continuous",
+    "name": "ブレーキ 2.5 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.14131179618411285
+   },
+   {
+    "id": "G20-single",
+    "name": "μ × 0.8",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.13618519295177195
+   },
+   {
+    "id": "G20-continuous",
+    "name": "μ × 0.8",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13618519295177195
+   },
+   {
+    "id": "G26-single",
+    "name": "時定数 0.25 秒",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.14124654726033997
+   },
+   {
+    "id": "G26-continuous",
+    "name": "時定数 0.25 秒",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13653544981126048
+   },
+   {
+    "id": "G29-single",
+    "name": "時定数 0.6 秒",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.14251843568615247
+   },
+   {
+    "id": "G29-continuous",
+    "name": "時定数 0.6 秒",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.14110164798019023
+   },
+   {
+    "id": "G30-single",
+    "name": "加速の上限 3 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.14125548835935
+   },
+   {
+    "id": "G30-continuous",
+    "name": "加速の上限 3 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.14022759699308518
+   }
+  ],
+  "LOWMU": {
+   "n": 10,
+   "collisions": 10,
+   "errors": 0,
+   "min_clearance_m": -0.012405464279368825,
+   "min_clearance_id": "LM8",
+   "median_clearance_m": -0.005297156359071328,
+   "below_5cm": 10,
+   "below_8cm": 10,
+   "valid_episode": 0,
+   "valid_episode_r3": 0,
+   "stall": 0,
+   "stall_ids": [],
+   "zero_valid_laps": 0,
+   "shield_fraction": 0.039898670044331855,
+   "shield_fraction_governor": 0.0,
+   "shield_fraction_q_below": 0.028499050031665613,
+   "shield_fraction_e_below": 0.031665611146295125,
+   "shield_run_max": 0.08571428571428572,
+   "lap1_median_s": null,
+   "lap1_max_s": null,
+   "lap1_n": 0,
+   "mean_running_speed_mps": 1.9942076661253025,
+   "ctrl_ms_per_frame_median": 61.96698575461039,
+   "ctrl_ms_per_frame_p99": 174.06804952837098,
+   "collision_ids": [
+    {
+     "id": "STD",
+     "t": 8.257520612015586,
+     "with": "segment-5",
+     "gate": 0,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM0",
+     "t": 4.665216564323593,
+     "with": "disk-82",
+     "gate": 20,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM1",
+     "t": 2.912093639341135,
+     "with": "segment-5",
+     "gate": 12,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM2",
+     "t": 9.397450475898626,
+     "with": "segment-5",
+     "gate": 29,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM3",
+     "t": 7.464117142565298,
+     "with": "segment-5",
+     "gate": 2,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM4",
+     "t": 5.145426972674461,
+     "with": "disk-82",
+     "gate": 18,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM5",
+     "t": 3.4131930610994186,
+     "with": "segment-5",
+     "gate": 10,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM6",
+     "t": 2.035532176849906,
+     "with": "disk-82",
+     "gate": 27,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM7",
+     "t": 5.274362618974653,
+     "with": "segment-5",
+     "gate": 6,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    },
+    {
+     "id": "LM8",
+     "t": 3.9076959523079915,
+     "with": "disk-82",
+     "gate": 22,
+     "dr": {
+      "physics": {
+       "frictionMultiplier": 0.4
+      },
+      "delay": 0
+     }
+    }
+   ]
+  },
+  "fastest_compare": {
+   "starts": 150,
+   "no_wall_valid": 150,
+   "fastest_valid": 146,
+   "fastest_collisions": 4,
+   "fastest_min_clearance_median_cm": 6.254086437258469,
+   "no_wall_min_clearance_median_cm": 13.942423456611369,
+   "fastest_below_8cm": 150,
+   "no_wall_below_8cm": 0,
+   "line_diff_mean_cm": 7.563748086285043,
+   "line_diff_p90_cm": 15.722241798241152,
+   "line_diff_max_cm": 21.89732917844634,
+   "bins": 129,
+   "speed_diff_mean_mps": -0.5470011469110843,
+   "speed_diff_p10_mps": -0.9299050285425609,
+   "speed_diff_p90_mps": -0.22088678917215984,
+   "within_mode_spread_ey_cm": {
+    "no_wall": 0.45915127755157537,
+    "fastest": 2.115093272872159,
+    "bins": [
+     262,
+     172
+    ]
+   },
+   "mean_running_speed": {
+    "no_wall": 2.7062984721880485,
+    "fastest": 3.303775922194173
+   },
+   "lap1_median_s": {
+    "no_wall": 9.810413569338671,
+    "fastest": 8.109898112912644
+   },
+   "rho": {
+    "no_wall": {
+     "rho_req_gt1": 0.0003785137767881993,
+     "rho_comb_gt1": 0.003796270526022822,
+     "rho_req_max": 2.143446713638885,
+     "rho_comb_max": 1.5891487699121347
+    },
+    "fastest": {
+     "rho_req_gt1": 0.37055425270262543,
+     "rho_comb_gt1": 0.366127094892181,
+     "rho_req_max": 4.5490450771248145,
+     "rho_comb_max": 3.8346188208232816
+    }
+   }
+  },
+  "nominal_8_to_9cm": [
+   {
+    "set": "NW-GRID-R3",
+    "id": "GR-g20o-0.15y-4",
+    "gate": 20,
+    "left_offset_m": -0.15,
+    "left_yaw_deg": -4,
+    "min_clearance": 0.0849961281557155,
+    "min_frame": 9
+   },
+   {
+    "set": "NW-GRID-R3",
+    "id": "GR-g23o0.05y12",
+    "gate": 23,
+    "left_offset_m": 0.05,
+    "left_yaw_deg": 12,
+    "min_clearance": 0.08470640649437253,
+    "min_frame": 29
+   }
+  ],
+  "rho_N300": {
+   "rho_req_gt1": 0.0003840844317776986,
+   "rho_comb_gt1": 0.0038575436408977556,
+   "rho_req_max": 2.143446713638885,
+   "rho_comb_max": 2.3921910257713037
+  },
+  "KX_by_corner": {
+   "0": {
+    "physics": {
+     "steerRate": 1.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.28,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 1,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.1299811267143599,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.512020202020202,
+    "lap1_median_s": 10.544218940943102
+   },
+   "1": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.28,
+     "driveAccelerationCap": 3.5,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 1,
+    "steerGain": 0.94,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.129587602937795,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8253030303030303,
+    "lap1_median_s": 14.244843282471928
+   },
+   "2": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.28,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.11826099011804873,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.7936868686868687,
+    "lap1_median_s": 13.279880300414577
+   },
+   "3": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 3.5,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 0.94,
+    "speedGain": 1.04,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.11941072438510386,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.7613131313131313,
+    "lap1_median_s": 12.911203677001959
+   },
+   "4": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.10246507414001463,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8036868686868687,
+    "lap1_median_s": 13.380918325438094
+   },
+   "5": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 1,
+    "steerGain": 1.06,
+    "speedGain": 1.04,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.12247780901793527,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8091414141414142,
+    "lap1_median_s": 13.454680282719865
+   },
+   "6": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.13194142620059013,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8016666666666666,
+    "lap1_median_s": 13.619240715699126
+   },
+   "7": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.1426835774929227,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8041919191919192,
+    "lap1_median_s": 13.539164523737627
+   },
+   "8": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 1.06,
+    "speedGain": 1.04,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.12434799753474746,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.7697979797979798,
+    "lap1_median_s": 12.891830582616059
+   },
+   "9": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.28,
+     "driveAccelerationCap": 3.5,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 1,
+    "steerGain": 0.94,
+    "speedGain": 1.04,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.12652964980858997,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.8068181818181818,
+    "lap1_median_s": 13.33318237726359
+   },
+   "10": {
+    "physics": {
+     "steerRate": 1.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.28,
+     "driveAccelerationCap": 6,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 1,
+    "steerGain": 1.06,
+    "speedGain": 0.96,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.13938417420141128,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.5092929292929292,
+    "lap1_median_s": 10.52801660212581
+   },
+   "11": {
+    "physics": {
+     "steerRate": 0.8,
+     "brakeDeceleration": 0.7,
+     "driveTau": 0.55,
+     "driveAccelerationCap": 3.5,
+     "frictionMultiplier": 0.85
+    },
+    "delay": 0,
+    "steerGain": 0.94,
+    "speedGain": 1.04,
+    "n": 33,
+    "collisions": 0,
+    "min_clearance_m": 0.12444376080164196,
+    "valid_episode_r3": 33,
+    "stall": 0,
+    "shield_fraction": 0.7613131313131313,
+    "lap1_median_s": 12.860753310569253
+   }
+  },
+  "ui_text_base": "1810 回の試験で衝突 0・最小すき間 8.5 cm(標準の物理)/ 8.0 cm(物理のずれ)"
+ },
+ "sets_summary": {
+  "NW-N300-R3": {
+   "n": 300,
+   "collisions": 0,
+   "min_clearance_m": 0.09981927032089931,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 300,
+   "stall": 0,
+   "shield_fraction": 0.0015222222222222221,
+   "lap1_median_s": 9.808830813526136
+  },
+  "NW-GRID-R3": {
+   "n": 494,
+   "collisions": 0,
+   "min_clearance_m": 0.08470640649437253,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 493,
+   "stall": 1,
+   "shield_fraction": 0.0034615384615384616,
+   "lap1_median_s": 9.808206836306649
+  },
+  "NW-STD": {
+   "n": 2,
+   "collisions": 0,
+   "min_clearance_m": 0.14042477678442583,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 1,
+   "stall": 0,
+   "shield_fraction": 0.0022396416573348264,
+   "lap1_median_s": 9.758484305681222
+  },
+  "NW-G": {
+   "n": 68,
+   "collisions": 0,
+   "min_clearance_m": 0.12579092634527544,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 34,
+   "stall": 0,
+   "shield_fraction": 0.16308676633805574,
+   "lap1_median_s": 9.893001327112314
+  },
+  "NW-G-OUT": {
+   "n": 12,
+   "collisions": 0,
+   "min_clearance_m": 0.13618519295177195,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 6,
+   "stall": 0,
+   "shield_fraction": 0.09302755687072313,
+   "lap1_median_s": 9.952332874516369
+  },
+  "NW-R200-R3": {
+   "n": 200,
+   "collisions": 0,
+   "min_clearance_m": 0.08027183978780772,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 200,
+   "stall": 0,
+   "shield_fraction": 0.22491666666666665,
+   "lap1_median_s": 10.079841682202765
+  },
+  "NW-VX-R3": {
+   "n": 300,
+   "collisions": 0,
+   "min_clearance_m": 0.09169970605519069,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 300,
+   "stall": 0,
+   "shield_fraction": 0.46035,
+   "lap1_median_s": 10.792204208838442
+  },
+  "NW-KX-R3": {
+   "n": 396,
+   "collisions": 0,
+   "min_clearance_m": 0.10246507414001463,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 396,
+   "stall": 0,
+   "shield_fraction": 0.7465193602693603,
+   "lap1_median_s": 12.917602105519862
+  },
+  "NW-FC30-R3": {
+   "n": 30,
+   "collisions": 0,
+   "min_clearance_m": 0.08642352676991974,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 30,
+   "stall": 0,
+   "shield_fraction": 0.0014444444444444444,
+   "lap1_median_s": 9.809330389271613
+  },
+  "NW-LONG-R3": {
+   "n": 20,
+   "collisions": 0,
+   "min_clearance_m": 0.12142175216872522,
+   "below_5cm": 0,
+   "below_8cm": 0,
+   "valid_episode_r3": 20,
+   "stall": 0,
+   "shield_fraction": 0.10106944444444445,
+   "lap1_median_s": 9.870417052324068
+  },
+  "NW-OFF-R3": {
+   "n": 800,
+   "collisions": 1,
+   "min_clearance_m": -0.0040830215478506095,
+   "below_5cm": 2,
+   "below_8cm": 3,
+   "valid_episode_r3": 799,
+   "stall": 0,
+   "shield_fraction": 0.0,
+   "lap1_median_s": 9.848099764464148
+  },
+  "LOWMU": {
+   "n": 10,
+   "collisions": 10,
+   "min_clearance_m": -0.012405464279368825,
+   "below_5cm": 10,
+   "below_8cm": 10,
+   "valid_episode_r3": 0,
+   "stall": 0,
+   "shield_fraction": 0.039898670044331855,
+   "lap1_median_s": null
+  }
+ }
+}

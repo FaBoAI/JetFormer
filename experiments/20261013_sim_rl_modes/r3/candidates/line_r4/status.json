@@ -1,0 +1,46 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "line",
+ "state": "accepted",
+ "label_ja": "合格(確認の段のあと、昇格の段で bundle/line/ に置く)",
+ "failed": [],
+ "pending": [
+  "check",
+  "promote"
+ ],
+ "rule": "protocol_line_r4b.json publication: 合格なら candidates/line_r4/(status accepted。昇格の段が bundle/line/ に置く)、不合格なら not_published。bundle/ はこの段では変えない",
+ "summary": {
+  "L1_r4": {
+   "LN-P60-R4": "60/60",
+   "LN-HEAD60-R4": "60/60",
+   "LN-EXT60-R4": "60/60",
+   "LN-CORNER-R4": "115/116",
+   "LN-BOX120-R4": "120/120",
+   "LN-G30R120-R4B": "120/120"
+  },
+  "L2_r4": 0.04126836025988298,
+  "L3_tracking": {
+   "median": 0.0153,
+   "p95": 0.09092499999999999,
+   "frames": 16756
+  },
+  "L4_distinct": {
+   "left_right_mean": 0.3385049808429119,
+   "inside_outside_mean": 0.15540957854406132,
+   "min_pair_max_1m_avg": 0.11614500000000001,
+   "bins": 522
+  },
+  "L5_vm3": 0.09913465272456383,
+  "L6_lap": 8.808268974746007,
+  "L7_shield": {
+   "P_fraction": 0.0011111111111111111,
+   "max_per_run_P_FAM6": 0.005
+  },
+  "L8_no_collision": "542/542",
+  "L9_no_stall": "542/542",
+  "L10_no_reverse_P_FAM6": 0,
+  "L11_escape_r4b": "0/542"
+ },
+ "note_ja": "第 4 回(r4b)の試験の組 LN-P60-R4 + LN-HEAD60-R4 + LN-EXT60-R4 + LN-CORNER-R4 + LN-BOX120-R4 + LN-G30R120-R4B + LN-FAM6(542 回、元の sim-core.js、シールド v5b あり)。/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/train_line_r4.md",
+ "updated_at": "2026-10-14T23:40:21"
+}

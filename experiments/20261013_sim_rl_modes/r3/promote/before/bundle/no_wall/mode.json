@@ -1,0 +1,57 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "no_wall",
+ "name_ja": "強化学習モード(絶対壁にぶつからない)",
+ "short_ja": "壁・柱からはなれて遅めに走る(記録するシーンは前もって走らせ、すき間が 8 cm 未満になるものは替える)。物理のずれ(舵の速さ・μ・遅れ・RC の応答・摩擦円)でもぶつからないよう学習し、走行中は安全シールドが舵の遅れを見積もって見張る。遅くてよい",
+ "order": 2,
+ "priority": 1,
+ "course": "default",
+ "obs_wrapper": "base79",
+ "runtime": {
+  "shield": true,
+  "shield_params": "jf-shield/v3(c_shield 0.07 m・悲観 0.05 m・H 24 フレーム・悲観の模型 = DR-T の悪い端・走りながらの見積もり・速さの見張り。deviations.md 4)",
+  "perturbation": null,
+  "conditioning": null,
+  "gate_index": "base79"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "min_initial_clearance_m": 0.12,
+   "sequence": "Halton",
+   "prefilter": true
+  },
+  "per_scene_params": {},
+  "prefilter_min_clearance_m": 0.08
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-no_wall",
+  "sim-safe"
+ ],
+ "ui_phrase": "「N 回の試験で衝突 0・最小すき間 X cm」と書く(「絶対」とは言い切らない。名前はユーザーの呼び方のまま)",
+ "policy_sha256": "153c709c52151c5e2ff15326ce6a307ecda67d9888c29c678d5afdcffb85d1ff",
+ "policy_source": "no_wall r2(作り直し): train/no_wall/r2 step_004014080(r1 の 1,000 万の点から種 22 で続けた 600 万ステップの学習の 400 万の点。遅い舵 + 遅延の回を増やし、速さの見張りつき。選び方は deviations.md 5・7)。走行中のシールド jf-shield/v3(deviations.md 4)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "scenario_blocklist": [
+  "low-friction"
+ ],
+ "scenario_note_ja": "アプリの「低摩擦」シナリオ(μ × 0.4)は試験した物理の範囲の外で、ぶつかります(r1: 10 回中 9 回)。強化学習モードでは選べないようにするか、選んだら警告してください",
+ "overrides_from_modes_json": [
+  "recording",
+  "runtime",
+  "scenario_blocklist",
+  "scenario_note_ja",
+  "short_ja"
+ ]
+}

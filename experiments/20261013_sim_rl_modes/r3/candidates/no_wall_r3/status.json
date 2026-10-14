@@ -1,0 +1,27 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "no_wall",
+ "state": "not_accepted",
+ "label_ja": "不合格(参考)",
+ "failed": [
+  "N5_r3",
+  "check_r3_nominal_collision",
+  "check_r3_N2_5p6cm"
+ ],
+ "pending": [],
+ "round": "r3",
+ "candidate": true,
+ "note_ja": "r3 の試験(protocol_no_wall_r3.json、1 回だけ)で不合格。優先 1 なので「不合格(参考)」として数字を見せる。昇格の段で、元の一式(r2)と r3 の候補のどちらを「不合格(参考)」で出すか決める",
+ "updated_at": "2026-10-15T03:04:30",
+ "from_training_status": {
+  "state": "not_accepted",
+  "label_ja": "不合格(参考)",
+  "failed": [
+   "N5_r3"
+  ],
+  "pending": []
+ },
+ "check_ja": "check_no_wall_r3.md: 不合格。標準の物理でもシールド v4.1 が衝突を起こす開始(ゲート 20・左 −0.13 m・−13°)と最小すき間 5.63 cm の開始。ゲート 23 の柱の足へ向いた開始で止まり",
+ "superseded_by": "r3/candidates/no_wall_r4(r4 の試験・確認 r4 で合格。bundle/no_wall に昇格)",
+ "updated_by": "昇格の段(2026-10-15、r3/promote): 確認 r3 の結果で状態を正した"
+}

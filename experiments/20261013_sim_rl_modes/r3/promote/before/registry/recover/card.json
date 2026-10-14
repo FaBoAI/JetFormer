@@ -1,0 +1,95 @@
+{
+ "schema": "jf-sim-rl-mode-card/v1",
+ "key": "recover",
+ "state": "not_accepted",
+ "headline_ja": "乱した 100 回のうち 38 回が 20 秒を走り切った(合格は 90 回)。立て直しの成功 76%・立て直しの時間 中央値 0.47 秒",
+ "lap_from_stop_s": 8.421988435165682,
+ "flying_lap_s": null,
+ "tests": {
+  "runs": 100,
+  "collisions": 62,
+  "text_ja": "乱しつきの 100 回のうち 62 回で衝突(乱しのあと)"
+ },
+ "min_clearance_cm": {
+  "value": 2.1,
+  "text_ja": "乱しなし REC60 の最小すき間"
+ },
+ "main": [
+  {
+   "label_ja": "立て直しの成功",
+   "value_ja": "76%(292 回の乱し)"
+  },
+  {
+   "label_ja": "立て直しの時間",
+   "value_ja": "中央値 0.47 秒・90% 点 1.00 秒"
+  },
+  {
+   "label_ja": "乱し",
+   "value_ja": "1 シーン 2.9 回・学習から外すフレーム 12%"
+  }
+ ],
+ "checks": [
+  {
+   "id": "C1_valid",
+   "label_ja": "乱しつき 100 回で 90 回以上走り切る",
+   "pass": false
+  },
+  {
+   "id": "C2_success",
+   "label_ja": "立て直しの成功 95% 以上",
+   "pass": false
+  },
+  {
+   "id": "C3_recovery_time",
+   "label_ja": "立て直しの時間",
+   "pass": true
+  },
+  {
+   "id": "C4_events_mask",
+   "label_ja": "乱しの数・外す割合",
+   "pass": false
+  },
+  {
+   "id": "C5_kick",
+   "label_ja": "押されたあとの生き残り",
+   "pass": false
+  },
+  {
+   "id": "C6_unperturbed",
+   "label_ja": "乱しなしの走り",
+   "pass": false
+  }
+ ],
+ "notes_ja": [
+  "不合格(参考): 乱しのあとにぶつかる開始が多い。記録のシーンは前もって Node で走らせ、20 秒を走り切るもの(候補の約 3 割)だけを使う",
+  "黒シートの出口での右への舵のパルスはほとんど戻れない。走り切ったシーンの約 4 割にシミュレーターのゲートの外しがある",
+  "乱した操作は記録に印(info.jf.l = 0)が付き、JetFormer の取り込みで学習から外す(シーンタブでジャンルを付け直しても外したまま)"
+ ],
+ "verdict_ja": "check_recover_r2.md: 新しい乱し 150 回で有効 51/150・成功 75%。合格の基準(90/100・95%)に届かない",
+ "updated_at": "2026-10-14T11:11:59",
+ "browser_identity": {
+  "pass": true,
+  "files": [
+   {
+    "file": "train/recover/fid_scene_P5.json",
+    "frames": 600,
+    "max_abs_steering": 3.885780586188048e-16,
+    "max_abs_speed": 6.217248937900877e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   },
+   {
+    "file": "train/recover/fid_std.json",
+    "frames": 118,
+    "max_abs_steering": 2.7755575615628914e-16,
+    "max_abs_speed": 1.3322676295501878e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   }
+  ],
+  "where": "http://192.168.55.1:8080(Firefox 157.0.1・DISPLAY :0)",
+  "checked_at": "2026-10-14T11:11:17"
+ }
+}

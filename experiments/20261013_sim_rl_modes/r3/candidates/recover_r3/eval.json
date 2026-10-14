@@ -1,0 +1,766 @@
+{
+ "schema": "jf-sim-rl-recover-r3-eval-summary/v1",
+ "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94",
+ "eval_test_sha256": "a5049317fc5299ae48d105dc614fbcd21137d91131b86d86c0f00bf6f5aed80a",
+ "set": "test",
+ "core": "original",
+ "protocol_recover_r3_sha256": "0a58b11c39e83aa6bebaddb1671875b2ca3cdc5b4fd9e0006f75c3a3b09d3545",
+ "recoverable_table_sha256": "410f18c25610c710e41b4ae5fc3f5595a9764604dc21885a26148646f1ee014a",
+ "all_judged_pass": false,
+ "judged": {
+  "C1_r3": {
+   "value": "98/100",
+   "pass": true,
+   "note": "valid_episode(元の定義)は 99/100。止まり 1・進みの不足 1"
+  },
+  "C2": {
+   "value": 0.995260663507109,
+   "events": 422,
+   "success": 420,
+   "pass": true
+  },
+  "C3": {
+   "value": {
+    "median": 0,
+    "p90": 0.7
+   },
+   "pass": true
+  },
+  "C4": {
+   "value": {
+    "events_per_episode": 4.22,
+    "masked_fraction": 0.17413333333333328
+   },
+   "pass": true
+  },
+  "C7": {
+   "value": {
+    "class_share": {
+     "弱": 0.3412322274881517,
+     "中": 0.33649289099526064,
+     "強": 0.3222748815165877
+    },
+    "type_share": {
+     "steer_pulse": 0.4052132701421801,
+     "excursion": 0.23222748815165878,
+     "speed_pulse": 0.36255924170616116
+    }
+   },
+   "pass": true
+  },
+  "C5_r3": {
+   "value": {
+    "yaw": "30/34",
+    "lateral": "30/34",
+    "yaw_rate": 0.8823529411764706,
+    "lateral_rate": 0.8823529411764706
+   },
+   "pass": false
+  },
+  "C6_r3": {
+   "value": {
+    "lap_from_stop": 8.514292482857686,
+    "rec60": "60/60",
+    "unperturbed": "60/60",
+    "min_clearance": 0.018953237737472955,
+    "min_clearance_rec60": 0.0604782251432166,
+    "min_clearance_u": 0.018953237737472955
+   },
+   "pass": false
+  }
+ },
+ "reported": {
+  "c6_spawn_limited": [
+   {
+    "test": "RC-U60-R3",
+    "id": "U56",
+    "initial_clearance_m": 0.018946010185484023,
+    "min_clearance": 0.018953237737472955,
+    "min_clearance_at_s": 0.0010994217582850493,
+    "dmin_after_1s": 0.06619357475075946
+   }
+  ],
+  "c6_without_spawn_limited": {
+   "runs": 119,
+   "valid": 119,
+   "min_clearance": 0.035136486090688326,
+   "dmin_after_1s_all": 0.04556219746194329,
+   "note": "報告だけ(判定ではない)。開始のすき間が 3 cm 未満の開始を除いた最小すき間と、全部の回の 1 秒より後のフレームの終わりのすき間(features)の最小"
+  },
+  "kick_all_positions": {
+   "yaw": "61/72",
+   "lateral": "62/72"
+  },
+  "kick_fail_ids": [
+   {
+    "id": "lateral-1.25",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 3.230357058800567,
+    "frames": 39,
+    "same_step_collision": true,
+    "no_candidate_after_kick": false
+   },
+   {
+    "id": "yaw-8.75",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 27.197469101962923,
+    "frames": 267,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   },
+   {
+    "id": "lateral-8.75",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 27.197469101962923,
+    "frames": 268,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   },
+   {
+    "id": "yaw-9.25",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 28.96487201594008,
+    "frames": 280,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   },
+   {
+    "id": "lateral-9.25",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 28.96487201594008,
+    "frames": 279,
+    "same_step_collision": true,
+    "no_candidate_after_kick": false
+   },
+   {
+    "id": "yaw-16.75",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 53.04436568463496,
+    "frames": 510,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   },
+   {
+    "id": "yaw-17.25",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 54.868492062756836,
+    "frames": 521,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   },
+   {
+    "id": "lateral-17.25",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 54.868492062756836,
+    "frames": 519,
+    "same_step_collision": true,
+    "no_candidate_after_kick": false
+   }
+  ],
+  "kick_fail_no_candidate": {
+   "judged_failed": 8,
+   "no_candidate": 5,
+   "same_step_collision": 3,
+   "note": "報告だけ: キックの直後にシールドの標準の模型がどの候補(23)でも 0.8 秒先までに 3.5 cm を割ると見た(fallback proposal_best・max_clearance)回。物理として避けにくいキックの目安"
+  },
+  "unperturbed_fail_ids": [],
+  "by_class": {
+   "強": {
+    "n": 136,
+    "success": 136
+   },
+   "中": {
+    "n": 142,
+    "success": 142
+   },
+   "弱": {
+    "n": 144,
+    "success": 142
+   }
+  },
+  "by_type": {
+   "speed_pulse": {
+    "n": 153,
+    "success": 153
+   },
+   "steer_pulse": {
+    "n": 171,
+    "success": 170
+   },
+   "excursion": {
+    "n": 98,
+    "success": 97
+   }
+  },
+  "by_fallback": {
+   "brake": {
+    "n": 104,
+    "success": 104
+   },
+   "requested": {
+    "n": 185,
+    "success": 184
+   },
+   "reverse": {
+    "n": 123,
+    "success": 122
+   },
+   "weaker1+reverse": {
+    "n": 4,
+    "success": 4
+   },
+   "excursion": {
+    "n": 2,
+    "success": 2
+   },
+   "weaker1+requested": {
+    "n": 1,
+    "success": 1
+   },
+   "excursion_reverse": {
+    "n": 1,
+    "success": 1
+   },
+   "weaker1+excursion": {
+    "n": 1,
+    "success": 1
+   },
+   "weaker2+reverse": {
+    "n": 1,
+    "success": 1
+   }
+  },
+  "requested_to_assigned": {
+   "steer_pulse:弱 → steer_pulse:弱": 72,
+   "steer_pulse:中 → steer_pulse:中": 52,
+   "steer_pulse:強 → steer_pulse:強": 47,
+   "excursion:強 → speed_pulse:brake:強": 37,
+   "excursion:弱 → excursion:弱": 35,
+   "excursion:中 → excursion:中": 32,
+   "excursion:中 → speed_pulse:brake:中": 26,
+   "excursion:強 → excursion:強": 22,
+   "steer_pulse:強 → speed_pulse:brake:強": 15,
+   "excursion:弱 → speed_pulse:brake:弱": 13,
+   "steer_pulse:中 → speed_pulse:brake:中": 12,
+   "speed_pulse:brake:弱 → speed_pulse:brake:弱": 9,
+   "speed_pulse:brake:中 → speed_pulse:brake:中": 9,
+   "speed_pulse:burst:弱 → speed_pulse:brake:弱": 8,
+   "speed_pulse:brake:強 → speed_pulse:brake:強": 7,
+   "speed_pulse:burst:強 → speed_pulse:brake:強": 5,
+   "speed_pulse:burst:中 → speed_pulse:brake:中": 5,
+   "excursion:中 → excursion:弱": 2,
+   "speed_pulse:burst:強 → speed_pulse:burst:強": 2,
+   "excursion:強 → excursion:中": 2,
+   "speed_pulse:burst:中 → speed_pulse:burst:中": 2,
+   "speed_pulse:burst:弱 → speed_pulse:burst:弱": 1,
+   "steer_pulse:中 → excursion:中": 1,
+   "speed_pulse:brake:強 → excursion:強": 1,
+   "steer_pulse:弱 → speed_pulse:brake:弱": 1,
+   "steer_pulse:強 → excursion:中": 1,
+   "speed_pulse:brake:中 → speed_pulse:burst:弱": 1,
+   "steer_pulse:弱 → excursion:弱": 1,
+   "excursion:強 → excursion:弱": 1
+  },
+  "replaced_fraction": 0.5616113744075829,
+  "wait_frames": {
+   "median": 3,
+   "p90": 11
+  },
+  "start_zones": {
+   "other": {
+    "n": 358,
+    "success": 356,
+    "share": 0.8483412322274881
+   },
+   "black_sheet_exit": {
+    "n": 64,
+    "success": 64,
+    "share": 0.15165876777251186
+   }
+  },
+  "gate_miss": {
+   "p_valid": "38/98",
+   "ids": [
+    "P1",
+    "P2",
+    "P3",
+    "P6",
+    "P8",
+    "P10",
+    "P11",
+    "P14",
+    "P17",
+    "P18",
+    "P20",
+    "P21",
+    "P22",
+    "P24",
+    "P25",
+    "P28",
+    "P30",
+    "P35",
+    "P42",
+    "P43",
+    "P44",
+    "P51",
+    "P53",
+    "P54",
+    "P61",
+    "P64",
+    "P67",
+    "P68",
+    "P69",
+    "P74",
+    "P75",
+    "P77",
+    "P78",
+    "P79",
+    "P80",
+    "P83",
+    "P87",
+    "P90"
+   ]
+  },
+  "invalid_p": [
+   {
+    "id": "P84",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "stall": true,
+    "progress_m": 0,
+    "frames": 600,
+    "collision_s": null
+   },
+   {
+    "id": "P99",
+    "reason": "collision",
+    "collisions": 1,
+    "stall": false,
+    "progress_m": 19.16,
+    "frames": 222,
+    "collision_s": 7.38
+   }
+  ],
+  "shield": {
+   "after3s": 0.0006784068745229951,
+   "other": 0.035009946007388465,
+   "all_rows": 0.0031790569584974823
+  },
+  "min_clearance_valid_p": 0.03523676437839606,
+  "variation": {
+   "rows": 98,
+   "VM7_cells_3000": 871,
+   "VM3_m": 0.03294042975388585,
+   "note": "有効な乱しありの回だけ。VM7 は 3 フレームおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "extra": {
+  "fallback_weak_medium": {
+   "set": "fallback",
+   "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "98/100"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9882352941176471
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.6333333333333333
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.25,
+      "masked_fraction": 0.1544333333333333
+     }
+    },
+    "C7": {
+     "pass": false,
+     "value": {
+      "class_share": {
+       "弱": 0.5176470588235295,
+       "中": 0.4823529411764706,
+       "強": 0
+      },
+      "type_share": {
+       "steer_pulse": 0.4211764705882353,
+       "excursion": 0.28705882352941176,
+       "speed_pulse": 0.2917647058823529
+      }
+     }
+    }
+   },
+   "eval_sha256": "53a7e23bbbb1d6b63ee6e5b32b88a30520d7e8a7ffdbe89955eb0fea16f818c9"
+  },
+  "fresh150": {
+   "set": "fresh",
+   "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94",
+   "all_judged_pass": true,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "147/150"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9841017488076311
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.7333333333333333
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.193333333333333,
+      "masked_fraction": 0.17843333333333342
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.314785373608903,
+       "中": 0.3004769475357711,
+       "強": 0.3847376788553259
+      },
+      "type_share": {
+       "steer_pulse": 0.3799682034976153,
+       "excursion": 0.2273449920508744,
+       "speed_pulse": 0.39268680445151033
+      }
+     }
+    }
+   },
+   "eval_sha256": "19c2f739365905f0faac1217671d362299f0faa2281b9dde747d1e00d8e5fad5"
+  },
+  "v1_same_starts": {
+   "set": "v1",
+   "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": false,
+     "value": "28/100"
+    },
+    "C2": {
+     "pass": false,
+     "value": 0.7242647058823529
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0.3,
+      "p90": 1.3800000000000001
+     }
+    },
+    "C4": {
+     "pass": false,
+     "value": {
+      "events_per_episode": 2.72,
+      "masked_fraction": 0.09874999999999996
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.29044117647058826,
+       "中": 0.3492647058823529,
+       "強": 0.3602941176470588
+      },
+      "type_share": {
+       "steer_pulse": 0.6213235294117647,
+       "excursion": 0.26838235294117646,
+       "speed_pulse": 0.11029411764705882
+      }
+     }
+    }
+   },
+   "eval_sha256": "f88e1cbe8b295b0ccd398e048634cc8ea8d1365578d745598306ee02631e2521"
+  },
+  "fastest_policy": {
+   "set": "test",
+   "policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "92/100"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9667458432304038
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.6666666666666666
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.21,
+      "masked_fraction": 0.17368333333333338
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.36342042755344417,
+       "中": 0.32066508313539194,
+       "強": 0.3159144893111639
+      },
+      "type_share": {
+       "steer_pulse": 0.37292161520190026,
+       "excursion": 0.24703087885985747,
+       "speed_pulse": 0.38004750593824227
+      }
+     }
+    },
+    "C5_r3": {
+     "pass": false,
+     "value": {
+      "yaw": "33/38",
+      "lateral": "35/38",
+      "yaw_rate": 0.868421052631579,
+      "lateral_rate": 0.9210526315789473
+     }
+    },
+    "C6_r3": {
+     "pass": false,
+     "value": {
+      "lap_from_stop": null,
+      "rec60": "0/0",
+      "unperturbed": "0/0",
+      "min_clearance": null,
+      "min_clearance_rec60": null,
+      "min_clearance_u": null
+     }
+    }
+   },
+   "eval_sha256": "5ca5e654631c48676bfe2220874658df24be221e8c7909b463b861651195440c"
+  }
+ },
+ "selection": {
+  "step": 5013504,
+  "eval": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/rc3/train/main/evals/recover/step_005013504.json",
+  "all": false,
+  "n_passed": 6,
+  "passed": [
+   "C1_r3",
+   "C2",
+   "C3",
+   "C4",
+   "C7",
+   "C5_r3"
+  ],
+  "C2": 0.9904534606205251,
+  "summary": {
+   "C1_r3": "98/100",
+   "C2": 0.9904534606205251,
+   "C3": {
+    "median": 0,
+    "p90": 0.6666666666666666
+   },
+   "C4": {
+    "events_per_episode": 4.19,
+    "masked_fraction": 0.17595000000000005
+   },
+   "C7": {
+    "class_share": {
+     "弱": 0.35083532219570407,
+     "中": 0.33890214797136037,
+     "強": 0.31026252983293556
+    },
+    "type_share": {
+     "steer_pulse": 0.3556085918854415,
+     "excursion": 0.2553699284009546,
+     "speed_pulse": 0.38902147971360385
+    }
+   },
+   "C5_r3": {
+    "yaw": "37/40",
+    "lateral": "36/40",
+    "yaw_rate": 0.925,
+    "lateral_rate": 0.9
+   },
+   "C6_r3": {
+    "lap_from_stop": 8.514292482857686,
+    "rec60": "15/15",
+    "unperturbed": "30/30",
+    "min_clearance": 0.0032230147410351093,
+    "min_clearance_rec60": 0.06072958208896552,
+    "min_clearance_u": 0.0032230147410351093
+   }
+  },
+  "policy": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/rc3/train/main/policies/step_005013504.json",
+  "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94"
+ },
+ "compare_r1": {
+  "same_runtime_validation": {
+   "note_ja": "同じ走行中の仕組み(乱し v2・シールド)・同じ検証の組で、r1 の方策(7720f275…)と選んだ r3 の方策",
+   "r1": {
+    "C1_r3": "95/100",
+    "C2": 0.9829683698296837,
+    "C3": {
+     "median": 0,
+     "p90": 0.9333333333333333
+    },
+    "C4": {
+     "events_per_episode": 4.11,
+     "masked_fraction": 0.17054999999999995
+    },
+    "C7": {
+     "class_share": {
+      "弱": 0.3746958637469586,
+      "中": 0.3357664233576642,
+      "強": 0.2895377128953771
+     },
+     "type_share": {
+      "steer_pulse": 0.36009732360097324,
+      "excursion": 0.30413625304136255,
+      "speed_pulse": 0.3357664233576642
+     }
+    },
+    "C5_r3": {
+     "yaw": "35/38",
+     "lateral": "33/38",
+     "yaw_rate": 0.9210526315789473,
+     "lateral_rate": 0.868421052631579
+    },
+    "C6_r3": {
+     "lap_from_stop": 8.421988435165682,
+     "rec60": "15/15",
+     "unperturbed": "30/30",
+     "min_clearance": 0.0032230147410351093,
+     "min_clearance_rec60": 0.0358407060757501,
+     "min_clearance_u": 0.0032230147410351093
+    }
+   },
+   "r3_selected": {
+    "C1_r3": "98/100",
+    "C2": 0.9904534606205251,
+    "C3": {
+     "median": 0,
+     "p90": 0.6666666666666666
+    },
+    "C4": {
+     "events_per_episode": 4.19,
+     "masked_fraction": 0.17595000000000005
+    },
+    "C7": {
+     "class_share": {
+      "弱": 0.35083532219570407,
+      "中": 0.33890214797136037,
+      "強": 0.31026252983293556
+     },
+     "type_share": {
+      "steer_pulse": 0.3556085918854415,
+      "excursion": 0.2553699284009546,
+      "speed_pulse": 0.38902147971360385
+     }
+    },
+    "C5_r3": {
+     "yaw": "37/40",
+     "lateral": "36/40",
+     "yaw_rate": 0.925,
+     "lateral_rate": 0.9
+    },
+    "C6_r3": {
+     "lap_from_stop": 8.514292482857686,
+     "rec60": "15/15",
+     "unperturbed": "30/30",
+     "min_clearance": 0.0032230147410351093,
+     "min_clearance_rec60": 0.06072958208896552,
+     "min_clearance_u": 0.0032230147410351093
+    }
+   }
+  },
+  "r1_published_test_v1": {
+   "note_ja": "r1 の一式(乱し v1・シールドなし)の試験の組の値(check_recover_r2.md 4 章の表)",
+   "C1": "38/100",
+   "C2": 0.76,
+   "C4": 2.92,
+   "C5": "35/40・36/40",
+   "C6_min_clearance_rec60_m": 0.02124
+  },
+  "r3_test_v2": {
+   "C1_r3": "98/100",
+   "C2": 0.995260663507109,
+   "C4": {
+    "events_per_episode": 4.22,
+    "masked_fraction": 0.17413333333333328
+   },
+   "C5_r3": {
+    "yaw": "30/34",
+    "lateral": "30/34",
+    "yaw_rate": 0.8823529411764706,
+    "lateral_rate": 0.8823529411764706
+   },
+   "C6_min_clearance_rec60_m": 0.0604782251432166
+  },
+  "r3_policy_with_v1": {
+   "C1_r3": {
+    "pass": false,
+    "value": "28/100"
+   },
+   "C2": {
+    "pass": false,
+    "value": 0.7242647058823529
+   },
+   "C3": {
+    "pass": true,
+    "value": {
+     "median": 0.3,
+     "p90": 1.3800000000000001
+    }
+   },
+   "C4": {
+    "pass": false,
+    "value": {
+     "events_per_episode": 2.72,
+     "masked_fraction": 0.09874999999999996
+    }
+   },
+   "C7": {
+    "pass": true,
+    "value": {
+     "class_share": {
+      "弱": 0.29044117647058826,
+      "中": 0.3492647058823529,
+      "強": 0.3602941176470588
+     },
+     "type_share": {
+      "steer_pulse": 0.6213235294117647,
+      "excursion": 0.26838235294117646,
+      "speed_pulse": 0.11029411764705882
+     }
+    }
+   }
+  },
+  "verdict_ja": "r3 の一式は r1 の一式より C1・C2・C4・C6(REC60 のすき間)で良く、C5 は同じくらい。乱しの作り直しとシールドの効果が大きく、方策そのものは同じ仕組みで r1 より少し良い(検証の組)。元の乱し v1 では r3 の方策も r1 と同じくらい(立て直せない乱しは学習でも救えない)"
+ }
+}

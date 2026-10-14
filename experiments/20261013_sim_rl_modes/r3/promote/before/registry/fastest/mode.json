@@ -1,0 +1,43 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "fastest",
+ "name_ja": "強化学習モード(最速)",
+ "short_ja": "ベストラップの強化学習の方策そのまま。教師(RC加速教師)より約 0.8 秒速い 1 周",
+ "order": 1,
+ "priority": 1,
+ "course": "default",
+ "obs_wrapper": "base79",
+ "runtime": {
+  "shield": false,
+  "perturbation": null,
+  "conditioning": null,
+  "gate_index": "base79"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.3,
+    0.3
+   ],
+   "left_yaw_deg": [
+    -25,
+    25
+   ],
+   "sequence": "Halton",
+   "prefilter": true
+  },
+  "per_scene_params": {},
+  "note": "今の方策は広い開始の 93% を走り切る(understand_rl 9 章)。走り切らない開始はプランから外す"
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-fastest"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+ "policy_source": "ベストラップの作業の確認 r1 で本物と判定された main 種 1・1,000 万ステップ(7c43cb53…)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

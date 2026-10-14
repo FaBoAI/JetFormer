@@ -1,0 +1,37 @@
+{
+ "schema": "jf-sim-rl-line-shield/v1",
+ "mode": "line",
+ "params": {
+  "c_nominal": 0.04,
+  "c_pessimistic": -1,
+  "governor": {
+   "enabled": false
+  },
+  "worst": {
+   "enabled": false
+  },
+  "unstick": {
+   "enabled": false
+  },
+  "identify": {
+   "enabled": false
+  },
+  "H": 24,
+  "keep_nominal": true
+ },
+ "what_ja": "経路いろいろの走行中のすき間シールド(標準の物理の模型で、すき間 4 cm を守る安全網。悲観の模型・速さの見張り・模型 Q・すくみをほどく・見積もりは使わない)",
+ "labels_ja": "シールドが替えた指令は正解ラベル(l = 1、sh = 1)。no_wall と同じ",
+ "implementation": {
+  "shield_mjs": "r3/line/rt/shield.mjs(jf-shield/v4-proto の写し)",
+  "shield_mjs_sha256": "29c9d111596a2708311b72a0e22d19a70258c533d76283b6ff6dc02f64b83dd0",
+  "mode_runtime": "r3/line/rt/mode_runtime.mjs(r3 の試作の切り替え globalThis.JF_R3.modeShield.line にこの params を入れて試験した)",
+  "mode_runtime_sha256": "5309dd86f9995cbfeb4b2311465433435f2bfd1b0d092111fb5ef873c60ef19b"
+ },
+ "promote_note_ja": "昇格の段で、共有の mode_runtime.mjs に「line のシールド」を mode.json の runtime.shield / shield_params で切り替える形で入れ、shield.mjs を v4 にしたあと、F-ID(fid_std_left08.json = シールドが働かない回、fid_<回>_shield.json = シールドが働く回)が差 0 であることを確かめる",
+ "protocol_line_r3_sha256": "25c853d778f0894ecfac97f5980c4f50986649536df66a48fa9de004fbb0b170",
+ "fid_with_shield": {
+  "file": "fid_p37_shield.json",
+  "test_run": "P37",
+  "shield_frames": 3
+ }
+}

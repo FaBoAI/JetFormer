@@ -1,0 +1,20 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "recover",
+ "round": "r4",
+ "state": "accepted",
+ "label_ja": "合格",
+ "failed": [],
+ "pending": [
+  "確認の段 r4(学習・評価のコードを使わない反証)の前。この合否は学習の段の試験の組の判定"
+ ],
+ "judged_by": "protocol_recover_r4.json acceptance(C1_r3・C2・C3・C4・C5_r4・C6_r4・C7・C8)",
+ "protocol_recover_r4_sha256": "1b6bd8ad32bf7010271864b94cbf3a4590bddca9aaed2bfe9c462302e7468172",
+ "updated_at": "2026-10-15T00:40:48",
+ "notes_ja": [
+  "報告: スタートのゲートの区間(s 0.30〜3.70 m)のキック 右 24/24・左 25/25・区間の外 168/169",
+  "ゲートの外し: 乱しありの有効な回 0/99、乱しなし 0/120。記録したブラウザのシーンは取り込む前に promote/check_recorded_scenes_rc4.mjs で止まり・進み・ゲートの外しを確かめ直す",
+  "試験の組の止まり 1 回(P27。例 P27 = ゲート 7・右 0.197 m の開始で壁へ寄ってシールドが止める。r3 の方策では走る)。valid_episode_r3 と記録の前の確かめ(predict_scenes_rc4.mjs)で外れる",
+  "開始のすき間が 3.5 cm より小さい開始(壁を向いた開始)では、どの候補もシールドの 3.5 cm を守れず、車は止まったまま動かないことがある。記録の前の確かめ(valid_episode_r3)でその開始は次の候補に替わるので記録には入らないが、ブラウザで手で走らせると 20 秒止まったままに見える(画面の説明に書く)"
+ ]
+}

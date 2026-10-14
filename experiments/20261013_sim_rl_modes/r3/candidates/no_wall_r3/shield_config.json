@@ -1,0 +1,172 @@
+{
+ "version": "jf-shield/v4.1",
+ "params": {
+  "H": 24,
+  "c_nominal": 0.08,
+  "c_pessimistic": 0.05,
+  "pessimistic": {
+   "steerRate": 0.8,
+   "delay": 1,
+   "brakeDeceleration": 0.7,
+   "frictionMultiplier": 0.85
+  },
+  "identify": {
+   "enabled": true,
+   "gain": [
+    0.9,
+    1.1
+   ],
+   "delays": [
+    0,
+    1,
+    2
+   ],
+   "tol": 1e-07
+  },
+  "governor": {
+   "enabled": true,
+   "theta_rad": 0.35,
+   "v_max": 4.5,
+   "min_frame": 3,
+   "brake": true,
+   "weak_extra": 0.92,
+   "brake_without_known": true,
+   "brake_probe": {
+    "enabled": true,
+    "v_min": 2.0,
+    "factor": 0.85,
+    "every": 15
+   }
+  },
+  "worst": {
+   "enabled": true,
+   "frictionCircle": true,
+   "frictionMultiplier": 0.85,
+   "speedGain": 1.04,
+   "brakeUnknown": 0.7,
+   "H": 45,
+   "c": 0.07
+  },
+  "unstick": {
+   "enabled": false
+  },
+  "keep_nominal": true,
+  "steer_set": [
+   -0.52,
+   -0.26,
+   0,
+   0.26,
+   0.52
+  ]
+ },
+ "protocol_params_v4": {
+  "H": 24,
+  "c_nominal": 0.08,
+  "c_pessimistic": 0.05,
+  "pessimistic": {
+   "steerRate": 0.8,
+   "delay": 1,
+   "brakeDeceleration": 0.7,
+   "frictionMultiplier": 0.85
+  },
+  "identify": {
+   "enabled": true,
+   "gain": [
+    0.9,
+    1.1
+   ],
+   "delays": [
+    0,
+    1,
+    2
+   ],
+   "tol": 1e-07
+  },
+  "governor": {
+   "enabled": true,
+   "theta_rad": 0.35,
+   "v_max": 4.5,
+   "min_frame": 3,
+   "brake": true,
+   "weak_extra": 0.92
+  },
+  "worst": {
+   "enabled": true,
+   "frictionCircle": true,
+   "frictionMultiplier": 0.85,
+   "speedGain": 1.04,
+   "brakeUnknown": 0.7,
+   "H": 45,
+   "c": 0.07
+  },
+  "unstick": {
+   "enabled": false
+  },
+  "keep_nominal": true,
+  "backups": "v3 のまま(pure pursuit 0.6 + 0.2·|v|・0.6・提案の舵を保ってブレーキ)",
+  "steer_set": [
+   -0.52,
+   -0.26,
+   0,
+   0.26,
+   0.52
+  ]
+ },
+ "v41_governor_extra": {
+  "enabled": true,
+  "theta_rad": 0.35,
+  "v_max": 4.5,
+  "min_frame": 3,
+  "brake": true,
+  "weak_extra": 0.92,
+  "brake_without_known": true,
+  "brake_probe": {
+   "enabled": true,
+   "v_min": 2.0,
+   "factor": 0.85,
+   "every": 15
+  }
+ },
+ "shield_mjs_sha256": "9dc3a64bc4cd4e869534a6cf08b704a0ffbcafb05e2ce94f54b2340bd9b0a9b0",
+ "runtime_files_sha256": {
+  "catalogue.mjs": "e6ff082462c7cb4cd22886a5c7d23fa4661d713f4257207a9baba23168197ef9",
+  "features.mjs": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+  "layouts.mjs": "a3d7051a563d7fc648a541753c3f71ab35c214b759da664ef8e2359fb69cebc4",
+  "line_profiles.mjs": "f7b4d330c0032dae73f7fc7d67f92e4f3933f9e2d539eddebe89c8338742d848",
+  "line_v2_table.json": "39e1b1c427b1246fcfe4008761b175d500ec83b2c926eee1d46b7005ad2378da",
+  "line_v2_table.mjs": "2016c7dda6607ea20cf57be6d2b76006ecbf2c911fde21e004d18e777433ae9e",
+  "manifest.json": "affabdf4fda04664aadd1b637b1a994bdbb89236951f168e1c8ba6327bba41cc",
+  "mode_runtime.mjs": "7f8ee13dc0ed28e2dc7c551fab7a9572fc72d97a622d04555b611f4bea700116",
+  "obs_modes.mjs": "e72f638942f286a250175b5039c868eb759d5f97e17507c1e28106c4dfb49a69",
+  "perturb.mjs": "5bb84250e840dd18af7f7b839d3e92c45a4b74e13ab516f7b0ec09203742bed5",
+  "policy_forward.mjs": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+  "reference_loop.json": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+  "reference_loop.mjs": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+  "rng.mjs": "abbf0c60f7f082ba12a3cde053a91ff83f3680b87ce7058b6361b1e772cff23b",
+  "room_table.json": "693358617d50462319c811f652f6aa093a443c34bec3a2e4bcda2ce7fb4b8d4a",
+  "room_table.mjs": "91e0dac4840f081c1355be809ddb5783811e4d9191e8705e2d14531791a67663",
+  "shield.mjs": "9dc3a64bc4cd4e869534a6cf08b704a0ffbcafb05e2ce94f54b2340bd9b0a9b0"
+ },
+ "runtime_note_ja": "runtime/ は web/rl(manifest aa74e23f…)の写しに shield.mjs(v4)を替え、mode_runtime.mjs のシールドの記録に模型 Q の予想(wq)と速さの上限(cap)を足したもの(記録だけ。操作は同じ)。manifest.json は写したときのまま(shield.mjs・mode_runtime.mjs の sha256 とは合わない。ブラウザの組は昇格の段が rl/make_web_bundle.mjs で作り直す)",
+ "v3_equivalent_params": {
+  "c_nominal": 0.07,
+  "worst": {
+   "enabled": false
+  },
+  "governor": {
+   "weak_extra": 1,
+   "brake_without_known": false,
+   "brake_probe": {
+    "enabled": false
+   }
+  }
+ },
+ "v4_equivalent_params": {
+  "governor": {
+   "brake_without_known": false,
+   "brake_probe": {
+    "enabled": false
+   }
+  }
+ }
+}

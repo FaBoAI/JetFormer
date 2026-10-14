@@ -1,0 +1,186 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "line",
+ "name_ja": "強化学習モード(経路いろいろ)",
+ "short_ja": "同じコースを、左寄り・右寄り・中央・イン・アウト・レイトエイペックス・ランダムな線など、シーンごとに違う経路で走る(第 4 回: 開始の範囲の角(大きく横を向いて柵・柱の近くから始まる所、右寄りの線へ寄せる所)からも安全に線へ寄せるよう学び直し、走行中は壁・柱から 4 cm を守るシールド v5b つき)。記録のシーンは開始のすき間 12 cm 以上で、前もって走らせて、すき間 3 cm 未満・止まり・有効な周なし・シールドの作動 10% 超・後ろへ動いたものは替える",
+ "order": 4,
+ "priority": 2,
+ "course": "default",
+ "obs_wrapper": "cond97",
+ "runtime": {
+  "shield": true,
+  "perturbation": null,
+  "conditioning": {
+   "line": "シーンごとに 1 つの形(フレーム 0 の p に記録)",
+   "c_v": "U(0.9, 1.0)"
+  },
+  "gate_index": "virtual",
+  "line_profile": "jf-line-profile/v2",
+  "line_profile_note": "目標の線 v2(rl/runtime/line_profiles.mjs)。走行中の mode_runtime.mjs は方策の meta.line_profile = v2 を見て使う",
+  "shield_params": {
+   "H": 24,
+   "c_nominal": 0.04,
+   "c_pessimistic": -1,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": false
+   },
+   "governor": {
+    "enabled": false
+   },
+   "worst": {
+    "enabled": false
+   },
+   "unstick": {
+    "enabled": false
+   },
+   "backups": [
+    {
+     "la": 0.6,
+     "k": 0.2
+    },
+    {
+     "la": 0.6,
+     "k": 0
+    },
+    {
+     "hold": true
+    }
+   ],
+   "keep_nominal": true,
+   "pess_fc": false,
+   "pess_speedGain": 1,
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ],
+   "stop": {
+    "enabled": true,
+    "E": true,
+    "Q": false,
+    "H_max": 240,
+    "v_stop": 0.02
+   },
+   "select": "v5b",
+   "cont_candidates": true,
+   "escape": {
+    "enabled": true,
+    "after": 3,
+    "v_still": 0.1,
+    "fwd_steers": [
+     -0.52,
+     -0.39,
+     -0.26,
+     -0.13,
+     0,
+     0.13,
+     0.26,
+     0.39,
+     0.52
+    ],
+    "fwd_speed": 0.5,
+    "fwd_frames": 30,
+    "turn_frames": [
+     0,
+     8
+    ],
+    "rev_steers": [
+     -0.52,
+     -0.26,
+     0,
+     0.26,
+     0.52
+    ],
+    "rev_speed": -0.4,
+    "rev_frames": [
+     12,
+     24
+    ],
+    "min_progress": 0.1,
+    "retry_every": 15
+   }
+  },
+  "shield_note": "jf-shield/v5(select 'v5b')を標準の物理の模型だけで(すき間 4 cm)。shield.json"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "sequence": "Halton",
+   "prefilter": true,
+   "min_initial_clearance_m": 0.12
+  },
+  "per_scene_params": {
+   "family_plan_15": {
+    "const 左(c0 0.6〜0.9)": 2,
+    "const 右(c0 −0.9〜−0.6)": 2,
+    "const 中央(|c0| ≤ 0.2)": 1,
+    "inside": 2,
+    "outside": 2,
+    "late_apex": 2,
+    "early_apex": 1,
+    "random": 3
+   },
+   "scale_rule": "15 シーンでない時は同じ割合で丸める"
+  },
+  "prefilter_min_clearance_m": 0.03,
+  "prefilter_min_valid_laps": 1,
+  "prefilter_no_stall": true,
+  "prefilter_max_shield_fraction": 0.1,
+  "prefilter_rule": "記録の前の予想で、valid_episode_r3 でない・最小すき間 < 0.03 m・shield_fraction > 0.10・reverse_frames > 0 のシーンを次の候補に替える(r4 と同じ)",
+  "prefilter_no_reverse": true
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-line",
+  "sim-line"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "5c197a2beb90cf96701180a1a176bde795cad9c2cfdd1271b6f1fa68981bcd8c",
+ "policy_source": "line r4b(r3/line_r4b/train/main、種 47、初期化 = line r4 の 4,014,080)の 4,014,080 ステップ(protocol_line_r4b.json selection)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_line_r2_sha256": "82de57e2a66e846a99df01a270433220dd474b9f469d64fa9e19946f6c9e3c61",
+ "round": "line r4b(r3/line_r4b/、protocol_line_r4b.json)",
+ "overrides_from_modes_json": [
+  "protocol_line_r2_sha256",
+  "protocol_line_r4b_sha256",
+  "recording",
+  "round",
+  "runtime",
+  "short_ja"
+ ],
+ "protocol_line_r4b_sha256": "c7a1f67706c1c5cd02f143ca4f364238bbc082da361e9456d6cf1ebe6887d17c",
+ "dataset_card": {
+  "schema": "jf-sim-rl-dataset-card-notes/v1",
+  "notes_ja": [
+   "線の形(左寄り・右寄り・中央・イン・アウト・レイトエイペックス・アーリーエイペックス・ランダム)はシーンの種から決まる(フレーム 0 の info.jf.p.line に記録)",
+   "r4b の試験(protocol_line_r4b.json、542 回、1 回だけ): 衝突 0・止まり 0・抜け出し 0・最小すき間 4.13 cm、線の追従 中央値 1.5 cm・95% 点 9.1 cm、左右の線の差 34 cm・イン/アウト 16 cm、線のばらつき VM3 9.9 cm",
+   "走行中は壁・柱から 4 cm を守るシールド v5b(標準の物理の模型だけ)。作動は 0.11% のフレーム。方策だけ(シールドなし)では角の一部でまだ崩れる(確認 r4: ゲート 32 の左寄りの端など、攻めの組 360 回で 23 回衝突。シールドありでは 0・最小 4.0 cm)",
+   "右寄り・アウトの線は追従の 95% 点が 15〜18 cm(全体は 9 cm)",
+   "ゲート 11 の開始では 1 周目の黒シートの横断が数えられないことがある(記録の前の確かめで替える)",
+   "記録の前の予想で、valid_episode_r3 でない・最小すき間 3 cm 未満・シールドの作動 10% 超・後ろへ動いたシーンは替える"
+  ]
+ },
+ "ui_note_ja": "経路の形はシーンの種から決まります。走行中は壁・柱から 4 cm を守るシールドが見張ります(作動したフレームの数を下に出します)",
+ "overrides_from_promote": [
+  "dataset_card",
+  "ui_note_ja"
+ ]
+}

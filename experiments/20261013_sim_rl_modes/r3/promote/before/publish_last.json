@@ -1,0 +1,58 @@
+{
+ "schema": "jf-sim-rl-publish/v1",
+ "at": "2026-10-14T11:11:59",
+ "static": {
+  "files": {
+   "catalogue.mjs": "e6ff082462c7cb4cd22886a5c7d23fa4661d713f4257207a9baba23168197ef9",
+   "features.mjs": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+   "layouts.mjs": "a3d7051a563d7fc648a541753c3f71ab35c214b759da664ef8e2359fb69cebc4",
+   "line_profiles.mjs": "f7b4d330c0032dae73f7fc7d67f92e4f3933f9e2d539eddebe89c8338742d848",
+   "line_v2_table.json": "39e1b1c427b1246fcfe4008761b175d500ec83b2c926eee1d46b7005ad2378da",
+   "line_v2_table.mjs": "2016c7dda6607ea20cf57be6d2b76006ecbf2c911fde21e004d18e777433ae9e",
+   "mode_runtime.mjs": "50de50e7d490f954d0ff13a7de8b20dfb27f15601d6e6a18755e9763f7638f0d",
+   "obs_modes.mjs": "e72f638942f286a250175b5039c868eb759d5f97e17507c1e28106c4dfb49a69",
+   "perturb.mjs": "5bb84250e840dd18af7f7b839d3e92c45a4b74e13ab516f7b0ec09203742bed5",
+   "policy_forward.mjs": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+   "reference_loop.json": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "reference_loop.mjs": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+   "rng.mjs": "abbf0c60f7f082ba12a3cde053a91ff83f3680b87ce7058b6361b1e772cff23b",
+   "room_table.json": "693358617d50462319c811f652f6aa093a443c34bec3a2e4bcda2ce7fb4b8d4a",
+   "room_table.mjs": "91e0dac4840f081c1355be809ddb5783811e4d9191e8705e2d14531791a67663",
+   "shield.mjs": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76"
+  },
+  "manifest_sha256": "affabdf4fda04664aadd1b637b1a994bdbb89236951f168e1c8ba6327bba41cc",
+  "runtime_version": "jf-sim-rl-mode-runtime/v1"
+ },
+ "modes": {
+  "fastest": {
+   "state": "accepted",
+   "policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+   "pool_scenes": 90
+  },
+  "no_wall": {
+   "state": "not_accepted",
+   "policy_sha256": "153c709c52151c5e2ff15326ce6a307ecda67d9888c29c678d5afdcffb85d1ff",
+   "pool_scenes": 90
+  },
+  "recover": {
+   "state": "not_accepted",
+   "policy_sha256": "7720f2754972efbbd9b714008c99e63822b5421a0eef349840d3d52fb8a0456f",
+   "pool_scenes": 75
+  },
+  "speed": {
+   "state": "accepted",
+   "policy_sha256": "6f4d5e8d245f4f3e076c4a5db94c9da684b5bb0ba061b999d372ab6098898ac0",
+   "pool_scenes": 90
+  },
+  "line": {
+   "state": "not_published",
+   "policy_sha256": null,
+   "pool_scenes": 0
+  },
+  "obstacle": {
+   "state": "not_published",
+   "policy_sha256": null,
+   "pool_scenes": 0
+  }
+ }
+}

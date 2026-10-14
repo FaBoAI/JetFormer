@@ -1,0 +1,79 @@
+{
+ "schema": "jf-sim-rl-line-r4b-browser-fid/v1",
+ "page": "http://192.168.55.1:8080/sim/c/default/",
+ "served_from": "http://192.168.55.1:8457/",
+ "cand": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/r3/candidates/line_r4",
+ "started_at": "2026-10-14T23:40:28",
+ "fids": {
+  "fid_ln_g30r120_r4b_g8_shield.json": {
+   "file": "fid_ln_g30r120_r4b_g8_shield.json",
+   "frames": 600,
+   "exact_same": 154,
+   "exact_diff": 446,
+   "first_exact_diff": 3,
+   "max_abs_steering": 5.273559366969494e-16,
+   "max_abs_speed": 2.4424906541753444e-15,
+   "shield_frames": 3,
+   "info_mismatch": 0,
+   "first_info_mismatch": null,
+   "sh_same_frames": 600,
+   "shield_frames_node": 3,
+   "metadata_same": true,
+   "metadata_shield": {
+    "version": "jf-shield/v5",
+    "select": "v5b",
+    "c_nominal": 0.04
+   },
+   "policy_sha256_page": null,
+   "policy_bytes_page": 1988582,
+   "policy_sha256_fid": "5c197a2beb90cf96701180a1a176bde795cad9c2cfdd1271b6f1fa68981bcd8c",
+   "ms_mean": 10.718333333333334,
+   "ms_p95": 18,
+   "ms_max": 25,
+   "pass": true
+  },
+  "fid_std_left08.json": {
+   "file": "fid_std_left08.json",
+   "frames": 600,
+   "exact_same": 122,
+   "exact_diff": 478,
+   "first_exact_diff": 9,
+   "max_abs_steering": 3.3306690738754696e-16,
+   "max_abs_speed": 2.6645352591003757e-15,
+   "shield_frames": 0,
+   "info_mismatch": 0,
+   "first_info_mismatch": null,
+   "sh_same_frames": 600,
+   "shield_frames_node": 0,
+   "metadata_same": true,
+   "metadata_shield": {
+    "version": "jf-shield/v5",
+    "select": "v5b",
+    "c_nominal": 0.04
+   },
+   "policy_sha256_page": null,
+   "policy_bytes_page": 1988582,
+   "policy_sha256_fid": "5c197a2beb90cf96701180a1a176bde795cad9c2cfdd1271b6f1fa68981bcd8c",
+   "ms_mean": 9.03,
+   "ms_p95": 12,
+   "ms_max": 25,
+   "pass": true
+  }
+ },
+ "browser": {
+  "browserName": "firefox",
+  "browserVersion": "157.0.1",
+  "platformName": "linux"
+ },
+ "page_env": {
+  "ready": "complete",
+  "sim": true,
+  "origin": "http://192.168.55.1:8080",
+  "secure": false,
+  "uuid": "function"
+ },
+ "ua": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+ "policy_sha256_served": "5c197a2beb90cf96701180a1a176bde795cad9c2cfdd1271b6f1fa68981bcd8c",
+ "finished_at": "2026-10-14T23:40:57",
+ "pass": true
+}

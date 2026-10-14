@@ -1,0 +1,171 @@
+{
+ "title": "離脱復活(recover)第 3 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)と modes.json を変えずに、recover だけに足す・置き換える項目",
+ "version": "recover-r3-1",
+ "written_at": "2026-10-14T09:55:00+09:00",
+ "written_by": "r3 の計画の段(sim_rl_modes_20261013、modes の作業とは別の作業。学習・試験の前に固定)",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "base_modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)。2026-10-14 08:30「作業を引き続き実施」",
+ "why": [
+  "確認 recover r1・r2(check_recover_r1.md・check_recover_r2.md)の不合格: 有効な回 34〜38%(要 90%)・出来事の成功 0.75(要 0.95)・出来事 3.0 回/回(要 3.5、衝突で早く終わるため)・キックの向き 0.865(要 0.90)・乱しなしの REC60 の最小すき間 2.12 cm(要 3 cm)。止まったままの回が有効に数えられ記録の前の確かめも通る(P33・Q4・Q10・Q12)",
+  "記録の乱しの決まり(modes.json common.perturbation_recording)には、物理として立て直せない乱しが入っている: 黒シートの出口の右へのパルスは 86 通りの操縦でも 0/82、出口の外も 13% しか逃げ道が無い(確認 r2)。r3 の下調べの oracle(方策を使わない 24 通りの操縦、乱しなしの方策の 756 の状態 × 12 の乱し、各クラスの一番強い値): 今の決まりの舵のパルス・ブレーキ/踏み込みで立て直せるのは約 54%。中・強の舵のパルスは 1.5 m/s では 92%、2.5 m/s 44%、4.0 m/s 19%、4.5 m/s 12% しか立て直せず、速さで決まる(r3/rc/oracle_summary.json)。→ C2 ≥ 0.95・C1 ≥ 90/100 は今の乱しの分布では物理として届かない見込み。しきい値は変えず、乱しの分布を「立て直せる組」に作り直す(deviations.md)",
+  "一方、始めてよい位置 425 のうち 422 では少なくとも 1 つの乱しが立て直せ(舵のパルスで 413・強い舵のパルスで 249)、位置のマス 105 のうち 92 に舵のパルスの立て直せる状態がある → 立て直せる組だけにしても出来事の数(C4 ≥ 3.5)と位置の広がりは保てる見込み",
+  "r3 の下調べ(学習しない): 標準の物理のすき間シールド 3.5 cm を乱しのフレーム以外にかけると、REC60 の最小すき間 2.12 → 3.52 cm(作動 0.01%)。乱しありの新しい開始 100 回では有効 29 → 32・出来事の成功 ≈ 0.745 → 0.763(立て直せない乱しはシールドでも救えない)。→ C6 のすき間はシールドで直し、C1・C2 は乱しの分布の作り直しと学び直しで直す"
+ ],
+ "unchanged": [
+  "判定のしきい値: C1 ≥ 90/100・C2 ≥ 0.95・C3 中央値 ≤ 1.2 秒・90% 点 ≤ 2.5 秒・C4 ≥ 3.5 回/回・外す割合 0.10〜0.40・C5 ≥ 0.90(向き・横それぞれ)・C6 停止から 1 周 ≤ 9.0 秒・REC60 60/60・最小すき間 ≥ 0.03 m",
+  "定義: recovered・recovery_success・mask_rule・nominal_line・clearance・判定のコア(元の sim-core.js、キックは protocol definitions.core_judged のとおり)",
+  "乱しの種類(舵のパルス・わざと外す・ブレーキ/踏み込み)・3 つの強さの中身(modes.json common.perturbation_recording.classes の frames・k・d・T)・予定(最初 2〜4 秒・終わってから 2〜3.5 秒・18.5 秒以降は始めない)・始めてよい位置の幅の決まり(zones.perturb_allowed)",
+  "乱した操作は学習に使わない(info.jf.l = 0、取り込みで外す)"
+ ],
+ "definitions_added": {
+  "stall": "止まり: フレーム 30 以降に、sim の速さ |v| < 0.2 m/s のフレームが 30 フレーム(1.0 秒)以上続く区間がある。ただしブレーキの乱しの区間とそのあと 30 フレーム([ps, pe + 30))は数えない",
+  "progress": "R の上の進み(追跡器の s、周をまたいで足す)が 20 秒で 1 周の長さ(26.12 m)以上",
+  "valid_episode_r3": "protocol の valid_episode かつ 止まりが無い かつ progress を満たす",
+  "kick_survival_r3": "protocol の RC-KICK の生き残り(20 秒を衝突なし、ゲートの外しはよい)かつ 止まりが無い"
+ },
+ "perturbation_r3": {
+  "id": "jf-perturb-record/v2",
+  "what": "記録・試験の乱しを「立て直せる組」に限る。種類・強さの中身・予定・幅の決まりは v1 のまま。足すのは (1) 立て直せる表、(2) 表で使えない組のときの替え方、(3) 始まりを散らす決まり",
+  "recoverable_table": {
+   "file": "r3/rc/recoverable_table_v1.json(学習の段の最初に下の手順で作り、学習を始める前に sha256 を r3/protocol_recover_r3_table.sha256 に書いて固定する。以後、学習・検証・試験・記録で同じ表)",
+   "builder": "r3/rc/build_recoverable_table.mjs(r3/rc/oracle_proto.mjs を元にした、乱数を使わない決定的な手順)",
+   "reference_drivers": [
+    "離脱復活 r1 の方策(bundle/recover/policy.json、7720f275…)を乱しなしで",
+    "最速の方策(bundle/fastest/policy.json、7c43cb53…)",
+    "離脱復活 r1 の方策に速さの上限 3.0 m/s(runtime の speed_limit)",
+    "離脱復活 r1 の方策に速さの上限 2.2 m/s"
+   ],
+   "starts": "各 driver に STD + mulberry32(0x7ab1e001) の記録の開始の分布(ゲート U{0..32}・左右 ±0.2 m・向き ±15°・開始のすき間 > 0)7 つ、種 3,240,000 + n、元の sim-core.js、標準の物理",
+   "states": "各回のフレーム 30〜590 を 4 フレームおき",
+   "combos": "舵のパルス {弱, 中, 強} × {左, 右}(フレーム数・k はクラスの上限 = 悪い側)・わざと外す {弱, 中, 強} × {左, 右}(d・T はクラスの上限。その側の幅が足りなければその状態では使えない = 表に入れない)・ブレーキ {弱, 中, 強}・踏み込み {弱, 中, 強}(フレーム数はクラスの上限)の 18 通り",
+   "oracle": "乱しを差し込み(乱しの間、乱していない側の指令は「そのまま」か「方策」)、そのあと次のどれか 1 つで立て直せれば「立て直せる」: (a) oracle_proto.mjs の 24 通り(乱しの間の速さ {そのまま, 0} × 乱しのあと {最大すき間の線(room_table の emid)の pure pursuit 速さ {そのまま, 2.0, 1.5, 1.0} / 舵 a ∈ {±0.52, ±0.26} を t1 ∈ {0.2, 0.4} 秒ブレーキ → pure pursuit 2.0})、(b) その driver の方策で続ける、(c) 離脱復活 r1 の方策で続ける",
+   "success": "ps から pe + 3 秒まで衝突なし・フレームの終わりのすき間 ≥ 0.02 m・最後に前へ 0.5 m/s 以上・|e_y − emid(s)| ≤ 0.20 m・|向きのずれ| ≤ 0.30 rad",
+   "cell": "(R 上の s を 0.25 m のマス、速さを 0.5 m/s のマス(floor(v/0.5))、18 通りの組)。サンプルが 3 つ以上あり、立て直せる割合 ≥ 0.95 のマスだけ「使える」。サンプルの無いマス(見た速さより速いなど)は使えない",
+   "estimate_cpu": "約 3,600 状態 × 18 通り。下調べの速さ(1 呼び出し 約 0.25 秒、方策の続きを先に試すともっと速い)で 4 本並べて 1 時間前後"
+  },
+  "scheduler": {
+   "draw": "出来事ごとの 12 個の一様乱数(種類・強さ・向き・フレーム数などの引き方)は v1(perturb.mjs createPerturber)と同じ。引いた組を「頼んだ組」とする",
+   "allowed_check": "フレーム f が予定の時刻以降・18.5 秒より前・v1 の始めてよい位置なら、今の s と速さ v で表を引く",
+   "fallback_order": "頼んだ組が使えなければ、次の順で最初に使える組にする(使った組を「当てた組」として出来事の記録に両方書く): (1) 向きを逆に、(2) 同じ強さのわざと外す(頼んだ向き → 逆)、(3) 同じ強さのブレーキ、(4) 1 つ弱い強さで (0)〜(3) をくり返す(弱まで)。どれも使えなければそのフレームでは始めず、次のフレームで同じ頼んだ組で調べ直す(乱数は引き直さない)",
+   "spread": "使える組があるフレームでも、mix32(シーンの種, f, 0x5a7e) / 2³² < 0.25 のときだけ始める(始まりが幅の決まりの入口に集まるのを散らす。乱数ではなく決定的)",
+   "magnitude": "当てた組の中身(フレーム数・k・d・T)は v1 と同じく乱数でクラスの範囲から引く(表は上限で作ってあるので、範囲の中のどの値でも同じかそれより立て直しやすい)",
+   "browser": "Node とブラウザで同じファイル(rl/runtime/perturb.mjs の r3 版 + 表の JSON。昇格の段で web/rl に入れる)"
+  }
+ },
+ "runtime": {
+  "shield": {
+   "what": "乱しのフレーム(info.jf.ph = 'perturb')以外に、標準の物理の模型のすき間シールドをかける(安全網。C6 のすき間)",
+   "params": {
+    "c_nominal": 0.035,
+    "c_pessimistic": -1,
+    "governor": {
+     "enabled": false
+    },
+    "identify": {
+     "enabled": false
+    },
+    "worst": {
+     "enabled": false
+    },
+    "unstick": {
+     "enabled": false
+    },
+    "H": 24,
+    "keep_nominal": true
+   },
+   "labels": "シールドが替えた指令は正解ラベル(l = 1、sh = 1)。乱しのフレームはシールドを通さない(乱しを打ち消さない)",
+   "prototype_evidence": "r3/rc/rc_sh(r3/runtime の試作、上の値): REC60 60/60・最小 3.52 cm・作動 0.01%。乱しあり 100 回で有効 32・止まり 3"
+  }
+ },
+ "sets": {
+  "test": {
+   "RC-P100-R3": {
+    "halton_from": 28001,
+    "count": 100,
+    "seed_base": 3120000,
+    "rule": "Halton 28,001 番から(試験の範囲の中。recover r1・r2 の 20,001〜・speed r2 の 25,001〜・line r2 の 26,001〜・no_wall r3 の 26,501〜27,999 と重ならない)、recover の記録の開始の分布で開始のすき間 > 0 を満たさない番号は飛ばして 100 個。回 i の種 = 3,120,000 + i。乱しは perturbation_r3(強さは auto)、標準の物理・連続 20 秒・シールドあり"
+   },
+   "RC-KICK-R3": {
+    "rule": "STD の開始・連続 20 秒・乱しなし。キックの時刻 1.25 + 0.5·k 秒(k = 0〜35、protocol の 1.0 + 0.5·k と重ならない)× 左右 × {向き 0.3 rad, 横 0.15 m} = 144 回。判定に使うのはキックの瞬間の位置が v1 の始めてよい位置(zones.perturb_allowed)の回だけ(protocol と同じ)。高速版(sim.peek().state の書き換え)",
+    "seed_base": 3121000
+   },
+   "RC-STD": "protocol.json のまま(乱しなしの STD の単周。定義の組)",
+   "RC-REC60": "protocol.json のまま(乱しなしの F-REC60 = ユーザーの記録の計画 60 条件。固定の表なので新しくできない)",
+   "RC-U60-R3": {
+    "rule": "乱しなし・連続 20 秒、RC-P100-R3 の続きの Halton 番号から 60 個(開始のすき間 > 0)、種 3,122,000 + i。新しく足した組(C6 のすき間を記録の開始の分布で確かめる。きびしくする向き)"
+   }
+  },
+  "validation": {
+   "rule": "RC-V100-R3 = Halton 17,001 番から 100 回(種 3,220,000 + i、検証の範囲の中で protocol の 10,001〜・line r2 の 12,001〜・obstacle r2 の 15,001〜・no_wall r3 の 16,001〜 と重ならない)+ RC-VKICK-R3(STD の開始、時刻 1.4 + 0.5·k、k = 0〜35、× 左右 × 2 種類、種 3,221,000 + i)+ RC-STD + RC-REC60 + RC-VU30-R3(乱しなし 30 回、種 3,222,000 + i)。高速版でよい。チェックポイントを選ぶためだけに使う"
+  },
+  "fresh_report": {
+   "rule": "mulberry32(0x3c3c0002) の一様乱数の新しい開始 150 回(乱しあり、種 3,320,000 + i)を、試験の組のあとに 1 回だけ走らせて C1・C2・C4・C7 と止まりを報告する"
+  }
+ },
+ "acceptance": {
+  "C1_r3": "RC-P100-R3 の 90/100 以上が valid_episode_r3",
+  "C2": "式・しきい値は protocol.json のまま(RC-P100-R3 の全部の出来事の recovery_success の割合 ≥ 0.95)",
+  "C3": "protocol.json のまま",
+  "C4": "protocol.json のまま(RC-P100-R3 の出来事の数の平均 ≥ 3.5/回、外すフレームの割合の平均 0.10〜0.40)",
+  "C5_r3": "RC-KICK-R3 の判定に使う回で、向き・横それぞれ kick_survival_r3 ≥ 0.90",
+  "C6_r3": "RC-STD が完走し停止から 1 周 ≤ 9.0 秒。RC-REC60 と RC-U60-R3 の全部が valid_episode_r3 で最小すき間 ≥ 0.03 m",
+  "C7_new": "RC-P100-R3 の出来事(当てた組)のうち、強さ 弱・中・強 がそれぞれ 15% 以上、種類 舵のパルス・わざと外す・ブレーキ/踏み込み がそれぞれ 10% 以上(立て直せる組に限っても、乱しの種類と強さのばらつきが残ること。きびしくする向き)",
+  "reported": [
+   "頼んだ組と当てた組の表(替わった割合と替え方の内訳)",
+   "乱しの始まりの位置の分布(黒シートの出口・奥の直線の出口の割合)",
+   "強さ・種類ごとの成功率、ゲートの外しのある有効な回",
+   "最速の方策の RC-P100-R3・RC-KICK-R3(同じ乱し、比べる)",
+   "シールドの作動の割合(乱しのあと 3 秒の中とそれ以外)",
+   "protocol の元の乱し(v1)で同じ開始を走らせた RC-P100-R3-V1(報告だけ。作り直しの効果と、v1 での値)",
+   "VM7・VM3(最速のモード・最速 + 同じ乱しと比べる)"
+  ],
+  "thresholds_relaxed": "無し。乱しの分布を作り直したこと(試験の組の乱しの決まりが変わる)は deviations.md に書く"
+ },
+ "training": {
+  "run": "recover_r3(rl/train_modes.py の recover を写した r3 の run。観測 base79v のまま)",
+  "init": "離脱復活 r1 の選んだチェックポイント(train/recover の 2,015,232 ステップ、方策 7720f275…)",
+  "seed": 32,
+  "seed_note": "protocol allowed_tuning.retry の「新しい種 = 元の種 + 1」(recover は r2 で作り直しをしていないので、この種は未使用)",
+  "steps_max": 10000000,
+  "early_stop": "400 万ステップ以降、続けて 3 つのチェックポイントが検証の組で全部合格したら止めてよい",
+  "perturbation": "学習の乱し = perturbation_r3 の scheduler(同じ表。ただし学習では立て直せる割合 ≥ 0.80 のマスも使う = 少しむずかしい組も学ぶ)+ 状態のキック 25%(modes.json の TRAIN_SPEC.kick のまま)。種類の割合は modes.json training.perturbation.types_p のまま",
+  "magnitude_curriculum": "強さの倍率を 0.5 から始め、最初の 300 万ステップで 1.0 まで上げる(r1 は 1.2 まで。表は 1.0 で作るので 1.0 を上限にする)",
+  "reward": {
+   "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)+ r1 のゲートの外し −3",
+   "recovery": "出来事の終わり pe のあと、recovered(definitions)になったら一度だけ +1.0(1.5 秒以内)/ +0.5(3 秒以内)、3 秒で戻らなければ −1.0",
+   "clearance_barrier": "d_min < 0.05 m で −0.3·min(4, ((0.05 − d_min)/0.02)²)(乱しの区間の中は 0)",
+   "terminal": "衝突・停止・逆走・黒シート違反・周の距離不足は −10 で終了(r1 のまま)+ 止まりの見張り(1.5 秒以降、ブレーキの乱しの区間を除いて直近 60 フレームの R の進みが 0.6 m 未満なら −10)"
+  },
+  "start_distribution": "modes.json recover.training.start_distribution のまま",
+  "shield_in_training": "使わない(重い)。検証・試験・記録はシールドあり",
+  "lock": "jf-heavy --mem 2G --lock rl -- nice -n 15(チェックポイント・続きから再開できること)"
+ },
+ "selection": {
+  "rule": "検証の組(シールドあり)で C1_r3・C2・C3・C4・C5_r3・C6_r3・C7 を全部満たすチェックポイントのうち一番後のもの。無ければ満たす数が一番多く、同じなら C2 の成功率が高いもの",
+  "test_runs": "試験の組は選んだ 1 つにだけ 1 回使う。試験の結果を見て選び直さない"
+ },
+ "fallback": "protocol.json acceptance.fallbacks.recover(強さを「弱・中」だけ)を、perturbation_r3 のまま RC-P100-R3 で 1 回だけ試験してよい(両方を報告)",
+ "recording": {
+  "prefilter": "記録の前の予想(rl/predict_scenes.mjs の r3 版)で、valid_episode_r3 でないシーン(止まり・進みの足りないものを含む)を次の候補に替える。候補はプランの 3 倍まで(足りなければ記録の段が deviations.md に書いて足す)",
+  "dataset_card_notes": "立て直せる組だけにしたこと・頼んだ組と当てた組の割合・始まりの位置の分布・シールドの作動を、データセットの説明に写す"
+ },
+ "label_mask_fixes_for_promote": {
+  "status_at_writing": "modes の作業の統合の段(deviations.md「統合の段」、2026-10-14 09:00〜)が JetFormer 本体に 2 つとも手当てを入れた: (a) jetformer/sim/label_mask.py の外す範囲を l = 0 の操作 j ごとに k ∈ [j − 10, j](乱しの区間なら [ps − 10, pe − 1])に 1 つ広げた、(b) scene_import.dataset_to_scenes が scene.json に label_mask.unset_segments を書き、dataset.update_scene がジャンルを付け直してもその区間を「未設定」で残す",
+  "promote_step": [
+   "(a)・(b) を、確認 recover r2 の e2e_label_mask.py と同じ形(本物のデータセットの形 → import_archive → 展開 → build_dataset → update_scene(mode_id=8) → build_dataset)で、離脱復活 r3 の乱し v2 のシーンを使って確かめる試験を JetFormer に足す(jetformer/tests/test_sim_label_mask_e2e.py): 学習に使う観測の正解に l = 0 の操作が 0、外した観測が付け直しのあとも残る、強化学習モードでないシーン・実機のシーンの作り直しは前とビット単位で同じ",
+   "残る正解の質の問題(漏れではない): 展開したシーンから作り直すと、学習に使う観測の約 67% で正解が 1 フレーム前にずれる(int(1e6/30·(k+1)) と 33,333/33,334 µs)。展開したシーン(VEHICLE の quality = 'snapshot')だけ未来の操作をフレームの番号で引く道を dataset._aligned_arrays に足す(実機のシーンは変えない)。試験: 33,333/33,334 µs のシーンで future_actions[k] = vehicle[k+1..k+10]",
+   "1 シーンの ZIP の形(simulation/frames.jsonl)の読み取り(統合の段で足した)も、乱し v2 のシーンで確かめる",
+   "pytest 一式は jf-heavy --mem 2500M --lock big"
+  ]
+ },
+ "publication": {
+  "r3": "合格なら bundle/recover/ を r3 の一式で置き換える(status accepted)。不合格でも優先 1 なので r3 の一式を status not_accepted「不合格(参考)」で出す(r1 の一式より数字が良いときだけ。良くなければ r1 のまま)",
+  "promote_step": "昇格の段は、modes の作業(wf_7e500cf6-ccd)が終わってから共有のファイル(rl/runtime・web/rl・bundle)と JetFormer 本体を変える"
+ },
+ "files": {
+  "prototype": "experiments/20261013_sim_rl_modes/r3/rc/(oracle_proto.mjs・summ_oracle.py・run_rc3.mjs = 確認 r1 の run_rc.mjs の写し・batch_rc3.mjs・jobs_rc3.mjs・run_rc3_bg.sh・summ_rc3.py)・r3/runtime/mode_runtime.mjs(shieldSkipPerturb)",
+  "prototype_results": "jetformer_reports/sim_rl_modes_20261013/r3/rc/(oracle_s0〜3.jsonl・oracle_summary.json・rc_web・rc_sh)",
+  "plan": "jetformer_reports/sim_rl_modes_20261013/r3/plan.md"
+ }
+}

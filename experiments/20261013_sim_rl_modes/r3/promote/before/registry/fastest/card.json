@@ -1,0 +1,62 @@
+{
+ "schema": "jf-sim-rl-mode-card/v1",
+ "key": "fastest",
+ "state": "accepted",
+ "headline_ja": "停止から 1 周 8.09 秒・走りながら 7.66 秒(RC加速教師 8.93 / 8.37 秒)。REC60 の 60 回すべて完走・最小すき間 5.7 cm",
+ "lap_from_stop_s": 8.091953367107205,
+ "flying_lap_s": 7.656318984241537,
+ "tests": {
+  "runs": 62,
+  "collisions": 0,
+  "text_ja": "62 回の試験(停止から・走りながら + REC60)で衝突 0"
+ },
+ "min_clearance_cm": {
+  "value": 5.7,
+  "text_ja": "REC60 の最小すき間"
+ },
+ "main": [
+  {
+   "label_ja": "線のばらつき(VM3)",
+   "value_ja": "0.8 cm(1 本の速い線。開始を広げてばらつきを出す)"
+  }
+ ],
+ "checks": [
+  {
+   "id": "F2_lap",
+   "label_ja": "停止から 1 周がベストラップの値と同じ",
+   "pass": true
+  },
+  {
+   "id": "F3_rec60",
+   "label_ja": "REC60 60/60",
+   "pass": true
+  },
+  {
+   "id": "F4_identity",
+   "label_ja": "ブラウザ(8080)と Node の操作が同じ",
+   "pass": true
+  }
+ ],
+ "notes_ja": [
+  "速さが目的のモードなので、線は 1 本(ばらつきは開始の位置・向きを広げて出す)",
+  "ベストラップの確認: 遅い舵 + 弱いブレーキ + 制御遅延 1 フレームの組み合わせには弱い(シミュレーターの標準の物理では問題なし)"
+ ],
+ "verdict_ja": "学習しない(ベストラップの作業の確認 r1・r3 で本物と判定された main 種 1・1,000 万ステップ 7c43cb53…)",
+ "updated_at": "2026-10-14T11:11:59",
+ "browser_identity": {
+  "pass": true,
+  "files": [
+   {
+    "file": "eval/fastest/fid_std.json",
+    "frames": 600,
+    "max_abs_steering": 3.885780586188048e-16,
+    "max_abs_speed": 2.4424906541753444e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   }
+  ],
+  "where": "http://192.168.55.1:8080(Firefox 157.0.1・DISPLAY :0)",
+  "checked_at": "2026-10-14T11:11:17"
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "line",
+ "state": "not_accepted",
+ "label_ja": "不合格(確認 r3 で反証。出さない)",
+ "failed": [
+  "check_r3_gate30_right_collision",
+  "check_r3_gate16_17_stall",
+  "check_r3_no_passing_candidate_passthrough"
+ ],
+ "pending": [],
+ "rule": "protocol_line_r3.json publication: 合格なら bundle/line/(status accepted)、不合格なら candidates/line_r3/(not_published)。bundle/ は modes の作業が終わってから昇格の段が変える",
+ "summary": {
+  "L1_r3": {
+   "P": "60/60",
+   "HEAD": "60/60",
+   "EXT": "60/60"
+  },
+  "L2_r3": 0.07710955113202286,
+  "L3_tracking": {
+   "median": 0.0158,
+   "p95": 0.08885000000000001,
+   "frames": 16771
+  },
+  "L4_distinct": {
+   "left_right_mean": 0.34009961685823736,
+   "inside_outside_mean": 0.15362126436781606,
+   "min_pair_max_1m_avg": 0.123115,
+   "bins": 522
+  },
+  "L5_vm3": 0.09875229927628797,
+  "L6_lap": 8.980318439580593,
+  "L7_shield": {
+   "P_fraction": 0.00011111111111111112,
+   "max_per_run_P_FAM6": 0.005
+  },
+  "L8_no_collision": "186/186"
+ },
+ "note_ja": "第 3 回の試験の組 LN-P60-R3 + LN-HEAD60-R3 + LN-EXT60-R3 + LN-FAM6(元の sim-core.js、シールドあり)。/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/train_line_r3.md",
+ "updated_at": "2026-10-15T03:04:30",
+ "from_training_status": {
+  "state": "accepted",
+  "label_ja": "合格(昇格の段で bundle/line/ に置く)",
+  "failed": [],
+  "pending": [
+   "promote"
+  ]
+ },
+ "check_ja": "check_line_r3.md: 不合格。ゲート 30 の角 × 右寄りの形でシールドがあっても衝突 3・最小 1.33 cm(合格する候補が無いとき方策の指令を通した)。ゲート 16・17 の角の箱で止まり 3/80・8/80",
+ "superseded_by": "r3/candidates/line_r4(r4b の試験・確認 r4 で合格。bundle/line に昇格)",
+ "updated_by": "昇格の段(2026-10-15、r3/promote): 確認 r3 の結果で状態を正した"
+}

@@ -1,0 +1,209 @@
+{
+ "title": "絶対壁にぶつからない(no_wall)第 3 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)を変えずに、no_wall だけに足す・置き換える項目",
+ "version": "no_wall-r3-1",
+ "written_at": "2026-10-14T09:55:00+09:00",
+ "written_by": "r3 の計画の段(sim_rl_modes_20261013、modes の作業とは別の作業。学習・試験の前に固定)",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "base_modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)。2026-10-14 08:30「作業を引き続き実施」",
+ "why": [
+  "確認 no_wall r2(check_no_wall_r2.md)の不合格: (1) DR-T の範囲の中の隅(速い舵 1.8・弱いブレーキ 0.7・μ × 0.85・摩擦円・前進のゲイン 1.04)でシールド v3 があっても衝突(DR-T の頂点 480 回で 10、隅 K0 で 33 中 30)。シールド v3 の模型は摩擦円・μ・前進のゲインを持たず、見積もった模型で合格なら替えない(keep_nominal)ので、この隅の危なさが見えない。(2) N2(標準の物理で 8 cm)は試験の組の引き当て(新しい開始 600 回で 8 cm 未満 1.3%・最小 7.0 cm = シールドのしきい値)。(3) 止まったまま(シールドが約 10 秒止め、有効な周 0)の開始が valid_episode と記録の前の確かめを通る。(4) bundle/no_wall/status.json が accepted のまま(確認 r2 は不合格)",
+  "r3 の下調べ(学習しない。r3/nw/、plan.md 2 章): シールド v4 の試作(見積もり + 見積もれない値の悪い端の模型 Q を keep_nominal の条件にも入れる・弱いブレーキのときの速さの上限に 0.92 を掛ける)で、隅 K0 の衝突 30/33 → 0/33、DR-T の頂点 VX(確認 r2 と同じ 480 回)10/480 → 0/480・最小 7.9 cm。ただし隅の原因分けの組 ABX(12 隅 × 33 ゲート)で 7/396(遅延 1 の隅 K7 で 4/33)が残り、標準の物理の新しい開始 600 回で止まり 2(ゲート 17 の開始は方策そのものの弱さで、v3・v4・すくみをほどく・開始のそろえのどれでも止まりのまま。c_nominal 0.09 にすると新しい止まり 1)。→ シールドだけでは足りず、方策の学び直しが要る"
+ ],
+ "unchanged": [
+  "判定のしきい値: N2 ≥ 0.08 m(標準の物理)・N3 ≥ 0.05 m(物理のずれ)・N4 ≤ 12.0 秒・N6 ≤ 0.02・N7 ≤ 0.05・N5 の R200 ≥ 190/200",
+  "DR-T の範囲(modes.json common.dr_specs.DR-T)・定義(valid_episode・clearance・lap_from_stop・rho_req・rho_comb・shield_fraction・in_range)・判定のコア(元の sim-core.js、摩擦円の回は protocol definitions.core_judged のとおり高速版の写し)",
+  "シールドが替えた指令を正解ラベルにする決まり(modes.json common.shield.labels)",
+  "記録は標準の物理"
+ ],
+ "definitions_added": {
+  "stall": "止まり: フレーム 30 以降に、sim の速さ |v| < 0.2 m/s のフレームが 30 フレーム(1.0 秒)以上続く区間がある",
+  "valid_episode_r3": "protocol の valid_episode かつ 止まりが無い かつ sim が数えた有効な周(33 ゲート・黒シートの横断 1 回・衝突 0)が 1 つ以上(120 秒の回は 5 つ以上)",
+  "dr_vertex": "DR-T の頂点: steerRate・brakeDeceleration・driveTau・driveAccelerationCap・frictionMultiplier・steerGain・speedGain をそれぞれ範囲の端のどちらかに(確率 1/2)、遅延 0/1 を 1/2、摩擦円を確率 0.3(確認 r2 の VX と同じ作り方)",
+  "dr_hard_corner": "DR-T の「止まりにくい隅」: 摩擦円 あり・brakeDeceleration 0.7・frictionMultiplier 0.85 に固定し、ほかの 5 つ(steerRate・driveTau・driveAccelerationCap・steerGain・speedGain)と遅延 0/1 は範囲の端のどちらかを乱数で(確認 r2 の K0〜K11 の形を一般にしたもの)"
+ },
+ "runtime": {
+  "shield": {
+   "version": "jf-shield/v4",
+   "params": {
+    "H": 24,
+    "c_nominal": 0.08,
+    "c_pessimistic": 0.05,
+    "pessimistic": {
+     "steerRate": 0.8,
+     "delay": 1,
+     "brakeDeceleration": 0.7,
+     "frictionMultiplier": 0.85
+    },
+    "identify": {
+     "enabled": true,
+     "gain": [
+      0.9,
+      1.1
+     ],
+     "delays": [
+      0,
+      1,
+      2
+     ],
+     "tol": 1e-07
+    },
+    "governor": {
+     "enabled": true,
+     "theta_rad": 0.35,
+     "v_max": 4.5,
+     "min_frame": 3,
+     "brake": true,
+     "weak_extra": 0.92
+    },
+    "worst": {
+     "enabled": true,
+     "frictionCircle": true,
+     "frictionMultiplier": 0.85,
+     "speedGain": 1.04,
+     "brakeUnknown": 0.7,
+     "H": 45,
+     "c": 0.07
+    },
+    "unstick": {
+     "enabled": false
+    },
+    "keep_nominal": true,
+    "backups": "v3 のまま(pure pursuit 0.6 + 0.2·|v|・0.6・提案の舵を保ってブレーキ)",
+    "steer_set": [
+     -0.52,
+     -0.26,
+     0,
+     0.26,
+     0.52
+    ]
+   },
+   "what": [
+    "Q の模型(見積もり + 悪い端): 舵の速さ・遅延・舵のゲインは見積もりのまま、ブレーキは見積もり(まだ減速を見ていなければ 0.7)、μ × 0.85・摩擦円あり・前進のゲイン 1.04。先読み 45 フレーム、しきい値 0.07 m",
+    "keep_nominal(提案を替えない)の条件を「見積もった模型で ≥ c_nominal」から「見積もった模型で ≥ c_nominal かつ Q で ≥ 0.07 m」にする",
+    "速さの見張り: ブレーキが標準より弱いと見積もったら、v3 の上限にさらに 0.92 を掛ける",
+    "c_nominal 0.07 → 0.08(N2 のしきい値と同じ。標準の物理では見積もった模型 = sim なので、合格する候補がある限り 8 cm を割らない。protocol acceptance.fallbacks.no_wall の c_shield の考え方と同じ向き)",
+    "すくみをほどく(unstick)は使わない: 下調べ(止まりの 4 つの開始、c_nominal 0.07・0.08、ヒステリシスあり/なし)で止まりを 1 つも直せず、すき間 5 cm まで寄るだけだった(plan.md 2.1)。止まりは方策の学び直しと判定(N5_r3)で扱う",
+    "悲観の模型・予備の操縦・候補・決定性は v3 のまま"
+   ],
+   "prototype_evidence": "r3/runtime/shield.mjs(jf-shield/v4-proto)で worst(c 0.07)+ weak_extra 0.92: K0 0/33、VX 0/480(c_nominal 0.09 の版、最小 7.87 cm、作動 43%・ほとんど速さの見張り)、ABX 7/396(v3 は 122)、標準の物理の新しい開始 FN3: c_nominal 0.09 の版 600 回で衝突 0・最小 9.0 cm・作動 0.27%・止まり 2、決まりの値(c_nominal 0.08)167 回で衝突 0・最小 8.00 cm・止まり 0・作動 0.04%。plan.md 2 章",
+   "browser": "Node とブラウザで同じファイル。web/rl/ の作り直しと F-ID(fid_std・fid_slow に加えて摩擦円の隅の snapshot の列 fid_corner)は昇格の段"
+  }
+ },
+ "sets": {
+  "test": {
+   "start_stream": "Halton 26,501 番から(protocol seeds.halton の試験の範囲の中。no_wall r1・r2 の 20,001〜・speed r2 の 25,001〜・line r2 の 26,001〜26,0xx と重ならない。27,999 まで)、no_wall の記録の開始の分布(ゲート U{0..32}・左右 ±0.2 m・向き ±15°・開始のすき間 ≥ 0.12 m)を満たさない番号を飛ばした順に、NW-N300-R3(300)→ NW-R200-R3(200)→ NW-VX-R3(300)→ NW-FC30-R3(30)→ NW-LONG-R3(20)へ割り当てる",
+   "NW-N300-R3": {
+    "physics": "標準",
+    "count": 300,
+    "seed_base": 3110000,
+    "episode": "連続 20 秒、シールドあり"
+   },
+   "NW-GRID-R3": {
+    "physics": "標準",
+    "rule": "33 ゲート × 左右 {−0.15, −0.05, +0.05, +0.15} m × 向き {−12, −4, +4, +12}°(開始のすき間 ≥ 0.12 m を満たすもの。確認 r2 の格子 {−0.2, −0.1, 0, 0.1, 0.2} × {−15, −7.5, 0, 7.5, 15} と重ならない)",
+    "seed_base": 3111000,
+    "episode": "連続 20 秒、シールドあり"
+   },
+   "NW-STD": "protocol.json のまま(STD の単周と連続 20 秒、標準の物理。定義の組なので新しくできない)",
+   "NW-G": "protocol.json のまま(ベストラップの r2 の条件の表 GRID × 単周・連続、STD の開始。判定は範囲の中の 68 回。固定の表なので新しくできない。r1・r2 の試験と同じ = 退行の確かめ)",
+   "NW-R200-R3": {
+    "physics": "DR-T から一様(遅延 0/1 半々・摩擦円 30%、確認 r2 の FD3 と同じ作り方)",
+    "count": 200,
+    "seed_base": 3112000,
+    "dr_rng": "mulberry32(0x3e3a0001)"
+   },
+   "NW-VX-R3": {
+    "physics": "dr_vertex",
+    "count": 300,
+    "seed_base": 3113000,
+    "dr_rng": "mulberry32(0x3e3a0002)"
+   },
+   "NW-KX-R3": {
+    "physics": "dr_hard_corner を 12 通り(mulberry32(0x3e3a0003))",
+    "rule": "12 通り × 33 ゲート、開始は各ゲートで左右 U(−0.05, 0.05) m・向き U(−5, 5)°(同じ乱数。開始のすき間 ≥ 0.12 m を満たすまで引き直す)",
+    "count": 396,
+    "seed_base": 3114000
+   },
+   "NW-FC30-R3": {
+    "physics": "標準の値 + 摩擦円",
+    "count": 30,
+    "seed_base": 3115000
+   },
+   "NW-LONG-R3": {
+    "rule": "120 秒の連続周回: 標準の物理 10 回・DR-T 一様 10 回(mulberry32(0x3e3a0004))",
+    "count": 20,
+    "seed_base": 3116000
+   },
+   "NW-OFF-R3": "NW-N300-R3・NW-R200-R3・NW-VX-R3 をシールドなしで(報告だけ)",
+   "note": "確認 r2 の組(FN3・FD3・VX・NG・ABX・LONG・D2)と r3 の下調べで使った組は、学習の段の選びにも試験にも使わない(下調べで見たため)"
+  },
+  "validation": {
+   "rule": "NW-V-R3 = 標準の物理 120 回(Halton 16,001 番から、種 3,210,000 + i)+ DR-T 一様 120 回(種 3,211,000 + i)+ dr_vertex 120 回(種 3,212,000 + i)+ dr_hard_corner 4 通り × 33 ゲート(mulberry32(0x3e3a0005)、種 3,213,000 + n)+ NW-STD。開始は no_wall の記録の開始の分布(Halton 16,001〜 は検証の範囲の中で、protocol の 10,001〜・line r2 の 12,001〜・obstacle r2 の 15,001〜 と重ならない)。高速版でよい。チェックポイントを選ぶためだけに使う"
+  }
+ },
+ "acceptance": {
+  "N1_r3": "NW-N300-R3・NW-GRID-R3・NW-STD・NW-G(範囲の中)・NW-R200-R3・NW-VX-R3・NW-KX-R3・NW-FC30-R3・NW-LONG-R3 の全部の回で衝突 0(シールドあり)。回の数 N をそのまま画面の「N 回の試験で衝突 0」に使う",
+  "N2_r3": "標準の物理の全部の回(NW-N300-R3・NW-GRID-R3・NW-STD・NW-LONG-R3 の標準 10 回)で最小すき間 ≥ 0.080 m",
+  "N3_r3": "物理をずらした全部の回(NW-G 範囲の中・NW-R200-R3・NW-VX-R3・NW-KX-R3・NW-FC30-R3・NW-LONG-R3 の DR 10 回)で最小すき間 ≥ 0.050 m",
+  "N4": "protocol.json のまま(NW-STD の単周が完走し、停止から 1 周 ≤ 12.0 秒)",
+  "N5_r3": "標準の物理の全部の回(NW-N300-R3・NW-GRID-R3・NW-STD 連続・NW-LONG-R3 の標準)と NW-FC30-R3 が valid_episode_r3。NW-R200-R3 の 190/200 以上・NW-VX-R3 の 285/300 以上・NW-KX-R3 の 376/396 以上が valid_episode_r3(VX・KX の 95% はきびしくする向きに足したもの)",
+  "N6": "protocol.json のまま(組は NW-N300-R3。ρ_req > 1・ρ_comb > 1 の割合 ≤ 0.02)",
+  "N7_r3": "NW-N300-R3 の shield_fraction ≤ 0.05、かつ NW-N300-R3 のどの回も shield_fraction ≤ 0.25",
+  "reported": [
+   "NW-OFF-R3(シールドなし)の衝突・すき間",
+   "物理をずらした組ごとのシールドの作動の割合(速さの見張り・Q・悲観の内訳)と 1 周の時間",
+   "NW-G の範囲の外の条件と、確認 r2 の LOWMU(μ × 0.4、範囲の外)",
+   "最速の方策の同じ開始(シールドなし)の衝突とすき間、最速との線の違い・速さ・すき間",
+   "ρ の分布、標準の物理で 8〜9 cm の回の数と場所",
+   "モードの中の線のばらつき(VM1・VM3・VM7)"
+  ],
+  "ui_numbers": "「N 回の試験で衝突 0・最小すき間 X cm(標準の物理)/ Y cm(物理のずれ)」。X は N2_r3 の組の最小、Y は N3_r3 の組の最小。不合格なら publish が「・不合格(参考)」を足す",
+  "thresholds_relaxed": "無し"
+ },
+ "status_fix": "modes の作業の統合の段は、登録簿 data/sim_rl/modes/no_wall/status.json を not_accepted「不合格(参考)」(failed: check_r2_corner_collisions・check_r2_N2_fresh)で出した(09:18)。ただし元の一式 bundle/no_wall/status.json は r2 の学習の段の accepted「合格」のまま。昇格の段(modes の作業が終わってから)で bundle/no_wall/status.json も not_accepted「不合格(参考)」に直し、failed に止まり(check_r2_N5_stall)を足す。r3 が合格したら r3 の一式(status accepted)で bundle と登録簿を置き換える",
+ "training": {
+  "run": "no_wall_r3(rl/train_modes.py の no_wall を写した r3 の run)",
+  "init": "no_wall r2 の選んだチェックポイント train/no_wall/r2/checkpoints/step_004014080.pt(方策 153c709c…)",
+  "seed": 23,
+  "seed_note": "protocol allowed_tuning.retry(1 回)は r2 で使った。r3 は protocol の外の作り直し(deviations.md に書く)",
+  "steps_max": 6000000,
+  "ppo": "lr 5e-5 → 3e-5(r2 と同じ)",
+  "dr": "DR-NW-train の物理をずらす回(85%)の内訳: 30% = dr_hard_corner に近い隅(摩擦円 あり・ブレーキ U(0.65, 0.8)・μ × U(0.82, 0.88)・前進のゲイン U(1.02, 1.05)、ほかは DR-NW-train)、15% = r2 の hard_dr(遅い舵 0.75〜0.95 + 遅延 1/2)、15% = dr_vertex(DR-NW-train の端)、残り 40% = DR-NW-train 一様",
+  "governor_in_training": "r2 の governor(舵の部分)に、ブレーキの部分 √(b/1.2)·0.92(b < 1.2 のとき)を本当の物理の値で足す(走行中のシールド v4 の速さの見張りと同じ上限)",
+  "start_mix": [
+   {
+    "p": 0.5,
+    "what": "記録の開始の分布(開始のすき間 ≥ 0.12 m)"
+   },
+   {
+    "p": 0.3,
+    "what": "むずかしい開始: ゲート 16・17 と 7〜10・20〜23 で |左右| ≥ 0.1 m かつ |向き| ≥ 7.5°(開始のすき間 ≥ 0.12 m)"
+   },
+   {
+    "p": 0.2,
+    "what": "広め: 左右 ±0.25 m・向き ±20°(開始のすき間 ≥ 0.10 m)"
+   }
+  ],
+  "reward": "r2 のまま(traction_req_w 0.5・friction_circle_w 0.5・terminal_clearance_m 0.08・clearance_barrier_start_m 0.14・clearance_barrier_w 0.4)+ 止まりの見張り(1.5 秒以降、直近 60 フレームの R の進みが 0.6 m 未満なら −10 で終える)",
+  "shield_in_training": "使わない(重い)。検証・試験はシールド v4 あり",
+  "lock": "jf-heavy --mem 2G --lock rl -- nice -n 15(チェックポイント・続きから再開できること)"
+ },
+ "selection": {
+  "rule": "検証の組(シールド v4 あり)で N1_r3〜N7_r3 の形を全部満たし止まり 0 のチェックポイントのうち一番後のもの。無ければ満たす数が一番多く、同じなら標準の物理の最小すき間が大きいもの",
+  "test_runs": "試験の組は選んだ 1 つにだけ 1 回使う。試験の結果を見て選び直さない"
+ },
+ "recording": {
+  "prefilter": "記録の前の予想(rl/predict_scenes.mjs の r3 版)で、valid_episode_r3 でない・最小すき間 < 0.08 m・shield_fraction > 0.25 のシーンを次の候補に替える",
+  "mode_json_overrides": "runtime.shield_params(上の値)・recording.prefilter_min_clearance_m 0.08・recording.prefilter_min_valid_laps 1・recording.prefilter_no_stall true・recording.prefilter_max_shield_fraction 0.25・scenario_blocklist ['low-friction'](r2 のまま)"
+ },
+ "publication": {
+  "r3": "合格なら bundle/no_wall/ を r3 の一式で置き換える(status accepted)。不合格なら r2 の一式に status not_accepted「不合格(参考)」のまま(優先 1 なので出して数字を見せる)、r3 の一式は candidates/no_wall_r3/",
+  "promote_step": "昇格の段は、modes の作業(wf_7e500cf6-ccd)が終わってから共有のファイル(rl/runtime・web/rl・bundle)を変える"
+ },
+ "files": {
+  "prototype": "experiments/20261013_sim_rl_modes/r3/runtime/shield.mjs(jf-shield/v4-proto)・r3/runtime/mode_runtime.mjs・r3/nw/(verify_nw3.mjs = 確認 r2 の verify_nw_r2.mjs の写し・probe_cases.mjs・run_bg1.sh・summ.py)",
+  "prototype_results": "jetformer_reports/sim_rl_modes_20261013/r3/nw/",
+  "plan": "jetformer_reports/sim_rl_modes_20261013/r3/plan.md"
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "schema": "jf-sim-rl-recover-perturbation/v2",
+ "round": "r4",
+ "id": "jf-perturb-record/v2",
+ "table": "recoverable_table_v2.json",
+ "table_sha256": "8735365cf6bcd6f02ebe66f56fe43cfa8829c858569458f68ffb78a8e9dc433f",
+ "min_rate_record": 0.95,
+ "min_rate_train": 0.8,
+ "min_n": 3,
+ "s_bin_m": 0.25,
+ "v_bin_mps": 0.5,
+ "table_rule": {
+  "file": "r3/rc4/recoverable_table_v2.json(学習の段の最初に lock rl の下で作り、学習を始める前に sha256 を r3/protocol_recover_r4_table.sha256 に固定。以後、学習・検証・試験・記録で同じ表)。ブラウザでも読める形 r3/rc4/rt/recoverable_table.mjs",
+  "builder": "r3/rc4/build_recoverable_table_v2.mjs(r3 の build_recoverable_table.mjs の写し。乱数を使わない決定的な手順。(driver, 開始) の組ごとに続きから作れる)",
+  "reference_drivers": [
+   "離脱復活 r3 の方策(candidates/recover_r3/policy.json、8d686076…、r4 の学習の初期化元)を乱しなし・シールドなしで",
+   "最速の方策(bundle/fastest/policy.json、7c43cb53…)",
+   "r3 の方策に速さの上限 3.0 m/s",
+   "r3 の方策に速さの上限 2.2 m/s"
+  ],
+  "starts": "r3 と同じ(STD + mulberry32(0x7ab1e001) の記録の開始の分布 7 つ、種 3,240,000 + n、元の sim-core.js、標準の物理)",
+  "states": "各回のフレーム 30〜590 を 4 フレームおき(最初の衝突・最初のゲートの外しより前だけ)",
+  "combos": "r3 と同じ 18 通り(クラスの上限 = 悪い側。わざと外すはその側の幅が d + 0.05 m に足りなければ表に入れない)",
+  "oracle": "乱しを差し込み、そのあと次のどれか 1 つで立て直せれば「立て直せる」: (a) r3 と同じ 24 通りの操縦(ブレーキ/踏み込みは 12 通り)、(b) その driver の方策で続ける、(c) 離脱復活 r3 の方策で続ける(driver が r3 そのものなら (b) と同じなので省く)",
+  "success": "r3 の条件(ps から pe + 3 秒まで衝突なし・フレームの終わりのすき間 ≥ 0.02 m・最後に前へ 0.5 m/s 以上・|e_y − emid(s)| ≤ 0.20 m・|向きのずれ| ≤ 0.30 rad)かつ definitions_added.gate_rule_table",
+  "cell": "r3 と同じ(s 0.25 m × 速さ 0.5 m/s × 18 通り。サンプル 3 つ以上で、記録・試験は立て直せる割合 ≥ 0.95、学習は ≥ 0.80 のマスだけ使える)"
+ },
+ "gate_rule": "立て直せる表 v2 の枝のゲートの決まり: 枝の [ps, pe + 3 秒] のどのフレームでも、R 上の s(自前の射影)が sim の次のゲート(passed_gates で進める)の s + 0.30 m を越えない(走行中の観測の包み base79v の仮想の外しと同じ数え方)、かつ pe のあと pe + 3 秒までに passed_gates が 1 つ以上増える(20 秒の終わりで切れたときは外していなければよい)",
+ "scheduler": "r3 と同じ(runtime/perturb_v2.mjs。頼んだ組 → 逆の向き → 同じ強さのわざと外す → 同じ強さのブレーキ → 1 つ弱く。散らし 25%)"
+}

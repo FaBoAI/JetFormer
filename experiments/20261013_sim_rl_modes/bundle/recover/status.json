@@ -1,15 +1,132 @@
 {
  "schema": "jf-sim-rl-mode-status/v1",
  "key": "recover",
- "state": "not_accepted",
- "label_ja": "不合格(参考)",
- "failed": [
-  "C1_valid",
-  "C2_success",
-  "C4_events_mask",
-  "C5_kick",
-  "C6_unperturbed"
- ],
+ "state": "accepted",
+ "label_ja": "合格",
+ "failed": [],
  "pending": [],
- "updated_at": "2026-10-14T04:26:41"
+ "round": "r4",
+ "judged_by": "protocol_recover_r4.json(sha256 1b6bd8ad…)の C1_r3・C2・C3・C4・C5_r4・C6_r4・C7・C8。試験の組は 1 回だけ",
+ "test": {
+  "C1_r3": "99/100",
+  "C2": 0.9926470588235294,
+  "C3": {
+   "median": 0,
+   "p90": 0.8
+  },
+  "C4": {
+   "events_per_episode": 4.08,
+   "masked_fraction": 0.1827
+  },
+  "C7": {
+   "class_share": {
+    "弱": 0.35294117647058826,
+    "中": 0.34068627450980393,
+    "強": 0.30637254901960786
+   },
+   "type_share": {
+    "steer_pulse": 0.26715686274509803,
+    "excursion": 0.39950980392156865,
+    "speed_pulse": 0.3333333333333333
+   }
+  },
+  "C5_r4": {
+   "grid_yaw": "83/84",
+   "grid_lateral": "84/84",
+   "random_yaw": "24/24",
+   "random_lateral": "26/26"
+  },
+  "C6_r4": {
+   "lap_from_stop": 8.846526394432733,
+   "rec60": "60/60",
+   "unperturbed": "60/60",
+   "min_clearance": 0.0350349733201582,
+   "min_clearance_rec60": 0.05329568264371551,
+   "min_clearance_u": 0.0350349733201582
+  },
+  "C8": {
+   "perturbed_valid_with_miss": "0/99",
+   "rate": 0,
+   "unperturbed_with_miss": "0/120"
+  }
+ },
+ "check": {
+  "pass": true,
+  "report": "jetformer_reports/sim_rl_modes_20261013/r3/check_recover_r4.md",
+  "runs_new": 4060,
+  "summary_ja": "確認 r4 合格。試験の組を自前の作り直しで 1 回ずつ全部同じに再現(8 項目すべて合格)。新しい種・開始でも 8 項目すべて合格(乱しあり 200/200・成功 0.977・外し 0/200、キック 83/84・84/84・65/65・49/49、乱しなし 120/120・最小 3.505 cm)。Firefox の閉ループ 100 回で有効 100/100・外し 0/100。ラベルの漏れ 0(91,823 フレーム)",
+  "numbers": {
+   "fresh_FP200_valid": "200/200",
+   "fresh_C2": 0.977,
+   "browser_closed_loop_100": "100/100",
+   "band_kicks_STD": "244/244",
+   "low_clearance_3to5cm_stalls": "9/60",
+   "strong_fixed_C2": 0.957,
+   "strong_fixed_left_band_C2": 0.941
+  }
+ },
+ "caveats_ja": [
+  "(a) 止まりが残る: 開始のすき間が 3〜5 cm の開始(一様な開始の約 0.9%)を 60 個集めると 9/60 が止まる(3〜3.5 cm 5/25、3.5〜5 cm 4/35)",
+  "(b) ゲート 7 の右の開始で方策が壁へ寄って止まる(r4 で新しく出た。格子のゲート 7・右 0.2 m の 5 つの向きのうち 3 つと試験の P27)。一様な開始で約 0.2〜0.3%。valid_episode_r3 と記録の前の確かめで外れる",
+  "(c) 余裕が小さい: 停止から 1 周 8.847 秒(基準 9.0)、乱しなしの最小すき間 3.50 cm(基準 3 cm)",
+  "(d) 乱しの強さを「強」に固定すると C2 は 0.957(375/392)、線の帯から出た出来事だけでは 0.941。既定の auto では 0.977"
+ ],
+ "replaces": {
+  "previous": "r1(方策 7720f275…・乱し v1・シールドなし、不合格(参考))",
+  "backup": "experiments/20261013_sim_rl_modes/r3/promote/before/bundle/recover/"
+ },
+ "candidate": "experiments/20261013_sim_rl_modes/r3/candidates/recover_r4/",
+ "runtime": {
+  "shared_runtime": "experiments/20261013_sim_rl_modes/rl/runtime(= web/rl = jetformer/sim/static/rl)",
+  "web_manifest_sha256": "5e6cf47815469381c18427755a96d74d0ab8097e8e1af587de7c022153f39307",
+  "runtime_version": "jf-sim-rl-mode-runtime/v1",
+  "files": {
+   "mode_runtime.mjs": "f59b195596bca037b930b6295df4e86edb7f93beca090b4d2b8a27a487e6aea9",
+   "perturb_v2.mjs": "bb7e58f71e7467e043567570eab7a1a861b427ed3a1bc0423e6049356e89ac0f",
+   "recoverable_table.mjs": "4ac6b6823dfba42bce5f9721c610264afca8dfcb4464305c86c42f6bbfddbe59",
+   "shield.mjs": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+   "shield_v4p.mjs": "29c9d111596a2708311b72a0e22d19a70258c533d76283b6ff6dc02f64b83dd0"
+  },
+  "equivalence": {
+   "how_ja": "試験に使った候補の runtime と、まとめた runtime を同じ開始・種・物理で閉ループに走らせ、全フレームの操作・info.jf・metadata・乱しの出来事を比べた(r3/promote/equiv_runtime.mjs)。保存した F-ID も与えた",
+   "cases": 139,
+   "same": 139,
+   "fids": 14,
+   "fids_pass": 14,
+   "by_mode": {
+    "no_wall": {
+     "cases": 58,
+     "same": 58,
+     "runs_with_reverse": 0
+    },
+    "recover": {
+     "cases": 29,
+     "same": 29,
+     "runs_with_reverse": 0
+    },
+    "fastest": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "speed": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "obstacle": {
+     "cases": 2,
+     "same": 2,
+     "runs_with_reverse": 0
+    },
+    "line": {
+     "cases": 40,
+     "same": 40,
+     "runs_with_reverse": 0
+    }
+   }
+  }
+ },
+ "note_ja": "r4 の試験(protocol_recover_r4.json、1 回だけ)で 8 項目すべて合格し、確認 r4 でも合格。昇格の段(2026-10-15)が bundle/recover/ と登録簿をこの一式で置き換えた",
+ "updated_at": "2026-10-15T02:44:57"
 }

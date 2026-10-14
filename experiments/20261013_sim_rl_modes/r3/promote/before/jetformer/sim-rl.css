@@ -1,0 +1,27 @@
+/* JetFormer の差し込み(シミュレーターのページの「強化学習モード」の欄と収集プランの枠) */
+.jf-rl { margin: 6px 0 10px; padding: 8px 10px; border: 1px solid #c7d2fe; border-radius: 8px; background: #eef2ff; }
+.jf-rl label { display: block; font-weight: 600; }
+.jf-rl select { width: 100%; }
+.jf-rl-info, .jf-rl-opts, .jf-rl-live, .jf-rl-status { margin-top: 5px; font-size: 11px; line-height: 1.5; }
+.jf-rl-opts label { font-weight: 500; }
+.jf-rl-live { font-variant-numeric: tabular-nums; color: #1e3a8a; }
+.jf-rl-muted { color: #4b5563; font-size: 11px; }
+.jf-rl-error { color: #b91c1c !important; }
+.jf-rl-badge { display: inline-block; padding: 0 7px; border-radius: 9px; background: #e5e7eb; font-size: 11px; font-weight: 600; }
+.jf-rl-badge.jf-rl-accepted { background: #bbf7d0; color: #14532d; }
+.jf-rl-badge.jf-rl-not_accepted { background: #fde68a; color: #78350f; }
+.jf-rl-badge.jf-rl-pending { background: #bfdbfe; color: #1e3a8a; }
+.jf-simbar .jf-rl-pill { background: #4338ca; color: #fff; }
+.jf-rl-plan { position: fixed; left: 12px; bottom: 12px; z-index: 60; width: min(620px, calc(100vw - 24px)); max-height: 60vh; overflow: auto;
+  padding: 10px 12px; border-radius: 10px; background: #111827; color: #e5e7eb; box-shadow: 0 4px 18px rgba(0, 0, 0, .35);
+  font: 12px/1.5 -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif; }
+.jf-rl-plan .jf-rl-muted { color: #9ca3af; }
+.jf-rl-plan-title { font-weight: 700; margin-bottom: 4px; }
+.jf-rl-table { width: 100%; border-collapse: collapse; margin: 6px 0; }
+.jf-rl-table th, .jf-rl-table td { border-bottom: 1px solid #374151; padding: 2px 4px; text-align: left; vertical-align: top; }
+.jf-rl-table th, .jf-rl-nw { white-space: nowrap; }
+.jf-rl-plan .jf-rl-error { color: #fca5a5 !important; }
+.jf-rl-row { display: flex; gap: 8px; margin: 6px 0; }
+.jf-rl-btn { padding: 3px 12px; border-radius: 6px; font-size: 12px; }
+.jf-rl-small { padding: 1px 8px; font-size: 11px; border-radius: 5px; margin-left: 4px; }
+.jf-rl-log pre { max-height: 140px; overflow: auto; white-space: pre-wrap; font-size: 11px; margin: 4px 0 0; }

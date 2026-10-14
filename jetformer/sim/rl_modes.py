@@ -189,6 +189,7 @@ def load_mode(key):
         'plan_ok': selectable and pool_n >= SCENES_PER_MINUTE,
         'start_distribution': rec.get('start_distribution'),
         'dataset_card': mode.get('dataset_card'),
+        'ui_note': mode.get('ui_note_ja'),          # 手で走らせるときの注意(2026-10-15 昇格の段。止まったまま動かない開始など)
         'eval_created_at': (ev or {}).get('created_at'),
     }
 
@@ -249,6 +250,12 @@ def collected_datasets():
             if isinstance(t, str) and t.startswith('sim-rl-'):
                 k = t[len('sim-rl-'):]
                 e = out.setdefault(k, {'count': 0, 'scenes': 0, 'minutes': 0.0, 'names': []})
+                if card.get('rl_superseded'):
+                    # 前の版の方策で記録したデータセット(カードに rl_superseded。2026-10-15 昇格の段)は別に数える
+                    o = e.setdefault('superseded', {'count': 0, 'names': []})
+                    o['count'] += 1
+                    o['names'].append(d.name)
+                    continue
                 e['count'] += 1
                 sc = card.get('scenes') or 0
                 sc = len(sc) if isinstance(sc, list) else int(sc or 0)

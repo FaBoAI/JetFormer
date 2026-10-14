@@ -1,0 +1,129 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "no_wall",
+ "name_ja": "強化学習モード(絶対壁にぶつからない)",
+ "short_ja": "壁・柱からはなれて遅めに走る(記録するシーンは前もって走らせ、すき間が 8 cm 未満・止まる・1 周できない・シールドの作動が 25% を超えるものは替える)。物理のずれ(舵の速さ・μ・遅れ・RC の応答・摩擦円)でもぶつからないよう学習し、走行中は安全シールド(v4.1)が舵の遅れとブレーキを見積もり、摩擦円・低い μ・弱いブレーキの悪い端でも止まれるかを見張る。遅くてよい",
+ "order": 2,
+ "priority": 1,
+ "course": "default",
+ "obs_wrapper": "base79",
+ "runtime": {
+  "shield": true,
+  "shield_version": "jf-shield/v4.1",
+  "shield_params": {
+   "H": 24,
+   "c_nominal": 0.08,
+   "c_pessimistic": 0.05,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": true,
+    "gain": [
+     0.9,
+     1.1
+    ],
+    "delays": [
+     0,
+     1,
+     2
+    ],
+    "tol": 1e-07
+   },
+   "governor": {
+    "enabled": true,
+    "theta_rad": 0.35,
+    "v_max": 4.5,
+    "min_frame": 3,
+    "brake": true,
+    "weak_extra": 0.92,
+    "brake_without_known": true,
+    "brake_probe": {
+     "enabled": true,
+     "v_min": 2.0,
+     "factor": 0.85,
+     "every": 15
+    }
+   },
+   "worst": {
+    "enabled": true,
+    "frictionCircle": true,
+    "frictionMultiplier": 0.85,
+    "speedGain": 1.04,
+    "brakeUnknown": 0.7,
+    "H": 45,
+    "c": 0.07
+   },
+   "unstick": {
+    "enabled": false
+   },
+   "keep_nominal": true,
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ]
+  },
+  "shield_note_ja": "jf-shield/v4.1(r3): v3(見積もり・速さの見張り・悲観の模型)に、見積もれない μ・摩擦円・前進のゲインを悪い端にした模型 Q(45 フレーム・7 cm)を「替えない」の条件にも入れ、弱いブレーキのとき速さの上限に 0.92 を掛け、c_nominal を 0.08 m に(protocol_no_wall_r3.json runtime.shield = v4)。v4.1 で、ブレーキの上限を舵の見積もりを待たずにかけ、走り出しで 1 フレームだけ速さを落としてブレーキを見積もる(deviations.md)",
+  "perturbation": null,
+  "conditioning": null,
+  "gate_index": "base79"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "min_initial_clearance_m": 0.12,
+   "sequence": "Halton",
+   "prefilter": true
+  },
+  "per_scene_params": {},
+  "prefilter_min_clearance_m": 0.08,
+  "prefilter_min_valid_laps": 1,
+  "prefilter_no_stall": true,
+  "prefilter_max_shield_fraction": 0.25,
+  "prefilter_note_ja": "記録の前の予想(r3/nw/predict_scenes_nw3.mjs と同じ決まり): valid_episode_r3(衝突・途中の終了・止まり 1 秒以上・有効な周 0 は不可)・最小すき間 ≥ 0.08 m・シールドの作動 ≤ 25% でないシーンは次の候補に替える"
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-no_wall",
+  "sim-safe"
+ ],
+ "ui_phrase": "「N 回の試験で衝突 0・最小すき間 X cm」と書く(「絶対」とは言い切らない。名前はユーザーの呼び方のまま)",
+ "policy_sha256": "3b099f9be4beed0b6cf885af7aed60eeb64ba20671e264bc1ee0c20aad2eb779",
+ "policy_source": "no_wall r3: r3/no_wall_r3/train step_006012928(r2 の選んだ点 step_004014080 から種 23 で続けた学習。物理の隅・むずかしい開始・止まりの見張り。protocol_no_wall_r3.json training)。走行中のシールド jf-shield/v4",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_no_wall_r3_sha256": "73a5a7193d42266b72f33b3a26b60679bc019e4ee5dafb80d87d9a6fffd55ecb",
+ "scenario_blocklist": [
+  "low-friction"
+ ],
+ "scenario_note_ja": "アプリの「低摩擦」シナリオ(μ × 0.4)は試験した物理の範囲の外で、ぶつかります。強化学習モードでは選べないようにするか、選んだら警告してください",
+ "ui_numbers": {
+  "runs": 1810,
+  "collisions": 0,
+  "min_clearance_nominal_m": 0.08470640649437253,
+  "min_clearance_randomised_m": 0.08027183978780772
+ },
+ "overrides_from_modes_json": [
+  "recording",
+  "runtime",
+  "scenario_blocklist",
+  "scenario_note_ja",
+  "short_ja",
+  "ui_numbers"
+ ]
+}

@@ -87,8 +87,9 @@ export function createRcTrainingTeacher(world, config, variation = {}) {
   if (!key) return original.createRcTrainingTeacher(world, config, variation);
   const actual = rlContract(key, world, config, variation);
   const entry = RL.modes[key];
+  // line r4(2026-10-14): モードの mode.json の runtime(登録簿の runtime)を渡す。shield・shield_params でシールドを切り替える(経路いろいろのシールド v5)
   const t = createModeTeacher(world, config, variation, {mode: key, weights: RL.weights[key], params: paramsFor(key),
-    policySha256: entry.policy_sha256, plannedTimeS: entry.planned_time_s ?? null});
+    policySha256: entry.policy_sha256, plannedTimeS: entry.planned_time_s ?? null, modeRuntime: entry.runtime ?? null});
   calls.rl_teachers++;
   const live = {mode: key, name: entry.name, frame: -1, ph: 'drive', l: 1, ev: 0, cl_mm: null, min_cl_mm: null, shield_frames: 0,
     perturb_frames: 0, events: 0, params: t.params, seed: config?.seed ?? null, error: null};

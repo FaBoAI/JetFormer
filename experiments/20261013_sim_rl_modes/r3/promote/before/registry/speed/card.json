@@ -1,0 +1,85 @@
+{
+ "schema": "jf-sim-rl-mode-card/v1",
+ "key": "speed",
+ "state": "accepted",
+ "headline_ja": "速さの倍率 100%・75%・50% で停止から 1 周 8.33・9.46・12.71 秒。60 回すべて走り切り、最小すき間 8.4 cm",
+ "lap_from_stop_s": 8.3344327550916,
+ "flying_lap_s": null,
+ "tests": {
+  "runs": 63,
+  "collisions": 0,
+  "text_ja": "63 回の試験で衝突 0(新しい開始 1,500 回でも衝突 0)"
+ },
+ "min_clearance_cm": {
+  "value": 8.4,
+  "text_ja": "試験の組の最小すき間"
+ },
+ "main": [
+  {
+   "label_ja": "速さの段",
+   "value_ja": "50% 2.09 m/s / 62% 2.52 m/s / 75% 2.89 m/s / 88% 3.12 m/s / 100% 3.24 m/s"
+  },
+  {
+   "label_ja": "速さのばらつき(VM4)",
+   "value_ja": "0.47 m/s"
+  }
+ ],
+ "checks": [
+  {
+   "id": "S1_valid",
+   "label_ja": "60 回のうち 57 回以上走り切る",
+   "pass": true
+  },
+  {
+   "id": "S2_clearance",
+   "label_ja": "すき間 ≥ 3 cm",
+   "pass": true
+  },
+  {
+   "id": "S3_lap_order",
+   "label_ja": "1 周の時間が速さの順で 3 秒以上違う",
+   "pass": true
+  },
+  {
+   "id": "S4_speed_order",
+   "label_ja": "平均の速さが倍率の順",
+   "pass": true
+  },
+  {
+   "id": "S5_vm4",
+   "label_ja": "速さのばらつき ≥ 0.4 m/s",
+   "pass": true
+  }
+ ],
+ "notes_ja": [
+  "速さのばらつきは主に上限(4.5 m/s × 倍率)から来る。同じ倍率の中の線はほぼ 1 本",
+  "開始の範囲の端(ゲート 5 の左寄り・100% など)ではまれにぶつかる(確認の格子 117 回中 6 回)。記録のシーンは前もって走らせ、すき間 3 cm 未満・止まったまま・ゲートの外しのものを替えてある"
+ ],
+ "verdict_ja": "check_speed_r2.md: 凍結した試験を独立に再現して全部一致、新しい開始 1,500 回で衝突 0",
+ "updated_at": "2026-10-14T11:12:00",
+ "browser_identity": {
+  "pass": true,
+  "files": [
+   {
+    "file": "eval/speed/r2/fid_std_speed_r2_cv1.json",
+    "frames": 600,
+    "max_abs_steering": 4.996003610813204e-16,
+    "max_abs_speed": 8.243405957841787e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   },
+   {
+    "file": "eval/speed/r2/fid_std_speed_r2_cv0.5.json",
+    "frames": 600,
+    "max_abs_steering": 3.3306690738754696e-16,
+    "max_abs_speed": 1.1102230246251565e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   }
+  ],
+  "where": "http://192.168.55.1:8080(Firefox 157.0.1・DISPLAY :0)",
+  "checked_at": "2026-10-14T11:11:17"
+ }
+}

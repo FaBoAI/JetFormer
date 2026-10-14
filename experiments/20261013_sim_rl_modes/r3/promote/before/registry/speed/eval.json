@@ -1,0 +1,136 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T20:56:12.357Z",
+ "mode": "speed",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/speed/r2/main/policies/step_002015232.json",
+  "sha256": "6f4d5e8d245f4f3e076c4a5db94c9da684b5bb0ba061b999d372ab6098898ac0",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 97
+ },
+ "judged": {
+  "S1_valid": {
+   "value": "60/60",
+   "pass": true
+  },
+  "S2_clearance": {
+   "value": 0.08381993746042779,
+   "pass": true,
+   "rule": "protocol_speed_r2: 全部の回、衝突した回はすき間 0",
+   "below_3cm": [],
+   "below_5cm": [],
+   "collided": []
+  },
+  "S3_lap_order": {
+   "value": {
+    "t1": 8.3344327550916,
+    "t75": 9.459719455532152,
+    "t5": 12.71429248285767
+   },
+   "pass": true
+  },
+  "S4_speed_order": {
+   "value": [
+    {
+     "c_v": 0.5,
+     "n": 12,
+     "mean_speed": 2.091216280989624,
+     "p95_max": 2.2499999979667034
+    },
+    {
+     "c_v": 0.625,
+     "n": 12,
+     "mean_speed": 2.5223310638340863,
+     "p95_max": 2.812499761372081
+    },
+    {
+     "c_v": 0.75,
+     "n": 12,
+     "mean_speed": 2.8880153198427876,
+     "p95_max": 3.3749925504211222
+    },
+    {
+     "c_v": 0.875,
+     "n": 12,
+     "mean_speed": 3.1209902771336853,
+     "p95_max": 3.936208676754509
+    },
+    {
+     "c_v": 1,
+     "n": 12,
+     "mean_speed": 3.2383566030556903,
+     "p95_max": 4.428995981666618
+    }
+   ],
+   "pass": true
+  },
+  "S5_vm4": {
+   "value": 0.46785076841209877,
+   "pass": true
+  }
+ },
+ "all_judged_pass": true,
+ "reported": {
+  "clearance_by_c_v": [
+   {
+    "c_v": 0.5,
+    "n": 12,
+    "min": 0.08381993746042779,
+    "median": 0.12590247217976253,
+    "below_5cm": 0
+   },
+   {
+    "c_v": 0.625,
+    "n": 12,
+    "min": 0.09466191337460644,
+    "median": 0.12740339618686047,
+    "below_5cm": 0
+   },
+   {
+    "c_v": 0.75,
+    "n": 12,
+    "min": 0.09063101914349964,
+    "median": 0.1197295530742075,
+    "below_5cm": 0
+   },
+   {
+    "c_v": 0.875,
+    "n": 12,
+    "min": 0.09644356871227208,
+    "median": 0.11154752128834008,
+    "below_5cm": 0
+   },
+   {
+    "c_v": 1,
+    "n": 12,
+    "min": 0.08636994022854745,
+    "median": 0.0887466307635459,
+    "below_5cm": 0
+   }
+  ],
+  "std3_min_clearance": 0.09733451169093049,
+  "protocol_speed_r2_sha256": "5550adcf00e4879dd9021151b87b77b7ffa381e19c528dc07a85d8858c5b1d62",
+  "variation": {
+   "rows": 60,
+   "VM1_us": 162.92268679010044,
+   "VM2_us": {
+    "mean_abs_dev": 51.00088290762003,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.0225194818007663,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.46785076841209877,
+    "bins_used": 522
+   },
+   "VM7_cells": 987,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 63,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

@@ -1,0 +1,11 @@
+--- a/sim-rl.js	2026-10-14 11:11:54.310061709 +0900
++++ b/sim-rl.js	2026-10-14 16:03:23.607301857 +0900
+@@ -62,7 +62,7 @@
+       if (!w || !Array.isArray(w.layers) || !Number.isInteger(w.obs_dim)) throw new Error('方策のファイルの形が違います');
+       RL.weights[key] = w;
+     }
+-    RL.modes[key] = {name: m.name, policy_sha256: m.policy_sha256, planned_time_s: m.planned_time_s ?? null, state: m.state};
++    RL.modes[key] = {name: m.name, policy_sha256: m.policy_sha256, planned_time_s: m.planned_time_s ?? null, state: m.state, runtime: m.runtime ?? null};   // line r4: mode.json の runtime(シールドの切り替え)
+     return m;
+   }
+ 

@@ -2,14 +2,142 @@
  "schema": "jf-sim-rl-mode/v1",
  "key": "no_wall",
  "name_ja": "強化学習モード(絶対壁にぶつからない)",
- "short_ja": "壁・柱からはなれて遅めに走る(記録するシーンは前もって走らせ、すき間が 8 cm 未満になるものは替える)。物理のずれ(舵の速さ・μ・遅れ・RC の応答・摩擦円)でもぶつからないよう学習し、走行中は安全シールドが舵の遅れを見積もって見張る。遅くてよい",
+ "short_ja": "壁・柱からはなれて遅めに走る(記録するシーンは前もって走らせ、すき間が 8 cm 未満・止まる・1 周できない・シールドの作動が 25% を超える・後ろへ下がったものは替える)。物理のずれ(舵の速さ・μ・遅れ・RC の応答・摩擦円)でもぶつからないよう学習し、走行中は安全シールド(v5)が舵の遅れとブレーキを見積もり、止まれる距離まで先読みして、摩擦円・低い μ・弱いブレーキの悪い端でも止まれるかを見張る。柱の前で動けなくなったら少し下がってから抜ける。遅くてよい",
  "order": 2,
  "priority": 1,
  "course": "default",
  "obs_wrapper": "base79",
  "runtime": {
   "shield": true,
-  "shield_params": "jf-shield/v3(c_shield 0.07 m・悲観 0.05 m・H 24 フレーム・悲観の模型 = DR-T の悪い端・走りながらの見積もり・速さの見張り。deviations.md 4)",
+  "shield_version": "jf-shield/v5",
+  "shield_params": {
+   "H": 24,
+   "c_nominal": 0.081,
+   "c_pessimistic": 0.05,
+   "pessimistic": {
+    "steerRate": 0.8,
+    "delay": 1,
+    "brakeDeceleration": 0.7,
+    "frictionMultiplier": 0.85
+   },
+   "identify": {
+    "enabled": true,
+    "gain": [
+     0.9,
+     1.1
+    ],
+    "delays": [
+     0,
+     1,
+     2
+    ],
+    "tol": 1e-07
+   },
+   "governor": {
+    "enabled": true,
+    "theta_rad": 0.35,
+    "v_max": 4.5,
+    "min_frame": 3,
+    "brake": true,
+    "weak_extra": 0.92,
+    "brake_without_known": true,
+    "brake_probe": {
+     "enabled": true,
+     "v_min": 2,
+     "factor": 0.85,
+     "every": 15
+    }
+   },
+   "backups": [
+    {
+     "la": 0.6,
+     "k": 0.2
+    },
+    {
+     "la": 0.6,
+     "k": 0
+    },
+    {
+     "hold": true
+    }
+   ],
+   "keep_nominal": true,
+   "worst": {
+    "enabled": true,
+    "frictionCircle": true,
+    "frictionMultiplier": 0.85,
+    "speedGain": 1.04,
+    "brakeUnknown": 0.7,
+    "H": 45,
+    "c": 0.07
+   },
+   "pess_fc": false,
+   "pess_speedGain": 1,
+   "unstick": {
+    "enabled": false,
+    "after": 15,
+    "speeds": [
+     0.5,
+     1
+    ],
+    "c": 0.05,
+    "hold": 90,
+    "exit_margin": 0.01
+   },
+   "steer_set": [
+    -0.52,
+    -0.26,
+    0,
+    0.26,
+    0.52
+   ],
+   "stop": {
+    "enabled": true,
+    "E": true,
+    "Q": true,
+    "H_max": 240,
+    "v_stop": 0.02
+   },
+   "select": "v5",
+   "cont_candidates": true,
+   "escape": {
+    "enabled": true,
+    "after": 3,
+    "v_still": 0.1,
+    "fwd_steers": [
+     -0.52,
+     -0.39,
+     -0.26,
+     -0.13,
+     0,
+     0.13,
+     0.26,
+     0.39,
+     0.52
+    ],
+    "fwd_speed": 0.5,
+    "fwd_frames": 30,
+    "turn_frames": [
+     0,
+     8
+    ],
+    "rev_steers": [
+     -0.52,
+     -0.26,
+     0,
+     0.26,
+     0.52
+    ],
+    "rev_speed": -0.4,
+    "rev_frames": [
+     12,
+     24
+    ],
+    "min_progress": 0.1,
+    "retry_every": 15
+   }
+  },
+  "shield_note_ja": "jf-shield/v5(r4): v4.1(見積もり・模型 Q・速さの見張り・ブレーキの探り)に、E と Q の先読みを止まるまで続ける条件(止まれる操縦がいつも残る)・どの候補も Q に合格しないときは E に合格する候補からブレーキを先に選ぶ・c_nominal 0.081 m・止まって動けないときの抜け出し(前へ / 後ろへ下がってから前へ、全部のしきい値のまま)を足した(protocol_no_wall_r4.json runtime.shield)",
   "perturbation": null,
   "conditioning": null,
   "gate_index": "base79"
@@ -30,7 +158,12 @@
    "prefilter": true
   },
   "per_scene_params": {},
-  "prefilter_min_clearance_m": 0.08
+  "prefilter_min_clearance_m": 0.08,
+  "prefilter_min_valid_laps": 1,
+  "prefilter_no_stall": true,
+  "prefilter_max_shield_fraction": 0.25,
+  "prefilter_no_reverse": true,
+  "prefilter_note_ja": "記録の前の予想(r3/nw4/predict_scenes_nw4.mjs と同じ決まり): valid_episode_r3(衝突・途中の終了・止まり 1 秒以上・有効な周 0 は不可)・最小すき間 ≥ 0.08 m・シールドの作動 ≤ 25%・後ろへ動いたフレームが無い、でないシーンは次の候補に替える"
  },
  "tags": [
   "simulator",
@@ -39,19 +172,62 @@
   "sim-safe"
  ],
  "ui_phrase": "「N 回の試験で衝突 0・最小すき間 X cm」と書く(「絶対」とは言い切らない。名前はユーザーの呼び方のまま)",
- "policy_sha256": "153c709c52151c5e2ff15326ce6a307ecda67d9888c29c678d5afdcffb85d1ff",
- "policy_source": "no_wall r2(作り直し): train/no_wall/r2 step_004014080(r1 の 1,000 万の点から種 22 で続けた 600 万ステップの学習の 400 万の点。遅い舵 + 遅延の回を増やし、速さの見張りつき。選び方は deviations.md 5・7)。走行中のシールド jf-shield/v3(deviations.md 4)",
+ "policy_sha256": "e632d96bfc71fca15eb11a4500a62f697908d583b84f6b7242a460e3e58b879d",
+ "policy_source": "no_wall r4: c_step_001507328(r3 の選んだ点 step_006012928 から種 25 で 301 万ステップ続けた学習(r4b。開始のすき間 12〜15 cm・分布の端・ゲート 16〜18 の右へずれて左を向いた開始を多く)の終わりの点から、種 26 で 151 万ステップ続けた学習(r4c。分布の角 = 全ゲートの |左右| 0.17〜0.2 m・|向き| 12〜15° とゲート 16〜18 の角を多く)。protocol_no_wall_r4.json・protocol_no_wall_r4b.json・protocol_no_wall_r4c.json)。走行中のシールド jf-shield/v5",
  "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
  "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_no_wall_r4_sha256": "ad90c926f065d4a4e83d56c7ac3a826fde043813e359dd2164059aaba71a80d6",
  "scenario_blocklist": [
   "low-friction"
  ],
- "scenario_note_ja": "アプリの「低摩擦」シナリオ(μ × 0.4)は試験した物理の範囲の外で、ぶつかります(r1: 10 回中 9 回)。強化学習モードでは選べないようにするか、選んだら警告してください",
+ "scenario_note_ja": "アプリの「低摩擦」シナリオ(μ × 0.4)は試験した物理の範囲の外で、ぶつかります。強化学習モードでは選べないようにするか、選んだら警告してください",
+ "ui_numbers": {
+  "runs": 3038,
+  "collisions": 0,
+  "min_clearance_nominal_m": 0.08104404023045395,
+  "min_clearance_nominal_runs": 2174,
+  "min_clearance_nominal_uniform_m": 0.08104404023045395,
+  "min_clearance_nominal_uniform_runs": 1000,
+  "min_clearance_randomised_m": 0.08156167320447369
+ },
+ "dataset_card_notes_ja": [
+  "r4 の試験(protocol_no_wall_r4.json、3038 回、1 回だけ): 衝突 0・最小すき間 8.10 cm(標準の物理 2174 回: 記録の開始から一様 1000 回では 8.10 cm、開始のすき間 12〜15 cm の層 400 回・分布の端の格子を含む)・8.16 cm(物理のずれ)",
+  "シールド v5 は標準の物理では予想が sim と同じなので、止まれる操縦を残しながら 8.1 cm を守る(しきい値ぎりぎりまで寄ることがある = 最小すき間はほぼ 8.0〜8.1 cm になる)",
+  "確認 r3(シールド v4.1)の数字: 記録の開始から一様 1,000 回で 8.01 cm、まれな開始(ゲート 20・左 −0.13 m・−13°)で衝突 1・隣の開始で 5.63 cm、ゲート 23 の柱の足へ向いた開始で止まり(約 0.05%)。v5 で直した開始の結果は train_no_wall_r4.md",
+  "記録の前の予想で、衝突・8 cm 未満・止まり・有効な周 0・シールドの作動 25% 超・後ろへ動いた(抜け出し)シーンは替える(データセットに後ろへ下がる正解ラベルは入らない)",
+  "最速と比べて遅く、壁から離れた 1 本の線に集まる(モードの中の線のばらつきは小さい)",
+  "残る危うさ(r4 の段の下調べ・検証): 標準の物理の最小すき間はシールドのしきい値(8.1 cm)に張り付く(余裕ではなく仕組みで守っている)。記録の開始の分布の角(ゲート 17・右 0.2 m・左向き 15°)は学習の点によって止まった(r4b 300 万・r4c 100 万で止まり、選んだ r4c 150 万では止まらない。学習で安定して覚えたとは言えない)。検証の組の物理の頂点 1 回(ゲート 23 の柱の足へ向いた開始・舵の速さ 0.8・前進のゲイン 0.96)で止まり(物理のずれの組の 95% の基準の中。試験の頂点 300 回では 0)。止まり・後ろへ動いたシーンは記録の前の予想が替える",
+  "確認 r4(check_no_wall_r4.md、学習・評価のコードを使わない作り直し 6,429 回): 範囲の中・シールドありの 5,749 回で衝突 0。標準の物理の最小すき間 8.10 cm(記録の開始から一様 1,500 回も 8.10 cm)、物理のずれの最小 7.03 cm(隅のまわり。試験の組では 8.16 cm)",
+  "方策だけ(シールドなし)では 4.54 cm まで寄る(確認 r4)。8 cm は方策の余裕ではなく、シールドの仕組みで守っている",
+  "アプリが許す開始(左右 ±0.3 m・向き ±25°)のうち記録の分布(±0.2 m・±15°・開始のすき間 12 cm 以上)の外では、止まったまま動かないことがある(確認 r4: 200 回中 6 回、衝突 0。開始のすき間が 8.1 cm 未満だと最初から動かない)。記録のシーンは分布の中から選び、前もって確かめる"
+ ],
  "overrides_from_modes_json": [
+  "dataset_card_notes_ja",
   "recording",
   "runtime",
   "scenario_blocklist",
   "scenario_note_ja",
-  "short_ja"
+  "short_ja",
+  "ui_numbers"
+ ],
+ "dataset_card": {
+  "schema": "jf-sim-rl-dataset-card-notes/v1",
+  "notes_ja": [
+   "r4 の試験(protocol_no_wall_r4.json、3038 回、1 回だけ): 衝突 0・最小すき間 8.10 cm(標準の物理 2174 回: 記録の開始から一様 1000 回では 8.10 cm、開始のすき間 12〜15 cm の層 400 回・分布の端の格子を含む)・8.16 cm(物理のずれ)",
+   "シールド v5 は標準の物理では予想が sim と同じなので、止まれる操縦を残しながら 8.1 cm を守る(しきい値ぎりぎりまで寄ることがある = 最小すき間はほぼ 8.0〜8.1 cm になる)",
+   "確認 r3(シールド v4.1)の数字: 記録の開始から一様 1,000 回で 8.01 cm、まれな開始(ゲート 20・左 −0.13 m・−13°)で衝突 1・隣の開始で 5.63 cm、ゲート 23 の柱の足へ向いた開始で止まり(約 0.05%)。v5 で直した開始の結果は train_no_wall_r4.md",
+   "記録の前の予想で、衝突・8 cm 未満・止まり・有効な周 0・シールドの作動 25% 超・後ろへ動いた(抜け出し)シーンは替える(データセットに後ろへ下がる正解ラベルは入らない)",
+   "最速と比べて遅く、壁から離れた 1 本の線に集まる(モードの中の線のばらつきは小さい)",
+   "残る危うさ(r4 の段の下調べ・検証): 標準の物理の最小すき間はシールドのしきい値(8.1 cm)に張り付く(余裕ではなく仕組みで守っている)。記録の開始の分布の角(ゲート 17・右 0.2 m・左向き 15°)は学習の点によって止まった(r4b 300 万・r4c 100 万で止まり、選んだ r4c 150 万では止まらない。学習で安定して覚えたとは言えない)。検証の組の物理の頂点 1 回(ゲート 23 の柱の足へ向いた開始・舵の速さ 0.8・前進のゲイン 0.96)で止まり(物理のずれの組の 95% の基準の中。試験の頂点 300 回では 0)。止まり・後ろへ動いたシーンは記録の前の予想が替える",
+   "確認 r4(check_no_wall_r4.md、学習・評価のコードを使わない作り直し 6,429 回): 範囲の中・シールドありの 5,749 回で衝突 0。標準の物理の最小すき間 8.10 cm(記録の開始から一様 1,500 回も 8.10 cm)、物理のずれの最小 7.03 cm(隅のまわり。試験の組では 8.16 cm)",
+   "方策だけ(シールドなし)では 4.54 cm まで寄る(確認 r4)。8 cm は方策の余裕ではなく、シールドの仕組みで守っている",
+   "アプリが許す開始(左右 ±0.3 m・向き ±25°)のうち記録の分布(±0.2 m・±15°・開始のすき間 12 cm 以上)の外では、止まったまま動かないことがある(確認 r4: 200 回中 6 回、衝突 0。開始のすき間が 8.1 cm 未満だと最初から動かない)。記録のシーンは分布の中から選び、前もって確かめる"
+  ]
+ },
+ "ui_note_ja": "記録の開始の範囲(左右 ±0.2 m・向き ±15°・開始のすき間 12 cm 以上)の外から走らせると、シールドが 8.1 cm を守れず止まったまま動かないことがあります(衝突はしません)。柱の前で動けなくなったときは、少し下がってから抜けます",
+ "overrides_from_promote": [
+  "dataset_card",
+  "dataset_card_notes_ja",
+  "ui_note_ja"
  ]
 }

@@ -1,0 +1,228 @@
+// 強化学習モードの教師(走行中の仕組みの全部)。2026-10-13、sim_rl_modes。
+// 2026-10-15 昇格の段(r3/promote): r4 で合格した 3 つのモードの走行中の仕組みを 1 つにまとめた。モードごとの動きは、それぞれの試験に使った写しと同じ
+//   (r3/promote/equiv_runtime.mjs で、操作・info.jf・metadata・乱しの出来事がビット単位で同じことを確かめた):
+//   - no_wall r4(r3/candidates/no_wall_r4/runtime、mode_runtime 7f8ee13d…・shield 8ece9be4…): shield.mjs はその上位の版 130ed5b2…(select の既定 'v5' で同じ)。
+//     log の shield に模型 Q の予想・速さの見張りの上限を足す(記録だけ)。
+//   - line r4b(r3/candidates/line_r4/runtime、mode_runtime 2fa7146d…・shield 130ed5b2…): 下の line r4 の説明のとおり(mode.json の runtime でシールド v5b)。
+//   - recover r4(r3/candidates/recover_r4/runtime、mode_runtime 0758cb1b…・shield 29c9d111…): 乱し v2(立て直せる表 v2)と、乱しのフレーム以外の
+//     すき間シールド 3.5 cm(すくみをほどくあり)。シールドは試験と同じ版 jf-shield/v4-proto を shield_v4p.mjs(= 29c9d111… をそのまま)から使い、
+//     値は RECOVER_R4.shield で固定(mode.json の runtime.shield_params は説明だけで、ここでは使わない)。
+// 2026-10-14 line r4(r3/line4/rt4、共有の web/rl/mode_runtime.mjs 50de50e7… の写しに足した。昇格の段がこの差分を共有のファイルへ入れる):
+//   - シールドの切り替えを mode.json の runtime で: createModeTeacher(..., {modeRuntime}) の modeRuntime = モードの mode.json の runtime
+//     ({shield: true|false, shield_params: {...}})。shield が真偽値ならそれで切り替え(無ければ catalogue の値 = 今までと同じ)、shield_params が
+//     オブジェクトならシールドの値にする(shieldParams の引数が上書き)。ブラウザの teacher.js は modeRuntime: entry.runtime を渡す。
+//     globalThis.JF_R3(r3 の試作の切り替え)は使わない。
+//   - 教師の metadata.shield に、実際に使ったシールドの値の全部(shield.mjs の既定と合わせたもの)を入れる(確認 line r3 の指摘:
+//     試作の切り替えでは R.shield が false のままで metadata に入らなかった)。
+//   - log の shield に抜け出し(escape)の進みを足す(記録だけ。操作は変えない)。
+// **Node の試験(元の sim-core.js を動かす)とブラウザの教師(JetFormer の _jf/rl/teacher.js)が同じこのファイルを使う**(純粋な ESM)。
+// 試験した走り = 記録する走り にするため、観測の包み・方策・シールド・乱しの予定・経路の形は全部ここで決める。
+// 乱数は config.seed(シーンの種)とフレーム番号だけから作り、時刻を使わない。同じフレームで 2 回呼ばれても同じ答えを返す。
+//
+//   const t = createModeTeacher(world, config, variation, {mode: 'no_wall', weights, params, policySha256});
+//   t.action(snapshot) → {steering, speed, info: {jf: {v, m, f, ph, l, ev, cl, es?, sh?, p?}}}
+//   t.metadata(context.teacher に入る。モードの中の全シーンで同じ)・t.reference・t.options
+//
+// world: アプリの activeWorld(開始ゲートで回した経路。障害物よけでは kind 'obstacle' の障害物を含む)。config: アプリの config(標準の物理)。
+// snapshot: sim.snapshot() の形 {state, metrics, config}。
+import {OBS_DIM, FEATURES_VERSION, REFERENCE_LOOP_SHA256, LOOP_LENGTH, actionToCommand, commandToAction, prepareGeometry, routeOffset} from './features.mjs';
+import {createPolicy, POLICY_SCHEMA} from './policy_forward.mjs';
+import {createObsWrapper, OBS_WRAPPERS} from './obs_modes.mjs';
+import {createShield, SHIELD_DEFAULTS} from './shield.mjs';
+// 離脱復活 r4 のシールド(試験に使った jf-shield/v4-proto そのもの。shield.mjs v5 とは別のファイル)
+import {createShield as createShieldV4p, SHIELD_DEFAULTS as SHIELD_DEFAULTS_V4P} from './shield_v4p.mjs';
+import {createPerturber, RECORD_SPEC} from './perturb.mjs';
+import {createLineProfile, LINE_FAMILIES, LINE_PROFILE_V2} from './line_profiles.mjs';
+import {LINE_V2_TABLE_SHA256} from './line_v2_table.mjs';
+import {obstaclesFromWorld, worldWithoutObstacles} from './layouts.mjs';
+import {CATALOGUE, CATALOGUE_SHA256} from './catalogue.mjs';
+import {ROOM_TABLE_SHA256} from './room_table.mjs';
+import {createRng, mix32} from './rng.mjs';
+// 離脱復活 r3(2026-10-14、protocol_recover_r3.json): 乱し v2(立て直せる表・替え方・散らし)と、乱しのフレーム以外のすき間シールド 3.5 cm
+// 離脱復活 r4(2026-10-14、protocol_recover_r4.json): r3/rc/rt/mode_runtime.mjs の写しに RECOVER_R4(表 v2・シールドの値)を足した(r3/rc4/rt)
+import {createPerturberV2, PERTURB_V2_ID} from './perturb_v2.mjs';
+import {RECOVERABLE_TABLE, RECOVERABLE_TABLE_SHA256} from './recoverable_table.mjs';
+
+export const RUNTIME_VERSION = 'jf-sim-rl-mode-runtime/v1';
+export const TEACHER_SCHEMA = 'jetformer-sim-rl-teacher/v1';
+export const MODE_POLICY_SCHEMA = 'jf-sim-rl-mode-policy/v1';
+export const BASE_SPEED_CAP = 4.5;
+export const MODE_KEYS = Object.freeze(CATALOGUE.modes.map(m => m.key));
+export const MODE_NUMBER = Object.freeze({fastest: 1, no_wall: 2, recover: 3, line: 4, speed: 5, obstacle: 6});   // protocol.json modes.mode_number
+// 離脱復活 r3 の走行中の仕組み(protocol_recover_r3.json perturbation_r3・runtime.shield)。params.perturb_version = 'v1' で元の乱し(報告の RC-P100-R3-V1 だけ)
+export const RECOVER_R3 = Object.freeze({
+  perturbation: PERTURB_V2_ID, min_rate: .95,
+  shield: Object.freeze({c_nominal: .035, c_pessimistic: -1, governor: Object.freeze({enabled: false}), identify: Object.freeze({enabled: false}),
+    worst: Object.freeze({enabled: false}), unstick: Object.freeze({enabled: false}), H: 24, keep_nominal: true}),
+  shield_skip_perturb: true,
+});
+// 離脱復活 r4(2026-10-14、protocol_recover_r4.json runtime): 乱し v2 は同じ式で、表を立て直せる表 v2(ゲートを外さない条件つき)に。
+// シールドの値は r4 の追補の決まりで固めた値(SHIELD_R4。下調べ r3/rc4/diag/dev_shield_rc4.mjs で決めた):
+// r3 の値 + すくみをほどく(止まっていて合格が「速さ 0」だけのフレームが 15 フレーム続いたら、0.5・1.0 m/s の「はう」候補を 3 cm のしきい値で調べる)。
+// 下調べ(r3 の方策、乱しなし): 開始のすき間 4.0・4.6 cm の止まり 2 つが普通に走るようになり(最小すき間 3.02・3.13 cm)、ほかの 24 回は全部同じ。
+// 開始のすき間 < 3.5 cm の開始(どの候補も合格しない)・ゲート 16 の右 0.2 m・+15°・ゲート 8 の右 0.2 m・−15°(方策の止まり)は直らない(画面の説明に書く)
+export const SHIELD_R4 = Object.freeze({...RECOVER_R3.shield,
+  unstick: Object.freeze({enabled: true, after: 15, speeds: Object.freeze([.5, 1.0]), c: .03, hold: 90, exit_margin: .01})});
+export const RECOVER_R4 = Object.freeze({id: 'recover-r4', perturbation: PERTURB_V2_ID, table: 'recoverable_table_v2', min_rate: .95, shield: SHIELD_R4, shield_skip_perturb: true});
+
+export function modeSpec(key) {
+  const m = CATALOGUE.modes.find(x => x.key === key);
+  if (!m) throw new Error('mode_runtime: 知らないモードです: ' + key);
+  return m;
+}
+// モードごとの走行中の仕組み(modes.json の runtime を機械が読める形に)
+export function runtimeSpec(key) {
+  const m = modeSpec(key);
+  return {key, obs_wrapper: m.policy.obs_wrapper, shield: !!m.runtime.shield, perturbation: m.runtime.perturbation ? 'record' : null,
+    conditioning: key === 'line' || key === 'speed' ? key : key === 'obstacle' ? 'layout' : null,
+    speed_cap_base_mps: BASE_SPEED_CAP, speed_cap_scaled: key === 'line' || key === 'speed'};
+}
+// 重み(rl-bestlap-policy/v1 または jf-sim-rl-mode-policy/v1)→ policy_forward の形
+export function policyFromWeights(weights, expectDim = null) {
+  if (!weights) throw new Error('mode_runtime: 方策の重みがありません');
+  const w = weights.schema === MODE_POLICY_SCHEMA ? {...weights, schema: POLICY_SCHEMA} : weights;
+  if (w.schema !== POLICY_SCHEMA) throw new Error('mode_runtime: 重みの schema が違います: ' + weights.schema);
+  if (expectDim != null && w.obs_dim !== expectDim) throw new Error(`mode_runtime: 重みの観測の次元 ${w.obs_dim} がモードの ${expectDim} と違います`);
+  return createPolicy(w);
+}
+
+// 記録の「経路いろいろ」の形の割り当て(modes.json line.recording.per_scene_params.family_plan_15 と同じ割合)。シーンの種から決まる(プランが無いとき)
+const LINE_PLAN15 = [['const_left', 2], ['const_right', 2], ['const_center', 1], ['inside', 2], ['outside', 2], ['late_apex', 2], ['early_apex', 1], ['random', 3]];
+export function lineParamsFor(kind, rng) {
+  const u1 = rng.uniform(), u2 = rng.uniform(), seed = rng.uint32();
+  if (kind === 'const_left') return {family: 'const', c0: .6 + .3 * u1};
+  if (kind === 'const_right') return {family: 'const', c0: -.9 + .3 * u1};
+  if (kind === 'const_center') return {family: 'const', c0: -.2 + .4 * u1};
+  if (kind === 'random') return {family: 'random', seed};
+  if (LINE_FAMILIES.includes(kind)) return {family: kind, a: .5 + .4 * u2};
+  throw new Error('mode_runtime: 知らない経路の形の指定です: ' + kind);
+}
+export const SPEED_LEVELS = Object.freeze([1.0, .875, .75, .625, .5]);
+// シーンの条件 p を、プランの指定(params)とシーンの種(seed)から決める(指定の無い値は種から決定的に)
+export function sceneParams(key, seed, params = {}) {
+  const rng = createRng(mix32(seed >>> 0, 0x5ce2e));
+  const p = {mode: key, seed: seed >>> 0};
+  if (key === 'line') {
+    let line = params.line;
+    if (!line || line === 'auto') {
+      const total = LINE_PLAN15.reduce((a, [, w]) => a + w, 0); let u = rng.uniform() * total, kind = 'random';
+      for (const [k, w] of LINE_PLAN15) { if (u < w) { kind = k; break; } u -= w; }
+      line = lineParamsFor(kind, rng);
+    } else if (typeof line === 'string') line = lineParamsFor(line, rng);
+    p.line = line;
+    p.c_v = params.c_v ?? +(0.9 + 0.1 * rng.uniform()).toFixed(4);
+  } else if (key === 'speed') {
+    p.line = {family: 'const', c0: 0};
+    p.c_v = params.c_v ?? SPEED_LEVELS[Math.floor(rng.uniform() * SPEED_LEVELS.length) % SPEED_LEVELS.length];
+  } else if (key === 'recover') {
+    p.perturb_class = params.perturb_class ?? 'auto';
+    p.perturb_version = params.perturb_version ?? 'v2';   // r3: 立て直せる表で替える乱し(v2)。'v1' は報告の比べ用
+  } else if (key === 'obstacle') {
+    p.layout_id = params.layout_id ?? null;
+  }
+  if (params.speed_limit != null) p.speed_limit = +params.speed_limit;
+  if (params.start) p.start = params.start;
+  return p;
+}
+// 適用した操作 → 観測の「前回の行動」(方策の値のままなら方策の値、変えたなら単位から戻す)
+export function appliedAction(cmd, policyCmd, speedCap, maxSteer = .52) {
+  const a = commandToAction(cmd.steering, cmd.speed, speedCap, maxSteer);
+  return [cmd.steering === policyCmd.steering ? policyCmd.a0 : a.a0, cmd.speed === policyCmd.speed ? policyCmd.a1 : a.a1];
+}
+
+export function createModeTeacher(world, config, variation = {}, {mode, weights, params = {}, policySha256 = null, obstacleSet = null,
+  shieldParams = {}, plannedTimeS = null, policy = null, overrides = {}, modeRuntime = null} = {}) {
+  // overrides(Node の試験だけ): {shield: false}(NW-OFF)・{perturbation: false}(乱しなしの線)。ブラウザでは使わない
+  const key = mode, M = modeSpec(key), R = runtimeSpec(key);
+  if (!world || !Array.isArray(world.route)) throw new Error('mode_runtime: world がありません');
+  routeOffset(world.route);   // Default(v3)の経路を回したものでなければ例外(RL の観測は v3 専用)
+  const seed = (config?.seed ?? 1) >>> 0;
+  const p = sceneParams(key, seed, params);
+  const wrapperName = R.obs_wrapper, dim = OBS_WRAPPERS[wrapperName].dim;
+  const act = policy ?? policyFromWeights(weights, dim);
+  const cV = p.c_v ?? 1, speedCap = BASE_SPEED_CAP * cV, maxSteer = config?.maxSteer ?? .52;
+  const obstacles = obstaclesFromWorld(world);
+  if (key !== 'obstacle' && obstacles.length && !overrides.allow_obstacles) throw new Error('mode_runtime: 障害物のあるコースで使えるのは「障害物よけ」だけです');
+  const geometry = prepareGeometry(world);
+  // 目標の線の版(2026-10-14 line r2): 経路いろいろだけ、params.line_profile か方策の meta.line_profile が 'v2' なら v2
+  // (開始のつなぎ・R の曲がりの内側の上限・なめらかさ。line_profiles.mjs)。無ければ v1(r1 の方策・速さいろいろは今までと同じ)
+  const lineVersion = key === 'line' ? (params.line_profile ?? weights?.meta?.line_profile ?? 'v1') : 'v1';
+  if (lineVersion !== 'v1') p.line_profile = lineVersion;
+  const lineFactory = p.line ? (s0 => createLineProfile(p.line, s0, {version: lineVersion})) : null;
+  const wrapper = createObsWrapper({wrapper: wrapperName, world, config, geometry, lineFactory, cV, obstacles});
+  // line r4: シールドの切り替えと値は mode.json の runtime(modeRuntime)から。無ければ catalogue(modes.json)の値
+  // 離脱復活 r4: シールドはいつも入り(乱しのフレーム以外)、値は RECOVER_R4.shield で固定・jf-shield/v4-proto(modeRuntime は使わない。試験と同じ)。
+  //   overrides.shield = false は Node の試験だけ(シールドなしの比べ)
+  const isRc = key === 'recover';
+  const isObj = v => v != null && typeof v === 'object' && !Array.isArray(v);
+  const shieldOnMode = isRc ? true : typeof modeRuntime?.shield === 'boolean' ? modeRuntime.shield : R.shield;
+  const shieldParamsUsed = isRc ? {...RECOVER_R4.shield, ...shieldParams}
+    : {...(isObj(modeRuntime?.shield_params) ? modeRuntime.shield_params : {}), ...shieldParams};
+  const shield = shieldOnMode && overrides.shield !== false ? (isRc ? createShieldV4p : createShield)({geometry, config, params: shieldParamsUsed}) : null;
+  const pertV2 = isRc && p.perturb_version !== 'v1';
+  const perturber = !(R.perturbation && overrides.perturbation !== false) ? null
+    : pertV2 ? createPerturberV2({spec: RECORD_SPEC, seed, cls: p.perturb_class, maxSteer, wheelbase: config?.wheelbase ?? .26, table: RECOVERABLE_TABLE, minRate: RECOVER_R4.min_rate})
+    : createPerturber({spec: RECORD_SPEC, seed, cls: p.perturb_class, maxSteer, wheelbase: config?.wheelbase ?? .26});
+  const obs = new Float64Array(dim), aux = {}, pa = [0, 0];
+  let lastF = -1, memo = null, prevA = [0, 0], prevCmd = {steering: 0, speed: 0}, shieldCount = 0, frames = 0;
+  const sha12 = policySha256 ? String(policySha256).slice(0, 12) : null;
+  const log = [];
+  function action(snapshot, extra = null) {
+    const st = snapshot.state, m = snapshot.metrics ?? {}, f = st.frame;
+    if (memo && f === lastF) return JSON.parse(JSON.stringify(memo));
+    if (f === 0) { wrapper.reset(st, m.route_index ?? 0); prevA = [0, 0]; prevCmd = {steering: 0, speed: 0}; }
+    else if (f === lastF + 1) wrapper.advance(st, m.route_index ?? 0);
+    else throw new Error(`mode_runtime: フレームが飛びました(${lastF} → ${f})`);
+    // Node の試験で制御遅延をかけたとき: 観測の「前回の行動」は実際に適用した行動(r2 と同じ約束)。ブラウザでは使わない
+    if (extra?.applied) prevA = [extra.applied[0], extra.applied[1]];
+    wrapper.observe(st, prevA[0], prevA[1], obs, aux);
+    act(obs, pa);
+    const pc = actionToCommand(pa[0], pa[1], speedCap, maxSteer);
+    let cmd = {steering: pc.steering, speed: pc.speed}, ph = 'drive', l = 1, ev = 0, sh = 0;
+    // 速さの上限(速さいろいろの代わりの方法: 学習しない上限 {4.5, 4.0, 3.5, 3.0, 2.5} m/s。protocol acceptance.fallbacks.speed)
+    if (p.speed_limit != null && cmd.speed > p.speed_limit) cmd.speed = p.speed_limit;
+    if (perturber) {
+      const r = perturber.step(f, {s: aux.s, ey: aux.lateral_error, dmin: aux.d_min, x: st.x, z: st.z, yaw: st.yaw, v: st.speed, speedCap, policy: cmd});
+      if (r.inj) { cmd = {steering: r.inj.steering ?? cmd.steering, speed: r.inj.speed ?? cmd.speed}; ph = 'perturb'; l = 0; }
+      ev = r.ev;
+    }
+    let shDbg = null;
+    // 離脱復活 r3: 乱しのフレーム(ph = 'perturb')はシールドを通さない(乱しを打ち消さない)
+    if (shield && !(isRc && RECOVER_R4.shield_skip_perturb && ph === 'perturb')) {
+      const r = shield.filter(st, aux.s, prevCmd, cmd);
+      shDbg = {fb: r.fallback ?? null, nom: r.predicted?.nominal ?? null, pess: r.predicted?.pessimistic ?? null, n: r.checked, id: r.ident ?? null};
+      // no_wall r3/r4(jf-shield/v4・v5): 記録だけに模型 Q の予想と速さの見張りの上限を足す(操作は変えない。作動の内訳を数えるため)
+      if (r.predicted && r.predicted.worst !== undefined) shDbg.wq = r.predicted.worst;
+      if (r.cap !== undefined) shDbg.cap = r.cap;
+      if (r.replaced) { cmd = r.cmd; sh = 1; ph = 'shield'; shieldCount++; }
+    }
+    prevA = appliedAction(cmd, pc, speedCap, maxSteer);
+    prevCmd = cmd;
+    const jf = {v: 1, m: key, f, ph, l, ev, cl: Math.round(aux.d_min * 1000)};
+    if (aux.e_star !== undefined) jf.es = Math.round(aux.e_star * 1000);
+    if (shield) jf.sh = sh;
+    if (f === 0) jf.p = {...p, policy: sha12, runtime: RUNTIME_VERSION};
+    frames++;
+    const out = {steering: cmd.steering, speed: cmd.speed, info: {jf}};
+    log.push({f, s: aux.s, ey: aux.lateral_error, epsi: aux.heading_error, dmin: aux.d_min, es: aux.e_star, v: st.speed, ph, l, ev, sh,
+      a0: prevA[0], a1: prevA[1], steering: cmd.steering, speed: cmd.speed, missed: wrapper.missed, shield: shDbg});
+    lastF = f; memo = out;
+    return JSON.parse(JSON.stringify(out));
+  }
+  const metadata = {schema: TEACHER_SCHEMA, id: `jf-rl-${key}-v1`, mode: key, policy_sha256: policySha256, obs_wrapper: wrapperName,
+    features_version: FEATURES_VERSION, reference_loop_sha256: REFERENCE_LOOP_SHA256, speed_cap_mps: R.speed_cap_scaled ? `${BASE_SPEED_CAP}·c_v` : BASE_SPEED_CAP,
+    runtime_version: RUNTIME_VERSION, catalogue_sha256: CATALOGUE_SHA256, room_table_sha256: ROOM_TABLE_SHA256, obstacle_set: obstacleSet ?? null};
+  if (isRc) {
+    // 離脱復活 r4: 試験の写し(0758cb1b…)と同じ形(v4-proto の既定 + RECOVER_R4.shield)。乱しは v2 の表の印
+    if (shieldOnMode && overrides.shield !== false) metadata.shield = {...SHIELD_DEFAULTS_V4P, ...shieldParamsUsed};
+    if (perturber) metadata.perturbation = pertV2 ? {id: PERTURB_V2_ID, table_id: RECOVERABLE_TABLE.id, table_sha256: RECOVERABLE_TABLE_SHA256, min_rate: RECOVER_R4.min_rate}
+      : {id: 'jf-perturb-record/v1'};
+  } else if (shield) metadata.shield = JSON.parse(JSON.stringify(shield.params));   // line r4: 実際に使った値の全部(shield.mjs が既定と合わせたもの)
+  else if (shieldOnMode) metadata.shield = JSON.parse(JSON.stringify({...SHIELD_DEFAULTS, ...shieldParamsUsed}));   // Node の試験でシールドを外したとき(overrides に残る)
+  if (lineVersion === 'v2') { metadata.line_profile = LINE_PROFILE_V2.id; metadata.line_v2_table_sha256 = LINE_V2_TABLE_SHA256; }
+  if (Object.keys(overrides).length) metadata.overrides_node_test_only = {...overrides};
+  return {action, metadata, reference: {length: LOOP_LENGTH, planned_time_s: plannedTimeS}, options: {mode: key}, params: p,
+    get log() { return log; }, get events() { return perturber ? perturber.events : []; }, get shieldFrames() { return shieldCount; },
+    get frames() { return frames; }, wrapper, spec: R};
+}
+export {worldWithoutObstacles};

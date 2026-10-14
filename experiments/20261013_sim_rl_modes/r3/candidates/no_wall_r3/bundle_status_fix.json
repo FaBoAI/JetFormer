@@ -1,0 +1,16 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "no_wall",
+ "state": "not_accepted",
+ "label_ja": "不合格(参考)",
+ "failed": [
+  "check_r2_corner_collisions",
+  "check_r2_N2_fresh",
+  "check_r2_N5_stall"
+ ],
+ "pending": [],
+ "note_ja": "r2 の学習の段の試験(340 回)は合格だったが、確認 r2(check_no_wall_r2.md)で不合格: DR-T の範囲の中の隅(速い舵・弱いブレーキ・μ 0.85・摩擦円・前進のゲイン 1.04)で衝突(頂点 480 回で 10)、標準の物理の新しい開始で 7.0 cm(N2 は試験の組の引き当て)、止まったまま(有効な周 0)のシーンが記録の前の確かめを通る",
+ "applies_to": "experiments/20261013_sim_rl_modes/bundle/no_wall/status.json(r2 の一式、方策 153c709c…)",
+ "written_by": "no_wall r3 の学習の段(2026-10-14)。昇格の段で置く",
+ "updated_at": "2026-10-14T12:37:57"
+}

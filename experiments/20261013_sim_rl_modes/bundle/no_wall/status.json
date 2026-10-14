@@ -1,21 +1,114 @@
 {
  "schema": "jf-sim-rl-mode-status/v1",
  "key": "no_wall",
- "state": "not_accepted",
- "label_ja": "不合格(参考)",
- "failed": [
-  "check_r2_corner_collisions",
-  "check_r2_N2_fresh",
-  "check_r2_N5_stall"
- ],
+ "state": "accepted",
+ "label_ja": "合格",
+ "failed": [],
  "pending": [],
- "from_training_status": {
-  "state": "accepted",
-  "label_ja": "合格",
-  "updated_at": "2026-10-14T05:29:16"
+ "round": "r4",
+ "judged_by": "protocol_no_wall_r4.json(sha256 ad90c926…)の N1_r4・N2_r4・N3_r4・N4・N5_r4・N6・N7_r4。試験の組は選んだ点で 1 回だけ(4,010 回・判定 3,038 回)",
+ "test": {
+  "N1_r4": "3038/3038",
+  "N2_r4": 0.08104404023045395,
+  "N3_r4": 0.08156167320447369,
+  "N4": 9.747625816191015,
+  "N5_r4": {
+   "all_required": "2203/2203",
+   "not_valid": [],
+   "NW-R200-R4": "200/200(要 190)",
+   "NW-VX-R4": "300/300(要 285)",
+   "NW-HC-R4": "256/256(要 244)"
+  },
+  "N6": {
+   "rho_req_gt1": 0.004047027911689064,
+   "rho_comb_gt1": 0.008366826617976152
+  },
+  "N7_r4": {
+   "fraction": 0.0014611111111111112,
+   "run_max": 0.015
+  }
  },
- "verdict_ja": "check_no_wall_r2.md: 凍結した試験 340 回は全部合格だが、試験した物理の範囲の中の角(摩擦円・μ×0.85・ブレーキ 0.7・舵の速さ 1.8・前進ゲイン 1.04)では 33 回中 30 回ぶつかる。標準の物理の新しい開始 600 回では最小すき間 7.0 cm(N2 の 8 cm は試験の組の引きがよかった)",
- "note_ja": "r2 の学習の段の試験(340 回)は合格だったが、確認 r2(check_no_wall_r2.md)で不合格: DR-T の範囲の中の隅(速い舵・弱いブレーキ・μ 0.85・摩擦円・前進のゲイン 1.04)で衝突、標準の物理の新しい開始で 7.0 cm(N2 は試験の組の引き当て)、止まったまま(有効な周 0)のシーンが記録の前の確かめを通る。登録簿(data/sim_rl/modes/no_wall/status.json)と同じにした",
- "written_by": "審査の段(sim_rl_modes_20261013、2026-10-14)。r3 の no_wall_r3/bundle_status_fix.json と同じ中身",
- "updated_at": "2026-10-14T13:55:40"
+ "check": {
+  "pass": true,
+  "report": "jetformer_reports/sim_rl_modes_20261013/r3/check_no_wall_r4.md",
+  "runs_new": 6429,
+  "summary_ja": "学習の段の試験 53 行を作り直して 53 回とも完全に一致。新しい組 6,429 回(範囲の中・シールドあり 5,749 回)で衝突 0、標準の物理の最小 8.10 cm・物理のずれの最小 7.03 cm、止まり: 標準の物理 0/3,303・物理のずれ 4/2,411(許しの中)。sh = 0 のフレームの指令は方策そのもの(3,892,200 フレーム)",
+  "numbers": {
+   "in_range_collisions": "0/5749",
+   "nominal_min_cm": 8.1,
+   "uniform_1500_min_cm": 8.1,
+   "dr_min_cm": 7.03,
+   "nominal_stalls": "0/3303",
+   "dr_stalls": "4/2411",
+   "N7_shield_pct": 0.146,
+   "policy_only_min_cm": 4.54,
+   "app_range_stalls": "6/200",
+   "frame_ms_max_node": 803.7
+  }
+ },
+ "caveats_ja": [
+  "標準の物理の最小すき間はシールドのしきい値 8.1 cm に張り付く(方策だけでは 4.54 cm まで寄る)",
+  "物理のずれの隅(舵の速さ 0.8・柱へ向いた開始)では止まりの小さな島がある(VV9 のまわり 35 回中 13 回。記録は標準の物理だけなので入らない)",
+  "記録の分布の外の開始(アプリの範囲)では止まることがある(200 回中 6 回、衝突 0)",
+  "抜け出しを計画するフレームは Node で 70〜100 ms(混んだ CPU で最大 0.8 秒)。ブラウザの 1 フレームの時間は昇格の段で測る",
+  "モードの中の線のばらつきは小さい(0.64 cm。最速 2.54 cm)"
+ ],
+ "replaces": {
+  "previous": "r2(方策 153c709c…・シールド v3、不合格(参考))",
+  "backup": "experiments/20261013_sim_rl_modes/r3/promote/before/bundle/no_wall/"
+ },
+ "candidate": "experiments/20261013_sim_rl_modes/r3/candidates/no_wall_r4/",
+ "runtime": {
+  "shared_runtime": "experiments/20261013_sim_rl_modes/rl/runtime(= web/rl = jetformer/sim/static/rl)",
+  "web_manifest_sha256": "5e6cf47815469381c18427755a96d74d0ab8097e8e1af587de7c022153f39307",
+  "runtime_version": "jf-sim-rl-mode-runtime/v1",
+  "files": {
+   "mode_runtime.mjs": "f59b195596bca037b930b6295df4e86edb7f93beca090b4d2b8a27a487e6aea9",
+   "perturb_v2.mjs": "bb7e58f71e7467e043567570eab7a1a861b427ed3a1bc0423e6049356e89ac0f",
+   "recoverable_table.mjs": "4ac6b6823dfba42bce5f9721c610264afca8dfcb4464305c86c42f6bbfddbe59",
+   "shield.mjs": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+   "shield_v4p.mjs": "29c9d111596a2708311b72a0e22d19a70258c533d76283b6ff6dc02f64b83dd0"
+  },
+  "equivalence": {
+   "how_ja": "試験に使った候補の runtime と、まとめた runtime を同じ開始・種・物理で閉ループに走らせ、全フレームの操作・info.jf・metadata・乱しの出来事を比べた(r3/promote/equiv_runtime.mjs)。保存した F-ID も与えた",
+   "cases": 139,
+   "same": 139,
+   "fids": 14,
+   "fids_pass": 14,
+   "by_mode": {
+    "no_wall": {
+     "cases": 58,
+     "same": 58,
+     "runs_with_reverse": 0
+    },
+    "recover": {
+     "cases": 29,
+     "same": 29,
+     "runs_with_reverse": 0
+    },
+    "fastest": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "speed": {
+     "cases": 5,
+     "same": 5,
+     "runs_with_reverse": 0
+    },
+    "obstacle": {
+     "cases": 2,
+     "same": 2,
+     "runs_with_reverse": 0
+    },
+    "line": {
+     "cases": 40,
+     "same": 40,
+     "runs_with_reverse": 0
+    }
+   }
+  }
+ },
+ "note_ja": "r4 の試験(protocol_no_wall_r4.json、1 回だけ)で全部合格し、確認 r4 でも反証できなかった。昇格の段(2026-10-15)が bundle/no_wall/ と登録簿をこの一式で置き換えた",
+ "updated_at": "2026-10-15T02:44:57"
 }

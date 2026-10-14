@@ -1,0 +1,64 @@
+--- a/jetformer/dataset.py	2026-10-14 20:14:36.000000000 +0900
++++ b/jetformer/dataset.py	2026-10-14 22:17:37.796401742 +0900
+@@ -311,6 +311,21 @@
+     return out
+ 
+ 
++def _frame_indexed(veh, cam_t):
++    """正解(未来の操作)をフレームの番号で引くシーンか。True になるのは、VEHICLE の quality が 'snapshot' で、かつ
++    操作の数がカメラのフレームと同じで、各カメラのフレームの最新の操作がちょうど同じ番号のとき(操作がカメラのフレームと 1 対 1)。
++
++    見分けの本体は「1 対 1」の条件のほう。quality = 'snapshot' は実機の VEHICLE.npz(recorder.py が書く。100 Hz)にも付くので、
++    quality だけでは展開したシミュレーターのシーンと区別できない。実機のシーンは VEHICLE が 100 Hz・カメラが 30 Hz で
++    1 対 1 にならないため、今までどおり時刻で引く(確認 recover r3: data/raw の実機のシーン 138 は前後でビット単位で同じ)。
++    1 対 1 になるのは、scene_import.dataset_to_scenes がデータセットから展開したシーン(VEHICLE の時刻 = カメラの時刻)だけ"""
++    q = veh.get('quality')
++    if q is None or str(np.asarray(q)) != 'snapshot':
++        return False
++    vt = veh['timestamps_us']
++    return len(vt) == len(cam_t) and np.array_equal(_latest_index(vt, cam_t), np.arange(len(cam_t)))
++
++
+ def _aligned_arrays(cam_t, tof, imu, veh):
+     n = len(cam_t)
+     out = {'timestamps_us': cam_t}
+@@ -350,16 +365,29 @@
+             out['vehicle_valid'] = (j >= 0) & (cam_t - vt[jc] <= max_age_us)
+             fut = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
+             fut_ok = np.ones(n, dtype=bool)
+-            frame_us = 1e6 / config.CAMERA['fps']
+-            for k in range(FUTURE_STEPS):
+-                tk = cam_t + int((k + 1) * frame_us)
+-                jk = _latest_index(vt, tk)
+-                jkc = np.clip(jk, 0, len(vt) - 1)
+-                fut[:, k] = state[jkc, :2]
+-                fut_ok &= (jk >= 0) & (tk - vt[jkc] <= max_age_us)
+-            out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
+-            horizon = cam_t + int(FUTURE_STEPS * frame_us)
+-            out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
++            if _frame_indexed(veh, cam_t):
++                # 操作がカメラのフレームと 1 対 1 のシーン(データセットから展開したシーン。_frame_indexed): 正解をフレームの番号で引く。
++                # 時刻(int(33333.33 µs) おき)で引くと、シミュレーターの 33,333/33,334 µs おきのフレームでは正解が 1 フレーム前にずれる
++                # 観測が出る(確認 recover r2: 観測の約 67%)。実機のシーンは今までどおり時刻で引く
++                ja = np.arange(n)
++                for k in range(FUTURE_STEPS):
++                    jk = ja + k + 1
++                    jkc = np.clip(jk, 0, nv - 1)
++                    fut[:, k] = state_all[jkc, :2]
++                    fut_ok &= (jk < nv) & ok[jkc]
++                out['future_actions'] = fut
++                out['future_valid'] = fut_ok
++            else:
++                frame_us = 1e6 / config.CAMERA['fps']
++                for k in range(FUTURE_STEPS):
++                    tk = cam_t + int((k + 1) * frame_us)
++                    jk = _latest_index(vt, tk)
++                    jkc = np.clip(jk, 0, len(vt) - 1)
++                    fut[:, k] = state[jkc, :2]
++                    fut_ok &= (jk >= 0) & (tk - vt[jkc] <= max_age_us)
++                out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
++                horizon = cam_t + int(FUTURE_STEPS * frame_us)
++                out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
+             out['erpm_valid'] = np.full(n, 'erpm' in veh)              # 旧ファームには回転数が無い(0で埋めている)
+     return out
+ 

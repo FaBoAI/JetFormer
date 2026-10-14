@@ -1,0 +1,133 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T19:18:19.258Z",
+ "mode": "recover",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/recover/best/policy.json",
+  "sha256": "7720f2754972efbbd9b714008c99e63822b5421a0eef349840d3d52fb8a0456f",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 79
+ },
+ "judged": {
+  "C1_valid": {
+   "value": "38/100",
+   "pass": false
+  },
+  "C2_success": {
+   "value": 0.7602739726027398,
+   "events": 292,
+   "pass": false
+  },
+  "C3_recovery_time": {
+   "value": {
+    "median": 0.4666666666666667,
+    "p90": 0.9966666666666668
+   },
+   "pass": true
+  },
+  "C4_events_mask": {
+   "value": {
+    "events_per_episode": 2.92,
+    "masked_fraction": 0.11875
+   },
+   "pass": false
+  },
+  "C5_kick": {
+   "value": {
+    "yaw": "35/40",
+    "lateral": "36/40",
+    "yaw_rate": 0.875,
+    "lateral_rate": 0.9
+   },
+   "pass": false
+  },
+  "C6_unperturbed": {
+   "value": {
+    "lap_from_stop": 8.421988435165682,
+    "rec60": "60/60",
+    "rec60_min_clearance": 0.021244856249210464
+   },
+   "pass": false
+  }
+ },
+ "all_judged_pass": false,
+ "reported": {
+  "by_class": {
+   "中": {
+    "n": 89,
+    "success": 67
+   },
+   "強": {
+    "n": 114,
+    "success": 83
+   },
+   "弱": {
+    "n": 89,
+    "success": 72
+   }
+  },
+  "by_type": {
+   "steer_pulse": {
+    "n": 123,
+    "success": 71
+   },
+   "excursion": {
+    "n": 122,
+    "success": 117
+   },
+   "speed_pulse": {
+    "n": 47,
+    "success": 34
+   }
+  },
+  "gate_miss_episodes": 7,
+  "gate_miss": {
+   "rule": "sim の passed_gates が変わらないまま R 上の s がゲートの間の最大 1.519 m + 0.5 m を越えて進んだ(rl/gate_miss.mjs)",
+   "p100_valid": "7/38",
+   "p100_valid_ids": [
+    "P36",
+    "P37",
+    "P59",
+    "P68",
+    "P69",
+    "P89",
+    "P99"
+   ],
+   "p100_all": "14/100",
+   "kick_survived": "15/127",
+   "kick_allowed_survived": {
+    "yaw": "4/35",
+    "lateral": "3/36"
+   },
+   "rec60": "0/60",
+   "virtual_counter_episodes_valid": "21/38",
+   "virtual_counter_note": "ランタイムの仮想の外し(wrapper.misses)は面を越えるのが遅れただけでも数えるので、外しの数には使わない(参考)"
+  },
+  "kick_all_positions": {
+   "yaw": "63/74",
+   "lateral": "64/74"
+  },
+  "variation": {
+   "rows": 100,
+   "VM1_us": 177.23010443768274,
+   "VM2_us": {
+    "mean_abs_dev": null,
+    "bins_used": 0
+   },
+   "VM3_m": {
+    "mean_abs_dev": null,
+    "bins_used": 0
+   },
+   "VM4_mps": {
+    "mean_abs_dev": null,
+    "bins_used": 0
+   },
+   "VM7_cells": 1189,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 309,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

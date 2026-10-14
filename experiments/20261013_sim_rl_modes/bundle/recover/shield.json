@@ -1,0 +1,35 @@
+{
+ "schema": "jf-sim-rl-recover-shield/v2",
+ "round": "r4",
+ "applies": "乱しのフレーム(info.jf.ph = 'perturb')以外",
+ "shield_mjs": "runtime/shield.mjs(jf-shield/v4-proto。下の値。すくみをほどくを使う)",
+ "params": {
+  "c_nominal": 0.035,
+  "c_pessimistic": -1,
+  "governor": {
+   "enabled": false
+  },
+  "identify": {
+   "enabled": false
+  },
+  "worst": {
+   "enabled": false
+  },
+  "unstick": {
+   "enabled": true,
+   "after": 15,
+   "speeds": [
+    0.5,
+    1.0
+   ],
+   "c": 0.03,
+   "hold": 90,
+   "exit_margin": 0.01
+  },
+  "H": 24,
+  "keep_nominal": true,
+  "note": "r3 の値 + すくみをほどく(下調べ: 開始のすき間 4.0・4.6 cm の止まり 2 つが直り、最小すき間 3.02・3.13 cm。ふつうの開始 24 回は全部同じ)"
+ },
+ "labels": "シールドが替えた指令(すくみをほどくを含む)は正解ラベル(l = 1、sh = 1)。乱しのフレームはシールドを通さない",
+ "ui_note_ja": "開始のすき間が 3.5 cm より小さい開始(壁を向いた開始)では、どの候補もシールドの 3.5 cm を守れず、車は止まったまま動かないことがある。記録の前の確かめ(valid_episode_r3)でその開始は次の候補に替わるので記録には入らないが、ブラウザで手で走らせると 20 秒止まったままに見える(画面の説明に書く)"
+}

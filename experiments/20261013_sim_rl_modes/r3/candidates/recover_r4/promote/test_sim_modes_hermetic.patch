@@ -1,0 +1,67 @@
+--- a/tests/test_sim_modes.py	2026-10-14 13:55:13.162546768 +0900
++++ b/tests/test_sim_modes.py	2026-10-14 22:19:29.949293965 +0900
+@@ -16,7 +16,7 @@
+ 
+ import _sim_testlib as L
+ from test_sim_web import FakeBridge, FakeJobs
+-from jetformer import config, dataset
++from jetformer import config, dataset, modes
+ from jetformer.sim import paths, rl_import, rl_modes, web
+ 
+ POLICY = {'schema': 'rl-bestlap-policy/v1', 'obs_dim': 79, 'layers': [{'w': [[0.0]], 'b': [0.0]}]}
+@@ -45,12 +45,21 @@
+     return sha
+ 
+ 
++def write_genres(path, genre8=True):
++    """ジャンルの表を一時フォルダーに書く(本物の data/modes.json に頼らない。確認 recover r3 の指摘)"""
++    table = [dict(m) for m in modes.DEFAULT_MODES] + ([{'id': 8, 'name': 'シミュレーター', 'description': ''}] if genre8 else [])
++    path.parent.mkdir(parents=True, exist_ok=True)
++    path.write_text(json.dumps(table, ensure_ascii=False), encoding='utf-8')
++    return path
++
++
+ @pytest.fixture
+ def client(tmp_path, monkeypatch):
+     L.install_fake_release(tmp_path, monkeypatch)
+     monkeypatch.setattr(config, 'DATASET_DIR', config.DATA_DIR / 'datasets')
+     monkeypatch.setattr(config, 'RAW_DIR', config.DATA_DIR / 'raw')
+     config.DATASET_DIR.mkdir(parents=True, exist_ok=True)
++    monkeypatch.setattr(modes, 'MODES_FILE', write_genres(config.DATA_DIR / 'modes.json'))
+     monkeypatch.delenv('JETFORMER_SIM_RL', raising=False)
+     jobs, fb = FakeJobs(), FakeBridge()
+     orig = web.bridge
+@@ -341,6 +350,33 @@
+     marr = dataset._frame_modes(after, (t * 1e6).astype(np.int64))
+     assert np.array_equal(np.nonzero(marr == 0)[0], np.arange(10, 25)) and (np.delete(marr, np.arange(10, 25)) == 4).all()
+ 
++
++def test_import_without_genre8_keeps_only_masked_frames_unset(client, monkeypatch):
++    """ジャンルの表にシミュレーター(8)が無い Jetson: 展開したシーンの「未設定のまま残す区間」は学習除外で外した観測だけ。
++    ジャンルを付け直すと、外していない観測にはジャンルが付く(確認 recover r3 の指摘。直す前はシーン全体が未設定のまま残った)"""
++    monkeypatch.setattr(modes, 'MODES_FILE', write_genres(config.DATA_DIR / 'modes_no8.json', genre8=False))
++    monkeypatch.setattr(rl_import, 'FRAMES', N)
++    write_mode('recover', 'not_accepted', tags=['simulator', 'sim-rl', 'sim-rl-recover', 'sim-recover'])
++    sids = [scene_zip('%032x' % 21, '20261014-000000-00000015-0001', 'train', l0=range(20, 25), start=(1, 2, .1)),
++            scene_zip('%032x' % 22, '20261014-000000-00000016-0001', 'val', l0=(40,), start=(2, 2, .1))]
++    pid, plan = plan_with_done(client, 'recover', sids)
++    r = client.post('/api/sim/rl/import', json={'plan': pid, 'mode': 'recover'})
++    assert r.status_code == 200, r.text
++    job = client.jobs.jobs[-1]
++    assert job['state'] == 'done', job.get('error')
++    name = job['result']['name']
++    sc = sorted(s['name'] for s in dataset.list_scenes() if s['name'].startswith('ds-' + name))
++    assert len(sc) == 2
++    first = json.loads((config.RAW_DIR / ('ds-' + name) / sc[0] / 'scene.json').read_text())
++    t = np.round(np.arange(N) / 30, 3)
++    assert {g['mode_id'] for g in first['mode_segments']} == {0}                  # ジャンル 8 はこの Jetson に無いので展開したては全部未設定
++    marr0 = dataset._frame_modes({'mode_id': 1, 'mode_segments': first['label_mask']['unset_segments']}, (t * 1e6).astype(np.int64))
++    assert np.array_equal(np.nonzero(marr0 == 0)[0], np.arange(10, 25))          # 残す区間は外した観測 [ps − 10, pe − 1] だけ
++    dataset.update_scene(sc[0], mode_id=4)
++    after = json.loads((config.RAW_DIR / ('ds-' + name) / sc[0] / 'scene.json').read_text())
++    marr = dataset._frame_modes(after, (t * 1e6).astype(np.int64))
++    assert np.array_equal(np.nonzero(marr == 0)[0], np.arange(10, 25)) and (np.delete(marr, np.arange(10, 25)) == 4).all()
++
+ 
+ def test_import_rejects_contract_mismatch_and_collisions(client, monkeypatch):
+     monkeypatch.setattr(rl_import, 'FRAMES', N)

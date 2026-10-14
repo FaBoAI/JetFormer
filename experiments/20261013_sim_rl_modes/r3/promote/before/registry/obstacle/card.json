@@ -1,0 +1,45 @@
+{
+ "schema": "jf-sim-rl-mode-card/v1",
+ "key": "obstacle",
+ "state": "not_published",
+ "headline_ja": "障害物のある 100 回(選びの組。試験の組はまだ使っていない)のうち 66 回だけ走り切った(合格は 95 回)ので出していません",
+ "lap_from_stop_s": 8.914292482857684,
+ "flying_lap_s": null,
+ "tests": {
+  "runs": 100,
+  "collisions": 34,
+  "text_ja": "障害物のある 100 回(選びの組)のうち 34 回で衝突"
+ },
+ "min_clearance_cm": {
+  "value": 0.03,
+  "text_ja": "走り切った回の最小すき間"
+ },
+ "main": [],
+ "checks": [
+  {
+   "id": "O1_valid",
+   "label_ja": "障害物のある 100 回のうち 95 回以上走り切る",
+   "pass": false
+  },
+  {
+   "id": "O2_clearance",
+   "label_ja": "すき間 ≥ 3 cm(足した障害物も)",
+   "pass": false
+  },
+  {
+   "id": "O3_lap1_median",
+   "label_ja": "1 周目の中央値 ≤ 10.5 秒",
+   "pass": true
+  },
+  {
+   "id": "O4_empty",
+   "label_ja": "障害物なしで停止から 1 周 ≤ 9 秒",
+   "pass": true
+  }
+ ],
+ "notes_ja": [
+  "すぐ前(3.5 m 以内)に障害物がある開始でぶつかりやすく、右へよける癖がある。優先 3 のモードで不合格なので、選べるようにしていない"
+ ],
+ "verdict_ja": "check_obstacle_r2.md: O1 66/100・O2 0.03 cm で不合格(優先 3 なので出さない)",
+ "updated_at": "2026-10-14T11:12:01"
+}

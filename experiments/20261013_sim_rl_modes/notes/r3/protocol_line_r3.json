@@ -1,0 +1,115 @@
+{
+ "title": "経路いろいろ(line)第 3 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)と protocol_line_r2.json(82de57e2…3c61)を変えずに、line だけに足す・置き換える項目",
+ "version": "line-r3-1",
+ "written_at": "2026-10-14T09:55:00+09:00",
+ "written_by": "r3 の計画の段(sim_rl_modes_20261013、modes の作業とは別の作業。学習・試験の前に固定)",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "base_protocol_line_r2_sha256": "82de57e2a66e846a99df01a270433220dd474b9f469d64fa9e19946f6c9e3c61",
+ "base_modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)。2026-10-14 08:30「作業を引き続き実施」",
+ "why": [
+  "確認 line r2(check_line_r2.md)の不合格: L2 だけ。R に対して |Δψ| ≥ 1 rad の開始(開始の分布の 7.1%、主にゲート 16・17)で、試験の P45 が柱の足から 1.33 cm。狙った組 HEAD 60 回で衝突 1・3.16 cm、範囲の端 EXT 60 回で衝突 2(E10 ゲート 17・E41 ゲート 31 の開始 0.73 秒)。ほかは合格(L1 59/60・L3 1.7 / 9.0 cm・L4 0.330 / 0.156 / 0.083・L5 0.093・L6 8.93 秒)",
+  "r3 の下調べ(学習しない、r3/line/、結果は r3/line/ と plan.md 4 章): 走行中の仕組みだけの直し 6 通り((d) は 2 通り)を同じ組(HEAD・EXT・試験 LN-P60-R2 の作り直し)で比べた。(a) 開始のそろえ(向きのずれ ≥ 0.6 rad の間 速さ ≤ 1.5 m/s): 衝突は消えたが P45 が 0.64 cm に悪化。(b) すき間のシールド 4 cm(標準の物理): 3 組とも衝突 0・最小 4.0 cm・作動 0.04〜0.06%、ただし P45 が 549 フレーム止まったまま(周 0 = 止まり)。(c) a + b: P45 が止まり。(d) 最大すき間の線を追う開始のそろえ(なし / + b): HEAD で 27/60 衝突 / 27/60 止まり(ゲート 17 で方策へ渡したあとレールへ)。(e) b + すくみをほどく: P45 はまだ止まり。→ 走行中の仕組みだけでは「大きく横を向いた開始」の弱さは消えず、方策の学び直しが要る。シールド 4 cm は安全網として足す(衝突と 3 cm 未満を防ぐ。止まりは判定で禁じ、学び直しで消す)",
+  "第 2 回の試験の組 LN-P60-R2 は失敗の形まで調べたあと(r3 の下調べでも走らせた)なので、第 3 回は重ならない新しい組で試験する"
+ ],
+ "unchanged": [
+  "判定のしきい値と式: L1 ≥ 57/60、L2 ≥ 0.03 m、L3 中央値 ≤ 0.05 m・95% 点 ≤ 0.12 m(開始から 3 m 以降)、L4(左右 ≥ 0.20・イン/アウト ≥ 0.10・どの 2 つも 1 m の移動平均の最大 ≥ 0.08 m)、L5 VM3 ≥ 0.08 m、L6 LN-FAM6 の c0 = 0 の 1 周目 ≤ 10.0 秒",
+  "目標の線 v2(protocol_line_r2.json target_line、line_v2_table.json sha256 39e1b1c4…)、経路の形の家族と強さ・family_plan_15・走行中の c_v U(0.9, 1.0)・速さの上限 4.5·c_v・観測 cond97",
+  "開始の分布(protocol_line_r2.json start_distribution: ゲート U{0..32}・左右 ±0.2 m・向き ±15°・開始のすき間 ≥ 0.12 m)。大きく横を向いた開始は除かない(除くと判定をゆるめることになる)",
+  "定義(valid_episode・clearance・lap_from_stop・tracking_error)と判定のコア(元の sim-core.js、sha256 aaeb2379…549e)、LN-FAM6",
+  "publication(優先 2: 合格 → accepted、不合格 → 出さない)と代わりの方法(acceptance.fallbacks.line)の中身"
+ ],
+ "definitions_added": {
+  "stall": "止まり: フレーム 30 以降に、sim の速さ |v| < 0.2 m/s のフレームが 30 フレーム(1.0 秒)以上続く区間がある",
+  "valid_episode_r3": "protocol の valid_episode かつ 止まりが無い かつ sim が数えた有効な周(33 ゲート・黒シートの横断 1 回・衝突 0)が 1 つ以上",
+  "large_heading_start": "開始の車の向きと、開始の位置の R の向き(R への射影の s ± 0.05 m の点から)のずれ |Δψ| ≥ 1.0 rad",
+  "shield_fraction": "protocol definitions.shield_fraction と同じ(info.jf.sh = 1 のフレームの割合)"
+ },
+ "runtime": {
+  "shield": {
+   "what": "経路いろいろにも安全シールドをかける(no_wall と同じ shield.mjs の r3 版。標準の物理の模型で、すき間 4 cm を守る安全網)",
+   "params": {"c_nominal": 0.04, "c_pessimistic": -1, "governor": {"enabled": false}, "worst": {"enabled": false},
+    "unstick": {"enabled": false}, "identify": {"enabled": false}, "H": 24, "keep_nominal": true},
+   "labels": "シールドが替えた指令は no_wall と同じく正解ラベル(l = 1、sh = 1)。すくみをほどく(unstick)は使わない(下調べ shu1 で P45 の止まりを直せなかった)",
+   "prototype_evidence": "r3 の下調べ sh1(r3/runtime/shield.mjs jf-shield/v4-proto、上の値。見積もりは標準の物理では標準の値になるので切っても同じ): HEAD・EXT・LN-P60-R2 で衝突 0・最小 4.0 cm、作動 0.04〜0.06%(HEAD・EXT)。P45 だけ止まり(作動 1.5%)。shu1(+ unstick)も同じ",
+   "browser": "Node とブラウザで同じファイル(web/rl/ の作り直しは昇格の段)。F-ID は line の作り直しの組で取り直す"
+  },
+  "start_alignment": "使わない(下調べで悪化した。plan.md 4 章)"
+ },
+ "sets": {
+  "test": {
+   "name": "LN-P60-R3 + LN-HEAD60-R3 + LN-EXT60-R3 + LN-FAM6",
+   "LN-P60-R3": {"halton_from": 29001, "count": 60, "seed_base": 3130000, "rule": "Halton 29,001 番から(protocol seeds.halton の試験の範囲 20,001〜29,999 の中。line r1 の 20,001〜・speed r2 の 25,001〜・line r2 の 26,001〜・no_wall r3 の 26,501〜27,999・recover r3 の 28,001〜 と重ならない)、開始のすき間 ≥ 0.12 m を満たさない番号は飛ばして 60 個。回 i の種 = 3,130,000 + i。経路の形は family_plan_15 の順を 4 回、強さ・c0・random の種・c_v は createRng(mix32(種, 0x11e))(r2 と同じ作り方)"},
+   "LN-HEAD60-R3": {"rng_seed": "0x4ead0003", "count": 60, "seed_base": 3131000, "rule": "一様乱数 mulberry32(0x4ead0003) で開始の分布(開始のすき間 ≥ 0.12 m)から引き、large_heading_start のものだけを 60 個。形は family_plan_15 の順、強さ・c0・random の種・c_v U(0.9, 1.0) は mulberry32(0x4ead0004)。確認 r2 の HEAD(0x4ead0001)と別の種"},
+   "LN-EXT60-R3": {"rng_seed": "0xe7e70003", "count": 60, "seed_base": 3132000, "rule": "一様乱数 mulberry32(0xe7e70003) の新しい開始(開始のすき間 ≥ 0.12 m)で、形の強さを上限(const c0 ±0.9・inside/outside/late_apex/early_apex a 0.9)の 6 つ + random を i mod 10 で(確認 r2 の EXT と同じ割り当て)、c_v は i が奇数なら 1.0・偶数なら 0.9。確認 r2 の EXT(0xe7e70001)と別の種"},
+   "LN-FAM6": "protocol.json のまま(STD の開始・c_v 1.0・連続 20 秒の 6 つの形。定義の組なので新しくできない。r1・r2 の試験・検証と同じ)",
+   "episode": "連続 20 秒(600 フレーム)、元の sim-core.js、標準の物理、シールドあり(runtime.shield の値)"
+  },
+  "validation": {
+   "name": "LN-V60-R3 + LN-VHEAD40-R3 + LN-FAM6",
+   "rule": "LN-V60-R3: Halton 18,001 番から(検証の範囲の中。protocol の 10,001〜・line r2 の 12,001〜・obstacle r2 の 15,001〜・no_wall r3 の 16,001〜・recover r3 の 17,001〜 と重ならない)、開始のすき間 ≥ 0.12 m で 60 個、種 3,230,000 + i、形・c_v は試験と同じ作り方。LN-VHEAD40-R3: mulberry32(0x4ead0005) で large_heading_start だけ 40 個、種 3,231,000 + i。高速版(rl/fast_core_modes.mjs)でよい。チェックポイントを選ぶためだけに使う"
+  },
+  "fresh_report": {
+   "name": "LN-F240-R3(報告だけ)",
+   "rule": "mulberry32(0x5eed2c43) の一様乱数の新しい開始 240 回(開始のすき間 ≥ 0.12 m)、種 3,330,000 + i、形は family_plan_15 の順。選んだ方策を試験の組のあとに 1 回だけ走らせ、60 回ずつ 4 つの L1・L2・L3・L5 と止まりの数を報告する"
+  }
+ },
+ "acceptance": {
+  "L1_r3": "LN-P60-R3 の 57/60 以上が valid_episode_r3。さらに LN-HEAD60-R3 の 57/60 以上・LN-EXT60-R3 の 57/60 以上が valid_episode_r3(新しく足した組。きびしくする向き)",
+  "L2_r3": "LN-P60-R3・LN-HEAD60-R3・LN-EXT60-R3 の valid_episode_r3 の回と LN-FAM6 の全部で、最小すき間 ≥ 0.03 m",
+  "L3_L5": "式・しきい値は protocol.json のまま。組は LN-P60-R3 の valid_episode_r3 の回(目標の線 v2)",
+  "L4_L6": "protocol.json のまま(LN-FAM6、全部 valid_episode_r3 であること)",
+  "L7_shield_new": "LN-P60-R3 の shield_fraction ≤ 0.02、かつ LN-P60-R3・LN-FAM6 のどの回も shield_fraction ≤ 0.10(シールドが経路の違いを作っていないこと。新しく足した。きびしくする向き)",
+  "L8_no_collision_new": "4 つの組のどの回も衝突 0(衝突した回は valid_episode_r3 でないので L1 の 3 回の許しに入るが、衝突は 1 回でも不合格にする。きびしくする向き)",
+  "reported": [
+   "形ごとの追従の誤差・1 周の時間・有効",
+   "止まりの回・シールドの作動の多い回(> 5%)とその開始",
+   "large_heading_start の回の最小すき間と、開始から 3 秒の最小すき間",
+   "12 cm を越える追従の誤差のフレームが R の上のどこにあるか",
+   "VM1・VM2・VM4・VM7(参考)、LN-F240-R3 の 60 回ずつ 4 つの値",
+   "最速との線の違い(同じ開始 60 組)"
+  ],
+  "thresholds_relaxed": "無し(全部 protocol.json のまま。足した L7・L8 と組はきびしくする向き)"
+ },
+ "training": {
+  "run": "line_r3(rl/train_modes.py --run line を写した r3 の run。観測 cond97・目標の線 v2 のまま)",
+  "init": "line r2 の選んだ方策 train/line/r2/main/checkpoints/step_008011776.pt(方策 1ae6be07…67ae)",
+  "seed": 45,
+  "steps_max": 8000000,
+  "early_stop": "300 万ステップ以降、続けて 3 つのチェックポイントが検証の組で全部合格したら止めてよい",
+  "ppo": "lr 5e-5 → 2e-5、4 ワーカー × 16 環境、rollout 256、log σ は初期化元のまま",
+  "start_mix": [
+   {"p": 0.45, "gate": "U{0..32}", "left_offset_m": [-0.2, 0.2], "left_yaw_deg": [-15, 15], "min_initial_clearance_m": 0.12, "note": "記録・試験の開始の分布"},
+   {"p": 0.35, "what": "large_heading_start だけ(同じ分布から棄却法、|Δψ| ≥ 0.8 rad に広げる)", "min_initial_clearance_m": 0.12},
+   {"p": 0.2, "gate": "U{0..32}", "left_offset_m": [-0.25, 0.25], "left_yaw_deg": [-20, 20], "min_initial_clearance_m": 0.10}
+  ],
+  "conditioning": "protocol_line_r2.json training.conditioning のまま(c_v は 80% U(0.9, 1.0)・20% U(0.6, 0.9))",
+  "reward": {
+   "base": "protocol_line_r2.json training.reward のまま(進みに追従の掛け算・追従・すき間の壁・3 cm 未満で −10 終了)",
+   "clearance_barrier": "d_min < 0.07 m で −0.3·min(4, ((0.07 − d_min)/0.03)²)(r2 は 0.06 m・0.2)",
+   "stall_watchdog": "1.5 秒以降、直近 60 フレームの R の進みが 0.6 m 未満なら −10 で終える(obstacle r2b と同じ)"
+  },
+  "shield_in_training": "使わない(計算が重い)。検証・試験・記録はシールドあり",
+  "physics": "標準の物理だけ",
+  "lock": "jf-heavy --mem 2G --lock rl -- nice -n 15(チェックポイント・続きから再開できること)"
+ },
+ "selection": {
+  "rule": "検証の組(シールドあり)で L1_r3〜L8 を全部満たすチェックポイントのうち、LN-VHEAD40-R3 の最小すき間が一番大きいもの。同じなら L3 の 95% 点が小さいもの。全部を満たすものが無ければ、満たす数が一番多く、同じなら LN-VHEAD40-R3 の止まり + 衝突の数が少ないもの",
+  "candidates": "学習の 100 万ごとのチェックポイント(初期化元は候補に入れない)",
+  "test_runs": "試験の組は選んだ 1 つにだけ 1 回使う。試験の結果を見て選び直さない"
+ },
+ "fallback": "選んだ方策が不合格なら、protocol.json acceptance.fallbacks.line(ベストラップの 7 本の線の混ぜ合わせ。L1・L2・L5)を LN-P60-R3 で 1 回判定して報告する(r1・r2 とも VM3 で不合格)",
+ "recording": {
+  "prefilter": "記録の前の予想(rl/predict_scenes.mjs の r3 版)で、valid_episode_r3 でない・最小すき間 < 0.03 m・shield_fraction > 0.10 のシーンを次の候補に替える",
+  "mode_json_overrides": "合格したときだけ: runtime.shield_params(上の値)・runtime.shield = true・recording.prefilter_min_clearance_m 0.03・recording.prefilter_min_valid_laps 1・recording.prefilter_no_stall true・recording.prefilter_max_shield_fraction 0.10"
+ },
+ "publication": {
+  "r3": "合格なら bundle/line/(status accepted)。不合格なら candidates/line_r3/(status not_published)。r1・r2 の候補はそのまま",
+  "promote_step": "昇格の段は、modes の作業(wf_7e500cf6-ccd)が終わってから共有のファイル(rl/runtime・web/rl・bundle)を変える"
+ },
+ "files": {
+  "prototype": "experiments/20261013_sim_rl_modes/r3/runtime/(shield.mjs jf-shield/v4-proto・mode_runtime.mjs・obs_modes.mjs の試作)・r3/line/(run_ln3.mjs・jobs_ln3.mjs・batch_ln3.mjs・run_bg_line.sh・summ_ln.py)",
+  "prototype_results": "jetformer_reports/sim_rl_modes_20261013/r3/line/(la1・sh1・lash1・lapp0・lapp1・shu1)",
+  "plan": "jetformer_reports/sim_rl_modes_20261013/r3/plan.md"
+ }
+}

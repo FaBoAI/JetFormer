@@ -1,0 +1,48 @@
+--- web_rl/mode_runtime.mjs
++++ r3/line4b/rt4b/mode_runtime.mjs
+@@ -1,4 +1,12 @@
+ // 強化学習モードの教師(走行中の仕組みの全部)。2026-10-13、sim_rl_modes。
++// 2026-10-14 line r4(r3/line4/rt4、共有の web/rl/mode_runtime.mjs 50de50e7… の写しに足した。昇格の段がこの差分を共有のファイルへ入れる):
++//   - シールドの切り替えを mode.json の runtime で: createModeTeacher(..., {modeRuntime}) の modeRuntime = モードの mode.json の runtime
++//     ({shield: true|false, shield_params: {...}})。shield が真偽値ならそれで切り替え(無ければ catalogue の値 = 今までと同じ)、shield_params が
++//     オブジェクトならシールドの値にする(shieldParams の引数が上書き)。ブラウザの teacher.js は modeRuntime: entry.runtime を渡す。
++//     globalThis.JF_R3(r3 の試作の切り替え)は使わない。
++//   - 教師の metadata.shield に、実際に使ったシールドの値の全部(shield.mjs の既定と合わせたもの)を入れる(確認 line r3 の指摘:
++//     試作の切り替えでは R.shield が false のままで metadata に入らなかった)。
++//   - log の shield に抜け出し(escape)の進みを足す(記録だけ。操作は変えない)。
+ // **Node の試験(元の sim-core.js を動かす)とブラウザの教師(JetFormer の _jf/rl/teacher.js)が同じこのファイルを使う**(純粋な ESM)。
+ // 試験した走り = 記録する走り にするため、観測の包み・方策・シールド・乱しの予定・経路の形は全部ここで決める。
+ // 乱数は config.seed(シーンの種)とフレーム番号だけから作り、時刻を使わない。同じフレームで 2 回呼ばれても同じ答えを返す。
+@@ -93,7 +101,7 @@
+ }
+ 
+ export function createModeTeacher(world, config, variation = {}, {mode, weights, params = {}, policySha256 = null, obstacleSet = null,
+-  shieldParams = {}, plannedTimeS = null, policy = null, overrides = {}} = {}) {
++  shieldParams = {}, plannedTimeS = null, policy = null, overrides = {}, modeRuntime = null} = {}) {
+   // overrides(Node の試験だけ): {shield: false}(NW-OFF)・{perturbation: false}(乱しなしの線)。ブラウザでは使わない
+   const key = mode, M = modeSpec(key), R = runtimeSpec(key);
+   if (!world || !Array.isArray(world.route)) throw new Error('mode_runtime: world がありません');
+@@ -112,7 +120,11 @@
+   if (lineVersion !== 'v1') p.line_profile = lineVersion;
+   const lineFactory = p.line ? (s0 => createLineProfile(p.line, s0, {version: lineVersion})) : null;
+   const wrapper = createObsWrapper({wrapper: wrapperName, world, config, geometry, lineFactory, cV, obstacles});
+-  const shield = R.shield && overrides.shield !== false ? createShield({geometry, config, params: shieldParams}) : null;
++  // line r4: シールドの切り替えと値は mode.json の runtime(modeRuntime)から。無ければ catalogue(modes.json)の値
++  const isObj = v => v != null && typeof v === 'object' && !Array.isArray(v);
++  const shieldOnMode = typeof modeRuntime?.shield === 'boolean' ? modeRuntime.shield : R.shield;
++  const shieldParamsUsed = {...(isObj(modeRuntime?.shield_params) ? modeRuntime.shield_params : {}), ...shieldParams};
++  const shield = shieldOnMode && overrides.shield !== false ? createShield({geometry, config, params: shieldParamsUsed}) : null;
+   const perturber = R.perturbation && overrides.perturbation !== false ? createPerturber({spec: RECORD_SPEC, seed, cls: p.perturb_class, maxSteer, wheelbase: config?.wheelbase ?? .26}) : null;
+   const obs = new Float64Array(dim), aux = {}, pa = [0, 0];
+   let lastF = -1, memo = null, prevA = [0, 0], prevCmd = {steering: 0, speed: 0}, shieldCount = 0, frames = 0;
+@@ -159,7 +171,9 @@
+   const metadata = {schema: TEACHER_SCHEMA, id: `jf-rl-${key}-v1`, mode: key, policy_sha256: policySha256, obs_wrapper: wrapperName,
+     features_version: FEATURES_VERSION, reference_loop_sha256: REFERENCE_LOOP_SHA256, speed_cap_mps: R.speed_cap_scaled ? `${BASE_SPEED_CAP}·c_v` : BASE_SPEED_CAP,
+     runtime_version: RUNTIME_VERSION, catalogue_sha256: CATALOGUE_SHA256, room_table_sha256: ROOM_TABLE_SHA256, obstacle_set: obstacleSet ?? null};
+-  if (R.shield) metadata.shield = {...SHIELD_DEFAULTS, ...shieldParams};
++  // line r4: 実際に使った値の全部(shield.mjs が既定と合わせたもの)。Node の試験でシールドを外したときは overrides に残る
++  if (shield) metadata.shield = JSON.parse(JSON.stringify(shield.params));
++  else if (shieldOnMode) metadata.shield = JSON.parse(JSON.stringify({...SHIELD_DEFAULTS, ...shieldParamsUsed}));
+   if (lineVersion === 'v2') { metadata.line_profile = LINE_PROFILE_V2.id; metadata.line_v2_table_sha256 = LINE_V2_TABLE_SHA256; }
+   if (Object.keys(overrides).length) metadata.overrides_node_test_only = {...overrides};
+   return {action, metadata, reference: {length: LOOP_LENGTH, planned_time_s: plannedTimeS}, options: {mode: key}, params: p,

@@ -1,0 +1,24 @@
+{
+ "schema": "jf-sim-rl-recover-shield/v1",
+ "applies": "乱しのフレーム(info.jf.ph = 'perturb')以外",
+ "shield_mjs": "runtime/shield.mjs(jf-shield/v4-proto。下の値で v3 と同じ動き)",
+ "params": {
+  "c_nominal": 0.035,
+  "c_pessimistic": -1,
+  "governor": {
+   "enabled": false
+  },
+  "identify": {
+   "enabled": false
+  },
+  "worst": {
+   "enabled": false
+  },
+  "unstick": {
+   "enabled": false
+  },
+  "H": 24,
+  "keep_nominal": true
+ },
+ "labels": "シールドが替えた指令は正解ラベル(l = 1、sh = 1)。乱しのフレームはシールドを通さない(乱しを打ち消さない)"
+}

@@ -1,0 +1,134 @@
+{
+ "title": "no_wall r4 の学習の続き(r4c)の追記 — protocol_no_wall_r4.json(ad90c926…)と protocol_no_wall_r4b.json(e6a77b7f…)を変えずに、training と selection.candidates だけを足す。シールド v5・検証の組・試験の組・判定は r4 のまま",
+ "version": "no_wall-r4c-1",
+ "written_at": "2026-10-14T20:56:38+09:00",
+ "written_by": "no_wall r4 の段(電源断 16:28 のあとの 20 時の再開)。r4b の学習(種 25、300 万)が終わったあと、r4b の点の検証の結果を読む前・試験の前に固定",
+ "protocol_no_wall_r4_sha256": "ad90c926f065d4a4e83d56c7ac3a826fde043813e359dd2164059aaba71a80d6",
+ "protocol_no_wall_r4b_sha256": "e6a77b7fc77701f41956b5fcaac52a43cb416690d4803e18a68f409ad9dbe833",
+ "why": [
+  "下調べの組だけで見た(検証・試験の点を含まない): ゲート 16〜18 の右 0.15・0.2 m × 左向き 12・15°(dev4e の点 12)で、止まったまま(周 0)の点は r3 の方策 3・r4b の 50 万 1・100 万 1・150 万 1・200 万 1・250 万 1・300 万 1(どれもゲート 17 の右 0.2 m・左向き 15°)。",
+  "ゲート 17 の細かい格子 dev4f(左右 {−0.2, −0.185, −0.175, −0.165, −0.155} m × 向き {15, 14, 13.5, 12.5, 12}°。検証の ±0.18 m・±13°、試験の ±0.16・±0.19 m × ±11.5・±14.5° を含まない)で、止まる点は r4b の 200 万で 3/25 → 250 万で 1/25 → 300 万で 1/25(右 0.2 m・左向き 15°)。学習が進むほど狭くなるが、記録の開始の分布の角(左右 ±0.2 m・向き ±15° は分布の中)に残る",
+  "止まり(N5)は確認 r3 の必ず直すことの 1 つ(止まりを無くす。開始の分布や 8 cm のしきい値は変えない)。r4b の箱(ゲート 17 の右 0.1〜0.2 m・左向き 8〜15°)は広く、角(0.17〜0.2 m・12〜15°)は箱の約 13%",
+  "lock rl は空いていて、r4b の学習は 1 本 30 分ほどで終わったので、r4b の終わりの点から角を多くして 150 万ステップ続ける(r4c)。r4c の点が検証の組で全部を満たさなければ、決まりのとおり r4b・r4 の点・r3 の方策から選ぶ(r4c は候補を足すだけ)"
+ ],
+ "training": {
+  "run": "no_wall_r4c(r3/nw4/train_c/train_nw4.py・env_nw4.mjs NW4C_DEFAULTS。train/ の写しに run を足しただけ。報酬・物理の内訳・速さの見張り・止まりの見張りは r3・r4・r4b のまま)",
+  "init": "r4b の終わりの点 no_wall_r4/train/checkpoints/step_003014656.pt(方策 22042f96…)",
+  "init_sha256": "3c389e1250c781e6ee3b858e354c6aa39c5a07bdbddf96fb941fc1c8676eba2e",
+  "init_policy_sha256": "22042f966136b8c56219ebe97c80ccc05ec9989fafa3d256c160f5f504e69aad",
+  "seed": 26,
+  "steps_max": 1500000,
+  "lr": 3e-05,
+  "ckpt_every": 500000,
+  "save_every": 200000,
+  "start_mix": [
+   {
+    "p": 0.3,
+    "what": "記録の開始の分布(ゲート U{0..32}・左右 ±0.2 m・向き ±15°・開始のすき間 ≥ 0.12 m)"
+   },
+   {
+    "p": 0.15,
+    "what": "開始のすき間 12〜15 cm の一覧 starts_lowc_nw4.json(r4・r4b と同じ)"
+   },
+   {
+    "p": 0.15,
+    "what": "分布の角: 全ゲート、|左右| 0.17〜0.2 m・|向き| 12〜15°(符号はそれぞれ半々、開始のすき間 ≥ 0.12 m)"
+   },
+   {
+    "p": 0.12,
+    "what": "ゲート 17、左右 −0.2〜−0.17 m・向き +12〜+15°"
+   },
+   {
+    "p": 0.03,
+    "what": "ゲート 16、同じ箱"
+   },
+   {
+    "p": 0.03,
+    "what": "ゲート 18、同じ箱"
+   },
+   {
+    "p": 0.07,
+    "what": "r3 のむずかしい開始(ゲート 7〜10・16・17・20〜23、|左右| 0.1〜0.2 m・|向き| 7.5〜15°)"
+   },
+   {
+    "p": 0.15,
+    "what": "広め ±0.25 m・±20°(開始のすき間 ≥ 0.10 m)"
+   }
+  ],
+  "lowc_list_sha256": "c912e210c911f59cf2ef614aafbbb6135b34afdd30e5e1e8f27f4f4c176334a9",
+  "lock": "jf-heavy --mem 2G --lock rl -- nice -n 15(r3/nw4/run_train_nw4c.sh。last.pt は 20 万ごと、止めたあとは同じコマンドで続きから)",
+  "note": "角の箱は試験の EDGE の点(ゲート 16〜18 の −0.19 m・+14.5°)と検証の点(−0.18 m・+13°)を含む範囲。学習の開始は一様乱数なので同じ点を覚えるわけではないが、試験の組の作り方(固定)を知っていて箱を決めたことはここに書いておく(r4b と同じ)"
+ },
+ "selection": {
+  "candidates": "r4c の学習の 50 万ステップごとの点(train_c/、step_000000000 は r4b の終わりの点と同じ方策なので候補に足さない)、r4b の点(train/)、r4 の点(train_a/)、step_000000000(r3 の方策)",
+  "order": "「一番後」の順は r4c の点(ステップの順)> r4b の点 > r4 の点 > step_000000000",
+  "rule": "protocol_no_wall_r4.json selection.rule のまま(検証の組 NW-V-R4 で全部を満たし止まり 0 の点のうち一番後。無ければ満たす数・標準の物理の最小すき間)",
+  "code": "r3/nw4/val_loop_nw4b.py・select_nw4b.py(r4c の点を順 3 で足した版)",
+  "test_runs": "試験の組は選んだ 1 つにだけ 1 回(r4 の試験の組はまだ使っていない)"
+ },
+ "unchanged": "シールド jf-shield/v5 の値・ファイル(runtime_v5/shield.mjs 8ece9be4…)、検証の組・試験の組・判定(N1_r4〜N7_r4)・記録の前の予想・画面の数字の決まりは protocol_no_wall_r4.json のまま",
+ "files": {
+  "code_sha256_at_freeze": {
+   "diag_nw4.mjs": "7536d2b3ce2b6d78b7d4f6c255a930f51fca622c58924d9ca952bdae2dc21ae3",
+   "export_nw4.py": "59946ca6e1f2844e1323839cf7e3fa5ccb3c662de4f9e025ba3b373c5797d2f4",
+   "export_nw4b.py": "f2cc8b6ffe183014cbf66bcd327cc96be35c9f7e758993f1be29139d8606f22a",
+   "fast_core_nw3.mjs": "bc872d0d53e849f7da9ff2cff1d56316aff6687267a2674a4600e2b5f71f8f34",
+   "judge_nw4.py": "a1d2a408d195ef8968260540f0c52d5291982debea07883813ed04dbbadf6221",
+   "make_figs_nw4.py": "8b1a9fe47902570b9f97dcc30db0f39642137fb71809abd5996582b9108390b4",
+   "make_reg_jobs_nw4.py": "83361ca6a671dd052d9b1ccb92fc3247dd66824ea599e5380e1fcb3c14e75e72",
+   "nw4_sets.mjs": "d78fbb3fbb217606254b37d088dd260f823cf896fe35e7d893c8cab6cf219d63",
+   "own_geom.mjs": "667f044a1b577bcce2ea9dd8bd0472612483adc79ed78d83966c48d278be4324",
+   "predict_scenes_nw4.mjs": "2334044fca27427a634edded1f721400ec595e16731b7396e804238d1e5322cd",
+   "probe_box_nw4b.mjs": "82ef96ee7d36e29f2861678b30fb964f781e485680cf9610be491f4772e42493",
+   "probe_feas_nw4.mjs": "46a01b06ae5ae0c90053b0002e7c142ef565b449fe1497ca869075b5e8462eae",
+   "probe_fine_nw4b.mjs": "a45a5e8215f8ba9249293c15ea5283559978117f4c2e00309a4e54955bc6a981",
+   "reg_jobs_nw4b.py": "adf768dc979e46032b1e048d083f69e8e309c309a211bb7df3569706a0184d66",
+   "run_nw4r.mjs": "8509b5babd439506c5ea054dedfab5bc9bf9c48fe305833ee27e86191008372e",
+   "run_sets_nw4.mjs": "e646fabbc6ee92729c58ca0731d3a0108e521ac4d29985577a8b960d5dfdca6b",
+   "run_test_nw4.sh": "cc693fb09386684874cce44d6085fa3f56464e1cc7ebbc11968d242a7531ffa8",
+   "run_train_nw4.sh": "e274729161340287d78200397b5c584e83f9e4fed4af33ece34ed6c57025bbd3",
+   "run_train_nw4b.sh": "f0e9f5b2d97316c42e2f174c2b1b55f6784a16e19c2cb62803b98377ae9d7ea8",
+   "run_train_nw4b2.sh": "c4d03a2dd53cbc634dea74f453b10112caf2b1cbf10741bce0b40248b4dab144",
+   "run_train_nw4c.sh": "dcf85db0c79df6218cf0b58a149d734257e5db17f26d160f4495af3d15c79a61",
+   "runtime_v5/catalogue.mjs": "e6ff082462c7cb4cd22886a5c7d23fa4661d713f4257207a9baba23168197ef9",
+   "runtime_v5/features.mjs": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+   "runtime_v5/layouts.mjs": "a3d7051a563d7fc648a541753c3f71ab35c214b759da664ef8e2359fb69cebc4",
+   "runtime_v5/line_profiles.mjs": "f7b4d330c0032dae73f7fc7d67f92e4f3933f9e2d539eddebe89c8338742d848",
+   "runtime_v5/line_v2_table.json": "39e1b1c427b1246fcfe4008761b175d500ec83b2c926eee1d46b7005ad2378da",
+   "runtime_v5/line_v2_table.mjs": "2016c7dda6607ea20cf57be6d2b76006ecbf2c911fde21e004d18e777433ae9e",
+   "runtime_v5/mode_runtime.mjs": "7f8ee13dc0ed28e2dc7c551fab7a9572fc72d97a622d04555b611f4bea700116",
+   "runtime_v5/obs_modes.mjs": "e72f638942f286a250175b5039c868eb759d5f97e17507c1e28106c4dfb49a69",
+   "runtime_v5/perturb.mjs": "5bb84250e840dd18af7f7b839d3e92c45a4b74e13ab516f7b0ec09203742bed5",
+   "runtime_v5/policy_forward.mjs": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+   "runtime_v5/reference_loop.json": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "runtime_v5/reference_loop.mjs": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+   "runtime_v5/rng.mjs": "abbf0c60f7f082ba12a3cde053a91ff83f3680b87ce7058b6361b1e772cff23b",
+   "runtime_v5/room_table.json": "693358617d50462319c811f652f6aa093a443c34bec3a2e4bcda2ce7fb4b8d4a",
+   "runtime_v5/room_table.mjs": "91e0dac4840f081c1355be809ddb5783811e4d9191e8705e2d14531791a67663",
+   "runtime_v5/shield.mjs": "8ece9be4648b4aef7f530556976a0cd922b9faa65172fd4b87c8eaa716a81130",
+   "select_nw4.py": "7cc689d142fe63440be04fe1b5de34ec5fdc3be154290357d6f93c0e969454aa",
+   "select_nw4b.py": "9579030503ff4a31b017a0ddc80f52d1b54338f7dda9d372c3dc9308d4bd5830",
+   "summ_dev_nw4.py": "c6e114498537b6d6ad723b1fc029e799a229ddbf30d5c3b97be021f4deda3ebf",
+   "summ_reg_nw4b.py": "fc2114de70ccdfa96c422af1c749e75d92aaad49ae92b59bd9531b63c1761b2e",
+   "test_shield_v5.mjs": "e38402e07fec52af7653a55e166027e248e13e0c442679e7937350a44dc97216",
+   "train/env_nw4.mjs": "3ca6174972f7ca046a2e833fa348cf9eb5e6cbb8a98df6a80d20e2956b12bf3d",
+   "train/env_worker_nw4.mjs": "4af405a58d92fcb676e68e29dfc356d7df642149d07eb7073a316d4db8a4e182",
+   "train/gen_lowc_nw4.mjs": "8a3b8893a7c9e0f1e32f3322af17c94351c9cd6e7707940a18843a26c9fe83d5",
+   "train/ppo_modes.py": "70ae8368df22d8c548c74a7d1f3fd4107b4bd8fddeffc5fc978f8a8fbbaa5653",
+   "train/starts_lowc_nw4.json": "c912e210c911f59cf2ef614aafbbb6135b34afdd30e5e1e8f27f4f4c176334a9",
+   "train/train_nw4.py": "748ed51d7e1eb5027cfa805d2d57668173985b60fb1a7521b769e28c065b9729",
+   "train/vec_env_nw4.py": "e2719e175f4449e662d753f76a3a58323123daf7a03c37f6445d41f32d2026bb",
+   "train_c/env_nw4.mjs": "720694b0aa01cb2cdd1c4f41ff9ae29128204171172b8a56b933bb59ef9f6688",
+   "train_c/env_worker_nw4.mjs": "4af405a58d92fcb676e68e29dfc356d7df642149d07eb7073a316d4db8a4e182",
+   "train_c/ppo_modes.py": "70ae8368df22d8c548c74a7d1f3fd4107b4bd8fddeffc5fc978f8a8fbbaa5653",
+   "train_c/starts_lowc_nw4.json": "c912e210c911f59cf2ef614aafbbb6135b34afdd30e5e1e8f27f4f4c176334a9",
+   "train_c/train_nw4.py": "4cd399aba1569282c0ad7089449ddab4476d865db35bc5e9b2cfa18d5ddeae9d",
+   "train_c/vec_env_nw4.py": "e2719e175f4449e662d753f76a3a58323123daf7a03c37f6445d41f32d2026bb",
+   "val_loop_nw4.py": "3d32d806c70393767d9cbce93fdfef68751dc0d479d2a654cbd38fa0b2567223",
+   "val_loop_nw4b.py": "3525270a2a9c3ebf7f9bbf7086855e3b36caeb1af42f5f72cadddc001cbb06b0",
+   "write_fid_nw4.mjs": "8170216f398a9152781b2784cab71950427d24877b2c5ab405d87fdf51ec2f4e",
+   "write_protocol_nw4.py": "bb08aaef19fccda12e7c26347d49c78ccdfe9926c38a32ae2e53dddaea81b9de",
+   "write_protocol_nw4c.py": "a12750a490c5b0a1dd8d6da37749faacd3349010dbdb8f614d77999b0a139932"
+  }
+ }
+}

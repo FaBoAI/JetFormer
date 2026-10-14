@@ -1,0 +1,59 @@
+--- a/jetformer/dataset.py
++++ b/jetformer/dataset.py
+@@ -311,6 +311,16 @@
+     return out
+ 
+ 
++def _frame_indexed(veh, cam_t):
++    """展開したシミュレーターのシーン(scene_import.dataset_to_scenes が VEHICLE に quality = 'snapshot' を書く)で、
++    操作の数がカメラのフレームと同じで、各カメラのフレームの最新の操作がちょうど同じ番号のとき True(正解をフレームの番号で引く)"""
++    q = veh.get('quality')
++    if q is None or str(np.asarray(q)) != 'snapshot':
++        return False
++    vt = veh['timestamps_us']
++    return len(vt) == len(cam_t) and np.array_equal(_latest_index(vt, cam_t), np.arange(len(cam_t)))
++
++
+ def _aligned_arrays(cam_t, tof, imu, veh):
+     n = len(cam_t)
+     out = {'timestamps_us': cam_t}
+@@ -350,16 +360,29 @@
+             out['vehicle_valid'] = (j >= 0) & (cam_t - vt[jc] <= max_age_us)
+             fut = np.zeros((n, FUTURE_STEPS, 2), dtype=np.float32)
+             fut_ok = np.ones(n, dtype=bool)
+-            frame_us = 1e6 / config.CAMERA['fps']
+-            for k in range(FUTURE_STEPS):
+-                tk = cam_t + int((k + 1) * frame_us)
+-                jk = _latest_index(vt, tk)
+-                jkc = np.clip(jk, 0, len(vt) - 1)
+-                fut[:, k] = state[jkc, :2]
+-                fut_ok &= (jk >= 0) & (tk - vt[jkc] <= max_age_us)
+-            out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
+-            horizon = cam_t + int(FUTURE_STEPS * frame_us)
+-            out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
++            if _frame_indexed(veh, cam_t):
++                # 展開したシミュレーターのシーン(VEHICLE の quality = 'snapshot'、操作がカメラのフレームと 1 対 1): 正解をフレームの番号で引く。
++                # 時刻(int(33333.33 µs) おき)で引くと、シミュレーターの 33,333/33,334 µs おきのフレームでは正解が 1 フレーム前にずれる
++                # 観測が出る(確認 recover r2: 観測の約 67%)。実機のシーンは今までどおり時刻で引く
++                ja = np.arange(n)
++                for k in range(FUTURE_STEPS):
++                    jk = ja + k + 1
++                    jkc = np.clip(jk, 0, nv - 1)
++                    fut[:, k] = state_all[jkc, :2]
++                    fut_ok &= (jk < nv) & ok[jkc]
++                out['future_actions'] = fut
++                out['future_valid'] = fut_ok
++            else:
++                frame_us = 1e6 / config.CAMERA['fps']
++                for k in range(FUTURE_STEPS):
++                    tk = cam_t + int((k + 1) * frame_us)
++                    jk = _latest_index(vt, tk)
++                    jkc = np.clip(jk, 0, len(vt) - 1)
++                    fut[:, k] = state[jkc, :2]
++                    fut_ok &= (jk >= 0) & (tk - vt[jkc] <= max_age_us)
++                out['future_actions'] = fut                                  # 未来の [steering_us, throttle_us]
++                horizon = cam_t + int(FUTURE_STEPS * frame_us)
++                out['future_valid'] = fut_ok & (horizon <= veh['timestamps_us'][-1])
+             out['erpm_valid'] = np.full(n, 'erpm' in veh)              # 旧ファームには回転数が無い(0で埋めている)
+     return out
+ 

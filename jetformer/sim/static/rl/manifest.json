@@ -1,6 +1,6 @@
 {
  "schema": "jf-sim-rl-web-bundle/v1",
- "created_at": "2026-10-13T23:57:31.203Z",
+ "created_at": "2026-10-14T17:43:15.211Z",
  "runtime_version": "jf-sim-rl-mode-runtime/v1",
  "entry": "mode_runtime.mjs",
  "export": "createModeTeacher(world, config, variation, {mode, weights, params, policySha256, obstacleSet})",
@@ -36,8 +36,8 @@
    "bytes": 18657
   },
   "mode_runtime.mjs": {
-   "sha256": "50de50e7d490f954d0ff13a7de8b20dfb27f15601d6e6a18755e9763f7638f0d",
-   "bytes": 12512
+   "sha256": "f59b195596bca037b930b6295df4e86edb7f93beca090b4d2b8a27a487e6aea9",
+   "bytes": 20003
   },
   "obs_modes.mjs": {
    "sha256": "e72f638942f286a250175b5039c868eb759d5f97e17507c1e28106c4dfb49a69",
@@ -47,9 +47,17 @@
    "sha256": "5bb84250e840dd18af7f7b839d3e92c45a4b74e13ab516f7b0ec09203742bed5",
    "bytes": 9552
   },
+  "perturb_v2.mjs": {
+   "sha256": "bb7e58f71e7467e043567570eab7a1a861b427ed3a1bc0423e6049356e89ac0f",
+   "bytes": 11181
+  },
   "policy_forward.mjs": {
    "sha256": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
    "bytes": 3789
+  },
+  "recoverable_table.mjs": {
+   "sha256": "4ac6b6823dfba42bce5f9721c610264afca8dfcb4464305c86c42f6bbfddbe59",
+   "bytes": 162801
   },
   "reference_loop.json": {
    "sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
@@ -72,8 +80,12 @@
    "bytes": 31540
   },
   "shield.mjs": {
-   "sha256": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76",
-   "bytes": 24985
+   "sha256": "130ed5b29a3dbae60777bf91e4eff9bdc23a4719b69e9c6057ddee14bc939cdf",
+   "bytes": 53379
+  },
+  "shield_v4p.mjs": {
+   "sha256": "29c9d111596a2708311b72a0e22d19a70258c533d76283b6ff6dc02f64b83dd0",
+   "bytes": 30341
   }
  }
 }

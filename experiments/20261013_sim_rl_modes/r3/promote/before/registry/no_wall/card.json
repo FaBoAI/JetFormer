@@ -1,0 +1,101 @@
+{
+ "schema": "jf-sim-rl-mode-card/v1",
+ "key": "no_wall",
+ "state": "not_accepted",
+ "headline_ja": "試験 340 回で衝突 0。新しい開始 600 回(標準の物理)の最小すき間 7.0 cm。停止から 1 周 9.80 秒",
+ "lap_from_stop_s": 9.797450475898623,
+ "flying_lap_s": null,
+ "tests": {
+  "runs": 340,
+  "collisions": 0,
+  "text_ja": "340 回の試験(標準の物理 + 物理のずれ)で衝突 0"
+ },
+ "min_clearance_cm": {
+  "value": 7.0,
+  "text_ja": "新しい開始 600 回(標準の物理)の最小。試験の組では 11.7 cm(標準)・7.0 cm(物理のずれ)"
+ },
+ "main": [
+  {
+   "label_ja": "安全シールドの作動",
+   "value_ja": "標準の物理 0%(物理をずらした R200 で 18% のフレーム。ほとんど速さの見張り)"
+  },
+  {
+   "label_ja": "走る速さ",
+   "value_ja": "平均 2.7 m/s(最速 3.3 m/s)"
+  }
+ ],
+ "checks": [
+  {
+   "id": "N1_no_collision",
+   "label_ja": "試験 340 回で衝突 0",
+   "pass": true
+  },
+  {
+   "id": "N2_clearance_nominal",
+   "label_ja": "標準の物理ですき間 ≥ 8 cm(試験の組)",
+   "pass": true
+  },
+  {
+   "id": "N3_clearance_randomised",
+   "label_ja": "物理のずれですき間 ≥ 5 cm",
+   "pass": true
+  },
+  {
+   "id": "N4_lap_from_stop",
+   "label_ja": "停止から 1 周 ≤ 12 秒",
+   "pass": true
+  },
+  {
+   "id": "N5_completion",
+   "label_ja": "完走",
+   "pass": true
+  },
+  {
+   "id": "N6_friction",
+   "label_ja": "無理のない加減速",
+   "pass": true
+  },
+  {
+   "id": "N7_shield",
+   "label_ja": "シールドの作動 ≤ 5%",
+   "pass": true
+  },
+  {
+   "id": "check_r2",
+   "label_ja": "確認(新しい開始・物理の範囲の端)",
+   "pass": false
+  }
+ ],
+ "notes_ja": [
+  "不合格(参考): 確認で、物理の範囲の端(摩擦円・μ×0.85・弱いブレーキ・遅い舵などの組み合わせ)ではぶつかることが分かった。シミュレーターの標準の物理(記録で使う条件)では新しい開始 600 回でも衝突 0",
+  "「絶対」はシミュレーターの中の試験の結果で、実車の保証ではない。安全シールドは外せない(方策だけでは標準の物理でも 600 回に 1 回ぶつかる)",
+  "記録のシーンは前もって Node で走らせ、すき間 8 cm 未満・止まったまま・ゲートの外しのものを替えてある"
+ ],
+ "verdict_ja": "check_no_wall_r2.md: 凍結した試験 340 回は全部合格だが、試験した物理の範囲の中の角(摩擦円・μ×0.85・ブレーキ 0.7・舵の速さ 1.8・前進ゲイン 1.04)では 33 回中 30 回ぶつかる。標準の物理の新しい開始 600 回では最小すき間 7.0 cm(N2 の 8 cm は試験の組の引きがよかった)",
+ "updated_at": "2026-10-14T11:11:59",
+ "browser_identity": {
+  "pass": true,
+  "files": [
+   {
+    "file": "eval/no_wall/fid_std_no_wall_r2.json",
+    "frames": 600,
+    "max_abs_steering": 3.3306690738754696e-16,
+    "max_abs_speed": 2.6645352591003757e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   },
+   {
+    "file": "eval/no_wall/fid_slow_no_wall_r2.json",
+    "frames": 600,
+    "max_abs_steering": 2.220446049250313e-16,
+    "max_abs_speed": 1.3322676295501878e-15,
+    "info_mismatch": 0,
+    "metadata_same": true,
+    "error": null
+   }
+  ],
+  "where": "http://192.168.55.1:8080(Firefox 157.0.1・DISPLAY :0)",
+  "checked_at": "2026-10-14T11:11:17"
+ }
+}

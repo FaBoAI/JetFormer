@@ -1,0 +1,32 @@
+--- a/jetformer/scene_import.py	2026-10-14 20:14:36.000000000 +0900
++++ b/jetformer/scene_import.py	2026-10-14 22:17:53.245037347 +0900
+@@ -147,8 +147,8 @@
+                  erpm=erpm, hall_count=np.zeros(n, np.int64), hall_errors=np.zeros(n, np.int32),
+                  hall_state=np.zeros(n, np.uint8), seq=np.arange(n, dtype=np.int64), board_t_us=veh_t.astype(np.int64),
+                  quality=np.array('snapshot'))
+-        mode_arr = a['mode'].astype(int) if 'mode' in a else np.zeros(n, int)
+-        mode_arr = np.where(np.isin(mode_arr, list(known_modes)), mode_arr, 0)
++        mode_raw = a['mode'].astype(int) if 'mode' in a else np.zeros(n, int)
++        mode_arr = np.where(np.isin(mode_raw, list(known_modes)), mode_raw, 0)
+         t_rel = (cam_t - cam_t[0]) / 1e6
+         nz = [m for m in mode_arr.tolist() if m]
+         mode_id = Counter(nz).most_common(1)[0][0] if nz else 0
+@@ -176,10 +176,16 @@
+         lm = ((card.get('label_mask') or {}).get('per_scene') or {}).get(orig)
+         if lm is not None:
+             # シミュレーターの強化学習モードのシーン: 乱した操作を正解に含むフレームは「未設定」(mode 0)。ジャンルを付け直しても
+-            # この区間は未設定のまま残す(dataset.update_scene)。消すと乱した操作が正解に戻ってしまう(確認 recover r2)
++            # この区間は未設定のまま残す(dataset.update_scene)。消すと乱した操作が正解に戻ってしまう(確認 recover r2)。
++            # 残す区間は、取り込みの学習除外(sim/label_mask.py)が外した観測 = 元のデータセットで mode 0 かつ future_valid = False の
++            # フレームだけ。この Jetson のジャンル表に無いジャンル(例: 8 シミュレーター)で 0 になっただけのフレームは入れない
++            # (入れるとジャンルを付け直してもシーン全体が未設定のまま残り、学習に使えない。確認 recover r3)
++            fv = a['future_valid'].astype(bool) if 'future_valid' in a else np.zeros(n, bool)
++            masked = (mode_raw == 0) & ~fv
+             meta['label_mask'] = {'schema': card['label_mask'].get('schema'), 'rule': card['label_mask'].get('rule_id'),
+                                   'masked_frames': int(lm.get('masked', 0)), 'teacher_mode': lm.get('teacher_mode'),
+-                                  'unset_segments': [sg for sg in meta['mode_segments'] if sg['mode_id'] == 0]}
++                                  'unset_rule': '元のデータセットで mode 0 かつ future_valid = False のフレーム',
++                                  'unset_segments': [sg for sg in _segments(np.where(masked, 0, -1), t_rel) if sg['mode_id'] == 0]}
+         with open(d / 'scene.json', 'w', encoding='utf-8') as f:
+             json.dump(meta, f, ensure_ascii=False, indent=1)
+         mid = n // 2

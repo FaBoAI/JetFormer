@@ -1,0 +1,1578 @@
+{
+ "schema": "jf-sim-rl-recover-r4-eval-summary/v1",
+ "policy_sha256": "68e321e40309e6fa0d8c05cc3419ca8ef8a1d2c3191aeb91411b3a1cd93990ef",
+ "eval_test_sha256": "5ed74e1a0a4bb5564dbb041f294ae6640d9ee16aca172c37a030c1296516d76d",
+ "set": "test",
+ "core": "original",
+ "protocol_recover_r4_sha256": "1b6bd8ad32bf7010271864b94cbf3a4590bddca9aaed2bfe9c462302e7468172",
+ "recoverable_table_sha256": "8735365cf6bcd6f02ebe66f56fe43cfa8829c858569458f68ffb78a8e9dc433f",
+ "all_judged_pass": true,
+ "judged": {
+  "C1_r3": {
+   "value": "99/100",
+   "pass": true,
+   "note": "valid_episode(元の定義)は 100/100。止まり 1・進みの不足 1"
+  },
+  "C2": {
+   "value": 0.9926470588235294,
+   "events": 408,
+   "success": 405,
+   "pass": true
+  },
+  "C3": {
+   "value": {
+    "median": 0,
+    "p90": 0.8
+   },
+   "pass": true
+  },
+  "C4": {
+   "value": {
+    "events_per_episode": 4.08,
+    "masked_fraction": 0.1827
+   },
+   "pass": true
+  },
+  "C7": {
+   "value": {
+    "class_share": {
+     "弱": 0.35294117647058826,
+     "中": 0.34068627450980393,
+     "強": 0.30637254901960786
+    },
+    "type_share": {
+     "steer_pulse": 0.26715686274509803,
+     "excursion": 0.39950980392156865,
+     "speed_pulse": 0.3333333333333333
+    }
+   },
+   "pass": true
+  },
+  "C5_r4": {
+   "value": {
+    "grid_yaw": "83/84",
+    "grid_lateral": "84/84",
+    "random_yaw": "24/24",
+    "random_lateral": "26/26"
+   },
+   "rates": {
+    "grid_yaw": 0.9880952380952381,
+    "grid_lateral": 1,
+    "random_yaw": 1,
+    "random_lateral": 1
+   },
+   "min_rate": 0.9880952380952381,
+   "pass": true
+  },
+  "C6_r4": {
+   "value": {
+    "lap_from_stop": 8.846526394432733,
+    "rec60": "60/60",
+    "unperturbed": "60/60",
+    "min_clearance": 0.0350349733201582,
+    "min_clearance_rec60": 0.05329568264371551,
+    "min_clearance_u": 0.0350349733201582
+   },
+   "pass": true
+  },
+  "C8": {
+   "value": {
+    "perturbed_valid_with_miss": "0/99",
+    "rate": 0,
+    "unperturbed_with_miss": "0/120"
+   },
+   "pass": true
+  }
+ },
+ "reported": {
+  "kick_band": {
+   "note": "報告だけ: スタートのゲートの区間(s 0.30〜3.70 m)の右向きのキック(確認 r3 で落ちたのは全部ここ)",
+   "band_right": "24/24",
+   "band_left": "25/25",
+   "outside": "168/169",
+   "band_right_dmin_before": [
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.49561605999420993,
+    0.49561605999420993,
+    0.5,
+    0.5,
+    0.4993113213043948,
+    0.4993113213043948,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5
+   ]
+  },
+  "kick_all_positions": {
+   "yaw": "174/194",
+   "lateral": "172/194"
+  },
+  "kick_fail_ids": [
+   {
+    "test": "RC-KICK-R4",
+    "id": "yaw-13.80",
+    "reason": "collision",
+    "stall": false,
+    "kick_s": 38.675336140952034,
+    "kick_v": 3.564313183115967,
+    "kick_dmin": 0.23418380528630608,
+    "frames": 420,
+    "same_step_collision": false,
+    "no_candidate_after_kick": true
+   }
+  ],
+  "kick_fail_no_candidate": {
+   "judged_failed": 1,
+   "no_candidate": 1,
+   "same_step_collision": 0
+  },
+  "c6_start_clearance_min": 0.03762550034632873,
+  "unperturbed_fail_ids": [],
+  "by_class": {
+   "弱": {
+    "n": 144,
+    "success": 143
+   },
+   "強": {
+    "n": 125,
+    "success": 123
+   },
+   "中": {
+    "n": 139,
+    "success": 139
+   }
+  },
+  "by_type": {
+   "excursion": {
+    "n": 163,
+    "success": 161
+   },
+   "speed_pulse": {
+    "n": 136,
+    "success": 135
+   },
+   "steer_pulse": {
+    "n": 109,
+    "success": 109
+   }
+  },
+  "by_fallback": {
+   "reverse": {
+    "n": 104,
+    "success": 104
+   },
+   "brake": {
+    "n": 83,
+    "success": 83
+   },
+   "excursion": {
+    "n": 28,
+    "success": 27
+   },
+   "weaker1+reverse": {
+    "n": 7,
+    "success": 7
+   },
+   "excursion_reverse": {
+    "n": 38,
+    "success": 38
+   },
+   "requested": {
+    "n": 132,
+    "success": 130
+   },
+   "weaker1+excursion_reverse": {
+    "n": 1,
+    "success": 1
+   },
+   "weaker2+reverse": {
+    "n": 2,
+    "success": 2
+   },
+   "weaker2+requested": {
+    "n": 3,
+    "success": 3
+   },
+   "weaker1+requested": {
+    "n": 9,
+    "success": 9
+   },
+   "weaker2+excursion": {
+    "n": 1,
+    "success": 1
+   }
+  },
+  "requested_to_assigned": {
+   "steer_pulse:弱 → steer_pulse:弱": 52,
+   "excursion:弱 → excursion:弱": 39,
+   "steer_pulse:中 → excursion:中": 31,
+   "steer_pulse:中 → steer_pulse:中": 28,
+   "excursion:強 → speed_pulse:brake:強": 28,
+   "steer_pulse:強 → excursion:強": 26,
+   "steer_pulse:強 → steer_pulse:強": 23,
+   "excursion:中 → excursion:中": 21,
+   "excursion:中 → speed_pulse:brake:中": 21,
+   "excursion:強 → excursion:強": 20,
+   "excursion:弱 → speed_pulse:brake:弱": 14,
+   "steer_pulse:中 → speed_pulse:brake:中": 11,
+   "steer_pulse:強 → speed_pulse:brake:強": 9,
+   "speed_pulse:brake:強 → speed_pulse:brake:強": 9,
+   "speed_pulse:burst:強 → speed_pulse:brake:強": 9,
+   "speed_pulse:burst:弱 → speed_pulse:burst:弱": 8,
+   "speed_pulse:burst:中 → speed_pulse:brake:中": 8,
+   "steer_pulse:弱 → excursion:弱": 7,
+   "speed_pulse:brake:中 → speed_pulse:brake:中": 7,
+   "excursion:中 → excursion:弱": 7,
+   "speed_pulse:burst:弱 → speed_pulse:brake:弱": 6,
+   "steer_pulse:強 → steer_pulse:中": 6,
+   "excursion:強 → excursion:弱": 5,
+   "speed_pulse:brake:弱 → speed_pulse:brake:弱": 4,
+   "excursion:強 → excursion:中": 3,
+   "steer_pulse:強 → excursion:中": 1,
+   "speed_pulse:burst:中 → excursion:中": 1,
+   "speed_pulse:brake:弱 → excursion:弱": 1,
+   "speed_pulse:burst:中 → speed_pulse:burst:中": 1,
+   "speed_pulse:burst:強 → excursion:弱": 1,
+   "speed_pulse:burst:強 → speed_pulse:burst:強": 1
+  },
+  "replaced_fraction": 0.6764705882352942,
+  "wait_frames": {
+   "median": 5,
+   "p90": 13
+  },
+  "start_zones": {
+   "other": {
+    "n": 327,
+    "success": 324,
+    "share": 0.8014705882352942
+   },
+   "black_sheet_exit": {
+    "n": 81,
+    "success": 81,
+    "share": 0.19852941176470587
+   }
+  },
+  "gate_miss": {
+   "p_valid": "0/99",
+   "ids": []
+  },
+  "invalid_p": [
+   {
+    "id": "P27",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "stall": true,
+    "progress_m": 1.14,
+    "frames": 600,
+    "collision_s": null
+   }
+  ],
+  "shield": {
+   "after3s": 0.0007933243227360874,
+   "other": 0.008406511030199185,
+   "all_rows": 0.0014628188376981197
+  },
+  "min_clearance_valid_p": 0.011083638571915999,
+  "variation": {
+   "rows": 99,
+   "VM7_cells_3000": 919,
+   "VM3_m": 0.033854269542438566,
+   "note": "有効な乱しありの回だけ。VM7 は 3 フレームおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "extra": {
+  "fresh150": {
+   "set": "fresh",
+   "label": "selected",
+   "policy_sha256": "68e321e40309e6fa0d8c05cc3419ca8ef8a1d2c3191aeb91411b3a1cd93990ef",
+   "all_judged_pass": true,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "148/150"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9900332225913622
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.7333333333333333
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.013333333333334,
+      "masked_fraction": 0.17706666666666673
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.34551495016611294,
+       "中": 0.34717607973421927,
+       "強": 0.3073089700996678
+      },
+      "type_share": {
+       "steer_pulse": 0.2757475083056478,
+       "excursion": 0.3770764119601329,
+       "speed_pulse": 0.34717607973421927
+      }
+     }
+    }
+   },
+   "reported": {
+    "gate_miss": {
+     "p_valid": "0/148",
+     "ids": []
+    },
+    "shield": {
+     "after3s": 0.0008028039396134793,
+     "other": 0.02290829632762388,
+     "all_rows": 0.0076809354957037895
+    },
+    "invalid_p": [
+     {
+      "id": "Q68",
+      "reason": "collection_duration_complete",
+      "collisions": 0,
+      "stall": true,
+      "progress_m": 0.08,
+      "frames": 600,
+      "collision_s": null
+     },
+     {
+      "id": "Q71",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 54.53,
+      "frames": 563,
+      "collision_s": 18.76
+     }
+    ],
+    "replaced_fraction": 0.6578073089700996,
+    "start_zones": {
+     "other": {
+      "n": 465,
+      "success": 459,
+      "share": 0.7724252491694352
+     },
+     "black_sheet_exit": {
+      "n": 136,
+      "success": 136,
+      "share": 0.22591362126245848
+     },
+     "back_straight_exit": {
+      "n": 1,
+      "success": 1,
+      "share": 0.0016611295681063123
+     }
+    }
+   },
+   "eval_sha256": "cc2c761e1755a3a927d39f21c958c7687286c28890f918915f227f2f1e535713"
+  },
+  "v1_same_starts": {
+   "set": "v1",
+   "label": "selected",
+   "policy_sha256": "68e321e40309e6fa0d8c05cc3419ca8ef8a1d2c3191aeb91411b3a1cd93990ef",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": false,
+     "value": "25/100"
+    },
+    "C2": {
+     "pass": false,
+     "value": 0.677536231884058
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0.5666666666666667,
+      "p90": 1.826666666666667
+     }
+    },
+    "C4": {
+     "pass": false,
+     "value": {
+      "events_per_episode": 2.76,
+      "masked_fraction": 0.09463333333333329
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.3115942028985507,
+       "中": 0.30434782608695654,
+       "強": 0.38405797101449274
+      },
+      "type_share": {
+       "steer_pulse": 0.6811594202898551,
+       "excursion": 0.18115942028985507,
+       "speed_pulse": 0.13768115942028986
+      }
+     }
+    }
+   },
+   "reported": {
+    "gate_miss": {
+     "p_valid": "15/25",
+     "ids": [
+      "P0",
+      "P5",
+      "P9",
+      "P11",
+      "P14",
+      "P26",
+      "P35",
+      "P38",
+      "P44",
+      "P55",
+      "P62",
+      "P76",
+      "P86",
+      "P89",
+      "P90"
+     ]
+    },
+    "shield": {
+     "after3s": 0.011378002528445006,
+     "other": 0.013953141322190717,
+     "all_rows": 0.011324195540914172
+    },
+    "invalid_p": [
+     {
+      "id": "P1",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 28.47,
+      "frames": 325,
+      "collision_s": 10.8
+     },
+     {
+      "id": "P2",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 11.3,
+      "frames": 107,
+      "collision_s": 3.55
+     },
+     {
+      "id": "P3",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 16.2,
+      "frames": 181,
+      "collision_s": 6.03
+     },
+     {
+      "id": "P4",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 44.3,
+      "frames": 428,
+      "collision_s": 14.25
+     },
+     {
+      "id": "P6",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.49,
+      "frames": 150,
+      "collision_s": 4.97
+     },
+     {
+      "id": "P7",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 32.39,
+      "frames": 379,
+      "collision_s": 12.63
+     },
+     {
+      "id": "P8",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 18.14,
+      "frames": 168,
+      "collision_s": 5.57
+     },
+     {
+      "id": "P10",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 9.21,
+      "frames": 89,
+      "collision_s": 2.94
+     },
+     {
+      "id": "P13",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 38.43,
+      "frames": 390,
+      "collision_s": 12.99
+     },
+     {
+      "id": "P15",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 7.64,
+      "frames": 105,
+      "collision_s": 3.5
+     },
+     {
+      "id": "P16",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 25.1,
+      "frames": 259,
+      "collision_s": 8.63
+     },
+     {
+      "id": "P18",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 16.08,
+      "frames": 175,
+      "collision_s": 5.83
+     },
+     {
+      "id": "P19",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 50.2,
+      "frames": 523,
+      "collision_s": 17.43
+     },
+     {
+      "id": "P20",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 20.25,
+      "frames": 212,
+      "collision_s": 7.04
+     },
+     {
+      "id": "P21",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 22.62,
+      "frames": 228,
+      "collision_s": 7.59
+     },
+     {
+      "id": "P22",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.18,
+      "frames": 145,
+      "collision_s": 4.8
+     },
+     {
+      "id": "P23",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 32.18,
+      "frames": 361,
+      "collision_s": 12.02
+     },
+     {
+      "id": "P24",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 18.36,
+      "frames": 180,
+      "collision_s": 5.99
+     },
+     {
+      "id": "P25",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 32.47,
+      "frames": 401,
+      "collision_s": 13.36
+     },
+     {
+      "id": "P27",
+      "reason": "collection_duration_complete",
+      "collisions": 0,
+      "stall": true,
+      "progress_m": 1.14,
+      "frames": 600,
+      "collision_s": null
+     },
+     {
+      "id": "P28",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 8.57,
+      "frames": 82,
+      "collision_s": 2.71
+     },
+     {
+      "id": "P29",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 21.88,
+      "frames": 205,
+      "collision_s": 6.81
+     },
+     {
+      "id": "P30",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 11.65,
+      "frames": 136,
+      "collision_s": 4.53
+     },
+     {
+      "id": "P31",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 32.41,
+      "frames": 325,
+      "collision_s": 10.83
+     },
+     {
+      "id": "P32",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 31.8,
+      "frames": 310,
+      "collision_s": 10.31
+     },
+     {
+      "id": "P33",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 40.32,
+      "frames": 427,
+      "collision_s": 14.22
+     },
+     {
+      "id": "P34",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 53.78,
+      "frames": 550,
+      "collision_s": 18.3
+     },
+     {
+      "id": "P37",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 21.7,
+      "frames": 207,
+      "collision_s": 6.87
+     },
+     {
+      "id": "P39",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 6.24,
+      "frames": 96,
+      "collision_s": 3.18
+     },
+     {
+      "id": "P40",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 13.98,
+      "frames": 124,
+      "collision_s": 4.1
+     },
+     {
+      "id": "P41",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 54.37,
+      "frames": 549,
+      "collision_s": 18.28
+     },
+     {
+      "id": "P42",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 44.26,
+      "frames": 463,
+      "collision_s": 15.4
+     },
+     {
+      "id": "P45",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 20.65,
+      "frames": 200,
+      "collision_s": 6.64
+     },
+     {
+      "id": "P46",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 7.07,
+      "frames": 90,
+      "collision_s": 2.97
+     },
+     {
+      "id": "P47",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 7.64,
+      "frames": 104,
+      "collision_s": 3.46
+     },
+     {
+      "id": "P48",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 35,
+      "frames": 344,
+      "collision_s": 11.44
+     },
+     {
+      "id": "P50",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 27.14,
+      "frames": 284,
+      "collision_s": 9.44
+     },
+     {
+      "id": "P51",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 6.57,
+      "frames": 91,
+      "collision_s": 3.02
+     },
+     {
+      "id": "P52",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 9.95,
+      "frames": 92,
+      "collision_s": 3.06
+     },
+     {
+      "id": "P53",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 52.83,
+      "frames": 540,
+      "collision_s": 17.99
+     },
+     {
+      "id": "P54",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 11.85,
+      "frames": 147,
+      "collision_s": 4.87
+     },
+     {
+      "id": "P56",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 22.31,
+      "frames": 233,
+      "collision_s": 7.76
+     },
+     {
+      "id": "P57",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 29.61,
+      "frames": 324,
+      "collision_s": 10.78
+     },
+     {
+      "id": "P58",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 8.75,
+      "frames": 91,
+      "collision_s": 3.03
+     },
+     {
+      "id": "P59",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 10.26,
+      "frames": 124,
+      "collision_s": 4.1
+     },
+     {
+      "id": "P61",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 36.98,
+      "frames": 392,
+      "collision_s": 13.04
+     },
+     {
+      "id": "P63",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 10.86,
+      "frames": 136,
+      "collision_s": 4.51
+     },
+     {
+      "id": "P64",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 25.51,
+      "frames": 263,
+      "collision_s": 8.76
+     },
+     {
+      "id": "P65",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 28.66,
+      "frames": 298,
+      "collision_s": 9.92
+     },
+     {
+      "id": "P66",
+      "reason": "collection_duration_complete",
+      "collisions": 0,
+      "stall": true,
+      "progress_m": 14.72,
+      "frames": 600,
+      "collision_s": null
+     },
+     {
+      "id": "P67",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 9.7,
+      "frames": 126,
+      "collision_s": 4.18
+     },
+     {
+      "id": "P68",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 20.33,
+      "frames": 212,
+      "collision_s": 7.05
+     },
+     {
+      "id": "P69",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 13.11,
+      "frames": 133,
+      "collision_s": 4.41
+     },
+     {
+      "id": "P70",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.6,
+      "frames": 150,
+      "collision_s": 4.97
+     },
+     {
+      "id": "P71",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 17.87,
+      "frames": 208,
+      "collision_s": 6.9
+     },
+     {
+      "id": "P72",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 23.35,
+      "frames": 234,
+      "collision_s": 7.78
+     },
+     {
+      "id": "P73",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 39.67,
+      "frames": 407,
+      "collision_s": 13.57
+     },
+     {
+      "id": "P74",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 35.2,
+      "frames": 351,
+      "collision_s": 11.69
+     },
+     {
+      "id": "P75",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": true,
+      "progress_m": 6.51,
+      "frames": 161,
+      "collision_s": 5.36
+     },
+     {
+      "id": "P77",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 26.78,
+      "frames": 284,
+      "collision_s": 9.46
+     },
+     {
+      "id": "P78",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.88,
+      "frames": 149,
+      "collision_s": 4.96
+     },
+     {
+      "id": "P79",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 9.28,
+      "frames": 117,
+      "collision_s": 3.89
+     },
+     {
+      "id": "P80",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 24.9,
+      "frames": 244,
+      "collision_s": 8.12
+     },
+     {
+      "id": "P81",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 29.56,
+      "frames": 300,
+      "collision_s": 9.97
+     },
+     {
+      "id": "P82",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 11.71,
+      "frames": 117,
+      "collision_s": 3.9
+     },
+     {
+      "id": "P83",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 30.15,
+      "frames": 341,
+      "collision_s": 11.34
+     },
+     {
+      "id": "P84",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 30.61,
+      "frames": 309,
+      "collision_s": 10.27
+     },
+     {
+      "id": "P85",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.73,
+      "frames": 133,
+      "collision_s": 4.43
+     },
+     {
+      "id": "P87",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 21.86,
+      "frames": 233,
+      "collision_s": 7.76
+     },
+     {
+      "id": "P88",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 22.83,
+      "frames": 234,
+      "collision_s": 7.79
+     },
+     {
+      "id": "P93",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 37.48,
+      "frames": 378,
+      "collision_s": 12.57
+     },
+     {
+      "id": "P95",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 31.3,
+      "frames": 325,
+      "collision_s": 10.83
+     },
+     {
+      "id": "P97",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 24.68,
+      "frames": 237,
+      "collision_s": 7.89
+     },
+     {
+      "id": "P98",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 12.27,
+      "frames": 125,
+      "collision_s": 4.16
+     },
+     {
+      "id": "P99",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 25.05,
+      "frames": 257,
+      "collision_s": 8.54
+     }
+    ],
+    "replaced_fraction": 0,
+    "start_zones": {
+     "back_straight_exit": {
+      "n": 82,
+      "success": 66,
+      "share": 0.2971014492753623
+     },
+     "other": {
+      "n": 123,
+      "success": 77,
+      "share": 0.44565217391304346
+     },
+     "black_sheet_exit": {
+      "n": 71,
+      "success": 44,
+      "share": 0.2572463768115942
+     }
+    }
+   },
+   "eval_sha256": "070922ccc90c36b33dec41dcb30c3656d9d24f0464d55bfe46db42a7acb90838"
+  },
+  "fastest_policy": {
+   "set": "test",
+   "label": "fastest",
+   "policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "92/100"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9712918660287081
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.6333333333333333
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.18,
+      "masked_fraction": 0.17186666666666656
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.3708133971291866,
+       "中": 0.31100478468899523,
+       "強": 0.3181818181818182
+      },
+      "type_share": {
+       "steer_pulse": 0.35645933014354064,
+       "excursion": 0.2583732057416268,
+       "speed_pulse": 0.38516746411483255
+      }
+     }
+    },
+    "C5_r4": {
+     "pass": false,
+     "value": {
+      "grid_yaw": "65/76",
+      "grid_lateral": "68/76",
+      "random_yaw": "27/29",
+      "random_lateral": "25/29"
+     }
+    },
+    "C6_r4": {
+     "pass": false,
+     "value": {
+      "lap_from_stop": null,
+      "rec60": "0/0",
+      "unperturbed": "0/0",
+      "min_clearance": null,
+      "min_clearance_rec60": null,
+      "min_clearance_u": null
+     }
+    },
+    "C8": {
+     "pass": true,
+     "value": {
+      "perturbed_valid_with_miss": "3/92",
+      "rate": 0.03260869565217391,
+      "unperturbed_with_miss": "0/0"
+     }
+    }
+   },
+   "reported": {
+    "kick_band": {
+     "note": "報告だけ: スタートのゲートの区間(s 0.30〜3.70 m)の右向きのキック(確認 r3 で落ちたのは全部ここ)",
+     "band_right": "7/28",
+     "band_left": "21/21",
+     "outside": "157/161",
+     "band_right_dmin_before": [
+      0.1522533624812374,
+      0.1522533624812374,
+      0.1487828104831151,
+      0.1487828104831151,
+      0.10042108790602927,
+      0.10042108790602927,
+      0.2197768314412801,
+      0.2197768314412801,
+      0.08360014077101553,
+      0.08360014077101553,
+      0.10778488771078086,
+      0.10778488771078086,
+      0.3126046956458641,
+      0.3126046956458641,
+      0.11743783970203399,
+      0.11743783970203399,
+      0.13617985335414137,
+      0.13617985335414137,
+      0.09040496925206622,
+      0.08273160216314208,
+      0.2720090799166402,
+      0.15406734333677344,
+      0.3812385552927522,
+      0.0963306520824496,
+      0.0813387846989236,
+      0.13061817523944588,
+      0.13908729701413708,
+      0.1213514492437754
+     ]
+    },
+    "gate_miss": {
+     "p_valid": "3/92",
+     "ids": [
+      "P7",
+      "P56",
+      "P71"
+     ]
+    },
+    "shield": {
+     "after3s": 0.0017042664432825904,
+     "other": 0.001188763060752049,
+     "all_rows": 0.0015740697284007668
+    },
+    "invalid_p": [
+     {
+      "id": "P4",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 18.42,
+      "frames": 156,
+      "collision_s": 5.2
+     },
+     {
+      "id": "P23",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 27.43,
+      "frames": 265,
+      "collision_s": 8.83
+     },
+     {
+      "id": "P28",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 14.43,
+      "frames": 127,
+      "collision_s": 4.23
+     },
+     {
+      "id": "P36",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 16.8,
+      "frames": 144,
+      "collision_s": 4.79
+     },
+     {
+      "id": "P37",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 50.13,
+      "frames": 463,
+      "collision_s": 15.42
+     },
+     {
+      "id": "P60",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 13.55,
+      "frames": 123,
+      "collision_s": 4.08
+     },
+     {
+      "id": "P80",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 47.71,
+      "frames": 407,
+      "collision_s": 13.54
+     },
+     {
+      "id": "P87",
+      "reason": "collision",
+      "collisions": 1,
+      "stall": false,
+      "progress_m": 27.4,
+      "frames": 267,
+      "collision_s": 8.88
+     }
+    ],
+    "replaced_fraction": 0.6866028708133971,
+    "start_zones": {
+     "back_straight_exit": {
+      "n": 37,
+      "success": 37,
+      "share": 0.08851674641148326
+     },
+     "black_sheet_exit": {
+      "n": 66,
+      "success": 66,
+      "share": 0.15789473684210525
+     },
+     "other": {
+      "n": 315,
+      "success": 303,
+      "share": 0.7535885167464115
+     }
+    }
+   },
+   "eval_sha256": "c606c368d2a7c4a20efba5ac94b6f510f796258e19e0551fdc84fdb08b2d1a95"
+  },
+  "r3_candidate_same_sets": {
+   "set": "test",
+   "label": "r3_candidate",
+   "policy_sha256": "8d686076fc0a09593489ce5ef3cbc8d277a23318efe00e9b0b5803da90cb4a94",
+   "all_judged_pass": false,
+   "judged": {
+    "C1_r3": {
+     "pass": true,
+     "value": "100/100"
+    },
+    "C2": {
+     "pass": true,
+     "value": 0.9907834101382489
+    },
+    "C3": {
+     "pass": true,
+     "value": {
+      "median": 0,
+      "p90": 0.5666666666666667
+     }
+    },
+    "C4": {
+     "pass": true,
+     "value": {
+      "events_per_episode": 4.34,
+      "masked_fraction": 0.1932
+     }
+    },
+    "C7": {
+     "pass": true,
+     "value": {
+      "class_share": {
+       "弱": 0.3225806451612903,
+       "中": 0.34101382488479265,
+       "強": 0.33640552995391704
+      },
+      "type_share": {
+       "steer_pulse": 0.2880184331797235,
+       "excursion": 0.3433179723502304,
+       "speed_pulse": 0.3686635944700461
+      }
+     }
+    },
+    "C5_r4": {
+     "pass": false,
+     "value": {
+      "grid_yaw": "70/78",
+      "grid_lateral": "70/78",
+      "random_yaw": "21/23",
+      "random_lateral": "28/29"
+     }
+    },
+    "C6_r4": {
+     "pass": true,
+     "value": {
+      "lap_from_stop": 8.514292482857686,
+      "rec60": "60/60",
+      "unperturbed": "60/60",
+      "min_clearance": 0.03762704966686523,
+      "min_clearance_rec60": 0.0604782251432166,
+      "min_clearance_u": 0.03762704966686523
+     }
+    },
+    "C8": {
+     "pass": true,
+     "value": {
+      "perturbed_valid_with_miss": "1/100",
+      "rate": 0.01,
+      "unperturbed_with_miss": "0/120"
+     }
+    }
+   },
+   "reported": {
+    "kick_band": {
+     "note": "報告だけ: スタートのゲートの区間(s 0.30〜3.70 m)の右向きのキック(確認 r3 で落ちたのは全部ここ)",
+     "band_right": "4/22",
+     "band_left": "21/21",
+     "outside": "164/165",
+     "band_right_dmin_before": [
+      0.17627113118862506,
+      0.17627113118862506,
+      0.11011731815924125,
+      0.11011731815924125,
+      0.12347563457977098,
+      0.12347563457977098,
+      0.13377636341002108,
+      0.13377636341002108,
+      0.13953609469826628,
+      0.13953609469826628,
+      0.16441367358904052,
+      0.16441367358904052,
+      0.10813702613591329,
+      0.10813702613591329,
+      0.24639070462472823,
+      0.24639070462472823,
+      0.133893653937079,
+      0.133893653937079,
+      0.20493942193042095,
+      0.11194387564318514,
+      0.1235895854372984,
+      0.11873425823018396
+     ]
+    },
+    "gate_miss": {
+     "p_valid": "1/100",
+     "ids": [
+      "P14"
+     ]
+    },
+    "shield": {
+     "after3s": 0.001937608990505716,
+     "other": 0.00018533390992771977,
+     "all_rows": 0.0004543051845079075
+    },
+    "invalid_p": [],
+    "replaced_fraction": 0.6866359447004609,
+    "start_zones": {
+     "back_straight_exit": {
+      "n": 54,
+      "success": 54,
+      "share": 0.12442396313364056
+     },
+     "other": {
+      "n": 303,
+      "success": 299,
+      "share": 0.6981566820276498
+     },
+     "black_sheet_exit": {
+      "n": 77,
+      "success": 77,
+      "share": 0.1774193548387097
+     }
+    }
+   },
+   "eval_sha256": "a1069a7ed86797051c5f51eab08c881bf127453e3fee963a7e285a2f804088b8"
+  }
+ },
+ "selection": {
+  "step": 5439488,
+  "eval": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/rc4/train/main/evals/recover/step_005439488.json",
+  "all": true,
+  "n_passed": 8,
+  "passed": [
+   "C1_r3",
+   "C2",
+   "C3",
+   "C4",
+   "C7",
+   "C5_r4",
+   "C6_r4",
+   "C8"
+  ],
+  "C2": 0.9902439024390244,
+  "C5_min": 1,
+  "summary": {
+   "C1_r3": "100/100",
+   "C2": 0.9902439024390244,
+   "C3": {
+    "median": 0,
+    "p90": 0.7666666666666667
+   },
+   "C4": {
+    "events_per_episode": 4.1,
+    "masked_fraction": 0.18515000000000004
+   },
+   "C7": {
+    "class_share": {
+     "弱": 0.37073170731707317,
+     "中": 0.32195121951219513,
+     "強": 0.3073170731707317
+    },
+    "type_share": {
+     "steer_pulse": 0.23414634146341465,
+     "excursion": 0.3951219512195122,
+     "speed_pulse": 0.37073170731707317
+    }
+   },
+   "C5_r4": {
+    "grid_yaw": "42/42",
+    "grid_lateral": "42/42",
+    "random_yaw": "18/18",
+    "random_lateral": "17/17"
+   },
+   "C6_r4": {
+    "lap_from_stop": 8.846526394432733,
+    "rec60": "15/15",
+    "unperturbed": "30/30",
+    "min_clearance": 0.03618259412989358,
+    "min_clearance_rec60": 0.058043256567607976,
+    "min_clearance_u": 0.03618259412989358
+   },
+   "C8": {
+    "perturbed_valid_with_miss": "0/100",
+    "rate": 0,
+    "unperturbed_with_miss": "0/45"
+   }
+  },
+  "policy": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/r3/rc4/train/main/policies/step_005439488.json",
+  "policy_sha256": "68e321e40309e6fa0d8c05cc3419ca8ef8a1d2c3191aeb91411b3a1cd93990ef"
+ }
+}
