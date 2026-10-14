@@ -1,0 +1,208 @@
+{
+ "title": "JetFormer 10月14日\n戻し方と余裕のある線",
+ "log": "20261010-173445",
+ "_note": "約 1 分の報告動画の絵コンテ(sim_dart_20261014 の確認の段で作成。動画はメインのセッションが Gemini TTS(Achernar)で描く)。図は video/fig/v1〜v6(experiments/20261014_sim_dart_margin/review/video/make_slides.py が走行の生の記録・review/recount.json・review/teacher_traces.json・recording/summary.json・data/sim_rl/modes/*/status.json から作った。v1 はベストラップの動画の図の写し)。src_start/src_end は読み上げの長さの見込み(1 秒 5.3 字)で、描くときに読み上げに合わせて詰めてよい。確認: python3 ~/jetformer_reports/sim_cotrain_20261013/video/src/check_storyboard.py <この JSON>",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月14日のレポート",
+   "src_start": 160.6,
+   "src_end": 166.67,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "強化学習のベストラップ",
+    "まねしたモデルは衝突",
+    "戻し方と余裕のある線",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。今日は、戻し方と余裕のある線を試しました!",
+     "say": "ラピカです。今日は、戻し方と、余裕のある線を試しました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_bestlap",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "強化学習でベストラップ",
+   "src_start": 166.18,
+   "src_end": 173.12,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v1_bestlap.png",
+   "lines": [
+    {
+     "text": "強化学習で、先生より0.84秒速い、8.09秒の周ができました。",
+     "say": "強化学習で、先生より0.84秒速い、8.09秒の周ができました。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_crash",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "まねしたモデルは衝突",
+   "src_start": 173.08,
+   "src_end": 179.11,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v2_crash.png",
+   "lines": [
+    {
+     "text": "でも、それをまねしたモデルは、12回とも1秒ほどで衝突しました。",
+     "say": "でも、それをまねしたモデルは、12回とも、1秒ほどで衝突しました。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_cause",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "原因は2つ",
+   "src_start": 179.61,
+   "src_end": 186.47,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v3_cause.png",
+   "lines": [
+    {
+     "text": "線は壁まで約11cm。しかも、ずれた時の戻し方を知りません。",
+     "say": "線は、壁まで約11センチ。しかも、ずれた時の戻し方を、知りません。",
+     "expression": "surprised",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_fixes",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日の2つの対策",
+   "src_start": 186.14,
+   "src_end": 192.49,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v4_fixes.png",
+   "lines": [
+    {
+     "text": "そこで、先生の戻し方を教えるDARTと、余裕のある線を試しました。",
+     "say": "そこで、先生の戻し方を教えるダートと、余裕のある線を試しました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_results",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "最初の直線は抜けた",
+   "src_start": 192.48,
+   "src_end": 203.14,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v5_results.png",
+   "lines": [
+    {
+     "text": "どちらも最初の直線を抜け、4倍以上長く走れました。",
+     "say": "どちらも最初の直線を抜け、4倍以上長く走れました。",
+     "expression": "happy",
+     "pose": "point"
+    },
+    {
+     "text": "でも完走は0回。多くが最初のカーブのゲートを外しました。",
+     "say": "でも完走は、0回。多くが、最初のカーブのゲートを外しました。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s7_modes",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "強化学習モードの今",
+   "src_start": 204.48,
+   "src_end": 209.76,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_dart_20261014/video/fig/v6_modes.png",
+   "lines": [
+    {
+     "text": "強化学習モードは、最速と速さいろいろが合格です。",
+     "say": "強化学習モードは、最速と、速さいろいろが合格です。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s8_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 209.5,
+   "src_end": 214.34,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "DARTと余裕の線を10分ずつ記録",
+    "最初の直線の衝突は直った",
+    "止まるまで1.1秒→4.4・6.6秒",
+    "完走はどれも0/12",
+    "次の難所は最初のカーブのゲート",
+    "数は生の記録で数え直し済み"
+   ],
+   "lines": [
+    {
+     "text": "壁への衝突は直りましたが、まだ1周は走れません。",
+     "say": "壁への衝突は直りましたが、まだ1周は、走れません。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s9_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 214.52,
+   "src_end": 221.54,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "ゲートの端からも余裕をとる",
+    "カーブの手前でも乱しを入れる",
+    "DAggerで走った状態を教える",
+    "種を増やし、データ量をそろえる",
+    "実車ではまだ確かめていない"
+   ],
+   "lines": [
+    {
+     "text": "課題は、ゲートの余裕と、DAggerで走った状態を教えることです。",
+     "say": "課題は、ゲートの余裕と、ダガーで走った状態を教えることです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,109 @@
+#!/usr/bin/env node
+// (sim_dart_20261014 の写し: import の道だけ変えた。lap_audit.mjs はベストラップのものを読むだけで使う)
+// ブラウザのアプリが記録した 1 シーン(データセットのフォルダー)を、Node の元の物理で再生して確かめる(2026-10-13)
+//
+//   node ~/jetformer/experiments/20261013_sim_rl_bestlap/verify_recording.mjs <データセットのフォルダー> [--teacher <教師モジュール.js>] [--out 結果.json]
+//
+//  1) コースを作り直し、開始ゲート・開始ずれ(session の start_variation)と 1 フレーム目の姿勢を照合する
+//  2) 記録した操作(evaluation-report.json の actions)を元の sim-core.js で再生し、各フレームの姿勢・速度・舵角が
+//     frames.jsonl(操作前の姿勢・操作後の状態)・trace と一致するかを見る
+//  3) --teacher を付けると、同じ状態からその教師モジュール(ブラウザで使ったもの)の操作を計算し直し、記録と一致するかを見る
+//     (ブラウザ内の方策と Node の方策が同じ計算をしていることの確認)
+//  4) 周回・ゲート・黒シート・衝突の集計が、再生の結果と一致するかを見る
+//  5) 自前の積分と数え直し(rl/lap_audit.mjs、RL 環境の段で追加): 同じ操作列を自前のコードで積分し直して軌跡が一致し、
+//     ゲート(順番・±0.65 m)・黒シートの車幅の条件(周ごとに全部数える)・衝突・周回時間を数え直して sim の集計と一致するか
+//     (各周 33 ゲート・黒シートの有効な横断ちょうど 1 回・衝突 0 も見る)
+// どの教師で集めたデータにも使える(RC 教師専用の qa/verify-rc-teacher-recording.mjs の汎用版)。ユーザーのファイルは変更しない。
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+import {baseWorld, activeWorldFor, createSimulation, SIM_ROOT} from '../lib/app_emulation.mjs';   // 写し(sim_dart_20261014): 今日のコピーの sim
+
+const args = process.argv.slice(2);
+const opt = name => { const i = args.indexOf(name); if (i < 0) return null; const v = args[i + 1]; args.splice(i, 2); return v; };
+const teacherPath = opt('--teacher'), outPath = opt('--out');
+assert.ok(args[0], '使い方: node verify_recording.mjs <データセットのフォルダー> [--teacher module.js] [--out result.json]');
+let root = path.resolve(args[0]);
+if (!fs.existsSync(path.join(root, 'simulation/session.json'))) {
+  const c = fs.readdirSync(root).map(p => path.join(root, p)).filter(p => fs.existsSync(path.join(p, 'simulation/session.json')));
+  assert.equal(c.length, 1, 'データセットのフォルダーが見つかりません'); root = c[0];
+}
+const read = p => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
+const session = read('simulation/session.json'), report = read('simulation/evaluation-report.json');
+const rows = fs.readFileSync(path.join(root, 'simulation/frames.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
+const variation = session.context.start_variation;
+const errors = {};
+const near = (a, b, label, tol = 1e-9) => {
+  assert.ok(Number.isFinite(a) && Number.isFinite(b), label + ' が数値ではありません');
+  const e = Math.abs(a - b); errors[label.split(' ')[0]] = Math.max(errors[label.split(' ')[0]] ?? 0, e);
+  assert.ok(e <= tol, `${label}: ${a} と ${b}(差 ${e})`); return e;
+};
+
+// 1) コースと開始姿勢
+const {world, variation: planned} = activeWorldFor(await baseWorld(), variation.gate, variation.left_offset_m, variation.left_yaw_deg);
+for (const k of ['x', 'z', 'yaw']) near(world.spawn[k], rows[0].pose_pre_action[k], 'spawn ' + k, 1e-9);
+world.spawn = {...rows[0].pose_pre_action};   // 角度の度⇔ラジアンの往復で最後の桁が変わり得るので、記録の姿勢を正とする
+const sim = createSimulation(world, report.config);
+sim.reset({seed: report.seed, scenario: report.scenario});
+// コースのハッシュ: 開始の向きは sim-core の正規化(atan2(sin,cos))や sin/cos の最後の桁がブラウザ(SpiderMonkey)と
+// Node(V8)で違い得るので、qa/verify-rc-teacher-recording.mjs と同じく、正規化した world の開始姿勢だけを記録の値にして照合する
+const coreSource = fs.readFileSync(path.join(SIM_ROOT, 'dist/sim-core.js'), 'utf8') + '\nexport { normalizedWorld, hash };';
+const helpers = await import('data:text/javascript;base64,' + Buffer.from(coreSource).toString('base64'));
+const hashWorld = helpers.normalizedWorld(world);
+for (const k of ['x', 'z', 'yaw']) near(hashWorld.spawn[k], rows[0].pose_pre_action[k], 'spawn ' + k, 1e-12);
+hashWorld.spawn = {...hashWorld.spawn, ...rows[0].pose_pre_action};
+assert.equal(helpers.hash(hashWorld), report.world_hash, 'コース(開始姿勢を含む)のハッシュが記録と違います');
+let teacher = null;
+if (teacherPath) {
+  const mod = await import(pathToFileURL(path.resolve(teacherPath)).href);
+  teacher = mod.createRcTrainingTeacher(world, sim.snapshot().config, {gate: planned.gate, left_offset_m: variation.left_offset_m, left_yaw_deg: variation.left_yaw_deg});
+}
+
+// 2) 3) 1 フレームずつ再生
+assert.equal(rows.length, report.actions.length, 'frames.jsonl と actions のフレーム数が違います');
+for (let i = 0; i < rows.length; i++) {
+  const row = rows[i], action = report.actions[i], trace = report.trace[i], before = sim.snapshot();
+  assert.equal(row.frame, i); assert.equal(action.frame, i);
+  for (const k of ['x', 'z', 'yaw']) near(row.pose_pre_action[k], before.state[k], `pre ${k} f${i}`);
+  near(row.sim_time, before.state.sim_time, `time f${i}`);
+  for (const k of ['steering', 'speed']) near(row.command_si[k], action[k], `stored ${k} f${i}`, 1e-12);
+  if (teacher) { const fresh = teacher.action(before); for (const k of ['steering', 'speed']) near(fresh[k], action[k], `teacher ${k} f${i}`, 1e-9); }
+  sim.step(action);
+  const after = sim.snapshot().state;
+  for (const k of ['x', 'z', 'yaw', 'speed', 'steering']) { near(after[k], trace[k], `replay ${k} f${i}`); near(row.state_post_action[k], after[k], `post ${k} f${i}`); }
+}
+
+// 4) 集計
+sim.setPaused(report.final_state.paused);
+const fresh = sim.report(), m = fresh.metrics;
+assert.deepEqual(fresh.outcome, report.outcome, '終了の理由が記録と違います');
+for (const k of ['collisions', 'passed_gates', 'completed_laps']) assert.equal(m[k], report.metrics[k], k + ' が記録と違います');
+const laps = (m.lap_events ?? []).map(l => ({lap: l.lap_index, elapsed_s: l.elapsed, gates: l.passed_gates, collisions: l.collisions,
+  shortcut: l.required_crossing_events.length, start_frame: l.start_frame, end_frame: l.end_frame}));
+// 5) 自前の積分と数え直し
+const {independentAudit} = await import('/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/lap_audit.mjs');
+const own = independentAudit({...report, world});
+assert.equal(own.frames.length, fresh.trace.length, '自前の積分のフレーム数が違います');
+for (let i = 0; i < own.frames.length; i++) for (const k of ['time', 'x', 'z', 'yaw', 'speed', 'steering']) near(own.frames[i][k], fresh.trace[i][k], `own_physics.${k} f${i}`);
+assert.equal(own.reason, fresh.outcome.reason, '自前の終了の理由が sim と違います');
+assert.equal(own.passed_gates, m.passed_gates, '自前のゲート数が sim と違います');
+assert.equal(own.collisions.length, m.collisions, '自前の衝突の数が sim と違います');
+assert.equal(own.laps.length, laps.length, '自前の周の数が sim と違います');
+own.laps.forEach((l, i) => near(l.elapsed, laps[i].elapsed_s, `own_lap_elapsed ${i + 1}`));
+const recount = {laps: own.laps.map(l => ({lap: l.lap, elapsed_s: l.elapsed, gates: l.gates, valid_crossings: l.valid_crossings, collisions: l.collisions})),
+  every_lap_valid: own.laps.every(l => l.gates === 33 && l.valid_crossings === 1 && l.collisions === 0), crossings_total: own.crossings.length,
+  crossings_valid: own.crossings.filter(c => c.valid).length, gate_misses: own.gate_misses.length, collisions: own.collisions.length,
+  min_clearance_m: own.min_clearance_m, gate_margin_min_m: own.gate_events.length ? Math.min(...own.gate_events.map(g => g.margin_m)) : null};
+// 記録の段(2026-10-14 14:35)で追加: 線の外を横切ったあと、そのゲートがシーンの終わりまでに数えられたか(数えられないまま終われば「終わりの外し」。
+// 準備の段の確かめ build_check_r1 で、D3 の試しのシーンが最後の 0.5 秒でゲート 3 を外したまま終わっていた。modes の s の決まりはこれを見られない)
+recount.outside_crossings = own.gate_misses.map(g => ({gate: g.gate, time: g.time, frame: Math.round(g.time * 30), lateral_m: g.lateral,
+  counted_later: own.gate_events.some(e => e.gate === g.gate && e.time > g.time)}));
+recount.end_of_scene_misses = recount.outside_crossings.filter(g => !g.counted_later).length;
+const result = {schema: 'rl-bestlap-recording-replay/v1', pass: true, dataset: root, frames: rows.length,
+  controller: session.controller, label_mode: session.training_label_mode, teacher_id: session.context.teacher?.id ?? null,
+  start_variation: variation, scenario: report.scenario, seed: report.seed, episode_mode: report.config.episodeMode ?? 'single-lap-v1',
+  outcome: fresh.outcome, collisions: m.collisions, passed_gates: m.passed_gates, laps,
+  max_abs_error: errors, teacher_recomputed: !!teacher, teacher_module: teacherPath ? path.resolve(teacherPath) : null, independent_recount: recount};
+if (outPath) fs.writeFileSync(outPath, JSON.stringify(result, null, 1));
+console.log(JSON.stringify(result, null, 1));

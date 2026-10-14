@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""記録の後の検証(D1・D2・D3 の 30 シーン)。2026-10-14、sim_dart_20261014(protocol.json recording.verification_after_recording)
+
+    source ~/miniconda/etc/profile.d/conda.sh && conda activate jetracer
+    jf-heavy --mem 1500M --lock none -- nice -n 10 python -I verify_dart_collection.py --dataset D1 \\
+        --result <browser_collect の result.json> --out-dir <結果> [--sessions-root <ブリッジの runtime/datasets>] [--workers 2]
+
+  ベストラップの verify_rl_collection.py と同じ組み立てを、DART 用にしたもの(データは変えない):
+  - 計画・設定との一致(種・場面・開始・20 秒の連続周回・衝突で停止・ジャンル 8・train / val・教師の id と方策の sha256)
+  - 物理: verify_recording.mjs の写し(記録した操作を元の sim-core.js で再生して軌跡が一致 ≤ 1e-9、周回・ゲート・黒シート・衝突の集計、
+    自前の積分と数え直し)。教師の再計算は乱しがあるのでここでは使わない(下の relabel_scene.mjs --no-fork で行う)
+  - 先生と乱し: relabel_scene.mjs --no-fork(記録の状態から先生を計算し直し、info.dart.clean と比べる・乱しの予定を計算し直して
+    info.dart.noise と比べる・本当のゲートの外し(modes の gate_miss.mjs の決まり)・最小すき間)
+  - センサー: ユーザーの verify-rc-teacher-dataset.py の写し(教師の id の行だけ変えた verify_rc_teacher_dataset_dart.py)。
+    PWM の作り直し(差 0 µs)・未来ラベル(付け替えの前の、記録の操作の 1〜10 フレーム先)も見る
+  - 画像がすべて違うか(カメラ・ToF の全フレームの sha256)
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from pathlib import Path
+
+EXP = Path('/home/jetson/jetformer/experiments/20261014_sim_dart_margin')
+REPORT = Path('/home/jetson/jetformer_reports/sim_dart_20261014')
+SESSIONS = REPORT / 'sim' / 'runtime' / 'datasets'
+PROTOCOL = REPORT / 'protocol.json'
+NOISE = {'D1': 'N_fast', 'D2': 'none', 'D3': 'N_margin'}
+TEACHER = {'D1': 'fast', 'D2': 'margin', 'D3': 'margin'}
+
+
+def read(p):
+    return json.loads(Path(p).read_text())
+
+
+def require(ok, msg):
+    if not ok:
+        raise ValueError(msg)
+
+
+def resolve_scene(root, sid):
+    require(re.fullmatch(r'[0-9a-f]{32}', sid or ''), 'セッション ID の形が違います')
+    paths = list((root / sid).glob('*/simulation/session.json'))
+    require(len(paths) == 1, f'{sid}: シーンが 1 つではありません')
+    return paths[0].parent.parent
+
+
+def verify_scene(d, name, sid, plan_row, a, protocol):
+    out = Path(a.out_dir) / 'scenes' / name
+    out.mkdir(parents=True, exist_ok=True)
+    saved = out / 'row.json'
+    if a.reuse and saved.exists():
+        # 記録の段で追加: 記録の途中で先に確かめたシーン(同じセッション ID・合格)は確かめ直さない
+        old = read(saved)
+        if old.get('session_id') == sid and old.get('pass'):
+            old['reused'] = True
+            return old
+    row = {'name': name, 'session_id': sid, 'pass': False}
+    try:
+        root = resolve_scene(Path(a.sessions_root), sid)
+        row['root'] = str(root)
+        s, r = read(root / 'simulation/session.json'), read(root / 'simulation/evaluation-report.json')
+        card, splits = read(root / 'dataset_card.json'), read(root / 'splits.json')
+        p, v, c, t = plan_row, r['context']['start_variation'], r['config'], r['context']['teacher']
+        require(s['display_name'] == name, '名前が違います')
+        require(r['seed'] == c['seed'] == p['seed'] and r['scenario'] == p['scenario'], '種・場面が計画と違います')
+        require(v['gate'] == p['start-gate'] == 0 and abs(v['left_offset_m'] - p['spawn-offset']) < 1e-12 and abs(v['left_yaw_deg'] - p['spawn-yaw']) < 1e-12, '開始が計画と違います')
+        require(c['noiseStd'] == (.025 if p['scenario'] == 'noise' else 0), '雑音が計画と違います')
+        require(c['episodeMode'] == 'continuous-laps-v1' and c['timeLimit'] == 20 and c['stopOnCollision'], '回の設定が違います')
+        require(s['controller'] == r['context']['controller'] == 'demo' and s['synthetic'] and s['training_label_mode'] == 'synthetic_controller', '合成の教師の記録ではありません')
+        ids = protocol['recording']['teacher_metadata']['ids']
+        pol = protocol['teachers']['T_fast' if TEACHER[d] == 'fast' else 'T_margin']['policy_sha256']
+        require(t.get('id') == ids[d] and t.get('uses_ground_truth') is True and t.get('policy_sha256') == pol and t.get('control_delay_frames') == 0, '教師の出どころが違います')
+        require(card['num_modes'] == 9 and card['mode_frames'] == {'8': 600}, 'ジャンル 8 ではありません')
+        require(splits.get(p['dataset-split']) == card['source_scenes'], 'train / val が計画と違います')
+        row['teacher_contract_sha256'] = hashlib.sha256(json.dumps(t, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        # 物理
+        rp = subprocess.run(['nice', '-n', '10', 'node', str(EXP / 'record' / 'verify_recording.mjs'), str(root), '--out', str(out / 'replay.json')],
+                            capture_output=True, text=True)
+        require(rp.returncode == 0, 'verify_recording.mjs: ' + rp.stderr[-800:])
+        rep = read(out / 'replay.json')
+        rc = rep['independent_recount']
+        row.update(frames=rep['frames'], collisions=rep['collisions'], laps=[l['elapsed_s'] for l in rep['laps']], every_lap_valid=rc['every_lap_valid'],
+                   recount_gate_misses=rc['gate_misses'], replay_max_abs_error=rep['max_abs_error'], min_clearance_m=rc['min_clearance_m'],
+                   gate_margin_min_m=rc['gate_margin_min_m'], outside_crossings=rc['outside_crossings'],
+                   end_of_scene_misses=rc['end_of_scene_misses'])
+        # 先生と乱し
+        rt = subprocess.run(['nice', '-n', '10', 'node', str(EXP / 'relabel' / 'relabel_scene.mjs'), '--scene', str(root / 'simulation'), '--teacher', TEACHER[d],
+                             '--noise', NOISE[d], '--no-fork', '--out', str(out / 'teacher.json')], capture_output=True, text=True)
+        require(rt.returncode == 0, 'relabel_scene.mjs --no-fork: ' + rt.stderr[-800:])
+        te = read(out / 'teacher.json')
+        row.update(teacher_clean_vs_info_max=te['r2']['clean_vs_info_max'], teacher_info_frames=te['r2']['info_frames'],
+                   teacher_clean_vs_applied_unnoisy_max=te['r2']['clean_vs_applied_unnoisy_max'], noise_flag_mismatch=te['r2']['noise_flag_mismatch'],
+                   noise_value_mismatch_max=te['r2']['noise_value_mismatch_max'], noisy_frames=te['noisy_frames'], noise_params=te['noise_params'],
+                   gate_misses=te['main_gate_misses']['misses'], gate_stuck_max_m=te['main_gate_misses']['stuck_max_m'])
+        # センサー(写し)
+        rs = subprocess.run([sys.executable, '-I', str(EXP / 'record' / 'verify_rc_teacher_dataset_dart.py'), str(root), '--output', str(out / 'sensors.json')],
+                            capture_output=True, text=True)
+        row['sensors_pass'] = rs.returncode == 0 and read(out / 'sensors.json').get('pass') is True
+        if not row['sensors_pass']:
+            row['sensors_error'] = (rs.stderr or rs.stdout)[-800:]
+        # 画像の sha256
+        hs = {'cam': [], 'tof': []}
+        for f in sorted((root / 'samples' / 'CAM_FRONT').rglob('*.jpg')):
+            hs['cam'].append(hashlib.sha256(f.read_bytes()).hexdigest())
+        for f in sorted((root / 'samples' / 'TOF_FRONT').rglob('*.png')):
+            hs['tof'].append(hashlib.sha256(f.read_bytes()).hexdigest())
+        row['_hashes'] = hs
+        # 合否のゲートの外しは protocol の決まり(modes の gate_miss.mjs: sim がゲートを数えないまま R 上で 2.019 m 進んだ)。
+        # lap_audit の数え直しの gate_misses(目標ゲートの線を ±0.65 m の外で横切った回数)は「外側を横切った」として書くだけにする:
+        # 準備の段の試し(D3 train-00、k = 1)で、線の外を横切ったあと曲がりで線の手前に戻り、内側で横切り直してゲートが数えられた例があった
+        # (sim の周は 33 ゲートで有効、s の決まりでは外しなし)
+        row['gate_outside_crossings'] = row.pop('recount_gate_misses')
+        row['pass'] = (row['frames'] == 600 and row['collisions'] == 0 and row['every_lap_valid'] and len(row['laps']) >= 1 and row['gate_misses'] == 0
+                       and max(row['replay_max_abs_error'].values()) <= 1e-9 and row['teacher_clean_vs_info_max'] <= 1e-9
+                       and row['teacher_info_frames'] == 600 and row['sensors_pass'])
+    except Exception as e:  # noqa: BLE001
+        row['error'] = f'{type(e).__name__}: {e}'
+    saved.write_text(json.dumps(row, ensure_ascii=False))
+    return row
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--dataset', choices=['D1', 'D2', 'D3'], required=True)
+    ap.add_argument('--result', required=True)
+    ap.add_argument('--plan', default='')
+    ap.add_argument('--sessions-root', default=str(SESSIONS))
+    ap.add_argument('--out-dir', required=True)
+    ap.add_argument('--workers', type=int, default=2)
+    ap.add_argument('--reuse', action='store_true', help='out-dir/scenes/<シーン>/row.json が同じセッション ID で合格ならそのまま使う')
+    a = ap.parse_args()
+    d = a.dataset
+    protocol = read(PROTOCOL)
+    res = read(a.result)
+    plan = read(a.plan or REPORT / 'record_prep' / f'plan_{d}.json')
+    byname = {p['name']: p for p in plan}
+    side = Path(a.result).parent / 'sidecars'
+    scenes = [(n, read(side / f'{n}.json')['session_id']) for n in res['accepted']]
+    with ThreadPoolExecutor(max_workers=max(1, a.workers)) as ex:
+        rows = list(ex.map(lambda x: verify_scene(d, x[0], x[1], byname[x[0]], a, protocol), scenes))
+    cam = [h for r in rows for h in r.get('_hashes', {}).get('cam', [])]
+    tof = [h for r in rows for h in r.get('_hashes', {}).get('tof', [])]
+    for r in rows:
+        r.pop('_hashes', None)
+    good = [r for r in rows if r['pass']]
+    summary = {'dataset': d, 'scenes_accepted_by_browser': len(scenes), 'scenes_pass': len(good), 'scenes_reused': sum(1 for r in rows if r.get('reused')), 'failed': [r['name'] for r in rows if not r['pass']],
+               'rejected_by_browser': res.get('rejected'), 'retried_in_browser': res.get('retried'),
+               'collisions': sum(r.get('collisions', 0) for r in rows), 'gate_misses': sum(r.get('gate_misses', 0) for r in rows),
+               'gate_outside_crossings': sum(r.get('gate_outside_crossings', 0) for r in rows),
+               'scenes_with_outside_crossings': [r['name'] for r in rows if r.get('gate_outside_crossings')],
+               # 線の外を横切り、シーンの終わりまでそのゲートが数えられなかった(終わりの外し)。合否には入れず、付け替えの validity で
+               # その手前のフレームが外れることを確かめる(D2 は relabel_dataset.py --mode check で見る)。build_check_r1 の指摘
+               'end_of_scene_misses': sum(r.get('end_of_scene_misses', 0) for r in rows),
+               'scenes_with_end_of_scene_misses': [{'name': r['name'], 'crossings': [c for c in r.get('outside_crossings', []) if not c['counted_later']]}
+                                                   for r in rows if r.get('end_of_scene_misses')],
+               'replay_max_abs_error': max((max(r['replay_max_abs_error'].values()) for r in rows if 'replay_max_abs_error' in r), default=None),
+               'teacher_clean_vs_info_max': max((r['teacher_clean_vs_info_max'] for r in rows if 'teacher_clean_vs_info_max' in r), default=None),
+               'noise_flag_mismatch_total': sum(r.get('noise_flag_mismatch', 0) for r in rows),
+               'noisy_frames_total': sum(r.get('noisy_frames', 0) for r in rows), 'frames_total': sum(r.get('frames', 0) for r in rows),
+               'min_clearance_m': min((r['min_clearance_m'] for r in rows if r.get('min_clearance_m') is not None), default=None),
+               'lap1_mean_s': (sum(r['laps'][0] for r in good if r.get('laps')) / max(1, len(good))) if good else None,
+               'camera_images': len(cam), 'camera_unique': len(set(cam)), 'tof_images': len(tof), 'tof_unique': len(set(tof)),
+               'teacher_contracts': len({r.get('teacher_contract_sha256') for r in good})}
+    summary['pass'] = (summary['scenes_pass'] == len(scenes) and summary['camera_unique'] == summary['camera_images']
+                       and summary['tof_unique'] == summary['tof_images'] and summary['teacher_contracts'] == 1)
+    out = {'schema': 'jf-sim-dart-collection-verify/v1', 'made': datetime.now().isoformat(timespec='seconds'), 'summary': summary, 'scenes': rows}
+    Path(a.out_dir).mkdir(parents=True, exist_ok=True)
+    (Path(a.out_dir) / 'collection_verify.json').write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    print(json.dumps(summary, ensure_ascii=False, indent=1))
+    sys.exit(0 if summary['pass'] else 1)
+
+
+if __name__ == '__main__':
+    main()
