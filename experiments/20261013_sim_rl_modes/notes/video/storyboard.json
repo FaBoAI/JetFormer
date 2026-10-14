@@ -1,122 +1,116 @@
 {
- "title": "JetFormer 10月15日\n強化学習モード 5つが合格",
+ "title": "JetFormer 10月14日\n強化学習モードでいろいろな走り",
  "log": "20261010-173445",
- "_note": "約 1 分の報告動画の絵コンテ(第 3〜4 回の審査の段で書き直し。前の版は r3/review/before/storyboard.json)。図は video/fig/r4_v1〜v3(experiments/20261013_sim_rl_modes/r3/review/video/make_slides_r4.py が登録簿の card/eval/status・昇格の前の登録簿の写し・確認の段の summary・r3/variation.json・r3/review/indep_variation_r4.json と r3/screens/ の実際の画面から作った)。背景の log は実車の走行で、タイトルと終わりの札の後ろにだけ薄く見える。確認: python3 ~/jetformer_reports/sim_cotrain_20261013/video/src/check_storyboard.py <この JSON>",
+ "_note": "約 1 分の報告動画の絵コンテ(10/15 に作り直し: 日付を 10 月 14 日に、最初に前回の課題(強化学習の走りが同じ線に集中)と解決(5 つのモード)を説明、シミュレーターの画面を表示)。図 r5_v0〜v2 は experiments/20261013_sim_rl_modes/r3/review/video/make_slides_r5.py、r4_v2 は make_slides_r4.py。前の版は storyboard.r4_1015.json",
  "scenes": [
   {
    "id": "s1_title",
    "kind": "title",
    "log": "20261010-173445",
-   "caption": "10月15日のレポート",
+   "caption": "10月14日のレポート",
    "src_start": 160.6,
-   "src_end": 167.1,
+   "src_end": 167.54,
    "speed": 1,
    "highlights": [],
    "summary_items": [
-    "強化学習モードは6つ",
-    "5つが合格して選べる",
-    "見本を記録して比べた",
+    "前回の課題: 同じ線に集中",
+    "解決: 5つの強化学習モード",
+    "いろいろな線を走った",
     "今日のまとめと課題"
    ],
    "lines": [
     {
-     "text": "ラピカです。学び直した強化学習モードが、3つとも合格しました!",
-     "say": "ラピカです。学び直した強化学習モードが、3つとも合格しました。",
+     "text": "ラピカです。今日は、いろいろな走りを集める強化学習モードを作りました!",
+     "say": "ラピカです。今日は、いろいろな走りを集める、強化学習モードを作りました。",
      "expression": "happy",
      "pose": "normal"
     }
    ]
   },
   {
-   "id": "s2_modes",
+   "id": "s2_problem",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "選べるモードは5つ",
+   "caption": "前回の課題: 同じ線に集中",
    "src_start": 167.3,
-   "src_end": 178.6,
+   "src_end": 177.17,
    "speed": 1,
    "highlights": [],
-   "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r4_v1_modes.png",
+   "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r5_v0_problem.png",
    "lines": [
     {
-     "text": "最速、壁にぶつからない、離脱復活、速さいろいろ、経路いろいろの5つが選べます。",
-     "say": "最速、壁にぶつからない、離脱復活、速さいろいろ、経路いろいろの、5つが選べます。",
+     "text": "前回の強化学習は速いけれど、どこから走り出しても、同じ線に集まりました。",
+     "say": "前回の強化学習は、速いけれど、どこから走り出しても、同じ線に集まりました。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "これでは、データの場面が増えません。",
+     "say": "これでは、データの場面が増えません。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_solution",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "解決: 5つの走り方",
+   "src_start": 176.0,
+   "src_end": 184.68,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r5_v1_solution.png",
+   "lines": [
+    {
+     "text": "そこで、走り方の違う強化学習モードを、5つ作りました。",
+     "say": "そこで、走り方の違う、強化学習モードを、5つ作りました。",
      "expression": "happy",
      "pose": "point"
     },
     {
-     "text": "障害物よけは、まだ出していません。",
-     "say": "障害物よけは、まだ出していません。",
+     "text": "シミュレーターで選んで、データを集められます。",
+     "say": "シミュレーターで選んで、データを集められます。",
      "expression": "normal",
-     "pose": "normal"
+     "pose": "point"
     }
    ]
   },
   {
-   "id": "s3_results",
+   "id": "s4_routes",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "学び直した3つの結果",
-   "src_start": 178.8,
-   "src_end": 192.2,
+   "caption": "いろいろな線を走った",
+   "src_start": 185.0,
+   "src_end": 192.42,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r5_v2_routes.png",
+   "lines": [
+    {
+     "text": "5つを合わせると、走る線のばらつきは、前の約23倍になりました。",
+     "say": "5つを合わせると、走る線のばらつきは、前の、約23倍になりました。",
+     "expression": "surprised",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_results",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "学び直した3つも合格",
+   "src_start": 192.4,
+   "src_end": 199.78,
    "speed": 1,
    "highlights": [],
    "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r4_v2_results.png",
    "lines": [
     {
-     "text": "壁にぶつからないは、3,038回の試験で衝突0。離脱復活は、99%立て直せました。",
-     "say": "壁にぶつからないは、3千回の試験で衝突ゼロ。離脱復活は、99パーセント立て直せました。",
+     "text": "壁にぶつからないは衝突0、離脱復活は99%立て直せました。",
+     "say": "壁にぶつからないは、衝突0。離脱復活は、99パーセント立て直せました。",
      "expression": "happy",
-     "pose": "point"
-    },
-    {
-     "text": "経路いろいろも、柱から4cm以上はなれて走ります。",
-     "say": "経路いろいろも、柱から4センチ以上はなれて走ります。",
-     "expression": "normal",
-     "pose": "point"
-    }
-   ]
-  },
-  {
-   "id": "s4_variation",
-   "kind": "summary",
-   "log": "20261010-173445",
-   "caption": "線のばらつきは約23倍",
-   "src_start": 192.4,
-   "src_end": 201.8,
-   "speed": 1,
-   "highlights": [],
-   "image": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/video/fig/r4_v3_variation.png",
-   "lines": [
-    {
-     "text": "5つの見本を合わせると、線のばらつきは前の教師の約23倍。いちばん効くのは経路いろいろです。",
-     "say": "5つの見本を合わせると、線のばらつきは、前の教師の約23倍。いちばん効くのは経路いろいろです。",
-     "expression": "happy",
-     "pose": "point"
-    }
-   ]
-  },
-  {
-   "id": "s5_check",
-   "kind": "summary",
-   "log": "20261010-173445",
-   "caption": "決まりを先に固めて確認",
-   "src_start": 202.0,
-   "src_end": 209.1,
-   "speed": 1,
-   "highlights": [],
-   "summary_items": [
-    "合否の決まりは結果の前に固定",
-    "試験の組は1回だけ使う",
-    "学習と別のコードで確かめ直し",
-    "乱した操作は学習に使わない",
-    "テスト一式679件が合格"
-   ],
-   "lines": [
-    {
-     "text": "結果を見る前に決まりを固め、学習と別のコードでも確かめ直しました。",
-     "say": "結果を見る前に決まりを固め、学習と別のコードでも、確かめ直しました。",
-     "expression": "normal",
      "pose": "point"
     }
    ]
@@ -126,8 +120,8 @@
    "kind": "summary",
    "log": "20261010-173445",
    "caption": "今日のまとめ",
-   "src_start": 209.3,
-   "src_end": 215.7,
+   "src_start": 202.0,
+   "src_end": 207.51,
    "speed": 1,
    "highlights": [],
    "summary_items": [
@@ -139,9 +133,9 @@
    ],
    "lines": [
     {
-     "text": "いろいろな走りのデータを、安全に集められるようになりました。",
-     "say": "いろいろな走りのデータを、安全に集められるようになりました。",
-     "expression": "happy",
+     "text": "同じ線に集まる課題が解け、いろいろな走りのデータを集められます。",
+     "say": "同じ線に集まる課題が解け、いろいろな走りのデータを、集められます。",
+     "expression": "normal",
      "pose": "normal"
     }
    ]
@@ -151,8 +145,8 @@
    "kind": "ending",
    "log": "20261010-173445",
    "caption": "課題",
-   "src_start": 215.9,
-   "src_end": 224.8,
+   "src_start": 209.3,
+   "src_end": 217.19,
    "speed": 1,
    "highlights": [],
    "summary_items": [
@@ -164,8 +158,8 @@
    ],
    "lines": [
     {
-     "text": "課題は、余裕を広げることと、このデータで学習して効くかの確認です。",
-     "say": "課題は、余裕を広げることと、このデータで学習して、効くかの確認です。",
+     "text": "課題は、このデータで学習して、1周走り切れるか確かめることです。",
+     "say": "課題は、このデータで学習して、1周走り切れるか、確かめることです。",
      "expression": "worried",
      "pose": "point"
     },
