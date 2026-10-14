@@ -1,0 +1,74 @@
+{
+ "schema": "rl-bestlap-dataset/v1",
+ "created_at": "2026-10-14T03:10:59",
+ "name": "jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0",
+ "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0",
+ "archive": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/sim/runtime/datasets/7f3650b01bff4592abd2f463c3db59b6/jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0.zip",
+ "archive_bytes": 679060327,
+ "archive_sha256": "8942243f18a99321b4ddcf43d3c9f7741ec383dea4f9e61f17cdbd97034a009f",
+ "dataset_bytes_on_disk": 808416986,
+ "tags": [
+  "simulator",
+  "rl-bestlap"
+ ],
+ "source": "simulator",
+ "genre_id": 8,
+ "num_modes": 9,
+ "mode_frames": {
+  "0": 0,
+  "1": 0,
+  "2": 0,
+  "3": 0,
+  "4": 0,
+  "5": 0,
+  "6": 0,
+  "7": 0,
+  "8": 36000
+ },
+ "scenes": 60,
+ "frames": 36000,
+ "training_frames": 35400,
+ "train_scenes": 48,
+ "val_scenes": 12,
+ "test_scenes": 0,
+ "scene_log": "ds-jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0",
+ "import_summary": {
+  "scenes": 60,
+  "frames": 36000,
+  "usable_frames": 35400,
+  "images_checked": 1200
+ },
+ "import_warnings": [
+  "ジャンルの名前がこの Jetson と違います(ID は同じものとして学習します): 6=未使用（予約）, 7=未使用（予約）"
+ ],
+ "scenes_tab": {
+  "log": "ds-jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0",
+  "created": 60,
+  "skipped": 0
+ },
+ "modes_json_sha256_before": "f40f64bc07a4e72acfd3a278f9810e711744e44e2818a3cf19ddfb79589a6d14",
+ "modes_json_sha256_after": "f40f64bc07a4e72acfd3a278f9810e711744e44e2818a3cf19ddfb79589a6d14",
+ "modes_json_unchanged": true,
+ "progress_log": [
+  [
+   0.986,
+   "シーンに展開中 57 / 60"
+  ],
+  [
+   0.987,
+   "シーンに展開中 58 / 60"
+  ],
+  [
+   0.988,
+   "シーンに展開中 59 / 60"
+  ],
+  [
+   0.99,
+   "シーンに展開中 60 / 60"
+  ],
+  [
+   1.0,
+   "取り込みました: jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0(60 シーン・学習に使えるフレーム 35400・シーンタブに 60 シーン)"
+  ]
+ ]
+}

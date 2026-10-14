@@ -64,8 +64,58 @@ export const REWARD = Object.freeze({
 export const REWARD_PILOT = Object.freeze({...REWARD, progress_gate_margin: Infinity,
   terminal: Object.freeze({...REWARD.terminal, stall: -5, wrong_way: -5})});
 export const REWARD_VERSION = 'rl-bestlap-reward-v2-gatecap';
+// r3(確認 r2 のあと。手順の外の参考の追加実験だけ): すき間を「罰」ではなく「守る約束」にする。
+// 学習の回(mode 'train')で、車体と障害物のすき間(features の d_min、フレームごと)が 3 cm を下回ったら、衝突と同じ −10 で回を終える。
+// 3 cm は手順の「選べる」条件(REC60 の最小すき間 ≥ 0.03 m)と同じ値。評価(mode 'eval')では使わない(sim の判定だけ)。
+// 開始の分布から 3,000 回引いて、開始の時点で 3 cm 未満の開始は 0 回だった(なので開始の直後の扱いは特に設けない)。
+export const REWARD_R3 = Object.freeze({...REWARD, clearance_terminate_m: .03,
+  terminal: Object.freeze({...REWARD.terminal, clearance: -10})});
+export const REWARD_R3_VERSION = 'rl-bestlap-reward-v2-gatecap+clear3cm';
+export const REWARDS = Object.freeze({default: REWARD, r3: REWARD_R3});
+export const rewardVersionOf = r => r === REWARD ? REWARD_VERSION : r === REWARD_R3 ? REWARD_R3_VERSION : 'custom';
 // 開始の乱し(protocol.json episode.start_distribution)
 export const START_DISTRIBUTION = Object.freeze({gate0_fraction: .5, gate_range: [0, 32], left_offset_m: [-.12, .12], left_yaw_deg: [-8, 8]});
+
+// ---- 物理のずれのランダム化(r2 の追加実験。手順の外の参考。既定では使わない = 本番の結果は変わらない) ----
+// 2026-10-13 r2: 独立な確認(rl_check_r1)で、選んだ方策が舵の速さ 1.0 rad/s・ブレーキ ≤ 1.0 m/s² などでぶつかると分かった。
+// 「速く・ぶつからない」ための更新の候補として、回ごとに物理を変えて学習し直す(ドメインのランダム化)。
+// 観測は標準の物理の値のまま作る(方策は今の物理を知らない = 実車と同じ)。
+export const PERTURB_KEYS = Object.freeze(['steerRate', 'brakeDeceleration', 'driveTau', 'driveAccelerationCap', 'frictionMultiplier']);
+export const DR_SPECS = Object.freeze({
+  // nominal_fraction の回は標準の物理。それ以外は各値を一様に引く。delay1_fraction の回は制御遅延 1 フレーム
+  r2: Object.freeze({nominal_fraction: .2, steerRate: [.85, 1.7], brakeDeceleration: [.8, 2.0], driveTau: [.3, .5],
+    driveAccelerationCap: [4, 6], frictionMultiplier: [.88, 1.08], delay1_fraction: .5, steerGain: [.95, 1.05], speedGain: [.97, 1.03]}),
+  // r3(確認 r2 のあと): 範囲は r2 と同じ。ずらす回の半分(edge_fraction)は「角・辺」の回で、物理の 5 つの値をそれぞれ
+  // 範囲の下の端か上の端の幅 15%(edge_width)から引く。一様に引くと「遅い舵 × 弱いブレーキ」の角がほとんど出ない(確認 r2 の must-fix)ため。
+  // 角の回では 2^5 = 32 の角のどれかの近くを引くので、遅い舵 × 弱いブレーキ(両方が下の端)は角の回の 1/4 = 全体の約 1 割
+  r3: Object.freeze({nominal_fraction: .2, steerRate: [.85, 1.7], brakeDeceleration: [.8, 2.0], driveTau: [.3, .5],
+    driveAccelerationCap: [4, 6], frictionMultiplier: [.88, 1.08], delay1_fraction: .5, steerGain: [.95, 1.05], speedGain: [.97, 1.03],
+    edge_fraction: .5, edge_width: .15}),
+});
+export function sampleDr(rng, spec) {
+  if (!spec) return null;
+  // 引く回数をいつも同じにする(標準の回でも同じ数だけ引く)
+  const u = () => rng.uniform();
+  const pick = (r, x) => r[0] + (r[1] - r[0]) * x;
+  const nominal = u() < spec.nominal_fraction;
+  const xs = {steerRate: u(), brakeDeceleration: u(), driveTau: u(), driveAccelerationCap: u(), frictionMultiplier: u(),
+    delay: u(), steerGain: u(), speedGain: u()};
+  // r3: 角・辺の回かどうかと、値ごとの端(下か上)。edge_fraction の無い spec(r2)では引かない = r2 の引き方はビット単位で同じ
+  const edgeSpec = spec.edge_fraction > 0;
+  const edge = edgeSpec ? u() < spec.edge_fraction : false;
+  const sides = edgeSpec ? Object.fromEntries(PERTURB_KEYS.map(k => [k, u() < .5 ? 'low' : 'high'])) : null;
+  if (nominal) return {physics: {}, delay: 0, steerGain: 1, speedGain: 1, nominal: true, ...(edgeSpec ? {edge: false} : {})};
+  const physics = {};
+  for (const k of PERTURB_KEYS) {
+    if (!edge) { physics[k] = pick(spec[k], xs[k]); continue; }
+    const [lo, hi] = spec[k], w = (hi - lo) * spec.edge_width;
+    physics[k] = sides[k] === 'low' ? lo + w * xs[k] : hi - w * xs[k];
+  }
+  return {physics, delay: xs.delay < spec.delay1_fraction ? 1 : 0, steerGain: pick(spec.steerGain, xs.steerGain),
+    speedGain: pick(spec.speedGain, xs.speedGain), nominal: false, ...(edgeSpec ? {edge} : {})};
+}
+// r3: 「遅い舵 × 弱いブレーキ」の角(確認 r2 の must-fix の場所)。学習の記録の集計と試験に使う
+export const isSlowSteerWeakBrake = physics => !!physics && physics.steerRate <= 1.0 + 1e-12 && physics.brakeDeceleration <= .9 + 1e-12;
 export const EPISODE_SECONDS = 20;
 
 let baseWorldCache = null;
@@ -146,19 +196,30 @@ export class RlEnv {
     this.sim = null;
   }
   // 開始(停止状態)。invalid_spawn なら false を返す(呼ぶ側が引き直す)
-  reset({gate = 0, left_offset_m = 0, left_yaw_deg = 0, seed = 1, scenario = 'baseline', noiseStd = 0} = {}) {
+  // perturb(r2 の追加実験だけ): {physics: {steerRate…}, delay: 0|1, steerGain, speedGain}。null なら今までと同じ
+  reset({gate = 0, left_offset_m = 0, left_yaw_deg = 0, seed = 1, scenario = 'baseline', noiseStd = 0, perturb = null} = {}) {
     const {world, variation} = activeWorldFor(this.baseWorld, gate, left_offset_m, left_yaw_deg);
-    const config = simConfig({episodeMode: this.episodeMode, timeLimit: this.timeLimit, seed, noiseStd});
+    const nominalConfig = simConfig({episodeMode: this.episodeMode, timeLimit: this.timeLimit, seed, noiseStd});
+    const physics = perturb?.physics ?? {};
+    for (const k of Object.keys(physics)) if (!PERTURB_KEYS.includes(k)) throw new Error('env_core: 変えられない物理の値です: ' + k);
+    const config = {...nominalConfig, ...physics};
     const sim = this.core.createSimulation(world, config);
     sim.reset({seed: config.seed, scenario});
     this.sim = sim; this.world = world; this.variation = variation; this.scenario = scenario;
     this.view = this.coreKind === 'fast' ? sim.peek() : sim.snapshot();
     this.config = this.view.config;
+    // 観測・報酬の μ は標準の物理の値で作る(方策に今の物理を教えない)
+    const trackerConfig = Object.keys(physics).length ? {...this.config, ...Object.fromEntries(PERTURB_KEYS.map(k => [k, PHYSICS[k]]))} : this.config;
+    this.perturb = perturb && (Object.keys(physics).length || perturb.delay || (perturb.steerGain ?? 1) !== 1 || (perturb.speedGain ?? 1) !== 1)
+      ? {physics: {...physics}, delay: perturb.delay | 0, steerGain: perturb.steerGain ?? 1, speedGain: perturb.speedGain ?? 1} : null;
+    if (this.perturb && ![0, 1].includes(this.perturb.delay)) throw new Error('env_core: delay は 0 か 1 です');
+    this.queued = null;
     const st = this.view.state;
     this.start = {gate: variation.gate, left_offset_m: variation.left_offset_m, left_yaw_deg: variation.left_yaw_deg, seed: config.seed, scenario};
+    if (this.perturb) this.start.perturb = this.perturb;
     if (st.terminal) { this.invalid = true; return false; }
     this.invalid = false;
-    this.tracker = createFeatureTracker(world, this.config, {geometry: this.geometry});
+    this.tracker = createFeatureTracker(world, trackerConfig, {geometry: this.geometry});
     this.tracker.resetProgress(st.x, st.z, this.view.metrics.route_index);
     this.prevA0 = 0; this.prevA1 = 0; this.stallFrames = 0;
     this.s0 = this.tracker.s;
@@ -189,7 +250,12 @@ export class RlEnv {
   // 方策の行動 a ∈ [−1, 1]²
   step(a0, a1) {
     const c = actionToCommand(a0, a1, this.speedCap, this.config.maxSteer);
-    return this.stepCommand(c.steering, c.speed, c.a0, c.a1);
+    if (!this.perturb) return this.stepCommand(c.steering, c.speed, c.a0, c.a1);
+    // r2: 制御遅延 1 なら 1 フレーム前の行動を適用する(最初は中立 = 舵 0・速さ 0。アプリの固定遅延・eval_sets と同じ)。
+    // 観測の「前回の行動」は適用した行動(eval_sets の delayFrames 1 と同じ約束)。ゲインは適用する指令にだけ掛ける
+    let ap = c;
+    if (this.perturb.delay === 1) { ap = this.queued ?? actionToCommand(0, -1, this.speedCap, this.config.maxSteer); this.queued = c; }
+    return this.stepCommand(ap.steering * this.perturb.steerGain, ap.speed * this.perturb.speedGain, ap.a0, ap.a1);
   }
   // アプリが適用する単位で 1 フレーム進める(教師・保存した操作の再生用)。a0n/a1n は観測の「前回の行動」に入れる値
   stepCommand(steering, speed, a0n = null, a1n = null) {
@@ -231,6 +297,8 @@ export class RlEnv {
         if (this.aux.gate_along >= 0) reason = 'gate_miss';
         else if (this.stallFrames >= REWARD.stall_frames) reason = 'stall';
         else if (s < this.tracker.sMax - REWARD.wrong_way_m) reason = 'wrong_way';
+        // r3: すき間の約束(REWARD_R3 のときだけ。既定の REWARD には clearance_terminate_m が無いので今までと同じ)
+        else if (REWARD.clearance_terminate_m > 0 && this.aux.d_min < REWARD.clearance_terminate_m) reason = 'clearance';
         if (reason) { terminated = true; terminal = REWARD.terminal[reason]; }
       }
     }
@@ -258,7 +326,7 @@ export class RlEnv {
     return {episode: this.episodes, start: this.start, variant: this.variant, mode: this.mode, episode_mode: this.episodeMode, core: this.coreKind,
       frames: st.frame, sim_time: st.sim_time, reason: this.last?.reason ?? st.reason, sim_reason: st.reason, terminated: !!this.last?.terminated,
       truncated: !!this.last?.truncated, return: this.stats.return, reward_parts: this.stats.reward_parts, progress_m: this.tracker.s - this.s0,
-      progress_capped_m: this.sCap - this.sCap0, reward_version: this.reward === REWARD ? REWARD_VERSION : 'custom',
+      progress_capped_m: this.sCap - this.sCap0, reward_version: rewardVersionOf(this.reward),
       laps, completed_laps: m.completed_laps ?? (st.reason === 'route_complete' ? 1 : 0), passed_gates: m.passed_gates,
       current_lap_gates: m.current_lap_passed_gates ?? null, collisions: m.collisions, collision_events: m.collision_events,
       min_clearance: this.stats.min_clearance, max_speed: this.stats.max_speed, gate_miss_frame: this.stats.gate_miss_frame,
@@ -266,11 +334,12 @@ export class RlEnv {
   }
   report() { return {...this.sim.report(), world: this.world, context: {start_variation: this.variation, controller: 'rl-env', core: this.coreKind,
     variant: this.variant, features_version: FEATURES_VERSION, reference_loop_sha256: REFERENCE_LOOP_SHA256,
-    reward_version: this.reward === REWARD ? REWARD_VERSION : 'custom'}}; }
+    reward_version: rewardVersionOf(this.reward)}}; }
 }
 
 // 開始を引く(invalid_spawn なら引き直す)。戻り値は引き直した回数
-export function resetRandom(env, rng, dist = START_DISTRIBUTION, maxTries = 100) {
-  for (let tries = 0; tries < maxTries; tries++) if (env.reset(sampleStart(rng, dist))) return tries;
+// extra(r2): 開始に足す値(perturb など)。null なら今までと同じ
+export function resetRandom(env, rng, dist = START_DISTRIBUTION, maxTries = 100, extra = null) {
+  for (let tries = 0; tries < maxTries; tries++) if (env.reset(extra ? {...sampleStart(rng, dist), ...extra} : sampleStart(rng, dist))) return tries;
   throw new Error('env_core: 開始を 100 回引いても衝突しない開始になりません');
 }

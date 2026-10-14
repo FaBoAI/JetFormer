@@ -228,3 +228,85 @@ test('調整後の報酬: 線を越えずにコースの外へ出た走り(パ�
     assert.ok(env.summary().completed_laps >= 2);
   }
 });
+
+// ---- r2(手順の外の参考の追加実験): 物理のずれのランダム化。既定の動きを変えないことと、ずれの適用が正しいことを確かめる ----
+test('r2 のずれ: perturb なし・標準の perturb は今までとビット単位で同じ。ずれは元のコアの設定の上書き + 1 フレームの遅延と同じ', () => {
+  const drive = (env, n = 300) => { const xs = []; for (let i = 0; i < n && !env.done; i++) { env.step(Math.sin(i * .05) * .5, .2); xs.push(env.view.state.x, env.view.state.z, ...env.obs); } return xs; };
+  const a = new E.RlEnv({core: fastCore}); a.reset({gate: 3, left_offset_m: .02});
+  const b = new E.RlEnv({core: fastCore}); b.reset({gate: 3, left_offset_m: .02, perturb: {physics: {}, delay: 0, steerGain: 1, speedGain: 1}});
+  assert.equal(b.perturb, null);
+  assert.deepEqual(drive(a), drive(b));
+  // 観測は今の物理を漏らさない(リセット直後の観測が同じ)
+  const c = new E.RlEnv({core: fastCore}); c.reset({gate: 3, left_offset_m: .02, perturb: {physics: {steerRate: .9, frictionMultiplier: .9, brakeDeceleration: .8}, delay: 1}});
+  a.reset({gate: 3, left_offset_m: .02}); assert.deepEqual([...c.obs], [...a.obs]);
+  assert.equal(c.config.steerRate, .9); assert.equal(c.config.frictionMultiplier, .9);
+  // 同じことを元のコアで手で行う: 設定を上書きし、1 フレーム前の指令(最初は中立)にゲインを掛けて適用する
+  const physics = {steerRate: 1.0, brakeDeceleration: .9, driveTau: .45, driveAccelerationCap: 5, frictionMultiplier: .95};
+  const env = new E.RlEnv({core: originalCore, coreKind: 'original', mode: 'eval', episodeMode: 'single', timeLimit: 15});
+  env.reset({perturb: {physics, delay: 1, steerGain: 1.03, speedGain: .98}});
+  const {world} = E.activeWorldFor(E.loadBaseWorld(), 0, 0, 0);
+  const sim = originalCore.createSimulation(world, {...E.simConfig({episodeMode: 'single', timeLimit: 15}), ...physics});
+  sim.reset({seed: 1, scenario: 'baseline'});
+  let queued = {steering: 0, speed: 0}, same = true;
+  for (let i = 0; i < 200 && !env.done; i++) {
+    const a0 = Math.sin(i * .09) * .7, a1 = .4 * Math.cos(i * .03);
+    env.step(a0, a1);
+    const cmd = F.actionToCommand(a0, a1, 4.5, .52), ap = queued; queued = cmd;
+    const s = sim.step({steering: ap.steering * 1.03, speed: ap.speed * .98}).state;
+    if (s.x !== env.view.state.x || s.z !== env.view.state.z || s.speed !== env.view.state.speed) { same = false; break; }
+  }
+  assert.ok(same, 'ずれの適用が元のコアの手の計算と違います');
+  // 引き方は決定的で、標準の回 約 2 割・遅延 1 の回 約 4 割
+  const r1 = E.createRng(5), r2 = E.createRng(5), xs = [];
+  for (let i = 0; i < 1000; i++) { const p = E.sampleDr(r1, E.DR_SPECS.r2); assert.deepEqual(p, E.sampleDr(r2, E.DR_SPECS.r2)); xs.push(p); }
+  const nom = xs.filter(p => p.nominal).length / 1000, d1 = xs.filter(p => p.delay === 1).length / 1000;
+  assert.ok(nom > .15 && nom < .25, `標準の回の割合 ${nom}`); assert.ok(d1 > .34 && d1 < .46, `遅延 1 の割合 ${d1}`);
+  for (const p of xs.filter(p => !p.nominal)) for (const k of E.PERTURB_KEYS) {
+    const [lo, hi] = E.DR_SPECS.r2[k]; assert.ok(p.physics[k] >= lo && p.physics[k] <= hi);
+  }
+});
+
+// ---- r3(確認 r2 のあと。手順の外の参考の追加実験): 角・辺を多めに引くランダム化と、すき間の約束 ----
+test('r3: r2 の引き方はビット単位で同じ。r3 は角・辺を多めに引き、遅い舵 × 弱いブレーキが r2 の数倍出る', () => {
+  // r2 の 1,000 回の引き方(r3 のコードを足す前に記録した値)
+  const r2 = E.createRng(5), xs2 = [];
+  for (let i = 0; i < 1000; i++) xs2.push(E.sampleDr(r2, E.DR_SPECS.r2));
+  assert.equal(crypto.createHash('sha256').update(JSON.stringify(xs2)).digest('hex'), '91eb262d6312d75b35c32757cc21704d8464e7f2ed7054bf0614af5bcf89b15c');
+  assert.equal(r2.state, 1313820653);
+  // r3: 決定的。標準 約 2 割、角・辺 約 4 割。角・辺の回の値はどれも範囲の端の 15% の中。範囲の外には出ない
+  const a = E.createRng(9), b = E.createRng(9), xs3 = [], N = 20000;
+  for (let i = 0; i < N; i++) { const p = E.sampleDr(a, E.DR_SPECS.r3); assert.deepEqual(p, E.sampleDr(b, E.DR_SPECS.r3)); xs3.push(p); }
+  const frac = f => xs3.filter(f).length / N;
+  const nom = frac(p => p.nominal), edge = frac(p => p.edge);
+  assert.ok(nom > .18 && nom < .22, `標準 ${nom}`); assert.ok(edge > .37 && edge < .43, `角・辺 ${edge}`);
+  for (const p of xs3.filter(p => !p.nominal)) for (const k of E.PERTURB_KEYS) {
+    const [lo, hi] = E.DR_SPECS.r3[k], v = p.physics[k], w = (hi - lo) * .15;
+    assert.ok(v >= lo && v <= hi, `${k} ${v}`);
+    if (p.edge) assert.ok(v <= lo + w + 1e-12 || v >= hi - w - 1e-12, `端の外 ${k} ${v}`);
+  }
+  // 遅い舵(≤ 1.0)× 弱いブレーキ(≤ 0.9): r2 は約 1%、r3 は約 5〜6%
+  const corner3 = frac(p => E.isSlowSteerWeakBrake(p.physics)), corner2 = xs2.filter(p => E.isSlowSteerWeakBrake(p.physics)).length / 1000;
+  assert.ok(corner3 > .045 && corner3 < .07, `r3 の角 ${corner3}`); assert.ok(corner2 < .03, `r2 の角 ${corner2}`);
+});
+
+test('r3: すき間の約束は REWARD_R3 の学習の回だけ。3 cm を下回ったフレームで −10 で終わり、それまでは既定の報酬と同じ', () => {
+  // 壁へ 0.45 m/s でまっすぐ進む(1 フレーム 1.5 cm。速いと 1 フレームで 3 cm を飛び越えて、約束より先に衝突になる)
+  const drive = env => { const rs = []; while (!env.done) { const r = env.step(0, -.8); rs.push({...r, d: env.aux.d_min, obs: [...env.obs]}); } return rs; };
+  const base = new E.RlEnv({core: fastCore}); base.reset({});
+  const r3 = new E.RlEnv({core: fastCore, reward: E.REWARD_R3}); r3.reset({});
+  const A = drive(base), B = drive(r3);
+  assert.equal(A.at(-1).reason, 'collision');
+  const last = B.at(-1);
+  assert.equal(last.reason, 'clearance'); assert.ok(last.terminated && !last.truncated); assert.ok(last.d < .03);
+  assert.ok(B.length < A.length, `約束の終わり ${B.length} < 衝突 ${A.length}`);
+  assert.ok(B.slice(0, -1).every(r => r.d >= .03));
+  // 終わる前までは観測・報酬がビット単位で同じ。終わるフレームは同じ報酬 − 10
+  for (let i = 0; i < B.length - 1; i++) { assert.equal(B[i].reward, A[i].reward); assert.deepEqual(B[i].obs, A[i].obs); }
+  assert.ok(Math.abs(last.reward - (A[B.length - 1].reward - 10)) < 1e-12);
+  assert.equal(r3.summary().reward_version, E.REWARD_R3_VERSION); assert.equal(base.summary().reward_version, E.REWARD_VERSION);
+  // 評価の回(mode 'eval')では使わない(sim の判定だけ)
+  const ev = new E.RlEnv({core: fastCore, mode: 'eval', reward: E.REWARD_R3}); ev.reset({});
+  assert.equal(drive(ev).at(-1).reason, 'collision');
+  // 既定の REWARD に約束は無い
+  assert.equal(E.REWARD.clearance_terminate_m, undefined); assert.equal(E.REWARD_R3.clearance_terminate_m, .03);
+});

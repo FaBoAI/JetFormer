@@ -92,7 +92,8 @@ class NodeVecEnv:
 
     def __init__(self, n_workers: int = 4, envs_per_worker: int = 16, seed: int = 0, variant: str = "main",
                  mode: str = "train", episode_mode: str = "continuous", core: str = "fast", teacher_actions: bool = False,
-                 starts="random", time_limit: float = 20.0, node: str = NODE, node_args: list[str] | None = None):
+                 starts="random", time_limit: float = 20.0, node: str = NODE, node_args: list[str] | None = None,
+                 dr: str | None = None, reward: str | None = None):
         if variant not in ("main", "open"):
             raise ValueError("variant は main か open です")
         self.n_workers, self.envs_per_worker = n_workers, envs_per_worker
@@ -106,6 +107,10 @@ class NodeVecEnv:
                 cfg = dict(n_envs=envs_per_worker, env_offset=w * envs_per_worker, seed=int(seed) & 0xFFFFFFFF, variant=variant,
                            mode=mode, episode_mode=episode_mode, core=core, teacher_actions=teacher_actions, starts=starts,
                            time_limit=time_limit)
+                if dr:
+                    cfg["dr"] = dr  # r2 の追加実験: 回ごとの物理のずれ(env_core.mjs DR_SPECS)。None なら今までと同じ
+                if reward:
+                    cfg["reward"] = reward  # r3 の追加実験: 'r3' ですき間の約束つきの報酬(env_core.mjs REWARDS)。None なら今までと同じ
                 self.workers.append(_Worker(cfg, node, node_args or []))
         except BaseException:
             self.close()

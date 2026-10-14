@@ -79,6 +79,12 @@ def valid_lap(l: dict) -> bool:
     return l.get("gates") == 33 and l.get("crossings") == 1 and l.get("collisions") == 0
 
 
+def is_slow_weak(e: dict) -> bool:
+    """r3: 回の物理が「遅い舵 × 弱いブレーキ」の角か(env_core.mjs isSlowSteerWeakBrake と同じ)。"""
+    ph = ((e.get("start") or {}).get("perturb") or {}).get("physics") or {}
+    return ph.get("steerRate", 9) <= 1.0 + 1e-12 and ph.get("brakeDeceleration", 9) <= 0.9 + 1e-12
+
+
 def summarize_episodes(eps: list[dict]) -> dict:
     """この更新の間に終わったエピソードの集計(学習曲線用。確率的な方策の値)。"""
     if not eps:
@@ -181,6 +187,12 @@ def main() -> None:
     ap.add_argument("--lr-start", type=float, default=None)
     ap.add_argument("--init", type=Path, default=None, help="方策を初期化する重み(予備策 1 の BC。.pt の model)")
     ap.add_argument("--tag", default="")
+    # r2(手順の外の参考の追加実験): 物理のずれのランダム化で、選んだ方策から学習を続ける
+    ap.add_argument("--dr", default=None, help="回ごとの物理のずれ(env_core.mjs DR_SPECS の名前。例 r2)。省略すると今までと同じ")
+    ap.add_argument("--init-ckpt", type=Path, default=None,
+                    help="方策・価値・観測の正規化・log σ をこのチェックポイント(.pt)から始める(最適化の状態とステップ数は新しくする)")
+    # r3(確認 r2 のあと。手順の外の参考の追加実験): すき間の約束つきの報酬
+    ap.add_argument("--reward", default=None, choices=["r3"], help="報酬の名前(env_core.mjs REWARDS)。省略すると本番と同じ")
     args = ap.parse_args()
 
     torch.set_num_threads(args.torch_threads)
@@ -203,11 +215,12 @@ def main() -> None:
         "n_envs": args.workers * args.envs_per_worker, "workers": args.workers, "envs_per_worker": args.envs_per_worker,
         "ppo": cfg.to_dict(), "torch_threads": args.torch_threads, "torch": torch.__version__, "python": sys.version.split()[0],
         "protocol_sha256": sha256(PROTOCOL), "started_at": now(), "resumes": [], "init": str(args.init) if args.init else None,
-        "argv": sys.argv}
+        "dr": args.dr, "init_ckpt": str(args.init_ckpt) if args.init_ckpt else None, "reward": args.reward, "argv": sys.argv}
     if run.get("total_steps") != args.steps:
         raise SystemExit(f"run.json の total_steps({run.get('total_steps')})と --steps({args.steps})が違います")
 
-    env = NodeVecEnv(n_workers=args.workers, envs_per_worker=args.envs_per_worker, seed=args.seed, variant=args.variant, mode="train")
+    env = NodeVecEnv(n_workers=args.workers, envs_per_worker=args.envs_per_worker, seed=args.seed, variant=args.variant, mode="train",
+                     dr=args.dr, reward=args.reward)
     run["env"] = env.info
     agent = PPO(env, cfg, total_steps=args.steps, seed=args.seed)
     evaluator = AsyncEvaluator(out, args.variant)
@@ -221,6 +234,15 @@ def main() -> None:
         print(f"[{now()}] last.pt から再開します: {agent.steps:,} ステップ", flush=True)
         agent.start(reset_seed)
     else:
+        if args.init_ckpt is not None:
+            d = torch.load(args.init_ckpt, map_location="cpu", weights_only=False)
+            agent.model.load_state_dict(d["model"])   # actor・critic・log σ(学習の終わりの値のまま)
+            agent.rms.load_state_dict(d["rms"])
+            if args.log_std_init is not None:
+                with torch.no_grad():
+                    agent.model.log_std.fill_(cfg.log_std_init)
+            run["init_ckpt_sha256"] = sha256(args.init_ckpt)
+            run["init_ckpt_steps"] = int(d.get("steps", 0))
         if args.init is not None:
             d = torch.load(args.init, map_location="cpu", weights_only=False)
             agent.model.load_state_dict(d["model"])
@@ -274,6 +296,12 @@ def main() -> None:
                 rec = {"t": now(), "steps": agent.steps, "update": agent.updates, "collect_s": t1 - t0, "update_s": t2 - t1,
                        "steps_per_s": (args.workers * args.envs_per_worker * cfg.rollout_steps) / (t2 - t0),
                        "steps_per_s_run": (agent.steps - s_start) / (t2 - t_start), **ustats, **rstats, "episodes": summarize_episodes(episodes)}
+                if args.dr:
+                    # r2: 標準の物理の回と、ずらした回を分けても集計する(学習曲線用)
+                    rec["episodes_nominal"] = summarize_episodes([e for e in episodes if not e["start"].get("perturb")])
+                    rec["episodes_perturbed"] = summarize_episodes([e for e in episodes if e["start"].get("perturb")])
+                    # r3: 遅い舵(≤ 1.0 rad/s)× 弱いブレーキ(≤ 0.9 m/s²)の角の回(確認 r2 の must-fix の場所)
+                    rec["episodes_slow_steer_weak_brake"] = summarize_episodes([e for e in episodes if is_slow_weak(e)])
                 plog.write(json.dumps(rec) + "\n")
                 plog.flush()
                 if agent.updates % 10 == 0:

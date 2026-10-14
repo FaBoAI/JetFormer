@@ -1,0 +1,3136 @@
+{
+ "schema": "sim-rl-bestlap-evaluation/v1",
+ "created_at": "2026-10-14T11:12:34",
+ "protocol_sha256": "1f249211704c0065b87645d5bf93d959fcd65205fd4c2f4e535a1c310e81b8b6",
+ "protocol_sha256_recorded": "1f249211704c0065b87645d5bf93d959fcd65205fd4c2f4e535a1c310e81b8b6",
+ "where": "ブラウザ(Firefox 157、DISPLAY :0、WebGL 2 = Mesa llvmpipe)のアプリ(コピーした dist/index.html、元とバイト単位で同じ)の連続試験。ブリッジはユーザーの bridge.py(コピー、元と同じ)を専用の venv(onnxruntime 1.31.0、CPU)で 127.0.0.1:8792",
+ "settings": {
+  "control_delay_frames": 1,
+  "lookahead": 1,
+  "steer_gain": 1.0,
+  "throttle_gain": "1.0(外部の参照は 1.01)",
+  "mode": "8(外部の参照は 4)",
+  "single_lap_limit_s": 15,
+  "physics_and_sensors": "REC60 と同じ(RC 応答の物理・measured-height-approx)"
+ },
+ "bundles": [
+  {
+   "label": "SR-s0",
+   "arm": "S-R",
+   "seed": 0,
+   "run": "simrl_bestlap_20261013-SR-s0",
+   "zip": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-SR-s0.zip",
+   "zip_sha256": "ea5293114957f5c364a86d82df5a2eb20d1c2c5513419795d08c47c8daf7d472",
+   "onnx": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-SR-s0/jetformer.onnx",
+   "onnx_sha256": "46435add17ffa4127c56c3beb1e4a2fa254fb70ae8c182cb5740275d7e8e9ed9",
+   "mode": 8,
+   "throttle_gain": 1.0
+  },
+  {
+   "label": "SR-s1",
+   "arm": "S-R",
+   "seed": 1,
+   "run": "simrl_bestlap_20261013-SR-s1",
+   "zip": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-SR-s1.zip",
+   "zip_sha256": "5836a1f1e94200b09e7cd969091899b5a9be645ba5658a2c4d5ea7fff8667373",
+   "onnx": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-SR-s1/jetformer.onnx",
+   "onnx_sha256": "3149f03b5b2b6555bf34f8d55981c95a5818f005fed088e4514be50570bd33c4",
+   "mode": 8,
+   "throttle_gain": 1.0
+  },
+  {
+   "label": "ST-s0",
+   "arm": "S-T",
+   "seed": 0,
+   "run": "simrl_bestlap_20261013-ST-s0",
+   "zip": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-ST-s0.zip",
+   "zip_sha256": "39e9af01b681ef50bd8c815f6e2c3f4aa68ebd2d5b32256a4a90c47277a4ff59",
+   "onnx": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-ST-s0/jetformer.onnx",
+   "onnx_sha256": "bcb756293251888a9e3654f15127315d4434b77bdea50faeb3a2c6001bb53667",
+   "mode": 8,
+   "throttle_gain": 1.0
+  },
+  {
+   "label": "ST-s1",
+   "arm": "S-T",
+   "seed": 1,
+   "run": "simrl_bestlap_20261013-ST-s1",
+   "zip": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-ST-s1.zip",
+   "zip_sha256": "470c6633cee673315fcba21aee603a7b172cc592516c7b91d5f80ff72d20bb80",
+   "onnx": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/bundles/simrl_bestlap_20261013-ST-s1/jetformer.onnx",
+   "onnx_sha256": "e4086e1882785876b8b1b505520ebf1cec0a3f3695963abadc3687cb4191ac52",
+   "mode": 8,
+   "throttle_gain": 1.0
+  },
+  {
+   "label": "EXT",
+   "arm": "外部の参照",
+   "seed": null,
+   "run": "shortcut-rc-finetuned",
+   "zip": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/bundles/shortcut-rc-finetuned.zip",
+   "zip_sha256": "d95fd84a439001cf8141469dccfe8537c67f90e894920cdebd106e5b45ce6de7",
+   "onnx": "/home/jetson/sim/extracted/course-simulator/models/shortcut-rc-finetuned/jetformer.onnx",
+   "onnx_sha256": "e8cf0453f21f6f8ee11e1b9feb6878e4f7cb9e23883f9f0dc837fba01b04efb5",
+   "mode": 4,
+   "throttle_gain": 1.01
+  }
+ ],
+ "references": {
+  "T_RL": {
+   "E0": 8.091953367107205,
+   "E1": 8.091953367107205,
+   "E2": 8.089754523590635,
+   "E3": 8.104397687033122,
+   "E4": 8.085356836557494,
+   "E5": 8.130783809231962
+  },
+  "T_teacher": {
+   "E0": 8.93078380923196,
+   "E1": 8.982058571282636,
+   "E2": 8.953122924982443
+  },
+  "RL_flying": {
+   "E0": {
+    "lap1": 8.091097437063649,
+    "lap2": 7.656318984241537
+   },
+   "E1": {
+    "lap1": 8.09150972063303,
+    "lap2": 7.6659455200470425
+   }
+  },
+  "teacher_flying": {
+   "E0": {
+    "lap1": 8.75841899184614,
+    "lap2": 8.370092214503968
+   },
+   "E1": {
+    "lap1": 8.738455030235594,
+    "lap2": 8.367273173232574
+   }
+  },
+  "RL_delay1_STD": 8.397450475898628,
+  "teacher_delay1_STD": {
+   "reason": "collision",
+   "passed_gates": 16
+  },
+  "learned_onnx_user_record_s": 8.964117142565293,
+  "source": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/final/final_eval_main.json",
+  "note": "RL と教師は Node の元の sim-core.js(遅延 0・物理の上限どおり)。RL の段の最終の評価の値で、この段では走らせ直していない"
+ },
+ "T_single_lap_from_stop": {
+  "SR-s0/E0": null,
+  "SR-s0/E1": null,
+  "SR-s0/E2": null,
+  "SR-s0/E3": null,
+  "SR-s0/E4": null,
+  "SR-s0/E5": null,
+  "SR-s1/E0": null,
+  "SR-s1/E1": null,
+  "SR-s1/E2": null,
+  "SR-s1/E3": null,
+  "SR-s1/E4": null,
+  "SR-s1/E5": null,
+  "ST-s0/E0": null,
+  "ST-s0/E1": 8.829684387473677,
+  "ST-s0/E2": null,
+  "ST-s0/E3": 8.839929863883023,
+  "ST-s0/E4": null,
+  "ST-s0/E5": null,
+  "ST-s1/E0": null,
+  "ST-s1/E1": null,
+  "ST-s1/E2": null,
+  "ST-s1/E3": null,
+  "ST-s1/E4": null,
+  "ST-s1/E5": null,
+  "EXT/E0": 9.02198843516568,
+  "EXT/E1": null,
+  "EXT/E2": null,
+  "EXT/E3": null,
+  "EXT/E4": 9.03298265274853,
+  "EXT/E5": null
+ },
+ "single_runs": {
+  "EXT/E0": {
+   "reason": "route_complete",
+   "completed": true,
+   "single_lap_s": 9.02198843516568,
+   "passed_gates": 33,
+   "collisions": 0,
+   "sim_time": 9.02198843516568,
+   "frames": 271,
+   "min_clearance_m": 0.10640584588279105,
+   "collision_event": null,
+   "gate_misses_orig": [],
+   "max_speed": 4.576976696487314,
+   "steer_edge_frac": 0.055350553505535055
+  },
+  "EXT/E1": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 31,
+   "collisions": 1,
+   "sim_time": 8.61759074813254,
+   "frames": 259,
+   "min_clearance_m": 0.0030329409113221406,
+   "collision_event": {
+    "time": 8.61759074813254,
+    "x": -2.318320594082216,
+    "z": 2.650045754181025,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 8.61759074813254,
+     "frame": 258,
+     "collider": "disk-82",
+     "kind": "post-foot",
+     "x": -2.318320594082216,
+     "z": 2.650045754181025
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 4.515031309792742,
+   "steer_edge_frac": 0.04633204633204633
+  },
+  "EXT/E2": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 31,
+   "collisions": 1,
+   "sim_time": 8.655321768499014,
+   "frames": 260,
+   "min_clearance_m": 0.0028816792939363456,
+   "collision_event": {
+    "time": 8.655321768499014,
+    "x": -2.317956571288083,
+    "z": 2.650923093603114,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 8.655321768499014,
+     "frame": 259,
+     "collider": "disk-82",
+     "kind": "post-foot",
+     "x": -2.317956571288083,
+     "z": 2.650923093603114
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 4.56437646245739,
+   "steer_edge_frac": 0.04230769230769231
+  },
+  "EXT/E3": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 31,
+   "collisions": 1,
+   "sim_time": 8.616491326374256,
+   "frames": 259,
+   "min_clearance_m": 0.0006533592075508299,
+   "collision_event": {
+    "time": 8.616491326374256,
+    "x": -2.3146797382291266,
+    "z": 2.6691893125981005,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 8.616491326374256,
+     "frame": 258,
+     "collider": "disk-82",
+     "kind": "post-foot",
+     "x": -2.3146797382291266,
+     "z": 2.6691893125981005
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 4.447902965964818,
+   "steer_edge_frac": 0.05405405405405406
+  },
+  "EXT/E4": {
+   "reason": "route_complete",
+   "completed": true,
+   "single_lap_s": 9.03298265274853,
+   "passed_gates": 33,
+   "collisions": 0,
+   "sim_time": 9.03298265274853,
+   "frames": 271,
+   "min_clearance_m": 0.05612474875749418,
+   "collision_event": null,
+   "gate_misses_orig": [],
+   "max_speed": 4.3720545232466295,
+   "steer_edge_frac": 0.04797047970479705
+  },
+  "EXT/E5": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 24,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.06817104817342973,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 17,
+     "time": 5.255321768499026,
+     "lateral_m": 0.655881928039431
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 17,
+     "time": 7.10329826527484,
+     "lateral_m": 3.128383269617247
+    }
+   ],
+   "max_speed": 4.551097047678136,
+   "steer_edge_frac": 0.044444444444444446
+  },
+  "SR-s0/E0": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "sim_time": 1.2208890134074164,
+   "frames": 37,
+   "min_clearance_m": 0.0019035646344958482,
+   "collision_event": {
+    "time": 1.2208890134074164,
+    "x": 2.121611868997117,
+    "z": 2.6487754213142387,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 1.2208890134074164,
+     "frame": 36,
+     "collider": "segment-43",
+     "kind": "curtain",
+     "x": 2.121611868997117,
+     "z": 2.6487754213142387
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.601494603017066,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s0/E1": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0043976870331401,
+   "frames": 31,
+   "min_clearance_m": 0.0006479285762300349,
+   "collision_event": {
+    "time": 1.0043976870331401,
+    "x": 1.283924027293146,
+    "z": 2.635103986790833,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0043976870331401,
+     "frame": 30,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.283924027293146,
+     "z": 2.635103986790833
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.274412408770341,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s0/E2": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0109942175828504,
+   "frames": 31,
+   "min_clearance_m": 0.0002453814800435893,
+   "collision_event": {
+    "time": 1.0109942175828506,
+    "x": 1.3851204528407213,
+    "z": 2.6432470276883566,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0109942175828506,
+     "frame": 30,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.3851204528407213,
+     "z": 2.6432470276883566
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.4501168931942985,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s0/E3": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.1065965305497103,
+   "frames": 34,
+   "min_clearance_m": 0.0007095403143734628,
+   "collision_event": {
+    "time": 1.1065965305497105,
+    "x": 1.7342955385676309,
+    "z": 2.6508808902832324,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.1065965305497105,
+     "frame": 33,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.7342955385676309,
+     "z": 2.6508808902832324
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.5988219800194834,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s0/E4": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0754620407329472,
+   "frames": 33,
+   "min_clearance_m": 0.00029270152010851813,
+   "collision_event": {
+    "time": 1.0754620407329472,
+    "x": 1.4325319420909428,
+    "z": 2.6492586780653498,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0754620407329472,
+     "frame": 32,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.4325319420909428,
+     "z": 2.6492586780653498
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.188280352103131,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s0/E5": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.024187278682271,
+   "frames": 31,
+   "min_clearance_m": 0.0031729388635303724,
+   "collision_event": {
+    "time": 1.024187278682271,
+    "x": -0.19767356963071053,
+    "z": -2.175208524312435,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 1.024187278682271,
+     "frame": 30,
+     "collider": "disk-76",
+     "kind": "post-foot",
+     "x": -0.19767356963071053,
+     "z": -2.175208524312435
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 4.065304868726086,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E0": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.1399298638830437,
+   "frames": 35,
+   "min_clearance_m": 0.00020061626469584579,
+   "collision_event": {
+    "time": 1.139929863883044,
+    "x": 1.7610920825254757,
+    "z": 2.6595164956971753,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.139929863883044,
+     "frame": 34,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.7610920825254757,
+     "z": 2.6595164956971753
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.44155057604651,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E1": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0476258161910388,
+   "frames": 32,
+   "min_clearance_m": 0.00036997591397791574,
+   "collision_event": {
+    "time": 1.047625816191039,
+    "x": 1.507589355481877,
+    "z": 2.634875157077546,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.047625816191039,
+     "frame": 31,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.507589355481877,
+     "z": 2.634875157077546
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.4765099532779336,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E2": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 0.8652165643235997,
+   "frames": 26,
+   "min_clearance_m": 0.002836950918618214,
+   "collision_event": {
+    "time": 0.8652165643235997,
+    "x": 0.7494453652032722,
+    "z": 2.570337503289016,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 0.8652165643235997,
+     "frame": 25,
+     "collider": "disk-26",
+     "kind": "post-foot",
+     "x": 0.7494453652032722,
+     "z": 2.570337503289016
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 2.873877057809997,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E3": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "sim_time": 1.2318832309902668,
+   "frames": 37,
+   "min_clearance_m": 0.001521413150304532,
+   "collision_event": {
+    "time": 1.231883230990267,
+    "x": 2.1255977544827274,
+    "z": 2.643302583850195,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 1.231883230990267,
+     "frame": 36,
+     "collider": "segment-43",
+     "kind": "curtain",
+     "x": 2.1255977544827274,
+     "z": 2.643302583850195
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.5364222712691746,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E4": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.096351054140363,
+   "frames": 33,
+   "min_clearance_m": 0.00039872315243580717,
+   "collision_event": {
+    "time": 1.0963510541403632,
+    "x": 1.5063496372183638,
+    "z": 2.648747422753742,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0963510541403632,
+     "frame": 32,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.5063496372183638,
+     "z": 2.648747422753742
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 3.2563962691819692,
+   "steer_edge_frac": 0.0
+  },
+  "SR-s1/E5": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "sim_time": 1.3465263944327548,
+   "frames": 41,
+   "min_clearance_m": 0.0008629505961946574,
+   "collision_event": {
+    "time": 1.3465263944327548,
+    "x": -1.5804022492458614,
+    "z": -2.2463076721833293,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.3465263944327548,
+     "frame": 40,
+     "collider": "segment-31",
+     "kind": "rail",
+     "x": -1.5804022492458614,
+     "z": -2.2463076721833293
+    }
+   },
+   "gate_misses_orig": [],
+   "max_speed": 4.385519096686775,
+   "steer_edge_frac": 0.0
+  },
+  "ST-s0/E0": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 22,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.08781823801268951,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 1.976561462491235,
+     "lateral_m": 0.6735182793705994
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.7487252379493206,
+     "lateral_m": 3.102057339812504
+    }
+   ],
+   "max_speed": 4.467535926639925,
+   "steer_edge_frac": 0.08444444444444445
+  },
+  "ST-s0/E1": {
+   "reason": "route_complete",
+   "completed": true,
+   "single_lap_s": 8.829684387473677,
+   "passed_gates": 33,
+   "collisions": 0,
+   "sim_time": 8.829684387473677,
+   "frames": 265,
+   "min_clearance_m": 0.12437350689506593,
+   "collision_event": null,
+   "gate_misses_orig": [],
+   "max_speed": 4.46846873151114,
+   "steer_edge_frac": 0.06792452830188679
+  },
+  "ST-s0/E2": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 22,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.0979681430239779,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 1.9652165643236026,
+     "lateral_m": 0.6688425930211689
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.738830442124755,
+     "lateral_m": 3.064355704187998
+    }
+   ],
+   "max_speed": 4.466217294175199,
+   "steer_edge_frac": 0.08
+  },
+  "ST-s0/E3": {
+   "reason": "route_complete",
+   "completed": true,
+   "single_lap_s": 8.839929863883023,
+   "passed_gates": 33,
+   "collisions": 0,
+   "sim_time": 8.839929863883023,
+   "frames": 266,
+   "min_clearance_m": 0.1187172051606767,
+   "collision_event": null,
+   "gate_misses_orig": [],
+   "max_speed": 4.46900428822408,
+   "steer_edge_frac": 0.06766917293233082
+  },
+  "ST-s0/E4": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 22,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.09432561811130571,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 1.9619182990487474,
+     "lateral_m": 0.6908227695965407
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.74212870739961,
+     "lateral_m": 3.0667684708528484
+    }
+   ],
+   "max_speed": 4.469569007772718,
+   "steer_edge_frac": 0.08
+  },
+  "ST-s0/E5": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 30,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.02036174432238079,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 18,
+     "order_in_lap": 31,
+     "time": 8.129684387473679,
+     "lateral_m": 0.693731422552723
+    }
+   ],
+   "max_speed": 4.47080944162135,
+   "steer_edge_frac": 0.06666666666666667
+  },
+  "ST-s1/E0": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 22,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.08653342259350795,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.058620033773892,
+     "lateral_m": 0.9840007679802238
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.771064353699803,
+     "lateral_m": 3.153119260867486
+    }
+   ],
+   "max_speed": 4.471762162421724,
+   "steer_edge_frac": 0.07111111111111111
+  },
+  "ST-s1/E1": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 22,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.07153642545019233,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.0076959523079982,
+     "lateral_m": 0.8189280964521105
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.7688655101832333,
+     "lateral_m": 3.145579407687661
+    }
+   ],
+   "max_speed": 4.474323610168228,
+   "steer_edge_frac": 0.08222222222222222
+  },
+  "ST-s1/E2": {
+   "reason": "collision",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 17,
+   "collisions": 1,
+   "sim_time": 13.78645625831576,
+   "frames": 414,
+   "min_clearance_m": 2.77521823822535e-08,
+   "collision_event": {
+    "time": 13.78645625831576,
+    "x": 3.74513190386025,
+    "z": -2.5846836073218067,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 13.78645625831576,
+     "frame": 413,
+     "collider": "disk-12",
+     "kind": "post-foot",
+     "x": 3.74513190386025,
+     "z": -2.5846836073218067
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.0076959523079982,
+     "lateral_m": 0.8138098689174895
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.757520612015601,
+     "lateral_m": 3.0820001573098255
+    },
+    {
+     "route_point": 18,
+     "order_in_lap": 18,
+     "time": 13.42968438747366,
+     "lateral_m": 0.67357378855964
+    }
+   ],
+   "max_speed": 4.474139212588072,
+   "steer_edge_frac": 0.0966183574879227
+  },
+  "ST-s1/E3": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 17,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.00261560037132263,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 1.97985972776609,
+     "lateral_m": 0.6766287302941637
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.771064353699803,
+     "lateral_m": 3.0980025194960272
+    },
+    {
+     "route_point": 18,
+     "order_in_lap": 18,
+     "time": 13.450924081465857,
+     "lateral_m": 0.6856871937002511
+    }
+   ],
+   "max_speed": 4.471336366560065,
+   "steer_edge_frac": 0.08666666666666667
+  },
+  "ST-s1/E4": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 17,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.024826828906734853,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.042128707399616,
+     "lateral_m": 0.9387036528301778
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.754222346740746,
+     "lateral_m": 3.1411619375578126
+    },
+    {
+     "route_point": 18,
+     "order_in_lap": 18,
+     "time": 13.465216564323562,
+     "lateral_m": 0.6640997081163026
+    }
+   ],
+   "max_speed": 4.472712850649086,
+   "steer_edge_frac": 0.08666666666666667
+  },
+  "ST-s1/E5": {
+   "reason": "time_limit",
+   "completed": false,
+   "single_lap_s": null,
+   "passed_gates": 30,
+   "collisions": 0,
+   "sim_time": 14.999999999999957,
+   "frames": 450,
+   "min_clearance_m": 0.02802924262936303,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 18,
+     "order_in_lap": 31,
+     "time": 8.178760306007783,
+     "lateral_m": 0.6586090364969496
+    }
+   ],
+   "max_speed": 4.473342146007242,
+   "steer_edge_frac": 0.07111111111111111
+  }
+ },
+ "flying": {
+  "EXT/E0": {
+   "reason": "collection_duration_complete",
+   "completed_20s": true,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed": 9.021433654399077,
+     "valid": true
+    },
+    {
+     "lap": 2,
+     "elapsed": 8.49438410312923,
+     "valid": true
+    }
+   ],
+   "lap1_s": 9.021433654399077,
+   "flying_lap_s": 8.49438410312923,
+   "passed_gates": 77,
+   "collisions": 0,
+   "sim_time": 20,
+   "gate_misses_orig": [],
+   "collision_event": null
+  },
+  "EXT/E1": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 31,
+   "collisions": 1,
+   "sim_time": 8.61759074813254,
+   "gate_misses_orig": [],
+   "collision_event": {
+    "time": 8.61759074813254,
+    "x": -2.318320594082216,
+    "z": 2.650045754181025,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 8.61759074813254,
+     "frame": 258,
+     "collider": "disk-82",
+     "kind": "post-foot",
+     "x": -2.318320594082216,
+     "z": 2.650045754181025
+    }
+   }
+  },
+  "SR-s0/E0": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "sim_time": 1.2208890134074164,
+   "gate_misses_orig": [],
+   "collision_event": {
+    "time": 1.2208890134074164,
+    "x": 2.121611868997117,
+    "z": 2.6487754213142387,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 1.2208890134074164,
+     "frame": 36,
+     "collider": "segment-43",
+     "kind": "curtain",
+     "x": 2.121611868997117,
+     "z": 2.6487754213142387
+    }
+   }
+  },
+  "SR-s0/E1": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0043976870331401,
+   "gate_misses_orig": [],
+   "collision_event": {
+    "time": 1.0043976870331401,
+    "x": 1.283924027293146,
+    "z": 2.635103986790833,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0043976870331401,
+     "frame": 30,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.283924027293146,
+     "z": 2.635103986790833
+    }
+   }
+  },
+  "SR-s1/E0": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.1399298638830437,
+   "gate_misses_orig": [],
+   "collision_event": {
+    "time": 1.139929863883044,
+    "x": 1.7610920825254757,
+    "z": 2.6595164956971753,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.139929863883044,
+     "frame": 34,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.7610920825254757,
+     "z": 2.6595164956971753
+    }
+   }
+  },
+  "SR-s1/E1": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "sim_time": 1.0476258161910388,
+   "gate_misses_orig": [],
+   "collision_event": {
+    "time": 1.047625816191039,
+    "x": 1.507589355481877,
+    "z": 2.634875157077546,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.047625816191039,
+     "frame": 31,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.507589355481877,
+     "z": 2.634875157077546
+    }
+   }
+  },
+  "ST-s0/E0": {
+   "reason": "collection_duration_complete",
+   "completed_20s": true,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed": 17.25394458224784,
+     "valid": false
+    }
+   ],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 45,
+   "collisions": 0,
+   "sim_time": 20,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 1.976561462491235,
+     "lateral_m": 0.6735182793705994
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.7487252379493206,
+     "lateral_m": 3.102057339812504
+    }
+   ],
+   "collision_event": null
+  },
+  "ST-s0/E1": {
+   "reason": "collision",
+   "completed_20s": false,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed": 8.829112109463896,
+     "valid": true
+    }
+   ],
+   "lap1_s": 8.829112109463896,
+   "flying_lap_s": null,
+   "passed_gates": 50,
+   "collisions": 1,
+   "sim_time": 13.69745047589861,
+   "gate_misses_orig": [
+    {
+     "route_point": 18,
+     "order_in_lap": 18,
+     "time": 13.338830442124722,
+     "lateral_m": 0.7034419297458174
+    }
+   ],
+   "collision_event": {
+    "time": 13.697450475898611,
+    "x": 3.8066639200030257,
+    "z": -2.6215358371763724,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 13.697450475898611,
+     "frame": 410,
+     "collider": "disk-12",
+     "kind": "post-foot",
+     "x": 3.8066639200030257,
+     "z": -2.6215358371763724
+    }
+   }
+  },
+  "ST-s1/E0": {
+   "reason": "collection_duration_complete",
+   "completed_20s": true,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed": 17.290388634852423,
+     "valid": false
+    }
+   ],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 44,
+   "collisions": 0,
+   "sim_time": 20,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.058620033773892,
+     "lateral_m": 0.9840007679802238
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.771064353699803,
+     "lateral_m": 3.153119260867486
+    }
+   ],
+   "collision_event": null
+  },
+  "ST-s1/E1": {
+   "reason": "collection_duration_complete",
+   "completed_20s": true,
+   "laps": [
+    {
+     "lap": 1,
+     "elapsed": 17.393179019137644,
+     "valid": false
+    }
+   ],
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 44,
+   "collisions": 0,
+   "sim_time": 20,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.0076959523079982,
+     "lateral_m": 0.8189280964521105
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.7688655101832333,
+     "lateral_m": 3.145579407687661
+    }
+   ],
+   "collision_event": null
+  }
+ },
+ "acceptance_H2": {
+  "a_completion": {
+   "E0_both_seeds_complete_and_user_verifier_pass": false,
+   "completed_of_12": 0,
+   "required": 9,
+   "pass": false
+  },
+  "b_close_to_rl": {
+   "ratios": [],
+   "median_ratio": null,
+   "threshold": 1.05,
+   "pass": false
+  },
+  "c_faster_than_teacher_trained": {
+   "pairs": [],
+   "n_pairs": 0,
+   "seed_spread": {
+    "SR": {
+     "median_s0": null,
+     "median_s1": null,
+     "abs_diff": null
+    },
+    "ST": {
+     "median_s0": 8.83480712567835,
+     "median_s1": null,
+     "abs_diff": null
+    },
+    "max": null,
+    "note": "腕の種のどちらかが 1 回も完走しないと、その腕のばらつきは計算できない(計算できる腕だけで最大をとる。どちらもなければ Δ = 0.10 秒)"
+   },
+   "delta": 0.1,
+   "rule": "fallback(組が 3 つ未満): S-R の E0 が両方の種とも外部の参照の E0 − 0.10 秒より速い",
+   "ext_E0": 9.02198843516568,
+   "sr_E0": [
+    null,
+    null
+   ],
+   "pass": false
+  },
+  "verdict": "できなかった"
+ },
+ "user_verifier": {
+  "EXT-E0-single": {
+   "pass": true,
+   "exit_code": 0,
+   "failure_count": 0,
+   "failures": [],
+   "replay_elapsed": 9.02198843516568,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/EXT-E0-single.json"
+  },
+  "SR-s0-E0-single-rep2": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 5,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut"
+   ],
+   "replay_elapsed": 1.2208890134074164,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-rep2.json"
+  },
+  "SR-s0-E0-single-steer0.95": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.steer_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.steer_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.3043976870331409,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-steer0.95.json"
+  },
+  "SR-s0-E0-single-steer1.05": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.steer_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.steer_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 2.4333333333333345,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-steer1.05.json"
+  },
+  "SR-s0-E0-single-thr1.01": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.0520235032241791,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-thr1.01.json"
+  },
+  "SR-s0-E0-single-x-la2": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.lookahead: numeric replay/reference mismatch",
+    "sensor_contract.policy.lookahead: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 3.404397687033138,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-x-la2.json"
+  },
+  "SR-s0-E0-single-x-thr0.8": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.2274855439571266,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-x-thr0.8.json"
+  },
+  "SR-s0-E0-single-x-thr0.9": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.0498246597076089,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single-x-thr0.9.json"
+  },
+  "SR-s0-E0-single": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 5,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut"
+   ],
+   "replay_elapsed": 1.2208890134074164,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s0-E0-single.json"
+  },
+  "SR-s1-E0-single-x-la2": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.lookahead: numeric replay/reference mismatch",
+    "sensor_contract.policy.lookahead: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.747625816191041,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s1-E0-single-x-la2.json"
+  },
+  "SR-s1-E0-single-x-thr0.8": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.143228129157899,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s1-E0-single-x-thr0.8.json"
+  },
+  "SR-s1-E0-single-x-thr0.9": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 1.0608188772904594,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s1-E0-single-x-thr0.9.json"
+  },
+  "SR-s1-E0-single": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 5,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut"
+   ],
+   "replay_elapsed": 1.1399298638830437,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/SR-s1-E0-single.json"
+  },
+  "ST-s0-E0-single-x-la2": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 6,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "sensor_contract.calibration.lookahead: numeric replay/reference mismatch",
+    "sensor_contract.policy.lookahead: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 4.966315986081877,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s0-E0-single-x-la2.json"
+  },
+  "ST-s0-E0-single-x-thr1.01": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 2,
+   "failures": [
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 8.80219884351655,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s0-E0-single-x-thr1.01.json"
+  },
+  "ST-s0-E0-single": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 3,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates"
+   ],
+   "replay_elapsed": 14.999999999999957,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s0-E0-single.json"
+  },
+  "ST-s1-E0-single-x-la2": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 7,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Collision count/events must both be zero",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "Exactly one mandatory crossing required: shortcut",
+    "sensor_contract.calibration.lookahead: numeric replay/reference mismatch",
+    "sensor_contract.policy.lookahead: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 2.5619182990487452,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s1-E0-single-x-la2.json"
+  },
+  "ST-s1-E0-single-x-thr1.01": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 5,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates",
+    "sensor_contract.calibration.throttle_gain: numeric replay/reference mismatch",
+    "sensor_contract.policy.throttle_gain: numeric replay/reference mismatch"
+   ],
+   "replay_elapsed": 14.999999999999957,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s1-E0-single-x-thr1.01.json"
+  },
+  "ST-s1-E0-single": {
+   "pass": false,
+   "exit_code": 1,
+   "failure_count": 3,
+   "failures": [
+    "Episode did not terminate with successful route_complete",
+    "Finished flag/progress are incomplete",
+    "Must pass all 33 ordered gates"
+   ],
+   "replay_elapsed": 14.999999999999957,
+   "output": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/user_verifier/ST-s1-E0-single.json"
+  }
+ },
+ "determinism": {
+  "run1": {
+   "reason": "collision",
+   "frames": 37,
+   "lap_s": null,
+   "passed_gates": 2
+  },
+  "run2": {
+   "reason": "collision",
+   "frames": 37,
+   "lap_s": null,
+   "passed_gates": 2
+  },
+  "max_abs_diff_common_frames": 0.0,
+  "identical": true,
+  "rule": "違えば全モデルの E0 を 3 回ずつの中央値(deviations.md に記録)"
+ },
+ "gain_sensitivity_SR_s0_E0": {
+  "steer0.95": {
+   "reason": "collision",
+   "lap_s": null,
+   "passed_gates": 2,
+   "user_verifier": false
+  },
+  "steer1.05": {
+   "reason": "collision",
+   "lap_s": null,
+   "passed_gates": 2,
+   "user_verifier": false
+  },
+  "thr1.01": {
+   "reason": "collision",
+   "lap_s": null,
+   "passed_gates": 1,
+   "user_verifier": false
+  },
+  "protocol": {
+   "reason": "collision",
+   "lap_s": null,
+   "passed_gates": 2,
+   "user_verifier": false
+  }
+ },
+ "extra_runs_not_judged": [
+  {
+   "name": "EXT-E0-single-x-d0",
+   "label": "EXT",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-d0",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 3,
+   "collisions": 1,
+   "control_delay_ticks": 0,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1.01,
+   "min_clearance_m": 0.00041907005233943716,
+   "sim_time": 4.693052788865501,
+   "collision_event": {
+    "time": 4.693052788865501,
+    "x": 4.177313860449438,
+    "z": -2.5742182328797383,
+    "obstacle": "rail",
+    "raw": {
+     "time": 4.693052788865501,
+     "frame": 140,
+     "collider": "segment-5",
+     "kind": "rail",
+     "x": 4.177313860449438,
+     "z": -2.5742182328797383
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.408795374066278,
+     "lateral_m": 3.285672150347934
+    }
+   ],
+   "user_verifier": null
+  },
+  {
+   "name": "SR-s0-E0-single-x-d0",
+   "label": "SR-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-d0",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "control_delay_ticks": 0,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.0008152192811755644,
+   "sim_time": 0.9630177208070295,
+   "collision_event": {
+    "time": 0.9630177208070295,
+    "x": 1.2356272233154704,
+    "z": 2.6301221781227064,
+    "obstacle": "rail",
+    "raw": {
+     "time": 0.9630177208070295,
+     "frame": 28,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.2356272233154704,
+     "z": 2.6301221781227064
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": null
+  },
+  {
+   "name": "SR-s0-E0-single-x-la2",
+   "label": "SR-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-la2",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 2,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.0008050235028180114,
+   "sim_time": 3.404397687033138,
+   "collision_event": {
+    "time": 3.404397687033138,
+    "x": 2.5707270678897243,
+    "z": 0.2614126611788663,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 3.404397687033138,
+     "frame": 102,
+     "collider": "segment-39",
+     "kind": "curtain",
+     "x": 2.5707270678897243,
+     "z": 0.2614126611788663
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "SR-s0-E0-single-x-thr0.8",
+   "label": "SR-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr0.8",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 0.8,
+   "min_clearance_m": 0.00044874093658933516,
+   "sim_time": 1.2274855439571266,
+   "collision_event": {
+    "time": 1.2274855439571268,
+    "x": 1.732715114194554,
+    "z": 2.6512920331660648,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.2274855439571268,
+     "frame": 36,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.732715114194554,
+     "z": 2.6512920331660648
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "SR-s0-E0-single-x-thr0.9",
+   "label": "SR-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr0.9",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 0.9,
+   "min_clearance_m": 0.00046976257624290786,
+   "sim_time": 1.0498246597076089,
+   "collision_event": {
+    "time": 1.049824659707609,
+    "x": 1.3768125258320434,
+    "z": 2.637239687848044,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.049824659707609,
+     "frame": 31,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.3768125258320434,
+     "z": 2.637239687848044
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "SR-s1-E0-single-x-d0",
+   "label": "SR-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-d0",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "control_delay_ticks": 0,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.0007145344268582252,
+   "sim_time": 3.158620033773888,
+   "collision_event": {
+    "time": 3.158620033773888,
+    "x": 2.521919299066644,
+    "z": 0.27392869029552536,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 3.158620033773888,
+     "frame": 94,
+     "collider": "segment-39",
+     "kind": "curtain",
+     "x": 2.521919299066644,
+     "z": 0.27392869029552536
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": null
+  },
+  {
+   "name": "SR-s1-E0-single-x-la2",
+   "label": "SR-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-la2",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 2,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.0006547067236389661,
+   "sim_time": 1.747625816191041,
+   "collision_event": {
+    "time": 1.7476258161910412,
+    "x": 2.7546024837411553,
+    "z": 1.7307944137500488,
+    "obstacle": "curtain",
+    "raw": {
+     "time": 1.7476258161910412,
+     "frame": 52,
+     "collider": "segment-46",
+     "kind": "curtain",
+     "x": 2.7546024837411553,
+     "z": 1.7307944137500488
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "SR-s1-E0-single-x-thr0.8",
+   "label": "SR-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr0.8",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 0.8,
+   "min_clearance_m": 0.0008322503291642389,
+   "sim_time": 1.143228129157899,
+   "collision_event": {
+    "time": 1.1432281291578992,
+    "x": 1.4437548685630592,
+    "z": 2.6369536980633606,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.1432281291578992,
+     "frame": 34,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.4437548685630592,
+     "z": 2.6369536980633606
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "SR-s1-E0-single-x-thr0.9",
+   "label": "SR-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr0.9",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 1,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 0.9,
+   "min_clearance_m": 0.0004633435342955329,
+   "sim_time": 1.0608188772904594,
+   "collision_event": {
+    "time": 1.0608188772904596,
+    "x": 1.3710034360433436,
+    "z": 2.6372010410260356,
+    "obstacle": "rail",
+    "raw": {
+     "time": 1.0608188772904596,
+     "frame": 31,
+     "collider": "segment-11",
+     "kind": "rail",
+     "x": 1.3710034360433436,
+     "z": 2.6372010410260356
+    }
+   },
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "ST-s0-E0-single-x-d0",
+   "label": "ST-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-d0",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 3,
+   "collisions": 1,
+   "control_delay_ticks": 0,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.0006840776508723924,
+   "sim_time": 4.903298265274848,
+   "collision_event": {
+    "time": 4.903298265274848,
+    "x": 3.932850962427722,
+    "z": -2.60911183472255,
+    "obstacle": "rail",
+    "raw": {
+     "time": 4.903298265274848,
+     "frame": 147,
+     "collider": "segment-5",
+     "kind": "rail",
+     "x": 3.932850962427722,
+     "z": -2.60911183472255
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.515391904615988,
+     "lateral_m": 3.213488255712013
+    }
+   ],
+   "user_verifier": null
+  },
+  {
+   "name": "ST-s0-E0-single-x-la2",
+   "label": "ST-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-la2",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 3,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 2,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.002528753283405072,
+   "sim_time": 4.966315986081877,
+   "collision_event": {
+    "time": 4.966315986081877,
+    "x": 3.7974108531778383,
+    "z": -2.608566720415898,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 4.966315986081877,
+     "frame": 148,
+     "collider": "disk-12",
+     "kind": "post-foot",
+     "x": 3.7974108531778383,
+     "z": -2.608566720415898
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.563017720807027,
+     "lateral_m": 3.2320644040845283
+    }
+   ],
+   "user_verifier": false
+  },
+  {
+   "name": "ST-s0-E0-single-x-thr1.01",
+   "label": "ST-s0",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr1.01",
+   "reason": "route_complete",
+   "single_lap_s": 8.80219884351655,
+   "lap1_s": 8.80219884351655,
+   "flying_lap_s": null,
+   "passed_gates": 33,
+   "collisions": 0,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1.01,
+   "min_clearance_m": 0.1305002658520318,
+   "sim_time": 8.80219884351655,
+   "collision_event": null,
+   "gate_misses_orig": [],
+   "user_verifier": false
+  },
+  {
+   "name": "ST-s1-E0-single-x-d0",
+   "label": "ST-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-d0",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "control_delay_ticks": 0,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.00010734515583382329,
+   "sim_time": 3.287555680074081,
+   "collision_event": {
+    "time": 3.287555680074081,
+    "x": 2.092121599793182,
+    "z": -1.206713113680929,
+    "obstacle": "rail",
+    "raw": {
+     "time": 3.287555680074081,
+     "frame": 98,
+     "collider": "segment-27",
+     "kind": "rail",
+     "x": 2.092121599793182,
+     "z": -1.206713113680929
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 3,
+     "order_in_lap": 3,
+     "time": 1.7864562583158,
+     "lateral_m": 0.6873258223167855
+    }
+   ],
+   "user_verifier": null
+  },
+  {
+   "name": "ST-s1-E0-single-x-la2",
+   "label": "ST-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-la2",
+   "reason": "collision",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 2,
+   "collisions": 1,
+   "control_delay_ticks": 1,
+   "lookahead": 2,
+   "steer_gain": 1,
+   "throttle_gain": 1,
+   "min_clearance_m": 0.00011453889183007937,
+   "sim_time": 2.5619182990487452,
+   "collision_event": {
+    "time": 2.5619182990487457,
+    "x": 2.346594603542872,
+    "z": 0.2071743851270907,
+    "obstacle": "post-foot",
+    "raw": {
+     "time": 2.5619182990487457,
+     "frame": 76,
+     "collider": "disk-70",
+     "kind": "post-foot",
+     "x": 2.346594603542872,
+     "z": 0.2071743851270907
+    }
+   },
+   "gate_misses_orig": [
+    {
+     "route_point": 3,
+     "order_in_lap": 3,
+     "time": 1.8252867004405584,
+     "lateral_m": 0.6675138964792449
+    }
+   ],
+   "user_verifier": false
+  },
+  {
+   "name": "ST-s1-E0-single-x-thr1.01",
+   "label": "ST-s1",
+   "start": "E0",
+   "kind": "single",
+   "variant": "x-thr1.01",
+   "reason": "time_limit",
+   "single_lap_s": null,
+   "lap1_s": null,
+   "flying_lap_s": null,
+   "passed_gates": 17,
+   "collisions": 0,
+   "control_delay_ticks": 1,
+   "lookahead": 1,
+   "steer_gain": 1,
+   "throttle_gain": 1.01,
+   "min_clearance_m": 0.015367600569309636,
+   "sim_time": 14.999999999999957,
+   "collision_event": null,
+   "gate_misses_orig": [
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 2.0109942175828532,
+     "lateral_m": 0.8876979095037726
+    },
+    {
+     "route_point": 4,
+     "order_in_lap": 4,
+     "time": 3.7608188772904563,
+     "lateral_m": 3.18755326644994
+    },
+    {
+     "route_point": 18,
+     "order_in_lap": 18,
+     "time": 13.47326319721634,
+     "lateral_m": 0.6605154127941194
+    }
+   ],
+   "user_verifier": false
+  }
+ ],
+ "offline_l1_us": {
+  "S-R/s0": {
+   "RL_val": {
+    "steer_step1_us": 29.63,
+    "throttle_step1_us": 7.7,
+    "steer_mean10_us": 31.54,
+    "throttle_mean10_us": 7.65,
+    "both_mean10_us": 19.6
+   },
+   "teacher_val": {
+    "steer_step1_us": 98.36,
+    "throttle_step1_us": 91.1,
+    "steer_mean10_us": 104.01,
+    "throttle_mean10_us": 88.43,
+    "both_mean10_us": 96.22
+   }
+  },
+  "S-T/s0": {
+   "RL_val": {
+    "steer_step1_us": 106.18,
+    "throttle_step1_us": 90.85,
+    "steer_mean10_us": 110.93,
+    "throttle_mean10_us": 94.84,
+    "both_mean10_us": 102.88
+   },
+   "teacher_val": {
+    "steer_step1_us": 4.1,
+    "throttle_step1_us": 4.28,
+    "steer_mean10_us": 4.77,
+    "throttle_mean10_us": 4.53,
+    "both_mean10_us": 4.65
+   }
+  },
+  "S-R/s1": {
+   "RL_val": {
+    "steer_step1_us": 29.76,
+    "throttle_step1_us": 8.39,
+    "steer_mean10_us": 31.43,
+    "throttle_mean10_us": 7.89,
+    "both_mean10_us": 19.66
+   },
+   "teacher_val": {
+    "steer_step1_us": 102.1,
+    "throttle_step1_us": 94.68,
+    "steer_mean10_us": 104.7,
+    "throttle_mean10_us": 90.15,
+    "both_mean10_us": 97.42
+   }
+  },
+  "S-T/s1": {
+   "RL_val": {
+    "steer_step1_us": 107.62,
+    "throttle_step1_us": 93.05,
+    "steer_mean10_us": 112.63,
+    "throttle_mean10_us": 95.82,
+    "both_mean10_us": 104.22
+   },
+   "teacher_val": {
+    "steer_step1_us": 4.06,
+    "throttle_step1_us": 4.82,
+    "steer_mean10_us": 4.7,
+    "throttle_mean10_us": 4.75,
+    "both_mean10_us": 4.72
+   }
+  }
+ },
+ "takeover_diagnostic_not_judged": {
+  "note": "参考(合否に使わない)。RL の方策は観測に正解の状態を使う。引き継ぎは遅延 0。",
+  "rows": [
+   {
+    "name": "SR-s0-E0-single-rep2",
+    "browser_reason": "collision",
+    "browser_frames": 37,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.14384488295364026,
+    "relabel_steer_abs_mean_first20_rad": 0.059877643200927214,
+    "relabel_speed_abs_mean_mps": 0.3163688608994962,
+    "last_recoverable_frame": 33,
+    "first_unrecoverable_frame": 36,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s0-E0-single-x-d0",
+    "browser_reason": "collision",
+    "browser_frames": 29,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.21541125820323406,
+    "relabel_steer_abs_mean_first20_rad": 0.09105748526869245,
+    "relabel_speed_abs_mean_mps": 0.4950855725291036,
+    "last_recoverable_frame": 24,
+    "first_unrecoverable_frame": 27,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s0-E0-single-x-la2",
+    "browser_reason": "collision",
+    "browser_frames": 103,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.39996342837632437,
+    "relabel_steer_abs_mean_first20_rad": 0.08996812613106361,
+    "relabel_speed_abs_mean_mps": 1.8644984838716876,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s0-E0-single",
+    "browser_reason": "collision",
+    "browser_frames": 37,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.14384488295364026,
+    "relabel_steer_abs_mean_first20_rad": 0.059877643200927214,
+    "relabel_speed_abs_mean_mps": 0.3163688608994962,
+    "last_recoverable_frame": 33,
+    "first_unrecoverable_frame": 36,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s0-E1-single",
+    "browser_reason": "collision",
+    "browser_frames": 31,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.24305403578794668,
+    "relabel_steer_abs_mean_first20_rad": 0.1303440952757192,
+    "relabel_speed_abs_mean_mps": 0.5368277813476637,
+    "last_recoverable_frame": 21,
+    "first_unrecoverable_frame": 24,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s0-E2-single",
+    "browser_reason": "collision",
+    "browser_frames": 31,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.19658536017618322,
+    "relabel_steer_abs_mean_first20_rad": 0.06864078746625457,
+    "relabel_speed_abs_mean_mps": 0.5771920479286303,
+    "last_recoverable_frame": 24,
+    "first_unrecoverable_frame": 27,
+    "k0_lap_s": 8.089754523590635
+   },
+   {
+    "name": "SR-s0-E3-single",
+    "browser_reason": "collision",
+    "browser_frames": 34,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.17313362055105336,
+    "relabel_steer_abs_mean_first20_rad": 0.052265215393800156,
+    "relabel_speed_abs_mean_mps": 0.39858586414466257,
+    "last_recoverable_frame": 30,
+    "first_unrecoverable_frame": 33,
+    "k0_lap_s": 8.104397687033122
+   },
+   {
+    "name": "SR-s0-E4-single",
+    "browser_reason": "collision",
+    "browser_frames": 33,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.19085913126172058,
+    "relabel_steer_abs_mean_first20_rad": 0.10610174901429574,
+    "relabel_speed_abs_mean_mps": 0.7097549785324355,
+    "last_recoverable_frame": 27,
+    "first_unrecoverable_frame": 30,
+    "k0_lap_s": 8.085356836557494
+   },
+   {
+    "name": "SR-s0-E5-single",
+    "browser_reason": "collision",
+    "browser_frames": 31,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.239629343122861,
+    "relabel_steer_abs_mean_first20_rad": 0.1956967415278963,
+    "relabel_speed_abs_mean_mps": 0.21505814842029414,
+    "last_recoverable_frame": 24,
+    "first_unrecoverable_frame": 27,
+    "k0_lap_s": 8.130783809231962
+   },
+   {
+    "name": "SR-s1-E0-single-x-d0",
+    "browser_reason": "collision",
+    "browser_frames": 95,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.49970631962331785,
+    "relabel_steer_abs_mean_first20_rad": 0.09769944763697713,
+    "relabel_speed_abs_mean_mps": 2.0655805798325573,
+    "last_recoverable_frame": 45,
+    "first_unrecoverable_frame": 42,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s1-E0-single-x-la2",
+    "browser_reason": "collision",
+    "browser_frames": 53,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.4146096783979042,
+    "relabel_steer_abs_mean_first20_rad": 0.10618461333728779,
+    "relabel_speed_abs_mean_mps": 2.183310024173174,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s1-E0-single",
+    "browser_reason": "collision",
+    "browser_frames": 35,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.17055568968160192,
+    "relabel_steer_abs_mean_first20_rad": 0.0566209976968924,
+    "relabel_speed_abs_mean_mps": 0.4135991226510856,
+    "last_recoverable_frame": 30,
+    "first_unrecoverable_frame": 33,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s1-E1-single",
+    "browser_reason": "collision",
+    "browser_frames": 32,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1970596582236003,
+    "relabel_steer_abs_mean_first20_rad": 0.06115453904326048,
+    "relabel_speed_abs_mean_mps": 0.5304833655277569,
+    "last_recoverable_frame": 27,
+    "first_unrecoverable_frame": 30,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "SR-s1-E2-single",
+    "browser_reason": "collision",
+    "browser_frames": 26,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.21499016422839265,
+    "relabel_steer_abs_mean_first20_rad": 0.12311085564162534,
+    "relabel_speed_abs_mean_mps": 0.8610941756620071,
+    "last_recoverable_frame": 21,
+    "first_unrecoverable_frame": 24,
+    "k0_lap_s": 8.089754523590635
+   },
+   {
+    "name": "SR-s1-E3-single",
+    "browser_reason": "collision",
+    "browser_frames": 37,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1436048778744824,
+    "relabel_steer_abs_mean_first20_rad": 0.06249666567343287,
+    "relabel_speed_abs_mean_mps": 0.5618957857434542,
+    "last_recoverable_frame": 33,
+    "first_unrecoverable_frame": 36,
+    "k0_lap_s": 8.104397687033122
+   },
+   {
+    "name": "SR-s1-E4-single",
+    "browser_reason": "collision",
+    "browser_frames": 33,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.17585429140866532,
+    "relabel_steer_abs_mean_first20_rad": 0.05814613074343772,
+    "relabel_speed_abs_mean_mps": 0.6725085660035108,
+    "last_recoverable_frame": 27,
+    "first_unrecoverable_frame": 30,
+    "k0_lap_s": 8.085356836557494
+   },
+   {
+    "name": "SR-s1-E5-single",
+    "browser_reason": "collision",
+    "browser_frames": 41,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1757868490170241,
+    "relabel_steer_abs_mean_first20_rad": 0.12061578523742164,
+    "relabel_speed_abs_mean_mps": 0.2073886827320718,
+    "last_recoverable_frame": 33,
+    "first_unrecoverable_frame": 36,
+    "k0_lap_s": 8.130783809231962
+   },
+   {
+    "name": "ST-s0-E0-single-x-d0",
+    "browser_reason": "collision",
+    "browser_frames": 148,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2211892873222957,
+    "relabel_steer_abs_mean_first20_rad": 0.18472897244396524,
+    "relabel_speed_abs_mean_mps": 0.8505801233960018,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 39,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s0-E0-single-x-la2",
+    "browser_reason": "collision",
+    "browser_frames": 149,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.22225475839274306,
+    "relabel_steer_abs_mean_first20_rad": 0.20730873118085547,
+    "relabel_speed_abs_mean_mps": 0.8662270231136914,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s0-E0-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.23577156188031406,
+    "relabel_steer_abs_mean_first20_rad": 0.18769343986415168,
+    "relabel_speed_abs_mean_mps": 0.7774420328695705,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s0-E1-single",
+    "browser_reason": "route_complete",
+    "browser_frames": 265,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1457036570110155,
+    "relabel_steer_abs_mean_first20_rad": 0.16254939117577846,
+    "relabel_speed_abs_mean_mps": 0.781556266469348,
+    "last_recoverable_frame": 264,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s0-E2-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.23839011191800136,
+    "relabel_steer_abs_mean_first20_rad": 0.22691807918851697,
+    "relabel_speed_abs_mean_mps": 0.7593036567475758,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.089754523590635
+   },
+   {
+    "name": "ST-s0-E3-single",
+    "browser_reason": "route_complete",
+    "browser_frames": 266,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.14796972775312656,
+    "relabel_steer_abs_mean_first20_rad": 0.19362834557387376,
+    "relabel_speed_abs_mean_mps": 0.7713006678892947,
+    "last_recoverable_frame": 265,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.104397687033122
+   },
+   {
+    "name": "ST-s0-E4-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.23335778777245136,
+    "relabel_steer_abs_mean_first20_rad": 0.15627362560237626,
+    "relabel_speed_abs_mean_mps": 0.7716301530721223,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.085356836557494
+   },
+   {
+    "name": "ST-s0-E5-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.22105062349898874,
+    "relabel_steer_abs_mean_first20_rad": 0.08055975786861982,
+    "relabel_speed_abs_mean_mps": 0.7464545999589483,
+    "last_recoverable_frame": 234,
+    "first_unrecoverable_frame": 159,
+    "k0_lap_s": 8.130783809231962
+   },
+   {
+    "name": "ST-s1-E0-single-x-d0",
+    "browser_reason": "collision",
+    "browser_frames": 99,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2682990422374669,
+    "relabel_steer_abs_mean_first20_rad": 0.22868014059484237,
+    "relabel_speed_abs_mean_mps": 1.2150725591326215,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s1-E0-single-x-la2",
+    "browser_reason": "collision",
+    "browser_frames": 77,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.3325146311735815,
+    "relabel_steer_abs_mean_first20_rad": 0.24345265811985312,
+    "relabel_speed_abs_mean_mps": 1.1432379422437418,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s1-E0-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2527187888388444,
+    "relabel_steer_abs_mean_first20_rad": 0.22327131864487987,
+    "relabel_speed_abs_mean_mps": 0.7909762602146423,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s1-E1-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2462256112226242,
+    "relabel_steer_abs_mean_first20_rad": 0.18438886820863856,
+    "relabel_speed_abs_mean_mps": 0.8273039471825924,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "ST-s1-E2-single",
+    "browser_reason": "collision",
+    "browser_frames": 414,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2515476756109099,
+    "relabel_steer_abs_mean_first20_rad": 0.25450807305156664,
+    "relabel_speed_abs_mean_mps": 0.8735418841791015,
+    "last_recoverable_frame": 39,
+    "first_unrecoverable_frame": 42,
+    "k0_lap_s": 8.089754523590635
+   },
+   {
+    "name": "ST-s1-E3-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.27169543634926946,
+    "relabel_steer_abs_mean_first20_rad": 0.22477498660829598,
+    "relabel_speed_abs_mean_mps": 0.815230186217944,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.104397687033122
+   },
+   {
+    "name": "ST-s1-E4-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2731360298853767,
+    "relabel_steer_abs_mean_first20_rad": 0.18781582468583657,
+    "relabel_speed_abs_mean_mps": 0.8145451439647392,
+    "last_recoverable_frame": 42,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.085356836557494
+   },
+   {
+    "name": "ST-s1-E5-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.2245673017189933,
+    "relabel_steer_abs_mean_first20_rad": 0.05896782629556492,
+    "relabel_speed_abs_mean_mps": 0.7695457948273856,
+    "last_recoverable_frame": 240,
+    "first_unrecoverable_frame": 159,
+    "k0_lap_s": 8.130783809231962
+   },
+   {
+    "name": "EXT-E0-single-x-d0",
+    "browser_reason": "collision",
+    "browser_frames": 141,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.18253581067963848,
+    "relabel_steer_abs_mean_first20_rad": 0.14734342809278916,
+    "relabel_speed_abs_mean_mps": 0.9583211377888838,
+    "last_recoverable_frame": 48,
+    "first_unrecoverable_frame": 51,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "EXT-E0-single",
+    "browser_reason": "route_complete",
+    "browser_frames": 271,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.17288381777518794,
+    "relabel_steer_abs_mean_first20_rad": 0.13317119233921576,
+    "relabel_speed_abs_mean_mps": 1.0047650290520376,
+    "last_recoverable_frame": 270,
+    "first_unrecoverable_frame": 63,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "EXT-E1-single",
+    "browser_reason": "collision",
+    "browser_frames": 259,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.16753070641803397,
+    "relabel_steer_abs_mean_first20_rad": 0.1366477391309383,
+    "relabel_speed_abs_mean_mps": 0.9632628717249784,
+    "last_recoverable_frame": 246,
+    "first_unrecoverable_frame": 249,
+    "k0_lap_s": 8.091953367107205
+   },
+   {
+    "name": "EXT-E2-single",
+    "browser_reason": "collision",
+    "browser_frames": 260,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1838215754143615,
+    "relabel_steer_abs_mean_first20_rad": 0.15432120210928224,
+    "relabel_speed_abs_mean_mps": 0.9402603871835177,
+    "last_recoverable_frame": 249,
+    "first_unrecoverable_frame": 45,
+    "k0_lap_s": 8.089754523590635
+   },
+   {
+    "name": "EXT-E3-single",
+    "browser_reason": "collision",
+    "browser_frames": 259,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.16101266840714276,
+    "relabel_steer_abs_mean_first20_rad": 0.13953175706100487,
+    "relabel_speed_abs_mean_mps": 1.028781772621883,
+    "last_recoverable_frame": 246,
+    "first_unrecoverable_frame": 249,
+    "k0_lap_s": 8.104397687033122
+   },
+   {
+    "name": "EXT-E4-single",
+    "browser_reason": "route_complete",
+    "browser_frames": 271,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.1714597285542948,
+    "relabel_steer_abs_mean_first20_rad": 0.10585267706382792,
+    "relabel_speed_abs_mean_mps": 0.9443852438348144,
+    "last_recoverable_frame": 270,
+    "first_unrecoverable_frame": 63,
+    "k0_lap_s": 8.085356836557494
+   },
+   {
+    "name": "EXT-E5-single",
+    "browser_reason": "time_limit",
+    "browser_frames": 450,
+    "replay_same": true,
+    "relabel_steer_abs_mean_rad": 0.25936861819997564,
+    "relabel_steer_abs_mean_first20_rad": 0.06806374361581305,
+    "relabel_speed_abs_mean_mps": 0.7373695301673769,
+    "last_recoverable_frame": 141,
+    "first_unrecoverable_frame": 144,
+    "k0_lap_s": 8.130783809231962
+   }
+  ]
+ },
+ "diff_vs_external_reference_s": {
+  "E0": {
+   "SR-s0": null,
+   "SR-s1": null,
+   "ST-s0": null,
+   "ST-s1": null
+  },
+  "E1": null,
+  "E2": null,
+  "E3": null,
+  "E4": {
+   "SR-s0": null,
+   "SR-s1": null,
+   "ST-s0": null,
+   "ST-s1": null
+  },
+  "E5": null
+ },
+ "verification_all_runs": {
+  "runs": 59,
+  "consistency_pass": 59,
+  "lap_rule_pass": 56,
+  "setting_mismatches": [],
+  "unreadable": []
+ },
+ "speed": [
+  {
+   "label": "SR-s0",
+   "fps": 2.73,
+   "frames": 201,
+   "timing": {
+    "predict_posts": 201,
+    "predict_ms_median": 183,
+    "predict_ms_p90": 234,
+    "predict_ms_max": 337
+   },
+   "batch_wall_s": 73.6
+  },
+  {
+   "label": "SR-s1",
+   "fps": 2.79,
+   "frames": 215,
+   "timing": {
+    "predict_posts": 215,
+    "predict_ms_median": 185,
+    "predict_ms_p90": 234,
+    "predict_ms_max": 339
+   },
+   "batch_wall_s": 77.0
+  },
+  {
+   "label": "ST-s0",
+   "fps": 3.01,
+   "frames": 562,
+   "timing": {
+    "predict_posts": 562,
+    "predict_ms_median": 179,
+    "predict_ms_p90": 220,
+    "predict_ms_max": 357
+   },
+   "batch_wall_s": 186.8
+  },
+  {
+   "label": "ST-s1",
+   "fps": 3.0,
+   "frames": 626,
+   "timing": {
+    "predict_posts": 626,
+    "predict_ms_median": 177,
+    "predict_ms_p90": 219,
+    "predict_ms_max": 300
+   },
+   "batch_wall_s": 209.0
+  },
+  {
+   "label": "EXT",
+   "fps": 3.07,
+   "frames": 141,
+   "timing": {
+    "predict_posts": 141,
+    "predict_ms_median": 172,
+    "predict_ms_p90": 210,
+    "predict_ms_max": 265
+   },
+   "batch_wall_s": 45.9
+  },
+  {
+   "label": "EXT",
+   "fps": 2.66,
+   "frames": 271,
+   "timing": {
+    "predict_posts": 271,
+    "predict_ms_median": 188,
+    "predict_ms_p90": 252,
+    "predict_ms_max": 419
+   },
+   "batch_wall_s": 101.9
+  },
+  {
+   "label": "SR-s0",
+   "fps": 2.56,
+   "frames": 447,
+   "timing": {
+    "predict_posts": 447,
+    "predict_ms_median": 188,
+    "predict_ms_p90": 234,
+    "predict_ms_max": 373
+   },
+   "batch_wall_s": 174.7
+  },
+  {
+   "label": "ST-s0",
+   "fps": 3.04,
+   "frames": 3342,
+   "timing": {
+    "predict_posts": 3342,
+    "predict_ms_median": 178,
+    "predict_ms_p90": 225,
+    "predict_ms_max": 451
+   },
+   "batch_wall_s": 1098.6
+  },
+  {
+   "label": "SR-s1",
+   "fps": 2.46,
+   "frames": 271,
+   "timing": {
+    "predict_posts": 271,
+    "predict_ms_median": 192,
+    "predict_ms_p90": 256,
+    "predict_ms_max": 2242
+   },
+   "batch_wall_s": 110.2
+  },
+  {
+   "label": "ST-s1",
+   "fps": 3.26,
+   "frames": 3864,
+   "timing": {
+    "predict_posts": 3864,
+    "predict_ms_median": 162,
+    "predict_ms_p90": 235,
+    "predict_ms_max": 2400
+   },
+   "batch_wall_s": 1183.8
+  },
+  {
+   "label": "EXT",
+   "fps": 2.62,
+   "frames": 2358,
+   "timing": {
+    "predict_posts": 2358,
+    "predict_ms_median": 195,
+    "predict_ms_p90": 248,
+    "predict_ms_max": 437
+   },
+   "batch_wall_s": 901.1
+  }
+ ],
+ "figures": [
+  "fig/eval_laptimes.png",
+  "fig/eval_trajectories.png",
+  "fig/eval_speed_profiles.png",
+  "fig/eval_crash_map.png",
+  "fig/eval_sr_first_corner.png"
+ ],
+ "files": {
+  "runs_csv": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/runs.csv",
+  "runs_verified": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop/runs_verified.json",
+  "closed_loop": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/eval/closed_loop"
+ },
+ "review_20261014": {
+  "note": "確認の段(review.md)で、Python の自前の積分・判定(review/independent_lap_check.py。JS のコードを使わない)などで数え直した値",
+  "independent_recheck": {
+   "closed_loop_59": {
+    "runs": 59,
+    "agree_with_sim": 59,
+    "max_trace_diff": 5.781208844979346e-13,
+    "laps_counted": 11,
+    "laps_best_lap_valid": 8
+   },
+   "rl_teacher_records_18": {
+    "runs": 18,
+    "agree_with_sim": 18,
+    "max_trace_diff": 5.500044863993026e-13,
+    "laps_counted": 24,
+    "laps_best_lap_valid": 24
+   },
+   "random_starts": {
+    "draw": {
+     "drawn_at": "2026-10-14T11:22:57",
+     "rng": "python random.Random(secrets.randbits(32))",
+     "seed": 2713733778,
+     "P1_range": "gate 0, offset U(-0.03,0.03) m, yaw U(-3,3) deg (記録の 60 条件の範囲)",
+     "P2_range": "gate randint(1,32), offset U(-0.12,0.12) m, yaw U(-8,8) deg (RL の学習の開始の範囲)",
+     "P1": {
+      "gate": 0,
+      "offset": 0.019563,
+      "yawDeg": -2.915111
+     },
+     "P2": {
+      "gate": 6,
+      "offset": -0.045759,
+      "yawDeg": 6.995701
+     }
+    },
+    "results": {
+     "sanity-E0-single": {
+      "reason": "route_complete",
+      "laps_s": [
+       8.091953367107205
+      ],
+      "best_lap_valid": [
+       true
+      ],
+      "min_clearance_m": 0.07052793528148477,
+      "agree_with_sim": true
+     },
+     "sanity-E0-continuous": {
+      "reason": "collection_duration_complete",
+      "laps_s": [
+       8.091097437063654,
+       7.656318984241544
+      ],
+      "best_lap_valid": [
+       true,
+       true
+      ],
+      "min_clearance_m": 0.06709387202897042,
+      "agree_with_sim": true
+     },
+     "P1-single": {
+      "reason": "route_complete",
+      "laps_s": [
+       8.082058571282639
+      ],
+      "best_lap_valid": [
+       true
+      ],
+      "min_clearance_m": 0.07276689515548117,
+      "agree_with_sim": true
+     },
+     "P1-continuous": {
+      "reason": "collection_duration_complete",
+      "laps_s": [
+       8.081240820851855,
+       7.809609992913822
+      ],
+      "best_lap_valid": [
+       true,
+       true
+      ],
+      "min_clearance_m": 0.06160888191062974,
+      "agree_with_sim": true
+     },
+     "P2-single": {
+      "reason": "route_complete",
+      "laps_s": [
+       7.939929863883025
+      ],
+      "best_lap_valid": [
+       true
+      ],
+      "min_clearance_m": 0.05308472034395464,
+      "agree_with_sim": true
+     },
+     "P2-continuous": {
+      "reason": "collection_duration_complete",
+      "laps_s": [
+       7.939478502972381,
+       7.788850963781808
+      ],
+      "best_lap_valid": [
+       true,
+       true
+      ],
+      "min_clearance_m": 0.05308472034395464,
+      "agree_with_sim": true
+     }
+    },
+    "user_verifier_lap_items": {
+     "sanity-E0-single.json": true,
+     "P1-single.json": true,
+     "P2-single.json": true
+    }
+   },
+   "recorded_scenes_2_random": {
+    "draw": {
+     "seed": 2708978707,
+     "scenes": [
+      "20261013-173553-eb300e81-0001",
+      "20261013-170034-0b52d979-0001"
+     ],
+     "of": 60
+    },
+    "results": {
+     "20261013-170034-0b52d979-0001": {
+      "laps_s": [
+       8.085770077478582,
+       7.715414921071918
+      ],
+      "best_lap_valid": [
+       true,
+       true
+      ],
+      "agree_with_sim": true
+     },
+     "20261013-173553-eb300e81-0001": {
+      "laps_s": [
+       8.106927693088798,
+       7.847243727798702
+      ],
+      "best_lap_valid": [
+       true,
+       true
+      ],
+      "agree_with_sim": true
+     }
+    }
+   }
+  },
+  "failure_shape_numbers": {
+   "first_straight_nearest_obstacle_m": {
+    "RL_E0": {
+     "id": "segment-43",
+     "kind": "curtain",
+     "d": 0.10424354519982869
+    },
+    "teacher_E0": {
+     "id": "disk-26",
+     "kind": "post-foot",
+     "d": 0.28993187902834855
+    },
+    "definition": "開始から車の x が初めて 2.6 m を超えるまで。車体の長方形と障害物の最小距離"
+   },
+   "rail_segment11_min_clearance_m": {
+    "RL_E0": 0.1390006506924495,
+    "teacher_E0": 0.3408103306119583
+   },
+   "whole_lap_min_clearance_m": {
+    "RL_E0": 0.07052793528148477,
+    "teacher_E0": 0.06663635857438983
+   },
+   "SR_dev_at_crash_vs_RL_E0_m": [
+    0.1013332140950552,
+    0.17931898117813244
+   ],
+   "SR_dev_at_crash_same_start_m": [
+    0.10716417330315035,
+    0.19020692416423646
+   ],
+   "SR_dev_at_0p5s_same_start_m": [
+    0.0010694648036011375,
+    0.028247954214926194
+   ],
+   "gate_point4_lateral_m": {
+    "teacher_E0": 0.6281485164487685,
+    "ST-s0-E1": 0.6442935380902081,
+    "ST-s0-E3": 0.5846351369058335,
+    "EXT-E0": 0.4495783726614567,
+    "RL_E0": 0.511552492996
+   },
+   "SR_s0_E0_relabel_minus_used_steer_rad_frames15_26": [
+    -0.051109999999999996,
+    0.17421
+   ],
+   "SR_collision_kinds_12": {
+    "curtain": 2,
+    "rail": 8,
+    "post-foot": 2
+   },
+   "source": "review/derived_numbers.json(review/derived_numbers.py)"
+  },
+  "dataset": {
+   "reimport_with_current_code": {
+    "listed": true,
+    "card": {
+     "scenes": 60,
+     "frames": 36000,
+     "training_frames": 35400,
+     "train_scenes": 48,
+     "val_scenes": 12,
+     "num_modes": 9,
+     "mode_frames": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 36000
+     },
+     "tags": [
+      "simulator",
+      "rl-bestlap"
+     ],
+     "source": "simulator"
+    },
+    "label_mask_applied": false,
+    "scenes_tab": {
+     "count": 60,
+     "modes": [
+      8
+     ],
+     "frames_cam": 36000,
+     "unset_segments": 0
+    },
+    "train_reader": {
+     "train_samples": 28320,
+     "sample_keys": "<class 'tuple'>"
+    },
+    "archive_sha256": "8942243f18a99321b4ddcf43d3c9f7741ec383dea4f9e61f17cdbd97034a009f"
+   },
+   "live_equals_fresh_reimport_files": 72378,
+   "live_differs_only": [
+    "import_source.json"
+   ],
+   "rebuild_from_scenes_tab_label_shift": {
+    "spacing_us_values": [
+     33333,
+     33334
+    ],
+    "label_steps": 356700,
+    "shifted_steps_if_rebuilt_from_scenes": 119100,
+    "shifted_frac": 0.33389402859545836,
+    "steer_label_abs_diff_us_mean_if_rebuilt": 19.51323890686035,
+    "imported_future_actions_equal_vehicle_k_plus_1_frac": 1.0
+   }
+  },
+  "user_simulator_manifest": {
+   "files": 851,
+   "ok": 851,
+   "mismatch": 0,
+   "missing": 0,
+   "extra": [
+    "最初にお読みください.txt"
+   ],
+   "dataset_zip_ok": true
+  },
+  "pytest_full": {
+   "failed": 5,
+   "passed": 703,
+   "skipped": 3,
+   "deselected": 1,
+   "failed_tests": [
+    "experiments/20261013_sim_rl_modes/r3/rc/promote/test_sim_label_frame_index.py::test_snapshot_scene_uses_frame_index",
+    "experiments/20261013_sim_rl_modes/r3/rc/promote/test_sim_label_frame_index.py::test_snapshot_invalid_frames_drop_labels",
+    "experiments/20261013_sim_rl_modes/r3/rc/promote/test_sim_label_mask_e2e.py::test_e2e_import_expand_rebuild_relabel",
+    "experiments/20261013_sim_rl_modes/tests/test_masking.py::test_same_as_jetformer_import",
+    "tests/test_sim_runner.py::test_runner_sigint_stops"
+   ],
+   "this_experiment_tests": "13 passed(experiments/20261013_sim_rl_bestlap)",
+   "attribution": "失敗 5 件はほかの作業(sim_rl_modes の作業中の試験 4 件・シミュレーター統合の tests/test_sim_runner.py 1 件)。この作業は jetformer/ のコードを変えていない"
+  }
+ }
+}

@@ -1,0 +1,175 @@
+{
+ "title": "JetFormer 10月14日\n強化学習でベストラップ",
+ "log": "20261010-173445",
+ "_note": "約 1 分の報告動画の絵コンテ(確認の段で作成)。図は video/fig/v1〜v4(experiments/20261013_sim_rl_bestlap/review/video/make_slides.py が evaluation.json・recording/summary.json・review/*.json と screens/ の実際の画面から作った)。背景の log は実車の走行で、タイトルと終わりの札の後ろにだけ薄く見える。確認: python3 ~/jetformer_reports/sim_cotrain_20261013/video/src/check_storyboard.py <この JSON>",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月14日のレポート",
+   "src_start": 160.6,
+   "src_end": 165.96,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "強化学習でベストラップを作る",
+    "その走りを20分のデータに",
+    "JetFormerで学習して走らせる",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。今日は、強化学習のベストラップで学習させました!",
+     "say": "ラピカです。今日は、強化学習のベストラップで、学習させました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_rl",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "強化学習で0.84秒速い周",
+   "src_start": 166.4,
+   "src_end": 175.36,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/video/fig/v1_rl_vs_teacher.png",
+   "lines": [
+    {
+     "text": "強化学習で、停止から1周8.09秒。教師より0.84秒速い周ができました。",
+     "say": "強化学習で、停止から1周、8.09秒。教師より、0.84秒速い周ができました。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_data",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "走りを20分のデータに",
+   "src_start": 177.4,
+   "src_end": 182.72,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/video/fig/v2_dataset.png",
+   "lines": [
+    {
+     "text": "その走りを20分記録して、JetFormerに取り込みました。",
+     "say": "その走りを、20分記録して、ジェットフォーマーに取り込みました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_closed_loop",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "学んだモデルは完走できず",
+   "src_start": 184.6,
+   "src_end": 194.91,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/video/fig/v3_closed_loop.png",
+   "lines": [
+    {
+     "text": "でも、このデータで学んだモデルは、12回とも1秒ほどでぶつかりました。",
+     "say": "でも、このデータで学んだモデルは、12回とも、1秒ほどでぶつかりました。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "教師のデータでも、完走は12回中2回です。",
+     "say": "教師のデータでも、完走は、12回中2回です。",
+     "expression": "worried",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s5_why",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "なぜぶつかったのか",
+   "src_start": 195.0,
+   "src_end": 205.19,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/video/fig/v4_why.png",
+   "lines": [
+    {
+     "text": "強化学習の線は、壁まで約10cm。少しのずれで届きます。",
+     "say": "強化学習の線は、壁まで約10センチ。少しのずれで、届きます。",
+     "expression": "surprised",
+     "pose": "point"
+    },
+    {
+     "text": "モデルは、ずれを直す舵を習っていませんでした。",
+     "say": "モデルは、ずれを直す舵を、習っていませんでした。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 206.0,
+   "src_end": 211.95,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "強化学習で教師より0.84秒速い周",
+    "20分・60シーンのデータを記録",
+    "学んだモデルは1秒前後で衝突",
+    "教師データのモデルも完走2/12",
+    "数字は別の積分で数え直し済み"
+   ],
+   "lines": [
+    {
+     "text": "速い周とデータはできましたが、まねしたモデルは、まだ走り切れません。",
+     "say": "速い周とデータはできましたが、まねしたモデルは、まだ走り切れません。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s7_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 213.5,
+   "src_end": 222.14,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "線に10〜20cmの余裕を約束させる",
+    "ずれた時の戻し方を教える",
+    "強化学習の操作をなめらかに",
+    "遅れや舵の乱れに強くする",
+    "実車ではまだ確かめていない"
+   ],
+   "lines": [
+    {
+     "text": "課題は、線に余裕を持たせることと、ずれた時の戻し方を教えることです。",
+     "say": "課題は、線に余裕を持たせることと、ずれた時の戻し方を、教えることです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

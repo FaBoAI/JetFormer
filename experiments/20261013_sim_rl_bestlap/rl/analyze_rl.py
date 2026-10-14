@@ -44,7 +44,8 @@ def sha256(p: Path) -> str:
 
 def runs() -> list[str]:
     names = [n for n in ["pilot-main-s100", "main-s0", "main-s1", "main-s2", "open-s0"] if (RL / n / "progress.jsonl").exists()]
-    names += sorted(p.parent.name for p in RL.glob("*/progress.jsonl") if p.parent.name not in names)
+    # r2-* は手順の外の参考の追加実験(物理のずれのランダム化)。選定・本番の曲線には入れない(rl/r2/ の図と表で別に扱う)
+    names += sorted(p.parent.name for p in RL.glob("*/progress.jsonl") if p.parent.name not in names and not p.parent.name.startswith("r2-"))
     return names
 
 
@@ -141,8 +142,8 @@ def curves() -> None:
         a_ret.plot(x, smooth(ret), color=c, lw=1.6, ls=":" if pilot else "-", label=lab + ("(調整前の報酬。比べられない)" if pilot else ""))
         one = [r["episodes"].get("lap1", {}).get("n", 0) / r["episodes"]["n"] if r["episodes"].get("n") else np.nan for r in P]
         two = [r["episodes"].get("two_valid_laps_frac", np.nan) if r["episodes"].get("n") else np.nan for r in P]
-        a_comp.plot(x, smooth(one), color=c, lw=1.6, label=lab + " 有効な 1 周目あり")
-        a_comp.plot(x, smooth(two), color=c, lw=1.0, ls="--", label=lab + " 20 秒・2 周とも有効")
+        a_comp.plot(x, smooth(one), color=c, lw=1.6, label=lab)
+        a_comp.plot(x, smooth(two), color=c, lw=1.0, ls="--")
         lap1 = [r["episodes"].get("lap1", {}).get("median", np.nan) for r in P]
         fly = [r["episodes"].get("flying", {}).get("median", np.nan) for r in P]
         a_lap.plot(x, smooth(lap1), color=c, lw=0.9, alpha=0.35)
@@ -153,14 +154,15 @@ def curves() -> None:
             a_eval.plot(xe, [e["rec60_valid"] or 0 for e in E], color=c, lw=1.6, marker="o", ms=4, label=lab)
             l1 = [e["rec60_lap1_mean"] if e["rec60_lap1_n"] == 60 else np.nan for e in E]
             l2 = [e["rec60_lap2_mean"] if e["rec60_lap2_n"] == 60 else np.nan for e in E]
-            a_lap.plot(xe, l1, color=c, lw=1.8, marker="o", ms=5, label=lab + " 1 周目")
-            a_lap.plot(xe, l2, color=c, lw=1.4, ls="--", marker="s", ms=4, mfc=SURFACE, label=lab + " 2 周目(フライング)")
+            if not pilot and any(np.isfinite(v) for v in l1):
+                a_lap.plot(xe, l1, color=c, lw=1.8, marker="o", ms=5, label=lab)
+                a_lap.plot(xe, l2, color=c, lw=1.4, ls="--", marker="s", ms=4, mfc=SURFACE)
     _style(a_ret, "学習中の 1 回(20 秒)あたりの報酬(確率的な方策、9 更新の移動平均)", "報酬の平均")
-    _style(a_comp, "学習中の回のうち有効な周を走った割合(確率的な方策)", "割合")
+    _style(a_comp, "有効な周の割合(確率的。実線 1 周目が有効・破線 2 周とも有効)", "割合")
     a_comp.set_ylim(-0.02, 1.02)
     _style(a_eval, "決定的な方策で REC60(記録の 60 条件)を 2 周とも有効に走れた数", "シーン数 / 60")
     a_eval.set_ylim(-1, 61)
-    _style(a_lap, "周回時間: 太線 = 決定的な方策の REC60 平均、薄い線 = 学習中の中央値", "秒")
+    _style(a_lap, "周回時間(丸 1 周目・四角 2 周目。太線 決定的 REC60 平均・薄線 学習中)", "秒")
     for ref, txt in ((T_LAP1, f"教師 1 周目 {T_LAP1:.3f}"), (T_LAP2, f"教師 2 周目 {T_LAP2:.3f}")):
         a_lap.axhline(ref, color=INK2, lw=1.1, ls="-.")
         a_lap.text(0.01, ref, " " + txt, color=INK2, fontsize=8, va="bottom", transform=a_lap.get_yaxis_transform())
@@ -170,7 +172,7 @@ def curves() -> None:
         ax.set_xlim(0, max(xmax, 1) * 1.02)
     for ax in (a_ret, a_comp, a_eval):
         ax.legend(fontsize=7.5, frameon=False, labelcolor=INK2)
-    a_lap.legend(fontsize=7, frameon=False, labelcolor=INK2, loc="upper right", ncol=2)
+    a_lap.legend(fontsize=7.5, frameon=False, labelcolor=INK2, loc="upper right")
     fig.suptitle("RL(PPO)の学習曲線 — main は速度上限 4.5 m/s、open は 7.24 m/s(参考)", color=INK, fontsize=13, x=0.01, ha="left")
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(FIG / "rl_learning_curves.png", dpi=130, facecolor=SURFACE)
@@ -192,6 +194,8 @@ def curves() -> None:
             ys = [e[key] if (key == "std_single" or e[need] == 60) else np.nan for e in E]
             ys = [np.nan if v is None else v for v in ys]
             vals += [v for v in ys if np.isfinite(v)]
+            if not any(np.isfinite(v) for v in ys):
+                continue
             ax.plot(xs, ys, color=SERIES.get(n, "#4a3aa7"), lw=1.8, marker="o", ms=4, label=LABELS.get(n, n))
             el = [(x, y) for x, y, e in zip(xs, ys, E) if e["eligible"] and np.isfinite(y)]
             if el:
@@ -204,12 +208,14 @@ def curves() -> None:
         ax.text(0.01, thr, f" H1 の条件 {thr:.3f}", color=INK2, fontsize=8, va="top", transform=ax.get_yaxis_transform())
         if key == "std_single":
             ax.axhline(LEARNED, color="#8a8984", lw=1.0, ls="-.")
-            ax.text(0.01, LEARNED, f" 学習済み ONNX {LEARNED:.3f}", color=INK2, fontsize=8, va="bottom", transform=ax.get_yaxis_transform())
+            ax.text(0.99, LEARNED, f"学習済み ONNX {LEARNED:.3f} ", color=INK2, fontsize=8, va="bottom", ha="right", transform=ax.get_yaxis_transform())
         if vals:
-            ax.set_ylim(min(vals + [thr]) - 0.08, max(min(max(vals), ref + 1.5), ref + 0.15) + 0.05)
-        ax.legend(fontsize=7, frameon=False, labelcolor=INK2)
-    fig.suptitle("決定的な方策の周回時間(200 万ステップごとの評価、高速版のコア。白抜きの丸 = 選べるチェックポイント)", color=INK, fontsize=12, x=0.01, ha="left")
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
+            top = max(ref, LEARNED if key == "std_single" else ref) + 0.15
+            ax.set_ylim(min(vals + [thr]) - 0.08, top)
+    fig.suptitle("決定的な方策の周回時間(200 万ステップごとの評価、高速版のコア。白抜きの丸 = 選べるチェックポイント。上の範囲の外の点は省略)", color=INK, fontsize=12, x=0.01, ha="left")
+    h, l = axes[2].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper right", ncol=len(l), fontsize=8, frameon=False, labelcolor=INK2, bbox_to_anchor=(0.995, 0.93))
+    fig.tight_layout(rect=(0, 0, 1, 0.88))
     fig.savefig(FIG / "rl_laptime_eval.png", dpi=130, facecolor=SURFACE)
     plt.close(fig)
     print("図:", FIG / "rl_learning_curves.png", FIG / "rl_laptime_eval.png")
@@ -247,6 +253,15 @@ def select() -> dict:
         ck = RL / n / "checkpoints" / (pol.stem + ".pt")
         shutil.copy2(ck, dst / "checkpoint.pt")
         export_torch(ck, w, dst)
+        rj = json.loads((RL / n / "run.json").read_text())
+        (dst / "provenance.json").write_text(json.dumps({
+            "run": n, "variant": variant, "seed": rj["seed"], "step": b["step"], "score_rec60_lap1_plus_lap2": b["score"],
+            "policy_json_sha256": sha256(dst / "policy.json"), "source_policy": str(pol), "source_checkpoint": str(ck),
+            "reward_version": rj.get("env", {}).get("reward_version"), "features_version": rj.get("env", {}).get("features_version"),
+            "reference_loop_sha256": rj.get("env", {}).get("reference_loop_sha256"), "speed_cap_mps": rj.get("env", {}).get("speed_cap_mps"),
+            "protocol_sha256": rj.get("protocol_sha256"), "ppo": rj.get("ppo"), "control_delay_frames_trained": 0,
+            "note": "rl/best の方策。JS は rl/policy_forward.mjs + policy.json(または policy_weights.mjs)、観測は rl/features.mjs"},
+            ensure_ascii=False, indent=1) + "\n")
         out[f"selected_{variant}"] = {"run": n, "step": b["step"], "score": b["score"], "policy_json": str(dst / "policy.json"),
                                       "policy_json_sha256": sha256(dst / "policy.json"), "policy_weights_mjs": str(dst / "policy_weights.mjs"),
                                       "policy_pt": str(dst / "policy.pt"), "policy_torchscript": str(dst / "policy_ts.pt"),
@@ -336,7 +351,7 @@ def trajectory(final_eval_path: Path | None = None) -> None:
     times = {"rl": fe["rl"]["STD"]["single"]["single_lap_s"], "teacher": fe["teacher"]["STD"]["single"]["single_lap_s"], "learned": fe["learned_onnx"]["single_lap_s"]}
     colors = {"rl": "#2a78d6", "teacher": "#eb6834", "learned": "#1baf7a"}
     names = {"rl": "RL(PPO main)", "teacher": "作者の RC 教師", "learned": "学習済み ONNX(遅延 1)"}
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8.2), facecolor=SURFACE, gridspec_kw={"width_ratios": [1.55, 1]})
+    fig, axes = plt.subplots(1, 2, figsize=(17, 6.6), facecolor=SURFACE, gridspec_kw={"width_ratios": [1.6, 1]})
     for ax in axes:
         ax.set_facecolor(SURFACE)
         for s in world["surfaces"]:
@@ -367,7 +382,7 @@ def trajectory(final_eval_path: Path | None = None) -> None:
     b = world["bounds"]
     axes[0].set_xlim(b["minX"], b["maxX"]); axes[0].set_ylim(b["maxZ"], b["minZ"])
     axes[0].set_title("停止から 1 周(標準の開始、元の sim-core.js)。数字はゲートの番号", color=INK, fontsize=11, loc="left")
-    axes[0].legend(fontsize=9, frameon=False, labelcolor=INK2, loc="lower left")
+    axes[0].legend(fontsize=9, frameon=False, labelcolor=INK2, loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=3)
     axes[0].set_xlabel("x [m]", color=INK2); axes[0].set_ylabel("z [m](上が −z)", color=INK2)
     # 速さの色(RL)
     x = np.array([t["x"] for t in tr["rl"]]); zz = np.array([t["z"] for t in tr["rl"]]); v = np.array([t["speed"] for t in tr["rl"]])
@@ -378,7 +393,7 @@ def trajectory(final_eval_path: Path | None = None) -> None:
     axes[1].set_title("拡大: 黒シートの近道とその先(点 = RL の各フレーム)", color=INK, fontsize=11, loc="left")
     fig.tight_layout()
     FIG.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG / "rl_trajectory_vs_teacher.png", dpi=130, facecolor=SURFACE)
+    fig.savefig(FIG / "rl_trajectory_vs_teacher.png", dpi=130, facecolor=SURFACE, bbox_inches="tight")
     plt.close(fig)
     print("図:", FIG / "rl_trajectory_vs_teacher.png")
 

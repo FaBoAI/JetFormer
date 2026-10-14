@@ -17,7 +17,14 @@
   - 他の Firefox が動いていないこと・空きメモリ 2 GiB 以上を確かめてから始める(webgl_probe.py と同じ)。
   - snap の Firefox は jf-heavy のメモリ上限の外(自分の systemd スコープ)に移るので、起動後にそのスコープにも上限を付ける。
   - 結果: /home/jetson/jetformer_reports/sim_rl_bestlap_20261013/webgl_probe/<tag>/result.json(1 シーンごとの時間、
-    フレーム送信の往復時間、PNG 化の時間、収集 ZIP の情報)
+    フレーム送信の往復時間、PNG 化の時間、収集 ZIP の情報)。--out-dir で置き場所を変えられる(記録の段は recording/browser/)。
+  - 記録の段(2026-10-14)で足したもの(既定では今までと同じ動き):
+      --out-dir            結果の置き場所
+      --screens-dir        途中の画面(窓全体・車載カメラ・ToF)を保存する場所。最初のシーンの途中と、その後はおよそ
+                           --screens-every-s 秒ごとに保存する(最大 --screens-max 組)
+      --extra-session-ids  前の実行で集めたシーンのセッション ID(JSON の配列)。途中で止まって続きを集めたときに、
+                           1 つの ZIP にまとめる対象へ足す(design.md 4.3 節の「続き」)
+      --progress-file      進み具合を 1 行ずつ追記する JSONL(別のプロセスから見られるように)
 """
 from __future__ import annotations
 
@@ -90,9 +97,20 @@ def main():
     ap.add_argument('--collection-name', default='', help='この実行のシーンを1つのZIPにまとめるときの名前')
     ap.add_argument('--scene-timeout', type=float, default=600, help='1 シーンあたりの待ち時間の上限 [秒]')
     ap.add_argument('--firefox-mem', default='2500M', help='snap の Firefox のスコープに付けるメモリ上限')
+    ap.add_argument('--out-dir', default='', help='結果の置き場所(既定 webgl_probe/<tag>)')
+    ap.add_argument('--screens-dir', default='', help='途中の画面を保存する場所(省略で保存しない)')
+    ap.add_argument('--screens-every-s', type=float, default=900, help='最初のシーンのあと、画面を保存する間隔 [秒]')
+    ap.add_argument('--screens-max', type=int, default=8, help='途中の画面を保存する最大の組数')
+    ap.add_argument('--extra-session-ids', default='', help='まとめる対象に足す、前の実行のセッション ID(JSON の配列のファイル)')
+    ap.add_argument('--progress-file', default='', help='進み具合を追記する JSONL')
     a = ap.parse_args()
-    out = REPORT / 'webgl_probe' / a.tag
+    out = Path(a.out_dir) if a.out_dir else REPORT / 'webgl_probe' / a.tag
     out.mkdir(parents=True, exist_ok=True)
+    screens = Path(a.screens_dir) if a.screens_dir else None
+    if screens:
+        screens.mkdir(parents=True, exist_ok=True)
+    shots = []
+    extra_ids = json.loads(Path(a.extra_session_ids).read_text()) if a.extra_session_ids else []
     result = {'tag': a.tag, 'page': a.page, 'display': a.display, 'preflight': wait_preflight()}
     log = open(out / 'geckodriver.log', 'w')
     env = {'DISPLAY': a.display, 'XAUTHORITY': XAUTH} if a.display else {}
@@ -101,10 +119,30 @@ def main():
     d = WebDriver(GECKO_PORT)
     progress = []
 
+    def shoot(v, label):
+        """途中の画面(窓全体・車載カメラ 224×224・ToF の表示)を保存する。失敗しても収集は続ける"""
+        try:
+            stem = f'{len(shots):02d}_{label}'
+            d.screenshot(screens / f'{stem}_window.png')
+            save_canvas(d, 'camera', screens / f'{stem}_camera.png')
+            save_canvas(d, 'ranges', screens / f'{stem}_tof.png')
+            shots.append({'stem': stem, 'wall_s': v.get('wall_s'), 'frame': v.get('frame'), 'batch': v.get('batch'),
+                          'record': v.get('record')})
+        except Exception as e:  # noqa: BLE001
+            shots.append({'error': f'{type(e).__name__}: {e}'})
+
     def note(v):
         v = dict(v, wall_s=round(time.time() - t_batch, 1), mem_available_mb=mem_available_mb())
         progress.append(v)
         print('[collect]', json.dumps(v, ensure_ascii=False), flush=True)
+        if a.progress_file:
+            with open(a.progress_file, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(v, ensure_ascii=False) + '\n')
+        if screens and len(shots) < a.screens_max:
+            first_scene = not shots and 150 <= (v.get('frame') or 0) <= 450
+            later = shots and v['wall_s'] - (shots[-1].get('wall_s') or 0) >= a.screens_every_s and 60 <= (v.get('frame') or 0) <= 540
+            if first_scene or later:
+                shoot(v, f"t{int(v['wall_s']):05d}_f{v.get('frame')}")
 
     try:
         for _ in range(60):
@@ -133,6 +171,11 @@ def main():
         result['plan'] = plan
         d.js("""document.getElementById('batch-plan').value=arguments[0];document.getElementById('batch-record').checked=true;
                 document.getElementById('collection-ids').value='';""", json.dumps(plan, ensure_ascii=False))
+        # アプリは 60 条件がすべてきれいに終わると、その場で collection-name の名前で 1 つの ZIP にまとめる(app.js の連続試験の最後)。
+        # その名前の既定は jetformer-simulator-id8-20min なので、始める前に --collection-name を入れておく(記録の段 2026-10-14 に追加。
+        # 最初の 60 シーンの記録では入れ忘れ、教師データと紛らわしい名前の ZIP ができたので作り直した)
+        if a.collection_name:
+            d.js("document.getElementById('collection-name').value=arguments[0];", a.collection_name)
         result['ui_before_run'] = d.js("""const $=id=>document.getElementById(id);return {dataset_mode:$('dataset-mode').value,
             automated_labels:$('automated-labels').checked,batch_record:$('batch-record').checked};""")
         d.js("performance.clearResourceTimings();performance.setResourceTimingBufferSize(100000);")
@@ -155,7 +198,21 @@ def main():
         d.screenshot(out / 'after_batch.png')
         save_canvas(d, 'camera', out / 'camera_rgb_after.png')
         ids = [s['dataset_session_id'] for s in result['scenes'] if s['dataset_session_id'] and s['frames'] == 600 and s['collisions'] == 0]
-        if a.collection_name and ids:
+        result['session_ids_this_run'] = ids
+        ids = [*extra_ids, *[i for i in ids if i not in extra_ids]]
+        result['session_ids_for_collection'] = ids
+        if len(plan) == 60 and len(result['session_ids_this_run']) == 60:
+            # アプリの自動のまとめ(連続試験の最後に await される)が終わるのを待つ
+            wait_text(d, "return document.getElementById('collection-status').textContent;",
+                      lambda v: 'シーン /' in v or '集約できません' in v, 1800, 5)
+        auto = json.loads(d.js("try{return localStorage.getItem('course-20s-collection');}catch(e){return null;}") or 'null')
+        slug = ''.join(ch if ch.isalnum() or ch in '-_' else '_' for ch in a.collection_name).strip('_')[:40]
+        if a.collection_name and auto and str(auto.get('filename', '')).startswith(slug + '_') and auto.get('scenes') == len(ids) and not extra_ids:
+            result['collection'] = auto          # アプリが連続試験の最後に自分でまとめた(同じ名前・同じシーン数)
+            result['collection_status'] = d.js("return document.getElementById('collection-status').textContent;")
+            result['collection_by'] = 'app-auto'
+        elif a.collection_name and ids:
+            result['collection_by'] = 'collection-build'
             t_col = time.time()
             d.js("""const $=id=>document.getElementById(id);$('collection-ids').value=arguments[0];$('collection-name').value=arguments[1];
                     $('collection-status').textContent='';$('collection-build').click();""", '\n'.join(ids), a.collection_name)
@@ -168,6 +225,7 @@ def main():
         result['error'] = f'{type(e).__name__}: {e}'
     finally:
         result['progress'] = progress
+        result['screens'] = shots
         d.quit()
         gd.terminate()
         try:

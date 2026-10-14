@@ -159,3 +159,24 @@ def test_variant_speed_cap(variant, cap):
             if te.any():
                 break
         assert vmax <= cap + 1e-4 and vmax > 3.0
+
+
+def test_r3_reward_and_dr_through_python():
+    """r3(手順の外の参考の追加実験): reward='r3' はワーカーに届き、壁へゆっくり進むと『すき間の約束』で終わる。既定は今までどおり。"""
+    with NodeVecEnv(n_workers=1, envs_per_worker=1, seed=0, starts=[STD]) as env:
+        assert env.info["reward_version"] == "rl-bestlap-reward-v2-gatecap"
+        assert "clearance_terminate_m" not in env.info["reward"]
+    with NodeVecEnv(n_workers=1, envs_per_worker=1, seed=0, starts=[STD], reward="r3") as env:
+        assert env.info["reward_version"] == "rl-bestlap-reward-v2-gatecap+clear3cm"
+        assert env.info["reward"]["clearance_terminate_m"] == pytest.approx(0.03)
+        env.reset()
+        a = np.array([[0.0, -0.8]], np.float32)
+        for _ in range(600):
+            _, rew, term, trunc, info = env.step(a)
+            if term[0] or trunc[0]:
+                break
+        assert term[0] and info["episodes"][0]["reason"] == "clearance"
+        assert info["episodes"][0]["min_clearance"] < 0.03
+    with NodeVecEnv(n_workers=1, envs_per_worker=4, seed=1, dr="r3", reward="r3") as env:
+        assert env.info["dr"] == "r3" and env.info["dr_spec"]["edge_fraction"] == pytest.approx(0.5)
+        env.reset()

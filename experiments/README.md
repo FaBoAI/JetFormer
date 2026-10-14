@@ -13,7 +13,7 @@ JetFormer の実車走行・学習・解析の検証の記録。作業で使っ�
 | [`20261012_policy_zoo/`](20261012_policy_zoo/README.md) | 方策(Policy)の比較: TransFuser軽量型(JetFormer v0)を基準に、ACT型・TCP型・TransFuser多段型・DINOv2型を追加し、5 方策 × 種 2 を同じ条件で学習・評価(`evaluation.md`。結果を見る前に固定した規則で判定)。結果は「ベストは TransFuser軽量型(モデル B)のまま、差は最大 1.1µs」。設計(`spec.md`・`interfaces.md`)・速さの計測(`bench/`)・学習の記録(`training.md`)・図・動画の台本 |
 | [`20261013_sim_cotrain/`](20261013_sim_cotrain/README.md) | シミュレーター(ジャンル8)と実機(ジャンル4・5)を混ぜて学習(C)→ 実機だけで仕上げ(C+FT)、対照に A+FT。結果を見る前に固定した規則(`protocol.json`)で判定。結果は「すべて A と同等(49.24〜49.73µs)。精度は上がらず、走行はモデル B のまま。入力のずれには約 4 割強くなった」。シミュレーターの 60 シーンはほぼ同じ走りのくり返しだった |
 | [`20261013_sim_integration/`](20261013_sim_integration/README.md) | シミュレーター(CourseLab)の Web UI への統合の記録: 調査(`understand_*.md`)・設計(`design.md`)・本番の画面での確認(`verify.md`、20 項目)・レビュー(`review.md`)と画面の写真。コードは `jetformer/sim/` と「シミュレーター」タブ。使い方はリポジトリの README |
-| [`20261013_sim_rl_bestlap/`](20261013_sim_rl_bestlap/notes/design.md) | **作業中**: シミュレーターで強化学習(PPO)のベストラップ → その走りをシミュレーターデータとして記録 → JetFormer を学習。物理(sim-core.js)を Node で画面なしに動かす環境と、教師ラップの再現(`notes/env.md`)、固定した手順(`notes/protocol.json`)。ユーザーのシミュレーター本体の写し(`sim/dist`・`sim/qa`)は入れていない |
+| [`20261013_sim_rl_bestlap/`](20261013_sim_rl_bestlap/notes/README.md) | シミュレーターで強化学習(PPO)のベストラップ → その走りを 20 分のシミュレーターデータとして記録 → JetFormer を学習してシミュレーターの中で走らせる。結果は「強化学習は停止から 1 周 8.092 秒・フライング 7.656 秒(作者の教師 8.931 / 8.370 秒)、独立な確認 3 回で本物。しかしそのデータで学んだ JetFormer は 12 回とも約 1 秒で衝突(線に余裕がなく、ずれの戻し方を習っていない)」。物理を Node で画面なしに動かす環境(`rl/`)、確認(`check_r*/`)、閉ループ評価(`eval/`)、報告(`notes/`)。ユーザーのシミュレーター本体の写し(`sim/dist`・`sim/qa`)は入れていない |
 
 ## 注意
 
