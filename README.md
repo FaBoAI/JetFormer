@@ -18,7 +18,8 @@ sudo systemctl restart jetformer-web    # コードを更新したとき
 - **データセット**:選んだシーンからnuScenes形式を作成 → tarでエクスポート(SHA256付き)→ ダウンロード / Hugging Face へアップロード(下記)
 - **学習**:データセットと間引き率を選んで、このJetsonのGPUで学習(下記)
 - **走行**:学習結果のモデルで車を走らせる。ステアリング・速度のゲインを走行中に調整、走行中の収集(評価用)も選べる(下記)
-- **シミュレーター**:コースのシミュレーター(CourseLab)の導入・ブリッジの起動・コースの選択とアップロード・モデルを読み込んで開く・集めたデータの取り込み(下記)
+- **シミュレーター**:コースのシミュレーター(CourseLab)の導入・ブリッジの起動・コースの選択とアップロード・モデルを読み込んで開く・集めたデータの取り込み・
+  強化学習モード(いろいろな走りのデータセットを作る。状態の表示と収集プラン)(下記)
 
 JupyterLab(8888番)とは別ポートです。カメラは同時に1つのプロセスしか使えないので、
 JetRacerのノートブックでカメラを使っている間は収集できません。
@@ -218,6 +219,60 @@ GPU は使わない。シミュレーターのファイルは変えない(JetFor
   この Jetson の JetFormer に固定)。JetFormer の管理 API は `/api/sim/*`。どちらも既存の `/api/datasets/*`・`/api/models/*` とは重ならない。
 - データ:`data/sim/`(releases/・active.json・venv/・venv.json・wheels/・runtime/(ブリッジの作業場所)・logs/bridge.log)、`data/sim_courses/`(アップロードしたコースと settings.json)。
 - コード:`jetformer/sim/`(install・env・bridge_runner・bridge_proc・proxy・courses・worldhash・datasets・web)、テストは `tests/test_sim_*.py`。
+
+### 強化学習モード(データセットのばらつき)
+
+シミュレーターの教師の走り方を、強化学習(PPO)で学習した方策に変えて、いろいろな走りのデータセットを作る(2026-10-14)。
+これまでのシミュレーターの 60 シーンは「ほぼ同じ 20 秒の走り」の繰り返しだったため。学習と試験は `experiments/20261013_sim_rl_modes/`、
+報告は `~/jetformer_reports/sim_rl_modes_20261013/`(まとめは `README.md`、くわしくは `design.md`・`integrate.md`・`record.md`・`review.md`)。
+
+| モード | 状態 | 中身 |
+|---|---|---|
+| 強化学習モード(最速) | 合格 | ベストラップの方策そのまま(停止から 1 周 8.09 秒)。開始の位置・向きを広げてばらつきを出す |
+| 強化学習モード(絶対壁にぶつからない) | 不合格(参考) | 壁・柱から離れて遅めに走る + 走行中の安全シールド。試験 340 回で衝突 0 だが、物理の範囲の端ではぶつかることがある |
+| 強化学習モード(離脱復活) | 不合格(参考) | 走行中にわざと舵・アクセル・線を乱し、そこから戻る。乱した操作は学習から外す |
+| 強化学習モード(速さいろいろ) | 合格 | 最速の 50〜100%(5 段)の速さで走る |
+| 経路いろいろ・障害物よけ | 出していない | 試験で不合格(優先 2・3 のモードは出さない決まり)。タブには数字と理由だけ出る |
+
+**使い方**
+
+- タブのカード「強化学習モード」で、モードごとの状態・停止から 1 周・試験の衝突・最小すき間・主な数字(立て直しの成功・速さの段など)を見られる。
+  数字は RL の側が元の `sim-core.js` で試験した値(`eval.json`)で、シミュレーターの中の結果(実車の保証ではない)。
+- 「このモードで開く」→ `/sim/c/default/?rl=<モード>`。ページの「反復試験・教師データ収集」の「教師の走行」の下の「強化学習モード」で選び直せる。
+  選ぶと、コントローラー = 経路追従デモ・教師 = RC加速教師の差し込み口・物理とセンサーを記録の条件にそろえる。「▶ 評価を開始」で走る。
+  速さいろいろは速さの倍率、離脱復活は乱しの強さを選べる(既定はシーンの種から)。走行中のすき間・シールド・乱しの様子も出る。
+- **収集プラン**: カードでモードごとの分(1 分 = 20 秒のシーン 3 つ、1 モード 20 分まで)・val の割合・種を決めて「プランを作って開く」→
+  新しいタブ(`?rlplan=<ID>`)で「開始」。1 シーンずつアプリ自身の「連続試験」で記録し、モードが終わるたびにそのモードのシーンを
+  1 つのデータセット `sim-rl-<モード>_<日時>` に取り込む(ブリッジの「1つのZIPにまとめる」は空き 20 GiB が要るので使わない)。
+  記録中はタブを表に出しておく(裏では止まる)。Jetson の Firefox では 1 シーン約 2 分(5 分 × 4 モード = 60 シーンで約 2 時間)。
+- シーンの開始・種・条件は、前もって Node(元の sim-core.js・ブラウザと同じ方策のファイル)で走らせて「20 秒・衝突 0・1 周以上・止まらない・
+  ゲートの外し 0(離脱復活は除く)・すき間(壁にぶつからない 8 cm 以上・速さいろいろ 3 cm 以上)」を確かめた組(`scenes.json`)から選ぶ。記録で外れたら(衝突など)同じモードの替えのシーンを足す。
+  ブラウザ(Firefox)と Node は数学関数の最後の桁が違うので、閉ループの走りは途中から Node の予想と分かれる(予想で走り切るシーンが記録で外れることがある)。
+  取り込んだら `node experiments/20261013_sim_rl_modes/integrate/replay_check.mjs --dataset data/datasets/<名前>` で、モードの決まり(すき間・止まり・周)を記録そのもので確かめられる。
+- ブリッジにモデルを読み込んでいるときは、換算(操舵の中心 1442・スロットルの中立 1498 ±5 µs)が違えば記録を止める(PWM のラベルがずれるため)。
+
+**データセット**
+
+- ジャンルは全部 8(シミュレーター)のまま(新しいジャンルは作らない)。モードはタグ `sim-rl`・`sim-rl-<モード>`(+ `sim-safe`・`sim-recover`・`sim-speed`)と
+  データセット名で分かれる。カードの `rl` にモード・方策・プラン、`simulation/collection.json` にシーンごとの開始・種・条件。
+- 離脱復活の乱した操作は記録の `frames.jsonl` の `action_info.jf.l = 0` で印が付く。取り込み(`dataset_import.import_archive` と
+  まとめての取り込み。「JetFormerへ送る」も同じ)で、その操作を正解(k+1〜k+10)に含む観測と、その操作のフレーム自身(k ∈ [j − 10, j])を
+  `future_valid = False`・`mode = 0`(未設定)にする(`jetformer/sim/label_mask.py`、カードの `label_mask`)。jf の無い行は外す(安全側)。
+  シーンタブでジャンルを付け直しても、外した区間は「未設定」のまま残る(scene.json の `label_mask`)。
+
+**しくみ**
+
+- ページの import map(JSON として書き足す)で、アプリが読む `./rc-speed-controller.js` を `_jf/rl/teacher.js` に差し替える(`_jf/` の中からは元のファイル)。
+  モードを選んでいなければ元の RC加速教師そのもの。選んでいれば、Node の試験と同じファイル `_jf/rl/mode_runtime.mjs`(観測・方策・安全シールド・乱し)で走る。
+  `jetformer/sim/static/rl/` の runtime は `experiments/20261013_sim_rl_modes/web/rl/` の写し(`manifest.json` に sha256)。ページの欄・実行係は `static/sim-rl.js`。
+- 登録簿 `data/sim_rl/modes/<モード>/{mode.json, status.json, policy.json, eval.json, card.json, scenes.json}`(RL の側の
+  `experiments/20261013_sim_rl_modes/integrate/publish_registry.py` が置く)、プラン `data/sim_rl/plans/<ID>.json`。
+  方策は `policy.json` の sha256 が `mode.json` と同じときだけ配る。
+- API: `GET /api/sim/rl/modes`・`GET /api/sim/rl/modes/<モード>/policy.json`・`GET|POST /api/sim/rl/plans`・`GET /api/sim/rl/plans/<ID>`・
+  `POST /api/sim/rl/plans/<ID>/progress`・`POST /api/sim/rl/import`(ジョブ import)。コードは `jetformer/sim/{rl_modes,rl_import,label_mask}.py`。
+- 環境変数 `JETFORMER_SIM_RL=0` で、ページへの差し込みと API を止められる(シミュレーターの版が変わって差し込みが合わなくなったときなど)。
+- 強化学習モードは Default コースだけ(RL の観測が Default の参照ループ専用)。アプリの「低摩擦」の場面(μ × 0.4)は使えない(学習・試験した物理の範囲の外)。
+- テスト: `tests/test_sim_modes.py`(登録簿・方策・プラン・まとめての取り込み・学習除外・ジャンルの付け直し)・`tests/test_sim_modes_js.py`(teacher.js・sim-rl.js)。
 
 ## AI走行(管理画面の「走行」タブ)
 

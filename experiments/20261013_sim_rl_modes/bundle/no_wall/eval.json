@@ -1,0 +1,292 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T20:28:31.018Z",
+ "mode": "no_wall",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/no_wall/r2/policies/step_004014080.json",
+  "sha256": "153c709c52151c5e2ff15326ce6a307ecda67d9888c29c678d5afdcffb85d1ff",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 79
+ },
+ "judged": {
+  "N1_no_collision": {
+   "value": "340/340",
+   "runs": 340,
+   "pass": true
+  },
+  "N2_clearance_nominal": {
+   "value": 0.11747097721512682,
+   "pass": true
+  },
+  "N3_clearance_randomised": {
+   "value": 0.07003787748145629,
+   "pass": true
+  },
+  "N4_lap_from_stop": {
+   "value": 9.797450475898623,
+   "pass": true
+  },
+  "N5_completion": {
+   "value": {
+    "n60": "60/60",
+    "std": true,
+    "r200": "200/200"
+   },
+   "pass": true
+  },
+  "N6_friction": {
+   "value": {
+    "rho_req_gt1": 0.0006957199309845829,
+    "rho_comb_gt1": 0.001948015806756832
+   },
+   "pass": true
+  },
+  "N7_shield": {
+   "value": 0,
+   "pass": true
+  }
+ },
+ "all_judged_pass": true,
+ "reported": {
+  "NW_OFF": {
+   "runs": 260,
+   "collisions": 1,
+   "min_clearance": 0.0019761477284628054
+  },
+  "R200_shield_fraction": 0.17730833333333335,
+  "NW_G_OUT": [
+   {
+    "id": "G11-single",
+    "name": "ブレーキ 0.6 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.13683391266442382
+   },
+   {
+    "id": "G11-continuous",
+    "name": "ブレーキ 0.6 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13683391266442382
+   },
+   {
+    "id": "G19-single",
+    "name": "ブレーキ 2.5 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.1377206922732696
+   },
+   {
+    "id": "G19-continuous",
+    "name": "ブレーキ 2.5 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13030616349354948
+   },
+   {
+    "id": "G20-single",
+    "name": "μ × 0.8",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.13611102924126198
+   },
+   {
+    "id": "G20-continuous",
+    "name": "μ × 0.8",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13127027339555997
+   },
+   {
+    "id": "G26-single",
+    "name": "時定数 0.25 秒",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.13322330920709932
+   },
+   {
+    "id": "G26-continuous",
+    "name": "時定数 0.25 秒",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13322330920709932
+   },
+   {
+    "id": "G29-single",
+    "name": "時定数 0.6 秒",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.1434595812511102
+   },
+   {
+    "id": "G29-continuous",
+    "name": "時定数 0.6 秒",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13784936648915472
+   },
+   {
+    "id": "G30-single",
+    "name": "加速の上限 3 m/s²",
+    "reason": "route_complete",
+    "collisions": 0,
+    "min_clearance": 0.13923890781468964
+   },
+   {
+    "id": "G30-continuous",
+    "name": "加速の上限 3 m/s²",
+    "reason": "collection_duration_complete",
+    "collisions": 0,
+    "min_clearance": 0.13923890781468964
+   }
+  ],
+  "lap1": {
+   "n60": [
+    9.796737672887348,
+    9.794808197579622,
+    9.763533635032527,
+    9.764409874855874,
+    9.765757150276583,
+    9.815090438374753,
+    9.760825269523568,
+    9.798725818916141,
+    9.76263463374905,
+    9.729649389008767,
+    9.84802371363183,
+    9.73266505540617,
+    9.790421884800862,
+    9.79844952560973,
+    9.830772447763133,
+    9.828457005670183,
+    9.76138209115743,
+    9.832138361901647,
+    9.781314576506235,
+    9.799512721807696,
+    9.802761082159844,
+    9.761837527998047,
+    9.797816568458405,
+    9.728762096541823,
+    9.76576105539372,
+    9.793449458174516,
+    9.72651378130793,
+    9.757465198050644,
+    9.764412884367466,
+    9.829559357557892,
+    9.647863771677667,
+    9.511764374030015,
+    9.830541149910282,
+    9.819101213837016,
+    9.851085311350419,
+    9.538362427278901,
+    9.861277889845764,
+    9.722539138961881,
+    9.772808912731644,
+    9.541470607654148,
+    9.78256713975035,
+    9.68689609318878,
+    9.792068882446864,
+    9.593567214690989,
+    9.861732137353114,
+    9.677978678013593,
+    9.51517402044881,
+    9.533399612001393,
+    9.89837562539239,
+    9.84595014434712,
+    9.61724706964915,
+    9.880400234497744,
+    9.694974425454731,
+    9.564709928196677,
+    9.755300374916214,
+    9.679252994221276,
+    9.737580597650174,
+    9.520301210557907,
+    9.780814149039063,
+    9.79809750384142
+   ]
+  },
+  "ui_text": "340 回の試験で衝突 0・最小すき間 11.7 cm(標準の物理)/ 7.0 cm(物理のずれ)",
+  "ui_numbers": {
+   "runs": 340,
+   "collisions": 0,
+   "min_clearance_nominal_m": 0.11747097721512682,
+   "min_clearance_randomised_m": 0.07003787748145629
+  },
+  "variation": {
+   "rows": 60,
+   "VM1_us": 117.99050973903142,
+   "VM2_us": {
+    "mean_abs_dev": 11.708381481481412,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.00371410153256704,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.01512222009365684,
+    "bins_used": 522
+   },
+   "VM7_cells": 269,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  },
+  "ui_text_base": "340 回の試験で衝突 0・最小すき間 11.7 cm(標準の物理)/ 7.0 cm(物理のずれ)"
+ },
+ "runs": 612,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "shield": {
+  "version": "jf-shield/v3",
+  "H": 24,
+  "c_nominal": 0.07,
+  "c_pessimistic": 0.05,
+  "pessimistic": {
+   "steerRate": 0.8,
+   "delay": 1,
+   "brakeDeceleration": 0.7,
+   "frictionMultiplier": 0.85
+  },
+  "identify": {
+   "enabled": true,
+   "gain": [
+    0.9,
+    1.1
+   ],
+   "delays": [
+    0,
+    1,
+    2
+   ],
+   "tol": 1e-07
+  },
+  "governor": {
+   "enabled": true,
+   "theta_rad": 0.35,
+   "v_max": 4.5,
+   "min_frame": 3,
+   "brake": true
+  },
+  "backups": [
+   {
+    "la": 0.6,
+    "k": 0.2
+   },
+   {
+    "la": 0.6,
+    "k": 0
+   },
+   {
+    "hold": true
+   }
+  ],
+  "keep_nominal": true,
+  "steer_set": [
+   -0.52,
+   -0.26,
+   0,
+   0.26,
+   0.52
+  ],
+  "shield_mjs_sha256": "d682a6b5996102772298579d229189eae57f9434c159f9e7b6e8b754205e4c76"
+ }
+}

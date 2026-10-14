@@ -1,0 +1,176 @@
+{
+ "schema": "jf-sim-rl-modes-snapshot/v1",
+ "created_at": "2026-10-13T22:10:25",
+ "note": "ベストラップの作業のファイルの写し。env_core.mjs の EXP_ROOT は snapshot/ を指す(sim/・rl/ の相対の位置は元と同じ)。features.mjs・reference_loop.mjs/.json・policy_forward.mjs はブラウザと Node で同じファイル(バイト単位で同じ写し)",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "files": {
+  "rl/env_core.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/env_core.mjs",
+   "sha256": "df99dacf25c97327f086c73cb8ffa2b168b8747e01dcf310c109a2c5e1ac2a6c",
+   "protocol_sha256": "df99dacf25c97327f086c73cb8ffa2b168b8747e01dcf310c109a2c5e1ac2a6c",
+   "match": true
+  },
+  "rl/features.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/features.mjs",
+   "sha256": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+   "protocol_sha256": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790",
+   "match": true
+  },
+  "rl/reference_loop.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.mjs",
+   "sha256": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+   "protocol_sha256": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901",
+   "match": true
+  },
+  "rl/reference_loop.json": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.json",
+   "sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "protocol_sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "match": true
+  },
+  "rl/policy_forward.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/policy_forward.mjs",
+   "sha256": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+   "protocol_sha256": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0",
+   "match": true
+  },
+  "rl/env_worker.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/env_worker.mjs",
+   "sha256": "179fb254ac5a08d1857a89831288322fdb4e99f2d92ae90daff79ddaaa0224e5",
+   "protocol_sha256": "179fb254ac5a08d1857a89831288322fdb4e99f2d92ae90daff79ddaaa0224e5",
+   "match": true
+  },
+  "rl/vec_env.py": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/vec_env.py",
+   "sha256": "562cb704e6f3d8e40ec6bd30118cdf0f57dd7d567c7abf46acbd5a8328e57778",
+   "protocol_sha256": "562cb704e6f3d8e40ec6bd30118cdf0f57dd7d567c7abf46acbd5a8328e57778",
+   "match": true
+  },
+  "rl/ppo.py": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/ppo.py",
+   "sha256": "f0fcb1270e7b5b0499a91f94f41ac0d3235aafa27348cea8a41a3e9ceeb0f210",
+   "protocol_sha256": "f0fcb1270e7b5b0499a91f94f41ac0d3235aafa27348cea8a41a3e9ceeb0f210",
+   "match": true
+  },
+  "rl/train_rl.py": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/train_rl.py",
+   "sha256": "70e9bfcb6e4c05f5d97e3c5d21c991e0471c4ff37c4cfdcf4e94f9e6e9508f56",
+   "protocol_sha256": "70e9bfcb6e4c05f5d97e3c5d21c991e0471c4ff37c4cfdcf4e94f9e6e9508f56",
+   "match": true
+  },
+  "rl/eval_sets.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/eval_sets.mjs",
+   "sha256": "50f3b72aaa215348160a2d6de5c49b5cc316c99bb65e5a99ed68e3b3a128c0b9",
+   "protocol_sha256": "50f3b72aaa215348160a2d6de5c49b5cc316c99bb65e5a99ed68e3b3a128c0b9",
+   "match": true
+  },
+  "rl/lap_audit.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/lap_audit.mjs",
+   "sha256": "916cb6d378fce81ab867b4600f8b0f01220cf8accd42f0250887a39580edd912",
+   "protocol_sha256": "916cb6d378fce81ab867b4600f8b0f01220cf8accd42f0250887a39580edd912",
+   "match": true
+  },
+  "rl/verify_lap.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/verify_lap.mjs",
+   "sha256": "3b3a7b045ab2c3767b12239bb15a9dfd90beaea05015fa2d471dd08cb9f7e0f8",
+   "protocol_sha256": "3b3a7b045ab2c3767b12239bb15a9dfd90beaea05015fa2d471dd08cb9f7e0f8",
+   "match": true
+  },
+  "rl/r2/robust_eval.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/r2/robust_eval.mjs",
+   "sha256": "57aa72e99a76d9cd7689d992de8963585a7d43c80acda5a7f50ce81804ae2912",
+   "protocol_sha256": "57aa72e99a76d9cd7689d992de8963585a7d43c80acda5a7f50ce81804ae2912",
+   "match": true
+  },
+  "sim/fast-sim-core.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/fast-sim-core.mjs",
+   "sha256": "227ceccc7970ebf1aea98e4ea8686b612397b212e77382c216e5ec85096df0cc",
+   "protocol_sha256": "227ceccc7970ebf1aea98e4ea8686b612397b212e77382c216e5ec85096df0cc",
+   "match": true
+  },
+  "sim/dist/sim-core.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e",
+   "protocol_sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e",
+   "match": true
+  },
+  "sim/world-v3.json": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/world-v3.json",
+   "sha256": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2",
+   "protocol_sha256": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2",
+   "match": true
+  },
+  "check_r1/own_physics_r1.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/check_r1/own_physics_r1.mjs",
+   "sha256": "2e3c91eb06170e5b2533f733d45c1206bafd281f454e35465486470d5df8977c",
+   "protocol_sha256": "2e3c91eb06170e5b2533f733d45c1206bafd281f454e35465486470d5df8977c",
+   "match": true
+  },
+  "verify_recording.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/verify_recording.mjs",
+   "sha256": "88c09ac0e19b7edfdd475d006d154306aee6b7fe9ef8575c9e943ffa9287493c",
+   "protocol_sha256": "88c09ac0e19b7edfdd475d006d154306aee6b7fe9ef8575c9e943ffa9287493c",
+   "match": true
+  },
+  "sim/dist/rc-speed-controller.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/rc-speed-controller.js",
+   "sha256": "4a32ab56369b3d0c9a76f16fe7144eb895677b72ceeefc8483645f91ae96f417",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/speed-controller.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/speed-controller.js",
+   "sha256": "94a2a1877698a3f8aeb180f17fa0b689ecbb50498e60474977a8f8f98097312f",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/optimized-reference.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/optimized-reference.js",
+   "sha256": "1b81959ec72ffed59ea462997bc2421d6a3752bde6ce4e2515b488570a66ea60",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/control-delay.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/control-delay.js",
+   "sha256": "eb405f7e87ce9581c3a5ccc2850dce67d21750ad49e930a06a972a4aaf72f23c",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/world.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/world.js",
+   "sha256": "4099860131f444f7eb061d0fef34b22fac0f7ba6dbc53ca31b07058dc7573655",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/scene.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/scene.js",
+   "sha256": "878fc934af2890c4db152041182b8914033224f65a2482bcc46265cdc7d0c806",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/sensors.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/sensors.js",
+   "sha256": "ee4caf761bae6906100d9a1a922357b1e64ea2ed6b746ce8aaf0eaa4da38f605",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/dist/ego-sensors.js": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/ego-sensors.js",
+   "sha256": "5ced4af5bbde26a7fc2be05cde5b3864b3474a68d6a4a8311128d916e93cba5a",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "sim/SHA256SUMS.txt": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/SHA256SUMS.txt",
+   "sha256": "23d938326c3c7c769faa149935331dc10beda686e29c3936d27d8c5362ff1286",
+   "protocol_sha256": null,
+   "match": null
+  },
+  "lib/app_emulation.mjs": {
+   "source": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/lib/app_emulation.mjs",
+   "sha256": "361c61becdd47919e57160ece6d80668abf6210f1d95ae455b00eede274d1ea9",
+   "protocol_sha256": null,
+   "match": null
+  }
+ }
+}

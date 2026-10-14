@@ -1,0 +1,13 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "line",
+ "state": "not_published",
+ "label_ja": "不合格(出さない・参考の候補)",
+ "failed": [
+  "L2_clearance"
+ ],
+ "pending": [],
+ "rule": "protocol.json publication.priority_2_3_not_accepted: 優先 2・3 で不合格は出さない(報告だけ)。登録簿・bundle には置いていない",
+ "note_ja": "第 2 回の試験の組 LN-P60-R2 + LN-FAM6 で L2 だけ不合格(1.33 cm: P45 = ゲート 16・R に対して 79° 向いた開始から 1.97 秒、R が柵から 7 cm の s 11.9〜12.1 m)。L1 59/60・L3 1.7 / 9.0 cm・L4 0.330 / 0.156 / 0.083・L5 0.093・L6 8.93 秒は合格。報告だけの新しい開始 120 回では 120/120 有効・最小すき間 6.9 cm。目標の線 v2(方策の meta.line_profile = v2)。/home/jetson/jetformer_reports/sim_rl_modes_20261013/train_line.md",
+ "updated_at": "2026-10-14T07:29:48"
+}

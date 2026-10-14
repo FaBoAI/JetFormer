@@ -1,0 +1,51 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "obstacle",
+ "name_ja": "強化学習モード(障害物よけ)",
+ "short_ja": "コースの上に柱や箱をランダムに置き、それをよけて走る(配置はシーンごとに変わる)",
+ "order": 6,
+ "priority": 3,
+ "course": "default-obstacles",
+ "obs_wrapper": "obst95",
+ "runtime": {
+  "shield": false,
+  "perturbation": null,
+  "conditioning": {
+   "layout": "シーンごとに recording 組の配置を 1 つ(フレーム 0 の p と info.jf に配置 ID)"
+  },
+  "gate_index": "virtual"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.15,
+    0.15
+   ],
+   "left_yaw_deg": [
+    -10,
+    10
+   ],
+   "sequence": "Halton",
+   "prefilter": true,
+   "layout_check": "開始の前後 1.5 m に障害物が無い配置だけ"
+  },
+  "per_scene_params": {
+   "layouts": "recording 組の 30 配置から、シーンごとに違うものを選ぶ"
+  },
+  "start_rule_r2": "記録の組の配置ではゲート 0(アプリの既定の STD)から始めない。開始はいつも Halton + 前後 1.5 m の検査(protocol_obstacle_r2.json recording.start_rule)"
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-obstacle",
+  "sim-obstacles"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "3cffd1d233fc206756917cc9db10466d98088cca7bc85ea136ffb437aad1f2fa",
+ "policy_source": "sim_rl_modes_20261013 train/obstacle/r2/r2b/main/policies/step_008011776.json(obstacle r2、種 62、main_s1_10M から通しで 15,024,128 ステップ = 前半 obstacle_r2 701 万 + 後半 obstacle_r2b。protocol_obstacle_r2.json・protocol_obstacle_r2b.json)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "protocol_obstacle_r2_sha256": "9b591db78cf0647661f9bc9e77606d4b3c3cd367a3e6f5d6f12f9b22d91a011d",
+ "protocol_obstacle_r2b_sha256": "0c5fc6eb47907408b5b2167816e209ad313dffd6fd2e64746cc2f6cebfce0e56"
+}

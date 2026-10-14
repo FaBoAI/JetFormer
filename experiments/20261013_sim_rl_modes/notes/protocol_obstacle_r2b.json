@@ -1,0 +1,39 @@
+{
+ "title": "障害物よけ(obstacle)第 2 回の後半の追記 — protocol_obstacle_r2.json(9b591db7…a011d)を変えずに、学習の後半の環境だけを足す",
+ "version": "obstacle-r2b-1",
+ "written_at": "2026-10-14T07:50:00+09:00",
+ "written_by": "学習の段 obstacle r2",
+ "base_protocol_obstacle_r2_sha256": "9b591db78cf0647661f9bc9e77606d4b3c3cd367a3e6f5d6f12f9b22d91a011d",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "why": [
+  "r2 の前半(obstacle_r2、種 62)を 701 万で止めた。選びの組 OB-V100-R2 で有効 14 → 24 → 36 → 39 → 53 → 52(100 万〜600 万)と上がったが、",
+  "(1) 決定的な方策が障害物の手前で止まる・はう回がある(500 万で有効 53 のうち 16 回は 1 周も回っていない、600 万で 3 回)。protocol の valid_episode は止まっていても有効に数えるので、O1 が見かけだけ上がり、見本にもならない。学習の『止まる』の終了(0.2 m/s 未満が 2 秒)は、0.2 m/s を少し越えてはう走りを止めない",
+  "(2) 衝突の多くは 3.3〜4.2 m/s のまま、よける幅が足りない・通り道の無い側へ行く(600 万の選びの組: 通り道の無い側・狭い側への失敗 19、広い側でも幅が足りない 22。下調べ rl/ob2/passage_sides.mjs)",
+  "(3) O4(障害物なし 1 周)が 8.73 → 9.22〜9.51 秒に遅くなった(R の s 6〜11 m、黒シートの先の曲がりで 1.0 m/s・外側 56 cm を通る)。障害物なしの回は 10% だけ"
+ ],
+ "unchanged": "protocol_obstacle_r2.json の判定・試験の組・選びの組 OB-V100-R2・選び方・試験の使い方・記録の決まり・観測・走行中の仕組み・報酬の前半の項(障害物の壁・全部の障害物の壁・近づく速さの罰・3 cm の終了・ゲートの外し)・開始の分布・配置の作り方",
+ "training": {
+  "run": "obstacle_r2b(rl/env_modes.mjs trainConfig('obstacle_r2b')・OBSTACLE_R2B_DEFAULTS、rl/train_modes.py --run obstacle_r2b)",
+  "init": "r2 の前半の 701 万のチェックポイント(/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/obstacle/r2/main/checkpoints/step_007012352.pt、sha256 39d70fb7ffa23e7955e897c3596a64b8d5e349adb3e93cc49adde089a6c00da9)。重み・観測の正規化・log σ をそのまま引き継ぐ(Adam の状態は新しく)",
+  "seed": 62,
+  "steps": 8000000,
+  "steps_note": "前半 701 万 + 後半 800 万 = 1,501 万(この段の依頼の 1,500 万)",
+  "lr": "1.75e-4 → 3e-5(前半の 3e-4 → 3e-5 の 701 万の所の値から続ける)",
+  "added": {
+   "slow_progress_terminal": "1.5 秒以降、直近 60 フレーム(2 秒)の R の進みが 0.6 m 未満なら −10 で終える(学習だけ)",
+   "passage_guidance": "rl/ob2/guidance.mjs(sha256 4c1bbbaed10831eb364378ce5f339b254d0d518ea113cf72d2cf57fcc0c00e71、学習だけ): 障害物ごとに、障害物の s ±0.2 m で全部の障害物とのすき間 ≥ 8 cm の横の区間(ゲートの窓 ±0.65 m の中)の共通部分のうち一番広いものを選び、目標 e_t = 障害物に近い端から min(0.12 m, 幅/2) 内側。次の障害物の手前 2.5 m から 0.3 m 過ぎるまで −0.05·min(1, ((e_y − e_t)/0.15)²)·ramp(1.0 m より近いと 1、2.5 m で 0)",
+   "none_p": "障害物なしの回 10% → 20%"
+  },
+  "early_stop": "後半 100 万(通しで 800 万)以降、続けて 3 つのチェックポイントが OB-V100-R2 で O1〜O4 を全部満たし有効 ≥ 98/100 なら止めてよい"
+ },
+ "selection_addition": {
+  "candidates": "前半(r2/main、100 万〜700 万)と後半(r2b/main、100 万ごと)の全部のチェックポイント。選び方は protocol_obstacle_r2.json selection.rule のまま",
+  "strict_valid": "前半で止まる・はう回が見つかったので、試験の組を使う条件に足す: 選んだチェックポイントが OB-V100-R2 で、有効な回のうち 1 周も回っていない回を無効に数えても O1(95/100)を満たすこと(厳しくする向きだけ。判定の O1 の式は protocol のまま)。試験・報告でも『有効だが周 0』の回の数を出す"
+ },
+ "files": {
+  "env_modes.mjs": "3e6af82d315f1e3238d609f7351959598b7996eb956a5b2fee84d444b48b1bb3",
+  "train_modes.py": "edf7548d005c8f386ef6275873df6d2598896dc350d74fae8a0805fd9544113a",
+  "guidance.mjs": "4c1bbbaed10831eb364378ce5f339b254d0d518ea113cf72d2cf57fcc0c00e71",
+  "early_stop_r2.py": "006c9a34eff367c11e02ff799309055dbeb73fee79c9dccf6f9a552ab1532cdd"
+ }
+}

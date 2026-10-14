@@ -25,7 +25,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 
 from .. import config, dataset_import, model_export
-from . import bridge_proc, courses, datasets, env, install, paths
+from . import bridge_proc, courses, datasets, env, install, paths, rl_import, rl_modes
 from .proxy import Proxy
 
 router = APIRouter()
@@ -33,7 +33,9 @@ CID_RE = courses.CID_RE
 MIME = {'.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
         '.html': 'text/html; charset=utf-8', '.json': 'application/json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
         '.png': 'image/png', '.txt': 'text/plain; charset=utf-8', '.svg': 'application/octet-stream'}
-STATIC_NAMES = ('sim-shim.js', 'sim-shim.css', 'course-scene.js', 'course-world.js')
+STATIC_NAMES = ('sim-shim.js', 'sim-shim.css', 'course-scene.js', 'course-world.js', 'sim-rl.js', 'sim-rl.css')
+RL_STATIC = paths.STATIC / 'rl'                     # 強化学習モードのブラウザの組(teacher.js + Node の試験と同じ runtime。manifest.json に sha256)
+RL_EXTRA = ('teacher.js', 'manifest.json')
 MAX_COURSE_UPLOAD = courses.MAX_ZIP
 SIM_JOB_KINDS = ('sim_install', 'sim_setup', 'import')
 SIM_POLICY = 'jetformer_v0'
@@ -188,22 +190,65 @@ def resolve_under(base, parts):
 
 
 _index_cache = {}
+IMPORTMAP_OPEN = '<script type="importmap">'
+RC_TEACHER = './rc-speed-controller.js'
+RL_TEACHER = './_jf/rl/teacher.js'
+
+
+def rl_files():
+    """配ってよい _jf/rl/ のファイル名(manifest.json の一覧 + teacher.js・manifest.json)"""
+    try:
+        man = json.loads((RL_STATIC / 'manifest.json').read_text(encoding='utf-8'))
+        names = set(man.get('files') or {})
+    except (OSError, ValueError, AttributeError):
+        names = set()
+    return {n for n in names | set(RL_EXTRA) if isinstance(n, str) and '/' not in n and n.endswith(('.mjs', '.json', '.js'))}
+
+
+def rewrite_importmap(html):
+    """import map(JSON として読み書きする)に、アプリが読む ./rc-speed-controller.js を JetFormer の _jf/rl/teacher.js に差し替える
+    1 行を足す。_jf/ の中からは元のファイルを読む(scopes)。teacher.js は強化学習モードを選んでいなければ元の RC 教師そのものを返す"""
+    a = html.index(IMPORTMAP_OPEN) + len(IMPORTMAP_OPEN)
+    b = html.index('</script>', a)
+    try:
+        im = json.loads(html[a:b])
+    except ValueError:
+        raise HTTPException(500, 'シミュレーターの import map を読めません(版が変わった可能性があります)')
+    if not isinstance(im, dict) or not isinstance(im.get('imports', {}), dict) or not isinstance(im.get('scopes', {}), dict):
+        raise HTTPException(500, 'シミュレーターの import map の形が想定と違います')
+    imports = dict(im.get('imports') or {})
+    if RC_TEACHER in imports:
+        raise HTTPException(500, 'シミュレーターの import map にもう rc-speed-controller.js があります(版が変わった可能性があります)')
+    imports[RC_TEACHER] = RL_TEACHER
+    scopes = dict(im.get('scopes') or {})
+    scopes['./_jf/'] = dict(scopes.get('./_jf/') or {}, **{RC_TEACHER: RC_TEACHER})
+    im = dict(im, imports=imports, scopes=scopes)
+    return html[:a] + '\n' + json.dumps(im, ensure_ascii=False, indent=1).replace('</', '<\\/') + '\n' + html[b:]
 
 
 def index_html(rel):
-    """dist/index.html に config.js・shim・css の 3 行を差し込む(mtime で覚える)"""
+    """dist/index.html に config.js・shim・css の 3 行(強化学習モードが有効なら + sim-rl.js・css と import map の差し替え)を
+    差し込む(mtime で覚える)"""
     p = rel.dist / 'index.html'
     shim, css = paths.STATIC / 'sim-shim.js', paths.STATIC / 'sim-shim.css'
-    key = (str(p), p.stat().st_mtime_ns, shim.stat().st_mtime_ns, css.stat().st_mtime_ns)
+    rjs, rcss, rteach = paths.STATIC / 'sim-rl.js', paths.STATIC / 'sim-rl.css', RL_STATIC / 'teacher.js'
+    use_rl = rl_modes.enabled() and rjs.is_file() and rteach.is_file()
+    key = (str(p), p.stat().st_mtime_ns, shim.stat().st_mtime_ns, css.stat().st_mtime_ns, use_rl,
+           rjs.stat().st_mtime_ns if use_rl else 0, rcss.stat().st_mtime_ns if use_rl and rcss.is_file() else 0)
     hit = _index_cache.get(key)
     if hit is not None:
         return hit
     html = p.read_text(encoding='utf-8')
     meta = '<meta charset="utf-8">'
-    if html.count(meta) != 1 or html.count('<script type="importmap">') != 1 or html.count('src="./app.js"') != 1:
+    if html.count(meta) != 1 or html.count(IMPORTMAP_OPEN) != 1 or html.count('src="./app.js"') != 1:
         raise HTTPException(500, 'シミュレーターの index.html の形が想定と違います(版が変わった可能性があります)')
     inject = ('\n<script src="./_jf/config.js"></script>\n<script src="/sim/static/sim-shim.js?v=%d"></script>\n'
               '<link rel="stylesheet" href="/sim/static/sim-shim.css?v=%d">\n' % (int(shim.stat().st_mtime), int(css.stat().st_mtime)))
+    if use_rl:
+        inject += '<script src="/sim/static/sim-rl.js?v=%d"></script>\n' % int(rjs.stat().st_mtime)
+        if rcss.is_file():
+            inject += '<link rel="stylesheet" href="/sim/static/sim-rl.css?v=%d">\n' % int(rcss.stat().st_mtime)
+        html = rewrite_importmap(html)
     out = html.replace(meta, meta + inject, 1)
     _index_cache.clear()
     _index_cache[key] = out
@@ -215,7 +260,10 @@ def config_js(c, rel):
                       'renderer': c.renderer, 'kind': c.kind, 'has_shortcut': c.has_shortcut, 'size_m': c.size_m,
                       'features': c.features},
            'bridge': '/sim/bridge', 'jetformer_port': S['web_port'] or config.WEB_PORT, 'courses_api': '/api/sim/courses',
-           'status_api': '/api/sim/status', 'home': '/', 'release': rel.id}
+           'status_api': '/api/sim/status', 'home': '/', 'release': rel.id,
+           'rl': {'enabled': rl_modes.enabled(), 'course_ok': rl_modes.course_supported(c.id),
+                  'reason': None if rl_modes.course_supported(c.id) else '強化学習モードは Default コースだけで使えます(RL の観測が Default の参照ループ専用のため)',
+                  'modes_api': '/api/sim/rl/modes', 'plans_api': '/api/sim/rl/plans', 'blocked_scenarios': list(rl_modes.BLOCKED_SCENARIOS)}}
     return 'window.JETFORMER_SIM = Object.freeze(%s);\n' % courses.js_json(cfg)
 
 
@@ -260,6 +308,11 @@ def sim_course_file(cid: str, path: str, request: Request):
         if text is None:
             raise HTTPException(404)
         return _text_response(request, text, 'text/javascript; charset=utf-8', rel.id)
+    if len(parts) == 3 and parts[:2] == ['_jf', 'rl'] and rl_modes.enabled() and parts[2] in rl_files():
+        p = resolve_under(RL_STATIC, parts[2:])
+        if p is None:
+            raise HTTPException(404)
+        return _file_response(request, p, 'jf-rl')
     if parts[0] == '_jf':
         raise HTTPException(404)
     if rel_path in ('scene.js', 'world.js'):
@@ -608,3 +661,150 @@ def api_sim_dataset_delete(sid: str):
         return datasets.delete(sid, in_flight=proxy.busy(), recording_sid=dc.get('session_id') if dc.get('recording') else None)
     except datasets.DatasetError as e:
         raise _err(e)
+
+
+# ---------------------------------------------------------------- 強化学習モード(rl_modes.py・rl_import.py)
+def _rl_err(e):
+    if isinstance(e, (rl_modes.RlError, datasets.DatasetError)):
+        return HTTPException(getattr(e, 'status', 400), str(e))
+    return HTTPException(400, str(e))
+
+
+def _rl_on():
+    if not rl_modes.enabled():
+        raise HTTPException(404, '強化学習モードは止められています(JETFORMER_SIM_RL=0)')
+
+
+@router.get('/api/sim/rl/modes')
+def api_sim_rl_modes():
+    _rl_on()
+    out = rl_modes.list_modes()
+    out['plans'] = rl_modes.list_plans(8)
+    return out
+
+
+@router.get('/api/sim/rl/modes/{key}')
+def api_sim_rl_mode(key: str):
+    _rl_on()
+    try:
+        return rl_modes.load_mode(key)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+
+
+@router.api_route('/api/sim/rl/modes/{key}/policy.json', methods=['GET', 'HEAD'])
+def api_sim_rl_policy(key: str, request: Request):
+    """方策の重み(登録簿のファイルの sha256 が mode.json と同じことを確かめてから返す)。ページは選んだモードだけを読む"""
+    _rl_on()
+    try:
+        p, sha = rl_modes.policy_file(key)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+    etag = '"%s"' % sha[:32]
+    if request.headers.get('if-none-match') == etag:
+        return Response(status_code=304, headers=_no_cache({'ETag': etag}))
+    return FileResponse(p, media_type='application/json', headers=_no_cache({'ETag': etag, 'X-Policy-SHA256': sha}))
+
+
+@router.get('/api/sim/rl/plans')
+def api_sim_rl_plans():
+    _rl_on()
+    return {'plans': rl_modes.list_plans()}
+
+
+@router.post('/api/sim/rl/plans')
+def api_sim_rl_plan_create(body: dict = Body(...)):
+    _rl_on()
+    try:
+        plan = rl_modes.create_plan(body)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+    return dict(rl_modes.plan_summary(plan), url=plan['url'], scenes=len(plan['order']))
+
+
+@router.get('/api/sim/rl/plans/{pid}')
+def api_sim_rl_plan(pid: str):
+    _rl_on()
+    try:
+        return rl_modes.get_plan(pid)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+
+
+@router.post('/api/sim/rl/plans/{pid}/progress')
+def api_sim_rl_plan_progress(pid: str, body: dict = Body(...)):
+    _rl_on()
+    try:
+        return rl_modes.update_progress(pid, body)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+
+
+@router.post('/api/sim/rl/import')
+def api_sim_rl_import(body: dict = Body(...)):
+    """プランの 1 モードの記録できたシーン ZIP を 1 つのデータセットに取り込む(ジョブ import)。body = {plan, mode}"""
+    _rl_on()
+    pid, key = body.get('plan'), body.get('mode')
+    try:
+        plan = rl_modes.get_plan(pid)
+    except rl_modes.RlError as e:
+        raise _rl_err(e)
+    md = (plan.get('modes') or {}).get(key)
+    if md is None:
+        raise HTTPException(404, 'このプランにないモードです: %s' % key)
+    pairs = rl_modes.mode_session_ids(plan, key)
+    if not pairs:
+        raise HTTPException(409, 'このモードで記録できたシーンがまだありません')
+    cur = (plan.get('imports') or {}).get(key) or {}
+    if cur.get('state') in ('running', 'done'):
+        raise HTTPException(409, 'このモードはもう取り込み%sです(%s)' % ('中' if cur['state'] == 'running' else '済み', cur.get('dataset')))
+    sids = [sid for _, sid in pairs]
+    with _importing_lock:
+        busy = [s for s in sids if s in _importing]
+        if busy:
+            raise HTTPException(409, 'このシーンはいま取り込んでいます(処理状況を見てください)')
+        _importing.update(sids)
+    name = md['dataset_name']
+    if len(pairs) < md['scenes']:
+        name = '%s_%dof%d' % (name, len(pairs), md['scenes'])
+    scene_meta = {sid: {'plan_scene': sc['id'], 'plan_name': sc['name'], 'params': sc.get('params'), 'pool_index': sc.get('pool_index'),
+                        'plan_start': {'gate': sc['fields']['start-gate'], 'left_offset_m': sc['fields']['spawn-offset'],
+                                       'left_yaw_deg': sc['fields']['spawn-yaw'], 'seed': sc['fields']['seed']},
+                        'expected_actions_sha256': (sc.get('expect') or {}).get('actions_sha256')} for sc, sid in pairs}
+    rl_info = {'mode': key, 'name': md['name'], 'state': md.get('state'), 'policy_sha256': md.get('policy_sha256'), 'plan': pid,
+               'scenes': len(pairs), 'planned_scenes': md['scenes'], 'minutes': round(len(pairs) * 20 / 60.0, 2),
+               'calibration': plan.get('calibration'), 'teacher_id': 'jf-rl-%s-v1' % key}
+    extra = {'rl': rl_info}
+    if md.get('dataset_card'):
+        extra['rl_notes'] = md['dataset_card']
+
+    def run(progress):
+        try:
+            res = rl_import.import_scenes(sids, name, tags=md.get('tags') or [], card_extra=extra, progress=progress,
+                                          delete_sources=bool(plan.get('delete_sources')), scene_meta=scene_meta)
+            if plan.get('delete_sources'):                   # 外れたシーン(衝突など。取り込めない)の元の ZIP も消す
+                for sid in rl_modes.mode_failed_session_ids(rl_modes.get_plan(pid), key):
+                    try:
+                        datasets.delete(sid)
+                        res.setdefault('deleted_sources', []).append(sid)
+                    except datasets.DatasetError:
+                        pass
+            rl_modes.set_import_state(pid, key, state='done', dataset=res['name'], scenes=len(sids), error=None,
+                                      label_mask=res.get('label_mask'))
+            return res
+        except BaseException as e:
+            rl_modes.set_import_state(pid, key, state='error', error=str(e)[:500])
+            raise
+        finally:
+            with _importing_lock:
+                _importing.difference_update(sids)
+    try:
+        rl_modes.set_import_state(pid, key, state='running', dataset=name, scenes=len(sids), error=None)
+        job = S['jobs'].submit('import', '強化学習モードのシーンを取り込み: %s(%d シーン)' % (md['name'], len(sids)), run)
+        if isinstance(job, dict) and job.get('id'):
+            rl_modes.set_import_state(pid, key, job_id=job['id'])
+        return job
+    except BaseException:
+        with _importing_lock:
+            _importing.difference_update(sids)
+        raise

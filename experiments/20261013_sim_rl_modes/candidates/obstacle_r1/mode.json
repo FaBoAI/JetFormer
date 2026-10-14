@@ -1,0 +1,48 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "obstacle",
+ "name_ja": "強化学習モード(障害物よけ)",
+ "short_ja": "コースの上に柱や箱をランダムに置き、それをよけて走る(配置はシーンごとに変わる)",
+ "order": 6,
+ "priority": 3,
+ "course": "default-obstacles",
+ "obs_wrapper": "obst95",
+ "runtime": {
+  "shield": false,
+  "perturbation": null,
+  "conditioning": {
+   "layout": "シーンごとに recording 組の配置を 1 つ(フレーム 0 の p と info.jf に配置 ID)"
+  },
+  "gate_index": "virtual"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.15,
+    0.15
+   ],
+   "left_yaw_deg": [
+    -10,
+    10
+   ],
+   "sequence": "Halton",
+   "prefilter": true,
+   "layout_check": "開始の前後 1.5 m に障害物が無い配置だけ"
+  },
+  "per_scene_params": {
+   "layouts": "recording 組の 30 配置から、シーンごとに違うものを選ぶ"
+  }
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-obstacle",
+  "sim-obstacles"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "4ba77f44a77c06a93c9f5c53ba3027091748e2ad45cf55ad1758c55480a906bb",
+ "policy_source": "sim_rl_modes_20261013 train/obstacle/main/policies/step_002015232.json(obstacle r1、種 61、main_s1_10M から 2,015,232 ステップ。予定 1,500 万の途中で止めた。調整なし・ゲートの外しは −10 で終了 = deviations.md)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

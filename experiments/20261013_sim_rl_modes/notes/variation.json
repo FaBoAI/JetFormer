@@ -1,0 +1,1008 @@
+{
+ "schema": "jf-sim-rl-modes-variation-summary/v1",
+ "written_at": "2026-10-14T13:39:19",
+ "request": "シミュレーターの走行に、データセットのばらつきが出る強化学習モードを用意(2026-10-13 21:20)。この段 = 見本の記録とばらつきの物差し",
+ "plan": {
+  "id": "20261014-112531-d4d791",
+  "minutes": {
+   "fastest": 5,
+   "no_wall": 5,
+   "recover": 5,
+   "speed": 5
+  },
+  "scenes": 61,
+  "val_ratio": 0.2,
+  "seed": 1,
+  "calibration": {
+   "policy_loaded": false,
+   "policy_name": null,
+   "steer_center_us": 1441,
+   "throttle_neutral_us": 1496,
+   "source": "recorder-default"
+  },
+  "started": "2026-10-14T11:25:37",
+  "finished": "2026-10-14T13:28:26",
+  "failed_scenes": [
+   {
+    "scene": "s031",
+    "frames": 225,
+    "collisions": 1,
+    "reason": "collision",
+    "replaced_by": "s031r1",
+    "session_id": "28d393ed077d4743bd7a6d791dfa6b93"
+   }
+  ],
+  "recorded_via": "http://192.168.55.1:8080 の JetFormer「シミュレーター」タブ → 強化学習モードのカード → プラン → 新しいタブで「開始」(DISPLAY :0 の Firefox 157)"
+ },
+ "datasets": {
+  "fastest": "sim-rl-fastest_20261014-1125",
+  "no_wall": "sim-rl-no_wall_20261014-1125",
+  "recover": "sim-rl-recover_20261014-1125",
+  "speed": "sim-rl-speed_20261014-1125"
+ },
+ "teacher_dataset": "jetformer-simulator-id8-20min_20261012-150956_b55616cf",
+ "definitions": {
+  "source": "protocol.json variation_metrics(VM1〜VM7)。記録した frames.jsonl の操作前の姿勢を方策の観測と同じ射影(features.mjs)で参照ループ R に載せて計算(Node の予想ではない)",
+  "VM1": "時刻(フレーム番号)でそろえた舵 PWM の、群の平均からの |差| の平均 µs(今日の 7.6 µs と同じ式。開始が違う群では意味が薄い)",
+  "VM2": "位置 s(5 cm のマス・各シーンの開始から 3 m 以降の最初の通過)でそろえた舵 PWM の |差| の平均 µs",
+  "VM3": "VM2 と同じ式の横ずれ e_y [m](線のばらつき)",
+  "VM4": "VM2 と同じ式の速さ [m/s]",
+  "VM5": "すき間(車体の長方形と柵・柱の距離)。シーンの最小は lap_audit の正確な値(replay_check)、フレームの分布は features.mjs の clearance",
+  "VM6": "乱しの出来事・学習から外す割合・立て直し(protocol definitions.recovered、乱しなしの線は登録簿の離脱復活の方策で作り直したもの)",
+  "VM7": "開始から 3 m 以降のフレームを (s 0.25 m × e_y 5 cm × 向きのずれ 0.1 rad × 速さ 0.5 m/s) のマスに入れた訪れたマスの数(最大 9,000 フレーム、種 12345)。全モード合わせはモードごとに 2,250 フレーム",
+  "teacher_reference": "前の教師のデータを同じコードで計算。VM1・VM2・VM3 は 60 シーン、VM7 は先頭 15 シーン(8,460 フレーム。モードの 15 シーンは 8,284〜8,375 フレーム)"
+ },
+ "teacher": {
+  "all60": {
+   "scenes": 60,
+   "frames": 36000,
+   "VM1_steer_time_aligned_us": 7.578082322831322,
+   "VM2_steer_position_aligned_us": 4.184431083505267,
+   "VM3_lateral_spread_m": 0.0034969248285476504,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.012265170680776172,
+   "lap1_s": {
+    "n": 60,
+    "min": 8.70969361068181,
+    "median": 8.744505953726794,
+    "max": 8.758448640205712,
+    "range": 0.04875502952390143
+   },
+   "lap2_s": {
+    "n": 60,
+    "min": 8.358862041911372,
+    "median": 8.371180506743343,
+    "max": 8.406762681129127,
+    "range": 0.04790063921775456
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.032068436102784925,
+     "median": 0.06485098106058372
+    },
+    "frame_p05_m": 0.11823311261514649,
+    "frame_median_m": 0.3633186129598918
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 0,
+    "masked_fraction_mean": 0,
+    "recovery_s": {
+     "n": 0
+    }
+   },
+   "VM7_state_cells": 279,
+   "VM7_frames_used": 9000,
+   "start_gates_distinct": 1,
+   "start_offset_m": {
+    "min": -0.029062,
+    "max": 0.028125
+   },
+   "start_yaw_deg": {
+    "min": -2.925926,
+    "max": 2.851852
+   },
+   "scenarios": {
+    "baseline": 30,
+    "noise": 30
+   },
+   "speed_levels_c_v": {},
+   "speed_mps_after3m": {
+    "p05": 1.8966481457082265,
+    "median": 2.8888191679754844,
+    "p95": 4.337544079579337,
+    "mean": 3.0758219320635107
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.00539825150871528,
+    "p95": 0.10147307961005964
+   },
+   "clearance_frame_m": {
+    "p05": 0.11823311261514649,
+    "median": 0.3633186129598918
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 1.0,
+    "VM3": 1.0,
+    "VM7": 1.0035971223021583
+   }
+  },
+  "first15": {
+   "scenes": 15,
+   "frames": 9000,
+   "VM1_steer_time_aligned_us": 7.561929652780311,
+   "VM2_steer_position_aligned_us": 4.147275920288066,
+   "VM3_lateral_spread_m": 0.0032336066481650915,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.01280962072785291,
+   "lap1_s": {
+    "n": 15,
+    "min": 8.711124792015719,
+    "median": 8.744490997889677,
+    "max": 8.758434976914605,
+    "range": 0.04731018489888683
+   },
+   "lap2_s": {
+    "n": 15,
+    "min": 8.361705398382322,
+    "median": 8.371244201299447,
+    "max": 8.399531736929555,
+    "range": 0.03782633854723372
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.032068436102784925,
+     "median": 0.06207511208661501
+    },
+    "frame_p05_m": 0.11836255582783706,
+    "frame_median_m": 0.363953183734567
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 0,
+    "masked_fraction_mean": 0,
+    "recovery_s": {
+     "n": 0
+    }
+   },
+   "VM7_state_cells": 278,
+   "VM7_frames_used": 8460,
+   "start_gates_distinct": 1,
+   "start_offset_m": {
+    "min": -0.02625,
+    "max": 0.02625
+   },
+   "start_yaw_deg": {
+    "min": -2.777778,
+    "max": 2.333333
+   },
+   "scenarios": {
+    "baseline": 8,
+    "noise": 7
+   },
+   "speed_levels_c_v": {},
+   "speed_mps_after3m": {
+    "p05": 1.897527379069481,
+    "median": 2.888896531327579,
+    "p95": 4.33656792457471,
+    "mean": 3.0766863026651734
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.005401351696030208,
+    "p95": 0.10281843511924044
+   },
+   "clearance_frame_m": {
+    "p05": 0.11836255582783706,
+    "median": 0.363953183734567
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 0.9911206177194162,
+    "VM3": 0.9247000741242926,
+    "VM7": 1.0
+   }
+  }
+ },
+ "modes": {
+  "fastest": {
+   "scenes": 15,
+   "frames": 9000,
+   "VM1_steer_time_aligned_us": 187.57832075942318,
+   "VM2_steer_position_aligned_us": 41.52719582641281,
+   "VM3_lateral_spread_m": 0.018240795968915365,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.04994722984161955,
+   "lap1_s": {
+    "n": 15,
+    "min": 7.906643394459861,
+    "median": 8.119272436851077,
+    "max": 8.624463385902342,
+    "range": 0.7178199914424805
+   },
+   "lap2_s": {
+    "n": 15,
+    "min": 7.668486672197989,
+    "median": 7.74050558038854,
+    "max": 7.809464960184533,
+    "range": 0.14097828798654355
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.01437033653249506,
+     "median": 0.06266142329466862
+    },
+    "frame_p05_m": 0.1025625704584534,
+    "frame_median_m": 0.3643692235089837
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 0,
+    "masked_fraction_mean": 0,
+    "recovery_s": {
+     "n": 0
+    }
+   },
+   "VM7_state_cells": 768,
+   "VM7_frames_used": 8375,
+   "start_gates_distinct": 15,
+   "start_offset_m": {
+    "min": -0.28518518518518515,
+    "max": 0.2629629629629629
+   },
+   "start_yaw_deg": {
+    "min": -24.2,
+    "max": 23.400000000000006
+   },
+   "scenarios": {
+    "baseline": 8,
+    "noise": 4,
+    "dim": 3
+   },
+   "speed_levels_c_v": {},
+   "speed_mps_after3m": {
+    "p05": 1.7515696403572771,
+    "median": 3.6621839611153257,
+    "p95": 4.4600553944471395,
+    "mean": 3.358451793104576
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.0967505117344405,
+    "p95": 0.3387904075393953
+   },
+   "clearance_frame_m": {
+    "p05": 0.1025625704584534,
+    "median": 0.3643692235089837
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 9.924215502104957,
+    "VM3": 5.216239085268289,
+    "VM7": 2.762589928057554
+   }
+  },
+  "no_wall": {
+   "scenes": 15,
+   "frames": 9000,
+   "VM1_steer_time_aligned_us": 138.06598408416383,
+   "VM2_steer_position_aligned_us": 11.323944007046192,
+   "VM3_lateral_spread_m": 0.00411341410799303,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.01714949486105793,
+   "lap1_s": {
+    "n": 15,
+    "min": 9.548366881563474,
+    "median": 9.739953764347407,
+    "max": 9.924884348177281,
+    "range": 0.3765174666138069
+   },
+   "lap2_s": {
+    "n": 15,
+    "min": 9.421606179882614,
+    "median": 9.439258787946521,
+    "max": 9.503341779148135,
+    "range": 0.08173559926552088
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.10040424375913597,
+     "median": 0.1363420314221675
+    },
+    "frame_p05_m": 0.14779885462085018,
+    "frame_median_m": 0.396775653637365
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 0,
+    "masked_fraction_mean": 0,
+    "recovery_s": {
+     "n": 0
+    }
+   },
+   "VM7_state_cells": 321,
+   "VM7_frames_used": 8329,
+   "start_gates_distinct": 15,
+   "start_offset_m": {
+    "min": -0.19012345679012346,
+    "max": 0.17530864197530865
+   },
+   "start_yaw_deg": {
+    "min": -13.32,
+    "max": 14.040000000000003
+   },
+   "scenarios": {
+    "baseline": 8,
+    "noise": 4,
+    "dim": 3
+   },
+   "speed_levels_c_v": {},
+   "speed_mps_after3m": {
+    "p05": 1.5494667957670163,
+    "median": 2.7983174327726137,
+    "p95": 4.140097046761252,
+    "mean": 2.765898246347268
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.07441333216829654,
+    "p95": 0.19913818611116962
+   },
+   "clearance_frame_m": {
+    "p05": 0.14779885462085018,
+    "median": 0.396775653637365
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 2.7062087488271427,
+    "VM3": 1.1762946902411455,
+    "VM7": 1.1546762589928057
+   }
+  },
+  "recover": {
+   "scenes": 15,
+   "frames": 9000,
+   "VM1_steer_time_aligned_us": 181.6574219835502,
+   "VM2_steer_position_aligned_us": 69.23483550818771,
+   "VM3_lateral_spread_m": 0.04435593070513098,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.11236207110655377,
+   "lap1_s": {
+    "n": 15,
+    "min": 8.164264063936391,
+    "median": 8.544852431789705,
+    "max": 17.24704111866045,
+    "range": 9.08277705472406
+   },
+   "lap2_s": {
+    "n": 9,
+    "min": 8.03142132089673,
+    "median": 8.342415235549357,
+    "max": 8.81022213705097,
+    "range": 0.7788008161542397
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.009192164586197538,
+     "median": 0.06018086463003704
+    },
+    "frame_p05_m": 0.09232906347712504,
+    "frame_median_m": 0.3494337075716751
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 4.4,
+    "masked_fraction_mean": 0.18822222222222224,
+    "recovery_s": {
+     "n": 65,
+     "median": 0.43333333333333335,
+     "p90": 0.9866666666666667
+    }
+   },
+   "VM7_state_cells": 1668,
+   "VM7_frames_used": 8299,
+   "start_gates_distinct": 13,
+   "start_offset_m": {
+    "min": -0.19670781893004116,
+    "max": 0.19176954732510282
+   },
+   "start_yaw_deg": {
+    "min": -14.472,
+    "max": 12.648000000000003
+   },
+   "scenarios": {
+    "baseline": 8,
+    "noise": 4,
+    "dim": 3
+   },
+   "speed_levels_c_v": {},
+   "speed_mps_after3m": {
+    "p05": 1.41384952424668,
+    "median": 3.360086455864515,
+    "p95": 4.391376613948843,
+    "mean": 3.1113956093069803
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.1303717381185592,
+    "p95": 0.3612420091328586
+   },
+   "clearance_frame_m": {
+    "p05": 0.09232906347712504,
+    "median": 0.3494337075716751
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 16.545818087698127,
+    "VM3": 12.684267715172183,
+    "VM7": 6.0
+   }
+  },
+  "speed": {
+   "scenes": 15,
+   "frames": 9000,
+   "VM1_steer_time_aligned_us": 160.71799062611257,
+   "VM2_steer_position_aligned_us": 50.202063157776564,
+   "VM3_lateral_spread_m": 0.02165399438584302,
+   "VM3_bins_used": 522,
+   "VM4_speed_spread_mps": 0.4658277424122101,
+   "lap1_s": {
+    "n": 15,
+    "min": 8.141765464751375,
+    "median": 9.504551442824503,
+    "max": 12.683259353943718,
+    "range": 4.541493889192344
+   },
+   "lap2_s": {
+    "n": 9,
+    "min": 7.9228065836360475,
+    "median": 8.266836443857638,
+    "max": 9.003851986084308,
+    "range": 1.081045402448261
+   },
+   "VM5_clearance": {
+    "scene_min_m": {
+     "min": 0.08374020023518026,
+     "median": 0.12055671449057713
+    },
+    "frame_p05_m": 0.13427968396253304,
+    "frame_median_m": 0.3936508493962531
+   },
+   "VM6_recovery": {
+    "events_per_scene_mean": 0,
+    "masked_fraction_mean": 0,
+    "recovery_s": {
+     "n": 0
+    }
+   },
+   "VM7_state_cells": 1250,
+   "VM7_frames_used": 8284,
+   "start_gates_distinct": 15,
+   "start_offset_m": {
+    "min": -0.19012345679012346,
+    "max": 0.17530864197530865
+   },
+   "start_yaw_deg": {
+    "min": -14.52,
+    "max": 14.040000000000003
+   },
+   "scenarios": {
+    "baseline": 8,
+    "noise": 4,
+    "dim": 3
+   },
+   "speed_levels_c_v": {
+    "1": 3,
+    "0.5": 3,
+    "0.625": 3,
+    "0.75": 3,
+    "0.875": 3
+   },
+   "speed_mps_after3m": {
+    "p05": 1.8129708839458587,
+    "median": 2.7289582902818252,
+    "p95": 4.2185982511171405,
+    "mean": 2.8273338990657235
+   },
+   "abs_lateral_m_after3m": {
+    "median": 0.04287092661673597,
+    "p95": 0.29576610773987
+   },
+   "clearance_frame_m": {
+    "p05": 0.13427968396253304,
+    "median": 0.3936508493962531
+   },
+   "shield_frames": 0,
+   "collisions": 0,
+   "ratio_vs_teacher": {
+    "VM2": 11.997344957040772,
+    "VM3": 6.192296216683731,
+    "VM7": 4.496402877697841
+   }
+  }
+ },
+ "pooled": {
+  "scenes": 60,
+  "frames": 36000,
+  "VM1_steer_time_aligned_us": 169.65628531230175,
+  "VM2_steer_position_aligned_us": 63.4126870850553,
+  "VM3_lateral_spread_m": 0.052578877377355775,
+  "VM3_bins_used": 522,
+  "VM4_speed_spread_mps": 0.37092712928461313,
+  "lap1_s": {
+   "n": 60,
+   "min": 7.906643394459861,
+   "median": 8.706470876348313,
+   "max": 17.24704111866045,
+   "range": 9.34039772420059
+  },
+  "lap2_s": {
+   "n": 48,
+   "min": 7.668486672197989,
+   "median": 8.28144848744166,
+   "max": 9.503341779148135,
+   "range": 1.8348551069501458
+  },
+  "VM5_clearance": {
+   "scene_min_m": {
+    "min": 0.009297961018828266,
+    "median": 0.07867884333043526
+   },
+   "frame_p05_m": 0.12081940414263599,
+   "frame_median_m": 0.37695566413058906
+  },
+  "VM6_recovery": {
+   "events_per_scene_mean": 1.1,
+   "masked_fraction_mean": 0.04705555555555556,
+   "recovery_s": {
+    "n": 65,
+    "median": 0.43333333333333335,
+    "p90": 0.9866666666666667
+   }
+  },
+  "VM7_state_cells": 2090,
+  "VM7_frames_used": 9000,
+  "start_gates_distinct": 22,
+  "start_offset_m": {
+   "min": -0.28518518518518515,
+   "max": 0.2629629629629629
+  },
+  "start_yaw_deg": {
+   "min": -24.2,
+   "max": 23.400000000000006
+  },
+  "scenarios": {
+   "baseline": 32,
+   "noise": 16,
+   "dim": 12
+  },
+  "speed_levels_c_v": {
+   "1": 3,
+   "0.5": 3,
+   "0.625": 3,
+   "0.75": 3,
+   "0.875": 3
+  },
+  "speed_mps_after3m": {
+   "p05": 1.610425279371487,
+   "median": 2.9616578184308233,
+   "p95": 4.403881582291063,
+   "mean": 3.0164120059655697
+  },
+  "abs_lateral_m_after3m": {
+   "median": 0.08337015449637121,
+   "p95": 0.3222028991868967
+  },
+  "clearance_frame_m": {
+   "p05": 0.12081940414263599,
+   "median": 0.37695566413058906
+  },
+  "shield_frames": 0,
+  "collisions": 0,
+  "ratio_vs_teacher": {
+   "VM2": 15.1544345741584,
+   "VM3": 15.035747107893348,
+   "VM7": 7.517985611510792
+  },
+  "scenes_per_mode": 15,
+  "VM7_equal_frames": {
+   "cells": 2090,
+   "frames_used": 9000,
+   "per_group": 2250
+  },
+  "leave_one_out": {
+   "fastest": {
+    "VM3_m": 0.054501443970255414,
+    "VM7_equal_frames": 2039
+   },
+   "no_wall": {
+    "VM3_m": 0.05140410544449095,
+    "VM7_equal_frames": 2157
+   },
+   "recover": {
+    "VM3_m": 0.04373065675128895,
+    "VM7_equal_frames": 1563
+   },
+   "speed": {
+    "VM3_m": 0.0514664274256424,
+    "VM7_equal_frames": 1672
+   }
+  }
+ },
+ "recover_detail": {
+  "events": 66,
+  "events_per_scene": {
+   "n": 15,
+   "min": 4,
+   "p05": 4,
+   "p25": 4,
+   "median": 4,
+   "p75": 5,
+   "p95": 5,
+   "max": 5,
+   "mean": 4.4
+  },
+  "masked_fraction": {
+   "n": 15,
+   "min": 0.11666666666666667,
+   "p05": 0.14466666666666667,
+   "p25": 0.16583333333333333,
+   "median": 0.19666666666666666,
+   "p75": 0.21250000000000002,
+   "p95": 0.22266666666666668,
+   "max": 0.225,
+   "mean": 0.18822222222222224
+  },
+  "recovered": 65,
+  "success": 63,
+  "success_rate": 0.9545454545454546,
+  "recovery_s_success": {
+   "n": 63,
+   "min": 0,
+   "p05": 0,
+   "p25": 0,
+   "median": 0.43333333333333335,
+   "p75": 0.7333333333333333,
+   "p95": 1.1199999999999999,
+   "max": 2.3666666666666667,
+   "mean": 0.4518518518518519
+  },
+  "perturb_frames": {
+   "n": 66,
+   "min": 3,
+   "p05": 4,
+   "p25": 8,
+   "median": 15,
+   "p75": 21.75,
+   "p95": 30,
+   "max": 35,
+   "mean": 15.666666666666666
+  },
+  "nominal_line": {
+   "policy_sha256": "7720f2754972efbbd9b714008c99e63822b5421a0eef349840d3d52fb8a0456f",
+   "runs": 8
+  }
+ },
+ "judged": {
+  "reference": {
+   "teacher_VM1_us": 7.578082322831322,
+   "teacher_VM3_m": 0.0034969248285476504,
+   "teacher_VM7_cells_15": 278,
+   "note": "protocol の基準は Node で作り直した REC60(VM1 7.58・VM3 0.0039)。ここでは記録した前の教師のデータそのものから同じコードで計算した値を基準にする"
+  },
+  "recover": {
+   "events_per_scene_mean": 4.4,
+   "masked_fraction_mean": 0.18822222222222224,
+   "vm7_ratio": 6,
+   "pass": true,
+   "rule": "出来事 ≥ 3.5/シーン・外す割合 0.10〜0.40・VM7 ≥ 教師の 2 倍"
+  },
+  "speed": {
+   "vm4_mps": 0.4658277424122101,
+   "lap1_range_s": 4.541493889192344,
+   "pass": true,
+   "rule": "VM4 ≥ 0.4 m/s・1 周目の時間の幅 ≥ 3 秒"
+  },
+  "fastest": {
+   "report_only": true,
+   "VM3_m": 0.018240795968915365,
+   "vm7_ratio": 2.762589928057554
+  },
+  "no_wall": {
+   "report_only": true,
+   "VM3_m": 0.00411341410799303,
+   "vm7_ratio": 1.1546762589928057
+  },
+  "headline": {
+   "modes_recorded": 4,
+   "judged": true,
+   "vm3_combined_m": 0.052578877377355775,
+   "vm3_ratio": 15.035747107893348,
+   "vm3_min_m": 0.039,
+   "vm7_cells": 2090,
+   "vm7_ratio": 7.517985611510792,
+   "vm7_ratio_min": 3,
+   "pass_vm3": true,
+   "pass_vm7": true,
+   "pass": true
+  }
+ },
+ "validation": {
+  "fastest": {
+   "dataset": "sim-rl-fastest_20261014-1125",
+   "user_style_check": {
+    "pass": true,
+    "scenes_pass": 15,
+    "scenes": 15,
+    "teacher_same_all_scenes": true,
+    "card": {
+     "genre": true,
+     "mode0_frames_equal_masked": true,
+     "label_mask_masked_frames": true,
+     "training_frames": true
+    },
+    "masked_frames": 0,
+    "tags": [
+     "simulator",
+     "sim-rl",
+     "sim-rl-fastest"
+    ],
+    "genre_frames": {
+     "8": 9000
+    },
+    "expanded_scenes": {
+     "log": "ds-sim-rl-fastest_20261014-1125",
+     "created": 15,
+     "all_exist": true,
+     "all_tags_ok": true
+    },
+    "min_unique_rgb": 600,
+    "min_unique_tof": 600,
+    "max_imu_float32_error": 0.0
+   },
+   "replay": {
+    "open_loop_max_pose_err_m": 1.1191741977611969e-13,
+    "teacher_max_abs_steering": 1.6145765280306534e-13,
+    "teacher_max_abs_speed": 1.829647544582258e-12,
+    "teacher_info_mismatch_frames": 0,
+    "pass_identity_1e-6": true,
+    "identity_fail_scenes": [],
+    "rules": {
+     "min_valid_laps": 1,
+     "max_stall_s": 1,
+     "min_clearance_m": null,
+     "no_gate_miss": true,
+     "stall_speed_mps": 0.2,
+     "stall_after_s": 1
+    },
+    "pass_rules": true,
+    "rule_fail_scenes": [],
+    "collisions": 0,
+    "valid_laps": {
+     "2": 15
+    },
+    "min_clearance_m": 0.01437033653249506,
+    "max_stall_s": 0,
+    "learn0_frames": 0,
+    "shield_frames": 0,
+    "prediction_first_diff_frame": [
+     34,
+     141
+    ],
+    "prediction_max_pose_diff_m": 0.5705064758614097
+   }
+  },
+  "no_wall": {
+   "dataset": "sim-rl-no_wall_20261014-1125",
+   "user_style_check": {
+    "pass": true,
+    "scenes_pass": 15,
+    "scenes": 15,
+    "teacher_same_all_scenes": true,
+    "card": {
+     "genre": true,
+     "mode0_frames_equal_masked": true,
+     "label_mask_masked_frames": true,
+     "training_frames": true
+    },
+    "masked_frames": 0,
+    "tags": [
+     "simulator",
+     "sim-rl",
+     "sim-rl-no_wall",
+     "sim-safe"
+    ],
+    "genre_frames": {
+     "8": 9000
+    },
+    "expanded_scenes": {
+     "log": "ds-sim-rl-no_wall_20261014-1125",
+     "created": 15,
+     "all_exist": true,
+     "all_tags_ok": true
+    },
+    "min_unique_rgb": 600,
+    "min_unique_tof": 600,
+    "max_imu_float32_error": 0.0
+   },
+   "replay": {
+    "open_loop_max_pose_err_m": 8.354428260304303e-14,
+    "teacher_max_abs_steering": 1.8596235662471372e-13,
+    "teacher_max_abs_speed": 7.467360063628803e-13,
+    "teacher_info_mismatch_frames": 0,
+    "pass_identity_1e-6": true,
+    "identity_fail_scenes": [],
+    "rules": {
+     "min_valid_laps": 1,
+     "max_stall_s": 1,
+     "min_clearance_m": 0.08,
+     "no_gate_miss": true,
+     "stall_speed_mps": 0.2,
+     "stall_after_s": 1
+    },
+    "pass_rules": true,
+    "rule_fail_scenes": [],
+    "collisions": 0,
+    "valid_laps": {
+     "2": 15
+    },
+    "min_clearance_m": 0.10040424375913597,
+    "max_stall_s": 0,
+    "learn0_frames": 0,
+    "shield_frames": 0,
+    "prediction_first_diff_frame": [
+     111,
+     393
+    ],
+    "prediction_max_pose_diff_m": 0.03497605552111445
+   }
+  },
+  "recover": {
+   "dataset": "sim-rl-recover_20261014-1125",
+   "user_style_check": {
+    "pass": true,
+    "scenes_pass": 15,
+    "scenes": 15,
+    "teacher_same_all_scenes": true,
+    "card": {
+     "genre": true,
+     "mode0_frames_equal_masked": true,
+     "label_mask_masked_frames": true,
+     "training_frames": true
+    },
+    "masked_frames": 1694,
+    "tags": [
+     "simulator",
+     "sim-rl",
+     "sim-rl-recover",
+     "sim-recover"
+    ],
+    "genre_frames": {
+     "0": 1694,
+     "8": 7306
+    },
+    "expanded_scenes": {
+     "log": "ds-sim-rl-recover_20261014-1125",
+     "created": 15,
+     "all_exist": true,
+     "all_tags_ok": true
+    },
+    "min_unique_rgb": 600,
+    "min_unique_tof": 600,
+    "max_imu_float32_error": 0.0
+   },
+   "replay": {
+    "open_loop_max_pose_err_m": 6.039613253960852e-14,
+    "teacher_max_abs_steering": 7.248743272292302e-10,
+    "teacher_max_abs_speed": 0.03266466768080034,
+    "teacher_info_mismatch_frames": 0,
+    "pass_identity_1e-6": false,
+    "identity_fail_scenes": [
+     "s030"
+    ],
+    "rules": {
+     "min_valid_laps": 1,
+     "max_stall_s": 1,
+     "min_clearance_m": null,
+     "no_gate_miss": false,
+     "stall_speed_mps": 0.2,
+     "stall_after_s": 1
+    },
+    "pass_rules": true,
+    "rule_fail_scenes": [],
+    "collisions": 0,
+    "valid_laps": {
+     "1": 6,
+     "2": 9
+    },
+    "min_clearance_m": 0.009192164586197538,
+    "max_stall_s": 0,
+    "learn0_frames": 1034,
+    "shield_frames": 0,
+    "prediction_first_diff_frame": [
+     38,
+     144
+    ],
+    "prediction_max_pose_diff_m": 1.283188276031883,
+    "identity_note": "s030 の 9 フレーム(f472〜480)で、記録の速さの指令が Node の教師と最大 0.0327 m/s 違う(舵は同じ・info も同じ)。同じ開ループの再生の状態を x だけ -1e-13 m ずらして教師に与えると、9/9 フレームが記録と 1e-9 以内で一致する。参照ループの頂点で向きのずれの観測が跳ぶ所で、ブラウザと Node の状態の 1e-14 m ほどの違いが別の側に落ちたもの(方策・ランタイムの違いではない)。ほかの 59 シーンは 1e-6 以内",
+    "sensitivity_file": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/record/replay/recover_s030_sensitivity.json"
+   }
+  },
+  "speed": {
+   "dataset": "sim-rl-speed_20261014-1125",
+   "user_style_check": {
+    "pass": true,
+    "scenes_pass": 15,
+    "scenes": 15,
+    "teacher_same_all_scenes": true,
+    "card": {
+     "genre": true,
+     "mode0_frames_equal_masked": true,
+     "label_mask_masked_frames": true,
+     "training_frames": true
+    },
+    "masked_frames": 0,
+    "tags": [
+     "simulator",
+     "sim-rl",
+     "sim-rl-speed",
+     "sim-speed"
+    ],
+    "genre_frames": {
+     "8": 9000
+    },
+    "expanded_scenes": {
+     "log": "ds-sim-rl-speed_20261014-1125",
+     "created": 15,
+     "all_exist": true,
+     "all_tags_ok": true
+    },
+    "min_unique_rgb": 600,
+    "min_unique_tof": 600,
+    "max_imu_float32_error": 0.0
+   },
+   "replay": {
+    "open_loop_max_pose_err_m": 1.3239409568654992e-13,
+    "teacher_max_abs_steering": 3.364808431882693e-13,
+    "teacher_max_abs_speed": 2.6261770535995765e-12,
+    "teacher_info_mismatch_frames": 0,
+    "pass_identity_1e-6": true,
+    "identity_fail_scenes": [],
+    "rules": {
+     "min_valid_laps": 1,
+     "max_stall_s": 1,
+     "min_clearance_m": 0.03,
+     "no_gate_miss": true,
+     "stall_speed_mps": 0.2,
+     "stall_after_s": 1
+    },
+    "pass_rules": true,
+    "rule_fail_scenes": [],
+    "collisions": 0,
+    "valid_laps": {
+     "1": 6,
+     "2": 9
+    },
+    "min_clearance_m": 0.08374020023518026,
+    "max_stall_s": 0,
+    "learn0_frames": 0,
+    "shield_frames": 0,
+    "prediction_first_diff_frame": [
+     43,
+     142
+    ],
+    "prediction_max_pose_diff_m": 0.3660308966258254
+   }
+  }
+ },
+ "files": {
+  "raw": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/record/variation_raw.json",
+  "figdata": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/record/figdata.json",
+  "replay": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/record/replay",
+  "verify": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/record/verify",
+  "figures": [
+   "/home/jetson/jetformer_reports/sim_rl_modes_20261013/fig/record_clearance_hist.png",
+   "/home/jetson/jetformer_reports/sim_rl_modes_20261013/fig/record_ey_by_s.png",
+   "/home/jetson/jetformer_reports/sim_rl_modes_20261013/fig/record_speed_hist.png",
+   "/home/jetson/jetformer_reports/sim_rl_modes_20261013/fig/record_trajectories.png",
+   "/home/jetson/jetformer_reports/sim_rl_modes_20261013/fig/record_variation_summary.png"
+  ]
+ }
+}

@@ -1,0 +1,621 @@
+{
+ "title": "シミュレーターの強化学習モード(sim_rl_modes_20261013)の合否の決まり。結果を見る前に固定(書き換えない)",
+ "version": 1,
+ "written_at": "2026-10-13T22:05:47",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・強化学習モード(絶対壁にぶつからない)・強化学習モード(離脱復活)など、データセットのバリエーションが出る構成のモードを用意",
+ "design": "design.md(同じフォルダー)。モードの設定は modes.json(sha256 は files)",
+ "modes": {
+  "priority_1": [
+   "fastest",
+   "no_wall",
+   "recover"
+  ],
+  "priority_2": [
+   "line",
+   "speed"
+  ],
+  "priority_3": [
+   "obstacle"
+  ],
+  "mode_number": {
+   "fastest": 1,
+   "no_wall": 2,
+   "recover": 3,
+   "line": 4,
+   "speed": 5,
+   "obstacle": 6
+  }
+ },
+ "definitions": {
+  "core_judged": "判定の数字はユーザーの元の sim-core.js(sha256 aaeb2379…549e、写しは snapshot/sim/dist/sim-core.js)を Node で動かし、mode_runtime.mjs(ブラウザと同じファイル)で操作を作る。例外: 摩擦円の物理(FC)は高速版に文字列の置き換えで入れた写し(own_physics_r1 の frictionCircle と 1e-9 で一致を試験済みのもの)、状態のキック(KICK)は高速版(sim.peek().state の書き換え)",
+  "physics_nominal": "modes.json common.physics_nominal(= 記録の物理)",
+  "valid_episode": "連続周回 20 秒が最後まで(reason collection_duration_complete、600 フレーム)、衝突 0、途中の終了(required_crossing_missing・lap_distance_insufficient・invalid_spawn)なし",
+  "clearance": "車体の長方形(0.42 × 0.19 m)と全障害物(コース + 足した障害物 + 外枠)の正確な距離を、sim の小区間ごとに(近いときは間も補間して)測る(rl/lap_audit.mjs の写しと同じ方法)。回の最小すき間 = その最小",
+  "lap_from_stop": "単周モード・STD の開始(ゲート 0・0 m・0°)・停止から。route_complete・33 ゲート・黒シートの有効な横断 1 回・衝突 0。時間 = metrics.elapsed",
+  "valid_lap_continuous": "連続周回の lap_events の周(sim が数えたもの。その周の衝突 0)",
+  "rho_req": "v²·|tan δ|/(0.26·μ·g)(ステップ後の実際の v・δ、μ = 車体の中心の路面 × frictionMultiplier)",
+  "rho_comb": "√(a_long² + a_lat²)/(μ·g)、a_long = (v_t − v_{t−1})/dt、a_lat = v_t·ω_t、ω_t = wrap(yaw_t − yaw_{t−1})/dt。走っているフレーム(v > 0.3 m/s)だけ",
+  "nominal_line": "同じ方策の乱しなしの線: 8 回(種 990000 + i、ゲート 0・±3 cm・±3°、連続 20 秒)を、絶対の s(R 上、mod L)の 5 cm のマスに、各回の開始から 3 m 以降の最初の通過で入れた e_y と向きのずれの平均 ē_y(s)・ψ̄(s)",
+  "recovered": "乱しの終わり pe 以降で、|e_y − ē_y(s)| ≤ 0.10 m かつ |wrap(ψ_err − ψ̄(s))| ≤ 0.15 rad が 15 フレーム続いた最初のフレーム f。立て直しの時間 = (f − pe)/30 秒",
+  "recovery_success": "3.0 秒以内に recovered、かつ pe から次の出来事の始まり(無ければ回の終わり)まで衝突・停止・逆走なし。ゲートの外しは別に数える(成功の条件に入れない)",
+  "tracking_error": "|e_y − e*(s)|。各回の開始から 3 m 以降のフレーム",
+  "mask_rule": "info.jf.l = 0 の操作 j を正解(k+1〜k+10)に含む観測 k(乱しの区間 [ps, pe) なら k ∈ [ps − 10, pe − 2])。masked fraction = 外した k の数 / 600",
+  "shield_fraction": "info.jf.sh = 1 のフレームの数 / 全フレーム",
+  "in_range": "DR-T の範囲の中 = 各値が範囲の両端を含む中(1e-12 の許し)。遅延は 0 か 1"
+ },
+ "seeds": {
+  "episode_rng": "splitmix32(base + i)(ベストラップと同じ mix32)",
+  "test_base": "900000 + 1000·m + i(m = modes.mode_number)",
+  "validation_base": "800000 + 1000·m + i",
+  "recording_base": "700000 + 1000·m + 100·(プランの通し番号 mod 10) + i",
+  "nominal_line_base": 990000,
+  "halton": "開始は Halton 列(基数 2・3・5 を ゲート・左右・向きに。範囲はモードの開始の分布)。番号の範囲: 記録 1〜9,999、検証 10,001〜19,999、試験 20,001〜29,999。重なる・開始の条件を満たさない番号は飛ばす(決定的)",
+  "training_seeds": {
+   "no_wall": 21,
+   "recover": 31,
+   "cond": 41,
+   "obstacle": 61
+  },
+  "obstacle_layout_seeds": {
+   "recording": "730000〜",
+   "validation": "830000〜",
+   "test": "930000〜"
+  }
+ },
+ "dr_test_spec": "modes.json common.dr_specs.DR-T",
+ "test_sets": {
+  "fastest": {
+   "F-STD": "STD の開始で単周(停止から 1 周)と連続 20 秒",
+   "F-REC60": "記録の 60 条件(files.collection_plan_60)の連続 20 秒",
+   "F-ID": "Node で作った 600 フレームの snapshot の列(STD の連続)を、ブラウザ(8080、Firefox)の teacher.js に 1 フレームずつ与え、Node の mode_runtime の操作と比べる"
+  },
+  "no_wall": {
+   "NW-N60": "標準の物理 60 回: F-REC60 の 0, 2, …, 58 番の 30 条件 + no_wall の記録の開始の分布の試験の Halton 30(連続 20 秒、シールドあり)",
+   "NW-STD": "STD の単周と連続 20 秒(標準の物理、シールドあり)",
+   "NW-G": "ベストラップの r2 の条件の表 GRID(rl/r2/robust_eval.mjs の 40 行 = 標準 + 39 条件)× 単周・連続、STD の開始、シールドあり。判定は DR-T の範囲の中の行だけ(34 行 × 2 = 68 回。範囲の外の 6 行 = ブレーキ 0.6・2.5、μ × 0.8、時定数 0.25・0.6、加速の上限 3 は報告)",
+   "NW-R200": "200 回: 物理を DR-T から引く(種 test_base)、開始は no_wall の記録の分布の試験の Halton、連続 20 秒、シールドあり",
+   "NW-FC10": "摩擦円の物理(標準の値 + 摩擦円)で F-REC60 の 0〜9 番、連続 20 秒、シールドあり",
+   "NW-OFF": "NW-N60・NW-R200 をシールドなしで(報告だけ)"
+  },
+  "recover": {
+   "RC-P100": "100 回: recover の記録の開始の分布の試験の Halton、乱しの予定は記録と同じ決まり(common.perturbation_recording、強さは出来事ごとに自動)を episode の種で。標準の物理・連続 20 秒",
+   "RC-KICK": "高速版。STD の開始・連続 20 秒、1.0〜19.0 秒の 0.5 秒おき 37 時刻 × 左右 × {向き 0.3 rad, 横 0.15 m}(148 回)。判定に使うのはキックの瞬間の位置が始めてよい位置(zones.perturb_allowed)の回だけ。生き残り = 20 秒を衝突なしで走り切る(ゲートの外しはよい)",
+   "RC-STD": "乱しなしの STD の単周",
+   "RC-REC60": "乱しなしの F-REC60"
+  },
+  "line": {
+   "LN-P60": "60 回: line の記録の開始の分布の試験の Halton、形は modes.json の family_plan_15 を 4 回分(各形の強さ・c0 は種から)、c_v U(0.9, 1.0)、連続 20 秒",
+   "LN-FAM6": "STD の開始・c_v 1.0・連続 20 秒で 6 つの形: 一定 c0 = −0.8・0・+0.8、イン a 0.8、アウト a 0.8、レイトエイペックス a 0.8"
+  },
+  "speed": {
+   "SP-P60": "60 回: c_v ∈ {1.0, 0.875, 0.75, 0.625, 0.5} × 12、目標の線 c0 = 0、speed の記録の開始の分布の試験の Halton、連続 20 秒",
+   "SP-STD3": "STD の単周(停止から 1 周)を c_v 1.0・0.75・0.5 で"
+  },
+  "obstacle": {
+   "OB-T100": "試験の 50 配置 × 2 開始(STD と、obstacle の記録の開始の分布の試験の Halton で配置の開始の条件を満たすもの)、連続 20 秒",
+   "OB-EMPTY": "障害物なしの STD の単周",
+   "OB-BASE": "最速の方策で OB-T100(報告だけ)"
+  }
+ },
+ "acceptance": {
+  "fastest": {
+   "judged": {
+    "F1_policy": "使う方策の sha256 と出どころ(ベストラップの最終の検証済み、または確認 r1 の 7c43cb53…)を記録の報告と登録簿に書く。決め方は modes.json の fastest.policy.source",
+    "F2_lap": "F-STD の停止から 1 周が、その方策のベストラップの作業の報告の値と 1e-6 秒以内で同じ(7c43cb53… なら 8.091953 秒前後)",
+    "F3_rec60": "F-REC60 で 60/60 が valid_episode",
+    "F4_identity": "F-ID の全 600 フレームで |Δ舵| ≤ 1e-6 rad・|Δ速さ| ≤ 1e-6 m/s"
+   },
+   "reported": [
+    "フライングラップ",
+    "広い開始の走り切りの割合",
+    "VM1〜VM5・VM7"
+   ]
+  },
+  "no_wall": {
+   "judged": {
+    "N1_no_collision": "NW-N60・NW-STD・NW-G(DR-T の範囲の中)・NW-R200・NW-FC10 の全部の回(60 + 2 + 68 + 200 + 10 = 340 回)で衝突 0(シールドあり)",
+    "N2_clearance_nominal_m": 0.08,
+    "N2_text": "NW-N60 と NW-STD の全部の回で最小すき間 ≥ 0.080 m",
+    "N3_clearance_randomised_m": 0.05,
+    "N3_text": "NW-G(範囲の中)・NW-R200・NW-FC10 の全部の回で最小すき間 ≥ 0.050 m",
+    "N4_lap_from_stop_max_s": 12.0,
+    "N4_text": "NW-STD の単周が完走し、停止から 1 周 ≤ 12.0 秒",
+    "N5_completion": "NW-N60 の 60/60 と NW-STD が valid_episode で 1 周以上の有効な周。NW-R200 の 190/200 以上が valid_episode で 1 周以上の有効な周",
+    "N6_friction": "NW-N60 の走っているフレームを全部合わせて、ρ_req > 1.0 の割合 ≤ 0.02、ρ_comb > 1.0 の割合 ≤ 0.02",
+    "N7_shield_max_fraction": 0.05,
+    "N7_text": "NW-N60 のシールドの作動の割合 ≤ 0.05"
+   },
+   "reported": [
+    "NW-OFF(シールドなし)の衝突・すき間",
+    "NW-R200 のシールドの作動の割合",
+    "NW-G の範囲の外の条件",
+    "最速の方策・RC 教師の同じ試験(シールドなし)の衝突とすき間",
+    "1 周の時間の分布",
+    "ρ の分布(最速と比べる)",
+    "最速との線の違い"
+   ],
+   "ui_numbers": "衝突は「N 回の試験で衝突 0」(N = N1 の回の数)、最小すき間は N2 と N3 の値"
+  },
+  "recover": {
+   "judged": {
+    "C1_valid_min": 90,
+    "C1_text": "RC-P100 の 90/100 以上が valid_episode(衝突した回は記録では捨てて替える)",
+    "C2_success_rate_min": 0.95,
+    "C2_text": "RC-P100 の全部の出来事のうち recovery_success の割合 ≥ 0.95",
+    "C3_recovery_time_s": {
+     "median_max": 1.2,
+     "p90_max": 2.5
+    },
+    "C3_text": "成功した出来事の立て直しの時間の中央値 ≤ 1.2 秒、90% 点 ≤ 2.5 秒",
+    "C4_events_and_mask": {
+     "events_per_episode_mean_min": 3.5,
+     "masked_fraction_mean_range": [
+      0.1,
+      0.4
+     ]
+    },
+    "C4_text": "RC-P100 の出来事の数の平均 ≥ 3.5/回、外すフレームの割合の平均が 0.10〜0.40",
+    "C5_kick_survival_min": 0.9,
+    "C5_text": "RC-KICK の判定に使う回で、向きのキックと横のキックそれぞれ生き残り ≥ 0.90",
+    "C6_unperturbed": "RC-STD が完走し停止から 1 周 ≤ 9.0 秒。RC-REC60 が 60/60 valid_episode で最小すき間 ≥ 0.03 m"
+   },
+   "reported": [
+    "最速の方策の RC-P100・RC-KICK(比べる)",
+    "ゲートの外しの割合",
+    "強さ(弱・中・強)と種類ごとの成功率",
+    "RC-KICK の全部の位置の生き残り",
+    "舵のパルス 12 フレームの生き残り(probe と同じ条件)"
+   ]
+  },
+  "line": {
+   "judged": {
+    "L1_valid_min": 57,
+    "L1_text": "LN-P60 の 57/60 以上が valid_episode",
+    "L2_clearance_min_m": 0.03,
+    "L2_text": "LN-P60 の有効な回と LN-FAM6 の全部で最小すき間 ≥ 0.03 m",
+    "L3_tracking": {
+     "median_max_m": 0.05,
+     "p95_max_m": 0.12
+    },
+    "L3_text": "LN-P60 の有効な回の tracking_error を全部合わせて、中央値 ≤ 0.05 m・95% 点 ≤ 0.12 m",
+    "L4_distinct": {
+     "left_right_mean_min_m": 0.2,
+     "inside_outside_mean_min_m": 0.1,
+     "any_pair_max_1m_avg_min_m": 0.08
+    },
+    "L4_text": "LN-FAM6 が全部 valid_episode。絶対の s(開始から 3 m 以降、6 回ともそろう 5 cm のマス)で、|e_y(+0.8) − e_y(−0.8)| の平均 ≥ 0.20 m、|e_y(イン) − e_y(アウト)| の平均 ≥ 0.10 m、6 つのどの 2 つも |差| の 1 m の移動平均の最大 ≥ 0.08 m(1 m 以上続けて 8 cm 以上違う所がある)",
+    "L5_vm3_min_m": 0.08,
+    "L5_text": "LN-P60 の有効な回の VM3 ≥ 0.08 m",
+    "L6_lap": "LN-FAM6 の c0 = 0 の 1 周目 ≤ 10.0 秒"
+   },
+   "reported": [
+    "形ごとの追従の誤差・1 周の時間",
+    "VM1・VM2・VM4・VM5・VM7"
+   ]
+  },
+  "speed": {
+   "judged": {
+    "S1_valid_min": 57,
+    "S1_text": "SP-P60 の 57/60 以上が valid_episode",
+    "S2_clearance_min_m": 0.03,
+    "S2_text": "SP-P60 の有効な回の全部で最小すき間 ≥ 0.03 m",
+    "S3_lap_order": "SP-STD3 が全部完走し、t(1.0) < t(0.75) < t(0.5)、t(0.5) − t(1.0) ≥ 3.0 秒",
+    "S4_speed_order": "SP-P60 の c_v ごとの有効な回の平均の速さ(走っているフレーム)が c_v とともに増え、隣どうしの差 ≥ 0.05 m/s。各 c_v で速さの 95% 点 ≤ 4.5·c_v + 0.05 m/s",
+    "S5_vm4_min_mps": 0.4,
+    "S5_text": "SP-P60 の有効な回の VM4 ≥ 0.4 m/s"
+   },
+   "reported": [
+    "c_v ごとの 1 周の時間・すき間",
+    "VM1・VM2・VM3・VM5・VM7"
+   ]
+  },
+  "obstacle": {
+   "judged": {
+    "O1_valid_min": 95,
+    "O1_text": "OB-T100 の 95/100 以上が valid_episode",
+    "O2_clearance_min_m": 0.03,
+    "O2_text": "OB-T100 の有効な回で最小すき間(コースと足した障害物の全部)≥ 0.03 m",
+    "O3_lap1_median_max_s": 10.5,
+    "O3_text": "OB-T100 の有効な回の 1 周目の中央値 ≤ 10.5 秒",
+    "O4_empty": "OB-EMPTY が完走し停止から 1 周 ≤ 9.0 秒"
+   },
+   "reported": [
+    "OB-BASE(最速の方策)の有効な回の数",
+    "障害物の横を通った回数とすき間",
+    "VM1〜VM5・VM7"
+   ]
+  },
+  "fallbacks": {
+   "line": "cond が L1〜L6 を満たさないとき、ベストラップのチェックポイント(F-REC60 60/60・すき間 ≥ 0.03 m のもの)をシーンごとに替える「線の混ぜ合わせ」を L1・L2・L5(VM3 ≥ 0.08 m)で判定する(L3・L4・L6 は当てはまらない)。合格すれば代わりの方法として出す",
+   "speed": "cond が S1〜S5 を満たさないとき、速さの上限 {4.5, 4.0, 3.5, 3.0, 2.5} m/s(c_v = 上限/4.5、SP-P60 の c_v を {1.0, 0.889, 0.778, 0.667, 0.556} に読み替え、SP-STD3 は 4.5・3.5・2.5)を no_wall(合格していれば。シールドあり)か最速の方策に掛けたものを S1〜S5 で判定する",
+   "no_wall": "N1 が満たされないとき、シールドの c_shield を 0.07 → 0.09 m にした版で試験を 1 回だけやり直してよい(両方を報告する)",
+   "recover": "C2・C3 が満たされないとき、記録の強さを「弱・中」だけにした版を 1 回だけ試験してよい(両方を報告し、合格したほうの強さを記録に使う)"
+  }
+ },
+ "variation_metrics": {
+  "implementation": "experiments/20261013_sim_rl_modes/rl/variation_metrics.mjs(この作業で作る。probe/zoo.mjs の profile・spread・spreadT と同じ式)。Node の走りの記録と、記録した frames.jsonl の姿勢(R への射影で e_y・向きのずれ・s を出す)の両方を読む",
+  "VM1": "時刻でそろえた舵: フレーム番号 t(0〜599)ごとに、群の全シーンの舵 PWM の平均からの |差| の平均 [µs](教師 REC60 = 7.58)",
+  "VM2": "位置でそろえた舵: 絶対の s(mod L)の 0.05 m のマスに、各シーンの開始から 3 m 以降の最初の通過の舵 PWM を入れ、全シーンがそろうマスで平均からの |差| の平均 [µs]",
+  "VM3": "VM2 と同じ式で横ずれ e_y [m](教師 REC60 = 0.0039)",
+  "VM4": "VM2 と同じ式で実際の速さ [m/s]。あわせて 1 周目・2 周目の時間の分布",
+  "VM5": "すき間(clearance の定義)の、シーンごとの最小と、全フレームの 5% 点・中央値",
+  "VM6": "出来事の数/シーン、外したフレームの割合、立て直しの時間の分布(recover)",
+  "VM7": "状態の網羅: 開始から 3 m 以降のフレームを (s 0.25 m × e_y 0.05 m × 向きのずれ 0.1 rad × 速さ 0.5 m/s) のマスに入れた、訪れたマスの数。比べる群は同じフレーム数 N(既定 9,000)を種 12345 で一様に間引いて数える",
+  "teacher_reference": "RC 教師の REC60 を Node(元のコア)で作り直したもの。VM3 は 60 シーン全部、VM7 は 0〜14 番の 15 シーン(9,000 フレーム)。物差しの段の最初に同じコードで計算し直し、その値を基準にする(VM1 が 7.58 ± 0.05 µs にならなければコードを直す)",
+  "per_mode_judged": {
+   "recover": {
+    "events_per_scene_mean_min": 3.5,
+    "masked_fraction_mean_range": [
+     0.1,
+     0.4
+    ],
+    "vm7_ratio_min": 2.0
+   },
+   "line": {
+    "vm3_min_m": 0.08,
+    "vm7_ratio_min": 2.0
+   },
+   "speed": {
+    "vm4_min_mps": 0.4,
+    "lap1_range_min_s": 3.0
+   },
+   "obstacle": {
+    "vm3_min_m": 0.04,
+    "distinct_layouts_min_of_15": 12
+   },
+   "fastest": "報告だけ",
+   "no_wall": "報告だけ"
+  },
+  "headline_judged": {
+   "condition": "記録したモードが 3 つ以上のとき判定する",
+   "vm3_combined_min_m": 0.039,
+   "vm3_text": "記録したモードの見本を合わせた群(モードごとに同じシーン数、最小のモードに合わせる)の VM3 ≥ 0.039 m(教師の 10 倍)",
+   "vm7_ratio_min": 3.0,
+   "vm7_text": "記録したモードから同じフレーム数ずつ、合計 9,000 フレームの VM7 ≥ 教師 15 シーンの VM7 の 3 倍"
+  },
+  "where_judged": "記録した見本(recorded)で判定する。記録できなかったモードは Node の予想(記録のプランを元のコアで)の値を報告し、判定は「未記録」"
+ },
+ "recording_acceptance": {
+  "RA1_scenes": "モードごとの見本(5 分 = 15 シーン)の 90% 以上(14/15)が valid(600 フレーム・30 Hz が途切れない・連続周回・衝突 0)。足りなければ新しい開始で 1 回だけ足し直してよい",
+  "RA2_replay": "記録した各シーンの適用した指令を Node の元の sim-core.js で再生し、記録の姿勢(x, z, yaw)との差 ≤ 1e-6(全フレーム)",
+  "RA3_info": "全フレームに action_info.jf があり、フレーム 0 に p がある。context.teacher がモードの中で全シーン同じ",
+  "RA4_calibration": "記録の前・途中で換算が 1442 ±5 / 1498 ±5 µs(またはモデル未読み込み = 既定)",
+  "RA5_import": "取り込んだデータセットがジャンル 8・タグ(modes.json の tags)を持ち、mask_rule で数え直した観測だけが future_valid = false かつ mode = 0(最後の 10 フレームの false は元のまま)。カードの label_mask の数が一致",
+  "RA6_variation": "variation_metrics.per_mode_judged と headline_judged",
+  "reported": [
+   "Node の予想と記録の操作の差(最大・最初に 1e-6 を超えたフレーム)",
+   "シールドの作動・出来事の数",
+   "記録にかかった時間"
+  ]
+ },
+ "ui_acceptance": {
+  "where": "http://192.168.55.1:8080(非ループバック)を DISPLAY :0 の snap Firefox で(127.0.0.1 では判定しない)。jf-heavy --mem 2500M --lock big、geckodriver 4447、プロファイルは jetformer_reports/sim_rl_modes_20261013/ の下",
+  "U1_page": "/sim/c/default/?rl=<key> で選択欄に登録したモードが出て、方策を読み込み、1 シーン(20 秒)を記録でき、コンソールにエラーが無い(登録した全モード。obstacle は /sim/c/default-obstacles/)",
+  "U2_unchanged": "モード未選択(rc)で元の RC 加速教師のまま動く。tests/test_sim_*.py が全部通る(import map の試験は直したもの)",
+  "U3_tab": "シミュレーター タブのカード「強化学習モード」に各モードの状態と eval.json の数字が出る。no_wall は「N 回の試験で衝突 0」の書き方",
+  "U4_plan": "カードでモード × 分のプランを作り、ページの実行係が少なくとも 1 シーン/モードを記録し、JetFormer がモードごとのデータセットに取り込む(学習除外・タグ込み)",
+  "U5_identity": "各モードの F-ID と同じ比べ方で、ブラウザと Node の操作の差 ≤ 1e-6(シールド・乱し・経路の判断も同じ)",
+  "U6_tests": "pytest 一式(jf-heavy --mem 2500M --lock big)と Node の試験が全部通る"
+ },
+ "publication": {
+  "accepted": "全部の judged を満たしたモードは登録簿(data/sim_rl/modes/<key>/)に status 'accepted' で出し、見本を記録する",
+  "priority_1_not_accepted": "優先 1 で満たさないものは status 'not_accepted'(画面では「不合格(参考)」)で出し、数字をそのまま見せる。見本は記録する(報告に不合格と書く)",
+  "priority_2_3_not_accepted": "出さない(報告だけ)。fallbacks の代わりの方法が合格すれば、それを代わりと書いて出す",
+  "eval_json": "画面の数字は判定に使った元のコアの試験の値だけ"
+ },
+ "selection": {
+  "checkpoints": "100 万ステップごと",
+  "validation_sets": "試験の組と同じ作り方で、種 validation_base・Halton 10,001〜、回の数は試験の 1/4(切り上げ)。高速版で回してよい",
+  "rule": "検証の組で judged を全部満たすチェックポイントのうち一番後のもの。無ければ満たす項目が一番多いもの(同じなら主な数字: no_wall = 最小すき間、recover = 成功率、line = VM3、speed = S3 の差、obstacle = 有効な回の数)",
+  "test_runs": "試験の組は選んだチェックポイントだけに使う。1 モードにつき 2 回まで(本番と作り直し)。試験の結果を見てチェックポイントを選び直さない"
+ },
+ "allowed_tuning": {
+  "pilot": "各学習の前のパイロット(100 万ステップ、結果に数えない)のあと、modes.json の tuning_ranges の中で 1 回だけ変えてよい",
+  "retry": "本番が判定を満たさなければ 1 回だけ作り直してよい(新しい種 = 元の種 + 1、範囲の中の調整、予算は modes.json の retry_steps_max まで)",
+  "never": [
+   "判定のしきい値",
+   "試験の組と種",
+   "定義",
+   "判定に使うコア"
+  ],
+  "record": "全部 deviations.md に書き、学習の run.json に使った値を残す"
+ },
+ "budget": {
+  "rl_steps": {
+   "no_wall": {
+    "pilot": 1000000,
+    "main": 10000000,
+    "retry_max": 10000000
+   },
+   "recover": {
+    "pilot": 1000000,
+    "main": 10000000,
+    "retry_max": 10000000
+   },
+   "cond": {
+    "pilot": 1000000,
+    "main": 20000000,
+    "retry_max": 5000000
+   },
+   "obstacle": {
+    "pilot": 1000000,
+    "main": 15000000,
+    "retry_max": 5000000
+   }
+  },
+  "first_pass_total_steps": 59000000,
+  "hard_cap_total_steps": 75000000,
+  "throughput_assumption": "約 5,300 steps/s(nice 15、Firefox と重ならないとき)。1,000 万 約 32 分",
+  "rl_cpu_hours": {
+   "first_pass": 3.1,
+   "cap": 4.0
+  },
+  "order": "no_wall → recover → cond → obstacle(1 本ずつ、jf-heavy --mem 2G --lock rl -- nice -n 15)",
+  "memory": "学習 2G。RL と Firefox は同時にしない"
+ },
+ "recording_plan_defaults": {
+  "sample_minutes_per_mode": 5,
+  "scenes_per_minute": 3,
+  "split": "train 12・val 3(5 分のとき)",
+  "order": [
+   "fastest",
+   "no_wall",
+   "recover",
+   "line",
+   "speed",
+   "obstacle"
+  ],
+  "where": "JetFormer のページ(8080)と JetFormer のブリッジ。ユーザーが使っていれば待つ(モデルを読み込み直さない)",
+  "estimate": "Jetson の Firefox で 1 シーン約 70 秒 → 1 モード約 18 分"
+ },
+ "time_plan": [
+  {
+   "from": "21:45",
+   "to": "22:20",
+   "stage": "設計・手順の固定"
+  },
+  {
+   "from": "22:20",
+   "to": "23:20",
+   "stage": "実装(写し・環境・観測の包み・シールド・乱し・経路・配置・mode_runtime・学習・試験・物差し)+ 試験 + パイロット"
+  },
+  {
+   "from": "23:20",
+   "to": "00:00",
+   "stage": "学習 no_wall + 試験"
+  },
+  {
+   "from": "00:00",
+   "to": "00:40",
+   "stage": "学習 recover + 試験"
+  },
+  {
+   "from": "00:40",
+   "to": "01:50",
+   "stage": "学習 cond + 試験(line・speed)"
+  },
+  {
+   "from": "01:50",
+   "to": "02:50",
+   "stage": "学習 obstacle + 試験"
+  },
+  {
+   "from": "23:00",
+   "to": "02:30",
+   "stage": "(並行)統合: 登録簿・API・取り込みの学習除外・ページ・カード・pytest。ブラウザの確認は lock big が空いたとき"
+  },
+  {
+   "from": "02:50",
+   "to": "04:40",
+   "stage": "見本の記録(lock big)"
+  },
+  {
+   "from": "04:40",
+   "to": "05:15",
+   "stage": "確かめ(再生・取り込み・学習除外・物差し)"
+  },
+  {
+   "from": "05:15",
+   "to": "05:45",
+   "stage": "報告"
+  }
+ ],
+ "time_plan_note": "ベストラップの作業が lock big を 22:40〜02:40 ごろ使う予定(記録・GPU の学習・閉ループ評価)。こちらの Firefox はその合間か後。時刻は目安で、依存関係(学習 → 試験 → 登録 → 記録)を守る",
+ "cut_order_if_late": [
+  "obstacle(学習・仮想コース・見本)",
+  "作り直しの学習",
+  "cond(speed は上限の代わり、line は線の混ぜ合わせの代わりを判定)",
+  "RC-KICK を半分(時刻を 1 秒おき)",
+  "優先 2・3 の見本を 3 分に"
+ ],
+ "never_cut": [
+  "fastest・no_wall・recover の方策と判定の試験",
+  "登録と画面での選択",
+  "fastest・no_wall・recover の見本の記録",
+  "取り込みの学習除外",
+  "8080 でのブラウザの確認"
+ ],
+ "out_of_scope": [
+  "実車での走行・確認(実車・PCA9685・I2C に触らない)",
+  "新しいジャンル・学習時のジャンルの付け替え",
+  "アップロードしたコースでの強化学習モード",
+  "ブラウザでの状態のキック",
+  "乱しの区間のラベルの付け直し(DAgger)",
+  "この作業での JetFormer の学習・閉ループ評価",
+  "low-friction の場面",
+  "作者のファイルの変更",
+  "白色雑音の「ゆらぎ」"
+ ],
+ "invariants": [
+  "ベストラップの作業のファイル(experiments/20261013_sim_rl_bestlap/・jetformer_reports/sim_rl_bestlap_20261013/)を変えない。写すか import で読むだけ",
+  "ユーザーのシミュレーター(data/sim/releases/20261013-144013-6f610dd5/・/home/jetson/sim/extracted/course-simulator)を変えない",
+  "実車・PCA9685・I2C に触らない。GPU を使わない",
+  "重い処理は jf-heavy(RL: --mem 2G --lock rl -- nice -n 15、Firefox・pytest 一式: --mem 2500M --lock big)。自前のブリッジは 8801〜8809、geckodriver 4447",
+  "ユーザーのブリッジは見つけたときの状態のまま残す(モデルを読み込み直さない・止めない)",
+  "jetformer-web の再起動は学習・記録・走行・セッション・ジョブが無いときだけ(/api/train/status・/api/drive/status・/api/status・/api/jobs を確かめる)",
+  "git にコミットしない(本体のセッションが行う)",
+  "各段の終わりに自分が起動したプロセスを止める(次の段が続ける長い学習を除く)"
+ ],
+ "deviation_policy": "protocol.json は書き換えない。違うことをしたら deviations.md に「いつ・何を・なぜ・結果への影響」を追記する",
+ "paths": {
+  "code": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes",
+  "reports": "/home/jetson/jetformer_reports/sim_rl_modes_20261013",
+  "snapshot": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/snapshot/(元のパスと sha256 を SNAPSHOT.json に)",
+  "rl_runs": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/rl/<run>/",
+  "eval": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/eval/<mode>/",
+  "recording": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/recording/",
+  "metrics": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/metrics/",
+  "registry": "/home/jetson/jetformer/data/sim_rl/modes/<key>/",
+  "obstacle_sets": "/home/jetson/jetformer/data/sim_rl/obstacle_sets/",
+  "plans": "/home/jetson/jetformer/data/sim_rl/plans/"
+ },
+ "files": {
+  "design_md": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/design.md",
+   "sha256": "e3a60ef557e15fff839af5effadd553a3a84fdb3971e0325d60a0f00a9fddf08"
+  },
+  "modes_json": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/modes.json",
+   "sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a"
+  },
+  "understand_rl_md": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/understand_rl.md",
+   "sha256": "688b3cbad999db4d7652aee904342555d2bf19fe771755e2725e7e1f2daf9746"
+  },
+  "understand_ui_md": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/understand_ui.md",
+   "sha256": "efc89d46229fcedff6093f83a83e881dfecfdedff83385d4d4cadbcd66f0c75a"
+  },
+  "corridor_json": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/probe/corridor.json",
+   "sha256": "736cfba394c3f4e44fb5d63c2ea4c4c6dbc345a7c158568aba385e54ae4f6975"
+  },
+  "zoo_json": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/probe/zoo.json",
+   "sha256": "db522d5bb61e489d49312ae78c017590b64b7423367bd3b3f3982b5e46706dfb"
+  },
+  "kicks_json": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/probe/kicks.json",
+   "sha256": "f8c057aaba66f158020be43565390c6e1ab9d0bd8a16c6bf24855b7c0dafc109"
+  },
+  "zoo_mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/probe/zoo.mjs",
+   "sha256": "812aad327e2b7713ac1ef8a2e0eb0b961c8c801bae000dd38365f9e22bf590f4"
+  },
+  "corridor_mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/probe/corridor.mjs",
+   "sha256": "132b3ed68dcf5d6ff59aacb3fd3bad71dfc83074917ec8dac9bbd0c4b29a67eb"
+  },
+  "kicks_mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_modes/probe/kicks.mjs",
+   "sha256": "1573dee9489762f9ddde87fc47d369dfba1d7160536d5567c24f03c7c6e7c15c"
+  },
+  "bestlap_policy_r1": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/best/main/policy.json",
+   "sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee"
+  },
+  "bestlap_r2_dr_policy": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/r2/dr/policy.json",
+   "sha256": "5f6f57168217b7355d2015633d36c6cc50ddbc0d7a0c50ea3f34aeabbf8155a5"
+  },
+  "bestlap_rl_check_r1_md": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl_check_r1.md",
+   "sha256": "b4365bb65029a67ab14db4c2153cc17b6c09ad3cd3918731bc5cc6f6f2704022"
+  },
+  "bestlap_protocol_json": {
+   "path": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/protocol.json",
+   "sha256": "1f249211704c0065b87645d5bf93d959fcd65205fd4c2f4e535a1c310e81b8b6"
+  },
+  "collection_plan_60": {
+   "path": "/home/jetson/sim/extracted/course-simulator/qa/rc-collection-plan-60.json",
+   "sha256": "1c5bb22087b5913531e6ebc76e6ae3da99c04ef1feaebfb1f2e74eaa68160dfb"
+  },
+  "sim_release_app_js": {
+   "path": "/home/jetson/jetformer/data/sim/releases/20261013-144013-6f610dd5/dist/app.js",
+   "sha256": "4a43205fbca16f17e4b2c5352209c467b3be98a66709afa972e1504c42a7307c"
+  },
+  "sim_release_rc_speed_controller_js": {
+   "path": "/home/jetson/jetformer/data/sim/releases/20261013-144013-6f610dd5/dist/rc-speed-controller.js",
+   "sha256": "4a32ab56369b3d0c9a76f16fe7144eb895677b72ceeefc8483645f91ae96f417"
+  },
+  "sim_core_original": {
+   "path": "/home/jetson/sim/extracted/course-simulator/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e"
+  }
+ },
+ "snapshot_sources": {
+  "rl/env_core.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/env_core.mjs",
+   "sha256": "df99dacf25c97327f086c73cb8ffa2b168b8747e01dcf310c109a2c5e1ac2a6c"
+  },
+  "rl/features.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/features.mjs",
+   "sha256": "3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790"
+  },
+  "rl/reference_loop.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.mjs",
+   "sha256": "446d4bbc506d88e9f9be048aaaebab59916e4179ca8192aeb49c06ad864cb901"
+  },
+  "rl/reference_loop.json": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.json",
+   "sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4"
+  },
+  "rl/policy_forward.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/policy_forward.mjs",
+   "sha256": "f16f9f50a5b95065a5ab36a28419625f4e6df61f404fa213c7313569a3efa3e0"
+  },
+  "rl/env_worker.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/env_worker.mjs",
+   "sha256": "179fb254ac5a08d1857a89831288322fdb4e99f2d92ae90daff79ddaaa0224e5"
+  },
+  "rl/vec_env.py": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/vec_env.py",
+   "sha256": "562cb704e6f3d8e40ec6bd30118cdf0f57dd7d567c7abf46acbd5a8328e57778"
+  },
+  "rl/ppo.py": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/ppo.py",
+   "sha256": "f0fcb1270e7b5b0499a91f94f41ac0d3235aafa27348cea8a41a3e9ceeb0f210"
+  },
+  "rl/train_rl.py": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/train_rl.py",
+   "sha256": "70e9bfcb6e4c05f5d97e3c5d21c991e0471c4ff37c4cfdcf4e94f9e6e9508f56"
+  },
+  "rl/eval_sets.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/eval_sets.mjs",
+   "sha256": "50f3b72aaa215348160a2d6de5c49b5cc316c99bb65e5a99ed68e3b3a128c0b9"
+  },
+  "rl/lap_audit.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/lap_audit.mjs",
+   "sha256": "916cb6d378fce81ab867b4600f8b0f01220cf8accd42f0250887a39580edd912"
+  },
+  "rl/verify_lap.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/verify_lap.mjs",
+   "sha256": "3b3a7b045ab2c3767b12239bb15a9dfd90beaea05015fa2d471dd08cb9f7e0f8"
+  },
+  "rl/r2/robust_eval.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/r2/robust_eval.mjs",
+   "sha256": "57aa72e99a76d9cd7689d992de8963585a7d43c80acda5a7f50ce81804ae2912"
+  },
+  "sim/fast-sim-core.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/fast-sim-core.mjs",
+   "sha256": "227ceccc7970ebf1aea98e4ea8686b612397b212e77382c216e5ec85096df0cc"
+  },
+  "sim/dist/sim-core.js": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/dist/sim-core.js",
+   "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e"
+  },
+  "sim/world-v3.json": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/world-v3.json",
+   "sha256": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2"
+  },
+  "check_r1/own_physics_r1.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/check_r1/own_physics_r1.mjs",
+   "sha256": "2e3c91eb06170e5b2533f733d45c1206bafd281f454e35465486470d5df8977c"
+  },
+  "verify_recording.mjs": {
+   "path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/verify_recording.mjs",
+   "sha256": "88c09ac0e19b7edfdd475d006d154306aee6b7fe9ef8575c9e943ffa9287493c"
+  }
+ },
+ "snapshot_rule": "写すときに snapshot_sources の sha256 と比べる。違っていれば(ベストラップの作業が後で変えた)、features.mjs・reference_loop.mjs/.json・policy_forward.mjs はここに書いた版を使い(git の c0a334c の版と同じ)、ほかは今の版を写して deviations.md に書く"
+}

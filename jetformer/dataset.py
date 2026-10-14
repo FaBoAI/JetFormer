@@ -159,13 +159,32 @@ def load_scene_meta(name):
     return _with_modes(s)
 
 
+def _segments_keeping_mask(s, mode_id):
+    """シーン全体のジャンルを mode_id にする区間。シミュレーターの強化学習モードのシーン(scene.json の label_mask)は、
+    学習から外した「未設定」の区間(乱した操作を正解に含むフレーム)を残す(消すと乱した操作が正解に戻るため)"""
+    dur = s.get('duration_s', 0.0)
+    unset = sorted(((sg['start_s'], sg['end_s']) for sg in (s.get('label_mask') or {}).get('unset_segments') or []
+                    if isinstance(sg, dict) and isinstance(sg.get('start_s'), (int, float)) and isinstance(sg.get('end_s'), (int, float))))
+    if not unset or mode_id == modes.UNSET:
+        return [{'start_s': 0.0, 'end_s': dur, 'mode_id': mode_id}]
+    out, cur = [], 0.0
+    for a, b in unset:                          # フレームは 33 ms おき。区間の端は ±1 ms で数えるので、2 ms あけて重ねない
+        if a - 0.002 > cur:
+            out.append({'start_s': round(cur, 3), 'end_s': round(a - 0.002, 3), 'mode_id': mode_id})
+        out.append({'start_s': a, 'end_s': b, 'mode_id': modes.UNSET})
+        cur = b + 0.002
+    if cur < dur:
+        out.append({'start_s': round(cur, 3), 'end_s': dur, 'mode_id': mode_id})
+    return out
+
+
 def update_scene(name, description=None, tags=None, mode_id=None):
     p = scene_path(name)
     s = json.loads((p / 'scene.json').read_text(encoding='utf-8'))
     if mode_id is not None:
         mode_id = modes.validate(mode_id)
         s['mode_id'] = mode_id
-        s['mode_segments'] = [{'start_s': 0.0, 'end_s': s.get('duration_s', 0.0), 'mode_id': mode_id}]
+        s['mode_segments'] = _segments_keeping_mask(s, mode_id)
     if description is not None:
         s['description'] = description
     if tags is not None:

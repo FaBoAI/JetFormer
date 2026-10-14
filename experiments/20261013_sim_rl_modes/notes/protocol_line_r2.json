@@ -1,0 +1,147 @@
+{
+ "title": "経路いろいろ(line)第 2 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)を変えずに、line だけに足す・置き換える項目",
+ "version": "line-r2-1",
+ "written_at": "2026-10-14T05:40:00+09:00",
+ "written_by": "学習の段 line r2",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "base_modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)",
+ "why": [
+  "確認 line r1(check_line_r1.md)の指摘 1: L2(すき間 ≥ 3 cm)の落ちは全部が開始から 1.2 秒以内。止まった状態から遠い目標の線へすぐ寄せる。→ e*(s) を開始の横ずれから 2 m かけてつなぐ(走行中と学習の両方)",
+  "指摘 2: L3 の 95% 点(19 cm)は主に方策のせい(S 字で線に乗らない)。→ 経路いろいろだけの学び直し: 進みに追従の掛け算を掛け、線から外れるほど進みの得が減るようにする(速さを落としてでも線に乗る)",
+  "指摘 3: 目標の線の定義の欠点(s 10.34〜11.29 m の左の急な曲がりで e*·κ_R が最大 1.36 = R の曲率の中心より先)。→ 目標の線 v2: R の曲がりの内側へ寄れる量を 1/|κ| − 0.7 m に抑え、傾きを 0.25 に抑え、σ 0.3 m でなめらかにする",
+  "指摘 4: 試験の組の P20(Halton 20021)は置いた時点で柱の足から 1.50 cm。line の開始の分布に開始のすき間の下限が無い。→ 開始のすき間 ≥ 0.12 m(no_wall・speed r2 と同じ)を足し、重ならない新しい試験の組にする",
+  "第 1 回の試験の組(Halton 20,001〜)は走り・失敗の形まで調べたあとなので、第 2 回は重ならない新しい組で試験する(speed r2 の 25,001〜とも重ならない 26,001〜)"
+ ],
+ "unchanged": [
+  "判定のしきい値と式: L1 ≥ 57/60 が valid_episode、L2 = 有効な回と LN-FAM6 の全部で最小すき間 ≥ 0.03 m、L3 = 有効な回の tracking_error(開始から 3 m 以降)の中央値 ≤ 0.05 m・95% 点 ≤ 0.12 m、L4(左右 ≥ 0.20・イン/アウト ≥ 0.10・どの 2 つも 1 m の移動平均の最大 ≥ 0.08 m)、L5 VM3 ≥ 0.08 m、L6 LN-FAM6 の c0 = 0 の 1 周目 ≤ 10.0 秒",
+  "経路の形の家族と強さ(const・inside・outside・late_apex・early_apex・random、c(s) の式)、記録の family_plan_15、走行中の c_v U(0.9, 1.0)、速さの上限 4.5·c_v、観測 cond97",
+  "定義(protocol.json definitions: valid_episode・clearance・lap_from_stop・tracking_error)と判定のコア(元の sim-core.js、sha256 aaeb2379…549e)",
+  "LN-FAM6(STD の開始・c_v 1.0・連続 20 秒の 6 つの形)",
+  "publication(優先 2: 合格 → accepted、不合格 → 出さない)と代わりの方法(acceptance.fallbacks.line)の中身",
+  "速さいろいろ(speed)の方策・学習・試験には何も変えない(速さいろいろは目標の線 v1 のまま)"
+ ],
+ "target_line": {
+  "id": "jf-line-profile/v2",
+  "where": "rl/runtime/line_profiles.mjs createLineProfile(p, s0, {version: 'v2'})(走行中 = mode_runtime.mjs は経路いろいろで方策の meta.line_profile が 'v2' のとき、学習 = env_modes.mjs run line)",
+  "steps": [
+   "1. c(s) と e = c·ρ_L(s)(c ≥ 0)/ c·ρ_R(s)(c < 0)は v1 と同じ",
+   "2. 幅の表 v2(rl/runtime/line_v2_table.json、rl/line_r2/build_line_v2_table.mjs)の [lo(s), hi(s)] に切る。hi = min(ρ_L, b_L)、lo = max(−ρ_R, −b_R)。b = max(0, 1/|κ| − r_min) を R の曲がりの内側だけに(左曲がり = 左の上限、右曲がり = 右の上限)、±0.5 m の最小フィルター → σ 0.25 m のガウス。そのあと |d hi/ds|・|d lo/ds| ≤ slope_max(円すいの包絡)。κ は R の局所の曲率(s ± 0.1 m の 3 点の円、σ 0.1 m)",
+   "3. 5 cm おきの格子で σ 0.3 m のガウスでなめらかにし、もう一度 [lo, hi] に切る(random 以外は 1 周の周期の格子、random は開始の 2 m 手前から 5 周分)",
+   "4. 開始のつなぎ: 最初の観測の車の横ずれ e0 から、s0 + 2.0 m までを smoothstep(3u² − 2u³)でつなぐ。s < s0 は e0"
+  ],
+  "params": {"r_min_m": 0.7, "slope_max": 0.25, "min_filter_m": 0.5, "bound_sigma_m": 0.25, "kappa_chord_m": 0.1, "kappa_sigma_m": 0.1, "smooth_sigma_m": 0.3, "blend_m": 2.0, "random_laps": 5},
+  "line_v2_table_sha256": "39e1b1c427b1246fcfe4008761b175d500ec83b2c926eee1d46b7005ad2378da",
+  "checked_before_training": "rl/line_r2/feasibility.mjs・target_l4.mjs: v2 の線は、LN-FAM6 の 6 つ + 強さ 0.9 の 6 つ + random 40 本のどれも e*·κ_R < 0.15(v1 は最大 1.25)、線の曲率半径 ≥ 0.452 m(車の舵の最小半径 0.455 m とほぼ同じ。v1 は 0.004 m の尖りあり)。目標の線どうしの L4 の値(車が目標の上を正確に走ったとき)は 左右 0.352・イン/アウト 0.176・どの 2 つも ≥ 0.120 m(v1 は 0.449・0.256・0.243)",
+  "tracking_error_note": "L3 の tracking_error は |e_y − e*_v2(s)|。開始から 3 m 以降なので、開始のつなぎ(2 m)は判定に入らない"
+ },
+ "start_distribution": {
+  "gate": "U{0..32}",
+  "left_offset_m": [-0.2, 0.2],
+  "left_yaw_deg": [-15, 15],
+  "sequence": "Halton",
+  "prefilter": true,
+  "min_initial_clearance_m": 0.12,
+  "note": "modes.json line.recording.start_distribution に、no_wall・speed r2 と同じ「開始のすき間 ≥ 0.12 m」を足したもの(車体 0.42 × 0.19 m とコースの正確な距離、features.mjs clearance)。記録・検証・試験・報告の組のすべてに使う"
+ },
+ "sets": {
+  "test": {
+   "name": "LN-P60-R2 + LN-FAM6",
+   "halton_from": 26001,
+   "count": 60,
+   "seed_base": 904500,
+   "episode": "連続 20 秒(600 フレーム)、元の sim-core.js",
+   "rule": "Halton 26,001 番から(protocol seeds.halton の試験の範囲 20,001〜29,999 の中。line r1 の 20,001〜20,062・speed r2 の 25,001〜 と重ならない)、開始のすき間 ≥ 0.12 m を満たさない番号は飛ばして 60 個。回 i の種 = 904500 + i。経路の形は family_plan_15 の順(const_left 2・const_right 2・const_center 1・inside 2・outside 2・late_apex 2・early_apex 1・random 3)を 4 回、強さ・c0・random の種・c_v は createRng(mix32(種, 0x11e)) から(r1 と同じ作り方)。+ LN-FAM6(protocol.json のまま)"
+  },
+  "validation": {
+   "name": "LN-V60-R2 + LN-FAM6",
+   "halton_from": 12001,
+   "count": 60,
+   "seed_base": 804500,
+   "episode": "連続 20 秒、高速版(rl/fast_core_modes.mjs)でよい",
+   "rule": "Halton 12,001 番から(line r1 の検証の 10,001〜とも重ならない)、開始のすき間 ≥ 0.12 m で 60 個。回 i の種 = 804500 + i。形・c_v の作り方は試験と同じ。+ LN-FAM6。L1 は 57/60 以上。チェックポイントを選ぶためだけに使う"
+  },
+  "fresh": {
+   "name": "LN-F120-R2(報告だけ。判定に使わない)",
+   "count": 120,
+   "rng_seed": 1280193074,
+   "seed_base": 2300000,
+   "episode": "連続 20 秒、元の sim-core.js",
+   "rule": "Halton を使わない一様乱数: 番号 k の開始は createRng(mix32(1280193074, k)) の 3 つの一様乱数でゲート U{0..32}・左右 U(−0.2, 0.2) m・向き U(−15, 15)°。開始のすき間 ≥ 0.12 m の最初の 120 個。回 i の種 = 2300000 + i、形は family_plan_15 の順。選んだ方策を試験の組のあとに 1 回だけ走らせ、60 回ずつ 2 つに分けた L1・L2・L3・L5 を報告する"
+  }
+ },
+ "acceptance_changes": {
+  "L1_L2_L3_L4_L5_L6": "式・しきい値は protocol.json acceptance.line のまま。組は LN-P60-R2 + LN-FAM6、目標の線は v2",
+  "reported": [
+   "形ごとの追従の誤差(中央値・95% 点)・1 周の時間・有効",
+   "衝突した回・最小すき間が 5 cm 未満の回と、そのときの開始からの時間",
+   "12 cm を越える追従の誤差のフレームが R の上のどこにあるか(S 字 s 2〜4.5・8〜12.5 m の割合)",
+   "VM1・VM2・VM4・VM7(参考)",
+   "LN-F120-R2 の 60 回ずつ 2 つの L1・L2・L3・L5"
+  ]
+ },
+ "training": {
+  "run": "line(rl/train_modes.py --run line。観測は cond97 のまま、経路いろいろだけの条件で学び直す。speed r2 と同じく cond の 1 本から分ける)",
+  "init": "line_r1_retry_5M = train/line/cond-retry/checkpoints/step_005013504.pt(sha256 dd8b3140…d317、第 1 回の作り直しの選んだ方策 2df85c56…655b)",
+  "init_reason": "cond97 の 18 個の条件の入力はもう線に従うよう学習してある(r1 の試験で L3 中央値 2.8 cm・L4・L5・L6 合格)。学習しない下調べ(rl/line_r2/probe_env.mjs、学習の環境の乱数で 120 回)で、この方策をそのまま目標の線 v2・r2 の開始の分布で走らせると 有効 119/120・追従の誤差 中央値 2.3 cm / 95% 点 14.5 cm(v1 の線・r1 の環境では 116/120・2.8 / 18.4 cm)。main 種 1 から 2,000 万では r1 の 2,500 万に届かない見込み",
+  "seed": 44,
+  "steps": 20000000,
+  "steps_note": "上限 2,000 万(この段の依頼の値)。protocol.json budget.hard_cap_total_steps 7,500 万を越える(ほかの学習 7,468 万 + この 2,000 万)。逸脱として deviations.md に書く",
+  "early_stop": "800 万ステップ以降、続けて 3 つのチェックポイントが検証の組で L1〜L6 を全部満たしたら止めてよい(rl/line_r2/run_line_r2.sh の見張り。止める合図で last.pt を保存して終わる)。止めなければ 2,000 万まで",
+  "ppo": "既定(lr 1e-4 → 3e-5 を 2,000 万で、4 ワーカー × 16 環境、rollout 256、log σ は初期化元のまま)",
+  "checkpoints": "100 万ステップごと(検証の組を裏で評価する。--eval --protocol line_r2)",
+  "conditioning": {
+   "families_p": "modes.json line.training.conditioning.families_p のまま(const 0.3・inside 0.12・outside 0.12・late_apex 0.08・early_apex 0.08・random 0.3。const の c0 は U(−0.9, 0.9)、ほかの a は U(0.5, 0.9))",
+   "c_v": "80% は U(0.9, 1.0)(走行中・試験と同じ)、20% は U(0.6, 0.9)",
+   "line_profile": "v2"
+  },
+  "start_mix": [
+   {"p": 0.6, "gate": "U{0..32}", "left_offset_m": [-0.2, 0.2], "left_yaw_deg": [-15, 15], "min_initial_clearance_m": 0.12, "note": "記録・試験の開始の分布と同じ"},
+   {"p": 0.2, "gate": "base(半分ゲート 0・半分 U{0..32})", "left_offset_m": [-0.12, 0.12], "left_yaw_deg": [-8, 8], "min_initial_clearance_m": 0.08},
+   {"p": 0.2, "gate": "U{0..32}", "left_offset_m": [-0.25, 0.25], "left_yaw_deg": [-20, 20], "min_initial_clearance_m": 0.10, "note": "試験より広め(頑丈さのため)"}
+  ],
+  "reward": {
+   "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+   "progress_tracking": "進みが正のとき、進み × (1 − f(e)) を引く。f(e) = 1 / (1 + (e/0.08)²)、e = e_y − e*_v2(s)(線から 8 cm で進みの得が半分、16 cm で 1/5)",
+   "tracking": "−0.05·min(1, (e/0.15)²)",
+   "clearance_barrier": "d_min < 0.06 m で −0.2·min(4, ((0.06 − d_min)/0.03)²)(目標の線は壁から 8 cm 以上なので、線の上では効かない)",
+   "terminal": "base と同じ(衝突・ゲートの外し・停止・逆走は −10 で終了)+ d_min < 0.03 m でも −10 で終了(L2 のしきい値)"
+  },
+  "tuning_ranges": {
+   "progress_track_sigma_m": [0.05, 0.12],
+   "tracking_w": [0.0, 0.2],
+   "tracking_scale_m": [0.05, 0.15],
+   "clearance_barrier_w": [0.05, 0.4],
+   "clearance_barrier_start_m": [0.04, 0.08],
+   "terminal_clearance_m": [0.0, 0.04]
+  },
+  "tuning_rule": "パイロットは無し。上の値で 1 本学習する。ただし 400 万ステップまでの検証の組で「L1 が 54/60 未満」か「L3 の中央値が初期化元より悪い」なら、1 回だけ範囲の中で値を変えて、初期化元からやり直してよい(deviations.md に書く)",
+  "physics": "標準の物理だけ(記録と試験の物理)。物理のずれ・乱しは無し",
+  "lock": "jf-heavy --mem 2G --lock rl --need-mb 1200 -- nice -n 15(起動のときに nice)"
+ },
+ "selection": {
+  "rule": "検証の組 LN-V60-R2 + LN-FAM6(高速版)で L1〜L6 を全部満たすチェックポイントのうち、L3 の 95% 点が一番小さいもの。同じなら後のもの。全部を満たすものが無ければ、満たす数が一番多く、同じなら L3 の 95% 点が小さいもの",
+  "candidates": "学習の 100 万ごとのチェックポイント(初期化元は候補に入れない)",
+  "test_runs": "試験の組 LN-P60-R2 + LN-FAM6 は選んだ 1 つにだけ 1 回使う。試験の結果を見て選び直さない"
+ },
+ "fallback": "選んだ方策が不合格なら、protocol.json acceptance.fallbacks.line(ベストラップの 7 本の線の混ぜ合わせ。L1・L2・L5 だけを判定)を LN-P60-R2 で 1 回判定して報告する(第 1 回は VM3 0.051 m で不合格)",
+ "recording": {
+  "start_distribution": "上の start_distribution(開始のすき間 ≥ 0.12 m)",
+  "prefilter_min_clearance_m": 0.03,
+  "prefilter_note": "記録の前の予想(rl/predict_scenes.mjs --min-clearance 0.03)で、走り切らないシーンに加えて最小すき間が 3 cm 未満のシーンも次の候補に替える(標準の物理では予想 = 記録)",
+  "mode_json_overrides": "合格したときだけ publish_mode.py --overrides で mode.json の recording.start_distribution.min_initial_clearance_m・recording.prefilter_min_clearance_m・runtime.line_profile を書く(modes.json は変えない)"
+ },
+ "publication": {
+  "r1": "第 1 回の候補 candidates/line/(status not_published)はそのまま残し、登録しない",
+  "r2": "合格なら bundle/line/(publish_mode.py、status accepted)。不合格なら candidates/line_r2/(status not_published)。統合の段は accepted のものだけを登録する。走行中の仕組みは目標の線 v2 を使うので、ブラウザの組 web/rl/ を作り直す(line_v2_table.mjs を含む)"
+ },
+ "files": {
+  "target_line": "rl/runtime/line_profiles.mjs(v2)・rl/runtime/line_v2_table.{json,mjs}・rl/line_r2/build_line_v2_table.mjs",
+  "runtime": "rl/runtime/obs_modes.mjs(最初の観測で anchor)・rl/runtime/mode_runtime.mjs(経路いろいろの線の版)",
+  "env": "rl/env_modes.mjs(trainConfig('line')・LINE_R2_DEFAULTS)",
+  "train": "rl/train_modes.py(RUNS.line・EVAL_EXTRA・TUNING_KEYS)",
+  "eval": "rl/eval_modes.mjs --mode line --protocol line_r2 --set test|validation|fresh",
+  "select": "rl/line_r2/select_line_r2.py",
+  "outputs": "jetformer_reports/sim_rl_modes_20261013/train/line/r2/"
+ }
+}

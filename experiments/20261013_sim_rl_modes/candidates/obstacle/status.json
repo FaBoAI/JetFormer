@@ -1,0 +1,17 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "obstacle",
+ "state": "not_published",
+ "label_ja": "不合格・出さない(参考の候補)",
+ "failed": [
+  "O1_valid",
+  "O2_clearance"
+ ],
+ "pending": [],
+ "set": "selection",
+ "round": "r2",
+ "rule": "protocol.json publication.priority_2_3_not_accepted: 優先 3 で合格していないので出さない(報告だけ)。登録簿・bundle には置いていない",
+ "note_ja": "r2(通しで 15,024,128 ステップ)の選んだ方策。選びの組 OB-V100-R2(元のコア)で 有効 66/100(O1 は 95 が要る)・有効な回の最小すき間 0.03 cm(O2 は 3 cm)・1 周目の中央値 9.02 秒・障害物なしの 1 周 8.914 秒。/home/jetson/jetformer_reports/sim_rl_modes_20261013/train_obstacle.md",
+ "updated_at": "2026-10-14T08:23:33",
+ "previous_round": "candidates/obstacle_r1/(r1、4ba77f44…06bb、not_published)"
+}

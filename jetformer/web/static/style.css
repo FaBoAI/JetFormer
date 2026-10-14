@@ -205,3 +205,18 @@ input.snd-text { flex: 1; margin: 0 !important; }
 .sim-course .warn-text { font-size: 12px; }
 .sim-errors { color: var(--danger); margin: 4px 0 0 18px; padding: 0; }
 .badge.run { background: #dcfce7; color: #166534; } .badge.bad { background: #fee2e2; color: #991b1b; }
+
+/* シミュレーター: 強化学習モード */
+.sim-rl-mode { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+.sim-rl-mode.off { opacity: .75; background: #fafafa; }
+.sim-rl-mode .head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sim-rl-mode .head b { font-size: 14px; }
+.sim-rl-mode .headline { font-size: 13px; margin-top: 4px; }
+.sim-rl-mode .nums { display: grid; grid-template-columns: max-content 1fr; gap: 1px 10px; font-size: 12px; margin-top: 4px; }
+.sim-rl-mode .nums span:nth-child(odd) { color: var(--muted); }
+.sim-rl-mode details { font-size: 12px; margin-top: 4px; }
+.sim-rl-mode details li { margin: 2px 0; }
+.sim-rl-plan-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sim-rl-plan-table td, .sim-rl-plan-table th { padding: 3px 6px; border-bottom: 1px dashed var(--line); text-align: left; }
+.sim-rl-plan-table input { width: 5em; }
+.badge.rl { background: #e0e7ff; color: #3730a3; }

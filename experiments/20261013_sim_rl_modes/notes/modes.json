@@ -1,0 +1,1148 @@
+{
+ "format": "jetformer-sim-rl-modes-catalogue/v1",
+ "version": 1,
+ "written_at": "2026-10-13T21:57:46",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・強化学習モード(絶対壁にぶつからない)・強化学習モード(離脱復活)など、データセットのバリエーションが出る構成のモードを用意",
+ "note": "モードの一覧と設定(学習・走行中の仕組み・記録の既定値)。合否の決まりは protocol.json。説明は design.md。RL の学習側と JetFormer の登録簿(data/sim_rl/modes/<key>/mode.json)はここから作る",
+ "default_mode": {
+  "key": "rc",
+  "name_ja": "使わない(RC加速教師)",
+  "note": "モードを選ばなければ今までどおり作者の RC 加速教師(何も変えない)"
+ },
+ "common": {
+  "course": {
+   "default": "Default(v3・33 ゲート・参照ループ R 26.12 m)。RL の観測(features.mjs)は v3 の経路にしか使えないので、強化学習モードは Default と、その上に障害物を重ねた仮想コース default-obstacles だけで使う",
+   "default_obstacles": "default-obstacles = Default の scene.js・world.js + JetFormer の重ね描き(_jf/scene-overlay.js・_jf/world-overlay.js)。WORLD_VERSION は '<元>+jf-obstacles-v1'"
+  },
+  "physics_nominal": {
+   "dt": 0.03333333333333333,
+   "maxSpeed": 7.24,
+   "maxSteer": 0.52,
+   "steerRate": 1.2,
+   "brakeDeceleration": 1.2,
+   "driveTau": 0.4,
+   "driveAccelerationCap": 6.0,
+   "frictionMultiplier": 1.0,
+   "vehicleLength": 0.42,
+   "vehicleWidth": 0.19,
+   "wheelbase": 0.26,
+   "note": "記録はいつもこの標準の物理(= RC_COLLECTION_PLAN[0] と同じ)。物理のずれ(DR)は学習と試験だけ。記録しない"
+  },
+  "episode": {
+   "mode": "continuous-laps-v1",
+   "frames": 600,
+   "seconds": 20,
+   "start": "停止から(速さ 0・舵 0)。アプリの reset と同じ開始(経路を開始ゲートで回し、左へ offset、向き +yaw)",
+   "initial_state_used": false
+  },
+  "action": {
+   "policy_output": "a ∈ [-1,1]²(展開時は平均)",
+   "steering_rad": "0.52·a0(正が左)",
+   "speed_mps": "V_cap·(a1+1)/2",
+   "V_cap_mps_default": 4.5,
+   "pwm_labels": "舵 1442+558·a0(a0≥0)/1442+442·a0(a0<0) µs、スロットル 1498−(v/7.24)·498 µs(dataset_recorder の換算。ブリッジに読み込み中のモデルの換算が使われるので、記録の前に中心 1442/1498 µs ±5 を確かめる)"
+  },
+  "observation_base": {
+   "module": "features.mjs(rl-bestlap-features-v1、79 次元、Node とブラウザで同じファイル。ベストラップの作業の写し、sha256 3cf941237cdce719ba963036f3f43cec67998b6c07e0295ef3a6d17b8ba38790)",
+   "reference_loop_sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4",
+   "wrapper": "obs_modes.mjs(この作業で作る)が 79 の後ろにモード別の入力を足す。features.mjs は変えない"
+  },
+  "obs_wrappers": {
+   "base79": {
+    "dim": 79,
+    "extra": [],
+    "gate_index": "sim の route_index(ベストラップと同じ)"
+   },
+   "base79v": {
+    "dim": 79,
+    "extra": [],
+    "gate_index": "virtual: sim の route_index。ただしゲートを外した(R 上の s が目標ゲートの s + 0.30 m を越えても route_index が進まない)あとは、s から決めた次のゲートを使う。外していなければ base79 と同じ値"
+   },
+   "cond97": {
+    "dim": 97,
+    "extra": [
+     "e*(s+Δs_i)/0.5(先読みの 16 点 Δs = 0.25..4.0 m の目標の横ずれ)",
+     "(e_y − e*(s))/0.5",
+     "c_v(速さの倍率)"
+    ],
+    "gate_index": "virtual"
+   },
+   "obst95": {
+    "dim": 95,
+    "extra": [
+     "足した障害物(kind 'obstacle')のうち車に近い順に 4 個(3 m 以内・左右 100° 以内): 車の座標系の前・左 /3、半径 /0.2、有無 1/0(無ければ 0,0,0,0)。箱(線分)は車に一番近い点"
+    ],
+    "gate_index": "virtual"
+   }
+  },
+  "reward_base": {
+   "version": "rl-bestlap-reward-v2-gatecap",
+   "per_step": {
+    "progress": "clip(min(s, 目標ゲートの s + 0.75) の増分, −0.3, v·dt + 0.05)",
+    "smooth_steer": -0.02,
+    "smooth_speed": -0.01,
+    "traction": "−0.02·max(0, ρ_req − 1.1)、ρ_req = v²|tanδ|/(0.26·μ·g)",
+    "clearance": "−0.05·max(0, (0.05 − d_min)/0.05)"
+   },
+   "terminal": {
+    "collision": -10,
+    "gate_miss": -10,
+    "required_crossing_or_lap_distance": -10,
+    "stall": -10,
+    "wrong_way": -10
+   }
+  },
+  "ppo_finetune": {
+   "base": "ベストラップの PPO(MLP 256-256、rollout 256 × 64 環境 = 16,384、5 エポック、ミニバッチ 4,096、clip 0.2、γ 0.995、λ 0.95、target_kl 0.03、torch 4 スレッド、CPU)",
+   "lr": [
+    0.0001,
+    3e-05
+   ],
+   "log_std": "初期化元から引き継ぐ",
+   "obs_dim": "引数(79/95/97)。新しい入力の 1 層目の重みは 0 で広げ、観測の正規化は新しい入力を平均 0・分散 1 から始める(初めは初期化元と同じ走り)",
+   "checkpoint_every_steps": 1000000,
+   "nice": 15,
+   "command": "jf-heavy --mem 2G --lock rl -- nice -n 15 <学習のコマンド>"
+  },
+  "init_policies": {
+   "main_s1_10M": {
+    "checkpoint": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/main-s1/checkpoints/step_010010624.pt",
+    "policy_json": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/best/main/policy.json",
+    "policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+    "note": "ベストラップの作業の選んだ方策(確認 r1 で本物と判定)"
+   },
+   "r2_dr_5M": {
+    "checkpoint": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/r2-dr-s11/checkpoints/step_005013504.pt",
+    "policy_json": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/r2/dr/policy.json",
+    "policy_sha256": "5f6f57168217b7355d2015633d36c6cc50ddbc0d7a0c50ea3f34aeabbf8155a5",
+    "note": "物理のランダム化で 500 万ステップ続けたもの(参考の追加実験。最速には使えない: 1 周目 8.337 秒・すき間 2.27 cm)。条件の表 36/39 で完走"
+   }
+  },
+  "zones": {
+   "black_sheet_zone_s": [
+    5.9,
+    8.0
+   ],
+   "black_sheet_note": "黒シートの必須の横断(z = 0、x 1.26〜2.36、車幅の条件)。ゲート 8〜12 の近く",
+   "back_straight_zone_s": [
+    14.6,
+    19.3
+   ],
+   "back_straight_note": "奥の直線(ゲート 21〜25)。5 cm のすき間で動ける幅 0.18〜0.36 m、取れる最大のすき間 14 cm",
+   "perturb_allowed": "乱れを始めてよい位置: R 上の s から先 2.0 m の区間の幅(すき間 5 cm、corridor.json と同じ作り方)の最小が 0.60 m 以上、かつ黒シートの区間・奥の直線の区間の外。予定のフレームが許されない位置なら、許される最初のフレームまで遅らせる"
+  },
+  "room_table": {
+   "file": "experiments/20261013_sim_rl_modes/rl/room_table.json(この作業で作る)",
+   "grid_ds_m": 0.05,
+   "definition": "R 上の s ごとに、車体を R の接線の向きにして横へずらし、全障害物とのすき間 ≥ 0.08 m で動ける左・右の幅。ゲートの s ±0.2 m では |e| ≤ 0.65 − 0.12、黒シートの区間では車幅の条件を満たす範囲に切る。±0.5 m の最小フィルターのあと、σ 0.4 m のガウスでなめらかにし、左右それぞれ 0.03 m 引いた値を使える幅 ρ_L(s)・ρ_R(s) とする",
+   "line_target": "e*(s) = c(s)·ρ_L(s)(c ≥ 0)/ c(s)·ρ_R(s)(c < 0)。c(s) ∈ [−1, 1] は経路の形(line_families)"
+  },
+  "line_families": {
+   "const": "c(s) = c0、c0 ∈ [−0.9, 0.9](正が左寄り)",
+   "inside": "c(s) = a·tanh(κ̄(s)/0.5)、a ∈ [0.5, 0.9](κ̄ = R の曲率を ±0.5 m で平均。左曲がりで左 = イン)",
+   "outside": "c(s) = −a·tanh(κ̄(s)/0.5)、a ∈ [0.5, 0.9]",
+   "late_apex": "c(s) = a·tanh(κ̄(s − 0.5)/0.5)、a ∈ [0.5, 0.9](曲がりの頂点を 0.5 m 後ろへ)",
+   "early_apex": "c(s) = a·tanh(κ̄(s + 0.5)/0.5)、a ∈ [0.5, 0.9]",
+   "random": "c(s) = 1.5〜3.0 m おきの節(値 U(−0.9, 0.9))を通る 3 次スプライン(2.5 周分)"
+  },
+  "shield": {
+   "module": "shield.mjs(純粋な ESM。Node とブラウザで同じファイル)",
+   "privileged_input": "world の全障害物の正確な形(features.mjs の prepareGeometry と同じ)・物理の config・今の状態(snapshot の x, z, yaw, speed, steering)",
+   "model": "sim-core の車の式の写し(小区間の積分・舵の速さ・加減速・ヨーレートの頭打ち。own_physics_r1 の createOwnSim と同じ式)。試験: 600 フレームの操作列で sim-core との位置の差 ≤ 1e-6 m",
+   "check": "提案の指令を 1 フレーム、そのあと予備の操縦で H = 24 フレーム(0.8 秒)先まで進め、各小区間の正確なすき間(車体の長方形と全障害物)を測る。標準の模型ですき間 ≥ c_shield = 0.07 m、悲観の模型(舵の速さ 0.85 rad/s・遅延 1 フレーム・ブレーキ 0.8 m/s²)ですき間 ≥ 0.05 m なら合格",
+   "backup_controller": "最大すき間の線(room_table の左右の幅の中点)を前方 0.6 m で追う pure pursuit の舵 + 速さの指令 0(ブレーキ)",
+   "on_fail": "候補(予備の操縦そのもの、舵 {−0.52, −0.26, 0, 0.26, 0.52} × 速さ {0, 提案} の各組 + 予備の操縦)を同じ検査にかけ、合格のうち提案に一番近い(舵の差を主に)ものを使う。どれも合格しなければ、予想の最小すき間が一番大きい候補",
+   "determinism": "snapshot とフレーム番号だけで決まる(乱数・時刻を使わない)。同じフレームで 2 回呼ばれても同じ答え",
+   "labels": "シールドが置き換えた指令もそのまま正解ラベルにする(安全な操作なので)。info.jf.sh = 1 で印を付け、割合を報告する",
+   "used_by": [
+    "no_wall"
+   ]
+  },
+  "perturbation_recording": {
+   "applies_to": [
+    "recover"
+   ],
+   "how": "行動の差し込みだけ(ブラウザの教師の差し込み口では状態に触れない)。予定は config.seed とフレーム番号から決まる(Node で同じ操作を作り直せる)",
+   "types": {
+    "steer_pulse": {
+     "p": 0.45,
+     "what": "舵を左か右へ |δ| = 0.52·k を n フレーム固定。速さの指令は方策のまま"
+    },
+    "excursion": {
+     "p": 0.4,
+     "what": "わざと外す: 目標の横ずれ e_tgt = e_y ± d へ、R を e_tgt ずらした線を前方 0.8 m の pure pursuit で追う(T 秒)。速さは方策のまま。その側の使える幅 < d + 0.05 m なら反対側、両側とも足りなければ steer_pulse に替える。d_min < 0.10 m になったら途中で終える"
+    },
+    "speed_pulse": {
+     "p": 0.15,
+     "what": "速さの指令を 0(ブレーキ)か V_cap(踏み込み)に n フレーム。舵は方策のまま"
+    }
+   },
+   "classes": {
+    "弱": {
+     "steer_pulse": {
+      "frames": [
+       3,
+       5
+      ],
+      "k": [
+       0.6,
+       0.8
+      ]
+     },
+     "excursion": {
+      "d_m": [
+       0.12,
+       0.2
+      ],
+      "T_s": [
+       0.4,
+       0.7
+      ]
+     },
+     "speed_pulse": {
+      "brake_frames": [
+       10,
+       15
+      ],
+      "burst_frames": [
+       6,
+       10
+      ]
+     }
+    },
+    "中": {
+     "steer_pulse": {
+      "frames": [
+       6,
+       9
+      ],
+      "k": [
+       0.8,
+       1.0
+      ]
+     },
+     "excursion": {
+      "d_m": [
+       0.2,
+       0.3
+      ],
+      "T_s": [
+       0.6,
+       1.0
+      ]
+     },
+     "speed_pulse": {
+      "brake_frames": [
+       15,
+       25
+      ],
+      "burst_frames": [
+       10,
+       15
+      ]
+     }
+    },
+    "強": {
+     "steer_pulse": {
+      "frames": [
+       10,
+       12
+      ],
+      "k": [
+       1.0,
+       1.0
+      ]
+     },
+     "excursion": {
+      "d_m": [
+       0.3,
+       0.4
+      ],
+      "T_s": [
+       0.8,
+       1.2
+      ]
+     },
+     "speed_pulse": {
+      "brake_frames": [
+       25,
+       30
+      ],
+      "burst_frames": [
+       15,
+       20
+      ]
+     }
+    }
+   },
+   "class_choice": "既定は出来事ごとに 3 つから等確率(プランで固定もできる)",
+   "schedule": {
+    "first_event_s": [
+     2.0,
+     4.0
+    ],
+    "gap_after_end_s": [
+     2.0,
+     3.5
+    ],
+    "no_start_after_s": 18.5,
+    "zone_rule": "zones.perturb_allowed"
+   },
+   "labels": "差し込んだフレーム [ps, pe) は info.jf.l = 0。取り込みで k ∈ [ps − 10, pe − 2] の future_valid を false・mode を 0 にする(masking)"
+  },
+  "masking": {
+   "rule": "フレーム j の操作が学習しないもの(info.jf.l = 0)なら、それを正解(k+1〜k+10 の操作)に含む観測 k を除く。乱れの区間 [ps, pe) では k ∈ [ps − 10, pe − 2]。pe − 1 以降(正解が立て直しの操作だけ)は残す",
+   "where": "JetFormer の取り込み(import_archive と /api/sim/rl/import)。npz の future_valid[k] = False、mode[k] = 0(未設定 = 学習しない。シーンタブへの展開でも残る)。vehicle_valid は変えない",
+   "card": "label_mask = {schema 'jetformer-sim-label-mask/v1', source 'frames.jsonl action_info.jf.l', horizon 10, masked_frames, per_scene}",
+   "label_horizon": 10
+  },
+  "frame_info": {
+   "key": "info.jf(アプリが /api/datasets/frame に送り、収集器が simulation/frames.jsonl の action_info に残す)",
+   "fields": {
+    "v": "1",
+    "m": "モードの key",
+    "f": "フレーム番号",
+    "ph": "drive | perturb | shield",
+    "l": "学習に使う 1 / 使わない 0",
+    "ev": "乱れの通し番号(無ければ 0)",
+    "cl": "すき間 [mm](d_min、整数)",
+    "es": "目標の横ずれ e* [mm](cond だけ)",
+    "sh": "シールドが置き換えた 1/0(no_wall だけ)"
+   },
+   "frame0_extra": {
+    "p": "シーンの条件の全部(経路の形・c0/a・c_v・配置 ID・乱れの強さ・seed・方策の sha256 の先頭 12 桁)"
+   },
+   "forbidden": "steering_pwm・throttle_pwm の鍵、'/' で始まる文字列は使わない(収集器・集約の特別扱い)。1 フレーム 200 バイト程度まで"
+  },
+  "teacher_metadata": {
+   "schema": "jetformer-sim-rl-teacher/v1",
+   "fields": [
+    "id = jf-rl-<key>-v1",
+    "mode",
+    "policy_sha256",
+    "obs_wrapper",
+    "features_version",
+    "reference_loop_sha256",
+    "speed_cap_mps",
+    "runtime_version",
+    "catalogue_sha256(この modes.json)",
+    "obstacle_set(あれば)"
+   ],
+   "rule": "モードの中の全シーンで同じ(集約の契約)。シーンごとに変わる値は info.jf(フレーム 0 の p)へ"
+  },
+  "genre_and_tags": {
+   "genre_id": 8,
+   "genre_name": "シミュレーター",
+   "new_genres": false,
+   "tags_common": [
+    "simulator",
+    "sim-rl"
+   ],
+   "tag_per_mode": "sim-rl-<key>",
+   "dataset_name": "sim-rl-<key>_<YYYYMMDD-HHMM>",
+   "scene_name": "rl-<key>-<train|val>-<NN>",
+   "masked_frames_mode": 0,
+   "auto_tag_source": "取り込み時に ZIP の中の context.teacher.schema == 'jetformer-sim-rl-teacher/v1' と mode を読む"
+  },
+  "recording_common": {
+   "scenes_per_minute": 3,
+   "scene_seconds": 20,
+   "split_val_ratio": 0.2,
+   "sample_minutes_per_mode": 5,
+   "ui_default_minutes": 5,
+   "ui_max_minutes_per_mode": 20,
+   "scenario_rotation": {
+    "baseline": 2,
+    "noise": 1,
+    "dim": 1
+   },
+   "scenario_excluded": [
+    "low-friction"
+   ],
+   "settings": "RC_COLLECTION_PLAN[0] と同じセンサー・物理(maxspeed 7.24・RC 応答・execution-speed fast・stop-collision true)、controller demo、teacher-profile speed-rc(差し替えた教師)、episode-mode continuous-laps-v1、limit 20、dataset-mode 8、automated-labels に印",
+   "starts": "開始(ゲート・左右・向き)は Halton 列で重ならないように作る(train と val で同じ開始を使わない)",
+   "prefilter": "プランの各シーンを Node(元の sim-core、同じ mode_runtime.mjs)で前もって走らせ、600 フレーム・衝突 0 にならないものは次の候補に替える(候補はプランの 3 倍まで)",
+   "calibration_guard": "記録の前と途中で、ブリッジに読み込み中のモデルの換算が 操舵の中心 1442 ±5 µs・スロットルの中立 1498 ±5 µs(またはモデル未読み込み = 既定)であることを確かめる。外れたら止める",
+   "merge": "モード 1 つ = データセット 1 つ。JetFormer が複数のシーン ZIP をまとめて取り込む(POST /api/sim/rl/import)。ブリッジの「1つのZIPにまとめる」は使わなくてよい(空き 20 GiB + 元の 2 倍が要るため)",
+   "browser_rule": "収集のタブは表に出しておく(裏では止まる)。確認は http://192.168.55.1:8080 で"
+  },
+  "dr_specs": {
+   "DR-NW-train": {
+    "nominal_fraction": 0.15,
+    "steerRate": [
+     0.75,
+     1.9
+    ],
+    "brakeDeceleration": [
+     0.65,
+     2.3
+    ],
+    "driveTau": [
+     0.25,
+     0.6
+    ],
+    "driveAccelerationCap": [
+     3.0,
+     6.0
+    ],
+    "frictionMultiplier": [
+     0.82,
+     1.12
+    ],
+    "delay_frames_p": {
+     "0": 0.4,
+     "1": 0.45,
+     "2": 0.15
+    },
+    "steerGain": [
+     0.93,
+     1.07
+    ],
+    "speedGain": [
+     0.95,
+     1.05
+    ],
+    "friction_circle_fraction": 0.3,
+    "steer_white_noise": {
+     "fraction": 0.5,
+     "sigma_rad": 0.03
+    }
+   },
+   "DR-T": {
+    "note": "試験用(protocol の R200)。学習の範囲の内側",
+    "steerRate": [
+     0.8,
+     1.8
+    ],
+    "brakeDeceleration": [
+     0.7,
+     2.2
+    ],
+    "driveTau": [
+     0.28,
+     0.55
+    ],
+    "driveAccelerationCap": [
+     3.5,
+     6.0
+    ],
+    "frictionMultiplier": [
+     0.85,
+     1.1
+    ],
+    "delay_frames_p": {
+     "0": 0.5,
+     "1": 0.5
+    },
+    "steerGain": [
+     0.94,
+     1.06
+    ],
+    "speedGain": [
+     0.96,
+     1.04
+    ],
+    "friction_circle_fraction": 0.3
+   },
+   "conventions": "ベストラップの r2 と同じ: 観測は標準の物理の値で作る(方策は今の物理を知らない)。遅延 n は n フレーム前の指令(最初は中立)、観測の前回の行動は適用した行動。ゲインは適用する指令に掛ける。摩擦円 = 縦の加減速を √((μg)² − a_lat²) までにする(check_r1/own_physics_r1.mjs の frictionCircle と同じ式。高速版への文字列の置き換えで入れ、own_physics_r1 と 1e-9 で一致を試験)"
+  },
+  "obstacle_layouts": {
+   "shapes": {
+    "post": "disks に kind 'obstacle' の円柱。半径 0.05〜0.10 m、高さ 0.30 m",
+    "box": "segments に kind 'obstacle' のカプセル。長さ 0.15〜0.35 m、半径 0.05 m、向きは自由、高さ 0.25 m(描画は箱 + 両端の半円柱)"
+   },
+   "count_per_layout": [
+    1,
+    4
+   ],
+   "min_spacing_s_m": 2.0,
+   "placement": "s は許される区間(黒シートの区間・奥の直線・開始の前後 1.5 m・ゲートの柱から 0.3 m 以内を除く)。横は最速の方策のふだんの線 ē_y(s) + U(−0.15, 0.15) m(いつもの線をふさぐ)",
+   "passage_guarantee": "障害物の s ±0.6 m のどこでも、全障害物(コース + 足したもの)とのすき間 ≥ 0.08 m で通れる横の範囲が 0.10 m 以上残り、その範囲がゲートの窓(±0.65 m)と重なること。JetFormer(Python)と Node の両方の検査器で確かめる",
+   "sets": {
+    "train": "回ごとに乱数で作る(種つき)。10% は障害物なし",
+    "validation": "30 配置(種 830000〜)",
+    "test": "50 配置(種 930000〜)",
+    "recording": "30 配置(種 730000〜)"
+   },
+   "files": "data/sim_rl/obstacle_sets/<set>.json({id, base: 'default', layouts: [{id, obstacles: [{shape, x, z, r | length, yaw, h}]}]})",
+   "rendering": "橙色・テクスチャなし。高さ ≥ 0.25 m(カメラ 0.25 m・ToF 0.20 m に映る)",
+   "cache": "prepareGeometry のキャッシュは上限つきにする(配置を毎回変えるとふえ続けるため)"
+  }
+ },
+ "modes": [
+  {
+   "key": "fastest",
+   "name_ja": "強化学習モード(最速)",
+   "order": 1,
+   "priority": 1,
+   "train": false,
+   "short_ja": "ベストラップの強化学習の方策そのまま。教師(RC加速教師)より約 0.8 秒速い 1 周",
+   "purpose": "いちばん速い走り(停止から 1 周 8.09 秒・走りながら 7.66 秒、教師 8.93 / 8.37 秒)。ばらつきは開始をアプリの範囲いっぱいに広げて作る",
+   "course": "default",
+   "policy": {
+    "source": "ベストラップの作業の最終の検証済みの方策。記録の段の時点で、rl/best/main/policy.json の sha256 が 7c43cb53… から変わっていて、その作業のあとの確認の報告(rl_check_r*.md など)がその方策を本物・合格と書いていればそれを使う。そうでなければ確認 r1 で本物と判定された 7c43cb53…(main 種 1・1,000 万ステップ)を使い、報告にそう書く。r2(物理のランダム化)の方策は最速には使わない",
+    "default_policy_json": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013/rl/best/main/policy.json",
+    "default_policy_sha256": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee",
+    "obs_wrapper": "base79",
+    "speed_cap_mps": 4.5
+   },
+   "training": null,
+   "runtime": {
+    "shield": false,
+    "perturbation": null,
+    "conditioning": null,
+    "gate_index": "base79"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.3,
+      0.3
+     ],
+     "left_yaw_deg": [
+      -25,
+      25
+     ],
+     "sequence": "Halton",
+     "prefilter": true
+    },
+    "per_scene_params": {},
+    "note": "今の方策は広い開始の 93% を走り切る(understand_rl 9 章)。走り切らない開始はプランから外す"
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-fastest"
+   ],
+   "variation": {
+    "judged": [],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM3",
+     "VM4",
+     "VM5",
+     "VM7"
+    ]
+   },
+   "fallback": "検証済みの方策が無ければ記録しない(7c43… は確認 r1 済みなので、実際にはいつも使える)"
+  },
+  {
+   "key": "no_wall",
+   "name_ja": "強化学習モード(絶対壁にぶつからない)",
+   "order": 2,
+   "priority": 1,
+   "train": true,
+   "short_ja": "壁・柱から 8 cm 以上はなれて走る。物理のずれ(舵の速さ・μ・遅れ・RC の応答・摩擦円)でもぶつからないよう学習し、走行中は安全シールドが見張る。遅くてよい",
+   "purpose": "ぶつからないことを最優先にした走り。標準の物理で全周すき間 8 cm 以上、物理をずらした試験でも衝突 0・すき間 5 cm 以上。摩擦円の内側の無理のない加減速",
+   "course": "default",
+   "policy": {
+    "obs_wrapper": "base79",
+    "speed_cap_mps": 4.5,
+    "init": "r2_dr_5M(読めなければ main_s1_10M)"
+   },
+   "training": {
+    "init": "r2_dr_5M",
+    "seed": 21,
+    "pilot_steps": 1000000,
+    "steps": 10000000,
+    "retry_steps_max": 10000000,
+    "reward": {
+     "base": "rl-bestlap-reward-v2-gatecap の progress と終了の罰",
+     "smooth_steer": -0.06,
+     "smooth_speed": -0.03,
+     "traction_req": "−0.2·max(0, ρ_req − 0.9)",
+     "friction_circle": "−0.2·max(0, ρ_comb − 0.9)、ρ_comb = √(a_long² + a_lat²)/(μg)、a_long = 実際の速さの変化/dt、a_lat = v·(実際のヨーレート)",
+     "clearance_barrier": "d_min < 0.12 m のとき −0.25·min(4, ((0.12 − d_min)/0.04)²)",
+     "terminal_clearance": "d_min < 0.075 m で終了 −10(約束としてのすき間)"
+    },
+    "terminations": [
+     "base の全部",
+     "d_min < 0.075 m"
+    ],
+    "dr": "DR-NW-train",
+    "start_distribution": {
+     "mix": [
+      {
+       "p": 0.5,
+       "gate": "U{0..32}",
+       "left_offset_m": [
+        -0.2,
+        0.2
+       ],
+       "left_yaw_deg": [
+        -15,
+        15
+       ],
+       "min_initial_clearance_m": 0.12
+      },
+      {
+       "p": 0.5,
+       "gate": 0,
+       "left_offset_m": [
+        -0.05,
+        0.05
+       ],
+       "left_yaw_deg": [
+        -5,
+        5
+       ]
+      }
+     ]
+    },
+    "tuning_ranges": {
+     "smooth_steer": [
+      -0.12,
+      -0.02
+     ],
+     "smooth_speed": [
+      -0.06,
+      -0.01
+     ],
+     "traction_req_w": [
+      0.05,
+      0.5
+     ],
+     "friction_circle_w": [
+      0.05,
+      0.5
+     ],
+     "clearance_barrier_w": [
+      0.1,
+      0.5
+     ],
+     "clearance_barrier_start_m": [
+      0.1,
+      0.14
+     ],
+     "terminal_clearance_m": [
+      0.06,
+      0.08
+     ],
+     "dr_widths": "DR-NW-train の各範囲を DR-T を下回らない範囲で狭めてよい"
+    }
+   },
+   "runtime": {
+    "shield": true,
+    "shield_params": "common.shield(c_shield 0.07 m・悲観 0.05 m・H 24 フレーム)",
+    "perturbation": null,
+    "conditioning": null,
+    "gate_index": "base79"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.2,
+      0.2
+     ],
+     "left_yaw_deg": [
+      -15,
+      15
+     ],
+     "min_initial_clearance_m": 0.12,
+     "sequence": "Halton",
+     "prefilter": true
+    },
+    "per_scene_params": {}
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-no_wall",
+    "sim-safe"
+   ],
+   "variation": {
+    "judged": [],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM3",
+     "VM4",
+     "VM5",
+     "VM7",
+     "線の違い: s でそろえた |ē_y(no_wall) − ē_y(fastest)| の平均",
+     "シールドの作動の割合"
+    ]
+   },
+   "ui_phrase": "「N 回の試験で衝突 0・最小すき間 X cm」と書く(「絶対」とは言い切らない。名前はユーザーの呼び方のまま)",
+   "fallback": "合格しなくても(優先 1 なので)「不合格(参考)」として出し、測った値をそのまま見せる。試験で衝突が残るときは、シールドの c_shield を 0.07 → 0.09 m に上げてもう一度だけ試験してよい(deviations.md に書く)"
+  },
+  {
+   "key": "recover",
+   "name_ja": "強化学習モード(離脱復活)",
+   "order": 3,
+   "priority": 1,
+   "train": true,
+   "short_ja": "走っている途中で、わざと線を外したり舵・アクセルを乱したりして、そこからコースへ戻る走りを集める。乱した操作は学習に使わない",
+   "purpose": "押されたり外れたりしたあとに、ぶつからずにコースへ戻る操作(立て直し)のデータ。乱しの区間はラベルにしない(masking)",
+   "course": "default",
+   "policy": {
+    "obs_wrapper": "base79v",
+    "speed_cap_mps": 4.5,
+    "init": "main_s1_10M"
+   },
+   "training": {
+    "init": "main_s1_10M",
+    "seed": 31,
+    "pilot_steps": 1000000,
+    "steps": 10000000,
+    "retry_steps_max": 10000000,
+    "reward": {
+     "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+     "gate_miss": "終了しない。−3 を与えて、仮想のゲート番号(base79v)で走り続ける",
+     "terminal": "衝突・停止・逆走・黒シート違反・周の距離不足は −10 で終了"
+    },
+    "perturbation": {
+     "types_p": {
+      "steer_pulse": 0.35,
+      "excursion": 0.25,
+      "speed_pulse": 0.15,
+      "state_kick": 0.25
+     },
+     "state_kick": "Node の高速版だけ: sim.peek().state を書き換える。向き ±U(0.1, 0.5) rad・横 ±U(0.05, 0.25) m(R の法線の向き)・速さ ×U(0.5, 1.3)。どれか 1 つか 2 つ",
+     "magnitude_curriculum": "記録の強さの 0.5 倍から始め、最初の 300 万ステップで 1.2 倍まで上げる",
+     "schedule": {
+      "first_event_s": [
+       1.0,
+       4.0
+      ],
+      "gap_after_end_s": [
+       1.5,
+       4.0
+      ]
+     },
+     "zone_rule": "記録と同じ考え方で、幅の条件を 0.45 m にゆるめる。黒シートの区間は除く",
+     "policy_loss_mask": "差し込んだ行動のステップは方策の損失・エントロピーから外す(価値の学習には使う)。状態のキックは行動ではないので外さない"
+    },
+    "start_distribution": {
+     "mix": [
+      {
+       "p": 0.35,
+       "gate": 0,
+       "left_offset_m": [
+        -0.12,
+        0.12
+       ],
+       "left_yaw_deg": [
+        -8,
+        8
+       ]
+      },
+      {
+       "p": 0.35,
+       "gate": "U{0..32}",
+       "left_offset_m": [
+        -0.12,
+        0.12
+       ],
+       "left_yaw_deg": [
+        -8,
+        8
+       ]
+      },
+      {
+       "p": 0.3,
+       "gate": "U{0..32}",
+       "left_offset_m": [
+        -0.3,
+        0.3
+       ],
+       "left_yaw_deg": [
+        -25,
+        25
+       ]
+      }
+     ]
+    },
+    "tuning_ranges": {
+     "gate_miss_penalty": [
+      -10,
+      -1
+     ],
+     "types_p": "各 0.1〜0.5",
+     "magnitude_curriculum_max": [
+      1.0,
+      1.5
+     ],
+     "zone_width_m": [
+      0.35,
+      0.6
+     ]
+    }
+   },
+   "runtime": {
+    "shield": false,
+    "perturbation": "common.perturbation_recording",
+    "conditioning": null,
+    "gate_index": "base79v"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.2,
+      0.2
+     ],
+     "left_yaw_deg": [
+      -15,
+      15
+     ],
+     "sequence": "Halton",
+     "prefilter": true
+    },
+    "per_scene_params": {
+     "perturb_class": "auto(出来事ごとに 弱・中・強)"
+    }
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-recover",
+    "sim-recover"
+   ],
+   "variation": {
+    "judged": [
+     "VM6: 出来事 ≥ 3.5 / シーン(平均)",
+     "VM6: 学習から外すフレームの割合の平均 0.10〜0.40",
+     "VM7 ≥ 教師 15 シーンの 2 倍"
+    ],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM3",
+     "VM4",
+     "VM5",
+     "立て直しの時間の分布"
+    ]
+   },
+   "fallback": "合格しなくても(優先 1)「不合格(参考)」として出す。立て直しの成功率が足りないときは、記録の強さを「弱・中」だけにした版をもう一度試験してよい(既定の試験と並べて報告し、deviations.md に書く)"
+  },
+  {
+   "key": "line",
+   "name_ja": "強化学習モード(経路いろいろ)",
+   "order": 4,
+   "priority": 2,
+   "train": true,
+   "short_ja": "同じコースを、左寄り・右寄り・中央・イン・アウト・レイトエイペックス・ランダムな線など、シーンごとに違う経路で走る",
+   "purpose": "走る線(横の位置)のばらつき。1 つの条件付きの方策(cond)が目標の横ずれ e*(s) の形に従って走る",
+   "course": "default",
+   "policy": {
+    "obs_wrapper": "cond97",
+    "speed_cap_mps": "4.5·c_v",
+    "init": "main_s1_10M(1 層目を 0 で広げる)",
+    "shared_policy": "cond(速さいろいろと同じ方策)"
+   },
+   "training": {
+    "run": "cond",
+    "init": "main_s1_10M",
+    "seed": 41,
+    "pilot_steps": 1000000,
+    "steps": 20000000,
+    "retry_steps_max": 5000000,
+    "reward": {
+     "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+     "tracking": "−0.08·min(1, ((e_y − e*(s))/0.10)²)",
+     "terminal": "base と同じ"
+    },
+    "conditioning": {
+     "c_v": "40% は 1.0、60% は U(0.5, 1.0)",
+     "families_p": {
+      "const": 0.3,
+      "inside": 0.12,
+      "outside": 0.12,
+      "late_apex": 0.08,
+      "early_apex": 0.08,
+      "random": 0.3
+     }
+    },
+    "start_distribution": {
+     "mix": [
+      {
+       "p": 0.7,
+       "gate": "base(半分ゲート 0・半分 U{0..32})",
+       "left_offset_m": [
+        -0.12,
+        0.12
+       ],
+       "left_yaw_deg": [
+        -8,
+        8
+       ]
+      },
+      {
+       "p": 0.3,
+       "gate": "U{0..32}",
+       "left_offset_m": [
+        -0.3,
+        0.3
+       ],
+       "left_yaw_deg": [
+        -25,
+        25
+       ]
+      }
+     ]
+    },
+    "tuning_ranges": {
+     "tracking_w": [
+      0.03,
+      0.2
+     ],
+     "tracking_scale_m": [
+      0.05,
+      0.15
+     ],
+     "room_clearance_m": [
+      0.06,
+      0.1
+     ]
+    }
+   },
+   "runtime": {
+    "shield": false,
+    "perturbation": null,
+    "conditioning": {
+     "line": "シーンごとに 1 つの形(フレーム 0 の p に記録)",
+     "c_v": "U(0.9, 1.0)"
+    },
+    "gate_index": "virtual"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.2,
+      0.2
+     ],
+     "left_yaw_deg": [
+      -15,
+      15
+     ],
+     "sequence": "Halton",
+     "prefilter": true
+    },
+    "per_scene_params": {
+     "family_plan_15": {
+      "const 左(c0 0.6〜0.9)": 2,
+      "const 右(c0 −0.9〜−0.6)": 2,
+      "const 中央(|c0| ≤ 0.2)": 1,
+      "inside": 2,
+      "outside": 2,
+      "late_apex": 2,
+      "early_apex": 1,
+      "random": 3
+     },
+     "scale_rule": "15 シーンでない時は同じ割合で丸める"
+    }
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-line",
+    "sim-line"
+   ],
+   "variation": {
+    "judged": [
+     "VM3 ≥ 0.08 m",
+     "VM7 ≥ 教師 15 シーンの 2 倍"
+    ],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM4",
+     "VM5"
+    ]
+   },
+   "fallback": "cond が合格しなければ、ベストラップの作業のチェックポイントのうち REC60 を全部有効・すき間 ≥ 3 cm で走れるものをシーンごとに替える「線の混ぜ合わせ」を、同じ試験(線の違いは VM3 だけ)にかけ、合格すればそれを出す(報告に代わりの方法と書く)"
+  },
+  {
+   "key": "speed",
+   "name_ja": "強化学習モード(速さいろいろ)",
+   "order": 5,
+   "priority": 2,
+   "train": true,
+   "short_ja": "最速の 50〜100% の速さの上限で走る。遅い走りでも線と舵をその速さに合わせる",
+   "purpose": "速さのばらつき(1 周 約 8 秒〜12 秒)。cond の方策が速さの倍率 c_v を見て走る",
+   "course": "default",
+   "policy": {
+    "obs_wrapper": "cond97",
+    "speed_cap_mps": "4.5·c_v",
+    "init": "cond の学習(経路いろいろと同じ方策)",
+    "shared_policy": "cond"
+   },
+   "training": {
+    "run": "cond(line と同じ 1 本の学習)"
+   },
+   "runtime": {
+    "shield": false,
+    "perturbation": null,
+    "conditioning": {
+     "line": "const c0 = 0(R = 教師の線を目標)",
+     "c_v": "シーンごとに 1 つ(フレーム 0 の p に記録)"
+    },
+    "gate_index": "virtual"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.2,
+      0.2
+     ],
+     "left_yaw_deg": [
+      -15,
+      15
+     ],
+     "sequence": "Halton",
+     "prefilter": true
+    },
+    "per_scene_params": {
+     "c_v_plan_15": {
+      "1.0": 3,
+      "0.875": 3,
+      "0.75": 3,
+      "0.625": 3,
+      "0.5": 3
+     }
+    }
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-speed",
+    "sim-speed"
+   ],
+   "variation": {
+    "judged": [
+     "VM4: s でそろえた速さのばらつき ≥ 0.4 m/s",
+     "1 周目の時間の幅(最大 − 最小)≥ 3.0 秒"
+    ],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM3",
+     "VM5",
+     "VM7"
+    ]
+   },
+   "fallback": "cond が合格しなければ、学習なしの速さの上限 {4.5, 4.0, 3.5, 3.0, 2.5} m/s を no_wall の方策(合格していれば)か最速の方策に掛けたものを、同じ試験(c_v = 上限/4.5)にかけ、合格すればそれを出す"
+  },
+  {
+   "key": "obstacle",
+   "name_ja": "強化学習モード(障害物よけ)",
+   "order": 6,
+   "priority": 3,
+   "train": true,
+   "short_ja": "コースの上に柱や箱をランダムに置き、それをよけて走る(配置はシーンごとに変わる)",
+   "purpose": "ぶつかりそうな物をよける操作のデータ。仮想コース default-obstacles(Default の見た目 + 橙の障害物)で記録",
+   "course": "default-obstacles",
+   "policy": {
+    "obs_wrapper": "obst95",
+    "speed_cap_mps": 4.5,
+    "init": "main_s1_10M(1 層目を 0 で広げる)"
+   },
+   "training": {
+    "init": "main_s1_10M",
+    "seed": 61,
+    "pilot_steps": 1000000,
+    "steps": 15000000,
+    "retry_steps_max": 5000000,
+    "reward": {
+     "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+     "obstacle_barrier": "足した障害物とのすき間 d_obs < 0.08 m のとき −0.1·min(4, ((0.08 − d_obs)/0.04)²)",
+     "terminal": "base と同じ(衝突 −10)"
+    },
+    "layouts": "common.obstacle_layouts の train(回ごと、10% は障害物なし)",
+    "start_distribution": {
+     "mix": [
+      {
+       "p": 0.8,
+       "gate": "base",
+       "left_offset_m": [
+        -0.12,
+        0.12
+       ],
+       "left_yaw_deg": [
+        -8,
+        8
+       ]
+      },
+      {
+       "p": 0.2,
+       "gate": "U{0..32}",
+       "left_offset_m": [
+        -0.2,
+        0.2
+       ],
+       "left_yaw_deg": [
+        -15,
+        15
+       ]
+      }
+     ]
+    },
+    "tuning_ranges": {
+     "obstacle_barrier_w": [
+      0.05,
+      0.3
+     ],
+     "count_per_layout_max": [
+      2,
+      4
+     ]
+    }
+   },
+   "runtime": {
+    "shield": false,
+    "perturbation": null,
+    "conditioning": {
+     "layout": "シーンごとに recording 組の配置を 1 つ(フレーム 0 の p と info.jf に配置 ID)"
+    },
+    "gate_index": "virtual"
+   },
+   "recording": {
+    "start_distribution": {
+     "gate": "U{0..32}",
+     "left_offset_m": [
+      -0.15,
+      0.15
+     ],
+     "left_yaw_deg": [
+      -10,
+      10
+     ],
+     "sequence": "Halton",
+     "prefilter": true,
+     "layout_check": "開始の前後 1.5 m に障害物が無い配置だけ"
+    },
+    "per_scene_params": {
+     "layouts": "recording 組の 30 配置から、シーンごとに違うものを選ぶ"
+    }
+   },
+   "tags": [
+    "simulator",
+    "sim-rl",
+    "sim-rl-obstacle",
+    "sim-obstacles"
+   ],
+   "variation": {
+    "judged": [
+     "VM3 ≥ 0.04 m",
+     "15 シーンで違う配置 ≥ 12"
+    ],
+    "reported": [
+     "VM1",
+     "VM2",
+     "VM4",
+     "VM5",
+     "VM7",
+     "障害物の横を通った回数とすき間"
+    ]
+   },
+   "fallback": "時間が足りなければ最初に削る(優先 3)。学習しても合格しなければ出さない(報告だけ)"
+  }
+ ],
+ "variation_metrics_ref": "protocol.json の variation_metrics(VM1〜VM7)"
+}

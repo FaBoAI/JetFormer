@@ -1,0 +1,132 @@
+{
+ "title": "速さいろいろ(speed)第 2 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)を変えずに、speed だけに足す・置き換える項目",
+ "version": "speed-r2-1",
+ "written_at": "2026-10-14T05:17:00+09:00",
+ "written_by": "学習の段 speed r2",
+ "base_protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "base_modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)",
+ "why": [
+  "確認 speed r1(check_speed_r1.md)の指摘 2: 第 1 回の試験の組 SP-P60 は開始のすき間の下限が無く(作り方は「すき間 > 0」だけ)、P20 は置いた時点で 1.50 cm。S2(≥ 3 cm)はどの方策でも満たせない",
+  "同じ指摘: S2 は有効な回だけを見るので、ぎりぎりの回が衝突になると S2 から外れる → 衝突した回をすき間 0 として数える",
+  "指摘 3: 開始の条件だけでは足りない。遅い段(c_v ≤ 0.75)が黒シートの入口の柱(s 6.6〜7.2)の横を 3〜5 cm で通るのを学習で直す",
+  "第 1 回の試験の組(Halton 20,001〜)は走り・失敗の形まで調べたあとなので、第 2 回は重ならない新しい組で試験する"
+ ],
+ "unchanged": [
+  "判定のしきい値: S1 ≥ 57/60 が valid_episode、S2 ≥ 0.03 m、S3(SP-STD3 が全部完走、t(1.0) < t(0.75) < t(0.5)、差 ≥ 3.0 秒)、S4(c_v ごとの平均の速さが隣どうし ≥ 0.05 m/s 増え、95% 点 ≤ 4.5·c_v + 0.05 m/s)、S5(VM4 ≥ 0.4 m/s)",
+  "SP-STD3(STD の単周を c_v 1.0・0.75・0.5 で)",
+  "定義(protocol.json definitions: valid_episode・clearance・lap_from_stop など)と判定のコア(元の sim-core.js、sha256 aaeb2379…549e)",
+  "走行中の仕組み(rl/runtime/mode_runtime.mjs・cond97・速さの上限 4.5·c_v・線 const c0 = 0・c_v はシーンごとに 1 つ)",
+  "c_v の 5 段 {1.0, 0.875, 0.75, 0.625, 0.5} と記録のプラン c_v_plan_15(各 3)",
+  "publication(優先 2: 合格 → accepted、不合格 → 出さない)と代わりの方法(acceptance.fallbacks.speed)の中身",
+  "経路いろいろ(line)の方策・学習・試験には何も変えない"
+ ],
+ "start_distribution": {
+  "gate": "U{0..32}",
+  "left_offset_m": [-0.2, 0.2],
+  "left_yaw_deg": [-15, 15],
+  "sequence": "Halton",
+  "prefilter": true,
+  "min_initial_clearance_m": 0.12,
+  "note": "modes.json speed.recording.start_distribution に、no_wall と同じ「開始のすき間 ≥ 0.12 m」を足したもの。すき間は車体 0.42 × 0.19 m とコースの正確な距離(features.mjs clearance)。記録・検証・試験・報告の組のすべてに使う"
+ },
+ "sets": {
+  "test": {
+   "name": "SP-P60-R2",
+   "halton_from": 25001,
+   "count": 60,
+   "seed_base": 905500,
+   "c_v_order": [1.0, 0.875, 0.75, 0.625, 0.5],
+   "episode": "連続 20 秒(600 フレーム)、元の sim-core.js",
+   "rule": "Halton 25,001 番から(protocol seeds.halton の試験の範囲 20,001〜29,999 の中。第 1 回の 20,001〜20,062 と重ならない)、開始のすき間 ≥ 0.12 m を満たさない番号は飛ばして 60 個。回 i の種 = 905500 + i、c_v = c_v_order[i mod 5]"
+  },
+  "validation": {
+   "name": "SP-V120-R2",
+   "halton_from": 10001,
+   "count": 120,
+   "seed_base": 805000,
+   "c_v_order": [1.0, 0.875, 0.75, 0.625, 0.5],
+   "episode": "連続 20 秒、高速版(rl/fast_core_modes.mjs)でよい",
+   "rule": "Halton 10,001 番から、開始のすき間 ≥ 0.12 m で 120 個(c_v 5 段 × 24)。+ SP-STD3。S1 は 114/120 以上(57/60 と同じ割合)。チェックポイントを選ぶためだけに使う"
+  },
+  "fresh": {
+   "name": "SP-F300-R2(報告だけ。判定に使わない)",
+   "count": 300,
+   "rng_seed": 6221138,
+   "seed_base": 1900000,
+   "c_v_order": [1.0, 0.875, 0.75, 0.625, 0.5],
+   "episode": "連続 20 秒、元の sim-core.js",
+   "rule": "Halton を使わない一様乱数: 番号 k の開始は createRng(mix32(6221138, k)) の 3 つの一様乱数でゲート U{0..32}・左右 U(−0.2, 0.2) m・向き U(−15, 15)°。開始のすき間 ≥ 0.12 m の最初の 300 個。回 i の種 = 1900000 + i、c_v = c_v_order[i mod 5]。選んだ方策を試験の組のあとに 1 回だけ走らせ、3 cm 未満の割合から「60 回の組が S2 を通る見込み」を報告する"
+  }
+ },
+ "acceptance_changes": {
+  "S1": "SP-P60-R2 の 57/60 以上が valid_episode(しきい値は同じ。組が新しい)",
+  "S2": "SP-P60-R2 の 60 回全部(有効でない回も含む)で最小すき間 ≥ 0.03 m。衝突した回・開始できなかった回・すき間が測れない回はすき間 0 として数える(= 衝突が 1 回でもあれば S2 不合格)",
+  "S3_S4_S5": "式・しきい値は protocol.json acceptance.speed のまま(S4・S5 は SP-P60-R2 の有効な回)",
+  "reported": [
+   "c_v ごとの 1 周の時間・すき間(最小・中央値・5 cm 未満の回)",
+   "SP-STD3 のすき間",
+   "VM1・VM2・VM3・VM5・VM7",
+   "SP-F300-R2 の衝突・3 cm 未満・5 cm 未満・開始から 3 m 以降の最小すき間"
+  ]
+ },
+ "training": {
+  "run": "speed(rl/train_modes.py --run speed。観測は cond97 のまま、速さいろいろだけの条件で学び直す)",
+  "init": "cond_main_4M = train/speed/cond-main/checkpoints/step_004014080.pt(第 1 回の cond の本番、種 41 の 401 万ステップ)",
+  "init_reason": "第 1 回の検証の組(SP-P60 の 1/4)で P12 を除く最小すき間 7.6 cm と 1〜400 万で一番広く、VM4 0.508・S3 の差 4.37 秒と速い端がまだ遅くなっていない(500 万〜は VM4 が下がり、1,100 万〜は 0.4 を割る)。学習しない下調べ(rl/speed_r2/probe_env.mjs、150 回)でも、すき間の中央値は c_v 0.5 で 11.9 cm(101 万の方策は 6.1 cm)",
+  "seed": 43,
+  "steps": 4000000,
+  "steps_reason": "protocol budget.hard_cap_total_steps 7,500 万のうち、ほかの学習(no_wall 1,704 万・recover 1,103 万・cond 2,743 万・obstacle 1,518 万 = 7,068 万)の残り 432 万の中。cond の retry_max 500 万以下",
+  "ppo": "既定(lr 1e-4 → 3e-5、4 ワーカー × 16 環境、rollout 256)",
+  "checkpoints": "50 万ステップごと(8 個)",
+  "conditioning": {
+   "line": "const c0 = 0(走行中の速さいろいろと同じ。目標は R を使える幅の表で切った e*)",
+   "c_v": "80% は 5 段 {1.0, 0.875, 0.75, 0.625, 0.5} から等確率、20% は U(0.5, 1.0)"
+  },
+  "start_mix": [
+   {"p": 0.5, "gate": "U{0..32}", "left_offset_m": [-0.2, 0.2], "left_yaw_deg": [-15, 15], "min_initial_clearance_m": 0.12, "note": "記録・試験の開始の分布と同じ"},
+   {"p": 0.25, "gate": "base(半分ゲート 0・半分 U{0..32})", "left_offset_m": [-0.12, 0.12], "left_yaw_deg": [-8, 8], "min_initial_clearance_m": 0.08},
+   {"p": 0.25, "gate": "U{0..32}", "left_offset_m": [-0.25, 0.25], "left_yaw_deg": [-20, 20], "min_initial_clearance_m": 0.10, "note": "試験より広め(頑丈さのため)"}
+  ],
+  "reward": {
+   "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+   "tracking": "−0.06·min(1, ((e_y − e*(s))/0.15)²)(第 1 回の 0.10 から下げた。line の範囲 0.03〜0.2 の中。R に強く寄せるほど速い端が遅くなり VM4 が下がった第 1 回の傾向への手当て)",
+   "clearance_barrier": "d_min < 0.09 m で −0.2·min(4, ((0.09 − d_min)/0.04)²)(no_wall と同じ形)",
+   "terminal": "base と同じ(衝突・ゲートの外し・停止・逆走は −10 で終了)+ d_min < 0.03 m でも −10 で終了(S2 のしきい値)"
+  },
+  "tuning_ranges": {
+   "tracking_w": [0.03, 0.2],
+   "tracking_scale_m": [0.05, 0.15],
+   "clearance_barrier_w": [0.05, 0.4],
+   "clearance_barrier_start_m": [0.06, 0.12],
+   "terminal_clearance_m": [0.0, 0.05],
+   "c_v_levels_p": [0.5, 1.0]
+  },
+  "tuning_rule": "パイロットは無し。上の値で 1 本だけ学習する(途中で値を変えない。止めて続けるのは同じ値で)",
+  "physics": "標準の物理だけ(記録と試験の物理)。物理のずれ・乱しは無し",
+  "lock": "jf-heavy --mem 2G --lock rl --need-mb 1200 -- nice -n 15(起動のときに nice)"
+ },
+ "selection": {
+  "rule": "検証の組 SP-V120-R2 + SP-STD3(高速版)で S1〜S5(S2 は第 2 回の数え方)を全部満たすチェックポイントのうち、S2 の値(全部の回の最小すき間)が一番大きいもの。同じなら後のもの。全部を満たすものが無ければ、満たす数が一番多く、同じなら S2 の値が大きいもの",
+  "candidates": "学習の 50 万ごとの 8 個(初期化元の 401 万は候補に入れない)",
+  "test_runs": "試験の組 SP-P60-R2 は選んだ 1 つにだけ 1 回使う(protocol selection.test_runs の 2 回目)。試験の結果を見て選び直さない"
+ },
+ "fallback": "選んだ方策が不合格なら、protocol.json acceptance.fallbacks.speed(最速の方策 + 速さの上限 {4.5, 4.0, 3.5, 3.0, 2.5} m/s。no_wall は合格していれば)を SP-P60-R2 + SP-STD3 と第 2 回の S2 で判定し、合格すればそれを代わりとして出す",
+ "recording": {
+  "start_distribution": "上の start_distribution(開始のすき間 ≥ 0.12 m)",
+  "prefilter_min_clearance_m": 0.03,
+  "prefilter_note": "記録の前の予想(rl/predict_scenes.mjs --min-clearance 0.03)で、走り切らないシーンに加えて最小すき間が 3 cm 未満のシーンも次の候補に替える(標準の物理では予想 = 記録)。これは記録の安全のための重ねがけで、試験の組には使わない",
+  "mode_json_overrides": "合格したときだけ publish_mode.py --overrides で mode.json の recording.start_distribution.min_initial_clearance_m と recording.prefilter_min_clearance_m を書く(modes.json は変えない)"
+ },
+ "publication": {
+  "r1": "第 1 回の書き出し train/speed/export/(status not_published)はそのまま残し、登録しない(確認 speed r1 の指摘 1)",
+  "r2": "第 2 回の書き出しは train/speed/r2/export/(policy.json・eval.json・status.json)。合格なら status accepted、不合格なら not_published(統合の段は accepted のものだけを登録する)"
+ },
+ "files": {
+  "env": "rl/env_modes.mjs(trainConfig('speed')・SPEED_R2_DEFAULTS)",
+  "train": "rl/train_modes.py(RUNS.speed・EVAL_EXTRA)",
+  "eval": "rl/eval_modes.mjs --mode speed --protocol speed_r2 --set test|validation|fresh",
+  "select": "rl/speed_r2/select_speed_r2.py",
+  "outputs": "jetformer_reports/sim_rl_modes_20261013/train/speed/r2/"
+ }
+}

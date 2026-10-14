@@ -1,0 +1,198 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T19:06:48.241Z",
+ "mode": "line",
+ "set": "test",
+ "core": "original",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/line/cond-retry/policies/step_005013504.json",
+  "sha256": "2df85c569eedf8fe41a07dcfa06348f6d8be17dfcf8e53d427bc71ade268655b",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 97
+ },
+ "judged": {
+  "L1_valid": {
+   "value": "58/60",
+   "pass": true
+  },
+  "L2_clearance": {
+   "value": 0.005442100605085422,
+   "pass": false
+  },
+  "L3_tracking": {
+   "value": {
+    "median": 0.0278,
+    "p95": 0.19058499999999984
+   },
+   "pass": false
+  },
+  "L4_distinct": {
+   "value": {
+    "left_right_mean": 0.36392049808429106,
+    "inside_outside_mean": 0.1782438697318009,
+    "min_pair_max_1m_avg": 0.14016999999999996,
+    "bins": 522
+   },
+   "pairs": [
+    {
+     "a": "c-0.8",
+     "b": "c0",
+     "max_1m_avg": 0.47716000000000003
+    },
+    {
+     "a": "c-0.8",
+     "b": "c+0.8",
+     "max_1m_avg": 0.6294150000000001
+    },
+    {
+     "a": "c-0.8",
+     "b": "inside",
+     "max_1m_avg": 0.55978
+    },
+    {
+     "a": "c-0.8",
+     "b": "outside",
+     "max_1m_avg": 0.30186
+    },
+    {
+     "a": "c-0.8",
+     "b": "late_apex",
+     "max_1m_avg": 0.5472000000000001
+    },
+    {
+     "a": "c0",
+     "b": "c+0.8",
+     "max_1m_avg": 0.5107750000000001
+    },
+    {
+     "a": "c0",
+     "b": "inside",
+     "max_1m_avg": 0.27429499999999996
+    },
+    {
+     "a": "c0",
+     "b": "outside",
+     "max_1m_avg": 0.3392
+    },
+    {
+     "a": "c0",
+     "b": "late_apex",
+     "max_1m_avg": 0.36944
+    },
+    {
+     "a": "c+0.8",
+     "b": "inside",
+     "max_1m_avg": 0.493955
+    },
+    {
+     "a": "c+0.8",
+     "b": "outside",
+     "max_1m_avg": 0.5032699999999999
+    },
+    {
+     "a": "c+0.8",
+     "b": "late_apex",
+     "max_1m_avg": 0.47297
+    },
+    {
+     "a": "inside",
+     "b": "outside",
+     "max_1m_avg": 0.45672000000000007
+    },
+    {
+     "a": "inside",
+     "b": "late_apex",
+     "max_1m_avg": 0.14016999999999996
+    },
+    {
+     "a": "outside",
+     "b": "late_apex",
+     "max_1m_avg": 0.4432650000000001
+    }
+   ],
+   "pass": true,
+   "fam6_valid": true
+  },
+  "L5_vm3": {
+   "value": 0.10816337146527726,
+   "pass": true
+  },
+  "L6_lap": {
+   "value": 9.07861620790145,
+   "pass": true
+  }
+ },
+ "all_judged_pass": false,
+ "reported": {
+  "by_family": {
+   "const_left": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0332,
+    "lap1": 9.248176290952777
+   },
+   "const_right": {
+    "n": 8,
+    "valid": 6,
+    "tracking_median": 0.022,
+    "lap1": 9.151350688653745
+   },
+   "const_center": {
+    "n": 4,
+    "valid": 4,
+    "tracking_median": 0.0161,
+    "lap1": 8.944706583240153
+   },
+   "inside": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0291,
+    "lap1": 8.807776362761857
+   },
+   "outside": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0294,
+    "lap1": 9.373547341997202
+   },
+   "late_apex": {
+    "n": 8,
+    "valid": 8,
+    "tracking_median": 0.0344,
+    "lap1": 8.770673831108558
+   },
+   "early_apex": {
+    "n": 4,
+    "valid": 4,
+    "tracking_median": 0.0284,
+    "lap1": 8.803722212976384
+   },
+   "random": {
+    "n": 12,
+    "valid": 12,
+    "tracking_median": 0.0256,
+    "lap1": 9.046384568478018
+   }
+  },
+  "variation": {
+   "rows": 64,
+   "VM1_us": 177.61463177487187,
+   "VM2_us": {
+    "mean_abs_dev": 42.26823390916823,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.10895865024844363,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.12247273856561305,
+    "bins_used": 522
+   },
+   "VM7_cells": 1473,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 66,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e"
+}

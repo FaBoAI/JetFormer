@@ -479,6 +479,25 @@
           <p class="muted small">描画はこのブラウザ(WebGL)、推論とデータの保存は Jetson のブリッジが行います。
             同時に AI で走らせられるのは 1 つのタブだけです(ブリッジのモデルは 1 つ)。</p>
         </div>
+        <div class="card" id="sim-rl-card">
+          <div class="card-title">🤖 強化学習モード(データセットのばらつき) <span id="sim-rl-pill"></span></div>
+          <p class="muted small">シミュレーターの教師の走り方を、強化学習(RL)で学習した方策に変えて、いろいろな走りのデータセットを作ります
+            (最速・壁から離れて走る・わざと乱してから立て直す・速さを変える など)。Default コースだけで使えます。
+            数字はシミュレーターの中の試験の結果で、実車の保証ではありません。ジャンルはどれも 8(シミュレーター)で、モードはタグ(sim-rl-…)で分かれます。</p>
+          <div id="sim-rl-modes"><div class="muted small">読み込み中…</div></div>
+          <div class="card-title" style="margin-top:12px">収集プラン(モード × 分)</div>
+          <p class="muted small">1 分 = 20 秒のシーン 3 つ。シーンの開始・種・条件は、前もって Node で走らせて 20 秒を走り切ると確かめた組から選びます。
+            開くと新しいタブのシミュレーターで「開始」を押すだけで、1 シーンずつ記録し、モードごとに 1 つのデータセットに取り込みます(乱した操作は学習から外します)。
+            Jetson の Firefox では 1 シーン約 70 秒(5 分のモードで約 18 分)、Mac の GPU のブラウザならもっと速く記録できます。記録中はそのタブを表に出しておいてください。</p>
+          <div id="sim-rl-plan-form"></div>
+          <div class="row">
+            <label>検証(val)の割合<input type="number" id="sim-rl-val" min="0" max="0.5" step="0.05" value="0.2"></label>
+            <label>種(空欄 = 自動)<input type="number" id="sim-rl-seed" min="0" max="999999" step="1" placeholder="自動"></label>
+          </div>
+          <label class="inline"><input type="checkbox" id="sim-rl-delete" checked> 取り込んだら、元のシーン(ブリッジの 1 シーンの ZIP)を消す</label>
+          <div class="row buttons"><button id="btn-sim-rl-plan" class="primary">プランを作って開く</button></div>
+          <div id="sim-rl-plans"></div>
+        </div>
         <div class="card">
           <div class="card-title">コース</div>
           <div id="sim-courses"></div>

@@ -1414,12 +1414,14 @@ const simMB = (b) => (b / 1e6).toFixed(b >= 1e8 ? 0 : 1) + ' MB';
 const simJsonError = (xhr) => { try { const d = JSON.parse(xhr.responseText); return d.errors || [d.detail || xhr.statusText]; } catch (e) { return [xhr.responseText || ('HTTP ' + xhr.status)]; } };
 
 async function loadSim() {
-  await Promise.all([loadSimStatus(), loadSimCourses(), loadSimModels(), loadSimDatasets(), loadSimJobs()]);
+  await Promise.all([loadSimStatus(), loadSimCourses(), loadSimModels(), loadSimDatasets(), loadSimJobs(), loadSimRl()]);
   clearTimeout(state.sim.timer);
+  let n = 0;
   const tick = async () => {
     if (state.tab !== 'sim') return;
     await loadSimStatus(); await loadSimJobs();
     if ($('#sim-log-box').open) loadSimLog();
+    if (++n % 3 === 0) loadSimRlPlans();
     state.sim.timer = setTimeout(tick, 2000);
   };
   state.sim.timer = setTimeout(tick, 2000);
@@ -1570,7 +1572,7 @@ async function loadSimJobs() {
       <div class="muted">${esc(j.message)}</div>${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}</div>`).join('')
     || '<div class="muted small">ありません</div>';
   const running = mine.some((j) => j.state === 'running');
-  if (state.sim.jobsRunning && !running) { loadSimCourses(); loadSimDatasets(); }
+  if (state.sim.jobsRunning && !running) { loadSimCourses(); loadSimDatasets(); loadSimRl(); }
   state.sim.jobsRunning = running;
 }
 async function simAction(fn, okMsg) {
@@ -1633,6 +1635,97 @@ $('#tab-sim').addEventListener('click', async (e) => {
     if (!confirm('シミュレーターの作業フォルダー(ZIP・展開したもの)を削除します。JetFormer に取り込んだデータセットは残ります。')) return;
     try { await api('DELETE', `/api/sim/datasets/${b.dataset.simDeldata}`); loadSimDatasets(); } catch (err) { toast(err.message, true); }
   }
+});
+
+// ------------------------------------------------------------ シミュレーター: 強化学習モード(jetformer/sim/rl_modes.py)
+state.simRl = { modes: [], minutes: {}, plans: [] };
+const RL_BADGE = { accepted: 'ok', not_accepted: 'warn', pending: 'sim', not_published: 'tag', broken: 'bad', untested: 'tag', training: 'sim' };
+const rlNum = (v, d = 2) => (typeof v === 'number' && isFinite(v) ? v.toFixed(d) : '—');
+async function loadSimRl() {
+  let r;
+  try { r = await api('GET', '/api/sim/rl/modes'); }
+  catch (e) { $('#sim-rl-modes').innerHTML = `<div class="muted small">${esc(e.message)}</div>`; $('#sim-rl-card').classList.toggle('hidden', /止められて/.test(e.message)); return; }
+  state.simRl.modes = r.modes; state.simRl.limits = { max: r.max_minutes, def: r.default_minutes, perMin: r.scenes_per_minute };
+  const sel = r.modes.filter((m) => m.selectable).length;
+  $('#sim-rl-pill').innerHTML = `<span class="badge rl">${sel} モードを選べます</span>`;
+  $('#sim-rl-modes').innerHTML = r.modes.map((m) => {
+    const c = m.card || {};
+    const nums = [];
+    if (c.lap_from_stop_s != null) nums.push(['停止から 1 周', `${rlNum(c.lap_from_stop_s)} 秒` + (c.flying_lap_s != null ? `(走りながら ${rlNum(c.flying_lap_s)} 秒)` : '')]);
+    if (c.tests) nums.push(['衝突', c.tests.text_ja]);
+    if (c.min_clearance_cm) nums.push(['最小すき間', `${rlNum(c.min_clearance_cm.value, c.min_clearance_cm.value < 0.1 ? 2 : 1)} cm(${c.min_clearance_cm.text_ja})`]);
+    for (const x of c.main || []) nums.push([x.label_ja, x.value_ja]);
+    const ds = m.datasets || { count: 0 };
+    nums.push(['集めたデータ', ds.count ? `${ds.count} データセット・${ds.scenes} シーン・${rlNum(ds.minutes, 1)} 分` : 'まだありません']);
+    const checks = (c.checks || []).map((k) => `<li>${k.pass === true ? '✅' : k.pass === false ? '❌' : '⏳'} ${esc(k.label_ja)}</li>`).join('');
+    const notes = (c.notes_ja || []).map((x) => `<li>${esc(x)}</li>`).join('');
+    const probs = (m.problems || []).map((x) => `<div class="err small">${esc(x)}</div>`).join('') + (m.warnings || []).map((x) => `<div class="warn-text small">${esc(x)}</div>`).join('');
+    return `<div class="sim-rl-mode ${m.selectable ? '' : 'off'}">
+      <div class="head"><b>${esc(m.name)}</b><span class="badge ${RL_BADGE[m.state] || 'tag'}">${esc(m.label)}</span>
+        <span class="grow"></span>${m.selectable ? `<button class="small primary" data-sim-rl-open="${esc(m.key)}">このモードで開く</button>` : ''}</div>
+      <div class="muted small">${esc(m.short || '')}</div>
+      ${c.headline_ja ? `<div class="headline">${esc(c.headline_ja)}</div>` : ''}
+      <div class="nums">${nums.map(([a, b]) => `<span>${esc(a)}</span><span>${esc(b)}</span>`).join('')}</div>
+      ${probs}
+      <details><summary>試験の結果と注意</summary>${c.verdict_ja ? `<div class="muted">${esc(c.verdict_ja)}</div>` : ''}<ul>${checks}</ul><ul>${notes}</ul>
+        ${m.policy_sha256 ? `<div class="muted">方策 ${esc(m.policy_sha256.slice(0, 12))}…${m.pool ? `・記録のシーンの組 ${m.pool.scenes}(候補の ${Math.round(100 * (m.pool.acceptance_rate || 0))}% が合格)` : ''}</div>` : ''}</details>
+    </div>`;
+  }).join('') || '<div class="muted small">登録されたモードがありません(data/sim_rl/modes/)</div>';
+  const planModes = r.modes.filter((m) => m.plan_ok);
+  for (const m of planModes) if (!(m.key in state.simRl.minutes)) state.simRl.minutes[m.key] = m.state === 'accepted' ? r.default_minutes : 0;
+  $('#sim-rl-plan-form').innerHTML = planModes.length ? `<table class="sim-rl-plan-table"><tr><th>モード</th><th>分</th><th>シーン</th></tr>${planModes.map((m) => `
+    <tr><td>${esc(m.name)} <span class="badge ${RL_BADGE[m.state] || 'tag'}">${esc(m.label)}</span></td>
+      <td><input type="number" min="0" max="${m.pool.max_minutes}" step="1" value="${state.simRl.minutes[m.key]}" data-sim-rl-min="${esc(m.key)}"></td>
+      <td class="muted" data-sim-rl-scenes="${esc(m.key)}">${state.simRl.minutes[m.key] * r.scenes_per_minute}</td></tr>`).join('')}</table>`
+    : '<div class="muted small">プランに使えるモードがありません</div>';
+  state.simRl.plans = (r.plans || []);
+  renderSimRlPlans();
+}
+async function loadSimRlPlans() {
+  try { state.simRl.plans = (await api('GET', '/api/sim/rl/plans')).plans; renderSimRlPlans(); } catch (e) { /* なし */ }
+}
+const RL_PLAN_STATE = { ready: '未開始', running: '記録中', stopped: '止めた', finished: '記録済み', error: 'エラー' };
+function renderSimRlPlans() {
+  const plans = (state.simRl.plans || []).slice(0, 6);
+  $('#sim-rl-plans').innerHTML = plans.length ? '<div class="card-title" style="margin-top:10px"><small>最近のプラン</small></div>' + plans.map((p) => {
+    const modes = Object.entries(p.modes || {}).map(([k, v]) => {
+      const imp = (p.imports || {})[k];
+      const nm = (state.simRl.modes.find((m) => m.key === k) || {}).name || k;
+      return `${esc(nm)} ${v.done}/${v.planned}${v.failed ? `(外れ ${v.failed})` : ''}${imp ? ` ・ 取り込み ${imp.state === 'done' ? '済み ' + esc(imp.dataset) : imp.state === 'running' ? '中' : 'エラー ' + esc(imp.error || '')}` : ''}`;
+    }).join('<br>');
+    return `<div class="sim-row"><span class="grow"><b>${esc(p.id)}</b> <span class="badge tag">${esc(RL_PLAN_STATE[p.state] || p.state)}</span>
+      <div class="muted small">${modes}${p.message ? '<br>' + esc(p.message) : ''}</div></span>
+      <a class="small" href="${esc(p.url)}" target="_blank" rel="noopener">開く</a></div>`;
+  }).join('') : '';
+}
+$('#sim-rl-card').addEventListener('input', (e) => {
+  const inp = e.target.closest('[data-sim-rl-min]'); if (!inp) return;
+  const k = inp.dataset.simRlMin, v = Math.max(0, Math.min(Number(inp.max) || 20, Math.round(Number(inp.value) || 0)));
+  state.simRl.minutes[k] = v;
+  const cell = document.querySelector(`[data-sim-rl-scenes="${k}"]`); if (cell) cell.textContent = v * ((state.simRl.limits || {}).perMin || 3);
+});
+$('#sim-rl-card').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-sim-rl-open]'); if (!b) return;
+  const s = state.sim.st;
+  if (s && s.bridge.state !== 'running' && s.env.ready) api('POST', '/api/sim/bridge/start').catch(() => {});
+  window.open(`/sim/c/default/?rl=${encodeURIComponent(b.dataset.simRlOpen)}`, '_blank', 'noopener');
+});
+$('#btn-sim-rl-plan').addEventListener('click', async () => {
+  const minutes = {};
+  for (const [k, v] of Object.entries(state.simRl.minutes)) if (v > 0) minutes[k] = v;
+  if (!Object.keys(minutes).length) { toast('どのモードも 0 分です', true); return; }
+  const body = { course: 'default', minutes, val_ratio: Number($('#sim-rl-val').value || 0.2), delete_sources: $('#sim-rl-delete').checked };
+  const seed = $('#sim-rl-seed').value.trim();
+  if (seed !== '') body.seed = Math.round(Number(seed));
+  const w = window.open('', '_blank');
+  try {
+    const p = await api('POST', '/api/sim/rl/plans', body);
+    const s = state.sim.st;
+    if (s && s.bridge.state !== 'running' && s.env.ready) api('POST', '/api/sim/bridge/start').catch(() => {});
+    toast(`プラン ${p.id} を作りました(${p.scenes} シーン)。新しいタブで「開始」を押してください`);
+    if (w) w.location.href = p.url; else window.open(p.url, '_blank');
+    loadSimRlPlans();
+  } catch (err) { if (w) w.close(); toast('プランを作れません: ' + err.message, true); }
 });
 
 // ------------------------------------------------------------ 起動

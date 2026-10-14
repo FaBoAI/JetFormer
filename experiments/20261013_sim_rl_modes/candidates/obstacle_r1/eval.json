@@ -1,0 +1,55 @@
+{
+ "schema": "jf-sim-rl-mode-eval/v1",
+ "created_at": "2026-10-13T20:12:30.298Z",
+ "mode": "obstacle",
+ "set": "validation",
+ "core": "fast",
+ "policy": {
+  "path": "/home/jetson/jetformer_reports/sim_rl_modes_20261013/train/obstacle/main/policies/step_002015232.json",
+  "sha256": "4ba77f44a77c06a93c9f5c53ba3027091748e2ad45cf55ad1758c55480a906bb",
+  "schema": "jf-sim-rl-mode-policy/v1",
+  "obs_dim": 95
+ },
+ "judged": {
+  "O1_valid": {
+   "value": "4/26",
+   "pass": false
+  },
+  "O2_clearance": {
+   "value": 0.006312997571128312,
+   "pass": false
+  },
+  "O3_lap1_median": {
+   "value": 8.549215703004492,
+   "pass": true
+  },
+  "O4_empty": {
+   "value": 8.645426972674448,
+   "pass": true
+  }
+ },
+ "all_judged_pass": false,
+ "reported": {
+  "variation": {
+   "rows": 4,
+   "VM1_us": 182.74360908653833,
+   "VM2_us": {
+    "mean_abs_dev": 56.3696982758622,
+    "bins_used": 522
+   },
+   "VM3_m": {
+    "mean_abs_dev": 0.035433884099616834,
+    "bins_used": 522
+   },
+   "VM4_mps": {
+    "mean_abs_dev": 0.0955761494252873,
+    "bins_used": 522
+   },
+   "VM7_cells": 487,
+   "note": "VM1・VM2 は舵の PWM [µs]、VM3 は横ずれ [m]、VM4 は速さ [m/s]。VM7 はフレームを 3 つおきに間引いた 3,000 フレームで数えた参考の値(判定は記録の段)"
+  }
+ },
+ "runs": 27,
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "note_ja": "検証の組(27 回、高速版)の結果。試験の組(元のコア)はまだ使っていない(protocol selection.test_runs の 2 回の枠を残した)。画面の数字には使わないこと"
+}

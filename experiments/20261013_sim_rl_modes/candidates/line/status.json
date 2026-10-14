@@ -1,0 +1,14 @@
+{
+ "schema": "jf-sim-rl-mode-status/v1",
+ "key": "line",
+ "state": "not_published",
+ "label_ja": "不合格(出さない・参考の候補)",
+ "failed": [
+  "L2_clearance",
+  "L3_tracking"
+ ],
+ "pending": [],
+ "rule": "protocol.json publication.priority_2_3_not_accepted: 優先 2・3 で不合格は出さない(報告だけ)。登録簿・bundle には置いていない",
+ "note_ja": "試験の組で L2(最小すき間 0.54 cm。低いすき間はどれも開始から 1.2 秒以内、2 回は開始直後の衝突)と L3 の 95% 点(19.1 cm。12 cm を越えるフレームの 87% が R の s 2〜4.5 m と 8〜12.5 m の S 字)が不合格。L1 58/60・L3 中央値 2.8 cm・L4・L5(VM3 0.108 m)・L6 9.08 秒は合格。F-ID(fid_std_left08.json)は web/rl の runtime で差 0。/home/jetson/jetformer_reports/sim_rl_modes_20261013/train_line.md",
+ "updated_at": "2026-10-14T04:10:45"
+}

@@ -1,0 +1,79 @@
+{
+ "schema": "jf-sim-rl-mode/v1",
+ "key": "recover",
+ "name_ja": "強化学習モード(離脱復活)",
+ "short_ja": "走っている途中で、わざと線を外したり舵・アクセルを乱したりして、そこからコースへ戻る走りを集める。乱した操作は学習に使わない",
+ "order": 3,
+ "priority": 1,
+ "course": "default",
+ "obs_wrapper": "base79v",
+ "runtime": {
+  "shield": false,
+  "perturbation": "common.perturbation_recording",
+  "conditioning": null,
+  "gate_index": "base79v"
+ },
+ "recording": {
+  "start_distribution": {
+   "gate": "U{0..32}",
+   "left_offset_m": [
+    -0.2,
+    0.2
+   ],
+   "left_yaw_deg": [
+    -15,
+    15
+   ],
+   "sequence": "Halton",
+   "prefilter": true
+  },
+  "per_scene_params": {
+   "perturb_class": "auto(出来事ごとに 弱・中・強)"
+  },
+  "prefilter": true,
+  "prefilter_required_ja": "記録の前に、プランの全シーンを Node(元の sim-core.js・同じ mode_runtime.mjs、rl/predict_scenes.mjs)で走らせ、20 秒を走り切らない開始は次の候補に替える。走り切るのは記録の開始の約 3 割(96 本中 29 本 = 30%、95% 区間 22〜40%。確認 r1 の新しい開始では 200 本中 65 本 = 32.5%)",
+  "expected_completion_rate": 0.3,
+  "candidates_for_15_scenes": 48,
+  "candidates_note_ja": "15 シーン(5 分)を集めるのに記録の決まりの列で 48 本の候補が要った(3.2 倍)。modes.json の「候補はプランの 3 倍まで」(45 本)では平均 13.6 本で 15 本に届かないことがある"
+ },
+ "tags": [
+  "simulator",
+  "sim-rl",
+  "sim-rl-recover",
+  "sim-recover"
+ ],
+ "ui_phrase": null,
+ "policy_sha256": "7720f2754972efbbd9b714008c99e63822b5421a0eef349840d3d52fb8a0456f",
+ "policy_source": "離脱復活の学習 r1(2026-10-14): PPO・初期化 main 種 1・種 31・調整 1 回(deviations.md)・1,000 万ステップのうち検証の組で選んだ 2,015,232 ステップ(7720f275…)。試験の組で不合格(C1 38/100・C2 0.760)。r2 で報告の値(ゲートの外し)を直した(方策は同じ)",
+ "modes_json_sha256": "635bf1ba79baa2eb7e71107d569819d5108d2096c25c36d72bdda96b98e5615a",
+ "protocol_sha256": "21dba8776e927f54801c71675db91983f406206965b3c0f49c04f373c3409f7e",
+ "dataset_card": {
+  "schema": "jf-sim-rl-dataset-card-notes/v1",
+  "notes_ja": [
+   "記録の開始のうち 20 秒を走り切るのは約 3 割(30%)。走り切らない(乱しのあとに衝突する)開始は記録の前に Node で走らせて替えてあるので、このデータセットのシーンは全部 20 秒・衝突 0 だが、「どの開始・どの乱しでも戻れる」データではない",
+   "走り切ったシーンの約 3〜4 割(記録の決まりの開始で 29 本中 11 本 = 38%、最初の 15 本で 4 本 = 27%、確認 r1 の新しい開始で 65 本中 18 本 = 28%)に、シミュレーターのゲートの外しがある(乱しのあとにゲートの外側(中心から 0.65 m より外)を通り、sim はそのゲートを 1 周後に通るまで周を数えない)。外した所の操作も学習に使う(乱した操作そのものは学習から外してある)",
+   "乱しの始まりは 2 か所に集まる: 黒シートの出口 s 8.00〜8.25 m に約 35%、奥の直線の出口 s 19.25〜19.50 m に約 23%(走り切ったシーンではそれぞれ 37%・33%)。乱してよい区間に入るまで始まりを遅らせる決まりのため。どこで乱れたかの幅はこの 2 か所に偏る"
+  ],
+  "numbers": {
+   "completion_rate_recording_starts": 0.302,
+   "completion_rate_fresh_check_r1": 0.325,
+   "gate_miss_rate_completed_recording_starts": 0.379,
+   "gate_miss_rate_completed_first15": 0.267,
+   "gate_miss_rate_completed_fresh_check_r1": 0.277,
+   "event_start_share_s_8_00_8_25": 0.35,
+   "event_start_share_s_19_25_19_50": 0.23,
+   "source": "jetformer_reports/sim_rl_modes_20261013/train/recover/r2/recording_facts.json・check_recover_r1/summary.json"
+  }
+ },
+ "import_requirements": {
+  "label_mask": "required",
+  "fail_closed": true,
+  "rule_ja": "info.jf.l = 0 の操作を正解(k+1〜k+10)に含む観測 k を future_valid = False・mode = 0。jf・jf.l の無い行と frames.jsonl に無いフレームも学習しないものとして外す",
+  "implemented_in": "jetformer/sim/label_mask.py(jetformer/dataset_import.py の import_archive から呼ぶ。2026-10-14 recover r2)"
+ },
+ "overrides_from_modes_json": [
+  "dataset_card",
+  "import_requirements",
+  "recording"
+ ]
+}

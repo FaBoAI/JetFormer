@@ -173,6 +173,13 @@ def dataset_to_scenes(name, progress=None, p0=0.0, p1=1.0):
             'imported_from': {'dataset': name, 'scene': orig},
             'created_at': datetime.datetime.now().isoformat(timespec='seconds'),
         }
+        lm = ((card.get('label_mask') or {}).get('per_scene') or {}).get(orig)
+        if lm is not None:
+            # シミュレーターの強化学習モードのシーン: 乱した操作を正解に含むフレームは「未設定」(mode 0)。ジャンルを付け直しても
+            # この区間は未設定のまま残す(dataset.update_scene)。消すと乱した操作が正解に戻ってしまう(確認 recover r2)
+            meta['label_mask'] = {'schema': card['label_mask'].get('schema'), 'rule': card['label_mask'].get('rule_id'),
+                                  'masked_frames': int(lm.get('masked', 0)), 'teacher_mode': lm.get('teacher_mode'),
+                                  'unset_segments': [sg for sg in meta['mode_segments'] if sg['mode_id'] == 0]}
         with open(d / 'scene.json', 'w', encoding='utf-8') as f:
             json.dump(meta, f, ensure_ascii=False, indent=1)
         mid = n // 2

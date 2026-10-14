@@ -1,0 +1,108 @@
+"""障害物よけ r2 の追補の決まり protocol_obstacle_r2.json を書く(2026-10-14 学習の段 obstacle r2)。学習・選び・試験の前に 1 回だけ固める。
+    python3 rl/ob2/write_protocol_r2.py   (もうあれば止まる)
+"""
+import hashlib
+import json
+from pathlib import Path
+
+REP = Path("/home/jetson/jetformer_reports/sim_rl_modes_20261013")
+EXP = Path("/home/jetson/jetformer/experiments/20261013_sim_rl_modes")
+OUT = REP / "protocol_obstacle_r2.json"
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()  # noqa: E731
+if OUT.exists():
+    raise SystemExit("protocol_obstacle_r2.json はもう固めてあります")
+
+P = {
+    "title": "障害物よけ(obstacle)第 2 回の追補の決まり — protocol.json(sha256 21dba877…09f7e)を変えずに、obstacle だけに足す・置き換える項目",
+    "version": "obstacle-r2-1",
+    "written_at": "2026-10-14T06:15:00+09:00",
+    "written_by": "学習の段 obstacle r2",
+    "base_protocol_sha256": sha(REP / "protocol.json"),
+    "base_modes_json_sha256": sha(REP / "modes.json"),
+    "request": "シミュレーターの走行は、ほかにももっといろいろなパターン、ぶつかるのを避けたり、いろいろな経路を通るパターンなども作成できるように。強化学習モード(最速)・(絶対壁にぶつからない)・(離脱復活)など、データセットのバリエーションが出る構成のモードを用意(ユーザー、2026-10-13 21:20)",
+    "why": [
+        "確認 obstacle r1(check_obstacle_r1.md)の指摘 1・2: r1 の方策(206 万で停止)は新しい配置で O1 5/100・O2 0.82 cm。学習のやり直しが要る",
+        "指摘 3: 足した 16 個の入力の正規化が動いていない(widen_state_dict が平均 0・分散 1 で始め、初期化元の大きな数え count を引き継ぐので、200 万でも obs_std 0.91〜0.93、本当は 0.02〜0.50)。→ 学習の前に環境を走らせて新しい 16 次元の平均・分散を数え直す(元の 79 次元と count はそのまま)",
+        "指摘 4: 開始の空き 1.5 / 1.8 m をそろえるだけでは足りない。早い衝突は 3〜4 m 先の障害物に 3.2 m/s のまま当たる。→ 近づく速さの罰・探索を広げる(σ 0.37・lr 3 倍。r1 の下調べで学習が約 2 倍速い)・正規化の直し。開始の空きも試験と同じ 1.5 m にそろえる",
+        "指摘 2: 有効な回でも 0.8 cm まで寄る。→ d_min < 3 cm で −10 で終える(O2 をそのまま学習の終わりに)・全部の障害物の壁(6 cm から)・足した障害物の壁を 0.1 → 0.2(modes.json の範囲 0.05〜0.3 の中)",
+        "指摘 7: O4 は STD ちょうどでしか測らない。±3 cm・±3° の 6 つのずれで 9.0 秒を越える。→ 選びの組に EMPTY-VAR6 を足し、選びの好みに使う(判定の O4 は protocol.json のまま)",
+        "r1 の検証の組は 26 回(1/4)で、95% の判定には小さい(1 回の差で 3.8 点動く)。→ 選びは試験と同じ大きさの新しい組 OB-V100-R2(50 配置 × 2 開始)で行う(speed r2・line r2 と同じ考え)",
+    ],
+    "unchanged": [
+        "判定のしきい値と式: O1 = OB-T100 の 95/100 以上が valid_episode、O2 = 有効な回の最小すき間(コースと足した障害物の全部)≥ 0.03 m、O3 = 有効な回の 1 周目の中央値 ≤ 10.5 秒、O4 = OB-EMPTY が完走し停止から 1 周 ≤ 9.0 秒",
+        "試験の組 OB-T100(試験の配置 50、種 930000〜、STD + obstacle の記録の開始の分布の試験の Halton 20,001〜、回の種 906000 + 2i / + 2i + 1)と OB-EMPTY・OB-BASE。試験の組はまだ方策で 1 回も使っていない(selection.test_runs の 2 回の枠が残っている)。r2 の選んだ 1 つに 1 回だけ使う",
+        "定義(protocol.json definitions: valid_episode・clearance・lap_from_stop)と判定のコア(元の sim-core.js、sha256 aaeb2379…549e)",
+        "観測 obst95(79 + 近い障害物 4 個)と走行中の仕組み(rl/runtime/mode_runtime.mjs・obs_modes.mjs・layouts.mjs、web/rl/)。方策の形(MLP 256-256・tanh)。仮想コース default-obstacles",
+        "配置の作り方(modes.json common.obstacle_layouts: 柱・箱 1〜4 個・s で 2 m 以上離す・最速のふだんの線 ±0.15 m・通り道の保証)と、試験・検証・記録の配置の組",
+        "記録のばらつきの判定(VM3 ≥ 0.04 m・15 シーンで違う配置 ≥ 12、記録した見本で判定)と記録の決まり(Halton の開始・開始の前後 1.5 m に障害物が無い配置だけ・シーンごとに違う配置)",
+        "publication(優先 3: 合格 → accepted、不合格 → 出さない)",
+    ],
+    "training": {
+        "run": "obstacle_r2(rl/train_modes.py --run obstacle_r2、rl/env_modes.mjs trainConfig('obstacle_r2')・OBSTACLE_R2_DEFAULTS)。run 'obstacle'(r1)の値は変えない",
+        "init": "main_s1_10M(modes.json obstacle.training.init と同じ。ベストラップの選んだ方策 7c43cb53…53ee、1 層目の新しい 16 列は 0 で広げる)",
+        "seed": 62,
+        "seed_note": "protocol allowed_tuning.retry の「新しい種 = 元の種 + 1」",
+        "steps": 15000000,
+        "steps_note": "この段の依頼の値(1,500 万)。modes.json obstacle.training.retry_steps_max(500 万)と protocol.json budget.hard_cap_total_steps(7,500 万)を越える。逸脱として deviations.md に書く",
+        "early_stop": "800 万ステップ以降、続けて 3 つのチェックポイントが OB-V100-R2 で O1〜O4 を全部満たし、かつ有効 ≥ 98/100 なら止めてよい(train/obstacle/r2/chain.sh の見張り。止める合図で last.pt を保存して終わる)。止めなければ 1,500 万まで",
+        "ppo": "ベストラップの PPO(MLP 256-256、rollout 256 × 64 環境、5 エポック、ミニバッチ 4,096、clip 0.2、γ 0.995、λ 0.95、target_kl 0.03)。違い: lr 3e-4 → 3e-5(1,500 万で直線)、log σ は初期化元(−1.83・−1.39)でなく −1.0・−1.0(σ 0.37)から(r1 の下調べ probe_explore と同じ)",
+        "obs_norm": "学習の前に、初期化の方策(σ 0.37 の雑音つき)で学習の環境を 64 環境 × 300 ステップ走らせ、新しい 16 次元(番号 79〜94)の観測の正規化の平均・分散をその値にする(分散の下限 0.01)。元の 79 次元の平均・分散と数え count はそのまま。1 層目の新しい列は 0 なので初めの走りは変わらない。数えた値は run.json の obs_warmup に残す(rl/train_modes.py --obs-warmup-steps 300)",
+        "layouts": "modes.json common.obstacle_layouts の train と同じ作り方(1〜4 個・10% は無し)。開始の前後の空きは試験・記録と同じ startClearOfObstacles(1.5 m): 開始を見ずに置き、開始の前後 1.5 m に入った障害物を除く(r1 は layouts.mjs の余白で 1.8 m)",
+        "start_mix": [
+            {"p": 0.4, "gate": "base(半分ゲート 0・半分 U{0..32})", "left_offset_m": [-0.12, 0.12], "left_yaw_deg": [-8, 8], "min_initial_clearance_m": 0.04},
+            {"p": 0.4, "gate": "U{0..32}", "left_offset_m": [-0.15, 0.15], "left_yaw_deg": [-10, 10], "min_initial_clearance_m": 0.04, "note": "記録・試験の開始の分布と同じ"},
+            {"p": 0.2, "gate": "U{0..32}", "left_offset_m": [-0.2, 0.2], "left_yaw_deg": [-15, 15], "min_initial_clearance_m": 0.04},
+        ],
+        "start_mix_note": "modes.json obstacle.training.start_distribution(80% base・20% 広め)に、記録・試験の分布の成分を足した。開始のすき間 ≥ 4 cm は 3 cm の終了ですぐ終わる開始を除くため(試験の組の開始のすき間の最小は 4.94 cm、方策なしで確かめた)",
+        "reward": {
+            "base": "rl-bestlap-reward-v2-gatecap(係数はそのまま)",
+            "obstacle_barrier": "足した障害物とのすき間 d_obs < 0.08 m のとき −0.2·min(4, ((0.08 − d_obs)/0.04)²)(modes.json tuning_ranges obstacle_barrier_w 0.05〜0.3 の中。r1 は 0.1)",
+            "clearance_barrier": "全部の障害物(コース + 足したもの)の d_min < 0.06 m のとき −0.2·min(4, ((0.06 − d_min)/0.03)²)(line r2 と同じ)",
+            "approach_speed": "−0.05·max(0, v − v_ok(d_obs))²、v_ok = 1.5 + 10·max(0, d_obs − 0.05) m/s(足した障害物に近いほど遅く。d_obs 0.10 m で 2.0 m/s、0.20 m で 3.0 m/s)",
+            "terminal": "衝突・ゲートの外し(仮想のゲート番号)・止まる・逆走は −10 で終える(r1 と同じ)+ d_min < 0.03 m で −10 で終える(O2)",
+        },
+        "tuning": "なし(パイロットも無し)。上の値は学習の前に固めた",
+        "checkpoints": "100 万ステップごと。protocol の検証の組(13 配置 × 2 + OB-EMPTY、高速版)を裏で評価し(--eval)、OB-V100-R2 も chain.sh が評価する",
+    },
+    "sets": {
+        "selection": {
+            "name": "OB-V100-R2 + OB-EMPTY + EMPTY-VAR6",
+            "layouts": "rl/ob2/selection_layouts.json: rl/build_obstacle_sets.mjs と同じ作り方(generateLayoutSet、STD の前後に置かない)で種 1,830,000 + i の 50 配置(試験 930000〜・検証 830000〜・記録 730000〜・確認 r1 の 1,930,000〜 と重ならない)",
+            "layouts_sha256": sha(EXP / "rl/ob2/selection_layouts.json"),
+            "starts": "各配置に STD(ゲート 0・0 m・0°)と、obstacle の記録の開始の分布の Halton(検証の範囲の 15,001 番から。protocol の検証の 10,001〜 と重ならない)で配置の開始の条件(開始のすき間 > 0・前後 1.5 m に障害物なし)を満たすもの。回の種 2,830,000 + 2i / + 2i + 1",
+            "episode": "連続 20 秒(600 フレーム)、高速版(rl/fast_core_modes.mjs。検証の組と同じ扱い)",
+            "empty": "OB-EMPTY(STD の単周)と EMPTY-VAR6(左 ±3 cm・向き ±3°・(+3 cm, −3°)・(−3 cm, +3°) の単周)",
+            "code": "rl/ob2/eval_ob2.mjs(1 回の走らせ方は rl/eval_modes.mjs と同じ episode.mjs runModeEpisode。r1 の方策で protocol の検証の組を走らせ、学習の段・確認 r1 と同じ 4/26・0.630 cm・8.549 秒・8.645 秒・ずれの最大 9.049 秒を出すことを確かめた)",
+            "code_sha256": sha(EXP / "rl/ob2/eval_ob2.mjs"),
+            "use": "チェックポイントを選ぶためだけに使う(判定の数字には使わない)",
+        },
+        "validation_protocol": "protocol.json selection.validation_sets のまま(13 配置 × 2 + OB-EMPTY、--eval で全チェックポイント)。報告する",
+        "test": "OB-T100 + OB-EMPTY(protocol.json のまま、rl/eval_modes.mjs --mode obstacle --set test、元のコア)+ OB-BASE(最速の方策、報告だけ)",
+    },
+    "selection": {
+        "rule": "100 万ごとのチェックポイント(と最後)のうち、OB-V100-R2 で O1〜O4 を全部満たすもの(O1 = 95/100 以上が有効・O2 = 有効な回の最小すき間 ≥ 3 cm・O3 = 1 周目の中央値 ≤ 10.5 秒・O4 = OB-EMPTY ≤ 9.0 秒)の中で、(1) EMPTY-VAR6 の 6 つが全部 9.0 秒以内のものを先に、(2) 有効な回が多いもの、(3) O2 の値が大きいもの、(4) 後のもの。全部を満たすものが無ければ、満たす項目が一番多いもの(同じなら有効な回の数、O2、後のもの)",
+        "protocol_note": "protocol.json selection.rule は「検証の組(1/4)」で選ぶ。r2 は試験と同じ大きさの OB-V100-R2 で選ぶ(逸脱、deviations.md)。protocol の検証の組の結果も全部のチェックポイントで報告する",
+        "test_runs": "試験の組 OB-T100 は、選んだチェックポイントが OB-V100-R2 で O1〜O4 を全部満たすときだけ、その 1 つに 1 回だけ使う(selection.test_runs の 1 回目)。満たさなければ試験の組は使わず、出さない(not_published)。試験の結果を見て選び直さない",
+    },
+    "recording": {
+        "prediction": "試験に合格したら、記録の前に Node(元のコア)で記録のプランを走らせて予想する(rl/ob/predict_variation.mjs: recording 組の配置をシーンに 1 つずつ、Halton の開始 + 前後 1.5 m の検査、有効でなければ同じ配置で 3 回まで替える)。有効な見本 15 シーン・違う配置 ≥ 12・VM3 ≥ 0.04 m の見込みを報告する",
+        "start_rule": "記録の組の配置では、ゲート 0(アプリの既定の STD)から始めない(確認 r1 の指摘 6: recording-016・017 は STD の車体と重なる、12/30 配置は STD の前後 1.5 m に障害物がある)。開始はいつも Halton + 前後 1.5 m の検査(modes.json obstacle.recording.start_distribution のとおり)",
+    },
+    "publication": "protocol.json のまま。試験で O1〜O4 を全部満たしたときだけ書き出しの status を candidate(登録は統合の段)。満たさなければ not_published(候補の置き場所に残すだけ)",
+    "files": {
+        "env_modes.mjs": sha(EXP / "rl/env_modes.mjs"),
+        "train_modes.py": sha(EXP / "rl/train_modes.py"),
+        "ppo_modes.py": sha(EXP / "rl/ppo_modes.py"),
+        "eval_ob2.mjs": sha(EXP / "rl/ob2/eval_ob2.mjs"),
+        "selection_layouts.json": sha(EXP / "rl/ob2/selection_layouts.json"),
+        "obstacle_sets/test.json": sha(EXP / "rl/obstacle_sets/test.json"),
+        "obstacle_sets/validation.json": sha(EXP / "rl/obstacle_sets/validation.json"),
+        "obstacle_sets/recording.json": sha(EXP / "rl/obstacle_sets/recording.json"),
+        "runtime/mode_runtime.mjs": sha(EXP / "rl/runtime/mode_runtime.mjs"),
+        "runtime/obs_modes.mjs": sha(EXP / "rl/runtime/obs_modes.mjs"),
+        "runtime/layouts.mjs": sha(EXP / "rl/runtime/layouts.mjs"),
+    },
+}
+OUT.write_text(json.dumps(P, ensure_ascii=False, indent=1) + "\n")
+(REP / "protocol_obstacle_r2.sha256").write_text(f"{sha(OUT)}  protocol_obstacle_r2.json\n")
+print(sha(OUT))

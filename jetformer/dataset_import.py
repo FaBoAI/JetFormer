@@ -190,26 +190,70 @@ def import_archive(path, simulator=True, source_name=None, progress=None, to_sce
                     shutil.copyfileobj(src, dst, 1 << 20)
                 if progress and k % 200 == 0:
                     progress(0.1 + 0.7 * k / max(len(files), 1), '展開中 %d / %d' % (k, len(files)))
-            if progress:
-                progress(0.85, '中身を確かめています')
-            errors, warnings, summary = validate_dataset(root)
-            if errors:
-                raise ValueError('学習に使える形ではありません: ' + ' / '.join(errors[:6]))
-            card_path = root / 'dataset_card.json'
-            card = json.loads(card_path.read_text(encoding='utf-8'))
-            if card.get('name') != name:                    # カードの名前をフォルダの名前にそろえる
-                card['name'] = name
-                card_path.write_text(json.dumps(card, ensure_ascii=False, indent=1), encoding='utf-8')
+            card, summary, warnings, lmask = check_staged(root, name, progress)
             os.replace(root, dest)
         finally:
             shutil.rmtree(stage, ignore_errors=True)
     finally:
         handle.close()
-    tags = list(card.get('tags') or []) + (['simulator'] if simulator else [])
+    return after_import(name, dest, card, summary, warnings, lmask, source_name or path.name, path.stat().st_size, kind,
+                        simulator, progress, to_scenes)
+
+
+def check_staged(root, name, progress=None):
+    """展開した(作業フォルダーの)データセットの学習除外・形の確かめ・カードの名前。戻り値 (card, summary, warnings, label_mask)。
+    だめなら ValueError(取り込まない)。シミュレーターの強化学習モードのまとめての取り込み(sim/rl_import.py)も使う"""
+    if progress:
+        progress(0.85, '中身を確かめています')
+    # シミュレーターの強化学習モードのシーンは、乱した操作(info.jf.l = 0)を正解から外す。jf の無い行も外す(安全側)。
+    # 強化学習モードでないシーンは変えない(sim/label_mask.py)
+    from .sim import label_mask
+    try:
+        lmask = label_mask.apply_to_dataset(root)
+    except Exception as e:                                      # noqa: BLE001 (外せないなら取り込まない)
+        raise ValueError('学習から外すフレームを決められません: %s' % e)
+    errors, warnings, summary = validate_dataset(root)
+    if errors:
+        raise ValueError('学習に使える形ではありません: ' + ' / '.join(errors[:6]))
+    if lmask:
+        summary['label_masked_frames'] = lmask['masked_frames']
+        warnings = warnings + lmask['warnings'][:10]
+    card_path = root / 'dataset_card.json'
+    card = json.loads(card_path.read_text(encoding='utf-8'))
+    if card.get('name') != name:                    # カードの名前をフォルダの名前にそろえる
+        card['name'] = name
+        card_path.write_text(json.dumps(card, ensure_ascii=False, indent=1), encoding='utf-8')
+    return card, summary, warnings, lmask
+
+
+def rl_tags(lmask):
+    """強化学習モードのシーンのタグ(sim-rl・sim-rl-<モード> と、登録簿のモードのタグ)。学習除外の結果の teacher_mode から決める"""
+    if not lmask:
+        return []
+    tags = []
+    for v in (lmask.get('per_scene') or {}).values():
+        m = v.get('teacher_mode')
+        if not isinstance(m, str) or not m.replace('_', '').isalnum() or len(m) > 32:
+            continue
+        tags += ['sim-rl', 'sim-rl-%s' % m]
+        try:
+            from .sim import rl_modes
+            tags += [t for t in rl_modes.load_mode(m).get('tags', []) if isinstance(t, str)]
+        except Exception:                                               # noqa: BLE001 (登録簿に無いモードでもタグは付ける)
+            pass
+    return tags
+
+
+def after_import(name, dest, card, summary, warnings, lmask, file_name, size, kind, simulator, progress=None, to_scenes=True,
+                 extra_tags=None, extra_info=None):
+    """置き換えた後: タグ(+ 強化学習モードのタグ)・import_source.json・シーンタブへの展開"""
+    tags = list(card.get('tags') or []) + (['simulator'] if simulator else []) + rl_tags(lmask) + list(extra_tags or [])
     card = dataset.set_dataset_tags(name, tags)
-    info = {'name': name, 'file': source_name or path.name, 'bytes': path.stat().st_size, 'archive': kind,
+    info = {'name': name, 'file': file_name, 'bytes': size, 'archive': kind,
             'simulator': bool(simulator), 'imported_at': datetime.datetime.now().isoformat(timespec='seconds'),
             'summary': summary, 'warnings': warnings}
+    if extra_info:
+        info.update(extra_info)
     scenes = expand_scenes(name, progress, info['warnings']) if to_scenes else None
     info['scenes'] = scenes
     with open(dest / 'import_source.json', 'w', encoding='utf-8') as f:
