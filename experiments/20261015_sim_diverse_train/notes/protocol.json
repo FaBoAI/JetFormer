@@ -1,0 +1,658 @@
+{
+ "title": "いろいろな走りのシミュレーターのデータで JetFormer を学習し、走行の精度が上がったかを調べる(sim_diverse_train_20261015)の手順。結果を見る前に固定(書き換えない。違えたことは deviations.md)",
+ "version": 1,
+ "written_at": "2026-10-15T09:15:41+09:00",
+ "request": {
+  "user_2026_10_15": "本日は、学習に挑戦してみましょう。学習して、走行精度が上がったかを調査し、まとめよ",
+  "context": "10/14 に強化学習(RL)の 5 つのモード(最速・速さいろいろ・絶対壁にぶつからない・離脱復活・経路いろいろ)が合格し、見本のデータ(各 15 シーン × 20 秒)は前の教師のデータより線のばらつきが 22.7 倍。10/14 の DART・余裕の線のデータもある。これまで: (a) シミュレーターの閉ループで A0(きれいな RL)・A1(+ DART)・A2(余裕の線)はどれも 0/12 完走(A1・A2 は最初の直線を抜けたが点 4 のゲートを外した)。(b) 10/13、前の教師のくり返しのデータを実機に混ぜた C は、実機の保留データの誤差が A(実機だけ 49.30 µs)と同等(49.73 µs)で、入力のずれへの強さだけ上がった",
+  "deliverable": "レポート(README.md)と約 1 分の動画の絵コンテ(10 月 15 日)。動画はメインのセッションが作る",
+  "scope": "シミュレーターの閉ループと、実車で記録した保留データのオフラインの誤差だけ。実車を走らせる試験はこの作業の範囲の外(実車・PCA9685・I2C に触れない)"
+ },
+ "design": "design.md(同じフォルダー。説明。決まりはこの JSON)",
+ "questions": {
+  "Q1_SIM_DRIVING": "いろいろな走りのシミュレーターのデータ(5 モードの見本 + DART + 余裕の線)で学習した JetFormer(S-DIV)は、シミュレーターの閉ループで、10/14 の A0・A1・A2 より完走が増えるか・遠くまで走れるか",
+  "Q1_VARIETY_VS_VOLUME": "(削らなければ)5 モードの見本だけ(S-MOD、25 分)で学習すると、量の多い A1(30 分)より走れるか(ばらつきの効果と量の効果を分ける)。S-DIV と比べて DART・余裕の線の上乗せはあるか",
+  "Q1b_DAGGER": "(時間があれば。最初に削る)一番良い Q1 の腕に DAgger を 1 回(学習した JetFormer が実際に行った状態に先生の操作を付けて足し、続きを学習)すると、完走が増えるか",
+  "Q2_REAL_ACCURACY": "実機のデータに、いろいろな走りのシミュレーターのデータ(ジャンル 8、前の C と同じ 36,000 フレーム)を混ぜて学習すると(C-DIV)、実機の保留データの誤差は A(実機だけ)・C(前の教師のくり返しのデータを混ぜた)と比べて変わるか"
+ },
+ "baselines_already_measured": {
+  "note": "下の数字は前の作業の evaluation.json(作り直さない・走らせ直さない)。今日の評価が前と同じ条件か、陽性対照と A1 の E0 の再走で確かめる",
+  "Q1": {
+   "source": "/home/jetson/jetformer_reports/sim_dart_20261014/evaluation.json(E0〜E11、同じアプリ・同じ計画・同じ物理)",
+   "A0": {
+    "run": "simrl_bestlap_20261013-SR-s0",
+    "data": "jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0(きれいな RL 20 分)",
+    "completed": "0/12",
+    "first_straight_gate0": "0/9",
+    "gate4_passed_gate0": "0/9",
+    "stop_time_median_s": 1.091,
+    "progress_median_m": 2.5
+   },
+   "A1": {
+    "run": "simdart_20261014-A1-s0",
+    "data": "jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0 + jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d(30 分)",
+    "completed": "0/12",
+    "first_straight_gate0": "8/9",
+    "gate4_passed_gate0": "0/9",
+    "stop_time_median_s": 4.438,
+    "progress_median_m": 11.4,
+    "E0_single": "衝突・169 フレーム(5.63 秒)・3/33 ゲート・点 4 外し"
+   },
+   "A2": {
+    "run": "simdart_20261014-A2-s0",
+    "data": "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b(10 分)",
+    "completed": "0/12",
+    "first_straight_gate0": "9/9",
+    "gate4_passed_gate0": "0/9",
+    "stop_time_median_s": 6.557,
+    "progress_median_m": 17.7
+   },
+   "reference_E0_E5": {
+    "S-T_s0(作者の教師のデータ)": "2/6(8.830・8.840 秒)",
+    "作者の ONNX": "2/6(9.022・9.033 秒)"
+   },
+   "teachers_node_delay0": {
+    "T_fast": "12/12(E0 8.092 秒)",
+    "T_margin": "12/12(E0 8.932 秒)"
+   },
+   "lap_length_m": 26.1
+  },
+  "Q2": {
+   "source": "/home/jetson/jetformer_reports/sim_cotrain_20261013/evaluation.json と protocol.json(sha256 91a50d41…)",
+   "A_L_us": {
+    "best": {
+     "s0": 49.146,
+     "s1": 49.457,
+     "mean": 49.301
+    },
+    "last": {
+     "s0": 49.235,
+     "s1": 49.752,
+     "mean": 49.494
+    }
+   },
+   "B_L_us": {
+    "best": 49.144,
+    "last": 49.091
+   },
+   "C_L_us": {
+    "best": {
+     "s0": 49.967,
+     "s1": 49.491,
+     "mean": 49.729
+    },
+    "last": {
+     "s0": 50.213,
+     "s1": 50.286,
+     "mean": 50.249
+    }
+   },
+   "C_verdict_vs_A": "同等(best +0.428・last +0.756 µs)",
+   "s_A_us": {
+    "best": 0.313,
+    "last": 0.661
+   },
+   "threshold_vs_A_us": {
+    "best": 0.626,
+    "last": 1.322
+   },
+   "C_seed_range_us": {
+    "best": 0.477,
+    "last": 0.072
+   },
+   "robust_dL1_us": {
+    "A_mean": 0.793,
+    "A_s0": 0.699,
+    "A_s1": 0.887,
+    "C_s0": 0.55,
+    "C_s1": 0.415,
+    "C_mean": 0.482
+   },
+   "speed_habit_fwd_bias_us": {
+    "A_genre4": 34.1,
+    "A_genre5": -6.75,
+    "C_genre4": 36.2,
+    "C_genre5": -9.0
+   },
+   "runs": {
+    "A": [
+     "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+     "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30"
+    ],
+    "C": [
+     "simreal_mix_20261013-cotrain-s0",
+     "simreal_mix_20261013-cotrain-s1"
+    ],
+    "B": "clean_driving_20261011-nocmd-s3-20261011-024626"
+   },
+   "predictions": {
+    "A_B": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/(pred・pert)",
+    "C": "/home/jetson/jetformer/data/zoo/sim_cotrain_20261013/(pred・pert・sim)"
+   }
+  }
+ },
+ "data": {
+  "genre": "すべてジャンル 8(シミュレーター)。新しいジャンルは作らない。data/modes.json は変えない",
+  "accepted_modes": {
+   "datasets": [
+    "sim-rl-fastest_20261014-1125",
+    "sim-rl-speed_20261014-1125",
+    "sim-rl-no_wall_20261015-0302",
+    "sim-rl-recover_20261015-0302",
+    "sim-rl-line_20261015-0302"
+   ],
+   "each": "15 シーン × 20 秒(600 フレーム)、学習 12 / 検証 3(各データセットの splits.json のまま)",
+   "frames": 45000,
+   "stride3_samples": {
+    "train": 11391,
+    "val": 2839,
+    "per_mode_train": [
+     2364,
+     2364,
+     2364,
+     1935,
+     2364
+    ]
+   },
+   "recover_label_mask": "離脱復活の乱した操作の前後 1,623 フレームは取り込みでジャンル 0・future_valid = False(学習に入らない)。読み込みでジャンル 0 のサンプルが 0 のことを確かめる",
+   "variation": "前の教師のデータと同じ式で、5 モード合わせて線のばらつき 22.7 倍(0.35 → 7.96 cm)・訪れた状態 9.5 倍・開始ゲート 24 か所(sim_rl_modes_20261013 の README 3 章)",
+   "start_gates": "75 シーンの開始ゲートは 0〜32 の 24 か所(ゲート 0 からは 2 シーンだけ。ゲート 10・20・28 からの開始も含む)・左右 ±0.29 m・向き ±24°",
+   "pwm_convention": "5 モードの見本は PWM の中心 1441 / 1496 µs(収集器の既定。両端は 1000 / 2000 µs)。ベストラップ・DART・余裕の線・前の教師は 1442 / 1498 µs。同じ操作の正解の差は舵 ≤ 1 µs・スロットル ≤ 2 µs(舵 0.001 rad・速さ 0.03 m/s 以下)。付け替えずにそのまま使う(準備の段で 1 シーンずつ frames.jsonl の操作から作り直して、差がこの範囲のことを確かめる。5 µs を超えたら、実験フォルダーの写しで 1442 / 1498 の約束に付け替えてから学習し、deviations.md に書く)",
+   "not_used": "no_wall・recover の 1025・1125(合格前の方策)は使わない"
+  },
+  "dart_D1": {
+   "dataset": "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d",
+   "scenes": "30(24 / 6)",
+   "frames": 18000,
+   "labels": "最速の先生に付け替え済み(relabel jf-sim-dart-relabel/v1)",
+   "stride3_samples": {
+    "train": 4728,
+    "val": 1182
+   }
+  },
+  "margin_D2": {
+   "dataset": "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b",
+   "scenes": "30(24 / 6)",
+   "frames": 18000,
+   "stride3_samples": {
+    "train": 4728,
+    "val": 1182
+   }
+  },
+  "excluded_from_S-DIV": {
+   "jetformer-simulator-rl-bestlap-20min_20261013-174515_7f3650b0": "A0 のデータ(最速の線 1 本の 20 分)。最速モードの見本・DART のきれいなフレームと同じ方策で、足すのは量(線のばらつきはほぼ増えない)。学習の時間も 1.45 倍になる",
+   "jetformer-simulator-id8-20min_20261012-150956_b55616cf": "作者の RC 教師の 1 本の線のくり返し(10/13 の C の材料)。今日の問いは「新しいいろいろな走りのデータ」なので入れない"
+  },
+  "real": {
+   "dataset": "clean_driving_20261011",
+   "scenes": "52(学習 41 / 検証 11)",
+   "stride3_samples": {
+    "train": 5912,
+    "val": 1559
+   },
+   "note": "10/12〜10/13 の A・C と同じ"
+  }
+ },
+ "arms_Q1": {
+  "common_recipe": "JetFormer TransFuser軽量型 = jetformer_v0。10/14 の A0〜A2 と同じ作り方: tools/train.py --policy jetformer_v0 --data <腕のフォルダー> --epochs 30 --lr 3e-4 --seed <種> --stride 3 --batch 64 --workers <1(足りなければ 0)> --no-command-input --impact-g 2.5。ImageNet から。AdamW wd 1e-4・cosine(train.py の既定)。最良のエポックは各腕の学習データの val で選ぶ(A0〜A2 と同じ決まり)。メモリの工夫は 10/14 の dart_train.py の写しと同じ(expandable_segments・THP なし・MALLOC_ARENA_MAX 2・jf-heavy --mem 3G --lock big --need-mb 3200)。workers は計算の結果を変えない(色の揺らしの乱数の流れだけ変わる)",
+  "imu_phase": {
+   "decision": "間引き 3 の位相 0 のまま(A0〜A2 と同じ)",
+   "why": "今日の主の比べは A0〜A2(位相 0 で学習)との差。位相の扱いを変えると、データの効果と学習の作り方の効果が分けられない。ベストラップの測りでは、見ていない位相の誤差は S-R で 17.5 → 20.7 µs(1.18 倍)。全部の腕に同じ形で入る",
+   "diagnostic": "学習のあと、S-DIV(と S-MOD)の val の全フレームで、フレーム番号を 3 で割った余りごとの誤差を測る(参考。合否に使わない)。見ていない位相の誤差が位相 0 の 1.3 倍を超えたら、次の手として「全部の位相で学習」を報告に書く"
+  },
+  "A0_A1_A2": "10/14 の学習結果と評価をそのまま使う(作り直さない・走らせ直さない。ただし 9 章の「前日との同一性」の確かめで違いが出たら走らせ直す)",
+  "S-DIV": {
+   "role": "主の腕(削らない)",
+   "data": "5 モードの見本 75 シーン + D1(DART)30 シーン + D2(余裕の線)30 シーン = 135 シーン・81,000 フレーム・45 分",
+   "datasets_in_order": [
+    "sim-rl-fastest_20261014-1125",
+    "sim-rl-speed_20261014-1125",
+    "sim-rl-no_wall_20261015-0302",
+    "sim-rl-recover_20261015-0302",
+    "sim-rl-line_20261015-0302",
+    "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d",
+    "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b"
+   ],
+   "train_val_scenes": [
+    108,
+    27
+   ],
+   "stride3_samples_expected": {
+    "train": 20847,
+    "val": 5203
+   },
+   "source_share_of_train_samples": {
+    "5 モード": 0.546,
+    "D1 DART": 0.227,
+    "D2 余裕の線": 0.227
+   },
+   "balancing": "しない(重みなし・そのままつなげる)。モードどうしは 15 シーンずつで同じ",
+   "seeds": [
+    0
+   ],
+   "run_name": "simdiv_20261015-SDIV-s0",
+   "expected_epoch_s": "約 125(10/14 の A1: 14,184 + 3,546 サンプルで 85 秒 = 1 サンプル 4.8 ms)→ 30 エポックで約 65 分"
+  },
+  "S-MOD": {
+   "role": "2 つ目の腕(遅れたら 2 番目に削る)。ばらつきと量を分ける",
+   "data": "5 モードの見本 75 シーンだけ = 45,000 フレーム・25 分",
+   "datasets_in_order": [
+    "sim-rl-fastest_20261014-1125",
+    "sim-rl-speed_20261014-1125",
+    "sim-rl-no_wall_20261015-0302",
+    "sim-rl-recover_20261015-0302",
+    "sim-rl-line_20261015-0302"
+   ],
+   "train_val_scenes": [
+    60,
+    15
+   ],
+   "stride3_samples_expected": {
+    "train": 11391,
+    "val": 2839
+   },
+   "seeds": [
+    0
+   ],
+   "run_name": "simdiv_20261015-SMOD-s0",
+   "expected_epoch_s": "約 68 → 30 エポックで約 35 分",
+   "volume_reading": "S-MOD(25 分・5 つの方策・開始 24 か所)は A1(30 分・最速の線 + DART)より少なく、A0(20 分・最速の線 1 本)より少し多い"
+  },
+  "A4_DAgger": {
+   "role": "Q1b(最初に削る)",
+   "procedure": "dagger",
+   "run_name": "simdiv_20261015-A4-s0"
+  },
+  "combined_folders": "2 つ以上のデータセットを合わせる腕は、data/datasets に新しいデータセットを作らず、/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/data/<腕>/ に aligned・samples へのシンボリックリンクと、つなげた splits.json・dataset_card.json を置く(10/14 の make_combined.py の写し。ジャンルの表は名前の書き方がデータセットで違うので、id 0〜8 がそろっていることだけを確かめ、表は 1 つ目のものを使う)。学習の前に、読み込んだサンプル数が元のデータセットの合計と同じ・ジャンル 0 のサンプル 0・ジャンル数 9 を確かめる(count_samples.py の写し)",
+  "bundle": "10/14 の export_bundle.py・check_bundle.py・http_load_check.py の写し。ONNX は学習結果のもの、model_config は 10/14 と同じ直し方(中心 1442 / 1498 µs・制御の遅れ 1・ジャンル 8・ゲイン 1.0・先読み 1・作者の参照モデルと同じ物理・センサーの欄)。ONNX と PyTorch の差 ≤ 0.01 µs",
+  "offline_diagnostics": "参考(合否に使わない): A0・A1・A2・S-DIV・S-MOD の best を、ベストラップの val・D1 の val(付け替えで変わった / 変わらない)・D2 の val・5 モードの val(モードごと)の全フレームで比べる(1 フレーム先の舵・スロットル、10 フレームの平均)。IMU の位相ごとの誤差も"
+ },
+ "eval_Q1": {
+  "where": "10/14 と同じ: ブラウザ(snap の Firefox・DISPLAY :0 の WebGL)でアプリの写しの index.html を開き、「モデル ZIP を読み込む」→「連続試験」。推論はユーザーの bridge.py の写しを、10/14 の専用の venv(experiments/20261014_sim_dart_margin/.venv-bridge、onnxruntime 1.31.0 CPU。読むだけで使う)で動かす",
+  "app_copy": "/home/jetson/jetformer_reports/sim_dart_20261014/sim から runtime/datasets(10/14 の記録 2.5 GB)を除いて /home/jetson/jetformer_reports/sim_diverse_train_20261015/sim に写す。dist の app.js・sim-core.js・index.html・rc-speed-controller.js・bridge.py がユーザーの /home/jetson/sim/extracted/course-simulator と 10/14 の写しの両方とバイト単位で同じことを確かめる(設計の段の 09:10 に、5 つとも同じことを確かめた)",
+  "ports_profile": "ブリッジ 8821(予備 8822〜8829)・geckodriver 4450・プロファイル /home/jetson/jetformer_reports/sim_diverse_train_20261015/ff_profile。ブリッジは jf-heavy --mem 1500M --lock none、ブラウザは jf-heavy --mem 2500M --lock big --need-mb 2048。jetformer-web のユーザーのブリッジには触れない",
+  "settings": {
+   "control_delay_frames": 1,
+   "model_lookahead": 1,
+   "steer_gain": 1.0,
+   "throttle_gain": 1.0,
+   "mode": 8,
+   "single_lap_limit_s": 15,
+   "physics_and_sensors": "10/14 と同じ(REC60 の計画の物理・センサーの欄・種 1・baseline)"
+  },
+  "starts": {
+   "E0": [
+    0,
+    0.0,
+    0.0
+   ],
+   "E1": [
+    0,
+    0.03,
+    3.0
+   ],
+   "E2": [
+    0,
+    -0.03,
+    -3.0
+   ],
+   "E3": [
+    0,
+    0.08,
+    -5.0
+   ],
+   "E4": [
+    0,
+    -0.08,
+    5.0
+   ],
+   "E5": [
+    20,
+    0.0,
+    0.0
+   ],
+   "E6": [
+    0,
+    0.05,
+    2.0
+   ],
+   "E7": [
+    0,
+    -0.05,
+    -2.0
+   ],
+   "E8": [
+    0,
+    0.02,
+    -4.0
+   ],
+   "E9": [
+    0,
+    -0.02,
+    4.0
+   ],
+   "E10": [
+    10,
+    0.0,
+    0.0
+   ],
+   "E11": [
+    28,
+    0.0,
+    0.0
+   ],
+   "form": "[ゲート, 左ずれ m, 向き 度]。10/14 と同じ 12 個",
+   "gate0_starts": [
+    "E0",
+    "E1",
+    "E2",
+    "E3",
+    "E4",
+    "E6",
+    "E7",
+    "E8",
+    "E9"
+   ]
+  },
+  "sessions_and_order": [
+   "1. 陽性対照: 作者の ONNX の E0(10/14 は 9.022 秒で完走・ユーザーの確認器 PASS)。ブリッジを立てた直後の 1 本目がアプリの 5 秒の打ち切りで止まったら(10/14 にあった)、同じセッションでもう 1 回",
+   "2. 前日との同一性: A1-s0 の E0 を 1 本(10/14 は 衝突・169 フレーム・5.63 秒・軌跡の差 0)",
+   "3. S-DIV の E0〜E11 + E0 の 2 回目(決定性)+ フライングラップ(E0 から連続周回 20 秒、参考)",
+   "4. (削らなければ)S-MOD の E0〜E11(+ フライング)",
+   "5. (削らなければ)DAgger の D0〜D11(状態集め)と A4 の E0〜E11"
+  ],
+  "same_as_yesterday_check": "陽性対照が 9.022 秒で完走しない、または A1-s0 の E0 が 10/14 と同じフレーム数・終わり方・軌跡(差 ≤ 1e-6 m)でなければ、その日の環境は前日と同じと言えない → S-DIV のあとに A2-s0(10/14 で一番遠くまで走った腕)の E0〜E11 を走らせ直し、A0・A1 の数字には「前日の環境」と書く(deviations.md)",
+  "run_success": "完走 = 単周が route_complete で終わり、衝突 0・33 ゲート・黒シートの必須横断 1 回、かつ記録した操作を元の sim-core.js で再生した自前の数え直しが同じ(10/14 の verify_eval.mjs の写し)。E0 はユーザーの qa/verify-learned-lap.mjs <結果> --model <ONNX> も PASS",
+  "per_run_metrics": [
+   "完走",
+   "停止から 1 周の時間",
+   "数えたゲート",
+   "衝突(時刻・物・位置)",
+   "最小すき間",
+   "止まった時刻",
+   "止まるまでに参照の周 R に沿って進んだ道のり(最速の先生の進みの追跡の s。10/14 と同じ)",
+   "最初の直線を抜けたか(ゲート 0 の開始で、衝突せずに x > 2.6 m)",
+   "点 4 のゲートを通ったか(ゲート 0 の開始で、sim が点 4 のゲートを数えた = 数えたゲート ≥ 4)",
+   "最初に外したゲートと、その線を越えた横の位置",
+   "先生の線からの距離(T_fast と T_margin の同じ開始の線の前後 1.5 秒の部分のいちばん近い点。0.5 秒・1 秒・最後・最大)",
+   "先生への引き継ぎ(T_fast・T_margin に任せて完走できる最後のフレーム。参考。DAgger の切り替えにも使う)"
+  ],
+  "checks": [
+   "全走行で、記録した操作の元の sim-core.js での再生と自前の数え直しが一致(10/14 の verify_eval.mjs の写し)",
+   "全走行を、ユーザーの replay-report.mjs(ユーザーの sim-core.js)でも再生して一致(10/14 の review/replay_all.sh の写し)",
+   "完走の数・判定は、評価の道具とは別の数え直しの道具(10/14 の review/recount.py の写し)で生の JSON から数え直して同じ",
+   "設定(モデルの sha256・遅延・先読み・ゲイン・ジャンル・開始)が計画と違う走行 0"
+  ],
+  "uploads_cleanup": "ブリッジが受け取ったモデルの写し(sim/runtime/uploads)は、セッションが終わるたびに消す(10/14 は 40 ファイル・540 MB)"
+ },
+ "verdicts_Q1": {
+  "note": "結果を見る前に固定。シミュレーターは決定的で、ばらつくのは開始だけ。Fisher の正確検定の p・符号検定の p は参考に書くだけ",
+  "quantities": {
+   "c(腕)": "E0〜E11 の単周 12 本のうち完走した数(種 0)",
+   "c_ref": "max(c(A0), c(A1), c(A2)) = 0(10/14)",
+   "fs(腕)": "ゲート 0 の開始 9 本(E0〜E4・E6〜E9)のうち、最初の直線を抜けた数(10/14: A0 0・A1 8・A2 9)",
+   "g4(腕)": "ゲート 0 の開始 9 本のうち、点 4 のゲートを通った数(10/14: A0・A1・A2 とも 0)",
+   "d(腕)": "12 本の、止まるまで(完走は 1 周)に進んだ道のりの中央値(10/14: A0 2.5 m・A1 11.4 m・A2 17.7 m)"
+  },
+  "Q1_S-DIV_vs_yesterday": {
+   "効いた": "c(S-DIV) ≥ 6 かつ c(S-DIV) − c_ref ≥ 4",
+   "一部効いた": "上でなく、c(S-DIV) − c_ref ≥ 2、または g4(S-DIV) ≥ 5(前日のどの腕も通れなかった点 4 のゲートを、ゲート 0 の開始の過半で通った)",
+   "悪くなった": "上でなく、c(S-DIV) ≤ c_ref かつ fs(S-DIV) ≤ 4(A1・A2 で直った最初の直線の失敗が戻った)",
+   "差なし": "それ以外"
+  },
+  "Q1_variety_vs_volume(S-MOD を走らせたとき)": {
+   "量よりばらつき": "c(S-MOD) − c(A1) ≥ 2、または(c(S-MOD) = c(A1) = 0 のとき)g4(S-MOD) − g4(A1) ≥ 3、または(どちらも点 4 を通らないとき)d(S-MOD) ≥ 1.5 × d(A1) = 17.1 m",
+   "ばらつきの効果は見えない": "それ以外(S-MOD は A1 より量が少ないので、「量の効果のほうが大きい」とまでは言わない)",
+   "DART・余裕の線の上乗せ(S-DIV 対 S-MOD)": {
+    "上乗せあり": "c(S-DIV) − c(S-MOD) ≥ 2、または(両方 0 のとき)g4 の差 ≥ 3 か fs の差 ≥ 3",
+    "差なし": "上と下のどちらでもない",
+    "悪くなった": "c(S-DIV) − c(S-MOD) ≤ −2、または(両方 0 のとき)g4 の差 ≤ −3 か fs の差 ≤ −3"
+   }
+  },
+  "Q1b_DAgger": {
+   "上乗せあり": "c(A4) − c(元の腕) ≥ 2、または(両方 0 のとき)g4 の差 ≥ 3",
+   "差なし": "上と下のどちらでもない",
+   "悪くなった": "c(A4) − c(元の腕) ≤ −2、または(両方 0 のとき)g4 の差 ≤ −3 か fs の差 ≤ −3"
+  },
+  "speed": "完走した走りの T(腕, e) / T_fast(e)(Node・遅延 0・同じ開始)の中央値。≤ 1.05 なら「最速の先生に近い速さ」。T_margin・作者の ONNX(9.02 秒)とも並べる。5 モードには速さ 50〜100% の走りが入っているので、遅くなることは予想される(判定には使わない)",
+  "best_arm": "完走の数 → 点 4 のゲートを通った数 g4 → 進んだ道のりの中央値 d の順で多いほう(10/14 は完走 0 で決められなかったので、g4・d を足した)",
+  "paired_reference": "開始ごとに S-DIV と A2(10/14 で一番遠くまで走った腕)の進んだ道のりを比べ、S-DIV が長い開始の数(符号検定の p、参考)",
+  "external_reference": "E0〜E5 で、S-T(2/6)・作者の ONNX(2/6)と並べる(判定には使わない)"
+ },
+ "dagger": {
+  "feasibility_at_design": "条件付きで今日できる(作るものが多いので最初に削る)。10/14 の道具で足りるもの: 先生(teacher_core.mjs の fast・margin)、ブラウザの記録の差し込み口(import map で ./rc-speed-controller.js を自分のモジュールに替える。開始の約束の検査 assertRcTeacherContract はその自分のモジュールの関数をアプリが呼ぶので、開始の範囲を自分で決められる)、Node の付け替えの道具(relabel_scene.mjs・relabel_dataset.py)、記録の検証・取り込み(post_record.sh)。足すもの: (1) 再生してから先生に替わる差し込みモジュール(フレーム k まで JetFormer が閉ループで実際に適用した操作を再生し、k から先生。info.dart に「先生のきれいな操作」と「JetFormer の操作との差」を noise として出す)、(2) 付け替えの道具の写しを、乱しを乱数から作り直すのではなく記録の info.dart.noise から読むように直す、(3) 開始の約束の検査を D0〜D11 に広げる。評価の走行は画像を残さないので、状態の画像はブラウザの記録で描き直す",
+  "states_starts": {
+   "D0": [
+    0,
+    0.04,
+    1.0
+   ],
+   "D1": [
+    0,
+    -0.04,
+    -1.0
+   ],
+   "D2": [
+    0,
+    0.01,
+    2.0
+   ],
+   "D3": [
+    0,
+    -0.01,
+    -2.0
+   ],
+   "D4": [
+    0,
+    0.06,
+    -3.0
+   ],
+   "D5": [
+    0,
+    -0.06,
+    3.0
+   ],
+   "D6": [
+    0,
+    0.0,
+    1.0
+   ],
+   "D7": [
+    0,
+    0.0,
+    -1.0
+   ],
+   "D8": [
+    5,
+    0.0,
+    0.0
+   ],
+   "D9": [
+    15,
+    0.0,
+    0.0
+   ],
+   "D10": [
+    24,
+    0.0,
+    0.0
+   ],
+   "D11": [
+    31,
+    0.0,
+    0.0
+   ],
+   "why": "評価の E0〜E11 とは別の開始(評価の開始の状態を学習に入れない)。点 4 のゲートの失敗はゲート 0 の開始で起きるので 8 個はゲート 0。先生(T_fast・T_margin)が Node で 12 個とも完走することを準備で確かめる(だめな開始は同じゲートで向き ±1° ずつ替える)"
+  },
+  "procedure": [
+   "1. 一番良い Q1 の腕(best_arm)で、D0〜D11 の単周をブラウザの閉ループで走らせる(評価と同じ設定。状態集め)",
+   "2. 先生の選び方: Node で D0〜D11 の各走行の操作を再生し、各フレームから T_fast・T_margin に任せて 2 秒以内に立て直せるフレームを数える。多いほうの先生(同じなら T_margin)",
+   "3. 切り替えのフレーム k = (その先生に任せて単周を完走できる最後のフレーム)。完走した走りは k = 300。k から先は先生が 20 秒まで運転する(乱しは足さない)",
+   "4. ブラウザの記録の連続試験(20 秒)で、再生 → 先生の差し込みモジュールで 12 シーンを記録し、10/14 と同じ検証(画像がすべて違う・PWM の作り直しの差 0)→ 取り込み(ジャンル 8・シーンのタブに展開しない)",
+   "5. 全フレームを、付け替えの道具の写しで先生の操作に付け替える(s_{t+1} から先生だけで 10 フレーム。先生が 2 秒以内に立て直せないフレームは学習から外す)",
+   "6. 元の腕の best.pth から、元の腕のデータ + DAgger の 12 シーン(全部を学習に)で 10 エポック続けて学習(lr 1e-4、ほかは同じ。--init)。run 名 simdiv_20261015-A4-s0",
+   "7. E0〜E11 で評価(Q1 と同じ)"
+  ],
+  "go_no_go_gates": {
+   "G1_node": "D の走行の 1 本で、評価(単周)で記録した操作を Node の連続周回で再生すると、フレーム k までの位置が単周の記録と ≤ 1e-6 m で同じ",
+   "G2_browser": "ブラウザの記録 1 シーンの試しで、フレーム k の位置が状態集めの走行と ≤ 2 cm、info.dart が frames.jsonl に入る、jf が入らない",
+   "G3_relabel": "付け替えの写しで、再生の差 ≤ 1e-9(R2)・JetFormer の操作を使わないフレームでは正解 = 記録の操作(R3)・D1 の 2 シーンで 10/14 の道具と同じ正解(差 ≤ 1 µs)",
+   "rule": "どれか 1 つでも不合格なら、その時点で DAgger は「今日はできない」として止め、理由を報告に書く"
+  },
+  "skip_if": "元の腕が 10/12 以上完走したら行わない(集める失敗の状態が少ない)"
+ },
+ "arms_Q2": {
+  "C-DIV": {
+   "role": "主の腕(種 0 は削らない。種 1 は最後に削る)",
+   "real": "clean_driving_20261011 の 52 シーン(学習 41・検証 11。A・C と同じ。検証は実機の 11 シーンだけ)",
+   "sim": "5 モードの見本の、それぞれの学習の 12 シーン = 60 シーン・36,000 フレーム(C の前の教師の 60 シーン・36,000 フレームと同じ量・同じ 20 秒のシーン)。すべて学習に入れる",
+   "sim_scene_rule": "各モードのデータセットの splits.json の train(12 シーン)を、モードの順(sim-rl-fastest_20261014-1125 → sim-rl-speed_20261014-1125 → sim-rl-no_wall_20261015-0302 → sim-rl-recover_20261015-0302 → sim-rl-line_20261015-0302)につなげる。各モードの val の 3 シーン(15 シーン)は学習に入れず、シミュレーターの保留の参考に使う",
+   "why_this_amount": "C と同じ 36,000 フレーム・60 シーンにして、変わるのを「中身(いろいろな走り・5 つの方策・24 か所の開始・速さ)」だけにする。離脱復活の乱しのフレームが学習から外れるので、間引き 3 の学習サンプルは C の 11,820 に対して 11,391(−3.6%)",
+   "why_not_dart_margin": "DART・余裕の線は Q1 の「戻し方」「余裕」のためのデータで、線はほぼ 2 本(最速・余裕の線)。量も C の 36,000 を超える。ばらつきの効果だけを見るため入れない",
+   "stride3_samples_expected": {
+    "train": 17303,
+    "val": 1559,
+    "real_train": 5912,
+    "sim_train": 11391
+   },
+   "genres": "ジャンルの表は simreal_mix_20261013 と同じ 0〜8(ジャンル数 9)。実機は 4・5、シミュレーターは 8",
+   "folder": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/data/C-DIV(シンボリックリンク。data/datasets には作らない)",
+   "recipe": "C と同じ: tools/train.py --policy jetformer_v0 --data <C-DIV のフォルダー> --epochs 30 --lr 3e-4 --seed <種> --stride 3 --batch 64 --workers <2(足りなければ 1)> --no-command-input --impact-g 2.5。C は workers 4 だったが、今日は jf-heavy --mem 3G の上限があるので 2(足りなければ 1)。workers は色の揺らしの乱数の流れだけを変える",
+   "seeds": [
+    0,
+    1
+   ],
+   "run_names": [
+    "simdiv_20261015-CDIV-s0",
+    "simdiv_20261015-CDIV-s1"
+   ],
+   "checks_before_training": [
+    "実機の学習サンプル 5,912・検証 1,559 が A・C と同じフレーム(シーン名とフレーム番号の表が同じ)",
+    "シミュレーターの学習サンプル 11,391・ジャンル 0 のサンプル 0・ジャンル数 9",
+    "実機のシーンの aligned が clean_driving_20261011 のものそのもの(リンク先が同じファイル)",
+    "action_reference(止まっている間の操作の中央値)を記録する。A・C は [1441.0, 1496.0]"
+   ],
+   "expected_epoch_s": "約 90(C: 91.6 秒)→ 1 本 約 50 分",
+   "no_finetune": "C+FT(実機だけの微調整)は作らない(10/13 で C と同等。今日の問いは「混ぜるデータの中身」)"
+  }
+ },
+ "eval_Q2": {
+  "tool": "10/13 の tools/sim_cotrain_eval.py・sim_cotrain.py(judge_primary・final_verdict)を /home/jetson/jetformer/experiments/20261015_sim_diverse_train/q2/ に写し、名前の表に C-DIV を足す。A・B・C の予測は前の npz を読む(走らせ直さない)",
+  "crosscheck": "写した道具で C の種 0 の best を予測し直し、10/13 の npz と同じ(最大の差 ≤ 0.01 µs)ことを確かめてから C-DIV を予測する",
+  "frames": "10/12・10/13 と同じ: rl_evaluate.pred_table()(key 3d339512828b17195d568f1b93ee4a28208f2e85)の 10,985 フレームを予測し、主指標は part 0 の人の 11 シーン & future_valid & vehicle_valid & 2.5G の衝突の前後でない 4,670 フレーム",
+  "prediction": "runtime.load_run(学習結果, best|last) → PyTorch FP32・eval。ジャンル = aligned の mode(4・5)。GPU は jf-heavy --mem 3G --lock big で 1 本ずつ",
+  "primary": {
+   "L": "人のきれいな走行の L1 [µs](10 ステップ × [ステア, スロットル] の平均)のフレーム平均",
+   "arm_value": "2 つの種の平均 L̄、[min, max]",
+   "vs_A": "「良い」= 腕の 2 つの種の両方が A の 2 つの種の両方より小さい かつ L̄_A − L̄_腕 > 2 × s_A(best 0.626 µs・last 1.322 µs)。「悪い」= 腕の両方の種が A の両方より大きい かつ L̄_腕 − L̄_A > 2 × s_A。ほかは「同等」。best と last の両方で判定し、best だけ「良い」は「同等」に下げる(10/13 の final_verdict)",
+   "vs_C": "同じ規則で、基準を C の種 0・1 にする。s = max(C の種の範囲, s_A) → 閾値 best 2 × 0.477 = 0.954 µs・last 2 × 0.661 = 1.322 µs",
+   "practical": "|差| ≥ 10 µs なら「実用上の差」。「良い」でも 10 µs 未満なら「小さいが一貫した差」",
+   "single_seed_fallback": "種 1 を削ったときは「暫定(種 1 つ)」と書き、L_s0 で判定する: 「良い(暫定)」= L_s0 < 基準の 2 つの種の小さいほう かつ L̄_基準 − L_s0 > 閾値、「悪い(暫定)」= L_s0 > 基準の 2 つの種の大きいほう かつ L_s0 − L̄_基準 > 閾値、ほかは「同等(暫定)」。best・last の組み合わせ方は同じ",
+   "code": "judge_primary(arm, ref, spread_mult=2, spread_floor=s)・final_verdict(best, last)(10/13 のまま)"
+  },
+  "secondary": {
+   "robustness": "10/13 と同じ 5 つのずれ(画像 3 行下・上、明るさ ×0.8・×1.2、ToF 1 行下)、同じ 1,559 フレーム、best.pth。ΔL1 = ずれの L1 の平均 − ずれなしの L1。「ずれに強い」= ΔL1(種の平均)≤ 0.8 × ΔL1_A(0.793 µs)かつ両方の種で ΔL1 ≤ ΔL1_A。C(0.482 µs、A の 0.61 倍)とも並べる(参考)",
+   "per_genre": "ジャンル 4・5 別の L1・3 フレーム先のステア・スロットルの MAE・向きの正解率・前進の偏り fwd_bias(compare_models.metrics)",
+   "speed_habit": "ジャンル別の fwd_bias(種の平均)が A(種の平均)から 10 µs 以上ずれたら「速さの癖の移り」。10/13 の確認の段で見つかった「低速の直線 HS(411 フレーム)で C が強く前進を出した(fwd_bias −11.3・−22.9 µs、A −1.0・+0.8 µs)」も、今日は先に決めた参考の測りとして同じ道具で出す(5 モードには速さ 50〜100% の走りが入るので、移りが減るか増えるかを見る)",
+   "r1_de": "10/13 と同じ(参考。判定に使わない)。各学習結果の model_config の中心と中立を使う。C-DIV の action_reference が [1441, 1496] と違えば、A の中心でも出して並べる",
+   "collapse": "10/13 と同じ「崩れ」(直線 542 フレームの前進の強さの低下 > 5%、fwd_bias < −30 µs、向きの正解率 < A − 0.01)。崩れた腕は「良い」でも推奨しない",
+   "sim_l1": "参考: (a) 前の教師のデータの val 12 シーン(10/13 と同じ。頭 4・5・8)、(b) 5 モードの val 15 シーン(C-DIV には入っていない = 保留。頭 8)。A・B は頭 4・5 だけ",
+   "per_scene": "参考: 10/13 で C が悪かった 2 シーン(20261010-152707-0001・20261010-193638-0003)で C-DIV も悪いか",
+   "training": "学習の曲線(実機の検証 L1)・最良のエポック・1 エポックの秒数・best − last",
+   "no_engine": "FP16 のエンジンは作らない(実車で使わない。推奨を変える条件を満たしたときだけ、次の作業で作って速さのゲートを測る)"
+  },
+  "independent_recount": "判定とは別の短い道具で、C-DIV の予測の npz から主指標のフレームの L1 を計算し直し、evaluation.json と ≤ 0.001 µs で同じこと・判定が同じことを確かめる(削らない)",
+  "conclusion_rules": [
+   "1. C-DIV を主指標で A と比べ、「良い / 同等 / 悪い」と実用上の差を書く",
+   "2. C-DIV を同じ規則で C と比べる(「前のくり返しのデータより良い / 同等 / 悪い」)。量は同じなので、差があれば中身(いろいろな走り。ただし先生が RC 教師から RL に替わったことも含む)の効果",
+   "3. どちらも「同等」なら「いろいろな走りのシミュレーターのデータを混ぜても、実機の保留データの精度は変わらなかった(A・C と同等)」と書く",
+   "4. ずれへの強さ・速さの癖・場所別は参考として書く(判定を変えない)",
+   "5. 走行の推奨をモデル B から替えるのは「良い」かつ実用上の差(≥ 10 µs)かつ崩れなしの腕だけ。今日は実車で試さない(範囲の外)ので、そのときも「実車の A/B/A の候補」と書くだけ",
+   "6. 結論は jetformer_v0・この学習の条件(調整なし)・このシミュレーターのデータに限る。机上の結論は実車の改善を示さない"
+  ]
+ },
+ "time_plan_jst_2026_10_15": {
+  "design": "09:00〜09:50(この段。CPU だけ)",
+  "build_1": "09:50〜10:20 合わせたフォルダー(S-DIV・S-MOD・C-DIV)とサンプル数の確かめ・PWM の約束の確かめ・学習の道具の写し → S-DIV の学習をすぐ始める",
+  "train_S-DIV": "10:20〜11:30(約 65〜70 分。1 エポック約 125 秒の見込み)。この間に CPU で build_2: アプリの写しと確かめ・評価の道具の写し(口・プロファイル)・一式の道具・Q2 の評価の道具の写し・DAgger の G1 と D0〜D11 の先生の確かめ",
+  "bundle_S-DIV": "11:30〜11:40(CPU)",
+  "eval_S-DIV": "11:40〜12:05(Firefox: 陽性対照・A1 の E0・S-DIV の 12 本 + 2 回目 + フライング。1 本約 30〜40 秒)。そのあと CPU で再生・数え直し・先生の線・引き継ぎ",
+  "train_C-DIV_s0": "12:05〜13:00(約 50 分)",
+  "predict_C-DIV_s0": "13:00〜13:10(GPU。写した道具の crosscheck・best・last・ずれ・シミュレーター。1 本約 4 分)→ CPU で判定",
+  "train_C-DIV_s1": "13:10〜14:05",
+  "predict_C-DIV_s1": "14:05〜14:12 → Q2 の判定・数え直し",
+  "train_S-MOD": "14:15〜14:55(約 35〜40 分)+ 一式",
+  "eval_S-MOD": "14:55〜15:15",
+  "offline_diagnostics": "15:15〜15:25(GPU、約 5 分)",
+  "dagger": "15:25〜17:45(状態集め 10 分 → 先生の選び・切り替え(CPU)→ 記録 12 シーン 約 25 分 → 検証・取り込み・付け替え(CPU)約 20 分 → 10 エポック 約 25 分 → 一式 → 評価 15 分)",
+  "buffer": "17:45〜19:00(電源断の分。10/13〜10/14 の 2 日で 4 回落ちた)",
+  "report": "19:00〜21:00(README.md・evaluation.md・図・確認・約 1 分の動画の絵コンテ)。19:00 を過ぎたら、まだ終わっていないものは 20:00 までに終わるときだけ続ける",
+  "estimates_from": "1 サンプルの秒数は 10/14 の A1(workers 1、学習 + 検証で 4.8 ms)・10/13 の C(4.75 ms)。Firefox の評価は 10/14 の 40 走行で 22 分",
+  "locks": "GPU の学習・予測と Firefox はどちらも lock big で 1 つずつ(ほかの作業とも順番)。待ち時間は計画に入っていないので、遅れたら下の削る順番に従う"
+ },
+ "cut_order_if_late": [
+  "1. DAgger(Q1b)を削る: D0〜D11 の状態集めを 16:00 までに始められない、10 エポックの学習を 17:15 までに始められない、G1〜G3 のどれかが不合格、のどれか",
+  "2. 2 つ目の Q1 の腕(S-MOD)を削る: 学習を 16:15 までに始められないとき(評価の本数を減らすときは フライング → E6〜E11 の順)",
+  "3. C-DIV の種 1 を削る(最後): 学習を 17:30 までに始められないとき。Q2 は「暫定(種 1 つ)」の判定にする",
+  "評価の本数を減らすとき: S-DIV・S-MOD のフライングラップ(参考)→ S-MOD の E6〜E11 の順。S-DIV の E0〜E11 は削らない"
+ ],
+ "never_cut": [
+  "S-DIV 種 0 の学習と E0〜E11 の閉ループ評価(陽性対照・前日との同一性の確かめを含む)",
+  "C-DIV 種 0 の学習と実機の保留データの評価(写した道具の crosscheck を含む)",
+  "再生・数え直しの確かめ(Q1 の全走行の再生と完走の数え直し、Q2 の主指標の数え直し)",
+  "今日のレポート(README.md と絵コンテ)"
+ ],
+ "disk_budget": {
+  "at_design": "空き 9.2 GB(09:02)。5 GB 以上を保つ",
+  "planned_peak_GB": {
+   "学習の結果 S-DIV・S-MOD・C-DIV 2 本・A4(1 本 約 0.28 GB)": 1.4,
+   "一式の ZIP 3 つ": 0.16,
+   "アプリの写し(dist・ブリッジ。記録の 2.5 GB は写さない)": 0.02,
+   "Firefox のプロファイル": 0.11,
+   "Q2 の予測": 0.02,
+   "DAgger の記録と取り込み(12 シーン)": 0.4,
+   "ブリッジが受け取ったモデルの写し(セッションごとに消す)": 0.6,
+   "ログ・図・評価の JSON": 0.1
+  },
+  "planned_peak_total_GB": 2.8,
+  "rules": [
+   "画像は写さない(合わせたフォルダーはシンボリックリンク。写すときはハードリンク)",
+   "各ジョブの前に空きを確かめ、5.5 GB 未満なら一時のもの(uploads・自分の一時フォルダー)を消してから。それでも足りなければ、予測の済んだ C-DIV と評価の済んだ Q1 の腕の last.pth を消す(best.pth・ONNX は残す)",
+   "新しい生の記録は DAgger の 12 シーンだけ(取り込んだあと、ブリッジ側の記録の ZIP は消す)",
+   "作った一時フォルダーは段の終わりに消す"
+  ]
+ },
+ "rules": {
+  "safety": "実車・PCA9685・I2C に触れない。実車を走らせる試験はしない(この作業の範囲の外)",
+  "gpu": "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- …(1 本ずつ)",
+  "firefox": "jf-heavy --mem 2500M --lock big、snap Firefox、DISPLAY=:0、XAUTHORITY=/run/user/1000/gdm/Xauthority、プロファイル /home/jetson/jetformer_reports/sim_diverse_train_20261015/ff_profile、geckodriver 4450、ブリッジ 8821〜8829",
+  "node_cpu": "jf-heavy --mem 1500M --lock none -- nice -n 10 …",
+  "rl_training": "jf-heavy --mem 2G --lock rl -- nice -n 15 …(この手順では RL の学習はしない)",
+  "memory": "8 GB・スワップなし。学習・Firefox の前に空きメモリを確かめる(jf-heavy の --need-mb)",
+  "power": "電源断に備える: 学習は毎エポック last.pth(同じコマンドで --resume)、予測は 1 本・1 種類ずつ npz、評価は 1 走行ずつ JSON(あるものは飛ばす。0 バイト・壊れたものは作り直す)、状態は state.json(tmp → 置き換え)。前の試みが途中で止まっていたら、その出力から続ける",
+  "do_not_touch": [
+   "ほかの作業のファイル(experiments/20261013_*・20261014_*、jetformer_reports のほかのフォルダー)は読むだけ。使うものは /home/jetson/jetformer/experiments/20261015_sim_diverse_train に写す",
+   "ユーザーのシミュレーター(/home/jetson/sim/extracted/course-simulator)・jetformer-web のユーザーのブリッジ(再起動しない)",
+   "jetformer/web・jetformer/sim*・data/sim*・data/modes.json・data/datasets の既存のデータセット(DAgger の取り込みで新しく 1 つ作るだけ)",
+   "git commit をしない"
+  ],
+  "processes": "段の終わりに自分が始めたプロセスを全部止める(次の段が続ける学習だけは除く)",
+  "language": "ユーザー向けの文・コードのコメントは日本語"
+ },
+ "deviation_policy": "手順と違えたら /home/jetson/jetformer_reports/sim_diverse_train_20261015/deviations.md に、時刻・何を・なぜ・結果への影響を書く。この JSON は書き換えない(sha256 は protocol.sha256)",
+ "paths": {
+  "experiment": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train",
+  "report": "/home/jetson/jetformer_reports/sim_diverse_train_20261015",
+  "prev_cotrain_report": "/home/jetson/jetformer_reports/sim_cotrain_20261013",
+  "prev_cotrain_tools": "/home/jetson/jetformer/tools/sim_cotrain*.py",
+  "prev_dart_report": "/home/jetson/jetformer_reports/sim_dart_20261014",
+  "prev_dart_experiment": "/home/jetson/jetformer/experiments/20261014_sim_dart_margin",
+  "prev_bestlap_report": "/home/jetson/jetformer_reports/sim_rl_bestlap_20261013",
+  "prev_modes_report": "/home/jetson/jetformer_reports/sim_rl_modes_20261013",
+  "datasets": "/home/jetson/jetformer/data/datasets/",
+  "runs": "/home/jetson/jetformer/data/runs",
+  "q2_predictions": "/home/jetson/jetformer/data/zoo/sim_diverse_train_20261015",
+  "bundles": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/bundles",
+  "app_copy": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/sim"
+ }
+}

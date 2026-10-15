@@ -1,0 +1,190 @@
+{
+ "title": "JetFormer 10月15日のレポート\nいろいろな走りのデータで学習",
+ "log": "20261010-173445",
+ "_note": "約 1 分の報告動画の絵コンテ(sim_diverse_train_20261015 の最終の確かめの段で作成。動画はメインのセッションが Gemini TTS(Achernar)で描く)。最初に前回の課題(いろいろな走りのデータは作れた・まねしたモデルは完走できない・前の混ぜ方は実機の精度が変わらない)と今日の問い(このデータで学習して確かめる)、次にシミュレーターの実際の画面と結果、実機の保留データの結果、今日のまとめ、課題の順。図 video/fig/d1〜d5 は experiments/20261015_sim_diverse_train/final_review/make_slides.py が走行の生の JSON・review/final の数え直し・eval_real.json・screens/ の実際の画面から作った。src_start/src_end は読み上げの長さの見込み(1 秒 5.3 字)で、描くときに詰めてよい。確認: python3 ~/jetformer_reports/sim_cotrain_20261013/video/src/check_storyboard.py <この JSON>",
+ "scenes": [
+  {
+   "id": "s1_title",
+   "kind": "title",
+   "log": "20261010-173445",
+   "caption": "10月15日のレポート",
+   "src_start": 160.6,
+   "src_end": 165.84,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "前回の課題",
+    "いろいろな走りで学習",
+    "シミュレーターの結果",
+    "実機の保留データの結果",
+    "今日のまとめと課題"
+   ],
+   "lines": [
+    {
+     "text": "ラピカです。今日は、いろいろな走りのデータで学習しました!",
+     "say": "ラピカです。今日は、いろいろな走りのデータで、学習しました。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s2_problem",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "前回の課題",
+   "src_start": 167.16,
+   "src_end": 177.39,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/video/fig/d1_problem.png",
+   "lines": [
+    {
+     "text": "前回は、いろいろな走りのデータを作れましたが、まねしたモデルは完走できませんでした。",
+     "say": "前回は、いろいろな走りを作れましたが、まねしたモデルは、完走できませんでした。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "実機のデータに混ぜても、精度は変わりませんでした。",
+     "say": "実機のデータに混ぜても、精度は変わりませんでした。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s3_plan",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日: このデータで学習",
+   "src_start": 180.14,
+   "src_end": 184.86,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/video/fig/d2_plan.png",
+   "lines": [
+    {
+     "text": "今日は、このデータで学習して、効くか確かめました。",
+     "say": "今日は、このデータで学習して、効くか確かめました。",
+     "expression": "normal",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s4_sim",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "シミュレーター: 完走5回",
+   "src_start": 185.76,
+   "src_end": 192.9,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/video/fig/d3_sim_result.png",
+   "lines": [
+    {
+     "text": "シミュレーターでは、12回中5回、1周を完走しました。前回は0回です。",
+     "say": "シミュレーターでは、12回中5回、1周を完走しました。前回は、0回です。",
+     "expression": "happy",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s5_run",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "最初のカーブを越えた",
+   "src_start": 193.45,
+   "src_end": 199.56,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/video/fig/d4_sim_run.png",
+   "lines": [
+    {
+     "text": "最初のカーブは越えましたが、S字の出口の柱で、まだぶつかります。",
+     "say": "最初のカーブは越えましたが、エス字の出口の柱で、まだぶつかります。",
+     "expression": "surprised",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s6_real",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "実機の精度は上がらず",
+   "src_start": 200.58,
+   "src_end": 207.2,
+   "speed": 1,
+   "highlights": [],
+   "image": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/video/fig/d5_real.png",
+   "lines": [
+    {
+     "text": "実機の保留データの精度は上がらず、差は1.5%で、ほぼ同じでした。",
+     "say": "実機の保留データの精度は上がらず、差は1.5パーセントで、ほぼ同じでした。",
+     "expression": "worried",
+     "pose": "point"
+    }
+   ]
+  },
+  {
+   "id": "s7_summary",
+   "kind": "summary",
+   "log": "20261010-173445",
+   "caption": "今日のまとめ",
+   "src_start": 208.46,
+   "src_end": 212.87,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "シミュレーターの完走 0→5/12",
+    "最初のカーブのゲート 0→8/9",
+    "5モードだけでもゲートを通過",
+    "DAggerは完走3/12で伸びず",
+    "実機の保留データは上がらず",
+    "数は生の記録で数え直し済み"
+   ],
+   "lines": [
+    {
+     "text": "走りが上がったのは、シミュレーターの中だけでした。",
+     "say": "走りが上がったのは、シミュレーターの中だけでした。",
+     "expression": "normal",
+     "pose": "normal"
+    }
+   ]
+  },
+  {
+   "id": "s8_issues",
+   "kind": "ending",
+   "log": "20261010-173445",
+   "caption": "課題",
+   "src_start": 214.08,
+   "src_end": 223.67,
+   "speed": 1,
+   "highlights": [],
+   "summary_items": [
+    "S字の出口の柱で衝突",
+    "種を増やして確かめる",
+    "量・ばらつき・先生を分ける",
+    "実機の精度に効く使い方",
+    "実車ではまだ確かめていない"
+   ],
+   "lines": [
+    {
+     "text": "課題は、S字の出口の衝突と、実機の精度に効く使い方を探すことです。",
+     "say": "課題は、エス字の出口の衝突と、実機の精度に効く使い方を探すことです。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "おつかれさまでした!",
+     "say": "おつかれさまでした。",
+     "expression": "happy",
+     "pose": "normal"
+    }
+   ]
+  }
+ ]
+}

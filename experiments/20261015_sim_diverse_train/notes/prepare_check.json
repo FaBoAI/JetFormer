@@ -1,0 +1,2317 @@
+{
+ "checked_at": "2026-10-15T09:34:22+0900",
+ "protocol_sha256": "f78fade8f8f9ac7107082cd0e465526af08edd00df959f2f94d541871d4f34a3",
+ "settings": {
+  "stride": 3,
+  "use_command": false,
+  "mask_impacts": true,
+  "impact_g": 2.5
+ },
+ "tool": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/prepare_check.py",
+ "tool_sha256": "b325608dadaaf078abaad3b56373b7b2ce7823cf46bacdda5be5b7753b6a3981",
+ "sources": {
+  "sim-rl-fastest_20261014-1125": {
+   "scenes": {
+    "train": 12,
+    "val": 3,
+    "test": 0
+   },
+   "frames": 9000,
+   "card_frames": 9000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 9000
+   },
+   "card_mode_frames": {
+    "8": 9000
+   },
+   "rl_state": "accepted",
+   "relabel": null,
+   "label_mask_frames": 0,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車1",
+    "2": "駐車2",
+    "3": "駐車3",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 2364,
+     "scenes": 12,
+     "scenes_in_split": 12,
+     "scenes_loadable": 12,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 2364
+     },
+     "action_reference": [
+      1259.3,
+      1187.7
+     ]
+    },
+    "val": {
+     "samples": 591,
+     "scenes": 3,
+     "scenes_in_split": 3,
+     "scenes_loadable": 3,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 591
+     }
+    }
+   }
+  },
+  "sim-rl-speed_20261014-1125": {
+   "scenes": {
+    "train": 12,
+    "val": 3,
+    "test": 0
+   },
+   "frames": 9000,
+   "card_frames": 9000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 9000
+   },
+   "card_mode_frames": {
+    "8": 9000
+   },
+   "rl_state": "accepted",
+   "relabel": null,
+   "label_mask_frames": 0,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車1",
+    "2": "駐車2",
+    "3": "駐車3",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 2364,
+     "scenes": 12,
+     "scenes_in_split": 12,
+     "scenes_loadable": 12,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 2364
+     },
+     "action_reference": [
+      1265.9,
+      1284.1
+     ]
+    },
+    "val": {
+     "samples": 591,
+     "scenes": 3,
+     "scenes_in_split": 3,
+     "scenes_loadable": 3,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 591
+     }
+    }
+   }
+  },
+  "sim-rl-no_wall_20261015-0302": {
+   "scenes": {
+    "train": 12,
+    "val": 3,
+    "test": 0
+   },
+   "frames": 9000,
+   "card_frames": 9000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 9000
+   },
+   "card_mode_frames": {
+    "8": 9000
+   },
+   "rl_state": "accepted",
+   "relabel": null,
+   "label_mask_frames": 0,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車1",
+    "2": "駐車2",
+    "3": "駐車3",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 2364,
+     "scenes": 12,
+     "scenes_in_split": 12,
+     "scenes_loadable": 12,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 2364
+     },
+     "action_reference": [
+      1479.9,
+      1187.7
+     ]
+    },
+    "val": {
+     "samples": 591,
+     "scenes": 3,
+     "scenes_in_split": 3,
+     "scenes_loadable": 3,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 591
+     }
+    }
+   }
+  },
+  "sim-rl-recover_20261015-0302": {
+   "scenes": {
+    "train": 12,
+    "val": 3,
+    "test": 0
+   },
+   "frames": 9000,
+   "card_frames": 9000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "0": 1623,
+    "8": 7377
+   },
+   "card_mode_frames": {
+    "0": 1623,
+    "8": 7377
+   },
+   "rl_state": "accepted",
+   "relabel": null,
+   "label_mask_frames": 1623,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車1",
+    "2": "駐車2",
+    "3": "駐車3",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 1935,
+     "scenes": 12,
+     "scenes_in_split": 12,
+     "scenes_loadable": 12,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 1935
+     },
+     "action_reference": [
+      1531.3,
+      1187.7
+     ]
+    },
+    "val": {
+     "samples": 475,
+     "scenes": 3,
+     "scenes_in_split": 3,
+     "scenes_loadable": 3,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 475
+     }
+    }
+   }
+  },
+  "sim-rl-line_20261015-0302": {
+   "scenes": {
+    "train": 12,
+    "val": 3,
+    "test": 0
+   },
+   "frames": 9000,
+   "card_frames": 9000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 9000
+   },
+   "card_mode_frames": {
+    "8": 9000
+   },
+   "rl_state": "accepted",
+   "relabel": null,
+   "label_mask_frames": 0,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車1",
+    "2": "駐車2",
+    "3": "駐車3",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 2364,
+     "scenes": 12,
+     "scenes_in_split": 12,
+     "scenes_loadable": 12,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 2364
+     },
+     "action_reference": [
+      1399.0,
+      1206.5
+     ]
+    },
+    "val": {
+     "samples": 591,
+     "scenes": 3,
+     "scenes_in_split": 3,
+     "scenes_loadable": 3,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 591
+     }
+    }
+   }
+  },
+  "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d": {
+   "scenes": {
+    "train": 24,
+    "val": 6,
+    "test": 0
+   },
+   "frames": 18000,
+   "card_frames": 18000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 18000
+   },
+   "card_mode_frames": {
+    "8": 18000
+   },
+   "rl_state": null,
+   "relabel": "jf-sim-dart-relabel/v1",
+   "label_mask_frames": null,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車(1)",
+    "2": "駐車(2)",
+    "3": "駐車(3)",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 4728,
+     "scenes": 24,
+     "scenes_in_split": 24,
+     "scenes_loadable": 24,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 4728
+     },
+     "action_reference": [
+      1102.4,
+      1188.5
+     ]
+    },
+    "val": {
+     "samples": 1182,
+     "scenes": 6,
+     "scenes_in_split": 6,
+     "scenes_loadable": 6,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 1182
+     }
+    }
+   }
+  },
+  "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b": {
+   "scenes": {
+    "train": 24,
+    "val": 6,
+    "test": 0
+   },
+   "frames": 18000,
+   "card_frames": 18000,
+   "frames_per_scene": [
+    600
+   ],
+   "aligned_mode_frames": {
+    "8": 18000
+   },
+   "card_mode_frames": {
+    "8": 18000
+   },
+   "rl_state": null,
+   "relabel": null,
+   "label_mask_frames": null,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車(1)",
+    "2": "駐車(2)",
+    "3": "駐車(3)",
+    "4": "高速走行",
+    "5": "低速走行",
+    "6": "未使用（予約）",
+    "7": "未使用（予約）",
+    "8": "シミュレーター"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 4728,
+     "scenes": 24,
+     "scenes_in_split": 24,
+     "scenes_loadable": 24,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 4728
+     },
+     "action_reference": [
+      1492.4,
+      1188.5
+     ]
+    },
+    "val": {
+     "samples": 1182,
+     "scenes": 6,
+     "scenes_in_split": 6,
+     "scenes_loadable": 6,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 1182
+     }
+    }
+   }
+  },
+  "clean_driving_20261011": {
+   "scenes": {
+    "train": 41,
+    "val": 11,
+    "test": 0
+   },
+   "frames": 27502,
+   "card_frames": 27502,
+   "frames_per_scene": [
+    232,
+    598
+   ],
+   "aligned_mode_frames": {
+    "4": 10181,
+    "5": 17321
+   },
+   "card_mode_frames": {
+    "4": 10181,
+    "5": 17321
+   },
+   "rl_state": null,
+   "relabel": null,
+   "label_mask_frames": null,
+   "mode_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "mode_names": {
+    "0": "未設定",
+    "1": "駐車(1)",
+    "2": "駐車(2)",
+    "3": "駐車(3)",
+    "4": "高速走行",
+    "5": "低速走行"
+   },
+   "ok": true,
+   "samples": {
+    "train": {
+     "samples": 5912,
+     "scenes": 41,
+     "scenes_in_split": 41,
+     "scenes_loadable": 41,
+     "impact_masked": 3522,
+     "num_modes": 6,
+     "mode_counts": {
+      "4": 2228,
+      "5": 3684
+     },
+     "action_reference": [
+      1441.0,
+      1496.0
+     ]
+    },
+    "val": {
+     "samples": 1559,
+     "scenes": 11,
+     "scenes_in_split": 11,
+     "scenes_loadable": 11,
+     "impact_masked": 1083,
+     "num_modes": 6,
+     "mode_counts": {
+      "4": 641,
+      "5": 918
+     }
+    }
+   }
+  }
+ },
+ "pwm": {
+  "sim-rl-fastest_20261014-1125": {
+   "scene": "20261014-022539-d4e063a1-0001",
+   "own_convention": "1441/1496",
+   "other_convention": "1442/1498",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 7.24,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9993,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 374.8097,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  },
+  "sim-rl-speed_20261014-1125": {
+   "scene": "20261014-035715-3d428382-0001",
+   "own_convention": "1441/1496",
+   "other_convention": "1442/1498",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 7.24,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    1.0,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 462.4551,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  },
+  "sim-rl-no_wall_20261015-0302": {
+   "scene": "20261014-180305-2a6e678b-0001",
+   "own_convention": "1441/1496",
+   "other_convention": "1442/1498",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 7.24,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9996,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 276.961,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  },
+  "sim-rl-recover_20261015-0302": {
+   "scene": "20261014-182116-b25f20bc-0001",
+   "own_convention": "1441/1496",
+   "other_convention": "1442/1498",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 7.24,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9993,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 274.725,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  },
+  "sim-rl-line_20261015-0302": {
+   "scene": "20261014-183958-80efa142-0001",
+   "own_convention": "1441/1496",
+   "other_convention": "1442/1498",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 7.24,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9999,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 470.7313,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  },
+  "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d": {
+   "scene": "20261014-052849-905d9714-0001",
+   "own_convention": "1442/1498",
+   "other_convention": "1441/1496",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 0.8,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9993,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 386.4612,
+    "1": 280.1604
+   },
+   "label_offset": 1,
+   "relabelled_dataset": true,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": null
+  },
+  "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b": {
+   "scene": "20261014-061841-190fb6a1-0001",
+   "own_convention": "1442/1498",
+   "other_convention": "1441/1496",
+   "calibration": {
+    "max_steering_rad": 0.52,
+    "max_speed_mps": 7.24,
+    "max_reverse_speed_mps": 0.8,
+    "pwm_min_us": 1000.0,
+    "pwm_max_us": 2000.0,
+    "steering_sign": 1,
+    "erpm_forward_sign": -1
+   },
+   "rebuild_vs_applied_max_us": [
+    0.0,
+    0.0
+   ],
+   "cross_convention_max_us": [
+    0.9992,
+    2.0
+   ],
+   "label_vs_applied_max_us_by_offset": {
+    "0": 304.644,
+    "1": 0.0001
+   },
+   "label_offset": 1,
+   "relabelled_dataset": false,
+   "min_speed_mps": 0.0,
+   "ok_rebuild": true,
+   "ok_within_1_2us": true,
+   "needs_relabel_over_5us": false,
+   "ok_label_equals_applied": true
+  }
+ },
+ "arms": {
+  "S-DIV": {
+   "path": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/data/S-DIV",
+   "combined_json": {
+    "schema": "jf-sim-diverse-combined/v1",
+    "created_at": "2026-10-15T09:22:35+0900",
+    "modes_from": "/home/jetson/jetformer/data/datasets/sim-rl-fastest_20261014-1125/dataset_card.json",
+    "mode_name_differences": {
+     "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d": {
+      "1": [
+       "駐車1",
+       "駐車(1)"
+      ],
+      "2": [
+       "駐車2",
+       "駐車(2)"
+      ],
+      "3": [
+       "駐車3",
+       "駐車(3)"
+      ]
+     },
+     "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b": {
+      "1": [
+       "駐車1",
+       "駐車(1)"
+      ],
+      "2": [
+       "駐車2",
+       "駐車(2)"
+      ],
+      "3": [
+       "駐車3",
+       "駐車(3)"
+      ]
+     }
+    },
+    "sources": [
+     {
+      "dataset": "sim-rl-fastest_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-fastest_20261014-1125",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "fa629b27b4b0e2a0ead0b42ef0e27a74ea206e07df2ec457e7abc913bcecdefe",
+      "card_sha256": "e7f55b62237045d13e91b14890d6904348938ffbdc220dce083953f517ae054d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-speed_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-speed_20261014-1125",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "4e6a953b314db3e3c706557483e3a959c0e220c4c793dcea07ff6c95c0d6491c",
+      "card_sha256": "6bfbaa899a636132e48646a4776f08135c5fd1545e2faaa583b7e4fc38c3864d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-no_wall_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-no_wall_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "c5137089e9ba8060ccdf0e2ee767fd3b5b9d00e8811155fa55ce90a05ebf4fac",
+      "card_sha256": "c3eced08dc2db516f1062eed04ccbc66d7305f7722e4ac79838021ef51a16177",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-recover_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-recover_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "91e1f5a36d22fc93fd0189effdc29428466124f8d8bfadd4ba873e350a13bde3",
+      "card_sha256": "25d8631094cc4d2ecb817ab9061718c164655ed844d7931ccd3dfb9803591106",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "0": 1623,
+       "8": 7377
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 1623
+     },
+     {
+      "dataset": "sim-rl-line_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-line_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "a9fcfdfacb38e2b5fc29fc3f75807c8bf529140b4aac7dd69590d27260840469",
+      "card_sha256": "0868f0e53732a54784a0a1cfd3baf867b9272aec8cab9b16deca0942ecbe8736",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d",
+      "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "bd44c80ff1c55d59658033e69e4934aac16d6ed2db9d71673dbe25b0f3bf63bd",
+      "card_sha256": "d9d4704545353be0e250fad0f0ea88c4659c6b9f89e8dad6a79e3810e7e5bc37",
+      "scenes_in_source": {
+       "train": 24,
+       "val": 6,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 24,
+       "val": 6,
+       "test": 0
+      },
+      "frames_included": 18000,
+      "mode_frames_included": {
+       "8": 18000
+      },
+      "sample_dir_links": 60,
+      "relabel": "jf-sim-dart-relabel/v1",
+      "label_mask": null
+     },
+     {
+      "dataset": "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b",
+      "path": "/home/jetson/jetformer/data/datasets/jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "5defdb0ca0dd4fa50070870bdfa974263037c44e1afdfee338a8b6d45b9288fa",
+      "card_sha256": "46d9388c6de281d457b53230fdd0f4907a1f664966f6a92c37addcbfece0fed3",
+      "scenes_in_source": {
+       "train": 24,
+       "val": 6,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 24,
+       "val": 6,
+       "test": 0
+      },
+      "frames_included": 18000,
+      "mode_frames_included": {
+       "8": 18000
+      },
+      "sample_dir_links": 60,
+      "relabel": null,
+      "label_mask": null
+     }
+    ],
+    "splits": {
+     "train": 108,
+     "val": 27,
+     "test": 0
+    },
+    "frames": 81000,
+    "mode_frames": {
+     "0": 1623,
+     "8": 79377
+    }
+   },
+   "splits": {
+    "train": {
+     "samples": 20847,
+     "scenes": 108,
+     "scenes_in_split": 108,
+     "scenes_loadable": 108,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 20847
+     },
+     "action_reference": [
+      1399.0,
+      1188.5
+     ],
+     "sum_of_sources": 20847,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 0,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 1935,
+     "samples_per_source": {
+      "sim-rl-fastest_20261014-1125": 2364,
+      "sim-rl-speed_20261014-1125": 2364,
+      "sim-rl-no_wall_20261015-0302": 2364,
+      "sim-rl-recover_20261015-0302": 1935,
+      "sim-rl-line_20261015-0302": 2364,
+      "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d": 4728,
+      "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b": 4728
+     }
+    },
+    "val": {
+     "samples": 5203,
+     "scenes": 27,
+     "scenes_in_split": 27,
+     "scenes_loadable": 27,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 5203
+     },
+     "sum_of_sources": 5203,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 0,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 475,
+     "samples_per_source": {
+      "sim-rl-fastest_20261014-1125": 591,
+      "sim-rl-speed_20261014-1125": 591,
+      "sim-rl-no_wall_20261015-0302": 591,
+      "sim-rl-recover_20261015-0302": 475,
+      "sim-rl-line_20261015-0302": 591,
+      "jetformer-simulator-rl-dart-fast-10min_20261014-062216_4446c73d": 1182,
+      "jetformer-simulator-rl-margin-line-10min_20261014-070934_48d04e6b": 1182
+     }
+    }
+   },
+   "checks": {
+    "scene_lists_equal_sources": true,
+    "scenes_expected": true,
+    "samples_expected": true,
+    "samples_equal_sum_of_sources": true,
+    "index_equal_sources": true,
+    "impact_masked_equal_sources": true,
+    "genre0_samples_zero": true,
+    "num_modes_9": true,
+    "train_mode_counts_expected": true,
+    "recover_masked_frames_excluded": true,
+    "recover_label_windows_clean": true,
+    "not_used_datasets_absent": true,
+    "links_ok": true,
+    "per_mode_train_expected": true,
+    "D1_D2_samples_expected": true,
+    "source_share_expected": true,
+    "modes_table_from_first_source": true
+   },
+   "files_sha256": {
+    "splits.json": "132106e7583b7b4cd335252692b2bbaacbd7c98e01ad66a4a814b0c222f1bf9b",
+    "dataset_card.json": "b94eae3a5f6bff37fb4412ea5018239803722c499aaed130ed6408c6affa051b",
+    "combined.json": "add1a9dd6b3bb2c83540979c594b04400a5f948124c68ec533baba0445b85159"
+   },
+   "links": {
+    "aligned_links": 135,
+    "sample_dir_links": 270,
+    "bad_links": [],
+    "n_bad_links": 0,
+    "images_checked": 81000,
+    "images_missing": 0,
+    "missing_examples": [],
+    "folder_bytes_without_following_links": 30758,
+    "ok": true
+   },
+   "per_mode_train": [
+    2364,
+    2364,
+    2364,
+    1935,
+    2364
+   ],
+   "source_share_of_train_samples": {
+    "5 モード": 0.546,
+    "D1 DART": 0.227,
+    "D2 余裕の線": 0.227
+   },
+   "ok": true
+  },
+  "S-MOD": {
+   "path": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/data/S-MOD",
+   "combined_json": {
+    "schema": "jf-sim-diverse-combined/v1",
+    "created_at": "2026-10-15T09:22:36+0900",
+    "modes_from": "/home/jetson/jetformer/data/datasets/sim-rl-fastest_20261014-1125/dataset_card.json",
+    "mode_name_differences": {},
+    "sources": [
+     {
+      "dataset": "sim-rl-fastest_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-fastest_20261014-1125",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "fa629b27b4b0e2a0ead0b42ef0e27a74ea206e07df2ec457e7abc913bcecdefe",
+      "card_sha256": "e7f55b62237045d13e91b14890d6904348938ffbdc220dce083953f517ae054d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-speed_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-speed_20261014-1125",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "4e6a953b314db3e3c706557483e3a959c0e220c4c793dcea07ff6c95c0d6491c",
+      "card_sha256": "6bfbaa899a636132e48646a4776f08135c5fd1545e2faaa583b7e4fc38c3864d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-no_wall_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-no_wall_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "c5137089e9ba8060ccdf0e2ee767fd3b5b9d00e8811155fa55ce90a05ebf4fac",
+      "card_sha256": "c3eced08dc2db516f1062eed04ccbc66d7305f7722e4ac79838021ef51a16177",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-recover_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-recover_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "91e1f5a36d22fc93fd0189effdc29428466124f8d8bfadd4ba873e350a13bde3",
+      "card_sha256": "25d8631094cc4d2ecb817ab9061718c164655ed844d7931ccd3dfb9803591106",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "0": 1623,
+       "8": 7377
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 1623
+     },
+     {
+      "dataset": "sim-rl-line_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-line_20261015-0302",
+      "splits_included": [
+       "train",
+       "val",
+       "test"
+      ],
+      "splits_sha256": "a9fcfdfacb38e2b5fc29fc3f75807c8bf529140b4aac7dd69590d27260840469",
+      "card_sha256": "0868f0e53732a54784a0a1cfd3baf867b9272aec8cab9b16deca0942ecbe8736",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "frames_included": 9000,
+      "mode_frames_included": {
+       "8": 9000
+      },
+      "sample_dir_links": 30,
+      "relabel": null,
+      "label_mask": 0
+     }
+    ],
+    "splits": {
+     "train": 60,
+     "val": 15,
+     "test": 0
+    },
+    "frames": 45000,
+    "mode_frames": {
+     "0": 1623,
+     "8": 43377
+    }
+   },
+   "splits": {
+    "train": {
+     "samples": 11391,
+     "scenes": 60,
+     "scenes_in_split": 60,
+     "scenes_loadable": 60,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 11391
+     },
+     "action_reference": [
+      1399.0,
+      1187.7
+     ],
+     "sum_of_sources": 11391,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 0,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 1935,
+     "samples_per_source": {
+      "sim-rl-fastest_20261014-1125": 2364,
+      "sim-rl-speed_20261014-1125": 2364,
+      "sim-rl-no_wall_20261015-0302": 2364,
+      "sim-rl-recover_20261015-0302": 1935,
+      "sim-rl-line_20261015-0302": 2364
+     }
+    },
+    "val": {
+     "samples": 2839,
+     "scenes": 15,
+     "scenes_in_split": 15,
+     "scenes_loadable": 15,
+     "impact_masked": 0,
+     "num_modes": 9,
+     "mode_counts": {
+      "8": 2839
+     },
+     "sum_of_sources": 2839,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 0,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 475,
+     "samples_per_source": {
+      "sim-rl-fastest_20261014-1125": 591,
+      "sim-rl-speed_20261014-1125": 591,
+      "sim-rl-no_wall_20261015-0302": 591,
+      "sim-rl-recover_20261015-0302": 475,
+      "sim-rl-line_20261015-0302": 591
+     }
+    }
+   },
+   "checks": {
+    "scene_lists_equal_sources": true,
+    "scenes_expected": true,
+    "samples_expected": true,
+    "samples_equal_sum_of_sources": true,
+    "index_equal_sources": true,
+    "impact_masked_equal_sources": true,
+    "genre0_samples_zero": true,
+    "num_modes_9": true,
+    "train_mode_counts_expected": true,
+    "recover_masked_frames_excluded": true,
+    "recover_label_windows_clean": true,
+    "not_used_datasets_absent": true,
+    "links_ok": true,
+    "per_mode_train_expected": true,
+    "modes_table_from_first_source": true
+   },
+   "files_sha256": {
+    "splits.json": "1acc831dc94165b7396bf85d00d76b457b80bf33c000c556ef6a5e169b987d16",
+    "dataset_card.json": "94bf1beed187a8c64348fb3838e3c88999b31d3fced4ff4c2916715813e22ac6",
+    "combined.json": "34aad75e31eb410d5b3efedfe89595b717b6ce1645bb7acf6f54757e0437cef5"
+   },
+   "links": {
+    "aligned_links": 75,
+    "sample_dir_links": 150,
+    "bad_links": [],
+    "n_bad_links": 0,
+    "images_checked": 45000,
+    "images_missing": 0,
+    "missing_examples": [],
+    "folder_bytes_without_following_links": 17274,
+    "ok": true
+   },
+   "per_mode_train": [
+    2364,
+    2364,
+    2364,
+    1935,
+    2364
+   ],
+   "ok": true
+  },
+  "C-DIV": {
+   "path": "/home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/data/C-DIV",
+   "combined_json": {
+    "schema": "jf-sim-diverse-combined/v1",
+    "created_at": "2026-10-15T09:22:45+0900",
+    "modes_from": "/home/jetson/jetformer/data/datasets/simreal_mix_20261013/dataset_card.json",
+    "mode_name_differences": {
+     "sim-rl-fastest_20261014-1125": {
+      "1": [
+       "駐車(1)",
+       "駐車1"
+      ],
+      "2": [
+       "駐車(2)",
+       "駐車2"
+      ],
+      "3": [
+       "駐車(3)",
+       "駐車3"
+      ],
+      "6": [
+       "低速走行・良",
+       "未使用（予約）"
+      ],
+      "7": [
+       "高速走行・良",
+       "未使用（予約）"
+      ]
+     },
+     "sim-rl-speed_20261014-1125": {
+      "1": [
+       "駐車(1)",
+       "駐車1"
+      ],
+      "2": [
+       "駐車(2)",
+       "駐車2"
+      ],
+      "3": [
+       "駐車(3)",
+       "駐車3"
+      ],
+      "6": [
+       "低速走行・良",
+       "未使用（予約）"
+      ],
+      "7": [
+       "高速走行・良",
+       "未使用（予約）"
+      ]
+     },
+     "sim-rl-no_wall_20261015-0302": {
+      "1": [
+       "駐車(1)",
+       "駐車1"
+      ],
+      "2": [
+       "駐車(2)",
+       "駐車2"
+      ],
+      "3": [
+       "駐車(3)",
+       "駐車3"
+      ],
+      "6": [
+       "低速走行・良",
+       "未使用（予約）"
+      ],
+      "7": [
+       "高速走行・良",
+       "未使用（予約）"
+      ]
+     },
+     "sim-rl-recover_20261015-0302": {
+      "1": [
+       "駐車(1)",
+       "駐車1"
+      ],
+      "2": [
+       "駐車(2)",
+       "駐車2"
+      ],
+      "3": [
+       "駐車(3)",
+       "駐車3"
+      ],
+      "6": [
+       "低速走行・良",
+       "未使用（予約）"
+      ],
+      "7": [
+       "高速走行・良",
+       "未使用（予約）"
+      ]
+     },
+     "sim-rl-line_20261015-0302": {
+      "1": [
+       "駐車(1)",
+       "駐車1"
+      ],
+      "2": [
+       "駐車(2)",
+       "駐車2"
+      ],
+      "3": [
+       "駐車(3)",
+       "駐車3"
+      ],
+      "6": [
+       "低速走行・良",
+       "未使用（予約）"
+      ],
+      "7": [
+       "高速走行・良",
+       "未使用（予約）"
+      ]
+     }
+    },
+    "sources": [
+     {
+      "dataset": "clean_driving_20261011",
+      "path": "/home/jetson/jetformer/data/datasets/clean_driving_20261011",
+      "splits_included": [
+       "train",
+       "val"
+      ],
+      "splits_sha256": "77feb3d45c0499becae37ae424a91095bf30c6b7a75ccd127dc9419c9adfe394",
+      "card_sha256": "139035cf819478d75690863f92b4b5760d48a18013fcd0a52d3106d06ba032dd",
+      "scenes_in_source": {
+       "train": 41,
+       "val": 11,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 41,
+       "val": 11,
+       "test": 0
+      },
+      "frames_included": 27502,
+      "mode_frames_included": {
+       "5": 17321,
+       "4": 10181
+      },
+      "sample_dir_links": 104,
+      "relabel": null,
+      "label_mask": null
+     },
+     {
+      "dataset": "sim-rl-fastest_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-fastest_20261014-1125",
+      "splits_included": [
+       "train"
+      ],
+      "splits_sha256": "fa629b27b4b0e2a0ead0b42ef0e27a74ea206e07df2ec457e7abc913bcecdefe",
+      "card_sha256": "e7f55b62237045d13e91b14890d6904348938ffbdc220dce083953f517ae054d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 0,
+       "test": 0
+      },
+      "frames_included": 7200,
+      "mode_frames_included": {
+       "8": 7200
+      },
+      "sample_dir_links": 24,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-speed_20261014-1125",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-speed_20261014-1125",
+      "splits_included": [
+       "train"
+      ],
+      "splits_sha256": "4e6a953b314db3e3c706557483e3a959c0e220c4c793dcea07ff6c95c0d6491c",
+      "card_sha256": "6bfbaa899a636132e48646a4776f08135c5fd1545e2faaa583b7e4fc38c3864d",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 0,
+       "test": 0
+      },
+      "frames_included": 7200,
+      "mode_frames_included": {
+       "8": 7200
+      },
+      "sample_dir_links": 24,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-no_wall_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-no_wall_20261015-0302",
+      "splits_included": [
+       "train"
+      ],
+      "splits_sha256": "c5137089e9ba8060ccdf0e2ee767fd3b5b9d00e8811155fa55ce90a05ebf4fac",
+      "card_sha256": "c3eced08dc2db516f1062eed04ccbc66d7305f7722e4ac79838021ef51a16177",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 0,
+       "test": 0
+      },
+      "frames_included": 7200,
+      "mode_frames_included": {
+       "8": 7200
+      },
+      "sample_dir_links": 24,
+      "relabel": null,
+      "label_mask": 0
+     },
+     {
+      "dataset": "sim-rl-recover_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-recover_20261015-0302",
+      "splits_included": [
+       "train"
+      ],
+      "splits_sha256": "91e1f5a36d22fc93fd0189effdc29428466124f8d8bfadd4ba873e350a13bde3",
+      "card_sha256": "25d8631094cc4d2ecb817ab9061718c164655ed844d7931ccd3dfb9803591106",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 0,
+       "test": 0
+      },
+      "frames_included": 7200,
+      "mode_frames_included": {
+       "0": 1278,
+       "8": 5922
+      },
+      "sample_dir_links": 24,
+      "relabel": null,
+      "label_mask": 1623
+     },
+     {
+      "dataset": "sim-rl-line_20261015-0302",
+      "path": "/home/jetson/jetformer/data/datasets/sim-rl-line_20261015-0302",
+      "splits_included": [
+       "train"
+      ],
+      "splits_sha256": "a9fcfdfacb38e2b5fc29fc3f75807c8bf529140b4aac7dd69590d27260840469",
+      "card_sha256": "0868f0e53732a54784a0a1cfd3baf867b9272aec8cab9b16deca0942ecbe8736",
+      "scenes_in_source": {
+       "train": 12,
+       "val": 3,
+       "test": 0
+      },
+      "scenes_included": {
+       "train": 12,
+       "val": 0,
+       "test": 0
+      },
+      "frames_included": 7200,
+      "mode_frames_included": {
+       "8": 7200
+      },
+      "sample_dir_links": 24,
+      "relabel": null,
+      "label_mask": 0
+     }
+    ],
+    "splits": {
+     "train": 101,
+     "val": 11,
+     "test": 0
+    },
+    "frames": 63502,
+    "mode_frames": {
+     "0": 1278,
+     "4": 10181,
+     "5": 17321,
+     "8": 34722
+    }
+   },
+   "splits": {
+    "train": {
+     "samples": 17303,
+     "scenes": 101,
+     "scenes_in_split": 101,
+     "scenes_loadable": 101,
+     "impact_masked": 3522,
+     "num_modes": 9,
+     "mode_counts": {
+      "4": 2228,
+      "5": 3684,
+      "8": 11391
+     },
+     "action_reference": [
+      1441.0,
+      1496.0
+     ],
+     "sum_of_sources": 17303,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 3522,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 1935,
+     "samples_per_source": {
+      "clean_driving_20261011": 5912,
+      "sim-rl-fastest_20261014-1125": 2364,
+      "sim-rl-speed_20261014-1125": 2364,
+      "sim-rl-no_wall_20261015-0302": 2364,
+      "sim-rl-recover_20261015-0302": 1935,
+      "sim-rl-line_20261015-0302": 2364
+     }
+    },
+    "val": {
+     "samples": 1559,
+     "scenes": 11,
+     "scenes_in_split": 11,
+     "scenes_loadable": 11,
+     "impact_masked": 1083,
+     "num_modes": 9,
+     "mode_counts": {
+      "4": 641,
+      "5": 918
+     },
+     "sum_of_sources": 1559,
+     "index_equal_sources": true,
+     "impact_masked_sum_of_sources": 1083,
+     "genre0_samples": 0,
+     "recover_masked_frames_in_index": 0,
+     "samples_with_perturbed_action_in_label_window": 0,
+     "recover_samples_checked": 0,
+     "samples_per_source": {
+      "clean_driving_20261011": 1559
+     }
+    }
+   },
+   "checks": {
+    "scene_lists_equal_sources": true,
+    "scenes_expected": true,
+    "samples_expected": true,
+    "samples_equal_sum_of_sources": true,
+    "index_equal_sources": true,
+    "impact_masked_equal_sources": true,
+    "genre0_samples_zero": true,
+    "num_modes_9": true,
+    "train_mode_counts_expected": true,
+    "recover_masked_frames_excluded": true,
+    "recover_label_windows_clean": true,
+    "not_used_datasets_absent": true,
+    "links_ok": true,
+    "real_val_same_frames_as_A": true,
+    "val_same_frames_as_C": true,
+    "real_train_same_frames_as_A": true,
+    "impact_masked_same_as_A": true,
+    "sim_train_samples_11391": true,
+    "no_sim_in_val": true,
+    "real_aligned_same_files_as_clean_driving": true,
+    "sim_scenes_are_5mode_train_12_each": true,
+    "5mode_val_scenes_not_in_CDIV": true,
+    "modes_table_same_as_C": true,
+    "action_reference_recorded": true
+   },
+   "files_sha256": {
+    "splits.json": "0a77a369f1718cc18dcbaee67a9dea112a53da88731d2699dbd46bf8a553b12b",
+    "dataset_card.json": "a7a2fefa81f2ee4e393522d4bb032ff6ab198a92edca4b4b2e7a069ebe761ae7",
+    "combined.json": "efeb06eeae165984ad6272bf091563ed0dbf65e66bb71b47cef714d8720253ab"
+   },
+   "links": {
+    "aligned_links": 112,
+    "sample_dir_links": 224,
+    "bad_links": [],
+    "n_bad_links": 0,
+    "images_checked": 63502,
+    "images_missing": 0,
+    "missing_examples": [],
+    "folder_bytes_without_following_links": 24306,
+    "ok": true
+   },
+   "cdiv": {
+    "real_val_samples": 1559,
+    "A_val_samples": [
+     1559,
+     1559
+    ],
+    "C_val_samples": [
+     1559,
+     1559,
+     1559
+    ],
+    "real_train_samples_in_CDIV": 5912,
+    "A_train_samples": [
+     5912,
+     5912
+    ],
+    "sim_train_samples_in_CDIV": 11391,
+    "sim_val_samples_in_CDIV": 0,
+    "A_impact_masked": [
+     {
+      "train": 3522,
+      "val": 1083
+     },
+     {
+      "train": 3522,
+      "val": 1083
+     }
+    ],
+    "CDIV_impact_masked": {
+     "train": 3522,
+     "val": 1083
+    },
+    "A_train_mode_counts": [
+     {
+      "4": 2228,
+      "5": 3684
+     },
+     {
+      "4": 2228,
+      "5": 3684
+     }
+    ],
+    "C_train_mode_counts": [
+     {
+      "4": 2228,
+      "5": 3684,
+      "8": 11820
+     },
+     {
+      "4": 2228,
+      "5": 3684,
+      "8": 11820
+     }
+    ],
+    "real_aligned_same_files": 52,
+    "real_link_differences": [],
+    "action_reference_CDIV": [
+     1441.0,
+     1496.0
+    ],
+    "action_reference_A_C": [
+     [
+      1441.0,
+      1496.0
+     ],
+     [
+      1441.0,
+      1496.0
+     ],
+     [
+      1441.0,
+      1496.0
+     ],
+     [
+      1441.0,
+      1496.0
+     ]
+    ],
+    "action_reference_real_only": [
+     1441.0,
+     1496.0
+    ],
+    "action_reference_same_as_A_C": true
+   },
+   "ok": true
+  }
+ },
+ "ok": {
+  "sources_frames_genres_accepted": true,
+  "recover_mask_recount_1623": true,
+  "pwm_rebuild_equals_applied": true,
+  "pwm_conventions_within_1_2us": true,
+  "pwm_no_relabel_needed": true,
+  "pwm_labels_equal_applied_not_relabelled": true,
+  "arm_S-DIV": true,
+  "arm_S-MOD": true,
+  "arm_C-DIV": true,
+  "smoke_all_arms": true
+ },
+ "recover_mask": {
+  "rule": "k ∈ [j − 10, j]",
+  "horizon": 10,
+  "scenes": 15,
+  "masked_recount": 1623,
+  "card_masked": 1623,
+  "per_scene": {
+   "20261014-182116-b25f20bc-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 62,
+    "masked_recount": 102,
+    "aligned_mode0": 102,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 102
+   },
+   "20261014-182239-8325b403-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 76,
+    "masked_recount": 116,
+    "aligned_mode0": 116,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 116
+   },
+   "20261014-182400-ef365fa0-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 40,
+    "masked_recount": 80,
+    "aligned_mode0": 80,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 80
+   },
+   "20261014-182521-fa867d9a-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 87,
+    "masked_recount": 127,
+    "aligned_mode0": 127,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 127
+   },
+   "20261014-182745-ba189d46-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 52,
+    "masked_recount": 102,
+    "aligned_mode0": 102,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 102
+   },
+   "20261014-182857-f475caf3-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 57,
+    "masked_recount": 87,
+    "aligned_mode0": 87,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 87
+   },
+   "20261014-183009-d3612f1d-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 79,
+    "masked_recount": 119,
+    "aligned_mode0": 119,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 119
+   },
+   "20261014-183121-854c667d-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 51,
+    "masked_recount": 101,
+    "aligned_mode0": 101,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 101
+   },
+   "20261014-183346-6a5b9f9b-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 70,
+    "masked_recount": 110,
+    "aligned_mode0": 110,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 110
+   },
+   "20261014-183458-5eb74890-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 64,
+    "masked_recount": 104,
+    "aligned_mode0": 104,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 104
+   },
+   "20261014-183610-9dcdd277-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 77,
+    "masked_recount": 117,
+    "aligned_mode0": 117,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 117
+   },
+   "20261014-183722-31739002-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 63,
+    "masked_recount": 113,
+    "aligned_mode0": 113,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 113
+   },
+   "20261014-182633-b515f0ce-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 75,
+    "masked_recount": 115,
+    "aligned_mode0": 115,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 115
+   },
+   "20261014-183233-33ca62d6-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 81,
+    "masked_recount": 121,
+    "aligned_mode0": 121,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 121
+   },
+   "20261014-183845-b491ecd3-0001": {
+    "rows": 600,
+    "frames": 600,
+    "l0_actions": 69,
+    "masked_recount": 109,
+    "aligned_mode0": 109,
+    "same": true,
+    "future_valid_false": true,
+    "card_masked": 109
+   }
+  },
+  "ok": true
+ },
+ "all_ok": true,
+ "seconds": 13.2,
+ "smoke": {
+  "S-DIV": {
+   "ok": true,
+   "kill_after_epoch1": true,
+   "started": "2026-10-15 09:29:49",
+   "ended": "2026-10-15 09:30:53",
+   "real_command": "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/S-DIV --epochs 30 --lr 3e-4 --out /home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-SDIV-s0 --seed 0 --stride 3 --batch 64 --workers 1 --no-command-input --impact-g 2.5",
+   "smoke_overrides": {
+    "--epochs": 2,
+    "--batch": 8,
+    "--workers": 0,
+    "--max-steps": 2,
+    "--out": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-SDIV-s0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "jf-heavy": "--mem 1500M --lock none"
+   },
+   "phases": [
+    {
+     "cmd_extra": [],
+     "exit": -9,
+     "seconds": 24.4,
+     "killed": true,
+     "last_epoch_after": 1
+    },
+    {
+     "cmd_extra": [
+      "--resume"
+     ],
+     "exit": 0,
+     "seconds": 25.6,
+     "killed": false,
+     "last_epoch_after": 2
+    }
+   ],
+   "result": {
+    "state": "done",
+    "epochs_done": 2,
+    "train_samples": 16,
+    "val_samples": 16,
+    "best_val_us": 177.7,
+    "best_epoch": 2,
+    "train_mode_counts": {
+     "8": 16
+    },
+    "impact_masked_frames": {
+     "train": 0,
+     "val": 0
+    },
+    "steer_center_us": 1399.0,
+    "throttle_neutral_us": 1188.5,
+    "dataset": "S-DIV",
+    "seed": 0
+   },
+   "model_config": {
+    "num_modes": 9,
+    "trained_modes": [
+     8
+    ],
+    "dataset": "S-DIV",
+    "policy": "jetformer_v0",
+    "command_input": false,
+    "inputs": [
+     "image",
+     "tof",
+     "imu",
+     "state",
+     "mode"
+    ]
+   },
+   "onnx_bytes": 56524226
+  },
+  "S-MOD": {
+   "ok": true,
+   "kill_after_epoch1": false,
+   "started": "2026-10-15 09:31:01",
+   "ended": "2026-10-15 09:31:57",
+   "real_command": "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/S-MOD --epochs 30 --lr 3e-4 --out /home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-SMOD-s0 --seed 0 --stride 3 --batch 64 --workers 1 --no-command-input --impact-g 2.5",
+   "smoke_overrides": {
+    "--epochs": 2,
+    "--batch": 8,
+    "--workers": 0,
+    "--max-steps": 2,
+    "--out": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-SMOD-s0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "jf-heavy": "--mem 1500M --lock none"
+   },
+   "phases": [
+    {
+     "cmd_extra": [],
+     "exit": 0,
+     "seconds": 52.5,
+     "killed": false,
+     "last_epoch_after": 2
+    }
+   ],
+   "result": {
+    "state": "done",
+    "epochs_done": 2,
+    "train_samples": 16,
+    "val_samples": 16,
+    "best_val_us": 118.9,
+    "best_epoch": 2,
+    "train_mode_counts": {
+     "8": 16
+    },
+    "impact_masked_frames": {
+     "train": 0,
+     "val": 0
+    },
+    "steer_center_us": 1399.0,
+    "throttle_neutral_us": 1187.7,
+    "dataset": "S-MOD",
+    "seed": 0
+   },
+   "model_config": {
+    "num_modes": 9,
+    "trained_modes": [
+     8
+    ],
+    "dataset": "S-MOD",
+    "policy": "jetformer_v0",
+    "command_input": false,
+    "inputs": [
+     "image",
+     "tof",
+     "imu",
+     "state",
+     "mode"
+    ]
+   },
+   "onnx_bytes": 56524226
+  },
+  "C-DIV": {
+   "ok": true,
+   "kill_after_epoch1": true,
+   "started": "2026-10-15 09:31:57",
+   "ended": "2026-10-15 09:32:59",
+   "real_command": "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/C-DIV --epochs 30 --lr 3e-4 --out /home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-CDIV-s0 --seed 0 --stride 3 --batch 64 --workers 2 --no-command-input --impact-g 2.5",
+   "smoke_overrides": {
+    "--epochs": 2,
+    "--batch": 8,
+    "--workers": 0,
+    "--max-steps": 2,
+    "--out": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/smoke/runs/simdiv_20261015-CDIV-s0",
+    "CUDA_VISIBLE_DEVICES": "",
+    "jf-heavy": "--mem 1500M --lock none"
+   },
+   "phases": [
+    {
+     "cmd_extra": [],
+     "exit": -9,
+     "seconds": 21.3,
+     "killed": true,
+     "last_epoch_after": 1
+    },
+    {
+     "cmd_extra": [
+      "--resume"
+     ],
+     "exit": 0,
+     "seconds": 33.8,
+     "killed": false,
+     "last_epoch_after": 2
+    }
+   ],
+   "result": {
+    "state": "done",
+    "epochs_done": 2,
+    "train_samples": 16,
+    "val_samples": 16,
+    "best_val_us": 158.6,
+    "best_epoch": 2,
+    "train_mode_counts": {
+     "4": 1,
+     "5": 3,
+     "8": 12
+    },
+    "impact_masked_frames": {
+     "train": 3522,
+     "val": 1083
+    },
+    "steer_center_us": 1441.0,
+    "throttle_neutral_us": 1496.0,
+    "dataset": "C-DIV",
+    "seed": 0
+   },
+   "model_config": {
+    "num_modes": 9,
+    "trained_modes": [
+     4,
+     5,
+     8
+    ],
+    "dataset": "C-DIV",
+    "policy": "jetformer_v0",
+    "command_input": false,
+    "inputs": [
+     "image",
+     "tof",
+     "imu",
+     "state",
+     "mode"
+    ]
+   },
+   "onnx_bytes": 56524226
+  }
+ },
+ "smoke_note": "CPU(CUDA_VISIBLE_DEVICES 空)・jf-heavy --mem 1500M --lock none で、本番と同じ train.py の引数のうち --epochs 2・--batch 8・--workers 0 に替え --max-steps 2 を足したもの。出力は smoke/runs(data/runs に作らない。終わったら消した)。S-DIV と C-DIV は 1 エポック目の last.pth のあとで kill -9(電源断のまね)→ 同じコマンドに --resume で 2 エポック目を続けた",
+ "tools_sha256": {
+  "make_combined.py": "439f9afabc3e16828198c786396e20843e0e19565325700667218c325d5ef57a",
+  "build_arms.sh": "ef2cf6dbbe03388d4fb28a8e1a9b45f2c6432e29151f8e3da83c3f1949ff2e8b",
+  "prepare_check.py": "b325608dadaaf078abaad3b56373b7b2ce7823cf46bacdda5be5b7753b6a3981",
+  "diverse_train.py": "047f36704caa7a740ebfec16d72339984d72ff9492e2467d6c11bc7852fc60d5",
+  "nothp.py": "f87bdd6fd536967b909a64136364bad608cc675bde323dc715918b1a821b3f63",
+  "export_bundle.py": "0e75ed0c44eb7fe912c9fa9625df85b9eeeb00ee58f4e2fbfb31f0ff0f9685ee",
+  "check_bundle.py": "382d8b0784e0f86901b43d7317993032fd89072d6484b15e994b5d4ef57f34ad",
+  "http_load_check.py": "33e2b04d0a2897a081c2ad605970c998de40ccda223f8356d39232221fc47883",
+  "finalize_prepare.py": "8b856436e8ffad2901740f137c56e051634a2d6480a9fadb28c93918542bd3a4"
+ },
+ "disk_free_gb_at_finalize": 9.07,
+ "finalized_at": "2026-10-15T09:36:59+0900",
+ "train_commands": [
+  "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/S-DIV --epochs 30 --lr 3e-4 --out data/runs/simdiv_20261015-SDIV-s0 --seed 0 --stride 3 --batch 64 --workers 1 --no-command-input --impact-g 2.5",
+  "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/S-MOD --epochs 30 --lr 3e-4 --out data/runs/simdiv_20261015-SMOD-s0 --seed 0 --stride 3 --batch 64 --workers 1 --no-command-input --impact-g 2.5",
+  "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/C-DIV --epochs 30 --lr 3e-4 --out data/runs/simdiv_20261015-CDIV-s0 --seed 0 --stride 3 --batch 64 --workers 2 --no-command-input --impact-g 2.5",
+  "/home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I /home/jetson/jetformer/experiments/20261015_sim_diverse_train/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data experiments/20261015_sim_diverse_train/train/data/C-DIV --epochs 30 --lr 3e-4 --out data/runs/simdiv_20261015-CDIV-s1 --seed 1 --stride 3 --batch 64 --workers 2 --no-command-input --impact-g 2.5"
+ ]
+}
