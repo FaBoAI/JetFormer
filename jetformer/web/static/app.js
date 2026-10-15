@@ -1656,7 +1656,8 @@ async function loadSimRl() {
     if (c.min_clearance_cm) nums.push(['最小すき間', `${rlNum(c.min_clearance_cm.value, c.min_clearance_cm.value < 0.1 ? 2 : 1)} cm(${c.min_clearance_cm.text_ja})`]);
     for (const x of c.main || []) nums.push([x.label_ja, x.value_ja]);
     const ds = m.datasets || { count: 0 };
-    nums.push(['集めたデータ', ds.count ? `${ds.count} データセット・${ds.scenes} シーン・${rlNum(ds.minutes, 1)} 分` : 'まだありません']);
+    nums.push(['集めたデータ', (ds.count ? `${ds.count} データセット・${ds.scenes} シーン・${rlNum(ds.minutes, 1)} 分` : 'まだありません')
+      + (ds.superseded?.count ? `(ほかに前の版の方策で記録した ${ds.superseded.count} データセット)` : '')]);
     const checks = (c.checks || []).map((k) => `<li>${k.pass === true ? '✅' : k.pass === false ? '❌' : '⏳'} ${esc(k.label_ja)}</li>`).join('');
     const notes = (c.notes_ja || []).map((x) => `<li>${esc(x)}</li>`).join('');
     const probs = (m.problems || []).map((x) => `<div class="err small">${esc(x)}</div>`).join('') + (m.warnings || []).map((x) => `<div class="warn-text small">${esc(x)}</div>`).join('');
