@@ -1,0 +1,660 @@
+{
+ "schema": "jf-sim-calib-section-map/v1",
+ "frame": "X = x + 5.15, Z = 2.8 - z(sim → コース図)",
+ "sources": {
+  "/home/jetson/jetformer_reports/overnight_20261011/course/course_map.json": "72c83a76e910f570cd092e229b283dcd8a811c743fec5c50b366486862c4f445",
+  "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/world-v3.json": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2",
+  "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.json": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4"
+ },
+ "surfaces": {
+  "carpet": {
+   "mu_sim": 0.8,
+   "course_rect_XZ": [
+    -0.275,
+    10.575,
+    -0.75,
+    6.05
+   ]
+  },
+  "blue-mat": {
+   "mu_sim": 0.65,
+   "course_rect_XZ": [
+    0.85,
+    1.7,
+    2.15,
+    3.75
+   ],
+   "course_map_rect_XZ": [
+    0.85,
+    1.7,
+    2.15,
+    3.75
+   ],
+   "max_edge_diff_m": 0.0
+  },
+  "turf": {
+   "mu_sim": 0.6,
+   "course_rect_XZ": [
+    8.1878,
+    10.0378,
+    2.8,
+    5.6
+   ],
+   "course_map_rect_XZ": [
+    8.1878,
+    10.0378,
+    2.8,
+    5.6
+   ],
+   "max_edge_diff_m": 0.0
+  },
+  "ptfe": {
+   "mu_sim": 0.22,
+   "course_rect_XZ": [
+    8.1878,
+    9.1878,
+    3.7,
+    4.7
+   ],
+   "course_map_rect_XZ": [
+    8.1878,
+    9.1878,
+    3.7,
+    4.7
+   ],
+   "max_edge_diff_m": 0.0
+  },
+  "shortcut": {
+   "mu_sim": 0.7,
+   "course_rect_XZ": [
+    6.41,
+    7.51,
+    2.5,
+    3.1
+   ],
+   "course_map_rect_XZ": [
+    6.41,
+    7.51,
+    2.5,
+    3.1
+   ],
+   "max_edge_diff_m": 0.0
+  }
+ },
+ "rails": {
+  "course_map_rails": 40,
+  "matched_within_3cm_each_end": 39,
+  "unmatched": [
+   {
+    "rail_XZ": [
+     [
+      9.52,
+      5.56
+     ],
+     [
+      9.65,
+      4.62
+     ]
+    ],
+    "best_endpoint_sum_m": 0.705
+   }
+  ],
+  "sim_segments": 51
+ },
+ "posts": {
+  "course_map_posts": 47,
+  "matched_within_3cm": 45,
+  "sim_disks": 94
+ },
+ "reference_loop": {
+  "length_m": 26.119648724030924,
+  "n": 1091,
+  "max_dist_to_course_centerline_m": 0.808,
+  "median_dist_m": 0.156,
+  "section_runs": [
+   {
+    "section": "HS",
+    "ref_s_start_m": 0.0,
+    "ref_s_end_m": 3.837,
+    "course_s_start_m": 1.9,
+    "course_s_end_m": 5.6,
+    "sim_xz_start": [
+     -0.85,
+     2.1
+    ],
+    "sim_xz_end": [
+     2.934,
+     2.066
+    ],
+    "n_points": 155
+   },
+   {
+    "section": "LH",
+    "ref_s_start_m": 3.861,
+    "ref_s_end_m": 6.181,
+    "course_s_start_m": 5.7,
+    "course_s_end_m": 7.8,
+    "sim_xz_start": [
+     2.956,
+     2.055
+    ],
+    "sim_xz_end": [
+     2.868,
+     0.462
+    ],
+    "n_points": 105
+   },
+   {
+    "section": "R1",
+    "ref_s_start_m": 6.206,
+    "ref_s_end_m": 8.216,
+    "course_s_start_m": 7.9,
+    "course_s_end_m": 10.5,
+    "sim_xz_start": [
+     2.845,
+     0.455
+    ],
+    "sim_xz_end": [
+     2.358,
+     -0.908
+    ],
+    "n_points": 91
+   },
+   {
+    "section": "GM",
+    "ref_s_start_m": 8.237,
+    "ref_s_end_m": 12.601,
+    "course_s_start_m": 10.6,
+    "course_s_end_m": 13.4,
+    "sim_xz_start": [
+     2.377,
+     -0.917
+    ],
+    "sim_xz_end": [
+     3.027,
+     -2.575
+    ],
+    "n_points": 185
+   },
+   {
+    "section": "DE",
+    "ref_s_start_m": 12.626,
+    "ref_s_end_m": 16.149,
+    "course_s_start_m": 13.5,
+    "course_s_end_m": 17.0,
+    "sim_xz_start": [
+     3.002,
+     -2.574
+    ],
+    "sim_xz_end": [
+     -0.517,
+     -2.465
+    ],
+    "n_points": 142
+   },
+   {
+    "section": "SW",
+    "ref_s_start_m": 16.174,
+    "ref_s_end_m": 24.212,
+    "course_s_start_m": 17.1,
+    "course_s_end_m": 25.4,
+    "sim_xz_start": [
+     -0.542,
+     -2.467
+    ],
+    "sim_xz_end": [
+     -2.744,
+     2.039
+    ],
+    "n_points": 335
+   },
+   {
+    "section": "HS",
+    "ref_s_start_m": 24.235,
+    "ref_s_end_m": 26.099,
+    "course_s_start_m": 0.0,
+    "course_s_end_m": 1.8,
+    "sim_xz_start": [
+     -2.721,
+     2.046
+    ],
+    "sim_xz_end": [
+     -0.871,
+     2.1
+    ],
+    "n_points": 78
+   }
+  ]
+ },
+ "gates": [
+  {
+   "gate": 0,
+   "sim_xz": [
+    -0.85,
+    2.1
+   ],
+   "ref_s_m": 1.341,
+   "section": "HS",
+   "course_s_m": 1.9
+  },
+  {
+   "gate": 1,
+   "sim_xz": [
+    0.5,
+    2.1
+   ],
+   "ref_s_m": 2.688,
+   "section": "HS",
+   "course_s_m": 3.2
+  },
+  {
+   "gate": 2,
+   "sim_xz": [
+    1.8,
+    2.1
+   ],
+   "ref_s_m": 4.159,
+   "section": "HS",
+   "course_s_m": 4.5
+  },
+  {
+   "gate": 3,
+   "sim_xz": [
+    3.35,
+    2.1
+   ],
+   "ref_s_m": 4.534,
+   "section": "LH",
+   "course_s_m": 6.0
+  },
+  {
+   "gate": 4,
+   "sim_xz": [
+    3.85,
+    1.93
+   ],
+   "ref_s_m": 4.895,
+   "section": "LH",
+   "course_s_m": 6.3
+  },
+  {
+   "gate": 5,
+   "sim_xz": [
+    4.04,
+    1.4
+   ],
+   "ref_s_m": 5.255,
+   "section": "LH",
+   "course_s_m": 6.7
+  },
+  {
+   "gate": 6,
+   "sim_xz": [
+    3.85,
+    0.87
+   ],
+   "ref_s_m": 5.638,
+   "section": "LH",
+   "course_s_m": 7.1
+  },
+  {
+   "gate": 7,
+   "sim_xz": [
+    3.35,
+    0.7
+   ],
+   "ref_s_m": 6.435,
+   "section": "LH",
+   "course_s_m": 7.4
+  },
+  {
+   "gate": 8,
+   "sim_xz": [
+    2.51,
+    0.7
+   ],
+   "ref_s_m": 6.728,
+   "section": "R1",
+   "course_s_m": 8.2
+  },
+  {
+   "gate": 9,
+   "sim_xz": [
+    2.16,
+    0.6062
+   ],
+   "ref_s_m": 6.99,
+   "section": "R1",
+   "course_s_m": 8.6
+  },
+  {
+   "gate": 10,
+   "sim_xz": [
+    1.9038,
+    0.35
+   ],
+   "ref_s_m": 7.229,
+   "section": "R1",
+   "course_s_m": 9.0
+  },
+  {
+   "gate": 11,
+   "sim_xz": [
+    1.81,
+    0
+   ],
+   "ref_s_m": 7.493,
+   "section": "R1",
+   "course_s_m": 9.4
+  },
+  {
+   "gate": 12,
+   "sim_xz": [
+    1.9038,
+    -0.35
+   ],
+   "ref_s_m": 7.837,
+   "section": "R1",
+   "course_s_m": 9.9
+  },
+  {
+   "gate": 13,
+   "sim_xz": [
+    2.16,
+    -0.6062
+   ],
+   "ref_s_m": 8.291,
+   "section": "R1",
+   "course_s_m": 10.3
+  },
+  {
+   "gate": 14,
+   "sim_xz": [
+    2.51,
+    -0.7
+   ],
+   "ref_s_m": 9.342,
+   "section": "GM",
+   "course_s_m": 10.7
+  },
+  {
+   "gate": 15,
+   "sim_xz": [
+    3.5,
+    -0.7
+   ],
+   "ref_s_m": 9.699,
+   "section": "GM",
+   "course_s_m": 11.6
+  },
+  {
+   "gate": 16,
+   "sim_xz": [
+    3.85,
+    -0.95
+   ],
+   "ref_s_m": 10.002,
+   "section": "GM",
+   "course_s_m": 12.0
+  },
+  {
+   "gate": 17,
+   "sim_xz": [
+    3.98,
+    -1.45
+   ],
+   "ref_s_m": 11.52,
+   "section": "GM",
+   "course_s_m": 12.4
+  },
+  {
+   "gate": 18,
+   "sim_xz": [
+    3.83,
+    -1.93
+   ],
+   "ref_s_m": 12.242,
+   "section": "GM",
+   "course_s_m": 12.7
+  },
+  {
+   "gate": 19,
+   "sim_xz": [
+    3.35,
+    -2.25
+   ],
+   "ref_s_m": 13.338,
+   "section": "GM",
+   "course_s_m": 13.2
+  },
+  {
+   "gate": 20,
+   "sim_xz": [
+    2.3,
+    -2.4
+   ],
+   "ref_s_m": 14.834,
+   "section": "DE",
+   "course_s_m": 14.2
+  },
+  {
+   "gate": 21,
+   "sim_xz": [
+    0.8,
+    -2.4
+   ],
+   "ref_s_m": 16.129,
+   "section": "DE",
+   "course_s_m": 15.7
+  },
+  {
+   "gate": 22,
+   "sim_xz": [
+    -0.5,
+    -2.42
+   ],
+   "ref_s_m": 17.235,
+   "section": "DE",
+   "course_s_m": 17.0
+  },
+  {
+   "gate": 23,
+   "sim_xz": [
+    -1.6,
+    -2.42
+   ],
+   "ref_s_m": 18.286,
+   "section": "SW",
+   "course_s_m": 18.1
+  },
+  {
+   "gate": 24,
+   "sim_xz": [
+    -2.65,
+    -2.4
+   ],
+   "ref_s_m": 19.119,
+   "section": "SW",
+   "course_s_m": 19.2
+  },
+  {
+   "gate": 25,
+   "sim_xz": [
+    -3.6,
+    -2.3
+   ],
+   "ref_s_m": 19.736,
+   "section": "SW",
+   "course_s_m": 20.1
+  },
+  {
+   "gate": 26,
+   "sim_xz": [
+    -4.2,
+    -1.9
+   ],
+   "ref_s_m": 20.262,
+   "section": "SW",
+   "course_s_m": 20.7
+  },
+  {
+   "gate": 27,
+   "sim_xz": [
+    -4.45,
+    -1.3
+   ],
+   "ref_s_m": 21.437,
+   "section": "SW",
+   "course_s_m": 21.2
+  },
+  {
+   "gate": 28,
+   "sim_xz": [
+    -4.45,
+    0
+   ],
+   "ref_s_m": 22.501,
+   "section": "SW",
+   "course_s_m": 22.4
+  },
+  {
+   "gate": 29,
+   "sim_xz": [
+    -4.4,
+    1.2
+   ],
+   "ref_s_m": 23.024,
+   "section": "SW",
+   "course_s_m": 23.6
+  },
+  {
+   "gate": 30,
+   "sim_xz": [
+    -4.15,
+    1.8
+   ],
+   "ref_s_m": 23.6,
+   "section": "SW",
+   "course_s_m": 24.1
+  },
+  {
+   "gate": 31,
+   "sim_xz": [
+    -3.5,
+    2.1
+   ],
+   "ref_s_m": 24.763,
+   "section": "SW",
+   "course_s_m": 24.7
+  },
+  {
+   "gate": 32,
+   "sim_xz": [
+    -2.2,
+    2.1
+   ],
+   "ref_s_m": 0.0,
+   "section": "HS",
+   "course_s_m": 0.5
+  }
+ ],
+ "section_surfaces_on_reference_loop_points": {
+  "HS": {
+   "carpet": 233
+  },
+  "LH": {
+   "carpet": 105
+  },
+  "R1": {
+   "carpet": 61,
+   "shortcut": 30
+  },
+  "GM": {
+   "carpet": 31,
+   "ptfe": 41,
+   "turf": 113
+  },
+  "DE": {
+   "carpet": 142
+  },
+  "SW": {
+   "carpet": 316,
+   "blue-mat": 19
+  }
+ },
+ "hotspots_sim": {
+  "R1": {
+   "center_sim": [
+    0.95,
+    0.22
+   ],
+   "contact_sim": [
+    0.95,
+    0.0
+   ],
+   "radius_m": 0.4
+  },
+  "DE": {
+   "center_sim": [
+    -0.1,
+    -2.6
+   ],
+   "contact_sim": [
+    -0.23,
+    -2.78
+   ],
+   "radius_m": 0.4
+  },
+  "GM_in": {
+   "center_sim": [
+    2.87,
+    -1.12
+   ],
+   "contact_sim": [
+    3.04,
+    -1.4
+   ],
+   "radius_m": 0.3
+  },
+  "GM_out": {
+   "center_sim": [
+    3.8,
+    -2.5
+   ],
+   "contact_sim": [
+    3.8,
+    -2.8
+   ],
+   "radius_m": 0.35
+  }
+ },
+ "dimensions": {
+  "course_map_W_D_m": [
+   10.3,
+   5.6
+  ],
+  "sim_bounds": {
+   "minX": -5.425,
+   "maxX": 5.425,
+   "minZ": -3.25,
+   "maxZ": 3.55
+  },
+  "sim_bounds_as_course_XZ": [
+   -0.27499999999999947,
+   10.575,
+   -0.75,
+   6.05
+  ],
+  "sim_route_gates": 33,
+  "required_crossing": [
+   {
+    "id": "shortcut",
+    "surface_id": "shortcut",
+    "minX": 1.26,
+    "maxX": 2.36,
+    "z": 0,
+    "direction": -1
+   }
+  ]
+ }
+}

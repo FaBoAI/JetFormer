@@ -1,0 +1,355 @@
+{
+ "schema": "jf-sim-calibration-protocol/v1",
+ "id": "sim_calibration_20261016",
+ "created_at": "2026-10-16T20:27:00+09:00",
+ "request": {
+  "user_words": "今週は走行できないので、ほかにできることは?",
+  "chosen_items": ["4 データを選び直して B2 を学習(別の作業)", "7 シミュレーターを実車に近づける(この手順)"],
+  "scope": "実車のログから車の応答(スロットル→速さ・電池、惰性とブレーキ、舵→ヨーレートと速さ、路面ごとの横の限界、遅れ)を同定し、ユーザーのファイルを変えずにシミュレーターへ較正した物理を当て、実車のログで較正の前後の忠実度を確かめ、そのうえで安全層 v1 の区間の速度上限(R1 2.5・GM 2.2・DE 3.0 m/s)を較正したシミュレーターで試す。最後に報告と約 1 分の動画の絵コンテ(描画は本体のセッション)。",
+  "plan_refs": ["/home/jetson/jetformer_reports/action_plan_20261016/plan.md(項目 9・後での『シミュレーターの較正と SIL』)", "/home/jetson/jetformer_reports/action_plan_20261016/evidence_simulator.md(SIM-1・SIM-4・SIM-5・6 章)"]
+ },
+ "rules": {
+  "real_car": "実車を走らせない。PCA9685・I2C に触れない。",
+  "drive_py": "jetformer/drive.py に何もつながない。走行の既定値を変えない。速度上限はシミュレーターの中の純粋な関数と、オフライン/シミュレーターの評価だけ。drive.py への組み込みは後でユーザーの了承が要る。",
+  "user_files": "ユーザーのシミュレーター(/home/jetson/jetformer/data/sim/releases・/home/jetson/sim)は読むだけ。写しはレポートのフォルダーに作り、元とバイト単位で同じことを sha256 で確かめる。",
+  "raw_data": "data/raw・data/labels・既存のデータセットは読むだけ。",
+  "jetformer_side_code": "新しいコードは /home/jetson/jetformer/experiments/20261016_sim_calibration/ に置き、試験を付ける。jetformer/sim・jetformer/web は変えない(変えると jetformer-web の再起動が要るため)。",
+  "compute": {
+   "cpu": "/home/jetson/bin/jf-heavy --mem 1500M --lock none -- nice -n 10 <cmd>",
+   "firefox": "/home/jetson/bin/jf-heavy --mem 2500M --lock big --need-mb 2048 -- <cmd>(GPU の学習・pytest 一式と順番待ち)",
+   "gpu": "使わない",
+   "firefox_env": {"DISPLAY": ":0", "XAUTHORITY": "/run/user/1000/gdm/Xauthority", "profile": "/home/jetson/jetformer_reports/sim_calibration_20261016/ff_profile", "geckodriver_port": 4451, "bridge_ports": "8831-8839"},
+   "disk": "空き 8 GB 以上を保つ(設計時 19 GB)。出力は合計 300 MB 以下の見込み。",
+   "power": "電源断に備え、各段は条件ごとに JSON を書き、既にある結果は飛ばして続きから走る。"
+  },
+  "git": "commit しない",
+  "processes": "起動したプロセス(ブリッジ・Firefox・geckodriver・node)は各段の終わりに全部止める。",
+  "language": "ユーザー向けの文章とコードのコメントは日本語"
+ },
+ "inputs_sha256": {
+  "sim_core_js": {"path": "/home/jetson/jetformer/data/sim/releases/20261013-144013-6f610dd5/dist/sim-core.js", "sha256": "aaeb23798ee4b85f31be6bedf763a519d910ffc76a39f1b85ddaa83fd854549e", "note": "experiments/20261013_sim_rl_bestlap/sim/dist と sim_diverse_train_20261015/sim/dist の写しも同じ"},
+  "sim_release": "20261013-144013-6f610dd5(active.json)",
+  "world_v3": {"path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/sim/world-v3.json", "sha256": "57de53a55e5366c004e26443d8e23722b015a9ac865044023a3ac57db55f9dc2", "world_version": "indoor-course-eval-3-turf-board-removed"},
+  "reference_loop": {"path": "/home/jetson/jetformer/experiments/20261013_sim_rl_bestlap/rl/reference_loop.json", "sha256": "0bd89546358b73fc0fb7201934151097d6e2dbd87521fb22a9b24596101f97e4", "length_m": 26.119648724030924},
+  "course_map": {"path": "/home/jetson/jetformer_reports/overnight_20261011/course/course_map.json", "sha256": "72c83a76e910f570cd092e229b283dcd8a811c743fec5c50b366486862c4f445"},
+  "rl_mode_runtime": {"path": "/home/jetson/jetformer/jetformer/sim/static/rl/mode_runtime.mjs", "sha256": "f59b195596bca037b930b6295df4e86edb7f93beca090b4d2b8a27a487e6aea9"},
+  "rl_policies": {"fastest": "7c43cb53cb24f7951bd4640b7bccb71f34ddbcc43599597aa75248aace6153ee", "speed": "6f4d5e8d245f4f3e076c4a5db94c9da684b5bb0ba061b999d372ab6098898ac0", "source": "/home/jetson/jetformer/data/sim_rl/modes/<key>/policy.json"},
+  "sdiv_bundle": {"path": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/bundles/simdiv_20261015-SDIV-s0.zip", "sha256": "842501534eb5418a207588e1865a25ae8de0f2bdcb3547416a33720a384abd9f"},
+  "design_stage_outputs": {
+   "section_map.json": "f7e2c0d4434084f8c70257e702c61793053e3396b6b1c43b7cba86e675a9f3f6",
+   "inventory.json": "c67d7696b216455fcd9dfa9ebf9e2abf47c7c5d5e5fecb08034a680873de3e29",
+   "section_map.py": "29038f25951a3a7bd4eb3eb75116c49eba7b5d32b1a8f17084fed52fd19138e6",
+   "inventory.py": "190913214c1728c5ab1a20015d0fcca52777b5b511a2c8853030e03c157ecc24"
+  }
+ },
+ "course_identity": {
+  "frame": "シミュレーター (x, z) → コース図 (X, Z): X = x + 5.15、Z = 2.8 − z",
+  "result": "同じコース。路面 5 種(青マット・芝・PTFE・ショートカットのスポンジ・カーペット)の矩形は誤差 0 mm。コース図の板 40 本のうち 39 本、支柱 47 本のうち 45 本が端点 3 cm 以内で一致。",
+  "differences": [
+   "芝の斜めの板 (X 9.52〜9.65, Z 4.62〜5.56) と両端の支柱がシミュレーター(版 indoor-course-eval-3-turf-board-removed)には無い。GM 出口(hotspot GM_out)の接触相手の 1 つ。→ 上限の試験で、この板を足した世界 W+ を感度として走らせる。実車で今もあるかは、計画項目 1(配置の確認)でユーザーに確かめる。",
+   "DE の赤い板 (X 3.01〜4.87, Z 5.60) が支柱へ斜めに入っている疑い(写真、未計測)は、コース図にもシミュレーターにも無い。",
+   "コース図そのものが推定(数 10 cm の誤差はありうる)。"
+  ],
+  "driving_direction": "どちらも左回り: HS(+X)→ LH(暗幕の中の左 U ターン)→ R1(ショートカットを右 U ターン、必須の横断)→ GM(芝と PTFE の左 U ターン)→ DE(奥の直線を −X)→ SW(左端の左 U ターン)→ HS",
+  "sections_on_reference_loop_R": {
+   "note": "参照ループ R(26.12 m)の各点を、コース図の基準線(25.48 m)の最も近い点の区間にした。R と基準線の距離は中央値 0.16 m・最大 0.81 m。",
+   "HS": [[24.235, 26.12], [0.0, 3.837]],
+   "LH": [3.861, 6.181],
+   "R1": [6.206, 8.216],
+   "GM": [8.237, 12.601],
+   "DE": [12.626, 16.149],
+   "SW": [16.174, 24.212],
+   "gates": {"HS": [32, 0, 1, 2], "LH": [3, 4, 5, 6, 7], "R1": [8, 9, 10, 11, 12, 13], "GM": [14, 15, 16, 17, 18, 19], "DE": [20, 21, 22], "SW": [23, 24, 25, 26, 27, 28, 29, 30, 31]},
+   "surfaces_on_R_points": {"HS": {"carpet": 233}, "LH": {"carpet": 105}, "R1": {"carpet": 61, "shortcut": 30}, "GM": {"turf": 113, "ptfe": 41, "carpet": 31}, "DE": {"carpet": 142}, "SW": {"carpet": 316, "blue-mat": 19}}
+  },
+  "hotspots_sim_xz": {"R1_contact_white_board": [0.95, 0.0], "R1_inner_rail_end_post": [2.36, 0.0], "DE_gate_north_post": [-0.23, -2.78], "GM_in": [3.04, -1.4], "GM_out": [3.8, -2.8]},
+  "sim_failure_spots_seen_before": "S-DIV の衝突 (2.4〜2.7, 0.25〜0.3) = R1 の内側のレール端の支柱(sim_diverse_train_20261015/eval_sim.md)",
+  "source": "section_map.py → section_map.json"
+ },
+ "data": {
+  "logs": "data/raw の 2026-10-10 の 23 本すべて(実機のログは 10/10 だけ)。ラベルは data/labels/<ログ>.npz・.json(loc_code・ai・mask・events)。",
+  "excluded_scenes": ["20261010-163247-0021", "20261010-163247-0022"],
+  "excluded_reason": "npz が壊れている(電源断)",
+  "operators": {
+   "human": "CH3 が人側(label_events.clean_select)。指令 = VEHICLE.pwm[:,0:2](基板が受信機から読んだ値、100 Hz)",
+   "ai": "CH3 が AI 側。指令 = AI_CMD.out を『撮像の時刻 + latency_ms』(= PCA9685 へ書いた時刻)から次の指令まで保持。100 ms より古い・hold・補助(assist > 0)・ガードが効いた・dry_run は欠け。AI が運転中の VEHICLE.pwm は送信機の値なので使わない。"
+  },
+  "center_neutral_us": {"steer_center_human": 1442, "steer_center_ai": 1443, "throttle_neutral": 1498},
+  "pwm_to_sim_units": "ブリッジ(jetformer_policy.pwm_to_action)と同じ: 舵 u_s = clip((pwm − 中心)/span, −1, 1) × 0.52 rad(span は左 2000 − 中心、右 中心 − 1000)。速さ u_v = (1498 − thr)/498 × 7.24 m/s(thr ≤ 1498)、−(thr − 1498)/502 × 0.8 m/s(thr > 1498 = ブレーキ/後退の要求)",
+  "truth_signals": {
+   "speed": "v = movavg(−erpm × 0.5e-3, 5)(100 Hz)。滑ると大きく出る(限界に書く)",
+   "yaw_rate": "r = gyro_z(deg/s → rad/s)− ログごとのずれ(|erpm| < 50 かつ |gyro_z| < 5 dps の中央値)。左が正",
+   "heading": "ψ = ∫ r dt(窓の始まりで 0)",
+   "position": "p = ∫ v (cos ψ, sin ψ) dt(窓の始まりで 0)",
+   "lateral_accel": "a_lat = −accel_x(IMU の x は横で右が正 → 左を正にする。tof_predictor.md 0 章)、0.1 秒の移動平均",
+   "longitudinal_accel": "a_lon = accel_y(前が正)"
+  },
+  "clean_mask": "inventory.py の clean と同じ: 衝突の 1 秒前〜2 秒後、交代・戻しの ±0.3 秒、基板の再起動の ±0.5 秒、補助・hold・リカバリー・giveup の区間 ±0.2 秒、50 ms を超える途切れ、指令の欠けを除く",
+  "section_label": "100 Hz の各時刻に、最も近い(100 ms 以内)ラベルのフレームの loc_code(unknown/R1/GM/DE/other=SW/HS/LH)",
+  "split": {
+   "unit": "シーン(20 秒)",
+   "rule": "各ログの中でシーンを名前順に並べた番号 k(0 始まり。label_events.load_log の scenes の順)。k % 3 == 1 を保留(validation)、それ以外を当てはめ(fit)",
+   "why": "電池の減り方・時刻・操作者の偏りを両方にそろえるため。隣のシーンは似ているが、物理のパラメーター(20 個ほど)に対して窓は 1,000 個以上ある"
+  },
+  "windows": {
+   "length_s": 1.0,
+   "stride_s": 0.5,
+   "warmup_s": 0.5,
+   "min_v0_mps": 0.5,
+   "requirements": "窓とその前の 0.5 秒(準備)がすべて clean・指令あり・同じ操作者",
+   "section_of_window": "窓の始まりの loc_code",
+   "secondary_length_s": 2.0
+  },
+  "inventory_design_stage": {
+   "moving_clean_s": {"human": 1085.9, "ai": 442.6},
+   "moving_clean_s_by_section": {"human": {"R1": 97.0, "GM": 159.8, "DE": 141.4, "LH": 155.1, "HS": 125.7, "SW": 239.6, "unknown": 167.3}, "ai": {"R1": 41.8, "GM": 70.4, "DE": 38.6, "LH": 76.7, "HS": 97.6, "SW": 96.5, "unknown": 21.0}},
+   "non_overlapping_1s_windows": {"human": 983, "ai": 328, "human_by_section": {"R1": 86, "GM": 137, "DE": 129, "LH": 139}, "ai_by_section": {"R1": 28, "GM": 24, "DE": 29, "LH": 57}},
+   "full_lock_s": {"human_right_ge_430us": 45.6, "human_left_ge_430us": 92.7, "human_left_max_note": "人の左は約 1892 µs(ずれ +450)まで", "ai_right_1000us": 26.05, "ai_left_2000us": 21.61},
+   "coast_s": {"human_straight": 6.1, "human_turning": 15.5, "ai": 0.08},
+   "brake_events": {"rule": "スロットル ≥ 中立 + 60 µs を 0.1 秒以上、始まりの速さ ≥ 1 m/s", "all": 23, "clean": 16, "clean_human": 5, "clean_ai": 11, "strong_ge_300us_clean": 3, "note": "設計の時の見積もり『9 回』より多いが、強いブレーキは 3 回だけ"},
+   "ai_latency_ms": {"p50_range": [23.1, 32.1], "p99_range": [35.6, 44.0], "outlier_log": "20261010-204605(p90 82 ms、カメラの不調)"},
+   "drive_efficiency_us_per_kerpm": {"human_typical": [31.6, 38.9], "human_low_battery_scene": "20261010-193638 の 3 本目 70.6", "ai_range": [23.2, 88.1], "note": "g = (1498 − thr)/(前進 eRPM/1000)。電圧の記録は無い"},
+   "precheck_maps": "precheck_maps.json: AI の左いっぱい(2000 µs、ずれ +557)の曲率 1.29 /m(1.84 m/s)、+459 µs で 1.57 /m。右いっぱい(ずれ −443〜−450)1.66〜1.84 /m。シミュレーターは ±いっぱいで 2.20 /m。AI の『一定のスロットル』は定常に届かないので、速さの対応は動的な当てはめで決める"
+  }
+ },
+ "model": {
+  "P_default": {
+   "desc": "今のシミュレーターの評価・記録の物理(REC60 の計画、閉ループ評価と同じ)",
+   "config": {"dt": 0.03333333333333333, "maxSpeed": 7.24, "maxSteer": 0.52, "acceleration": 1.2, "steerRate": 1.2, "vehicleLength": 0.42, "vehicleWidth": 0.19, "wheelbase": 0.26, "frictionMultiplier": 1, "noiseStd": 0, "longitudinalModel": "real-drive-response-estimate-v1", "driveTau": 0.4, "driveAccelerationCap": 6, "brakeDeceleration": 1.2},
+   "surfaces_mu": {"carpet": 0.8, "shortcut": 0.7, "turf": 0.6, "ptfe": 0.22, "blue-mat": 0.65},
+   "actuator_delay_s": 0
+  },
+  "P_cfg": {
+   "desc": "今ある設定欄だけで合わせた物理(ユーザーが画面で入れられる)。式は sim-core.js のまま",
+   "free_keys": {"driveTau": [0.05, 2.0], "driveAccelerationCap": [0.5, 20], "brakeDeceleration": [0.2, 3.0], "steerRate": [0.5, 20], "maxSteer": [0.3, 0.52], "frictionMultiplier": [0.5, 1.5], "control_delay_frames": [0, 1, 2]},
+   "note": "brakeDeceleration は惰性とブレーキの両方に効く(区別できない)。maxSteer は左右同じ頭打ちになる。control_delay_frames はアプリの遅れ(舵と速さの両方)"
+  },
+  "P_cal": {
+   "name": "jf-calib-v1",
+   "inputs": "u_s(舵の指令 rad、±0.52 = PWM の端)、u_v(速さの指令 m/s。負 = ブレーキ/後退の要求)。どちらもブリッジと RL の先生が今出している単位のまま",
+   "steering": {
+    "delay": "u_s を d_s 秒遅らせる(小区間 ≤ 10 ms の解像度。指令の履歴を時刻つきで持つ)",
+    "static_map": "δ_target = g_L(u_s/0.52)(左)・g_R(|u_s|/0.52)(右)。区分線形・単調。節は正規化した指令 {0, 0.25, 0.5, 0.75, 0.9, 1.0}。値は δ = atan(L κ0)(κ0 = 低速の曲率、L = 0.26)",
+    "slew": "δ は δ_target へ r_s rad/s で近づく",
+    "understeer": "κ = tan(δ)/L / (1 + K_us v²)",
+    "grip": "r = v κ を μ_s g / |v| で頭打ち(μ_s は路面 ID ごと。sim-core と同じ形で、値だけ替える)"
+   },
+   "longitudinal": {
+    "delay": "u_v を d_v 秒遅らせる",
+    "speed_map": "u_v ≥ 0: v_tgt = k_batt × T(u_v)。T は区分線形・単調、節 u_v = {0, u_db, 0.5, 1, 2, 3, 4, 5, 6, 7.24}(u_db 以下は 0 = ESC の不感帯。u_db ≤ 0.45 なので節の順は崩れない)",
+    "drive": "v_tgt > v ≥ 0: a = min(a_cap, μ_s g, (v_tgt − v)/τ_up) − k_s |a_lat|",
+    "lift_coast": "0 ≤ v_tgt ≤ v: a = −min(c0 + k_s |a_lat|, (v − v_tgt)/τ_down + k_s |a_lat|)、v_tgt より下へは行かない(ESC は前進側ではブレーキを掛けない)",
+    "brake": "u_v < 0 かつ v > 0.05: a = −(c0 + k_s |a_lat| + a_b(off))、off = −u_v × 627.5 µs(ブリッジの逆)、a_b(off) = s_b × max(0, off − db_b)",
+    "esc_reverse": "止まった(v ≤ 0.05)あとにブレーキ側の指令が来ても後退しない。中立(u_v ≥ 0)を 0.12 秒以上はさんでから後退側なら、−0.8 m/s を目標に 1.5 m/s² で後退(explore_control の ESC の規則。上限の層はこれを使わない)",
+    "a_lat_in_sim": "|a_lat| = |v r|(シミュレーターの中の値)",
+    "battery": "k_batt: 既定 1.0(当てはめの区間の中央値の効き)。感度 0.8"
+   },
+   "not_modeled": ["摩擦円(縦と横の結合はこすれ k_s だけ)", "車輪の空転・滑りによる eRPM の過大", "ToF の雑音・床の反射", "カメラの画像", "PCA9685 の周期(平均 8 ms。d_s・d_v に含める)"],
+   "where_profile_lives": "設定(config)には入れない。較正版のコアのモジュールに焼き込み、report().model.calibration に名前と sha256 を残す。snapshot().config は元と同じ形(先生・シールドは今までどおりの設定を見る)"
+  }
+ },
+ "identification": {
+  "data": "当てはめ(fit)のシーンだけ。保留のシーンは、プロファイルを固めて sha256 を記録するまで開かない",
+  "order": ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "select", "freeze"],
+  "I1_static_steering": {"samples": "clean・舵の PWM の 0.3 秒の標準偏差 ≤ 8 µs・0.8 ≤ v ≤ 2.2 m/s", "method": "ずれの帯ごとに κ0 = 中央値(r/v)。操作者ごとに区分線形・単調で当てはめ。人の左は正規化 0.81 まで、そこから先は AI だけ", "prior": "precheck_maps.json"},
+  "I2_understeer": {"samples": "I1 と同じ条件で 2.2 ≤ v ≤ 4.0", "method": "K_us を 0〜0.2 で 1 次元の最小二乗(κ − κ0/(1 + K v²))", "keep_if": "曲率の誤差が 3% 以上減る"},
+  "I3_grip": {"samples": "要求の横加速度 κ(u, v) v² ≥ 1.3 × |a_lat| の時刻(滑っている)", "method": "区間ごとに μ_s g = |a_lat| の中央値(200 サンプル以上)。R1 → shortcut、GM → turf・ptfe、DE・LH・HS → carpet、SW → carpet(青マットはシミュレーターの比 0.65/0.8 のまま)", "ptfe_vs_turf": "AI の 5 本は overnight_20261011/course/tracks_*.npz の位置で PTFE と芝に分けられる。どちらも 200 サンプル以上なら別々、足りなければ GM の 1 つの倍率を両方に掛ける(比 0.22/0.6 のまま)", "fallback": "足りない区間はシミュレーターの値 × カーペットの倍率、報告に『同定できず』と書く"},
+  "I4_steering_dynamics": {"method": "格子 d_s = 0〜0.15 秒(0.01 刻み)× r_s = {1.2, 2, 3, 4, 6, 8, 12, 無限}。横だけの再生(実際の速さを使う)で窓のヨーレート RMSE を最小に。操作者ごと", "use": "プロファイルは AI の値(PWM を書いた時刻からの遅れ。窓 ≥ 100 個のとき)。足りなければ人の値 + 0.008 秒", "check": "AI の d_s − 人の d_s が 0〜0.025 秒なら整合と書く"},
+  "I5_coast_scrub": {"samples": "スロットル |thr − 1498| ≤ 12 µs が 0.3 秒以上・v > 1 m/s", "method": "直線(|ずれ| < 100 µs)の減速の中央値 → c0。曲がり(|ずれ| > 250 µs)の減速を |a_lat| に回帰 → k_s(切片は c0 に固定)", "prior": {"c0": 0.56, "turning_decel": 2.03}},
+  "I6_speed_map_drive": {"method": "当てはめの窓で 1 秒先の速さの誤差(と窓の中の RMSE)を最小にする(Nelder-Mead、節の単調性は罰で)。こすれには実際のヨーレートを使う。人と AI で別々", "params": {"T_knots": "u_v = {0.5, 1, 2, 3, 4, 5, 6, 7.24}", "u_db": [0, 0.45], "tau_up": [0.15, 1.5], "a_cap": [1.5, 8], "tau_down": [0.05, 1.0], "d_v": [0, 0.15]}, "prior": "evidence_simulator.md 6.3 の一定のスロットルの表(人)", "ai_vs_human": "u_v = 2.5 の速さが 10% 以上、または舵 |u| = 0.5 の曲率が 10% 以上違えば、プロファイルは AI の対応を使う(シミュレーターに入る指令は AI の PWM と同じ単位)。違いの理由の候補(PCA9685 の発振のずれ・30 Hz の指令の揺れ)を報告に書く"},
+  "I7_brake": {"events": "inventory.json の brake_events のうち clean = true の 16 回(固定)", "method": "a_b = 観測した平均の減速 −(c0 + k_s |a_lat|)。a_b(off) = s_b × max(0, off − db_b) を最小二乗。出来事ごとのブートストラップ 2000 回", "scenarios": {"nominal": "当てはめ", "low": "a_b(+200 µs) の p10。ただし名目の 60% 以下", "high": "p90。ただし名目の 140% 以上"}, "limit": "強いブレーキ(≥ 300 µs)は 3 回だけ。ブレーキの表は仮。計画項目 8(人の送信機での実測)の後に v2 を作る"},
+  "I8_latency": {"camera_to_pwm": "AI_CMD.latency_ms の p50 27.6〜32.1 ms → アプリの制御の遅れ 1 フレーム(33 ms)のまま", "actuator": "PWM → 車の応答は d_s・d_v に入れる", "jitter": "p99 36〜44 ms は 1 フレームに含め、別に足さない(限界に書く)"},
+  "I9_battery": {"method": "シーンごとの効き g の表を作る。k_batt の既定は 1.0(当てはめの区間の人の中央値の g を基準)。忠実度では窓の前 5 秒の g から合わせた k_batt(t0) = clip(g_ref/g_t0, 0.5, 1.2)(30 サンプル未満なら 1.0)"},
+  "select": "任意の部品(K_us・d_v・τ_down・AI 専用の対応・速さの頭打ち・k_s)は、当てはめの目的関数が 3% 以上良くなるときだけ残す",
+  "freeze": "profiles/P_cal.json と profiles/P_cfg.json を書き、sha256 を profiles/SHA256SUMS に記録してから、保留のシーンの評価を 1 回だけ走らせる"
+ },
+ "fidelity": {
+  "profiles": ["P_default", "P_cfg", "P_cal(k_batt を窓の前 5 秒で合わせる)", "P_cal_k1(k_batt = 1)"],
+  "replay": {
+   "engine": "較正版のコア(JS、Node)を dt = 0.01 秒・障害物なしの広い世界で動かす。最終の数字はこれで出す。当てはめに使う Python の再生は、50 窓で JS と一致すること(速さ・ヨーレートの差 ≤ 1e-6)",
+   "commands": "窓とその前 0.5 秒の実際の指令(100 Hz)。遅れのための過去の指令もそのまま入れる",
+   "initial_state": "v(t0) = 実際の速さ。δ(t0) は準備の 0.5 秒をその物理で流して得る。ψ・位置は 0",
+   "surface": "窓の区間で決める: R1 → shortcut、GM → turf、ほか → carpet",
+   "open_loop": "速さとヨーレートの両方をシミュレーターで出す(結合した再生)。部品の診断として、横だけ(実際の速さ)・縦だけ(実際のヨー)も出す"
+  },
+  "metrics": {
+   "e_v": "1 秒後の速さの誤差 v_sim − v_real [m/s] → RMSE・中央値(偏り)・|e| の p90",
+   "e_r": "窓の中のヨーレートの誤差の二乗平均 → 全窓の RMS [rad/s]",
+   "e_psi": "1 秒後の向きの誤差 [度] → RMSE・中央値",
+   "e_p": "1 秒後の位置の誤差 |p_sim − p_real| [m] → RMS"
+  },
+  "aggregation": "全体・操作者(人・AI)・区間(R1・GM・DE・LH・HS・SW)・速さの帯。90% 信頼区間はシーン単位のブートストラップ 2000 回(種 20261016)。改善率 I = 1 − M(P)/M(P_default)",
+  "pass": {
+   "C1_overall": "全体で 4 つの指標すべて I ≥ 0.20、I の 90% 区間の下端 > 0。操作者ごと(人・AI)に e_v・e_r・e_psi の I ≥ 0.10",
+   "C2_sections": "R1・GM・DE・LH(全体の窓が 25 個以上の区間)で 4 つの指標すべて M(P_cal) ≤ 1.05 × M(P_default)。さらに R1 と GM で e_psi の I ≥ 0.10",
+   "C3_bias": "e_v の中央値の絶対値 ≤ 0.10 m/s(全体と R1・GM・DE)。e_psi の中央値の絶対値 ≤ 2.0 度(全体)・≤ 3.0 度(R1・GM・DE)",
+   "verdict": {"合格": "C1 かつ C2 かつ C3", "条件つき": "C1 が 4 指標のうち 3 つ以上で成り立ち(全体)、C2 の『悪くならない』と C3 の全体が成り立つ", "不合格": "それ以外"},
+   "report_only": ["C4 安定性: 保留のシーンで当て直したパラメーターが当てはめの値から 25% 超ずれたら『不安定』と印", "C5 2 秒の窓の同じ表", "P_cfg を同じ決まりで判定", "P_cal_k1(電池を合わせない)の表"]
+  },
+  "decision": {
+   "deliverable": "P_cfg が合格なら、画面の設定欄で入れられる P_cfg を第一の成果として勧める(P_cal も渡す)。そうでなければ P_cal",
+   "cap_test_physics": "P_cal が合格・条件つきなら P_cal で試す。不合格なら P_default と P_cal の両方で走らせ、結果は『仮説』と書く"
+  }
+ },
+ "application": {
+  "decision": "読み込み時の差分当て(load-time patch)で作る較正版のコア。Node とブラウザで同じ差分の関数・同じ実装を使う",
+  "why": [
+   "同定した効き(左右で違う舵の頭打ち・アンダーステア・惰性とブレーキの区別・こすれ・純粋な遅れ・速さの頭打ち・電池)は、今の設定欄に無い",
+   "元のファイルを変えない。元の sha256 を確かめてから差分を当て、当てる場所が 1 か所でなければ止まる(ユーザーが sim-core.js を更新したら気づける)",
+   "10/13 の高速版のコア(fast-sim-core.mjs、data: URL)と、10/14・10/15 の派生ページ(import map での差し替え)という、すでに確かめたやり方の組み合わせ",
+   "設定(プロファイル)が無ければ元とビット単位で同じ動きにできる(試験 T1)"
+  ],
+  "rejected": {
+   "ui_config_only": "式が無い効きを表せない → P_cfg として比べるだけ",
+   "rl_env_perturb": "env_core の perturb は 5 つの設定 + 遅れ 0/1 フレーム + ゲインだけで、Node の RL の環境の中だけ",
+   "jetformer_web_importmap": "jetformer/sim/web.py を変え、jetformer-web の再起動が要る。製品にするときの道(ユーザーの了承が要る)として報告に書くだけ"
+  },
+  "files": {
+   "code_dir": "/home/jetson/jetformer/experiments/20261016_sim_calibration/",
+   "calib_runtime.mjs": "較正の物理と上限の層(純粋な ESM、import なし)。差分でコアに文字列のまま埋め込む",
+   "calib_core.mjs": "差分の関数 patchSimCore(sourceText, profile, options) と Node 用の loadCalibratedCore(profile, {fast})。fast = 10/13 の高速化の差分も重ねる",
+   "build_browser_core.mjs": "ブラウザ用の静的なファイル _calib/sim-core-<名前>.js を書く",
+   "ident.py": "同定(I1〜I9)と P_cal・P_cfg のプロファイル",
+   "replay_fidelity.mjs": "忠実度の再生(保留のシーン)",
+   "cap_test.mjs / pp_driver.mjs": "上限の試験と追従の運転手",
+   "tests/": "node --test と pytest"
+  },
+  "browser": {
+   "copy": "/home/jetson/jetformer_reports/sim_diverse_train_20261015/sim を /home/jetson/jetformer_reports/sim_calibration_20261016/sim に写す(dist の全ファイルが元と sha256 で同じことを確かめる)",
+   "pages": "dist/calib.html(較正版のコア)と dist/calib_cap.html(較正版 + 上限)。index.html との差は <title> と import map の 1 行だけ: imports に \"./sim-core.js\": \"./_calib/sim-core-<名前>.js\"",
+   "bridge": "写しの bridge.py を 10/14 の専用の venv(experiments/20261014_sim_dart_margin/.venv-bridge)で口 8831〜8839"
+  },
+  "tests": {
+   "T1_identity": "プロファイル無しの較正版のコア(fast あり・なし)が元のコアと同じ: 教師の REC60(60 条件)・STD・ランダム操作 20 本で report の JSON が完全に一致",
+   "T2_guard": "元の sha256 が違う・差分の場所が 1 か所でない → 例外で止まる",
+   "T3_python_js": "Python の再生と JS のコアが 50 窓で一致(≤ 1e-6)。合わなければ JS を正とし、差を報告",
+   "T4_browser_build": "ブラウザ用のファイル == patchSimCore(元, プロファイル) のバイト列。calib.html と index.html の差は title と import map だけ",
+   "T5_physics_units": "惰性・ブレーキ・ESC の後退の手順・遅れ・頭打ち・アンダーステア・電池を手計算の値で確かめる",
+   "T6_governor": "上限の層の不変条件(9 章の invariants)。Python の安全層 v1 の純粋な関数が既にあれば、同じ入力 2,000 通り以上で上限と『ブレーキを出すか』が一致すること。無ければこの手順の仕様を正とし、報告に書く"
+  }
+ },
+ "cap_test": {
+  "purpose": "較正した物理で、区間の速度上限 v1 が (1) R1 などの衝突を減らすか、(2) ほかで悪くしないか、(3) ラップの損が 0.3 秒/周以内か、(4) 旋回中のブレーキ・低速のブレーキ・ブレーキと中立の往復が起きないか、を実車の前に確かめる。結果は実車への『仮説』で、実車の A/B/A の代わりにはならない",
+  "governor_v1_sim": {
+   "place": "較正版のコアの step の始めで、届いた指令(アプリの遅れのあと)に掛ける。使う状態は step の始めの状態(実車の層が見る eRPM の新しさと 1 フレーム以内で同じ)。Node とブラウザで同じ実装",
+   "zones_oracle": {
+    "method": "車の位置を参照ループ R に射影した進み s(features.mjs と同じ追跡)",
+    "R1_app": [5.02, 6.206],
+    "R1_turn": [6.206, 7.456],
+    "GM": [8.237, 12.601],
+    "DE": [12.626, 16.149],
+    "note": "R1_app = LH の後半(実車の『ψ ≥ 300』に当たる)〜 R1 の始まり。R1_turn = R1 の始まり + 約 0.5 秒(2.5 m/s × 0.5 s = 1.25 m)。DE = GM 出口 + 約 1.5 秒"
+   },
+   "zones_gyro": "実車と同じジャイロの位相(explore_control.md C1: R1 の起点 = 5 点平滑のヨーが −60 度/秒を切り、その旋回の最小が −170 度/秒以下、旋回量 −90 度以下。起点からの向き ψ で区間)。シミュレーターのヨーから作る。最初の R1 の前と、位相が不確か(R1 から 16 秒超・範囲外)なときは全区間 3.0 m/s。実装は Python の安全層 v1 があればその移植、無ければ C1 の規則",
+   "caps_mps": {"R1_app": 2.5, "R1_turn": 2.5, "GM": 2.2, "DE": 3.0, "none": null},
+   "variant_R1_275": "R1 だけ 2.75 m/s(計画どおり再生で比べる値)",
+   "rules": [
+    "上限 cap_eff = 区間の上限。区間を出たら cap_eff を 1.5 m/s² で上げて戻す(突き上げを防ぐ)",
+    "v ≤ cap_eff: u_v' = min(u_v, cap_eff)(速さの指令を上限で切る。u_v が負ならそのまま)",
+    "v > cap_eff: u_v' = min(u_v, 0)(中立 = 惰性)",
+    "v > cap_eff + 0.3 かつ v ≥ 1.0 かつ 区間が R1_app: ブレーキ u_v' = −200/627.5 m/s(中立 + 200 µs)",
+    "R1_turn・GM・DE ではブレーキを出さない(中立まで)",
+    "ブレーキを始めたら 0.2 秒は保つ。ブレーキをやめたら 0.2 秒は中立から始めない(往復を防ぐ)",
+    "舵は変えない。上限の層は u_v を大きくしない(u_v' ≤ u_v)"
+   ],
+   "brake_level_us": 200,
+   "invariants": ["R1_turn・GM・DE でのブレーキのフレーム = 0", "v < 1.0 m/s でのブレーキの始まり = 0", "0.2 秒未満のブレーキ ↔ 中立の往復 = 0", "u_v' > u_v のフレーム = 0", "後退(v < −0.05)= 0"]
+  },
+  "app_emulation": {
+   "base": "experiments/20261015_sim_diverse_train/lib/app_emulation.mjs と同じ手順(開始ゲートで経路を回す・開始のずれ)。コアだけ較正版に替える",
+   "config": "model.P_default.config に timeLimit 60・episodeMode continuous-laps-v1・stopOnCollision true・seed 1。較正版ではプロファイルが物理を替え、config の maxSpeed・maxSteer は指令の上下限としてそのまま効く",
+   "control_delay_frames": 1,
+   "episode": "60 秒の連続周回。最初の衝突で終わる(stopOnCollision)。衝突の場所は位置の s から区間に割り当てる"
+  },
+  "starts": {
+   "S24": "24 個: Halton(底 2・3・5)でゲート U{0..32}・左右のずれ U(−0.15, 0.15) m・向き U(−10, 10) 度。開始のすき間 < 0.12 m の開始は次の Halton の点に替える。種と一覧は cap_test/starts.json に書いて固定",
+   "E12": "閉ループ評価の E0〜E11(ブラウザの S-DIV だけ。sim_diverse_train_20261015/eval_sim.md と同じ)"
+  },
+  "drivers": {
+   "PP-k": {
+    "desc": "追従の運転手(新しく作る。Node だけ)。較正した物理を知っている運転手 = 実車のデータで学んだモデル B の代わり。ブレーキは使わない(持ち上げるだけ。人とモデル B と同じ)",
+    "path": "コース図の基準線をシミュレーターの座標に写し、周期スプラインでなめらかにしたもの。(a) 33 ゲートを 0.5 m 以内で通る、(b) ショートカットの開口を車幅ごと通る、(c) 車の矩形で静的なすき間 ≥ 0.05 m、のどれかが成り立たなければ参照ループ R を使う",
+    "steer": "純追従: 先読み L_d = 0.30 + 0.20 v [m]、δ_des = atan(2 L sin α / L_d)。指令 u_s は使う物理の舵の対応の逆(P_default では恒等)で ±0.52 に切る",
+    "speed": "経路の曲率 κ(s)(±0.3 m で平滑)から v_lim = sqrt(0.85 μ(s) g / max(|κ|, 0.05))。旋回の速さに k を掛ける。後ろ向きの計算は惰性 c0 で(ブレーキなし)、前向きは 3 m/s²、上限 4.3 m/s。指令 u_v = 速さの対応の逆(v_ref(s + 0.15 v))",
+    "k": [1.0, 1.2, 1.4],
+    "meaning": "k = 1.0 は限界の 85% で走る慎重な運転手。1.2・1.4 は R1 などに速く入りすぎる運転手(実車の first_trial の速い R1 進入に当たる)"
+   },
+   "RL": {
+    "desc": "古い物理(P_default + 乱し)で学んだ RL の先生。mode_runtime.mjs の createModeTeacher をそのまま使う(シールドなしのモードだけ)。指令の速さは 0 以上(ブレーキを出せない)",
+    "modes": [{"key": "fastest", "params": {}}, {"key": "speed", "params": {"c_v": 0.75}}],
+    "optional": [{"key": "speed", "params": {"c_v": 1.0}}]
+   },
+   "SDIV_browser": {
+    "desc": "シミュレーターで学んだ JetFormer(S-DIV、画像を使う)。ブラウザの写しの calib.html / calib_cap.html で E0〜E11 の単周(15 秒)、10/15 と同じ設定(遅れ 1・先読み 1・ゲイン 1.0/1.0・ジャンル 8)",
+    "role": "確認だけ(判定に使わない)。動画用の実際の画面も撮る",
+    "minimum_if_cut": "E0 を P_default(index.html)・P_cal(calib.html)・P_cal + 上限(calib_cap.html)で 1 本ずつ(画面の記録)"
+  }
+  },
+  "matrix": {
+   "primary": "{PP-1.0, PP-1.2, PP-1.4, RL-fastest, RL-speed-0.75} × {OFF, ON-O25(位置の区間・R1 2.5)} × P_cal(ブレーキ名目)× 世界 W0(v3)× S24 = 10 条件 × 24 開始",
+   "secondary": [
+    "ON-O275(R1 2.75)× 5 運転手",
+    "ブレーキ low・high × ON-O25 × {PP-1.2, PP-1.4, RL-fastest}",
+    "P_default × {OFF, ON-O25} × 5 運転手(較正で結論が変わるかを見る)",
+    "世界 W+(芝の斜めの板を足す: シミュレーターの座標で a (4.37, −2.76)・b (4.50, −1.82)、半径 0.0095 m・高さ 0.089 m の rail)× {OFF, ON-O25} × {PP-1.2, RL-fastest}",
+    "ON-G25(ジャイロの区間)× {PP-1.2, RL-fastest}",
+    "k_batt 0.8 × {OFF, ON-O25} × PP-1.2(任意)"
+   ],
+   "browser": "S-DIV × E12 × {calib.html(OFF), calib_cap.html(ON-O25)}。P_default の OFF は 10/15 の結果(完走 5/12)を使い、E0 だけ同じであることを確かめる"
+  },
+  "metrics": {
+   "pass_events": "区間の通過ごと: R1 の進入の速さ(R1 の始まり s = 6.206 の手前 0.4 秒の最大。実車の entry_erpm と同じ定義)、GM の始まりの速さ、DE の中の最高速度、通過の中の衝突",
+   "collision_attribution": "最初の衝突の位置の s → 区間(R1 は s ∈ [5.906, 8.216])。相手の物(disk/segment の id)も残す",
+   "rates": "R1 の衝突/R1 の通過、GM・DE も同じ。全体は 衝突 / 走った周(距離 ÷ 26.12 m)",
+   "lap_time": "衝突の無い完了した周(lap_events)の時間。同じ開始どうしの差(ON − OFF)の中央値",
+   "governor_log": "区間ごとの作動のフレームの割合、ブレーキのフレーム、上限で切った量",
+   "ci": "開始(24)単位のブートストラップ 2000 回(種 20261016)の 90% 区間。率は Wilson の 90% 区間も出す"
+  },
+  "decision_rules": {
+   "informative": "その運転手の OFF で R1 の通過が 30 回以上、かつ R1 の進入が 2.5 m/s を超えた割合が 20% 以上。満たさなければ『上限が効く場面が無い』と書き、判定から外す",
+   "R1_effective": "R1 の衝突/通過が ON で相対 50% 以上減り、差の 90% 区間の上端 < 0",
+   "no_harm": "全体の衝突/周の差(ON − OFF)の 90% 区間の上端 ≤ +0.05。区間ごとに +0.05/周 以上増えた所があれば印",
+   "lap_cost": "PP-1.0 と PP-1.2 で、衝突の無い周の時間の差の中央値 ≤ +0.3 秒/周",
+   "invariants": "ON のすべての走行で governor_v1_sim.invariants が 0",
+   "verdict": {
+    "シミュレーターで支持": "PP-1.2 と PP-1.4 がどちらも R1_effective(informative のとき)・全運転手で no_harm・lap_cost・invariants を満たす",
+    "支持(条件つき)": "R1_effective が PP-1.2・PP-1.4 の片方だけ、またはブレーキ low で崩れる",
+    "効く場面なし": "informative な運転手が無い",
+    "直す": "no_harm か invariants が破れる"
+   },
+   "R1_275_vs_25": "2.75 が 2.5 の R1 の減り方の 80% 以上を、ラップの損を小さく出せるなら『2.75 も候補』と書く。決めるのはユーザー",
+   "brake_robustness": "ブレーキ low で R1_effective が崩れるなら『ブレーキ表の実測(計画項目 8)が前提』と書く",
+   "calibration_matters": "P_default での判定が P_cal と違えば、その違いを報告の要点にする"
+  },
+  "sim_real_consistency": {
+   "what": "閉ループでの較正の確かめ。OFF の走行(PP・RL を合わせる)で、R1 の衝突の確率を進入の速さのロジスティック回帰で表し、確率 20% の速さ v20 を出す(P_cal と P_default の両方)",
+   "real_reference": "実車の R1: AI は 5500 eRPM(2.75 m/s)未満 1/21、5500〜6200 2/7、6200 以上 6/8。人は 5500 未満 1/53、6200 以上 5/12(fast_and_safe_plan.md 1 章)。20% を超えるのは 2.75〜3.1 m/s",
+   "rule": "v20(P_cal) が 2.4〜3.3 m/s なら『R1 の物理は実車と矛盾しない』。外なら R1 の結果の信頼を下げると書く。v20(P_default) と並べて『前後』として出す",
+   "caveat": "シミュレーターの R1 の失敗は内側の柱への切り込み、実車の強い衝突は外側の白い板への曲がり切れなさ(evidence_simulator.md 1.3)。失敗の形(相手の物)も並べる。DE は人の 3.0 m/s 未満 1/23・以上 10/37 と並べるだけ"
+  }
+ },
+ "outputs": {
+  "report_dir": "/home/jetson/jetformer_reports/sim_calibration_20261016/",
+  "design_stage": ["design.md", "protocol.json", "protocol.sha256", "deviations.md", "section_map.json", "inventory.json", "precheck_maps.json"],
+  "later": ["ident/(同定の表と図)", "profiles/P_cal.json・P_cfg.json・SHA256SUMS", "fidelity/fidelity.json・fidelity.md・図", "tests/(ログ)", "cap_test/starts.json・runs/*.json・cap_test.json・cap_test.md・図", "sim/(ブラウザの写し + _calib/ + calib*.html)・browser/(走行の JSON・画面)", "README.md(報告)", "video/storyboard.json(約 1 分。本体のセッションが描く)"]
+ },
+ "time_plan": [
+  {"step": "S0 設計と手順の固定", "when": "10/16 20:00〜21:00", "cpu_h": 1, "status": "この段"},
+  {"step": "S1 同定(ident.py)とプロファイルの固定", "when": "10/16 21:00〜10/17 00:30", "cpu_h": 3},
+  {"step": "S2 較正版のコア・ブラウザ用のファイル・試験 T1〜T5", "when": "10/17 00:30〜03:00", "cpu_h": 2.5},
+  {"step": "S3 忠実度(保留のシーン、前後)", "when": "10/17 03:00〜04:00", "cpu_h": 1},
+  {"step": "S4 上限の層・PP・上限の試験(Node)・試験 T6", "when": "10/17 04:00〜08:00", "cpu_h": 4},
+  {"step": "S5 ブラウザの S-DIV(確認と動画の画面)", "when": "B2 の学習(GPU)が終わって lock big が空いたあと、約 1.5 時間", "cpu_h": 1.5},
+  {"step": "S6 報告(README.md)と動画の絵コンテ", "when": "10/17 午前", "cpu_h": 1.5}
+ ],
+ "cut_order": [
+  "1. ブラウザの S-DIV の 12 × 2 本(E0 の画面の 3 本だけは動画用に残す)",
+  "2. ON-G25(ジャイロの区間判定)",
+  "3. 世界 W+(芝の斜めの板)",
+  "4. P_cfg(設定欄だけの版)の当てはめと判定",
+  "5. 2 秒の窓(C5)と AI だけの区間の表",
+  "6. 運転手を PP-1.2・PP-1.4・RL-fastest の 3 つに減らす",
+  "削らない: P_default 対 P_cal の保留のシーンでの忠実度、プロファイル、試験 T1(元と同じ)、位置の区間での上限の試験(PP を 1 つ以上)、不変条件、報告"
+ ],
+ "deviations_policy": "この手順と違うことをしたら deviations.md に、いつ・何を・なぜ・結果への影響を書く。合格の決まり・保留の分け方・上限の値は、結果を見てから変えない"
+}

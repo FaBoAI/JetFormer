@@ -1,0 +1,1135 @@
+{
+ "title": "B2(選び直した実機のデータで学習するモデル B)の手順。学習の前に固定(結果を見て変えない。変更は deviations.md)",
+ "version": 1,
+ "written_at": "2026-10-16T20:26:52",
+ "request": {
+  "user": "「今週は走行できないので、ほかにできることは？」(2026-10-16 18:00ごろ)。机上の案から「4 データを選び直して B2 を学習」と「7 シミュレーターを実車に近づける」を選んだ",
+  "this_part": "4 の設計と固定だけ(CPU)。学習・予測・判定・実車のカードの実行は後の段",
+  "plan": "/home/jetson/jetformer_reports/action_plan_20261016/plan.md の項目 10(既存データの選別)と 14(B2 の学習 → 机上の G3 → カード 3: B → B2 → B)",
+  "not_the_task": "チャットの「進捗どうですか?」はメインのセッションへの進捗の確認で、この作業の依頼ではない"
+ },
+ "design": "design.md(人が読む版。この JSON と同じ内容)",
+ "question": "R1 に速く入った人の手本(進入 ≥ 6200 eRPM の通過の手前)と R1 で当たった通過を学習から外し、速く走ったのに「低速走行」になっていた 152405・152707 をジャンル 4 に直して、モデル B と同じ作り方で学習すると(B2)、R1 の手前でモデルが出すスロットルは B より弱まるか。直線・DE・介入の場面・保留の精度を壊さずに",
+ "model": {
+  "name": "B2 = TransFuser軽量型(JetFormer v0 = jetformer_v0、dim 256・layers 4・heads 8、約 14.1M)。モデル B・A と同じ形",
+  "recipe": "モデル B・A と同じ: clean_driving_20261011・30 エポック・lr 3e-4(AdamW wd 1e-4・cosine)・間引き 1/3・バッチ 64・workers 4・今の操作値なし(--no-command-input)・衝突 2.5 G の前後(1 秒前〜2 秒後)を除く(--impact-g 2.5)・ImageNet の事前学習・色の揺らぎ。違うのは --drop-mask と --mode-remap-npz の 2 つの表だけ",
+  "model_B": "clean_driving_20261011-nocmd-s3-20261011-024626(種なし。impact_g 2.5・学習 5,912 / 検証 1,559・最良 25 エポック)",
+  "seeds": [
+   0,
+   1
+  ],
+  "runs": {
+   "0": "b2cur_20261016-s0",
+   "1": "b2cur_20261016-s1"
+  },
+  "train_cmd": {
+   "0": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --drop-mask data/derived/b2_curation_20261016/drop_b2.npz --mode-remap-npz data/derived/b2_curation_20261016/remap_b2.npz --seed 0 --out data/runs/b2cur_20261016-s0",
+   "1": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --drop-mask data/derived/b2_curation_20261016/drop_b2.npz --mode-remap-npz data/derived/b2_curation_20261016/remap_b2.npz --seed 1 --out data/runs/b2cur_20261016-s1"
+  },
+  "resume_cmd": {
+   "0": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --drop-mask data/derived/b2_curation_20261016/drop_b2.npz --mode-remap-npz data/derived/b2_curation_20261016/remap_b2.npz --seed 0 --out data/runs/b2cur_20261016-s0 --resume",
+   "1": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --drop-mask data/derived/b2_curation_20261016/drop_b2.npz --mode-remap-npz data/derived/b2_curation_20261016/remap_b2.npz --seed 1 --out data/runs/b2cur_20261016-s1 --resume"
+  },
+  "run_json": "学習を始める前に data/runs/<run>/run.json を書く(dataset・stride・epochs・batch・lr・pretrained・build_engine false・command_input false・mask_impacts true・policy jetformer_v0・impact_g 2.5・seed・name・created_at・note「B2: 選び直したデータ(R1 の速い進入の手前・R1 で当たった通過を外し、152405・152707 をジャンル 4 に)。机上の G3 に合格するまで走らせない」・experiment b2_curation_20261016・drop_mask・mode_remap の sha256)",
+  "expected_train_log": {
+   "train_samples": 5574,
+   "val_samples": 1476,
+   "dropped_printed": {
+    "train": 1639,
+    "val": 406
+   },
+   "impact_masked_printed": {
+    "train": 2889,
+    "val": 923
+   },
+   "genre_counts_train": {
+    "5": 2279,
+    "4": 3295
+   },
+   "check": "学習の最初の数行(「衝突の前後として外したフレーム」「drop で外した」「学習 N サンプル / 検証 N サンプル」「ジャンル別の学習サンプル数」)がこの値でなければ止めて deviations.md。drop で外した数は間引き・衝突の除外の前の数"
+  }
+ },
+ "curation": {
+  "tool": "experiments/20261016_b2_curation/make_b2_tables.py(試験 test_make_b2_tables.py 7 本。本物のデータで B と同じ 5,912 / 1,559、表を渡した JetFormerDataset の数・ジャンル別の数が card と一致、course_passes が 10/11 の passes.json の 131 通過と完全に一致、を確かめた)。出力は byte 単位で再現する(作り直しても同じ sha256)",
+  "r1_passes": {
+   "how": "tools/offline_rl.py の course_passes(label_events の course_anchors: 1 周に 1 回の大きな右ヘアピンの入口 = 起点 ta、R1 の後に向きが −25° まで戻った時刻 = 緑マット出口 tg)を、人の 9 ログ(clean_driving の元)と AI の 11 ログに掛けた",
+   "entry_erpm": "進入 eRPM = 起点の手前 0.4 秒([ta − 0.4, ta])の最大の前進 eRPM(course_passes の定義。explore_data の [ta − 0.4, ta + 0.15] とは少し違う)",
+   "r1_collision": "R1 の場所の 2.5 G の衝突(label_events)が [ta − 0.5, tg − 0.3](tg が無ければ ta + 3.5)にある通過",
+   "counts": {
+    "human_passes": 73,
+    "ai_log_passes_all": 58,
+    "same_as_20261011_passes_json": "131 / 131 通過で ta・tg・entry_erpm・衝突・ai が完全に一致"
+   },
+   "check_006_007": {
+    "ai_passes": 38,
+    "strong_by_entry": {
+     "<5500": [
+      1,
+      22
+     ],
+     "5500-6200": [
+      2,
+      7
+     ],
+     ">=6200": [
+      6,
+      9
+     ],
+     "no_entry": 0
+    },
+    "share_ge6200": 0.237,
+    "reference_collision_map": {
+     "passes": 36,
+     "strong": {
+      "<5500": [
+       1,
+       21
+      ],
+      "5500-6200": [
+       2,
+       7
+      ],
+      ">=6200": [
+       6,
+       8
+      ]
+     },
+     "share_ge6200": 0.22
+    },
+    "reading": "進入の速さ別の強い衝突は collision_map とほぼ同じ(1/22・2/7・6/9 対 1/21・2/7・6/8)。通過は 38 対 36 で、増えた 2 通過はどちらも強い衝突なし(5500 未満に 1、6200 以上に 1)",
+    "collisions_by_location": {
+     "label_events_ai_2.5G": {
+      "DE": 25,
+      "LH": 2,
+      "GM": 8,
+      "R1": 10,
+      "other": 2
+     },
+     "collision_map": {
+      "R1": 13,
+      "GM": 8,
+      "DE": 20,
+      "other": 4
+     },
+     "reconciliation": "data/labels/summary.json の照合: collision_map の 45 件は全部見つかり(2.5 G の衝撃 39 件 + 2.5 G 未満の衝撃 bump 6 件。R1 の軽い当たり 4 件など)、場所は 45/45 一致。2.5 G の検出の余分 6 件は目視で確かめた DE のこすり 5 件・LH 1 件"
+    }
+   }
+  },
+  "drop_rules": {
+   "fast": "人の 9 ログの R1 の通過で entry_erpm ≥ 6200 → 時刻 [ta − 2.0 秒, ta + 1.0 秒] のフレームを外す(D1・N3 の「起点の 2 秒前〜1 秒後」)",
+   "collided": "r1_collision の通過 → [ta − 2.0 秒, max(ta + 1.0, 最後の R1 の衝突 + 2.0, tg − 0.3(無ければ ta + 3.5))] を外す(通過ごと)",
+   "both": "両方に当たるフレームは reason 2(衝突した通過)",
+   "splits": "学習と検証の両方に同じ表を渡す(tools/train.py の仕様)。保留の評価のフレーム(下の evaluation)は外さない",
+   "not_done": "ジャンル 5 の 5500〜6200 の重み下げ(D1 の案)はしない。B2 は外すだけの最小形"
+  },
+  "dropped_passes": [
+   {
+    "log": "20261010-150424",
+    "ta_s": 116.156,
+    "entry_erpm": 7521.0,
+    "r1_collision": true,
+    "r1_strong": true,
+    "reason": "fast+collision"
+   },
+   {
+    "log": "20261010-150424",
+    "ta_s": 128.296,
+    "entry_erpm": 6703.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 13.603,
+    "entry_erpm": 8479.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 19.833,
+    "entry_erpm": 5869.0,
+    "r1_collision": true,
+    "r1_strong": false,
+    "reason": "collision"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 25.893,
+    "entry_erpm": 6628.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 34.493,
+    "entry_erpm": 6261.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 54.293,
+    "entry_erpm": 5054.0,
+    "r1_collision": true,
+    "r1_strong": false,
+    "reason": "collision"
+   },
+   {
+    "log": "20261010-152405",
+    "ta_s": 86.459,
+    "entry_erpm": 6366.0,
+    "r1_collision": true,
+    "r1_strong": true,
+    "reason": "fast+collision"
+   },
+   {
+    "log": "20261010-152707",
+    "ta_s": 16.431,
+    "entry_erpm": 6422.0,
+    "r1_collision": true,
+    "r1_strong": false,
+    "reason": "fast+collision"
+   },
+   {
+    "log": "20261010-152707",
+    "ta_s": 33.051,
+    "entry_erpm": 6641.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152707",
+    "ta_s": 50.181,
+    "entry_erpm": 6988.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-152707",
+    "ta_s": 66.661,
+    "entry_erpm": 7665.0,
+    "r1_collision": true,
+    "r1_strong": true,
+    "reason": "fast+collision"
+   },
+   {
+    "log": "20261010-152707",
+    "ta_s": 76.781,
+    "entry_erpm": 6887.0,
+    "r1_collision": true,
+    "r1_strong": true,
+    "reason": "fast+collision"
+   },
+   {
+    "log": "20261010-200916",
+    "ta_s": 10.405,
+    "entry_erpm": 6311.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   },
+   {
+    "log": "20261010-200916",
+    "ta_s": 250.295,
+    "entry_erpm": 6846.0,
+    "r1_collision": false,
+    "r1_strong": false,
+    "reason": "fast"
+   }
+  ],
+  "dropped_summary": {
+   "passes": 15,
+   "fast_only": 8,
+   "fast_and_collided": 5,
+   "collided_only": 2,
+   "by_log": {
+    "150424": 2,
+    "152405": 6,
+    "152707": 5,
+    "200916": 2
+   },
+   "in_val_scenes": "152405-0002(25.893・34.493 の 2 通過と 19.833 の一部)・152707-0001(16.431)"
+  },
+  "genre_fix": {
+   "what": "152405・152707 の 12 シーン(学習 10・検証 2)の全フレームを、学習するジャンル 5 → 4 にする(--mode-remap-npz。aligned の mode・生ログ・scene.json は変えない)",
+   "evidence": {
+    "log_json_mode_id": "生ログの log.json の mode_id は 152405・152707 とも 4(高速走行)。シーンの scene.json は 5 で、データセットはシーンの値を使った(facts.md 2.4「ログの指定は高速走行だったがシーンは5」)",
+    "speed_by_group_eRPM": {
+     "g5": {
+      "frames": 10219,
+      "fwd_med": 4800,
+      "fwd_p75": 5646,
+      "fwd_p90": 6610,
+      "hs_lh_med": 5226,
+      "de_sw_med": 5231,
+      "de_sw_p90": 6928,
+      "r1_n": 25,
+      "r1_med": 4722,
+      "r1_ge6200": 2,
+      "r1_ge5500": 5,
+      "share_fwd_gt7000": 0.06
+     },
+     "g4": {
+      "frames": 9294,
+      "fwd_med": 5144,
+      "fwd_p75": 6859,
+      "fwd_p90": 7629,
+      "hs_lh_med": 5210,
+      "de_sw_med": 6164,
+      "de_sw_p90": 7815,
+      "r1_n": 26,
+      "r1_med": 4582,
+      "r1_ge6200": 2,
+      "r1_ge5500": 5,
+      "share_fwd_gt7000": 0.209
+     },
+     "fix": {
+      "frames": 5963,
+      "fwd_med": 5735,
+      "fwd_p75": 7319,
+      "fwd_p90": 8410,
+      "hs_lh_med": 5406,
+      "de_sw_med": 6867,
+      "de_sw_p90": 8602,
+      "r1_n": 22,
+      "r1_med": 6082,
+      "r1_ge6200": 9,
+      "r1_ge5500": 18,
+      "share_fwd_gt7000": 0.288
+     }
+    },
+    "reading": "152405+152707 の前進 eRPM は、中央値 5,735・p90 8,410・DE〜SW の中央値 6,867・7,000 超の割合 28.8% で、ジャンル 4 の夜の 3 ログ(5,144・7,629・6,164・20.9%)より速く、ジャンル 5 の 4 ログ(4,800・6,610・5,231・6.0%)よりずっと速い。R1 の進入の中央値も 6,082(6,200 以上が 22 通過中 9)。速さで見ると「高速走行」",
+    "per_log": {
+     "20261010-135449": {
+      "log_mode_id": 1,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 4157.0,
+      "fwd_erpm_p90": 5678.0,
+      "de_sw_erpm_median": 4087.0,
+      "r1_passes": 2,
+      "r1_entry_median": 3922.0,
+      "r1_entry_ge6200": 0,
+      "r1_collisions": 0
+     },
+     "20261010-144028": {
+      "log_mode_id": 1,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 5126.0,
+      "fwd_erpm_p90": 6648.0,
+      "de_sw_erpm_median": 5524.0,
+      "r1_passes": 3,
+      "r1_entry_median": 4019.0,
+      "r1_entry_ge6200": 0,
+      "r1_collisions": 0
+     },
+     "20261010-150424": {
+      "log_mode_id": 1,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 5205.0,
+      "fwd_erpm_p90": 7168.0,
+      "de_sw_erpm_median": 6174.0,
+      "r1_passes": 8,
+      "r1_entry_median": 5550.0,
+      "r1_entry_ge6200": 2,
+      "r1_collisions": 1
+     },
+     "20261010-152405": {
+      "log_mode_id": 4,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 5470.0,
+      "fwd_erpm_p90": 7824.0,
+      "de_sw_erpm_median": 6233.0,
+      "r1_passes": 12,
+      "r1_entry_median": 5859.0,
+      "r1_entry_ge6200": 4,
+      "r1_collisions": 3
+     },
+     "20261010-152707": {
+      "log_mode_id": 4,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 6087.0,
+      "fwd_erpm_p90": 8759.0,
+      "de_sw_erpm_median": 7796.0,
+      "r1_passes": 10,
+      "r1_entry_median": 6276.0,
+      "r1_entry_ge6200": 5,
+      "r1_collisions": 3
+     },
+     "20261010-193638": {
+      "log_mode_id": 4,
+      "scene_genre_in_dataset": [
+       4
+      ],
+      "fwd_erpm_median": 4810.0,
+      "fwd_erpm_p90": 7033.0,
+      "de_sw_erpm_median": 6042.0,
+      "r1_passes": 3,
+      "r1_entry_median": 4137.0,
+      "r1_entry_ge6200": 0,
+      "r1_collisions": 0
+     },
+     "20261010-200916": {
+      "log_mode_id": 4,
+      "scene_genre_in_dataset": [
+       4
+      ],
+      "fwd_erpm_median": 5211.0,
+      "fwd_erpm_p90": 7676.0,
+      "de_sw_erpm_median": 6249.0,
+      "r1_passes": 16,
+      "r1_entry_median": 5064.0,
+      "r1_entry_ge6200": 2,
+      "r1_collisions": 0
+     },
+     "20261010-201626": {
+      "log_mode_id": 5,
+      "scene_genre_in_dataset": [
+       5
+      ],
+      "fwd_erpm_median": 4773.0,
+      "fwd_erpm_p90": 6069.0,
+      "de_sw_erpm_median": 4981.0,
+      "r1_passes": 12,
+      "r1_entry_median": 4736.0,
+      "r1_entry_ge6200": 0,
+      "r1_collisions": 0
+     },
+     "20261010-202633": {
+      "log_mode_id": 4,
+      "scene_genre_in_dataset": [
+       4
+      ],
+      "fwd_erpm_median": 5181.0,
+      "fwd_erpm_p90": 8249.0,
+      "de_sw_erpm_median": 6146.0,
+      "r1_passes": 7,
+      "r1_entry_median": 4212.0,
+      "r1_entry_ge6200": 0,
+      "r1_collisions": 0
+     }
+    }
+   },
+   "side_effect": "ジャンル 5 の学習サンプルは 3,684 → 2,279(−38%)、ジャンル 4 は 2,228 → 3,295。ジャンル 5 は「R1 を遅く入る午後の 3 ログ + 201626」になり、直線も遅くなりうる → 直線の前進の強さのゲートと、走行のジャンルの決め方(decision.drive_genre)で見る"
+  },
+  "counts": {
+   "B_train_samples": 5912,
+   "B_val_samples": 1559,
+   "B2_train_samples": 5574,
+   "B2_val_samples": 1476,
+   "removed_train_samples": 338,
+   "removed_val_samples": 83,
+   "removed_share_train": 0.0572,
+   "frames_before_stride_train": {
+    "B": 17694,
+    "B2": 16688
+   },
+   "genre_samples_train": {
+    "B": {
+     "5": 3684,
+     "4": 2228
+    },
+    "B2": {
+     "5": 2279,
+     "4": 3295
+    }
+   },
+   "genre_samples_val": {
+    "B": {
+     "5": 918,
+     "4": 641
+    },
+    "B2": {
+     "5": 650,
+     "4": 826
+    }
+   }
+  }
+ },
+ "references": {
+  "B": "clean_driving_20261011-nocmd-s3-20261011-024626(走行の基準。比べる相手の主)",
+  "A": {
+   "s0": "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30",
+   "s1": "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30"
+  },
+  "A_fresh": {
+   "s2": "realacc_20261015-v0-s2",
+   "s3": "realacc_20261015-v0-s3"
+  },
+  "role_of_A": "A の種 0〜3 は「同じ作り方・選別なし」の陰性対照。B2 − B の差が、種を替えただけの差(A_i − B)より十分大きいかを見る",
+  "existing_predictions": "保留の 10,985 行(pred_table、key 3d339512828b17195d568f1b93ee4a28208f2e85)の A_s0・A_s1・B は data/zoo/policy_zoo_20261012/pred、A_s2・A_s3 は data/zoo/real_accuracy_20261015/pred(読むだけ)"
+ },
+ "evaluation": {
+  "tool": "experiments/20261016_b2_curation/eval/b2_eval.py(後の段で書く。tables(CPU)・predict(GPU)・evaluate(CPU)・engine(GPU)・figures(CPU)。sha256 を eval_sha256.txt に書いてから evaluate)。予測は policy_zoo._Frames・_predict_frames と同じ計算(PyTorch FP32・eval)にジャンルの指定を足す",
+  "crosscheck": "新しい道具で B の best を pred_table の part 0 で予測し直し、10/12 の B.npz との最大の差 ≤ 0.01 µs(合わなければ止めて deviations.md)",
+  "genres": {
+   "own_labels": "B2 は自分の学習の付け替え(152405-0002・152707-0001 の行 = 4、ほかは aligned の mode)。A・B は aligned の mode(= 10/13)",
+   "aligned": "10/13 の字義どおり、全部のモデルに aligned の mode(B2 にも 152405-0002・152707-0001 = 5)",
+   "drive": "走行のジャンル: A・B = 5(カード 1 と同じ)、B2 = g(5、だめなら 4。decision.drive_genre)。R1・DE・直線の判定はこれで予測する"
+  },
+  "drive_output": "jetformer/drive.py の apply_gains と同じ式(rl_evaluate.drive_outputs)、先読み 3・速度のゲイン 1.0。スロットルはゲイン 1.0 なので生の予測と同じ。ステアはゲイン前の値(+ = 左)で比べる(車ではステアのゲイン倍になる)。中心・中立は各学習結果の model_config(B・A・B2 とも 1441 / 1496 になるはず。違えば deviations.md)",
+  "window_sets": {
+   "H": "保留の人: 人の 9 ログの通過で、窓のフレームがすべて clean_driving の val のシーンにあるもの(A・B・B2 のどれも学習していない)",
+   "AI": "保留の AI: 10/10 の AI 走行の 11 ログで ai = True の通過(ai_mix_20261011 の aligned のフレーム。clean_driving に入っていない = A・B・B2 のどれも学習していない。first_trial がいろいろなゲインで入った状態)",
+   "T": "学習のログの人: 窓のフレームがすべて clean_driving の train のシーンにある通過(A・B は学習に使った。B2 は外した通過以外を使った)",
+   "r1_window": "R1: 時刻 [ta − 1.0, ta] の vehicle_valid のフレーム(主)。参考に [ta − 0.4, ta](10/12 の窓)・[ta − 2.0, ta]",
+   "de_window": "DE: [tg, tg + 0.8](10/12 と同じ)",
+   "fast": "速い進入の状態 = entry_erpm ≥ 5500、遅い = < 5500(10/12 の ENTRY_BAND と同じ)",
+   "counts_expected": {
+    "r1": {
+     "H": {
+      "n": 12,
+      "ge5500": 4,
+      "ge6200": 3,
+      "r1_strong": 0
+     },
+     "AI": {
+      "n": 56,
+      "ge5500": 21,
+      "ge6200": 13,
+      "r1_strong": 11
+     },
+     "T": {
+      "n": 61,
+      "ge5500": 24,
+      "ge6200": 10,
+      "r1_strong": 4
+     }
+    },
+    "de": {
+     "H": {
+      "n": 10,
+      "ge5500": 4
+     },
+     "AI": {
+      "n": 55,
+      "ge5500": 21
+     },
+     "T": {
+      "n": 55,
+      "ge5500": 23
+     }
+    },
+    "straight_frames": 542,
+    "check": "道具の tables の段でこの数にならなければ止めて deviations.md"
+   },
+   "window_table": "上の窓([ta − 2.0, ta] と DE)と直線 542 行を 1 つの表(行の順を固定、sha1 の key)にして予測する。key は tables の段で eval_sha256.txt に書き、予測の前に固定"
+  },
+  "pass_value": "u_m(p) = 通過 p の窓のフレームの、モデル m の走行の出力の平均。Δ_m(p) = u_m(p) − u_B(p)(スロットル: + = 遅い。ステア: + = 左)。B2 の値は種 0・1 の平均 Δ_B2(p)。集合の値 D = 通過の平均。区間は通過の選び直し 10,000 回(種 0)の 95% パーセンタイル",
+  "gates": {
+   "G3-R1-held": {
+    "set": "H ∪ AI の速い進入(entry ≥ 5500。予定 25 通過)",
+    "pass_if": "D_B2 ≥ +30 µs かつ 両方の種で D ≥ +20 µs かつ 95% 区間の下限 > 0 かつ D_B2 − max_i D_Ai ≥ +15 µs(A_i = A の種 0〜3)かつ last.pth の B2(種の平均。B は best のまま)でも D ≥ +20 µs",
+    "why": "計画の G3「R1 の手前 1 秒の予測スロットルの前進量が基準より 30 µs 以上小さい」。選別が効くはずの「速く近づいた状態」で判定する(遅く近づいた状態には外したものが無い)。30 µs は定常の対応表で約 800 eRPM(1310 → 1340 µs で 5,280 → 4,456 eRPM)"
+   },
+   "G3-R1-train": {
+    "set": "T の速い進入(entry ≥ 5500。予定 24 通過。外した 6200 以上を含む)",
+    "pass_if": "D_B2 ≥ +30 µs かつ 両方の種で ≥ +20 µs かつ D_B2 − max_i D_Ai ≥ +15 µs",
+    "note": "A・B は学習に使った状態、B2 は外した通過を見ていない。「教えた癖が抜けたか」の確認(汎化の証拠ではない)"
+   },
+   "G3-R1-slow": {
+    "set": "H ∪ AI の遅い進入(entry < 5500。予定 43 通過)",
+    "pass_if": "D_B2 ≥ −10 µs(遅い近づき方で、B より強く前へ出さない)"
+   },
+   "G3-DE": {
+    "set": "H ∪ AI の DE の通過(予定 65)",
+    "pass_if": "ステア D_B2 ≥ min(−15, min_i D_Ai − 5) µs(右へ寄らない)かつ スロットル D_B2 ≥ min(−15, min_i D_Ai − 5) µs(強く前へ出さない)",
+    "why": "計画の G3「DE の予測スロットルが基準より大きくならない」。B2 は DE を直す手ではないので「悪くならない」だけを見る。下調べで A の新しい種 2 は B より DE のステアが −10.7 µs(保留の人 10 通過)ずれた → 余裕を 15 µs にした"
+   },
+   "G3-straight": {
+    "set": "10/12 の直線 542 行(rl_evaluate.straight_mask: 場所 HS・DE、|ヨー| < 20°/s、前進 > 2000 eRPM、衝突の前後でない、ai_mix の val)",
+    "pass_if": "前進の強さ(1498 − 出力のスロットル)の種の平均の低下が B の 5% 以内(10/12 の崩れの基準 = 計画 G3 の「SW・HS の低下 ≤ 5%」)"
+   },
+   "G3-no-collapse": {
+    "set": "主指標の 4,670 フレーム(own_labels)",
+    "pass_if": "fwd_bias(compare_models.metrics、3 フレーム先の予測 − 人、種の平均)≥ −30 µs かつ 向きの正解率(種の平均)≥ B − 0.01"
+   },
+   "G3-L1": {
+    "rule": "10/13 の規則(tools/sim_cotrain.py judge_primary・final_verdict)。L = |予測 − 人|(10 ステップ × 2)の平均、4,670 フレーム。vs A: 基準 A_s0・A_s1、閾値 best 0.626・last 1.322 µs。vs B: 基準 B だけ、spread_floor = s_A(同じ閾値)。主 = own_labels、参考 = aligned",
+    "subsets": {
+     "curation_windows": "主指標のフレームのうち drop_b2 の reason > 0(B2 がまねないよう外した窓。246 フレーム)",
+     "rest": "残り(4424 フレーム)= B2 にまねさせたフレーム"
+    },
+    "fresh_band": {
+     "note": "10/15 で、同じ作り方の新しい種 2・3 が A より +0.86 µs で「悪い」になった(FRESH-A)。種の違いだけで閾値を越えることがある → 5 本 {A_s0〜s3, B} の範囲の 2 倍を「種のばらつきの帯」にする",
+     "primary": {
+      "best": 2.49,
+      "last": 3.276
+     },
+     "rest": {
+      "best": 2.798,
+      "last": 3.514
+     }
+    },
+    "expected": "同等か、少し悪い(+0.5〜+2 µs)。保留の人も R1 に速く入っていて(152405-0002・152707-0001 の 4 通過)、B2 はその手本をまねないように学んだので、その窓の L1 は上がるのが「効いた」しるし",
+    "interpretation": {
+     "同等・良い": "そのまま(精度を落とさずに選別できた)",
+     "悪い(悪化 ≤ 種の帯)": "「種のばらつきの内」と書く。走行の判断には使わない",
+     "悪い(悪化 > 種の帯)": "rest で同じ判定をする。rest が「悪い」でなく、悪化 < 10 µs なら「速い進入をまねなくなった分(期待どおり)」。rest も「悪い」で悪化が rest の種の帯を越えたら no-go(選別・付け替えがほかの走りの手本まで壊した)",
+     "実用上の差": "主指標の悪化 ≥ 10 µs は no-go"
+    },
+    "pass_if": "NOT(rest が「悪い」かつ rest の悪化(best)> 2.798 µs)かつ 主指標の悪化 < 10 µs"
+   },
+   "G3-intervention": {
+    "set": "介入の集合 = pred_table の part 1(intervention_val_20261011、交代の後の人の修正 29 窓、1,570 フレーム。A・B・B2 のどれも学習していない)",
+    "rule": "同じ judge_primary で vs A(10/15 の S3 と同じ閾値 best 3.458・last 4.858 µs)",
+    "pass_if": "NOT(「悪い」かつ 悪化(best)> 5.822 µs(5 本の種の帯))",
+    "why": "R1 で当たった通過を外したので、当たった後の立て直しの手本が減る。立て直しの場面の精度が落ちていないかを見る",
+    "report": "種類別(after_collision 1,327・preemptive 231・stuck 12)も載せる(判定には使わない)"
+   },
+   "G3-engine": {
+    "which": "走らせる種 = 種 0(学習の前に決めた。種 0 のエンジンが不合格のときだけ種 1)",
+    "build": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 /home/jetson/miniconda/envs/jetracer/bin/python tools/build_engine.py data/runs/<run>/jetformer.onnx data/runs/<run>/jetformer_fp16.engine",
+    "check": "experiments/20261013_sim_cotrain/train/engine_load_check.py と同じ計算(100 回の空回しの後 600 回の run_numpy、実フレーム 64 個で FP32 との差)",
+    "pass_if": "FP16 と PyTorch FP32 の差の最大 ≤ 2.5 µs、run_numpy 中央値 ≤ 6.0 ms・p99 ≤ 8.0 ms、peak_mem ≤ 4,096 MB、NaN・Inf なし、run_numpy 中央値 ≤ B(2.377 ms)+ 0.5 ms(同じ形なので同じはず)、jetformer.drive.list_models() に出て trained_modes に走行のジャンル g がある、model_config の中心・中立が B と同じ(1441 / 1496)",
+    "not_done": "data/drive_recommended.json・drive_settings.json・jetformer/drive.py は変えない(推奨はモデル B のまま。B2 は一覧の中の 1 つ)"
+   }
+  },
+  "secondary_report_only": [
+   "G3 の字義どおり: 全部の通過(H ∪ AI 68、T 61)の D_B2(速い・遅いを分けない)",
+   "6200 以上だけ・H と AI を分けた値・T の外した通過 / 残した通過",
+   "窓 0.4 秒(10/12)と 2 秒",
+   "aligned のジャンル・ジャンル 4 で走らせた場合(B2 だけ 4)・last.pth",
+   "見積もった進入 eRPM(rl_evaluate.entry_estimate と同じ: 実際の進入 + 対応表での差)の 6200 以上・5500 以上の割合(B 対 B2)",
+   "DE の出口の予測ステアと人の差(計画 G3「人の −20 µs に近づく」。B2 は DE を直す手ではないので判定しない)",
+   "SW(場所 other)+ HS の直線(計画 G3 の字義)",
+   "ジャンル別(4・5)の L1・fwd_bias、シーン別の L1、学習の曲線(best − last)",
+   "参考の腕(任意): 外すだけ(drop-only)・付け替えだけ(relabel-only)の種 0"
+  ]
+ },
+ "decision": {
+  "desk_go_g": "desk_go(g) = G3-R1-held ∧ G3-R1-train ∧ G3-R1-slow ∧ G3-DE ∧ G3-straight(B2 を g で予測、B は 5)∧ G3-no-collapse ∧ G3-L1 ∧ G3-intervention",
+  "drive_genre": "g = 5 で desk_go なら g = 5。だめで g = 4 で desk_go なら g = 4(D1 の案 (a)「速い走りは高速走行に、R1 の手前は外す」。カード 3 で B2 を 4 で走らせる)。どちらもだめなら no-go(B2 は実車に出さない)。両方を必ず計算して載せる(後から選び直さない)",
+  "car_go": "desk_go(g) ∧ G3-engine ∧ ユーザーの了承 ∧(なるべく)カード 1(B の基準)が済んでいる",
+  "seed_for_car": "種 0(固定)。種 0 のエンジンが不合格のときだけ種 1",
+  "no_go_next": "B のまま。どのゲートで落ちたかを書く。次の手: (a) 新しい「遅く入って速く出る」データ(計画の項目 12)を足して B2 を作り直す、(b) ジャンル 5 の 5500〜6200 の重みを下げる、(c) 安全層 v1 の速度上限(項目 9・13)に任せる",
+  "statement": "机上の結論は実車の改善を示さない(10/12 の規則 7)。最終の判断はカード 3(B → B2 → B)",
+  "multiplicity": "判定はゲートの積で、走行のジャンルは 2 つまで(5 を先に)。偽陽性は小さいが 0 ではないと書く"
+ },
+ "predictions_before_results": {
+  "G3-R1-held": "D_B2 = +15〜+35 µs(中心 +22)。合格 約 40%",
+  "G3-R1-train": "D_B2 = +25〜+45 µs(中心 +32)。合格 約 55%",
+  "G3-R1-slow": "0〜+10 µs。合格 約 90%",
+  "G3-DE": "|D| < 8 µs。合格 約 90%",
+  "G3-straight": "g = 5 で低下 2〜7%(不合格 約 35%)、g = 4 で −3〜+2%",
+  "G3-L1": "own_labels vs A: 同等 50%・悪い 45%(+0.6〜+1.8 µs、種の帯の内)・良い 5%。rest は同等",
+  "G3-intervention": "同等",
+  "G3-engine": "合格(run_numpy 中央値 約 2.4 ms)",
+  "desk_go_any_g": "約 40%"
+ },
+ "gpu_order": [
+  "1. B2 種 0 の学習(約 20 分)",
+  "2. B2 種 1 の学習(約 20 分)",
+  "3. crosscheck(B の best を新しい道具で予測し直す)",
+  "4. 予測: pred_table(B2 の best・last、own_labels。aligned は付け替えた 2 シーンの行だけ予測し、ほかは own_labels の値を写す)と窓の表(B・A_s0〜s3 の best をジャンル 5、B2 の best・last をジャンル 5、B2 の best をジャンル 4)",
+  "5. B2 種 0 のエンジンと確認(種 0 が不合格なら種 1)",
+  "6.(任意)drop-only 種 0・relabel-only 種 0 の学習と予測"
+ ],
+ "optional_arms": {
+  "drop_only": {
+   "run": "b2cur_20261016-droponly-s0",
+   "cmd": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --drop-mask data/derived/b2_curation_20261016/drop_b2.npz --seed 0 --out data/runs/b2cur_20261016-droponly-s0"
+  },
+  "relabel_only": {
+   "run": "b2cur_20261016-relabelonly-s0",
+   "cmd": "cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3G --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/clean_driving_20261011 --epochs 30 --lr 3e-4 --stride 3 --batch 64 --workers 4 --no-command-input --impact-g 2.5 --mode-remap-npz data/derived/b2_curation_20261016/remap_b2.npz --seed 0 --out data/runs/b2cur_20261016-relabelonly-s0"
+  },
+  "role": "参考だけ(判定しない)。R1 の効きが「外したこと」と「付け替え」のどちらから来たかの目安。遅れたら最初に削る"
+ },
+ "gpu_rules": "GPU は 1 つずつ(jf-heavy --lock big。Firefox・pytest 一式も同じ鍵)。jetformer-web の学習・走行・収集が動いていたら始めない。ほかのセッションの GPU の処理(シミュレーターの較正など)とは鍵で順番になる",
+ "memory": {
+  "train": "jf-heavy --mem 3G --need-mb 3200 + THP なし(nothp.py)・MALLOC_ARENA_MAX 2・expandable_segments・choom 1000(10/15 と同じ包み。計算は変わらない)",
+  "on_cgroup_kill": "上限を 3872M にして --resume(10/15 の v0-s2 と同じ)。deviations.md に書く",
+  "predict": "jf-heavy --mem 3G --need-mb 3200(同じ包み)",
+  "cpu": "CUDA_VISIBLE_DEVICES= /home/jetson/bin/jf-heavy --mem 1500M --lock none -- nice -n 10"
+ },
+ "power_loss": "学習は同じコマンド + --resume(last.pth から。引数が同じでないと train.py が止める)。予測は出来た npz(key が合う)を飛ばす。last.pth が壊れていたら最初から学習し直して deviations.md。表(drop_b2・remap_b2)は作り直しても同じ sha256",
+ "disk": {
+  "free_at_freeze_gb": 20,
+  "keep_free_gb": 8,
+  "per_run_mb": {
+   "kept": 112,
+   "last_pth": 169
+  },
+  "keep_last_pth": "B2 の last.pth は last の予測が済むまで残す(--resume と last の判定に要る)",
+  "own_folders_only": [
+   "experiments/20261016_b2_curation/",
+   "data/derived/b2_curation_20261016/",
+   "data/runs/b2cur_20261016-*",
+   "data/zoo/b2_curation_20261016/",
+   "/home/jetson/jetformer_reports/b2_curation_20261016/"
+  ],
+  "no_dataset_copies": true
+ },
+ "rules": [
+  "実車を走らせない。PCA9685・I2C に触れない(実車はカード 3 を書くだけ)",
+  "jetformer/drive.py・走行の既定(drive_settings・drive_recommended)を変えない。安全層は純粋な関数と机上の評価のまま",
+  "生データ(data/raw)・既存のデータセットを書き換えない。選別は data/derived の表だけ",
+  "git commit をしない。jetformer-web は要るとき・暇なときだけ再起動",
+  "ユーザー向けの文章とコメントは日本語"
+ ],
+ "aba_card": {
+  "file": "card_aba_b2.md(人が読む版)",
+  "preconditions": [
+   "desk_go(g) とエンジンのゲートに合格",
+   "ユーザーの了承",
+   "カード 1(B の基準 60 周以上)が済んでいる(強く勧める)",
+   "計画 3 章の安全の決まり・走る前の 3 つ(安全確認・取り付けの固定・Jetson の電源)",
+   "コースの配置と照明が 10/10 と同じ",
+   "速度上限 0(常用にした後なら付録の版)"
+  ],
+  "skip_if": "カード 1 で B の AI 側の R1 の進入のうち 5500 以上が 10% 未満、かつ R1 の強い衝突/通過 ≤ 0.05 → 後回し(余った時間に害が無いかの確認として)",
+  "settings": {
+   "B": {
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "genre": 5
+   },
+   "B2": {
+    "run": "b2cur_20261016-s0(種 0 のエンジンが不合格のときだけ -s1)",
+    "genre": "g"
+   },
+   "common": "ステアのゲイン = カード 1 で決めた値(第一候補 1.0)・速度 1.0・先読み 3・ToF ガード 1(記録だけ)・重ね合わせ 0・速度上限 0・ほか(後退・リカバリー)はカード 1 と同じ・記録オン(説明欄にモデル・ブロック・電池の番号・電圧)"
+  },
+  "order": [
+   "車輪を浮かせた dry run 60 秒 × 2(B・B2): HOLD 0・infer_ms 中央値 ≤ B + 1 ms・カメラ ≥ 29 fps・遅れ中央値 ≤ 35 ms。B2 がだめならその日は B2 を走らせない",
+   "慣らし B 2〜3 周(数えない)",
+   "ブロック 1: B ≥ 22 周(1 走行 = AI 側 4 分)",
+   "B2 の慣らし 2〜3 周(R1 か LH を 2 周続けて回り切れなければやめる)",
+   "ブロック 2: B2 ≥ 43 周(2 走行)",
+   "ブロック 3: B ≥ 22 周(1 走行)"
+  ],
+  "batteries": "4〜6 本。各ブロックは満充電に近い電池から、打ち切りの電圧で替える。番号と前後の電圧を記録",
+  "stop_rules": "計画 3 章: CH3 は人、止まる衝突はすぐ取り返す、同じ場所で 2 回続けて強い衝突 or 最初の 10 周で衝突 20 回超で終える、強い正面衝突の後は点検、Jetson が落ちたらすぐ CH3 を人へ",
+  "metrics": {
+   "primary": "AI 側の R1 の通過ごとの進入 eRPM(course_passes と同じ: 起点の手前 0.4 秒の最大)",
+   "others": [
+    "R1 の強い衝突(4 G)/通過",
+    "DE の衝突(2.5 G)/通過",
+    "衝突/周(2.5 G・0.6 秒で 1 回・方位の周)",
+    "衝突なしの周の中央値(LapCounter)",
+    "ステアの反転/秒(±30 µs の不感帯)",
+    "交代/周(理由別)・HOLD・基板の再起動・infer_ms・遅れ"
+   ]
+  },
+  "judgement": {
+   "compare": "B = ブロック 1 + 3、B2 = ブロック 2",
+   "r1_slower": "片側 Mann–Whitney(B2 < B)p < 0.05 かつ Hodges–Lehmann のずれ(B − B2)≥ 300 eRPM",
+   "not_worse": [
+    "R1 の強い衝突/通過: B2 ≤ B × 1.1 + 0.02",
+    "DE の衝突/通過: B2 ≤ B × 1.1 + 0.02",
+    "衝突/周の比 B2/B: 点推定 ≤ 1.1 かつ上側 95% 限界 ≤ 1.5(ポアソンの正確な区間)",
+    "衝突なしの周の中央値の悪化 ≤ 0.3 秒 かつ ステアの反転/秒 ≤ B × 1.1"
+   ],
+   "verdicts": {
+    "B2 が良い": "r1_slower + not_worse 全部 → B2 を次の基準の候補",
+    "害なし・効き不明": "not_worse 全部だけ → B のまま",
+    "B2 は悪い": "not_worse のどれかが崩れた → B のまま",
+    "判定できない": "B のブロック 1 と 3 の R1 の進入の中央値の差 > 300 eRPM、または衝突/周の比が 0.67〜1.5 の外、または点推定 ≤ 1.1 で上側の限界だけ > 1.5 → 次の実車で B2・B のブロックを 1 つずつ足す"
+   },
+   "power": "43 対 44 通過の Mann–Whitney で約 500〜600 eRPM のずれを約 80%(R1 の進入の標準偏差: AI 006/007 893・人 1,085)"
+  },
+  "variant_with_cap": "速度上限を常用にした後: B・B2 とも同じ上限をオン。主に見るのは R1 で上限が効いた通過の割合と、上限の前のモデルの R1 の進入。not_worse は同じ"
+ },
+ "deliverables": {
+  "training": "data/runs/b2cur_20261016-s0・-s1(best・last・onnx・model_config・result・run.json)",
+  "evaluation": "evaluation.json・evaluation.md(全部のゲートの値と合否・参考の値・予想との答え合わせ)",
+  "report": "README.md(ユーザー向け・日本語)",
+  "card": "card_aba_b2.md の「机上の結果」欄を埋める",
+  "video_storyboard": "video/storyboard.md(約 1 分・時刻や予定のセリフなし・まとめと課題で締める・音声は Gemini TTS の Achernar。描画はメインのセッション)",
+  "deviations": "deviations.md"
+ },
+ "deviation_policy": "固定の後に変えたことは deviations.md に時刻・何を・なぜ・判定への影響を書く。ゲートの式・閾値・集合・走行のジャンルの決め方は変えない(変えたら、その項目は「固定の外」として判定から外し、参考に下げる)",
+ "paths": {
+  "report_dir": "/home/jetson/jetformer_reports/b2_curation_20261016",
+  "code_dir": "/home/jetson/jetformer/experiments/20261016_b2_curation",
+  "derived": "/home/jetson/jetformer/data/derived/b2_curation_20261016",
+  "runs": "data/runs/b2cur_20261016-s{0,1}",
+  "preds": "data/zoo/b2_curation_20261016/pred",
+  "logs": "/home/jetson/jetformer_reports/b2_curation_20261016/logs"
+ },
+ "baseline_values": {
+  "L_us": {
+   "best": {
+    "A_s0": {
+     "primary": 49.146,
+     "curation_windows": 54.74,
+     "rest": 48.835,
+     "intervention_iv_all": 128.9
+    },
+    "A_s1": {
+     "primary": 49.457,
+     "curation_windows": 54.822,
+     "rest": 49.158,
+     "intervention_iv_all": 127.772
+    },
+    "B": {
+     "primary": 49.144,
+     "curation_windows": 55.193,
+     "rest": 48.807,
+     "intervention_iv_all": 129.501
+    },
+    "A_s2": {
+     "primary": 49.937,
+     "curation_windows": 55.179,
+     "rest": 49.645,
+     "intervention_iv_all": 126.942
+    },
+    "A_s3": {
+     "primary": 50.389,
+     "curation_windows": 53.679,
+     "rest": 50.206,
+     "intervention_iv_all": 129.853
+    }
+   },
+   "last": {
+    "A_s0": {
+     "primary": 49.235,
+     "curation_windows": 54.61,
+     "rest": 48.936,
+     "intervention_iv_all": 127.617
+    },
+    "A_s1": {
+     "primary": 49.752,
+     "curation_windows": 55.271,
+     "rest": 49.445,
+     "intervention_iv_all": 127.927
+    },
+    "B": {
+     "primary": 49.091,
+     "curation_windows": 54.994,
+     "rest": 48.763,
+     "intervention_iv_all": 130.046
+    },
+    "A_s2": {
+     "primary": 50.646,
+     "curation_windows": 53.953,
+     "rest": 50.463,
+     "intervention_iv_all": 129.011
+    },
+    "A_s3": {
+     "primary": 50.729,
+     "curation_windows": 54.49,
+     "rest": 50.52,
+     "intervention_iv_all": 132.145
+    }
+   }
+  },
+  "thresholds_us": {
+   "best": {
+    "primary": {
+     "s_A_three": 0.313,
+     "2s_A": 0.626,
+     "s_five_fresh": 1.245,
+     "2s_five_fresh": 2.49
+    },
+    "curation_windows": {
+     "s_A_three": 0.453,
+     "2s_A": 0.906,
+     "s_five_fresh": 1.514,
+     "2s_five_fresh": 3.028
+    },
+    "rest": {
+     "s_A_three": 0.351,
+     "2s_A": 0.702,
+     "s_five_fresh": 1.399,
+     "2s_five_fresh": 2.798
+    },
+    "intervention_iv_all": {
+     "s_A_three": 1.729,
+     "2s_A": 3.458,
+     "s_five_fresh": 2.911,
+     "2s_five_fresh": 5.822
+    }
+   },
+   "last": {
+    "primary": {
+     "s_A_three": 0.661,
+     "2s_A": 1.322,
+     "s_five_fresh": 1.638,
+     "2s_five_fresh": 3.276
+    },
+    "curation_windows": {
+     "s_A_three": 0.661,
+     "2s_A": 1.322,
+     "s_five_fresh": 1.318,
+     "2s_five_fresh": 2.636
+    },
+    "rest": {
+     "s_A_three": 0.682,
+     "2s_A": 1.364,
+     "s_five_fresh": 1.757,
+     "2s_five_fresh": 3.514
+    },
+    "intervention_iv_all": {
+     "s_A_three": 2.429,
+     "2s_A": 4.858,
+     "s_five_fresh": 4.528,
+     "2s_five_fresh": 9.056
+    }
+   }
+  },
+  "frames": {
+   "primary": 4670,
+   "curation_windows": 246,
+   "rest": 4424,
+   "intervention_iv_all": 1570
+  },
+  "model_B_ref_us": [
+   1441.0,
+   1496.0
+  ],
+  "B_run_numpy_median_ms": 2.377,
+  "negative_control_existing_aligned_genre": {
+   "r1_1s_H": {
+    "passes": 12,
+    "all": {
+     "A_s0-B": -0.97,
+     "A_s1-B": 3.42,
+     "A_s2-B": -4.58,
+     "A_s3-B": 3.15,
+     "A_s1-A_s0": 4.39,
+     "n": 12,
+     "mean_B": 1327.1,
+     "mean_human_exec": 1337.8
+    },
+    "ge5500": {
+     "A_s0-B": 1.96,
+     "A_s1-B": 8.88,
+     "A_s2-B": -2.47,
+     "A_s3-B": 5.27,
+     "A_s1-A_s0": 6.92,
+     "n": 4,
+     "mean_B": 1314.5,
+     "mean_human_exec": 1337.6
+    },
+    "lt5500": {
+     "A_s0-B": -2.44,
+     "A_s1-B": 0.69,
+     "A_s2-B": -5.64,
+     "A_s3-B": 2.1,
+     "A_s1-A_s0": 3.12,
+     "n": 8,
+     "mean_B": 1333.5,
+     "mean_human_exec": 1337.9
+    }
+   },
+   "de_H": {
+    "passes": 10,
+    "all": {
+     "A_s0-B": 0.82,
+     "A_s1-B": -1.58,
+     "A_s2-B": -10.67,
+     "A_s3-B": 6.4,
+     "A_s1-A_s0": -2.4,
+     "n": 10,
+     "mean_B": 1480.0,
+     "mean_human_exec": 1515.2
+    },
+    "ge5500": {
+     "A_s0-B": 3.54,
+     "A_s1-B": -3.29,
+     "A_s2-B": -11.47,
+     "A_s3-B": 8.68,
+     "A_s1-A_s0": -6.83,
+     "n": 4,
+     "mean_B": 1504.0,
+     "mean_human_exec": 1507.8
+    },
+    "lt5500": {
+     "A_s0-B": -0.99,
+     "A_s1-B": -0.44,
+     "A_s2-B": -10.13,
+     "A_s3-B": 4.88,
+     "A_s1-A_s0": 0.54,
+     "n": 6,
+     "mean_B": 1464.1,
+     "mean_human_exec": 1520.0
+    }
+   },
+   "note": "下調べ(B2 はまだ無い)。保留の人の窓での A_i − B。速い 4 通過で −2.5〜+8.9 µs、DE のステアで −10.7〜+6.4 µs"
+  },
+  "erpm_map_steady": {
+   "x_us": [
+    1133.6,
+    1143.6,
+    1155.9,
+    1164.2,
+    1175.2,
+    1181.0,
+    1196.9,
+    1204.1,
+    1216.7,
+    1224.3,
+    1233.1,
+    1245.4,
+    1256.5,
+    1263.1,
+    1275.1,
+    1285.7,
+    1295.0,
+    1306.8,
+    1315.1,
+    1327.1,
+    1335.3,
+    1344.3,
+    1354.5,
+    1363.9,
+    1376.0,
+    1384.7,
+    1390.8,
+    1497.2,
+    1500.3
+   ],
+   "y_erpm": [
+    8909,
+    8878,
+    7917,
+    7917,
+    7917,
+    7917,
+    7702,
+    6928,
+    6928,
+    6928,
+    6928,
+    6928,
+    6763,
+    6763,
+    6191,
+    6000,
+    5853,
+    5292,
+    5261,
+    5067,
+    4712,
+    4222,
+    4222,
+    3874,
+    3729,
+    3557,
+    2918,
+    1324,
+    511
+   ],
+   "samples": 9511
+  }
+ },
+ "files": {
+  "passes_b2": {
+   "path": "/home/jetson/jetformer/data/derived/b2_curation_20261016/passes_b2.json",
+   "sha256": "aa639237b88bc1185523d6c86d4dc7012e254c969fed0dd4bf8b9322675baa8b"
+  },
+  "drop_b2": {
+   "path": "/home/jetson/jetformer/data/derived/b2_curation_20261016/drop_b2.npz",
+   "sha256": "0a28059fa034b39c2fb38106499cd93e26e228d8fe5ea3cf5f70791c937cdcfb"
+  },
+  "remap_b2": {
+   "path": "/home/jetson/jetformer/data/derived/b2_curation_20261016/remap_b2.npz",
+   "sha256": "c722f796246c281ce2d5349dba71baf69521ce3a6a6e68741af702e03da9cc9a"
+  },
+  "curation_card": {
+   "path": "/home/jetson/jetformer/data/derived/b2_curation_20261016/curation_card.json",
+   "sha256": "6de85c6c1d1f228657c2c0720da0062e393fea8943695164904195037a93e982"
+  },
+  "make_b2_tables": {
+   "path": "/home/jetson/jetformer/experiments/20261016_b2_curation/make_b2_tables.py",
+   "sha256": "f1641bdddc86f8149bcd4009bb889aa67ff49d7580652f705d30e179000d3d81"
+  },
+  "test_make_b2_tables": {
+   "path": "/home/jetson/jetformer/experiments/20261016_b2_curation/test_make_b2_tables.py",
+   "sha256": "d4e00032e24003ac5d3b1427d1ffd64591796702fe459a4f37182d7515519a84"
+  },
+  "baseline": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/data/baseline.json",
+   "sha256": "0b873180538c0e8c20cec00bf435f0257f721d6b56e0780a8de064298f6e223f"
+  },
+  "survey": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/data/survey.json",
+   "sha256": "85028b2e3cc2b58f03ec7b6c4dd53e6018c4b4c53aeab4ae5712506414c9807d"
+  },
+  "survey2": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/data/survey2.json",
+   "sha256": "7a87ebba2c1c15c949e71df79ed64e1401360c26e27511cc2554ad95cfd0646d"
+  },
+  "genre_groups": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/data/genre_groups.json",
+   "sha256": "830db6df0a8febd8d2026d9281b5c86471be5506285ae00718ad5d41cb757646"
+  },
+  "erpm_map": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/data/erpm_map.json",
+   "sha256": "ae88a06eb69b782edb378e1c26c98a7332ec297ff9c07cfca65c698bea631d0c"
+  },
+  "src_survey": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/src/b2_survey.py",
+   "sha256": "8424978ec0d55f431715b4aedf5d8b5a3687331bcdb5352360aa96973382572f"
+  },
+  "src_survey2": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/src/b2_survey2.py",
+   "sha256": "3e89f9a5c968d7a54ee94f5dbfe57322a7c60d4d82d0a8572a6773469a46e8c0"
+  },
+  "src_baseline": {
+   "path": "/home/jetson/jetformer_reports/b2_curation_20261016/src/b2_baseline.py",
+   "sha256": "0b848e555be93c8b071f3facb245ca6f24ff02ba1893c30c21b3652c2fc815a2"
+  },
+  "train_py": {
+   "path": "/home/jetson/jetformer/tools/train.py",
+   "sha256": "3deb9e35df9e2997d9f3b1fa3df9720a5f764d1083e090e90083b942c2389b0a"
+  },
+  "train_data_py": {
+   "path": "/home/jetson/jetformer/jetformer/train_data.py",
+   "sha256": "b2f6f8e4575dc145c627604d2cb43ccb7f580761d7d70dcffd2758d395144351"
+  },
+  "offline_rl_py": {
+   "path": "/home/jetson/jetformer/tools/offline_rl.py",
+   "sha256": "e3535ca15ef1dcc9555fe4d383effb8b8253968f67d7dc4962b3d698e0f648ef"
+  },
+  "label_events_py": {
+   "path": "/home/jetson/jetformer/tools/label_events.py",
+   "sha256": "5ba5d3e5f076847524f1c641f485729cb5505e33c1b77c8c741752b77966d5ec"
+  },
+  "clean_splits": {
+   "path": "/home/jetson/jetformer/data/datasets/clean_driving_20261011/splits.json",
+   "sha256": "77feb3d45c0499becae37ae424a91095bf30c6b7a75ccd127dc9419c9adfe394"
+  },
+  "clean_card": {
+   "path": "/home/jetson/jetformer/data/datasets/clean_driving_20261011/dataset_card.json",
+   "sha256": "139035cf819478d75690863f92b4b5760d48a18013fcd0a52d3106d06ba032dd"
+  },
+  "heldout_json": {
+   "path": "/home/jetson/jetformer/data/rl/ai_mix_20261011/eval/heldout.json",
+   "sha256": "776572c904c44feb7df97d92b0c358519da991ce8ead4b96ed90f5c8ed6e5b79"
+  },
+  "passes_20261011": {
+   "path": "/home/jetson/jetformer/data/rl/ai_mix_20261011/passes.json",
+   "sha256": "5279f44eac2cb134e9ad0cdd08a1455051e1b484e85d87e335d696195b717421"
+  },
+  "protocol_20261013": {
+   "path": "/home/jetson/jetformer_reports/sim_cotrain_20261013/protocol.json",
+   "sha256": "91a50d410a9232528fae7e09bb647b8292edb65a9fee473c135f5319046b4f05"
+  },
+  "protocol_20261015": {
+   "path": "/home/jetson/jetformer_reports/real_accuracy_20261015/protocol.json",
+   "sha256": "5941a6f6335a3ef95ed90ee66b7f9867f2089b8e81a103a731d15fa4208f72d8"
+  }
+ },
+ "code_version": {
+  "jetformer_git_head": "4de4732",
+  "uncommitted_relevant": "無し(tools/course_track.py は未追跡だが使わない)"
+ }
+}
