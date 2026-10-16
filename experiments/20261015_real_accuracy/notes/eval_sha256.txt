@@ -1,0 +1,37 @@
+# 評価の道具の sha256(使う前に記録。2026-10-15 18:05:03)
+29d4c3693dfc985c2b714972cd643ae53423239fb36acc2a78e2180f97937aa8  experiments/20261015_real_accuracy/eval/realacc_eval.py
+5ed43e96ccccd1137ea43992e2d8f88f8723eb696fbdbef8ed81df1b17ce0111  experiments/20261015_real_accuracy/eval/realacc_lib.py
+8cd4fc6abef28fa9022372c1f200747936c423a5c447f11cfac3d98f361ee492  experiments/20261015_real_accuracy/eval/realacc_report.py
+4c96a56ef05b4fbdd36f2c277096d9a3ee264011c0a7e59cadb4be31884f9992  experiments/20261015_real_accuracy/train/realacc_driver.py
+f87bdd6fd536967b909a64136364bad608cc675bde323dc715918b1a821b3f63  experiments/20261015_real_accuracy/train/nothp.py
+# 追加(2026-10-15 18:09:13): ENS のゲートの道具・GAINL の包み(固定の後に書いた)
+a5b7a9985ebac714764701d81597bb07fe3386ea5c25fbb0e63233f63ec128bd  experiments/20261015_real_accuracy/ens/ens_gate.py
+d838bff503abe6eb109d712618ddcd94066ed46ac8826db5479b1c405625bd58  experiments/20261015_real_accuracy/train_gainl.py
+# 18:2x 直した道具: 547b2e7fcab0de417e5b1a313aaba7b1186b29d5585e29248699dc43a75e133a  experiments/20261015_real_accuracy/train/realacc_driver.py
+# 2026-10-15 21:54:41 固定の外の参考の腕 SIZE-EQ を足した道具(deviations.md 21:55)
+6dab79ba1b11b33b4f67f712be39a1fc2edff13a4fc8dffc773cdfd126851425  experiments/20261015_real_accuracy/eval/realacc_eval.py
+1102366b8336975f33e77db72113e64348d2db4b42f61c518c8e1c7b0140929b  experiments/20261015_real_accuracy/eval/realacc_report.py
+0c3a5cc0ef4d475d6e5294691f235c94eeef4ec75ff97ff733dbed0127b58446  experiments/20261015_real_accuracy/train/realacc_driver.py
+# 2026-10-15 22:46:26 GAINL の包みの直し(CUDA_VISIBLE_DEVICES)と動作確認の上限
+899532899d796944667c4208d982d51efa74f39784dba07918918fde67163e56  experiments/20261015_real_accuracy/train_gainl.py
+725d0451724be93d51b7e6ebfc064193c6ec421b792d3923dc8fae87e0883887  experiments/20261015_real_accuracy/train/realacc_driver.py
+# 2026-10-16 10:23:37 電源断の後の片付け(deviations.md 10/16): 種 1 本だけの参考(判定の計算は変えない)・progress の「削った」・片付けの道具
+1a03efab3f24c65b17768af697dd5ead388765c0068e48f0fbb6aa2789518599  experiments/20261015_real_accuracy/eval/realacc_eval.py
+24939581fef5bb854f4b706b987d238b599074ae5ddc4355464542d7b1e21c8a  experiments/20261015_real_accuracy/eval/realacc_report.py
+bb657f0f0e17731d5f1a2acd45f8e63d8ba53f85a0c3320070a3f7ea2fbd3c70  experiments/20261015_real_accuracy/eval/single_seed_ref.py
+793fca3b23ce704ab38f704bc691831428dcb27f8650e96ff446e36093cb8106  experiments/20261015_real_accuracy/train/realacc_driver.py
+b683c3491cfc98bac2d391d063d9d2f00b1fb2fee5ddd4be2f0fc2aa69e86667  experiments/20261015_real_accuracy/train/resume_20261016.py
+# 2026-10-16 10:24:09 single_seed_ref.py: GAINL の参考に S3 の閾値超えの一文を足した(判定の計算は変えない)
+4bc88020ba5e13c85bcbbfe6219bafbe736408352dcf906c48c7adbf207a924d  experiments/20261015_real_accuracy/eval/single_seed_ref.py
+# 2026-10-16 10:25:05 training_report.py: SIZE-EQ の行・削った学習の行(表だけ)
+6c78f705e90951f4d18febfb78f599f2f50ae462bb993dae58eecf1870515725  experiments/20261015_real_accuracy/train/training_report.py
+# 2026-10-16 10:25:28 realacc_figures.py: SIZE-EQ の種 0 だけの参考の点(図だけ)
+dca68fb308ad5c8c3cf460b372b16f675445eaa04b3d5ec0cd8f7bbcd925cd51  experiments/20261015_real_accuracy/eval/realacc_figures.py
+# 2026-10-16 10:25:49 realacc_figures.py: 参考の文字の位置(図だけ)
+0602e0612138443b722bc5221866b13024399ac007bb2781033caf829198db64  experiments/20261015_real_accuracy/eval/realacc_figures.py
+# 2026-10-16 10:26:12 realacc_figures.py: 参考の文字の位置(図だけ)
+36bd9c953831e0db573cf2f4da22475163f08deca4389591726aae3ecca88b24  experiments/20261015_real_accuracy/eval/realacc_figures.py
+# 2026-10-16 10:28:25 動画の図(10/15 18:29 に書いた・図だけ。記録が漏れていた)
+e0d83f032ddad4e985708baadea877bb09fd28779c3b4f22da99306cae32f3cc  experiments/20261015_real_accuracy/eval/make_slides.py
+9067b65631077834eef174f447666b15c2b82ae30cf847e531dcaa2c2b3a9b6b  experiments/20261015_real_accuracy/eval/test_single_seed_ref.py
+121a7933bc0612da35b19df4cabc2ee4a9be3f2a9fc8833d4161fa248b2ff15c  experiments/20261015_real_accuracy/train/test_realacc_driver.py

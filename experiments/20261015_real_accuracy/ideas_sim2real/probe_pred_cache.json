@@ -1,0 +1,432 @@
+{
+ "frames": {
+  "clean": 4670,
+  "HS": 627,
+  "g4": 1922,
+  "g5": 2748
+ },
+ "single": {
+  "A_s0": {
+   "all": 49.146,
+   "steer": 50.234,
+   "throttle": 48.058,
+   "g4": 60.281,
+   "g5": 41.358,
+   "no_HS": 49.215,
+   "HS": 48.7,
+   "HS_throttle_bias": 17.49
+  },
+  "A_s1": {
+   "all": 49.457,
+   "steer": 51.317,
+   "throttle": 47.596,
+   "g4": 61.125,
+   "g5": 41.295,
+   "no_HS": 49.594,
+   "HS": 48.573,
+   "HS_throttle_bias": 21.136
+  },
+  "B": {
+   "all": 49.144,
+   "steer": 50.89,
+   "throttle": 47.397,
+   "g4": 60.732,
+   "g5": 41.038,
+   "no_HS": 49.608,
+   "HS": 46.146,
+   "HS_throttle_bias": 23.167
+  },
+  "C_s0": {
+   "all": 49.967,
+   "steer": 51.526,
+   "throttle": 48.409,
+   "g4": 61.706,
+   "g5": 41.757,
+   "no_HS": 49.481,
+   "HS": 53.103,
+   "HS_throttle_bias": 12.4
+  },
+  "C_s1": {
+   "all": 49.491,
+   "steer": 51.165,
+   "throttle": 47.816,
+   "g4": 60.383,
+   "g5": 41.873,
+   "no_HS": 48.822,
+   "HS": 53.803,
+   "HS_throttle_bias": 5.679
+  },
+  "CFT_s0": {
+   "all": 50.087,
+   "steer": 51.999,
+   "throttle": 48.175,
+   "g4": 62.128,
+   "g5": 41.666,
+   "no_HS": 49.663,
+   "HS": 52.822,
+   "HS_throttle_bias": 16.166
+  },
+  "CFT_s1": {
+   "all": 49.34,
+   "steer": 51.061,
+   "throttle": 47.619,
+   "g4": 60.501,
+   "g5": 41.534,
+   "no_HS": 48.561,
+   "HS": 54.365,
+   "HS_throttle_bias": 5.695
+  },
+  "AFT_s0": {
+   "all": 48.971,
+   "steer": 50.046,
+   "throttle": 47.896,
+   "g4": 59.988,
+   "g5": 41.266,
+   "no_HS": 49.003,
+   "HS": 48.765,
+   "HS_throttle_bias": 19.087
+  },
+  "AFT_s1": {
+   "all": 49.516,
+   "steer": 51.258,
+   "throttle": 47.774,
+   "g4": 60.759,
+   "g5": 41.652,
+   "no_HS": 49.504,
+   "HS": 49.593,
+   "HS_throttle_bias": 18.457
+  },
+  "CDIV_s0": {
+   "all": 50.607,
+   "steer": 53.143,
+   "throttle": 48.07,
+   "g4": 61.619,
+   "g5": 42.904,
+   "no_HS": 49.729,
+   "HS": 56.265,
+   "HS_throttle_bias": 7.445
+  },
+  "CDIV_s1": {
+   "all": 49.468,
+   "steer": 51.643,
+   "throttle": 47.292,
+   "g4": 60.58,
+   "g5": 41.696,
+   "no_HS": 48.727,
+   "HS": 54.246,
+   "HS_throttle_bias": 9.44
+  },
+  "dinov2_s0": {
+   "all": 50.537,
+   "steer": 54.02,
+   "throttle": 47.053,
+   "g4": 61.351,
+   "g5": 42.973,
+   "no_HS": 51.028,
+   "HS": 47.366,
+   "HS_throttle_bias": 22.201
+  },
+  "dinov2_s1": {
+   "all": 50.265,
+   "steer": 53.809,
+   "throttle": 46.722,
+   "g4": 61.109,
+   "g5": 42.682,
+   "no_HS": 50.322,
+   "HS": 49.901,
+   "HS_throttle_bias": 11.766
+  },
+  "act_s0": {
+   "all": 50.812,
+   "steer": 51.501,
+   "throttle": 50.123,
+   "g4": 61.627,
+   "g5": 43.247,
+   "no_HS": 50.553,
+   "HS": 52.481,
+   "HS_throttle_bias": 11.852
+  },
+  "act_s1": {
+   "all": 49.941,
+   "steer": 50.861,
+   "throttle": 49.02,
+   "g4": 60.291,
+   "g5": 42.702,
+   "no_HS": 49.376,
+   "HS": 53.583,
+   "HS_throttle_bias": 8.147
+  },
+  "msfusion_s0": {
+   "all": 49.299,
+   "steer": 52.553,
+   "throttle": 46.045,
+   "g4": 60.742,
+   "g5": 41.296,
+   "no_HS": 49.825,
+   "HS": 45.907,
+   "HS_throttle_bias": 24.41
+  },
+  "msfusion_s1": {
+   "all": 49.306,
+   "steer": 51.995,
+   "throttle": 46.617,
+   "g4": 60.602,
+   "g5": 41.406,
+   "no_HS": 48.914,
+   "HS": 51.836,
+   "HS_throttle_bias": 23.883
+  },
+  "tcp_s0": {
+   "all": 49.7,
+   "steer": 51.346,
+   "throttle": 48.054,
+   "g4": 61.127,
+   "g5": 41.708,
+   "no_HS": 49.241,
+   "HS": 52.661,
+   "HS_throttle_bias": 13.939
+  },
+  "tcp_s1": {
+   "all": 49.768,
+   "steer": 50.397,
+   "throttle": 49.139,
+   "g4": 61.287,
+   "g5": 41.712,
+   "no_HS": 49.641,
+   "HS": 50.586,
+   "HS_throttle_bias": 14.042
+  }
+ },
+ "hybrid": {
+  "C_steer+A_thr_s0": {
+   "all": 49.792,
+   "steer": 51.526,
+   "throttle": 48.058,
+   "g4": 61.271,
+   "g5": 41.763,
+   "no_HS": 49.564,
+   "HS": 51.262,
+   "HS_throttle_bias": 17.49
+  },
+  "C_steer+A_thr_s1": {
+   "all": 49.38,
+   "steer": 51.165,
+   "throttle": 47.596,
+   "g4": 60.15,
+   "g5": 41.848,
+   "no_HS": 49.287,
+   "HS": 49.983,
+   "HS_throttle_bias": 21.136
+  },
+  "CDIV_steer+A_thr_s0": {
+   "all": 50.601,
+   "steer": 53.143,
+   "throttle": 48.058,
+   "g4": 61.6,
+   "g5": 42.907,
+   "no_HS": 50.32,
+   "HS": 52.407,
+   "HS_throttle_bias": 17.49
+  },
+  "CDIV_steer+A_thr_s1": {
+   "all": 49.62,
+   "steer": 51.643,
+   "throttle": 47.596,
+   "g4": 60.659,
+   "g5": 41.898,
+   "no_HS": 49.334,
+   "HS": 51.461,
+   "HS_throttle_bias": 21.136
+  },
+  "CFT_steer+A_thr_s0": {
+   "all": 50.029,
+   "steer": 51.999,
+   "throttle": 48.058,
+   "g4": 61.612,
+   "g5": 41.927,
+   "no_HS": 49.775,
+   "HS": 51.665,
+   "HS_throttle_bias": 17.49
+  },
+  "CFT_steer+A_thr_s1": {
+   "all": 49.328,
+   "steer": 51.061,
+   "throttle": 47.596,
+   "g4": 60.601,
+   "g5": 41.444,
+   "no_HS": 49.343,
+   "HS": 49.235,
+   "HS_throttle_bias": 21.136
+  }
+ },
+ "ensemble": {
+  "A_s0+A_s1": {
+   "all": 48.343,
+   "steer": 49.67,
+   "throttle": 47.016,
+   "g4": 59.93,
+   "g5": 40.239,
+   "no_HS": 48.459,
+   "HS": 47.596,
+   "HS_throttle_bias": 19.313
+  },
+  "A_s0+CDIV_s0": {
+   "all": 48.676,
+   "steer": 50.38,
+   "throttle": 46.972,
+   "g4": 59.966,
+   "g5": 40.78,
+   "no_HS": 48.301,
+   "HS": 51.097,
+   "HS_throttle_bias": 12.467
+  },
+  "A_s1+CDIV_s1": {
+   "all": 48.173,
+   "steer": 50.176,
+   "throttle": 46.169,
+   "g4": 59.742,
+   "g5": 40.081,
+   "no_HS": 47.904,
+   "HS": 49.906,
+   "HS_throttle_bias": 15.288
+  },
+  "A_s0+C_s0": {
+   "all": 48.553,
+   "steer": 49.78,
+   "throttle": 47.326,
+   "g4": 60.151,
+   "g5": 40.441,
+   "no_HS": 48.382,
+   "HS": 49.657,
+   "HS_throttle_bias": 14.945
+  },
+  "A_s0+A_s1+B": {
+   "all": 47.975,
+   "steer": 49.354,
+   "throttle": 46.596,
+   "g4": 59.653,
+   "g5": 39.807,
+   "no_HS": 48.209,
+   "HS": 46.464,
+   "HS_throttle_bias": 20.598
+  },
+  "A_s0+A_s1+CDIV_s0+CDIV_s1": {
+   "all": 47.873,
+   "steer": 49.662,
+   "throttle": 46.083,
+   "g4": 59.419,
+   "g5": 39.797,
+   "no_HS": 47.553,
+   "HS": 49.936,
+   "HS_throttle_bias": 13.878
+  },
+  "A_s0+A_s1+C_s0+C_s1": {
+   "all": 47.769,
+   "steer": 49.125,
+   "throttle": 46.413,
+   "g4": 59.311,
+   "g5": 39.696,
+   "no_HS": 47.57,
+   "HS": 49.051,
+   "HS_throttle_bias": 14.176
+  },
+  "A_s0+A_s1+AFT_s0+AFT_s1": {
+   "all": 48.206,
+   "steer": 49.499,
+   "throttle": 46.912,
+   "g4": 59.667,
+   "g5": 40.189,
+   "no_HS": 48.294,
+   "HS": 47.636,
+   "HS_throttle_bias": 19.043
+  },
+  "all_v0like_8": {
+   "all": 47.513,
+   "steer": 49.039,
+   "throttle": 45.987,
+   "g4": 59.051,
+   "g5": 39.443,
+   "no_HS": 47.293,
+   "HS": 48.93,
+   "HS_throttle_bias": 14.481
+  },
+  "zoo_10": {
+   "all": 46.099,
+   "steer": 47.337,
+   "throttle": 44.861,
+   "g4": 57.683,
+   "g5": 37.997,
+   "no_HS": 46.18,
+   "HS": 45.579,
+   "HS_throttle_bias": 16.887
+  }
+ },
+ "pred_distance": {
+  "A_s0|A_s1": {
+   "all": 17.793,
+   "steer": 20.492,
+   "throttle": 15.094
+  },
+  "A_s0|B": {
+   "all": 17.407,
+   "steer": 20.084,
+   "throttle": 14.731
+  },
+  "A_s0|CDIV_s0": {
+   "all": 20.349,
+   "steer": 23.558,
+   "throttle": 17.14
+  },
+  "A_s1|CDIV_s1": {
+   "all": 21.119,
+   "steer": 23.242,
+   "throttle": 18.996
+  },
+  "CDIV_s0|CDIV_s1": {
+   "all": 19.879,
+   "steer": 23.061,
+   "throttle": 16.698
+  },
+  "A_s0|C_s0": {
+   "all": 18.306,
+   "steer": 21.139,
+   "throttle": 15.474
+  },
+  "C_s0|C_s1": {
+   "all": 20.381,
+   "steer": 23.978,
+   "throttle": 16.784
+  },
+  "A_s0|dinov2_s0": {
+   "all": 29.545,
+   "steer": 35.675,
+   "throttle": 23.415
+  }
+ },
+ "A_s0_per_step": {
+  "steer": [
+   41.6,
+   44.6,
+   47.8,
+   49.5,
+   51.1,
+   51.6,
+   52.7,
+   54.0,
+   53.6,
+   55.9
+  ],
+  "throttle": [
+   42.1,
+   44.4,
+   45.8,
+   47.2,
+   48.5,
+   49.2,
+   50.2,
+   50.8,
+   51.2,
+   51.2
+  ]
+ }
+}

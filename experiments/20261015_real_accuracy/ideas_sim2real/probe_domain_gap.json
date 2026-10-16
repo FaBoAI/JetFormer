@@ -1,0 +1,175 @@
+{
+ "note": "案出しの参考の数字(CPU・学習なし・判定には使わない)",
+ "T": {
+  "blur_sigma": 1.3,
+  "bands": 3,
+  "T2_saturation_scale": 0.611,
+  "fit_frames": {
+   "real": 300,
+   "sim": 300
+  }
+ },
+ "image_stats_median": {
+  "real_val": {
+   "brightness": 105.8,
+   "contrast": 34.5,
+   "saturation": 13.2,
+   "edge_sobel": 25.4,
+   "laplacian_var": 62.8,
+   "top_brightness": 118.9,
+   "bottom_brightness": 96.6
+  },
+  "sim": {
+   "brightness": 106.2,
+   "contrast": 61.0,
+   "saturation": 55.8,
+   "edge_sobel": 47.2,
+   "laplacian_var": 444.8,
+   "top_brightness": 147.5,
+   "bottom_brightness": 84.1
+  },
+  "sim_T": {
+   "brightness": 114.4,
+   "contrast": 39.2,
+   "saturation": 22.8,
+   "edge_sobel": 26.7,
+   "laplacian_var": 96.0,
+   "top_brightness": 122.6,
+   "bottom_brightness": 100.0
+  },
+  "sim_T2": {
+   "brightness": 116.7,
+   "contrast": 39.7,
+   "saturation": 14.6,
+   "edge_sobel": 27.4,
+   "laplacian_var": 93.1,
+   "top_brightness": 124.1,
+   "bottom_brightness": 102.7
+  }
+ },
+ "feature_gap": {
+  "imagenet": {
+   "acc_sim_vs_real": 1.0,
+   "acc_simT_vs_real": 1.0,
+   "acc_simT2_vs_real": 1.0,
+   "acc_realtrain_vs_realval": 0.538,
+   "gap_sim": 1.173,
+   "gap_simT": 1.162,
+   "gap_simT2": 1.076,
+   "gap_realtrain": 0.094
+  },
+  "A_s0": {
+   "acc_sim_vs_real": 1.0,
+   "acc_simT_vs_real": 0.998,
+   "acc_simT2_vs_real": 0.998,
+   "acc_realtrain_vs_realval": 0.618,
+   "gap_sim": 0.893,
+   "gap_simT": 0.781,
+   "gap_simT2": 0.788,
+   "gap_realtrain": 0.131
+  },
+  "CDIV_s0": {
+   "acc_sim_vs_real": 0.998,
+   "acc_simT_vs_real": 0.997,
+   "acc_simT2_vs_real": 0.997,
+   "acc_realtrain_vs_realval": 0.615,
+   "gap_sim": 0.961,
+   "gap_simT": 0.756,
+   "gap_simT2": 0.744,
+   "gap_realtrain": 0.158
+  }
+ },
+ "sim_frames_L1_us": {
+  "A_s0_head4_sim": {
+   "all": 143.58,
+   "steer": 165.63,
+   "throttle": 121.53
+  },
+  "A_s0_head4_sim_T": {
+   "all": 133.46,
+   "steer": 174.07,
+   "throttle": 92.86
+  },
+  "A_s0_head4_sim_T2": {
+   "all": 135.29,
+   "steer": 177.11,
+   "throttle": 93.48
+  },
+  "A_s0_head5_sim": {
+   "all": 139.95,
+   "steer": 161.79,
+   "throttle": 118.12
+  },
+  "A_s0_head5_sim_T": {
+   "all": 135.83,
+   "steer": 171.29,
+   "throttle": 100.37
+  },
+  "A_s0_head5_sim_T2": {
+   "all": 138.36,
+   "steer": 174.54,
+   "throttle": 102.19
+  },
+  "CDIV_s0_head8_sim": {
+   "all": 20.67,
+   "steer": 30.44,
+   "throttle": 10.9
+  },
+  "sim_label_spread_steer_us": 159.12,
+  "CDIV_s0_head8_sim_T": {
+   "all": 40.73,
+   "steer": 53.99,
+   "throttle": 27.47
+  }
+ },
+ "input_reliance_real_val_L1_us": {
+  "A_s0": {
+   "none": {
+    "all": 47.63,
+    "steer": 49.8,
+    "throttle": 45.46
+   },
+   "image": {
+    "all": 166.82,
+    "steer": 203.88,
+    "throttle": 129.76
+   },
+   "tof": {
+    "all": 54.52,
+    "steer": 60.48,
+    "throttle": 48.56
+   },
+   "imu": {
+    "all": 51.56,
+    "steer": 53.13,
+    "throttle": 50.0
+   }
+  },
+  "CDIV_s0": {
+   "none": {
+    "all": 48.86,
+    "steer": 53.07,
+    "throttle": 44.65
+   },
+   "image": {
+    "all": 89.9,
+    "steer": 103.67,
+    "throttle": 76.14
+   },
+   "tof": {
+    "all": 51.75,
+    "steer": 56.71,
+    "throttle": 46.79
+   },
+   "imu": {
+    "all": 53.57,
+    "steer": 56.82,
+    "throttle": 50.33
+   }
+  }
+ },
+ "frames": {
+  "real_eval": 300,
+  "sim_eval": 300
+ }
+}

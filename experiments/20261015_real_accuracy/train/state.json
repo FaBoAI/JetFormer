@@ -1,0 +1,775 @@
+{
+ "runs": {
+  "realacc_20261015-msf-s2": {
+   "arm": "ENS",
+   "kind": "ENS",
+   "created_at": "2026-10-15 17:44:33",
+   "attempts": [
+    {
+     "started": "2026-10-15 17:44:33",
+     "resume_from_epoch": 0,
+     "mem_cap": "3800M",
+     "need_mb": 4000,
+     "wrapped": "protocol のまま(包みなし)",
+     "exit": 137,
+     "ended": "2026-10-15 17:45:02",
+     "memory_cap_hit": true,
+     "manual": true,
+     "note": "1 エポック目の前に cgroup の上限(3800M)で止まった(oom-kill)"
+    },
+    {
+     "started": "2026-10-15 17:47:23",
+     "resume_from_epoch": 0,
+     "mem_cap": "3800M",
+     "need_mb": 3900,
+     "wrapped": "choom 1000 + nothp",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "manual": true,
+     "note": "手で始めた(道具が出来る前)。終わりは道具が待って確かめる"
+    }
+   ],
+   "train_wall_s": 0,
+   "resumes": 0,
+   "best_val_us": 49.2,
+   "best_epoch": 25,
+   "last_val_us": 49.8,
+   "peak_mem_mb": 1714.5,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 49.7,
+   "duration_s": 1934.1,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 18:20:12",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 19:53:20",
+    "bytes": 227391390
+   }
+  },
+  "realacc_20261015-v0-s2": {
+   "arm": "ENS",
+   "kind": "ENS",
+   "attempts": [
+    {
+     "started": "2026-10-15 18:20:12",
+     "resume_from_epoch": 0,
+     "mem_cap": "3G",
+     "need_mb": 3200,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": -9,
+     "wall_s": 47.9,
+     "ended": "2026-10-15 18:21:00",
+     "watchdog_killed": false,
+     "memory_cap_hit": true
+    },
+    {
+     "started": "2026-10-15 18:25:43",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3772,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1285.1,
+     "ended": "2026-10-15 18:47:08",
+     "watchdog_killed": false
+    }
+   ],
+   "created_at": "2026-10-15 18:20:12",
+   "mem_cap": "3872M",
+   "train_wall_s": 1333.0,
+   "resumes": 0,
+   "best_val_us": 49.8,
+   "best_epoch": 20,
+   "last_val_us": 50.6,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 33.0,
+   "duration_s": 1258.3,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 18:47:08",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 19:53:20",
+    "bytes": 169177741
+   }
+  },
+  "realacc_20261015-msf-s3": {
+   "arm": "ENS",
+   "kind": "ENS",
+   "attempts": [
+    {
+     "started": "2026-10-15 18:50:09",
+     "resume_from_epoch": 0,
+     "mem_cap": "3800M",
+     "need_mb": 3905,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1863.4,
+     "ended": "2026-10-15 19:21:12",
+     "watchdog_killed": false
+    }
+   ],
+   "created_at": "2026-10-15 18:47:09",
+   "train_wall_s": 1863.4,
+   "resumes": 0,
+   "best_val_us": 48.6,
+   "best_epoch": 28,
+   "last_val_us": 48.8,
+   "peak_mem_mb": 1714.5,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 48.6,
+   "duration_s": 1836.5,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 19:21:12",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 19:53:20",
+    "bytes": 227391390
+   }
+  },
+  "realacc_20261015-v0-s3": {
+   "arm": "ENS",
+   "kind": "ENS",
+   "attempts": [
+    {
+     "started": "2026-10-15 19:24:13",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3920,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1275.6,
+     "ended": "2026-10-15 19:45:28",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 19:21:12",
+   "train_wall_s": 1275.6,
+   "resumes": 0,
+   "best_val_us": 50.4,
+   "best_epoch": 21,
+   "last_val_us": 50.8,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 33.0,
+   "duration_s": 1251.0,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 19:45:29",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 19:53:20",
+    "bytes": 169177741
+   }
+  },
+  "realacc_20261015-sizeH-s0": {
+   "arm": "SIZE",
+   "kind": "SIZE_H",
+   "attempts": [
+    {
+     "started": "2026-10-15 19:53:37",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 4000,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 868.7,
+     "ended": "2026-10-15 20:08:06",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 19:53:37",
+   "train_wall_s": 868.7,
+   "resumes": 0,
+   "best_val_us": 52.1,
+   "best_epoch": 29,
+   "last_val_us": 52.2,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 3046,
+   "val_samples": 1559,
+   "epoch_s_median": 20.7,
+   "duration_s": 856.6,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 20:08:06",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:50",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-sizeH-s1": {
+   "arm": "SIZE",
+   "kind": "SIZE_H",
+   "attempts": [
+    {
+     "started": "2026-10-15 20:11:06",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3944,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 892.8,
+     "ended": "2026-10-15 20:25:59",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 20:08:06",
+   "train_wall_s": 892.8,
+   "resumes": 0,
+   "best_val_us": 53.6,
+   "best_epoch": 25,
+   "last_val_us": 53.8,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 3046,
+   "val_samples": 1559,
+   "epoch_s_median": 19.4,
+   "duration_s": 874.7,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 20:25:59",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:50",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-sizeQ-s0": {
+   "arm": "SIZE",
+   "kind": "SIZE_Q",
+   "attempts": [
+    {
+     "started": "2026-10-15 20:28:59",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3941,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 705.5,
+     "ended": "2026-10-15 20:40:45",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 20:25:59",
+   "train_wall_s": 705.5,
+   "resumes": 0,
+   "best_val_us": 59.7,
+   "best_epoch": 28,
+   "last_val_us": 59.7,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 1682,
+   "val_samples": 1559,
+   "epoch_s_median": 12.5,
+   "duration_s": 686.6,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 20:40:45",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:50",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-sizeQ-s1": {
+   "arm": "SIZE",
+   "kind": "SIZE_Q",
+   "attempts": [
+    {
+     "started": "2026-10-15 20:43:25",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 4000,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 670.5,
+     "ended": "2026-10-15 20:54:36",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 20:40:45",
+   "train_wall_s": 670.5,
+   "resumes": 0,
+   "best_val_us": 58.8,
+   "best_epoch": 23,
+   "last_val_us": 59.0,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 1682,
+   "val_samples": 1559,
+   "epoch_s_median": 12.4,
+   "duration_s": 652.7,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 20:54:36",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:50",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-rot-s0": {
+   "arm": "ROT",
+   "kind": "ROT",
+   "attempts": [
+    {
+     "started": "2026-10-15 20:56:31",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 4000,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1300.5,
+     "ended": "2026-10-15 21:18:12",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 20:55:31",
+   "train_wall_s": 1300.5,
+   "resumes": 0,
+   "best_val_us": 49.2,
+   "best_epoch": 15,
+   "last_val_us": 50.1,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 5879,
+   "val_samples": 1559,
+   "epoch_s_median": 33.4,
+   "duration_s": 1280.8,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 21:18:12",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:50",
+    "bytes": 169177741
+   }
+  },
+  "realacc_20261015-rot-s1": {
+   "arm": "ROT",
+   "kind": "ROT",
+   "attempts": [
+    {
+     "started": "2026-10-15 21:21:12",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3944,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1303.5,
+     "ended": "2026-10-15 21:42:56",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 21:18:12",
+   "train_wall_s": 1303.5,
+   "resumes": 0,
+   "best_val_us": 49.4,
+   "best_epoch": 21,
+   "last_val_us": 50.6,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 33.0,
+   "duration_s": 1278.9,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 21:42:56",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 21:51:51",
+    "bytes": 169177741
+   }
+  },
+  "realacc_20261015-sizeT-s0": {
+   "arm": "SIZE",
+   "kind": "SIZE_T",
+   "attempts": [
+    {
+     "started": "2026-10-15 21:57:40",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 4000,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1134.2,
+     "ended": "2026-10-15 22:16:34",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 21:57:40",
+   "train_wall_s": 1134.2,
+   "resumes": 0,
+   "best_val_us": 50.7,
+   "best_epoch": 24,
+   "last_val_us": 50.8,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 4682,
+   "val_samples": 1559,
+   "epoch_s_median": 27.2,
+   "duration_s": 1118.8,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 22:16:34",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 22:42:27",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-sizeT-s1": {
+   "arm": "SIZE",
+   "kind": "SIZE_T",
+   "attempts": [
+    {
+     "started": "2026-10-15 22:19:34",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3933,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1184.3,
+     "ended": "2026-10-15 22:39:19",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 22:16:34",
+   "train_wall_s": 1184.3,
+   "resumes": 0,
+   "best_val_us": 51.4,
+   "best_epoch": 23,
+   "last_val_us": 51.7,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 4682,
+   "val_samples": 1559,
+   "epoch_s_median": 28.1,
+   "duration_s": 1162.9,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 22:39:19",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-15 22:42:27",
+    "bytes": 169177805
+   }
+  },
+  "realacc_20261015-sizeHeq-s0": {
+   "arm": "SIZE_EQ",
+   "kind": "SIZE_H",
+   "attempts": [
+    {
+     "started": "2026-10-15 22:43:33",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 4000,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1673.3,
+     "ended": "2026-10-15 23:11",
+     "note": "posthoc の道具が途中で止まり終わりが書かれていなかった。学習は最後まで(result.json の state done・59 エポック・train.log)"
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 22:43:33",
+   "train_wall_s": 1673.3,
+   "resumes": 0,
+   "best_val_us": 51.6,
+   "best_epoch": 49,
+   "last_val_us": 51.9,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 3046,
+   "val_samples": 1559,
+   "epoch_s_median": 19.0,
+   "duration_s": 1673.3,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-16 10:10:54",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-16 10:14:08",
+    "bytes": 169181197
+   }
+  },
+  "realacc_20261015-gainl-s0": {
+   "arm": "GAINL",
+   "kind": "GAINL",
+   "attempts": [
+    {
+     "started": "2026-10-15 23:18:44",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3929,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": 0,
+     "wall_s": 1338.6,
+     "ended": "2026-10-15 23:41:02",
+     "watchdog_killed": false
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 23:15:44",
+   "train_wall_s": 1338.6,
+   "resumes": 0,
+   "best_val_us": 42.7,
+   "best_epoch": 24,
+   "last_val_us": 42.9,
+   "peak_mem_mb": 1262.4,
+   "train_samples": 5912,
+   "val_samples": 1559,
+   "epoch_s_median": 33.4,
+   "duration_s": 1328.2,
+   "check": "OK",
+   "check_ok": true,
+   "done_at": "2026-10-15 23:41:02",
+   "pred_check": "OK",
+   "last_pth_deleted": {
+    "at": "2026-10-16 10:14:08",
+    "bytes": 169177741
+   }
+  },
+  "realacc_20261015-gainl-s1": {
+   "arm": "GAINL",
+   "kind": "GAINL",
+   "attempts": [
+    {
+     "started": "2026-10-15 23:44:03",
+     "resume_from_epoch": 0,
+     "mem_cap": "3872M",
+     "need_mb": 3947,
+     "code": "bf754b8d0b84",
+     "env": {
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+      "MALLOC_ARENA_MAX": "2"
+     },
+     "wrapped": "choom 1000 + nothp",
+     "exit": "なし(電源断)",
+     "ended": "2026-10-15 23:46ごろ",
+     "note": "電源断で 8 エポック目まで(続きからの学習はしないで削った)"
+    }
+   ],
+   "mem_cap": "3872M",
+   "created_at": "2026-10-15 23:41:03",
+   "cut": "電源断で未完",
+   "partial_removed": {
+    "at": "2026-10-16 10:10:54",
+    "bytes": 233982928
+   }
+  }
+ },
+ "protocol_sha256": "5941a6f6335a3ef95ed90ee66b7f9867f2089b8e81a103a731d15fa4208f72d8",
+ "done_steps": [
+  "train:realacc_20261015-msf-s2",
+  "train:realacc_20261015-v0-s2",
+  "train:realacc_20261015-msf-s3",
+  "train:realacc_20261015-v0-s3",
+  "crosscheck",
+  "predict:ENS",
+  "train:realacc_20261015-sizeH-s0",
+  "train:realacc_20261015-sizeH-s1",
+  "train:realacc_20261015-sizeQ-s0",
+  "train:realacc_20261015-sizeQ-s1",
+  "rot_smoke",
+  "train:realacc_20261015-rot-s0",
+  "train:realacc_20261015-rot-s1",
+  "predict:SIX",
+  "gate",
+  "train:realacc_20261015-sizeT-s0",
+  "train:realacc_20261015-sizeT-s1",
+  "predict:SIZE_T",
+  "gainl_smoke",
+  "train:realacc_20261015-gainl-s0",
+  "train:realacc_20261015-sizeHeq-s0"
+ ],
+ "cuts": [
+  "train:realacc_20261015-gainl-s1: 電源断(10/15 23:46〜10/16 10:03)の後に削った(23:44 に始まり 8 エポック目で電源断。続きからの学習(約 17 分)はしない・2026-10-16 10:10:54)",
+  "train:realacc_20261015-sizeHeq-s1: 電源断(10/15 23:46〜10/16 10:03)の後に削った(始まっていない・2026-10-16 10:10:54)",
+  "train:realacc_20261015-sizeQeq-s0: 電源断(10/15 23:46〜10/16 10:03)の後に削った(始まっていない・2026-10-16 10:10:54)",
+  "train:realacc_20261015-sizeQeq-s1: 電源断(10/15 23:46〜10/16 10:03)の後に削った(始まっていない・2026-10-16 10:10:54)",
+  "predict:GAINL: 電源断(10/15 23:46〜10/16 10:03)の後に削った(その段の学習結果がそろわない。済んだ gainl-s0・sizeHeq-s0 は predict:RESUME_20261016 で予測・2026-10-16 10:10:54)",
+  "predict:SIZEEQ_H: 電源断(10/15 23:46〜10/16 10:03)の後に削った(その段の学習結果がそろわない。済んだ gainl-s0・sizeHeq-s0 は predict:RESUME_20261016 で予測・2026-10-16 10:10:54)",
+  "predict:SIZEEQ_Q: 電源断(10/15 23:46〜10/16 10:03)の後に削った(その段の学習結果がそろわない。済んだ gainl-s0・sizeHeq-s0 は predict:RESUME_20261016 で予測・2026-10-16 10:10:54)"
+ ],
+ "wrap_deviation_logged": true,
+ "updated": "2026-10-16 10:14:25",
+ "groups_started": [
+  "ENS",
+  "SIZE_H",
+  "SIZE_Q",
+  "ROT",
+  "SIX",
+  "GATE",
+  "SIZE_T",
+  "GAINL",
+  "SIZEEQ_H"
+ ],
+ "family_cap": {
+  "jetformer_v0": "3872M"
+ },
+ "steps": {
+  "crosscheck": {
+   "exit": 0,
+   "wall_s": 64.5,
+   "at": "2026-10-15 19:46:33"
+  },
+  "predict:ENS": {
+   "exit": 0,
+   "wall_s": 406.1,
+   "at": "2026-10-15 19:53:20",
+   "names": [
+    "realacc_20261015-msf-s2",
+    "realacc_20261015-v0-s2",
+    "realacc_20261015-msf-s3",
+    "realacc_20261015-v0-s3"
+   ]
+  },
+  "evaluate_last": {
+   "exit": 0,
+   "wall_s": 16.2,
+   "at": "2026-10-16 10:14:25"
+  },
+  "rot_smoke": {
+   "exit": 0,
+   "wall_s": 55.0,
+   "phases": [
+    0,
+    1
+   ],
+   "state": "done",
+   "ok": true,
+   "at": "2026-10-15 20:55:31"
+  },
+  "predict:SIX": {
+   "exit": 0,
+   "wall_s": 534.1,
+   "at": "2026-10-15 21:51:50",
+   "names": [
+    "realacc_20261015-sizeH-s0",
+    "realacc_20261015-sizeH-s1",
+    "realacc_20261015-sizeQ-s0",
+    "realacc_20261015-sizeQ-s1",
+    "realacc_20261015-rot-s0",
+    "realacc_20261015-rot-s1"
+   ]
+  },
+  "gate": {
+   "exit": 0,
+   "wall_s": 327.7,
+   "at": "2026-10-15 21:57:40",
+   "gate_json": true
+  },
+  "predict:SIZE_T": {
+   "exit": 0,
+   "wall_s": 188.3,
+   "at": "2026-10-15 22:42:27",
+   "names": [
+    "realacc_20261015-sizeT-s0",
+    "realacc_20261015-sizeT-s1"
+   ]
+  },
+  "gainl_smoke": {
+   "exit": 0,
+   "wall_s": 66.2,
+   "state": "done",
+   "label_check_ok": true,
+   "ok": true,
+   "at": "2026-10-15 23:15:43"
+  },
+  "predict:RESUME_20261016": {
+   "exit": 0,
+   "wall_s": 193.7,
+   "at": "2026-10-16 10:14:08",
+   "names": [
+    "realacc_20261015-gainl-s0",
+    "realacc_20261015-sizeHeq-s0"
+   ]
+  }
+ },
+ "history_notes": [
+  "2026-10-15 22:50: GAINL の動作確認の失敗(probe_gain.py の読み込みで CUDA_VISIBLE_DEVICES が空になり CPU で動いた・上限 3G)を直したので、GAINL の削りを取り消して続きから(deviations.md)"
+ ]
+}

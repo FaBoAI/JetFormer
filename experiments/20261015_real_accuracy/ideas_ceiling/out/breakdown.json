@@ -1,0 +1,355 @@
+{
+ "models_best": {
+  "B": 49.144,
+  "act_s0": 50.812,
+  "act_s1": 49.941,
+  "dinov2_s0": 50.537,
+  "dinov2_s1": 50.265,
+  "jetformer_v0_s0": 49.146,
+  "jetformer_v0_s1": 49.457,
+  "msfusion_s0": 49.299,
+  "msfusion_s1": 49.306,
+  "tcp_s0": 49.7,
+  "tcp_s1": 49.768,
+  "AFT_s0": 48.971,
+  "AFT_s1": 49.516,
+  "CFT_s0": 50.087,
+  "CFT_s1": 49.34,
+  "C_s0": 49.967,
+  "C_s1": 49.491,
+  "CDIV_s0": 50.607,
+  "CDIV_s1": 49.468
+ },
+ "A_seed_mean_of_L": 49.301,
+ "persistence_cur_action": {
+  "L1": 50.63,
+  "per_k": {
+   "steer": [
+    15.3,
+    29.7,
+    43.8,
+    57.5,
+    70.9,
+    83.9,
+    96.1,
+    107.9,
+    119.1,
+    129.7
+   ],
+   "throttle": [
+    6.3,
+    11.2,
+    15.8,
+    20.5,
+    24.8,
+    28.9,
+    32.7,
+    36.2,
+    39.5,
+    42.7
+   ]
+  }
+ },
+ "genre_median_constant(oracle)": 113.56,
+ "A_s0_per_k": {
+  "steer": [
+   41.6,
+   44.6,
+   47.8,
+   49.5,
+   51.1,
+   51.6,
+   52.7,
+   54.0,
+   53.6,
+   55.9
+  ],
+  "throttle": [
+   42.1,
+   44.4,
+   45.8,
+   47.2,
+   48.5,
+   49.2,
+   50.2,
+   50.8,
+   51.2,
+   51.2
+  ]
+ },
+ "A_mean_pred_per_k": {
+  "steer": [
+   40.6,
+   44.0,
+   47.1,
+   48.9,
+   50.5,
+   51.3,
+   52.2,
+   53.4,
+   53.5,
+   55.2
+  ],
+  "throttle": [
+   41.3,
+   43.5,
+   45.0,
+   46.4,
+   47.4,
+   48.1,
+   49.0,
+   49.4,
+   50.0,
+   50.1
+  ]
+ },
+ "by_genre": {
+  "4": {
+   "n": 1922,
+   "L1": 60.7,
+   "steer": 51.8,
+   "throttle": 69.6,
+   "share_of_total_err": 0.507
+  },
+  "5": {
+   "n": 2748,
+   "L1": 41.33,
+   "steer": 50.1,
+   "throttle": 32.6,
+   "share_of_total_err": 0.493
+  }
+ },
+ "by_scene": {
+  "20261010-135449-0003": {
+   "n": 405,
+   "L1": 41.64,
+   "steer": 50.6,
+   "throttle": 32.7,
+   "share_of_total_err": 0.073
+  },
+  "20261010-150424-0001": {
+   "n": 398,
+   "L1": 66.41,
+   "steer": 78.5,
+   "throttle": 54.4,
+   "share_of_total_err": 0.115
+  },
+  "20261010-152405-0002": {
+   "n": 312,
+   "L1": 55.84,
+   "steer": 57.1,
+   "throttle": 54.6,
+   "share_of_total_err": 0.076
+  },
+  "20261010-152707-0001": {
+   "n": 490,
+   "L1": 42.13,
+   "steer": 47.5,
+   "throttle": 36.7,
+   "share_of_total_err": 0.09
+  },
+  "20261010-193638-0003": {
+   "n": 573,
+   "L1": 96.5,
+   "steer": 52.7,
+   "throttle": 140.3,
+   "share_of_total_err": 0.24
+  },
+  "20261010-200916-0004": {
+   "n": 581,
+   "L1": 36.31,
+   "steer": 40.3,
+   "throttle": 32.4,
+   "share_of_total_err": 0.092
+  },
+  "20261010-200916-0009": {
+   "n": 356,
+   "L1": 49.59,
+   "steer": 56.3,
+   "throttle": 42.9,
+   "share_of_total_err": 0.077
+  },
+  "20261010-201626-0003": {
+   "n": 572,
+   "L1": 26.81,
+   "steer": 35.7,
+   "throttle": 17.9,
+   "share_of_total_err": 0.067
+  },
+  "20261010-201626-0007": {
+   "n": 571,
+   "L1": 29.54,
+   "steer": 42.5,
+   "throttle": 16.5,
+   "share_of_total_err": 0.073
+  },
+  "20261010-202633-0003": {
+   "n": 199,
+   "L1": 60.6,
+   "steer": 58.7,
+   "throttle": 62.5,
+   "share_of_total_err": 0.052
+  },
+  "20261010-202633-0007": {
+   "n": 213,
+   "L1": 49.61,
+   "steer": 66.9,
+   "throttle": 32.3,
+   "share_of_total_err": 0.046
+  }
+ },
+ "by_loc": {
+  "unknown": {
+   "n": 394,
+   "L1": 50.61,
+   "steer": 54.7,
+   "throttle": 46.5,
+   "share_of_total_err": 0.087
+  },
+  "R1": {
+   "n": 392,
+   "L1": 55.32,
+   "steer": 56.4,
+   "throttle": 54.3,
+   "share_of_total_err": 0.094
+  },
+  "GM": {
+   "n": 665,
+   "L1": 52.75,
+   "steer": 63.4,
+   "throttle": 42.1,
+   "share_of_total_err": 0.152
+  },
+  "DE": {
+   "n": 600,
+   "L1": 37.37,
+   "steer": 42.7,
+   "throttle": 32.1,
+   "share_of_total_err": 0.097
+  },
+  "other": {
+   "n": 1133,
+   "L1": 40.52,
+   "steer": 42.1,
+   "throttle": 38.9,
+   "share_of_total_err": 0.199
+  },
+  "HS": {
+   "n": 627,
+   "L1": 48.64,
+   "steer": 42.3,
+   "throttle": 55.0,
+   "share_of_total_err": 0.132
+  },
+  "LH": {
+   "n": 859,
+   "L1": 63.69,
+   "steer": 59.8,
+   "throttle": 67.6,
+   "share_of_total_err": 0.238
+  }
+ },
+ "row_error_quantiles": [
+  36.9,
+  62.0,
+  99.5,
+  127.2,
+  197.7
+ ],
+ "share_of_error_top10pct_rows": 0.288,
+ "L1_without_top5pct_rows": 42.96,
+ "ensembles": {
+  "A_s0+A_s1": {
+   "n": 2,
+   "L1_mean_ens": 48.343,
+   "L1_median_ens": 48.343,
+   "mean_single": 49.301,
+   "gain_vs_mean_single": 0.958
+  },
+  "A_s0+A_s1+B": {
+   "n": 3,
+   "L1_mean_ens": 47.975,
+   "L1_median_ens": 48.175,
+   "mean_single": 49.249,
+   "gain_vs_mean_single": 1.274
+  },
+  "v0_real_only_5 (A2,B,AFT2)": {
+   "n": 5,
+   "L1_mean_ens": 47.934,
+   "L1_median_ens": 48.075,
+   "mean_single": 49.247,
+   "gain_vs_mean_single": 1.312
+  },
+  "v0_family_all_11 (A2,B,AFT2,C2,CFT2,CDIV2)": {
+   "n": 11,
+   "L1_mean_ens": 47.538,
+   "L1_median_ens": 47.629,
+   "mean_single": 49.563,
+   "gain_vs_mean_single": 2.025
+  },
+  "zoo_5_policies_x2 (10)": {
+   "n": 10,
+   "L1_mean_ens": 46.099,
+   "L1_median_ens": 46.154,
+   "mean_single": 49.823,
+   "gain_vs_mean_single": 3.724
+  },
+  "all_best_19": {
+   "n": 19,
+   "L1_mean_ens": 46.471,
+   "L1_median_ens": 46.633,
+   "mean_single": 49.727,
+   "gain_vs_mean_single": 3.256
+  },
+  "A_s0 best+last": {
+   "n": 2,
+   "L1_mean_ens": 49.121,
+   "L1_median_ens": 49.121,
+   "mean_single": 49.19,
+   "gain_vs_mean_single": 0.069
+  }
+ },
+ "ensemble_curve_v0_family": {
+  "1": 49.541,
+  "2": 48.374,
+  "3": 48.096,
+  "4": 47.935,
+  "6": 47.736,
+  "8": 47.614,
+  "11": 47.538
+ },
+ "ensemble_infinite_extrapolation_L1": 47.36,
+ "temporal_ensemble": {
+  "jetformer_v0_s0": {
+   "base": 49.146,
+   "J2_decay0.0": 48.546,
+   "J4_decay0.0": 48.769,
+   "J9_decay0.0": 49.144,
+   "J9_decay0.3": 48.458,
+   "J9_decay1.0": 48.352,
+   "k3_base": 46.79,
+   "k3_J9_decay0.3": 46.21
+  },
+  "jetformer_v0_s1": {
+   "base": 49.457,
+   "J2_decay0.0": 48.894,
+   "J4_decay0.0": 49.121,
+   "J9_decay0.0": 49.489,
+   "J9_decay0.3": 48.837,
+   "J9_decay1.0": 48.701,
+   "k3_base": 47.21,
+   "k3_J9_decay0.3": 46.57
+  },
+  "B": {
+   "base": 49.144,
+   "J2_decay0.0": 48.451,
+   "J4_decay0.0": 48.57,
+   "J9_decay0.0": 48.831,
+   "J9_decay0.3": 48.256,
+   "J9_decay1.0": 48.284,
+   "k3_base": 46.99,
+   "k3_J9_decay0.3": 45.97
+  }
+ },
+ "temporal_plus_seed_ensemble_A2": 48.158
+}

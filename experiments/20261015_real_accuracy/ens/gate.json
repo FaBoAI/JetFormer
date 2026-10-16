@@ -1,0 +1,35 @@
+{
+ "pair": [
+  "realacc_20261015-v0-s2",
+  "realacc_20261015-msf-s2"
+ ],
+ "engine": "/home/jetson/jetformer/experiments/20261015_real_accuracy/ens/ens_p2_fp16.engine",
+ "engine_mb": 65.3,
+ "checked_at": "2026-10-15 21:57:33",
+ "check_io": {
+  "ok": true,
+  "why": ""
+ },
+ "accuracy": {
+  "actions_max_us": 0.856,
+  "actions_mean_us": 0.1059,
+  "actions_p99_us": 0.559,
+  "finite": true,
+  "gate_actions_2p5us": true,
+  "ref_member_vs_avg_mean_us": 14.41
+ },
+ "latency_ms": {
+  "run_numpy_median": 4.116,
+  "run_numpy_p99": 4.864,
+  "engine_median": 3.463,
+  "engine_p99": 3.634,
+  "gate_run_numpy": true
+ },
+ "gates": {
+  "actions_max_us": 2.5,
+  "run_numpy_median_ms": 6.0,
+  "run_numpy_p99_ms": 8.0
+ },
+ "all_gates": true,
+ "method": "実フレーム 64 個(clean_driving の検証から等間隔・10/12 の engine-check と同じ)で TensorRT(run_numpy)と PyTorch FP32(CPU・2 本の best.pth の平均)の actions の差。速さは 100 回の空回しの後 600 回"
+}

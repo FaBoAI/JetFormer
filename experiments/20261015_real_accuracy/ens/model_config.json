@@ -1,0 +1,62 @@
+{
+ "policy": "ens_average",
+ "members": [
+  "realacc_20261015-v0-s2",
+  "realacc_20261015-msf-s2"
+ ],
+ "num_modes": 6,
+ "trained_modes": [
+  4,
+  5
+ ],
+ "command_input": false,
+ "inputs": [
+  "image",
+  "tof",
+  "imu",
+  "state",
+  "mode"
+ ],
+ "input_shapes": {
+  "image": [
+   1,
+   3,
+   224,
+   224
+  ],
+  "tof": [
+   1,
+   2,
+   42,
+   54
+  ],
+  "imu": [
+   1,
+   10,
+   6
+  ],
+  "state": [
+   1,
+   3
+  ],
+  "mode": [
+   1,
+   6
+  ]
+ },
+ "outputs": [
+  "actions"
+ ],
+ "output_shapes": {
+  "actions": [
+   1,
+   10,
+   2
+  ]
+ },
+ "engine": {
+  "precision": "fp16",
+  "workspace_gb": 1.0
+ },
+ "note": "実機の精度の試し(real_accuracy_20261015)の ENS のゲート用。走行タブには出さない(data/runs の外)"
+}

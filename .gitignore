@@ -21,3 +21,8 @@ experiments/20261015_sim_diverse_train/eval/vrf/sim/
 experiments/20261015_sim_diverse_train/web/rt/weights_*.mjs
 experiments/20261015_sim_diverse_train/**/relabel_backup/
 experiments/20261015_sim_diverse_train/**/work/
+# 10/15 実機の精度: モデル(onnx・engine)と予測・作業のキャッシュ(npz)は入れない
+experiments/20261015_real_accuracy/**/*.onnx
+experiments/20261015_real_accuracy/**/*.engine
+experiments/20261015_real_accuracy/**/*.npz
+experiments/20261015_real_accuracy/**/cache/
