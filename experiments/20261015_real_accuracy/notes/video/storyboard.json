@@ -1,47 +1,52 @@
 {
- "title": "JetFormer 10月15日のレポート(2本目)\n実機の精度に効く方策",
+ "title": "JetFormer 10月15日のレポート\n実機の精度を上げる方法",
  "log": "20261010-173445",
- "_note": "約 1 分の報告動画の絵コンテ(real_accuracy_20261015 の見直しの段で作り直した。動画はメインのセッションが Gemini TTS(Achernar)で描く)。作業の日は 10 月 15 日で、その日の 2 本目の報告(1 本目は sim_diverse_train_20261015)。最初に前回の課題(シミュレーターでは完走できたが、実機の精度は上がらなかった)と今日試すこと、次に電池が減ったシーン(実機のカメラ)、結果(平均 ENS と電池の補正 GAIN が「良い」、ただし ENS は際どく GAIN はほぼ 1 シーンから)、データの量の曲線、精度の床、今日のまとめ、課題の順。図 video/fig/r1〜r6 は experiments/20261015_real_accuracy/review/make_slides_review.py が review/recount.json(保存した予測から数え直した値)と、保留の 11 シーンの実機のカメラ画像・前回のシミュレーターの実際の画面から作った(2160×1350)。src_start/src_end は読み上げの長さの見込み(1 秒 5.3 字)で、描くときに詰めてよい。読み上げの合計 312 字(約 58 秒。10/15 の 1 本目は 294 字で 54.6 秒)。前の版は storyboard.before_review.json。確認: python3 ~/jetformer_reports/sim_cotrain_20261013/video/src/check_storyboard.py <この JSON>",
+ "_note": "10/16 に作り直し(ユーザーの依頼: 始まりは 10/15 のレポート、2 本目とは言わない。今の課題・対策・結果をはっきり)。図 k1・k2 は experiments/20261015_real_accuracy/review/make_slides_k.py、r3〜r5 は make_slides_review.py。前の版は storyboard.2honme.json",
  "scenes": [
   {
    "id": "s1_title",
    "kind": "title",
    "log": "20261010-173445",
-   "caption": "10月15日のレポート 2本目",
+   "caption": "10月15日のレポート",
    "src_start": 160.6,
-   "src_end": 166.23,
+   "src_end": 166.15,
    "speed": 1,
    "highlights": [],
    "summary_items": [
-    "前回の課題",
-    "電池が減ったシーン",
-    "平均と電池の補正",
-    "データの量と精度の床",
+    "今の課題",
+    "対策",
+    "結果",
     "今日のまとめと課題"
    ],
    "lines": [
     {
-     "text": "ラピカです。今日2本目は、実機の精度に効く方策です!",
-     "say": "ラピカです。今日2本目は、実機の精度に効く方策です。",
+     "text": "ラピカです。今日は、実機の精度を上げる方法を試しました!",
+     "say": "ラピカです。今日は、実機の精度を上げる方法を、試しました。",
      "expression": "happy",
      "pose": "normal"
     }
    ]
   },
   {
-   "id": "s2_problem",
+   "id": "s2_issue",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "前回の課題",
-   "src_start": 167.31,
-   "src_end": 173.46,
+   "caption": "今の課題",
+   "src_start": 167.0,
+   "src_end": 176.43,
    "speed": 1,
    "highlights": [],
-   "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r1_problem.png",
+   "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/k1_issue.png",
    "lines": [
     {
-     "text": "前回、シミュレーターでは完走できましたが、実機の精度は上がりませんでした。",
-     "say": "前回、シミュレーターでは完走できましたが、実機の精度は上がりませんでした。",
+     "text": "今の課題は、実機のデータでの精度です。",
+     "say": "いまの課題は、実機のデータでの、精度です。",
+     "expression": "worried",
+     "pose": "point"
+    },
+    {
+     "text": "シミュレーターで完走できても、誤差は49µsのままです。",
+     "say": "シミュレーターで完走できても、誤差は、49マイクロ秒のままです。",
      "expression": "worried",
      "pose": "point"
     }
@@ -51,16 +56,16 @@
    "id": "s3_plan",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "今日: 5つの方策",
-   "src_start": 176.09,
-   "src_end": 179.7,
+   "caption": "対策と結果",
+   "src_start": 175.0,
+   "src_end": 182.1,
    "speed": 1,
    "highlights": [],
-   "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r2_plan.png",
+   "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/k2_table.png",
    "lines": [
     {
-     "text": "今日は、5つの方策を試しました。",
-     "say": "今日は、いつつの方策を試しました。",
+     "text": "対策は4つ。モデルの平均、電池の補正、学習の工夫、データの量です。",
+     "say": "対策は4つ。モデルの平均、電池の補正、学習の工夫、データの量です。",
      "expression": "normal",
      "pose": "point"
     }
@@ -70,17 +75,17 @@
    "id": "s4_battery",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "電池が減ったシーン",
-   "src_start": 181.1,
-   "src_end": 187.21,
+   "caption": "対策: 電池の補正",
+   "src_start": 181.0,
+   "src_end": 187.27,
    "speed": 1,
    "highlights": [],
    "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r3_battery.png",
    "lines": [
     {
-     "text": "誤差の大きいシーンを調べると、電池が減って、車の進みが鈍っていました。",
-     "say": "誤差の大きいシーンを調べると、電池が減って、車の進みが鈍っていました。",
-     "expression": "surprised",
+     "text": "誤差の大きいシーンは、電池が減って、車の進みが鈍っていたので、補正しました。",
+     "say": "誤差の大きいシーンは、電池が減って、車の進みが鈍っていたので、補正しました。",
+     "expression": "normal",
      "pose": "point"
     }
    ]
@@ -89,22 +94,22 @@
    "id": "s5_result",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "平均と電池の補正が効いた",
-   "src_start": 189.5,
-   "src_end": 202.1,
+   "caption": "結果",
+   "src_start": 188.0,
+   "src_end": 198.5,
    "speed": 1,
    "highlights": [],
    "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r4_result.png",
    "lines": [
     {
-     "text": "2本の平均で2.6 µs、電池の補正で4.2 µs、誤差が下がりました。",
-     "say": "2本の平均で2.6マイクロ秒、電池の補正で4.2マイクロ秒、誤差が下がりました。",
+     "text": "結果、平均で2.6µs、電池の補正で4.2µs、誤差が下がりました。",
+     "say": "結果、平均で、2.6マイクロ秒、電池の補正で、4.2マイクロ秒、誤差が下がりました。",
      "expression": "happy",
      "pose": "point"
     },
     {
-     "text": "ただ、平均は際どく、電池の補正は、ほぼ電池の減った1シーンの分です。",
-     "say": "ただ、平均は際どく、電池の補正は、ほぼ1シーンの分です。",
+     "text": "学習の工夫は効きませんでした。",
+     "say": "学習の工夫は、効きませんでした。",
      "expression": "worried",
      "pose": "point"
     }
@@ -114,86 +119,66 @@
    "id": "s6_size",
    "kind": "summary",
    "log": "20261010-173445",
-   "caption": "録画を増やすと効きそう",
-   "src_start": 204.13,
-   "src_end": 210.0,
+   "caption": "結果: データの量",
+   "src_start": 197.0,
+   "src_end": 203.58,
    "speed": 1,
    "highlights": [],
    "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r5_size.png",
    "lines": [
     {
-     "text": "データを減らすと誤差が増えたので、録画を増やせば、まだ良くなりそうです。",
-     "say": "データを減らすと誤差が増えたので、録画を増やせば、まだ良くなりそうです。",
+     "text": "データを半分にすると誤差が増えたので、録画を増やせば、まだ下がりそうです。",
+     "say": "データを半分にすると、誤差が増えたので、録画を増やせば、まだ下がりそうです。",
      "expression": "normal",
      "pose": "point"
     }
    ]
   },
   {
-   "id": "s7_floor",
-   "kind": "summary",
-   "log": "20261010-173445",
-   "caption": "精度の床まで余地あり",
-   "src_start": 212.72,
-   "src_end": 218.99,
-   "speed": 1,
-   "highlights": [],
-   "image": "/home/jetson/jetformer_reports/real_accuracy_20261015/video/fig/r6_floor.png",
-   "lines": [
-    {
-     "text": "人の揺れから見た床は約31 µsで、まだ余地があります。",
-     "say": "人の揺れから見た床は、約31マイクロ秒で、まだ余地があります。",
-     "expression": "normal",
-     "pose": "point"
-    }
-   ]
-  },
-  {
-   "id": "s8_summary",
+   "id": "s7_summary",
    "kind": "summary",
    "log": "20261010-173445",
    "caption": "今日のまとめ",
-   "src_start": 220.37,
-   "src_end": 225.57,
+   "src_start": 204.0,
+   "src_end": 210.31,
    "speed": 1,
    "highlights": [],
    "summary_items": [
-    "平均(2本): −2.6 µs 良い",
-    "電池の補正: −4.2 µs 良い",
-    "時間の平均・位相: 同等",
-    "録画2倍で2〜4 µsの見込み",
-    "どれも10 µs未満の小さな差",
-    "推奨はモデルBのまま"
+    "課題: 実機の精度が49µsで止まる",
+    "対策: 平均・電池の補正・学習の工夫・量",
+    "結果: 平均 −2.6・電池 −4.2 µs",
+    "学習の工夫は効かず",
+    "データを増やすと下がりそう",
+    "おすすめはモデルBのまま"
    ],
    "lines": [
     {
-     "text": "どれも小さな差なので、おすすめはモデルBのままです。",
-     "say": "どれも小さな差なので、おすすめは、モデルビーのままです。",
+     "text": "精度は少し上がりましたが、差は小さく、おすすめはモデルBのままです。",
+     "say": "精度は少し上がりましたが、差は小さく、おすすめは、モデルビーのままです。",
      "expression": "normal",
      "pose": "normal"
     }
    ]
   },
   {
-   "id": "s9_issues",
+   "id": "s8_issues",
    "kind": "ending",
    "log": "20261010-173445",
    "caption": "課題",
-   "src_start": 227.45,
-   "src_end": 234.63,
+   "src_start": 211.0,
+   "src_end": 218.73,
    "speed": 1,
    "highlights": [],
    "summary_items": [
     "きれいな周回の録画を増やす",
-    "電池の電圧も記録する",
-    "実車でB→候補→Bを試す",
-    "電池の補正を走行に入れる",
-    "実車ではまだ確かめていない"
+    "実車でA/B/Aで確かめる",
+    "電池の補正は1シーン以外でも",
+    "平均のエンジンの速さ"
    ],
    "lines": [
     {
-     "text": "課題は、録画を増やすことと、実車での確かめです。",
-     "say": "課題は、録画を増やすことと、実車での確かめです。",
+     "text": "次の課題は、録画を増やすことと、実車で確かめることです。",
+     "say": "次の課題は、録画を増やすことと、実車で確かめることです。",
      "expression": "worried",
      "pose": "point"
     },
