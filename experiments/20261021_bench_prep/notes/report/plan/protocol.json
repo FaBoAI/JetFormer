@@ -1,0 +1,689 @@
+{
+ "title": "実車のベンチマーク real_bench_20261023(10/23 金・10/24 土)の比べ方の事前登録。走る前に固定し、結果を見て変えない",
+ "version": 1,
+ "bench": "real_bench_20261023",
+ "written_at": "2026-10-21T10:46:00+09:00",
+ "stage": "Design(bench_prep_20261021)。コードは変えていない。GPU は使っていない",
+ "request": {
+  "user_20261021_1000": "「現在の課題を解決したいですね。あとは、テスト走行に向けて、いろいろなぱたーんの学習済みモデルを作成し、実際の走行で、ベストモデルを見つけ出したい」「ベンチマーキング的に、レポートを作成したいですね。その準備もおこなってください」",
+  "user_20261021_1027": "「電源を再起動しました。車体は、本日 17:30までに移動する必要があるので、今日は17:30に今日の作業が終わる用のスケジュールしましょう」",
+  "answers_20261021": [
+   "区間の速度上限は drive.py に既定 OFF でつなぐ(zone_caps、走行タブのスイッチ)。ON で走るのは 10/23 の記録で G1 に合格し、もう一度ユーザーの了承が出てから",
+   "基準の設定のステアは 1.0(回り切れなければ当日 1.3)",
+   "実車は 1 日 約 2 時間(10/23 金・10/24 土)。1 日目に B と候補 5 本ほど、2 日目に上位 2 本をくわしく",
+   "10/23 は比べる走り: B を最初・真ん中・最後、そのあいだに候補を 1 本ずつ。ブレーキの測定は最後"
+  ],
+  "not_the_task": "チャットの「進捗どうですか?」はメインのセッションへの問い。この手順の変更の依頼ではない"
+ },
+ "sources": [
+  "/home/jetson/jetformer_reports/plan_video_20261018/plan.md(3.4 走る日の設定・3.5 走る日の朝・5 章の走り方・5.1 安全の決まり)",
+  "/home/jetson/jetformer_reports/action_plan_20261016/plan.md(3 章 安全の決まり・4 章 カード 1・注 1〜4)",
+  "/home/jetson/jetformer_reports/week_20261016/README.md(R1 の強い衝突 1/22・2/7・6/9、G1 の 2 項目不合格)",
+  "/home/jetson/jetformer/tools/label_events.py(衝突 2.5 G・強い 4.0 G・場所・交代の分類・周)",
+  "/home/jetson/jetformer/tools/offline_rl.py course_passes(R1 の起点 ta・緑マット出口 tg・進入 eRPM・R1/DE の衝突)",
+  "/home/jetson/jetformer/jetformer/drive.py DEFAULT_PARAMS・zone_caps(既定 0、起動のたびに 0)"
+ ],
+ "files": {
+  "desk_bench": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/desk_bench.json(段 Desk が書く。欄の名前は下の desk_fields)",
+  "bench_candidates": "/home/jetson/jetformer/data/bench_candidates.json(段 Finalists がこの手順の selection と order で書く。protocol_sha256 にこの protocol.json の sha256)",
+  "deviations": "/home/jetson/jetformer_reports/bench_prep_20261021/plan/deviations.md(この手順から外れたことは全部ここに書く。10/23・24 の分は実車のレポートの deviations にも写す)",
+  "report_spec": "/home/jetson/jetformer_reports/bench_prep_20261021/plan/bench_spec.md"
+ },
+ "pool": {
+  "baseline": {
+   "id": "B",
+   "label": "モデルB(基準)",
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "policy": "TransFuser軽量型(jetformer_v0)",
+   "note": "推奨のモデル(data/drive_recommended.json)。実車は未走行。門には掛けず、毎日走る"
+  },
+  "candidates": [
+   {
+    "id": "MSF",
+    "label": "多段型",
+    "run": "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30",
+    "family": "arch",
+    "hypothesis": "融合を何段も → ずれに強く、介入の集合に近い"
+   },
+   {
+    "id": "TCP",
+    "label": "TCP型",
+    "run": "clean_driving_20261011-tcp-s0-nocmd-stride3-e30",
+    "family": "arch",
+    "hypothesis": "速さも予測する形(tcp_mode 0)→ R1 への進入の速さが違うか"
+   },
+   {
+    "id": "ACT",
+    "label": "ACT型",
+    "run": "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+    "family": "arch",
+    "hypothesis": "まとめて予測 → 舵がなめらか・ふらつきが減るか(重ね合わせ ensemble_j は基準の 0 のまま)"
+   },
+   {
+    "id": "SIM",
+    "label": "シミュ混合",
+    "run": "simreal_mix_20261013-cotrain-ft-s0",
+    "family": "robust",
+    "hypothesis": "シミュレーターを混ぜて実機で仕上げ → 入力のずれに約 4 割強い(取り付けを固め直した日に効くか)"
+   },
+   {
+    "id": "ENS",
+    "label": "2本の平均",
+    "run": "bench_20261021-ens-p2",
+    "family": "ens",
+    "hypothesis": "realacc_20261015-v0-s2 + msf-s2 の平均(1 つのエンジン)。机上で一番良い −2.6 µs → 衝突が減るか"
+   },
+   {
+    "id": "SLOW",
+    "label": "遅く入る型",
+    "run": "bench_20261021-slow-s0",
+    "family": "label_r1",
+    "hypothesis": "R1 の課題への対策: 上限 v1.1 を記録に再生し、上限がかかる区間のスロットルのラベルを上限の出力に付け替えて学ぶ → R1 の手前で自分で緩める"
+   },
+   {
+    "id": "WGT",
+    "label": "苦手区間重み型",
+    "run": "bench_20261021-wgt-s0",
+    "family": "weight",
+    "hypothesis": "R1・GM・DE のフレームの損失の重み 3 倍 → 苦手区間の操作が人に近づくか"
+   },
+   {
+    "id": "AUG",
+    "label": "ずれに強い型",
+    "run": "bench_20261021-aug-s0",
+    "family": "robust",
+    "hypothesis": "カメラの明るさ・小さなずれ・ToF の雑音の拡張 → 取り付けの違いに強いか",
+    "fallback": "train.py の拡張が 30 分で済まなかったときは run = bench_20261021-slow-s1。そのときの家族は label_r1(下の family_rule)"
+   }
+  ],
+  "family_rule": {
+   "families": {
+    "arch": "方策の形を変える(MSF・TCP・ACT)",
+    "robust": "入力のずれに強くする(SIM・AUG)",
+    "ens": "推論で平均する(ENS)",
+    "label_r1": "R1 の速さのラベルを変える(SLOW、slow-s1)",
+    "weight": "損失の重みを変える(WGT)"
+   },
+   "by_run_name": "run の名前に \"-slow-\" を含めば label_r1、\"-wgt-\" は weight、\"-aug-\" は robust、\"-ens-\" は ens。ほかは上の表の family。bench_candidates.json の id が変わっても、家族は run の名前で決める"
+  },
+  "excluded": "DINOv2型(ToF のずれに弱い)・B2(机上 no-go)・モデル A(操作値の入力あり)・オフライン強化学習の結果は出さない"
+ },
+ "desk_fields": {
+  "l1_best_us": "保留の人の走行 4,670 フレーム(clean_driving_20261011 の val、realacc_lib.py の手順)の L1 [µs]。新しい学習は best の重み",
+  "l1_last_us": "同じ。新しい学習の最後の重み(参考)",
+  "l1_interv_us": "介入の集合(intervention_val_20261011)の L1 [µs]",
+  "r1_app_thr_diff_us": "R1 の進入の手前 1 秒の予測スロットル − 人のスロットル [µs]。正 = 人より緩める",
+  "steer_amp_ratio": "保留での予測ステアの振れ幅 ÷ 人の振れ幅(B は 0.95〜1.07)",
+  "trt_median_ms": "TensorRT の推論の時間の中央値 [ms]",
+  "trt_p99_ms": "TensorRT の推論の時間の 99% 点 [ms]",
+  "engine_ok": "engine_check.json の精度の確認(TensorRT と FP32 の差 ≤ 2.5 µs)が今のエンジンで合格",
+  "sanity_ok": "10/10 の AI 走行の記録のフレームを入れたとき、出力に NaN が無く範囲内",
+  "gates_pass": "安全の門(下の gates)にすべて合格",
+  "gate_fail_reasons": "落ちた門の名前のリスト"
+ },
+ "gates": {
+  "rules": [
+   "engine_ok が true",
+   "sanity_ok が true",
+   "trt_p99_ms ≤ 10.0",
+   "0.80 ≤ steer_amp_ratio ≤ 1.25",
+   "l1_best_us − B の l1_best_us < 10.0(10 µs 以上悪ければ不合格)"
+  ],
+  "missing": "欄が無い・null・NaN は不合格(理由 \"missing:<欄の名前>\")",
+  "recompute": "門は desk_bench.json の値からこの式で計算し直す。desk_bench.json の gates_pass と食い違えば、この式の結果を使い、deviations.md に書く",
+  "baseline": "B は門に掛けない。ただし B の engine_ok か sanity_ok が false なら、10/23 は走らずにユーザーに知らせる"
+ },
+ "risk_rule": {
+  "levels": [
+   "low",
+   "mid",
+   "high"
+  ],
+  "high": "steer_amp_ratio が 0.85 未満か 1.20 超、または r1_app_thr_diff_us < −20(人より 20 µs 以上強く R1 に入る)",
+  "low": "high でなく、0.90 ≤ steer_amp_ratio ≤ 1.10 かつ r1_app_thr_diff_us ≥ −10 かつ trt_p99_ms ≤ 8.0、かつ 2026-10-21 に新しく足した方策のコード(jetformer/policies の新しいファイル)を通らない",
+  "mid": "それ以外(新しい方策のコードを通る候補 = ENS は、数が low でも mid)",
+  "missing": "r1_app_thr_diff_us が無いときは mid(ほかの条件で high なら high)",
+  "precedence": "bench_candidates.json の risk は、この規則で付ける。食い違えば、この規則を使う"
+ },
+ "selection": {
+  "n_slots": 5,
+  "step1_gate": "候補(B 以外)を門に掛け、gates_pass が false のものは出さない",
+  "step2_slow": "SLOW(bench_20261021-slow-s0)が門に通れば、必ず入れる(R1 の課題への対策)。SLOW が落ちて、label_r1 の別の候補(slow-s1)が通れば、それを SLOW の枠に入れる",
+  "step3_one_per_family": "残りの家族(arch・robust・ens・weight。label_r1 は step2 で済み)から、門に通った候補の中で desk_key がいちばん良い 1 本ずつを入れる。家族は 5 つなので、ここまでで 5 本を超えない",
+  "step4_fill": "5 本に足りなければ、まだ入っていない門に通った候補(同じ家族の 2 本目を含む)を desk_key の順に足す",
+  "step5_short": "門に通る候補が 5 本に足りなければ、その本数で走る(枠を詰める。block_layout)。0 本なら 1 日目は B だけの基準(カード 1: B を 3 ブロック)",
+  "desk_key": [
+   "1. l1_interv_us が小さい順(小数第 1 位に四捨五入して比べる。null は最後)",
+   "2. r1_app_thr_diff_us が大きい順(R1 の手前で人より緩める方が先。小数第 1 位に四捨五入。null は最後)",
+   "3. l1_best_us が小さい順(小数第 1 位に四捨五入)",
+   "4. |ln(steer_amp_ratio)| が小さい順(人の振れ幅に近い方が先。小数第 3 位に四捨五入)",
+   "5. trt_p99_ms が小さい順(小数第 1 位に四捨五入)",
+   "6. id の文字の順(ASCII)"
+  ],
+  "tie": "四捨五入した値が同じなら同点として、次の鍵で決める。6 番目の鍵で必ず決まる(決定的)",
+  "why_l1_interv_first": "保留の L1 はどの作り方でも約 49 µs で、差が人の揺れの床(約 31 µs)と実用の目安(10 µs)より小さい。介入の集合は、ずれた状態からの立て直しで、実車の失敗に近い場面を見る"
+ },
+ "order": {
+  "rule": [
+   "1. SLOW の枠(label_r1)を C1 にする",
+   "2. ENS が選ばれていれば、次(C2)にする",
+   "3. 残りは risk の低い順(low → mid → high)、同じ risk の中は desk_key の順",
+   "SLOW か ENS が入っていなければ、空いた先頭から 3 の順で詰める"
+  ],
+  "why": [
+   "SLOW は今の課題(R1 の衝突)への直接の対策で、いちばん知りたい比べ。最初の B のすぐ後に置くと、電池と時間のずれの影響が最も小さく、途中で中止になっても結果が残る",
+   "ENS は机上で一番良い候補。SLOW と ENS を B と B のあいだ(前半)に置き、2 つとも近い B で挟む",
+   "後半は危なさの低い順。危ない候補を最後の方にすると、ぶつかって車が傷んでも、失う比べが少ない。最後は必ず B で閉じる"
+  ]
+ },
+ "block_layout": {
+  "n5": [
+   "B",
+   "C1",
+   "C2",
+   "B",
+   "C3",
+   "C4",
+   "C5",
+   "B"
+  ],
+  "n4": [
+   "B",
+   "C1",
+   "C2",
+   "B",
+   "C3",
+   "C4",
+   "B"
+  ],
+  "n3": [
+   "B",
+   "C1",
+   "C2",
+   "B",
+   "C3",
+   "B"
+  ],
+  "n2": [
+   "B",
+   "C1",
+   "B",
+   "C2",
+   "B"
+  ],
+  "n1": [
+   "B",
+   "C1",
+   "B",
+   "C1",
+   "B"
+  ],
+  "n0": [
+   "B",
+   "B",
+   "B"
+  ],
+  "freed_time": "詰めて空いた時間は予備にし、ブレーキの測定を削らずに済ませ、早めに終える"
+ },
+ "run_settings": {
+  "baseline_mode_id": 5,
+  "baseline_params": {
+   "steer_gain": 1.0,
+   "throttle_gain": 1.0,
+   "lookahead": 3,
+   "tof_guard": 1,
+   "ensemble_j": 0,
+   "speed_cap": 0.0,
+   "zone_caps": 0,
+   "steer_trim_us": 0.0,
+   "osc_percent": 0.0,
+   "esc_reverse": 1,
+   "recovery": 1,
+   "speed_scale": 1.0,
+   "tcp_mode": 0,
+   "ensemble_m": 0.5
+  },
+  "params_note": "1 日のあいだ、全候補・全ブロックで同じ値(1 走行 = 1 設定。変えるのはモデルだけ)。zone_caps は 10/24 の B+上限のブロックだけ 1。値は画面の「基準の設定」でそろえる。data/drive_settings.json・drive_recommended.json・DEFAULT_PARAMS は変えない",
+  "steer_fallback": "1 日目のブロック 1(B)の慣らしで、R1 か LH を 2 周続けて回り切れなければ、ステアを 1.3 にして慣らしからやり直す。そのときは、その日の全ブロックを 1.3 にする。1.3 でも回れなければ、比べる走りをやめ、10/18 plan.md 5.2 の 6 のとおり first_trial の基準(1.0/1.0/3)を取ってブレーキの測定に進む(候補は走らせない)",
+  "candidate_cannot_lap": "候補が慣らしで R1 か LH を 2 周続けて回り切れなければ、その候補のブロックを止めて「回れない」と記録し、次へ進む(ステアは変えない)",
+  "block": {
+   "steps": [
+    "1. 画面でモデルを選ぶ。モデルの名前がブロックの run と同じか、2 人で声に出して確かめる",
+    "2. 「説明」欄に description_template を書く(電池の番号・走る前の電圧・点検の結果)",
+    "3. その日に初めて走るモデルは、車輪を浮かせて dry run 30 秒(HOLD 0・infer_ms を見る)",
+    "4. 走行を始め、CH3 で AI 側へ。慣らしの周(warmup_anchors)を走る(数えない)",
+    "5. そのまま数える周に入る。画面の AI 時間が「数える時間 + 1 分」(240 秒なら 5:00、300 秒なら 6:00、180 秒なら 4:00)を過ぎたら、次の直線で CH3 で人に戻して止める。多く走った分は道具が数えない",
+    "6. 走った後の電圧を測り、記録(シーン)の説明を直して V_after に書く(シーンの説明は走ったあとも直せる: PATCH /api/scenes/<名前>)"
+   ],
+   "counted_ai_s": 240,
+   "warmup_anchors": {
+    "first_run_of_model_on_real_car": 3,
+    "later_runs": 2,
+    "meaning": "その走行で AI のフレームにある R1 の起点(course_passes の ta)の K 番目から数える。K = 3 は最初の半端な周+2 周(慣らし 2〜3 周)、K = 2 は 1 周。B も実車は初めてなので、10/23 のブロック 1 は K = 3"
+   },
+   "window": "数える区間 = K 番目の R1 の起点 ta_K の 0.5 秒前から、AI の時間の合計が 240 秒になるまで。走行が先に終われば終わりまで。同じブロックが途中で切れて走り直したとき(Jetson・基板・電源の理由)は、走り直しの記録の K = 2 として、AI の時間を足し合わせて 240 秒まで",
+   "minimum_laps": "数える周(下の laps_counted)が 12 未満のブロックは「足りない」と印を付ける。順位の表には出すが、上位 2 本には選ばない",
+   "minutes_per_block": 8,
+   "minutes_breakdown": "モデルの選択と説明 1 分・車輪を浮かせた確認 0.5 分(初めてのモデル)・AI の時間 約 5 分(慣らし 約 0.5 分+数える 4 分+余り)・交代や置き直しの余裕 1 分・電池の交換 0.5 分(2 ブロックに 1 回)"
+  },
+  "description_template": "bench=real_bench_20261023 day={date} block={block} cand={id} model={run} battery=#__ V_before=__ V_after=__ check=__ memo=",
+  "description_rules": "1 ブロック = 1 つの block 番号(走り直しも同じ番号)。check には「点検する」の結果(例 bumper7_tof_ok)を書く。慣らしは同じ走行の中で走るので、別の記録にしない"
+ },
+ "day1": {
+  "date": "2026-10-23",
+  "length_min": 120,
+  "clock": "0:00 = 準備を始めた時刻(時刻そのものは書かない)",
+  "schedule": [
+   {
+    "t": "0:00–0:10",
+    "what": "朝の準備: ip_status.service を止める(ユーザーの sudo、1 分)・空き容量 10 GB 以上・重い処理が動いていない(jf-heavy の待ちが空)・CH3 が人側(SELECT 0)・電池 #1 を付け電圧を測る・「基準の設定」の値を画面で確かめる(run_settings の値)"
+   },
+   {
+    "t": "0:10–0:15",
+    "what": "コースの照合(配置と照明が 10/10 と同じか・GM の出口の芝の斜めの板)。10/19〜22 に済んでいれば省き、予備にする"
+   },
+   {
+    "t": "0:15–0:20",
+    "what": "人の操縦で自由走行 1 本(60〜90 秒、収集オン)→ 床の基準を作り直す(エージェント)→ ライブ・収集タブの「点検する」(バンパー 7±1 行・ToF ±5%)"
+   },
+   {
+    "t": "0:20–0:24",
+    "what": "車輪を浮かせて B の dry run 60 秒(HOLD 0・infer_ms を記録)"
+   },
+   {
+    "t": "0:24–0:32",
+    "what": "ブロック 1: B(慣らし K = 3、ここでステア 1.0 で回れるかを決める)"
+   },
+   {
+    "t": "0:32–0:40",
+    "what": "ブロック 2: C1"
+   },
+   {
+    "t": "0:40–0:48",
+    "what": "ブロック 3: C2"
+   },
+   {
+    "t": "0:48–0:56",
+    "what": "ブロック 4: B(K = 2)"
+   },
+   {
+    "t": "0:56–1:00",
+    "what": "休み・点検: 「点検する」・取り付けとネジの目視・電池の電圧"
+   },
+   {
+    "t": "1:00–1:08",
+    "what": "ブロック 5: C3"
+   },
+   {
+    "t": "1:08–1:16",
+    "what": "ブロック 6: C4"
+   },
+   {
+    "t": "1:16–1:24",
+    "what": "ブロック 7: C5"
+   },
+   {
+    "t": "1:24–1:32",
+    "what": "ブロック 8: B(K = 2)"
+   },
+   {
+    "t": "1:32–1:57",
+    "what": "ブレーキの量の測定(ユーザーの送信機、収集オン。2 m/s から始めて 3 m/s まで、弱・中・強を各 5 回、床と芝)"
+   },
+   {
+    "t": "1:57–2:00",
+    "what": "片付け: ip_status を戻す・ログの本数と空き容量・電池の電圧"
+   }
+  ],
+  "cut_order": [
+   "1. コースの照合(済んでいれば)と休みを 1 分に",
+   "2. まだ走っていないブロックの数える時間を 240 → 180 秒(B も候補も同じに。率は周あたりで比べる)",
+   "3. ブレーキの測定を 25 → 15 分(弱と強だけ、各 5 回、床と芝)",
+   "4. C5 を外す(順番の最後の候補)",
+   "5. C4 を外す",
+   "6. ブレーキの測定を 10 分(強 5 回、床だけ)"
+  ],
+  "never_cut": "朝の安全の準備・車輪を浮かせた確認・B の 3 回(最初・真ん中・最後)・新しいモデルの慣らし・最後の B(候補を外してでも最後は B で閉じる)",
+  "batteries": {
+   "plan_4_to_6_packs": [
+    {
+     "pack": "#1",
+     "use": "人の自由走行・dry run・ブロック 1 B・ブロック 2 C1"
+    },
+    {
+     "pack": "#2",
+     "use": "ブロック 3 C2・ブロック 4 B"
+    },
+    {
+     "pack": "#3",
+     "use": "ブロック 5 C3・ブロック 6 C4"
+    },
+    {
+     "pack": "#4",
+     "use": "ブロック 7 C5・ブロック 8 B"
+    },
+    {
+     "pack": "#5",
+     "use": "ブレーキの量の測定"
+    },
+    {
+     "pack": "#6",
+     "use": "予備"
+    }
+   ],
+   "why": "1 本で 2 ブロック。B は電池の前半(ブロック 1)と後半(4・8)の両方に入るので、B の周から電圧とラップの関係を出せる",
+   "only_4_packs": "ブレーキの測定は、残りの電圧がいちばん高い電池で行う。足りなければ cut_order の 3・6 を使う",
+   "swap": "ブロックの前の電圧が、ユーザーの決めた替える電圧を下回っていたら、予備に替えて書く(電池の種類が分からないので、この手順では電圧の値を決めない)"
+  }
+ },
+ "day2": {
+  "date": "2026-10-24",
+  "length_min": 120,
+  "finalists": "T1 = 1 日目の 1 位、T2 = 2 位(ranking.day1)",
+  "sequence": [
+   "B",
+   "T1",
+   "T2",
+   "B",
+   "T2",
+   "T1",
+   "B"
+  ],
+  "warmup_anchors": "全ブロック K = 2(どのモデルも 2 回目以降)。B+上限だけ K = 3(上限を ON で走るのは初めて)",
+  "cap_plan_A": {
+   "condition": "3 つ全部: (1) 10/23 の B の記録で G1 に合格(tools/cap_replay.py。G1 = R1 の合図 ≥ 90%・R1 以外の誤った合図 ≤ 1 回/分・旋回中のブレーキ 0・計算上のラップの損 ≤ 0.3 秒)、(2) ユーザーがもう一度了承した、(3) コースの配置が 10/10 と同じ。加えて、10/24 の朝に車輪を浮かせて zone_caps 1 の dry run 30 秒(HOLD 0・出力が上限以下)",
+   "how": "B の 3 回目のあと、リカバリー v2 の置き試し → B+上限(モデル B・基準の値・zone_caps 1、走行タブのスイッチ)→ B。B+上限は B の 3 回目と 4 回目で挟む",
+   "stop": "初めて上限を使うこの走行で、R1 の旋回中にブレーキが出たら(画面か目で)中止する",
+   "reading": "約 20 周だけなので「初見」。R1 の強い衝突/通過・DE の衝突/通過・失敗/周・ラップの差・R1 の旋回中のブレーキの数を出す(action_plan 注 4: 衝突/周の点推定 ≤ 1.1・ラップの悪化 ≤ 0.3 秒・旋回中のブレーキ 0)。上限の既定は OFF のまま"
+  },
+  "cap_plan_B": {
+   "condition": "A 案の条件がそろわないとき",
+   "instead": "T1・T2 の 4 ブロックの数える時間を 300 秒にする(B は 240 秒のまま)。そのぶん T1・T2 の周が増え、2 日目の判定が細かくなる。残った時間は remaining_time_priority の順"
+  },
+  "recovery_v2_test": {
+   "A": "残す。B+上限の前に 10 回(R1 の板、車の後ろを 1 m 以上空ける、合格 8/10)。10/16 の計画で、置き試しはカード 2(上限)の前に行うと決めたため",
+   "B": "残さない(時間が残ったときだけ、最後に)。候補の順位には効かない(全候補が同じリカバリーの設定で、止まる衝突はすぐ CH3 で取り返す決まり)。時間は T1・T2 の周に回す"
+  },
+  "schedule_A": [
+   {
+    "t": "0:00–0:10",
+    "what": "朝の準備(ip_status を止める・空き容量・重い処理なし・CH3 人側・電池 #1・「基準の設定」・「点検する」)"
+   },
+   {
+    "t": "0:10–0:14",
+    "what": "車輪を浮かせて dry run: T1・T2 各 30 秒、B+上限(zone_caps 1)30 秒"
+   },
+   {
+    "t": "0:14–0:22",
+    "what": "ブロック 1: B"
+   },
+   {
+    "t": "0:22–0:30",
+    "what": "ブロック 2: T1"
+   },
+   {
+    "t": "0:30–0:38",
+    "what": "ブロック 3: T2"
+   },
+   {
+    "t": "0:38–0:46",
+    "what": "ブロック 4: B"
+   },
+   {
+    "t": "0:46–0:50",
+    "what": "休み・点検"
+   },
+   {
+    "t": "0:50–0:58",
+    "what": "ブロック 5: T2"
+   },
+   {
+    "t": "0:58–1:06",
+    "what": "ブロック 6: T1"
+   },
+   {
+    "t": "1:06–1:14",
+    "what": "ブロック 7: B"
+   },
+   {
+    "t": "1:14–1:26",
+    "what": "リカバリー v2 の置き試し 10 回"
+   },
+   {
+    "t": "1:26–1:35",
+    "what": "ブロック 8: B+上限(K = 3)"
+   },
+   {
+    "t": "1:35–1:43",
+    "what": "ブロック 9: B"
+   },
+   {
+    "t": "1:43–1:55",
+    "what": "予備"
+   },
+   {
+    "t": "1:55–2:00",
+    "what": "片付け(ip_status を戻す・ログ・電圧)"
+   }
+  ],
+  "schedule_B": [
+   {
+    "t": "0:00–0:10",
+    "what": "朝の準備(A 案と同じ)"
+   },
+   {
+    "t": "0:10–0:13",
+    "what": "車輪を浮かせて dry run: T1・T2 各 30 秒"
+   },
+   {
+    "t": "0:13–0:21",
+    "what": "ブロック 1: B"
+   },
+   {
+    "t": "0:21–0:30",
+    "what": "ブロック 2: T1(300 秒)"
+   },
+   {
+    "t": "0:30–0:39",
+    "what": "ブロック 3: T2(300 秒)"
+   },
+   {
+    "t": "0:39–0:47",
+    "what": "ブロック 4: B"
+   },
+   {
+    "t": "0:47–0:51",
+    "what": "休み・点検"
+   },
+   {
+    "t": "0:51–1:00",
+    "what": "ブロック 5: T2(300 秒)"
+   },
+   {
+    "t": "1:00–1:09",
+    "what": "ブロック 6: T1(300 秒)"
+   },
+   {
+    "t": "1:09–1:17",
+    "what": "ブロック 7: B"
+   },
+   {
+    "t": "1:17–1:55",
+    "what": "remaining_time_priority の順"
+   },
+   {
+    "t": "1:55–2:00",
+    "what": "片付け"
+   }
+  ],
+  "remaining_time_priority": [
+   "1. 10/23 に削ったブレーキの測定の残り",
+   "2. 人の操縦の「遅く入って速く出る」手本の連続収集(60〜90 秒ずつ。合格の周 = R1 の進入 ≤ 5,000 eRPM・DE ≤ 6,000 eRPM・R1・GM・DE で衝突なし。次の学習の材料)",
+   "3. リカバリー v2 の置き試し 10 回"
+  ],
+  "cut_order": [
+   "1. 休みを 1 分に・予備を使う",
+   "2. A 案: リカバリー v2 の置き試しを 5 回に(合格は 4/5)",
+   "3. A 案: B+上限とブロック 9 を外す(上限は次の実車へ)。B 案: 数える時間を 300 → 240 秒",
+   "4. ブロック 5(T2)と 6(T1)を外す(B・T1・T2・B だけになる。判定は「足りない」の印付き)"
+  ],
+  "batteries": [
+   {
+    "pack": "#1",
+    "use": "dry run・ブロック 1 B・ブロック 2 T1"
+   },
+   {
+    "pack": "#2",
+    "use": "ブロック 3 T2(残りはリカバリー v2 の置き試しか手本の収集に)"
+   },
+   {
+    "pack": "#3",
+    "use": "ブロック 4 B・ブロック 5 T2"
+   },
+   {
+    "pack": "#4",
+    "use": "ブロック 6 T1・ブロック 7 B"
+   },
+   {
+    "pack": "#5",
+    "use": "A 案: ブロック 8 B+上限・ブロック 9 B。B 案: 手本の収集・ブレーキの残り"
+   },
+   {
+    "pack": "#6",
+    "use": "予備"
+   }
+  ],
+  "batteries_why": "T1 は電池の後半(2)と前半(6)、T2 は前半(3)と後半(5)に 1 回ずつ入り、電池の減りが T1 と T2 で同じになる",
+  "if_fewer_finalists": "1 日目に選べたのが 1 本なら B・T1・B・T1・B、0 本なら B を 3 ブロック(カード 1 の続き)。どちらも A 案・B 案は同じ規則"
+ },
+ "safety": {
+  "inherited_10_18_plan_5_1": [
+   "CH3 は人が持つ。中立に戻す仕組み(センサーの途切れ・CH3 が届かないときなど)は切らない",
+   "新しいモデル・設定・層は、数えない 2〜3 周の慣らしから始める(warmup_anchors)",
+   "止まる衝突は、すぐ CH3 で取り返す。リカバリー v2 が置き試しに合格するまでは待たない",
+   "強い正面衝突のあとは「点検する」をしてから続ける",
+   "Jetson が落ちたら、すぐ CH3 を人側へ戻す(PCA9685 は最後の出力を出し続けることがある)",
+   "基板の再起動があった周は数えて除く。4 分に 1 回を超えるなら、基板の電源の対策(action_plan 項目 15)を先にする",
+   "上限を初めて使う走行で、R1 の旋回中にブレーキが出たら中止する",
+   "ブレーキの測定は人が操作し、2 m/s から始める。リカバリー v2 の置き試しでは車の後ろを 1 m 以上空ける"
+  ],
+  "before_days": "10/21 の車輪を浮かせた安全確認 5 つ(停止・サーバーの強制終了・Jetson の電源断・基板の再起動・送信機オフ)と受信機のフェイルセーフで、だめな経路が 1 つでもあれば走らない",
+  "run_days": "10/23・24 はコードを変えない。重い処理(学習・ワークフロー・GPU)を回さない。走らせるのは bench_candidates.json の候補と B だけ",
+  "stop_run": [
+   "同じ場所で 2 回続けて強い衝突",
+   "最初の 10 周で衝突が 20 回を超えた",
+   "画面で 30 fps を保てない・HOLD が続く(重い処理が動いていないかを確かめてから、同じブロックを走り直す)",
+   "B+上限の走行で、R1 の旋回中にブレーキが出た"
+  ],
+  "stop_candidate": "stop_run の上の 2 つか、B+上限のブレーキで止めたら、その候補(層)はその日はもう走らせず、上位 2 本にも選ばない(「安全で中止」)。Jetson・基板・電源の理由で止めたときは候補のせいにしない(同じブロックを 1 回だけ走り直してよい)",
+  "stop_day": [
+   "CH3 で取り返せなかったことが 1 回でもあった → その日の AI 走行をすべて止める",
+   "基板の再起動が 4 分に 1 回を超えるブロックが 2 回続いた → 比べる走りを止め、ブレーキの測定(人の操縦)だけにする",
+   "「点検する」でバンパー 7±1 行・ToF ±5% に戻せない → AI 走行を止める",
+   "車が壊れた・Jetson が 2 回落ちた → AI 走行を止める"
+  ],
+  "course_changed": "コースの配置が 10/10 と違えば、比べる走り(同じ日の B との比べ)は続けるが、A 案(上限)は走らない。区間の指標は同じ日の中だけで比べる"
+ },
+ "metrics": {
+  "inputs": "data/labels/<ログ>.json(tools/label_events.py の events: collisions・takeovers・board_reboots・holds・recoveries)と course_passes(tools/offline_rl.py)。数えるのは window の中の AI のフレームだけ",
+  "definitions": {
+   "collision": "水平の加速度 ≥ 2.5 G(label_events の IMPACT_G、0.6 秒以内は 1 件、センサーの異常 collision_suspects と上下の bumps は除く)で、ai が true",
+   "strong_collision": "collision のうち ≥ 4.0 G(label_events の STRONG_G、strong が true)",
+   "lap": "周 = window の中で AI のフレームにある R1 の起点 ta(1 周に 1 回だけの大きな右ヘアピンの入口)。周 j は [ta_j − 0.5 秒, ta_{j+1} − 0.5 秒)。最後の周は window の終わりまで(R1・GM・DE の判定が終わる tg + 2.3 秒が window の中にあるときだけ数える)",
+   "reboot_lap": "周の中に基板の再起動(board_reboots)がある周は、全部の周あたりの指標から除き(分子も分母も)、reboots_per_4min だけに数える"
+  },
+  "per_block": {
+   "laps_counted": "数えた周の数(reboot_lap を除く)",
+   "incidents_per_lap": "【主の指標】失敗/周 = (collision の数 + 衝突のあとでない失敗の交代(class が stuck か preemptive)の数) ÷ laps_counted。after_collision の交代は衝突と同じ出来事なので足さない",
+   "collisions_per_lap": "collision の数 ÷ laps_counted",
+   "strong_collisions_per_lap": "strong_collision の数 ÷ laps_counted",
+   "r1_strong_per_pass": "R1 の通過のうち r1_strong(R1 の場所の強い衝突が [ta − 0.5, tg − 0.3](tg が無ければ ta + 3.5)にある)の割合",
+   "r1_coll_per_pass": "同じ窓の r1_collision の割合",
+   "gm_coll_per_pass": "loc が GM の collision が [ta, tg + 0.3] にある通過の割合(tg がある通過だけ)",
+   "de_coll_per_pass": "de_collision(loc が DE の collision が [tg − 0.3, tg + 2.3])の割合(tg がある通過だけ)",
+   "failure_takeovers_per_lap": "失敗の交代(after_collision・stuck・preemptive)の数 ÷ laps_counted",
+   "takeovers_per_lap": "人の交代(CH3 で AI → 人)の数 ÷ laps_counted(operational = 終了・置き直し・再起動の直後も含む全部。参考)",
+   "lap_time_s": "ラップ = ta_{j+1} − ta_j。2 つの起点のあいだがずっと AI で、交代・戻し・HOLD・基板の再起動が無い周だけ",
+   "lap_median_s": "lap_time_s の中央値(衝突した周も入れる)",
+   "lap_best_s": "lap_time_s の最小",
+   "clean_laps": "きれいな周の数 = AI だけ・collision なし・失敗の交代なし・リカバリーなしの周",
+   "clean_lap_share": "clean_laps ÷ laps_counted",
+   "clean_lap_median_s": "きれいな周の lap_time_s の中央値(5 周未満なら出さない)",
+   "lapcounter_clean_median_s": "参考: jetformer/laps.py の LapCounter の clean の中央値・ベスト(画面と同じ数)",
+   "t_r1gm_median_s": "区間の時間: tg − ta(R1 の起点から緑マットの出口まで)の中央値",
+   "t_rest_median_s": "区間の時間: ta_{j+1} − tg_j(DE から次の R1 の起点まで)の中央値",
+   "r1_entry_erpm_median": "R1 の進入 eRPM(ta の手前 0.4 秒の最大の前進 eRPM)の中央値",
+   "r1_entry_ge6200_share": "進入 ≥ 6,200 eRPM の通過の割合",
+   "reboots_per_4min": "基板の再起動の数 ÷ (AI の時間 / 240 秒)",
+   "holds": "HOLD の数",
+   "infer_ms_p99": "AI_CMD の推論の時間の 99% 点",
+   "cap_brake_in_r1_turn": "B+上限だけ: R1_turn の区間で出たブレーキの数(0 でなければならない)"
+  },
+  "ci": {
+   "level": "90%",
+   "method": "周を並びのまま 3 周ずつのかたまり(端の余りは小さいかたまり)にして、かたまりを復元抽出するブートストラップ 10,000 回、百分位の 90% 区間。差は候補と基準をそれぞれ別に抽出して差を取る。複数の走行があるときは走行ごとに抽出してから合わせる",
+   "seed": {
+    "2026-10-23": 20261023,
+    "2026-10-24": 20261024
+   },
+   "zero_counts": "数が 0 の率は、ブートストラップの区間のほかに、ポアソンの正確な片側 95% の上限(3.0 ÷ 周)も出す"
+  },
+  "reference_and_drift": {
+   "reference": "基準 = その日の B の全ブロックの周を合わせたもの(pooled B)",
+   "drift_check": "「時間のずれあり」= B の最初と最後のブロックで、lap_median_s の差が 0.3 秒を超える、または incidents_per_lap の差の 90% 区間が 0 を含まない",
+   "drift_correction": "「ずれあり」のとき、候補のブロック k の基準は、前後の B のブロックの値を、ブロックの番号で直線で内挿したもの(1 日目はブロック 2・3 が B1 と B4、5〜7 が B4 と B8 のあいだ。2 日目は 2・3 が B1 と B4、5・6 が B4 と B7、8 が B7 と B9)。率は周あたりの値を、ラップは中央値を内挿する。区間は前後の B の周を抽出し直して作る",
+   "battery_correction": "ラップだけ: 周の電圧 V = V_before + (V_after − V_before) × (その周の真ん中までの AI の時間 ÷ 走行の AI の時間)。その日の B の全部の周で lap_time_s = a + b·V を最小二乗で当て、b の 90% 区間(最小二乗の標準誤差と t 分布)が 0 を含まず b < 0 のときだけ、全部の周を lap − b·(V − B の周の V の平均)に直す。電圧の書き忘れが 1 つでもあれば直さない",
+   "order_of_corrections": "先に電池の直し(使えるときだけ)、次に時間のずれの判定と内挿。順位にはこの直した値を使い、直す前の値も並べて出す"
+  }
+ },
+ "ranking": {
+  "tradeoff": {
+   "lambda_s_per_incident": 1.0,
+   "meaning": "失敗を 0.1 回/周 減らすためなら、ラップが 0.1 秒遅くなってもよい(1 回/周 ↔ 1 秒)",
+   "status": "既定の仮定。ユーザーはまだ決めていない(10/16・10/18 の計画の「決めてほしいこと」)。10/23 の夜の判定までにユーザーが別の値を決めたら、その値を使い deviations.md に書く。報告には λ = 0.5 と 2.0 でも順位が変わるかを並べる"
+  },
+  "score": "S = Δincidents_per_lap + λ × Δlap_median_s(Δ = 候補 − 基準。小さいほど良い。基準は reference_and_drift の基準)",
+  "day1_top2": {
+   "eligible": "候補のうち: 数えた周が 12 以上・「安全で中止」でない・「回れない」でない・Δincidents_per_lap の 90% 区間の下端 > 0(はっきり B より悪い)でない",
+   "rank": "S を 0.05 刻みに丸めた値(round(S / 0.05) × 0.05)の小さい順。同じなら同点として、(1) r1_strong_per_pass が小さい、(2) failure_takeovers_per_lap が小さい、(3) 1 日目に先に走った、の順で決める",
+   "r1_slot": "上位 2 本のどちらも r1_strong_per_pass が B の半分以下でなく、B の R1 の強い衝突が 3 回以上あり、eligible の中に r1_strong_per_pass が B の半分以下の候補があれば、2 位をその中で S が最も小さい候補に替える(R1 の課題を 2 日目に確かめるため)",
+   "output": "T1 = 1 位、T2 = 2 位。eligible が 1 本なら T1 だけ、0 本なら 2 日目は B だけ",
+   "note": "1 日目の上位 2 本は「B より良い」とは言わない(選ぶための目安)"
+  },
+  "day2_best": {
+   "data": "判定は 10/24 の周だけで行う(10/23 の周で選んだので、10/23 の値は良い方に偏る)。10/23 の値は並べて出す",
+   "better_than_B": "次を全部満たす候補: (1) S の 90% 区間の上端 < 0、(2) Δincidents_per_lap の 90% 区間の上端 ≤ +0.10(安全が悪くない)、(3) r1_strong_per_pass の点推定 ≤ B、(4) 「安全で中止」なし、(5) reboots_per_4min が B より 1 回以上多くない",
+   "pick": "満たす候補が 2 本なら、S を 0.05 刻みに丸めた値の小さい方。同じなら incidents_per_lap の小さい方、それも同じなら risk の低い方、それも同じなら T1",
+   "no_difference": "満たす候補が無ければ「B のまま」。S の点推定がいちばん小さい候補は「次に試す候補」として書くが、良いとは言わない",
+   "adoption": "ベストモデルを推奨のモデル(data/drive_recommended.json)にするかは、ユーザーが決める。エージェントは変えない",
+   "cap": "B+上限は、ベストモデルの順位とは別に「初見」として出す"
+  },
+  "what_20_laps_can_say": {
+   "basis": "10/10 の first_trial の 006・007(AI の 38 通過・36 周)から抽出した見込み: 衝突 約 1.2 回/周(周ごとのばらつきはポアソンより小さい、分散/平均 0.57)・ラップの中央値 9.9 秒(四分位 9.5〜10.9)・R1 の強い衝突 0.24/通過。B もこれに近いと仮定",
+   "half_width_90": {
+    "cand_20_vs_B_60": "失敗/周の差 ±0.34 回/周・ラップの中央値の差 ±0.44 秒・R1 の強い衝突/通過の差 ±0.18",
+    "cand_20_vs_cand_20": "±0.40 回/周・±0.57 秒・±0.20",
+    "cand_40_vs_B_60_80": "±0.27 回/周・±0.29 秒・±0.14"
+   },
+   "can_say": [
+    "失敗が 3 割(約 0.35 回/周)以上減った・増えた",
+    "ラップが 0.5 秒以上変わった",
+    "R1 の強い衝突がほぼ無くなった(20 通過で 0〜1 回、B は 0.24 なら約 5 回)",
+    "はっきり悪い候補を外す"
+   ],
+   "cannot_say": [
+    "候補どうしの小さな差(1 日目の 2 位と 3 位など)",
+    "「差が無い」(同じくらい、という言い方の確かめ)",
+    "GM・DE の通過あたりの 2 割より小さい差",
+    "ほかの日・ほかの照明・ほかの電池でも同じか",
+    "机上の L1 の差(数 µs)が実車の差につながるか"
+   ]
+  }
+ },
+ "night_after_day1": [
+  "1. ラベル(tools/label_events.py)→ 区間の成績表(tools/section_scorecard.py)→ B の記録で G1(tools/cap_replay.py)→ ブレーキの表(tools/brake_table.py)→ 順位とレポート(tools/bench_report.py)。まとめて tools/bench_nightly.sh(S3 の段が作る。軽い処理だけで GPU を使わない)",
+  "2. ranking.day1_top2 で T1・T2 を決め、data/bench_candidates.json の days[1].blocks を書く",
+  "3. A 案・B 案の判定(day2.cap_plan_A の条件)と、λ をユーザーに確かめる"
+ ],
+ "deviations_rule": "この手順から外れたこと(時間・順番・削ったもの・電池の替え・走り直し・λ の変更など)は、起きた順に deviations.md に書く。結果を見てから規則を変えない"
+}

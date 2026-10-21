@@ -1,0 +1,145 @@
+{
+ "schema": "jf-bench-report/v1",
+ "created_at": "2026-10-21T14:22:08",
+ "tool": "tools/bench_report.py",
+ "bench_name": "real_bench_20261023",
+ "bench_path": "/home/jetson/jetformer/data/bench_candidates.json",
+ "protocol_path": "/home/jetson/jetformer_reports/bench_prep_20261021/plan/protocol.json",
+ "protocol_sha256": "1dbb279eba37031a301784868fd6b286eb37acf5f1976b24b5242268f0e0a2bb",
+ "protocol_sha_ok": true,
+ "desk_path": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/desk_bench.json",
+ "desk_fake": false,
+ "gates_recomputed": {
+  "MSF": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "arch",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "TCP": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "arch",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "ACT": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "arch",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "SIM": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "robust",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "ENS": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "ens",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "SLOW": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "label_r1",
+   "amendment": "A1",
+   "agrees_with_desk": true
+  },
+  "WGT": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "weight",
+   "amendment": null,
+   "agrees_with_desk": true
+  },
+  "AUG": {
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "family": "robust",
+   "amendment": null,
+   "agrees_with_desk": true
+  }
+ },
+ "families": {
+  "ENS": "ens",
+  "MSF": "arch",
+  "SIM": "robust",
+  "SLOW": "label_r1",
+  "AUG": "robust",
+  "ACT": "arch",
+  "WGT": "weight",
+  "B": null,
+  "TCP": "arch"
+ },
+ "software": {
+  "engines": {
+   "B": {
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "a565ec9cfd62d938ded7ebbf477bb29d4e7959b2df6b00148ce576034cfdfc7f",
+    "check_ok": true,
+    "actions_max_us": 0.947,
+    "check_matches_engine": true
+   },
+   "SLOW": {
+    "run": "bench_20261021-slow-s0",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "dab4b31c8b652a45ef82439ef89123c5ef190333604555cfabdbcf0df65614fe",
+    "check_ok": true,
+    "actions_max_us": 1.125,
+    "check_matches_engine": true
+   },
+   "ENS": {
+    "run": "bench_20261021-ens-p2",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "48f41619d5429f24a42287cc636cccf033d4370eaa75b19b4fc3f799a785defd",
+    "check_ok": true,
+    "actions_max_us": 0.856,
+    "check_matches_engine": true
+   },
+   "AUG": {
+    "run": "bench_20261021-aug-s0",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "a7dcb4821f7101884eda23b02d73cc3034f994f86f66b203fcbeefa262a89d2d",
+    "check_ok": true,
+    "actions_max_us": 0.967,
+    "check_matches_engine": true
+   },
+   "ACT": {
+    "run": "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "62dd96255cde361ebfad2006d456fb43507d2edb1238df6ad4eb11692365a86e",
+    "check_ok": true,
+    "actions_max_us": 1.099,
+    "check_matches_engine": true
+   },
+   "WGT": {
+    "run": "bench_20261021-wgt-s0",
+    "engine": "jetformer_fp16.engine",
+    "sha256": "52cd626c80005bc35b1090a1a5acca4c4bffbd78ad9c0cdd50ea4c9af94287c8",
+    "check_ok": true,
+    "actions_max_us": 1.401,
+    "check_matches_engine": true
+   }
+  },
+  "tof_floor_ref_sha256": "456953567788bd3c976e34a21e5bebb3c13d808dca0029a1a54c586799f1e524"
+ },
+ "unassigned": [],
+ "deviations": [],
+ "param_mismatch": [],
+ "n_boot": 10000,
+ "min_laps": 12,
+ "mock": false,
+ "git_commit": "30b71e8",
+ "figs": {},
+ "command": "$PY tools/bench_report.py --day 20261023 --out /home/jetson/jetformer_reports/bench_prep_20261021/benchmark",
+ "bench": "real_bench_20261023",
+ "days": []
+}

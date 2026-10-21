@@ -1,0 +1,1299 @@
+{
+ "version": 1,
+ "bench": "real_bench_20261023",
+ "stage": "Desk(bench_prep_20261021)",
+ "created_at": "2026-10-21T12:54:28+09:00",
+ "protocol_sha256": "1dbb279eba37031a301784868fd6b286eb37acf5f1976b24b5242268f0e0a2bb",
+ "protocol_sha256_expected": "1dbb279eba37031a301784868fd6b286eb37acf5f1976b24b5242268f0e0a2bb",
+ "protocol_sha256_ok": true,
+ "amendments": "protocol_amendments.md A1(label_r1 の門・l1_steer_best_us・l1_thr_best_us・brake_lowspeed_frac)",
+ "definitions": {
+  "sets": {
+   "primary": "保留の人の走行 4670 フレーム(pred_table part 0・human_clean_scenes・future_valid&vehicle_valid・2.5G の前後を除く)",
+   "interv": "介入の集合 intervention_val_20261011 の採点するフレーム 1570",
+   "r1_pre1s": "primary のうち R1 の起点(label_events.course_anchors)の手前 1 秒 340 フレーム・起点 12",
+   "lowspeed_heldout": "primary のうち速さ < 1.0 m/s の 222 フレーム"
+  },
+  "l1": "10 ステップ × 2 の |予測 − 人| の平均 [µs](PyTorch FP32。best・last の重み)",
+  "r1_app_thr_diff_us": "[ta − 1.0, ta) の 予測スロットル − 人のスロットル(行 index 2 = 先読み 3)の平均。正 = 人より緩める",
+  "steer_amp_ratio": "primary の予測ステアの標準偏差 ÷ 人のステアの標準偏差(10 ステップまとめて・best)",
+  "brake_lowspeed_frac": "v < 1.0 m/s のフレームで、予測の 1 行目のスロットル > 1598 µs の割合(保留 FP32 + 10/10 の AI 走行 TensorRT)",
+  "engine_ok": "engine_check.json が今のエンジンのもので accuracy_ok・actions_max_us ≤ 2.5",
+  "sanity_ok": "10/10 の AI 走行 11 本の AI のフレームを TensorRT(ジャンル 5・基準の設定)に入れ、NaN・Inf なし・[10,2] がすべて 500〜2500 µs・check_io が通る",
+  "trt": "engine_check.json の run_numpy(走行と同じ呼び方)の中央値・99% 点 [ms]"
+ },
+ "counts": {
+  "primary": 4670,
+  "interv": 1570,
+  "r1_pre1s_frames": 340,
+  "r1_anchors_used": 12,
+  "r1_anchors_by_log": {
+   "20261010-135449": 2,
+   "20261010-150424": 8,
+   "20261010-152405": 12,
+   "20261010-152707": 10,
+   "20261010-193638": 3,
+   "20261010-200916": 16,
+   "20261010-201626": 12,
+   "20261010-202633": 7
+  },
+  "lowspeed_heldout": 222,
+  "ai_1010_frames": 21759
+ },
+ "check_realacc_B": {
+  "l1_best_us": [
+   49.144,
+   49.144
+  ],
+  "l1_last_us": [
+   49.091,
+   49.091
+  ],
+  "l1_interv_us": [
+   129.501,
+   129.501
+  ],
+  "pass": true
+ },
+ "candidates": [
+  {
+   "id": "B",
+   "label": "モデルB(基準)",
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "family": null,
+   "l1_best_us": 49.144,
+   "l1_steer_best_us": 50.89,
+   "l1_thr_best_us": 47.397,
+   "l1_interv_us": 129.501,
+   "r1_app_thr_diff_us": -8.333,
+   "steer_amp_ratio": 0.9964,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -4.699,
+    "r1_app_pred_thr_row2_us": 1330.356,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 0.994,
+    "l1_interv_steer_us": 157.351,
+    "l1_interv_thr_us": 101.652,
+    "r1_app_thr_diff_ci90_us": [
+     -17.984,
+     1.074
+    ],
+    "r1_app_anchors": 12,
+    "l1_interv_last_us": 130.046
+   },
+   "l1_last_us": 49.091,
+   "engine_ok": true,
+   "trt_median_ms": 2.341,
+   "trt_p99_ms": 2.487,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/clean_driving_20261011-nocmd-s3-20261011-024626/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 0.947,
+    "actions_p99_us": 0.625,
+    "run_numpy_median_ms": 2.341,
+    "run_numpy_p99_ms": 2.487,
+    "checked_at": "2026-10-21 12:40:47",
+    "source": "/home/jetson/jetformer/experiments/20261021_bench_prep/desk/logs/engine_check_B.json"
+   },
+   "engine_sha256": "a565ec9cfd62d938ded7ebbf477bb29d4e7959b2df6b00148ce576034cfdfc7f",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 2237,
+    "values": 435180,
+    "steer_min_us": 942.3828125,
+    "steer_max_us": 1968.505859375,
+    "thr_min_us": 1103.515625,
+    "thr_max_us": 1702.392578125,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.456,
+    "run_numpy_p99_ms": 2.708,
+    "drivable": true,
+    "engine": {
+     "size": 29155292,
+     "mtime_ns": 1791675195321220894
+    },
+    "outside_drive_range_share": 0.00514
+   },
+   "brake_lowspeed_frac": 0.00824,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     21,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_B.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.00903,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      26,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/B.npz"
+     ],
+     "sha256": [
+      "1d144ceceabfc1d1169149b90c49c12a58d02227c88ffcc36b1f2cf5cce7d164"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/B_last.npz"
+     ],
+     "sha256": [
+      "5363b15ee66f2caaa8c16ae7505d12155a8db32360ce08feab82fd333d0e4fa7"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": null,
+   "gate_fail_reasons": [],
+   "gate_note": "基準。門に掛けない(protocol gates.baseline)。engine_ok・sanity_ok が false なら 10/23 は走らずにユーザーに知らせる",
+   "gates_if_applied": {
+    "pass": true,
+    "fail": []
+   },
+   "baseline_ok": true
+  },
+  {
+   "id": "MSF",
+   "label": "多段型",
+   "run": "clean_driving_20261011-msfusion-s0-nocmd-stride3-e30",
+   "family": "arch",
+   "l1_best_us": 49.299,
+   "l1_steer_best_us": 52.553,
+   "l1_thr_best_us": 46.045,
+   "l1_interv_us": 129.744,
+   "r1_app_thr_diff_us": -2.147,
+   "steer_amp_ratio": 1.0158,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -1.424,
+    "r1_app_pred_thr_row2_us": 1336.541,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 1.0142,
+    "l1_interv_steer_us": 162.9,
+    "l1_interv_thr_us": 96.589,
+    "r1_app_thr_diff_ci90_us": [
+     -7.788,
+     3.072
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 6.185,
+    "r1_app_thr_vs_B_ci90_us": [
+     -0.457,
+     13.328
+    ],
+    "l1_interv_last_us": 124.05
+   },
+   "l1_last_us": 50.092,
+   "engine_ok": true,
+   "trt_median_ms": 3.194,
+   "trt_p99_ms": 3.489,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/clean_driving_20261011-msfusion-s0-nocmd-stride3-e30/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 2.093,
+    "actions_p99_us": 0.658,
+    "run_numpy_median_ms": 3.194,
+    "run_numpy_p99_ms": 3.489,
+    "checked_at": "2026-10-12 18:25:36",
+    "source": "/home/jetson/jetformer_reports/policy_zoo_20261012/train/engine_check/clean_driving_20261011-msfusion-s0-nocmd-stride3-e30.json"
+   },
+   "engine_sha256": "5df393400a61a285a6e795ac4b14ed6452dde6ad4f1d895d46f3bb98c4fa25ff",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 5244,
+    "values": 435180,
+    "steer_min_us": 922.36328125,
+    "steer_max_us": 1946.2890625,
+    "thr_min_us": 1066.40625,
+    "thr_max_us": 1646.484375,
+    "post_kind": null,
+    "run_numpy_median_ms": 3.174,
+    "run_numpy_p99_ms": 3.406,
+    "drivable": true,
+    "engine": {
+     "size": 39591452,
+     "mtime_ns": 1791788232712014778
+    },
+    "outside_drive_range_share": 0.01205
+   },
+   "brake_lowspeed_frac": 0.0,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     0,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_MSF.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.0,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      1,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/msfusion_s0.npz"
+     ],
+     "sha256": [
+      "d872079bd1be8c527949a42175afdb64252da27088048b9f50d3ce6c577baf1f"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/msfusion_s0_last.npz"
+     ],
+     "sha256": [
+      "e12cfffa39fda77b17178de277c55c830f5d9387f901fa3871fe15bf1ddfca52"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "TCP",
+   "label": "TCP型",
+   "run": "clean_driving_20261011-tcp-s0-nocmd-stride3-e30",
+   "family": "arch",
+   "l1_best_us": 49.7,
+   "l1_steer_best_us": 51.346,
+   "l1_thr_best_us": 48.054,
+   "l1_interv_us": 133.971,
+   "r1_app_thr_diff_us": -2.916,
+   "steer_amp_ratio": 0.9987,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -0.199,
+    "r1_app_pred_thr_row2_us": 1335.772,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 1.007,
+    "l1_interv_steer_us": 170.362,
+    "l1_interv_thr_us": 97.58,
+    "r1_app_thr_diff_ci90_us": [
+     -14.96,
+     7.466
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 5.416,
+    "r1_app_thr_vs_B_ci90_us": [
+     1.821,
+     8.667
+    ],
+    "l1_interv_last_us": 131.731
+   },
+   "l1_last_us": 49.84,
+   "engine_ok": true,
+   "trt_median_ms": 2.664,
+   "trt_p99_ms": 2.954,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/clean_driving_20261011-tcp-s0-nocmd-stride3-e30/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 1.566,
+    "actions_p99_us": 1.021,
+    "run_numpy_median_ms": 2.664,
+    "run_numpy_p99_ms": 2.954,
+    "checked_at": "2026-10-12 18:25:19",
+    "source": "/home/jetson/jetformer_reports/policy_zoo_20261012/train/engine_check/clean_driving_20261011-tcp-s0-nocmd-stride3-e30.json"
+   },
+   "engine_sha256": "52b5fa2bdc0c18c9800c401ff80572e77f804d43118a9c9d22f41762e53ad096",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 1430,
+    "values": 435180,
+    "steer_min_us": 938.4765625,
+    "steer_max_us": 1955.078125,
+    "thr_min_us": 1116.943359375,
+    "thr_max_us": 1694.580078125,
+    "post_kind": "tcp_controller",
+    "run_numpy_median_ms": 2.6,
+    "run_numpy_p99_ms": 2.814,
+    "drivable": true,
+    "engine": {
+     "size": 32538084,
+     "mtime_ns": 1791786198872998031
+    },
+    "outside_drive_range_share": 0.00329
+   },
+   "brake_lowspeed_frac": 0.01531,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     39,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_TCP.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.01677,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      52,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/tcp_s0.npz"
+     ],
+     "sha256": [
+      "7290544bce78bd3eb4e2a6ca6625844ff74c58bef05c28dbd08839f8e23289cd"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/tcp_s0_last.npz"
+     ],
+     "sha256": [
+      "a1d1c371a8df73db25370dde2ed1aec2bd6351820b66ea118e821e4983750251"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "ACT",
+   "label": "ACT型",
+   "run": "clean_driving_20261011-act-s0-nocmd-stride3-e30",
+   "family": "arch",
+   "l1_best_us": 50.812,
+   "l1_steer_best_us": 51.501,
+   "l1_thr_best_us": 50.123,
+   "l1_interv_us": 125.403,
+   "r1_app_thr_diff_us": 0.979,
+   "steer_amp_ratio": 0.9892,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": 0.238,
+    "r1_app_pred_thr_row2_us": 1339.667,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 0.9848,
+    "l1_interv_steer_us": 160.605,
+    "l1_interv_thr_us": 90.201,
+    "r1_app_thr_diff_ci90_us": [
+     -8.211,
+     8.768
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 9.311,
+    "r1_app_thr_vs_B_ci90_us": [
+     5.902,
+     12.641
+    ],
+    "l1_interv_last_us": 125.834
+   },
+   "l1_last_us": 51.17,
+   "engine_ok": true,
+   "trt_median_ms": 2.587,
+   "trt_p99_ms": 2.879,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/clean_driving_20261011-act-s0-nocmd-stride3-e30/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 1.099,
+    "actions_p99_us": 0.753,
+    "run_numpy_median_ms": 2.587,
+    "run_numpy_p99_ms": 2.879,
+    "checked_at": "2026-10-12 18:25:03",
+    "source": "/home/jetson/jetformer_reports/policy_zoo_20261012/train/engine_check/clean_driving_20261011-act-s0-nocmd-stride3-e30.json"
+   },
+   "engine_sha256": "62dd96255cde361ebfad2006d456fb43507d2edb1238df6ad4eb11692365a86e",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 358,
+    "values": 435180,
+    "steer_min_us": 984.375,
+    "steer_max_us": 1940.185546875,
+    "thr_min_us": 1130.615234375,
+    "thr_max_us": 1689.3310546875,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.53,
+    "run_numpy_p99_ms": 2.747,
+    "drivable": true,
+    "engine": {
+     "size": 32355804,
+     "mtime_ns": 1791784655948139621
+    },
+    "outside_drive_range_share": 0.00082
+   },
+   "brake_lowspeed_frac": 0.02041,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     52,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_ACT.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.02236,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      66,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/act_s0.npz"
+     ],
+     "sha256": [
+      "575ef40fa6b61d0283f3210dffc881df6bb813a9ec3fe370e2888ee3915efd6e"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/act_s0_last.npz"
+     ],
+     "sha256": [
+      "89f9218b12f1309cc163814e1c8652e1056b60164ee906d11aca68b219ee8c16"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "SIM",
+   "label": "シミュ混合",
+   "run": "simreal_mix_20261013-cotrain-ft-s0",
+   "family": "robust",
+   "l1_best_us": 50.087,
+   "l1_steer_best_us": 51.999,
+   "l1_thr_best_us": 48.175,
+   "l1_interv_us": 124.704,
+   "r1_app_thr_diff_us": -8.187,
+   "steer_amp_ratio": 1.0026,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -2.249,
+    "r1_app_pred_thr_row2_us": 1330.501,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 1.0001,
+    "l1_interv_steer_us": 153.747,
+    "l1_interv_thr_us": 95.661,
+    "r1_app_thr_diff_ci90_us": [
+     -22.03,
+     3.484
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 0.145,
+    "r1_app_thr_vs_B_ci90_us": [
+     -5.689,
+     5.664
+    ],
+    "l1_interv_last_us": 126.275
+   },
+   "l1_last_us": 50.266,
+   "engine_ok": true,
+   "trt_median_ms": 2.326,
+   "trt_p99_ms": 2.606,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/simreal_mix_20261013-cotrain-ft-s0/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 0.899,
+    "actions_p99_us": 0.578,
+    "run_numpy_median_ms": 2.326,
+    "run_numpy_p99_ms": 2.606,
+    "checked_at": "2026-10-13 13:56:15",
+    "source": "/home/jetson/jetformer_reports/sim_cotrain_20261013/train/engine_check/simreal_mix_20261013-cotrain-ft-s0.json"
+   },
+   "engine_sha256": "7264e05f84ff7be1be6b6d60f44e6967e796ed3132423fb774123135da8b0b77",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 2154,
+    "values": 435180,
+    "steer_min_us": 916.50390625,
+    "steer_max_us": 1979.4921875,
+    "thr_min_us": 1098.876953125,
+    "thr_max_us": 1729.8583984375,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.191,
+    "run_numpy_p99_ms": 2.388,
+    "drivable": true,
+    "engine": {
+     "size": 29194764,
+     "mtime_ns": 1791867370830406194
+    },
+    "outside_drive_range_share": 0.00495
+   },
+   "brake_lowspeed_frac": 0.07967,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     203,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_SIM.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.08727,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      211,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/sim_cotrain_20261013/pred/CFT_s0.npz"
+     ],
+     "sha256": [
+      "ded3fd2d3454260d8fc98e3239a86566e45ce9835281cf19b036e8494baef4c6"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/sim_cotrain_20261013/pred/CFT_s0_last.npz"
+     ],
+     "sha256": [
+      "895060c6ed4c9875fb216cb846607f2bf496d7f27f86d1cb5630ca76383f3f9f"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "ENS",
+   "label": "2本の平均",
+   "run": "bench_20261021-ens-p2",
+   "family": "ens",
+   "l1_best_us": 46.426,
+   "l1_steer_best_us": 48.514,
+   "l1_thr_best_us": 44.337,
+   "l1_interv_us": 117.259,
+   "r1_app_thr_diff_us": -4.996,
+   "steer_amp_ratio": 0.9707,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -4.654,
+    "r1_app_pred_thr_row2_us": 1333.692,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 0.9796,
+    "l1_interv_steer_us": 146.561,
+    "l1_interv_thr_us": 87.957,
+    "r1_app_thr_diff_ci90_us": [
+     -13.39,
+     2.687
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 3.337,
+    "r1_app_thr_vs_B_ci90_us": [
+     0.143,
+     6.521
+    ],
+    "l1_interv_last_us": 119.142
+   },
+   "l1_last_us": 47.04,
+   "engine_ok": true,
+   "trt_median_ms": 4.148,
+   "trt_p99_ms": 4.261,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/bench_20261021-ens-p2/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 0.856,
+    "actions_p99_us": 0.559,
+    "run_numpy_median_ms": 4.148,
+    "run_numpy_p99_ms": 4.261,
+    "checked_at": "2026-10-21 11:16:40",
+    "source": "/home/jetson/jetformer/experiments/20261021_bench_prep/ens/logs/engine_load_check.json"
+   },
+   "engine_sha256": "48f41619d5429f24a42287cc636cccf033d4370eaa75b19b4fc3f799a785defd",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 1613,
+    "values": 435180,
+    "steer_min_us": 943.359375,
+    "steer_max_us": 1950.1953125,
+    "thr_min_us": 1122.314453125,
+    "thr_max_us": 1626.953125,
+    "post_kind": null,
+    "run_numpy_median_ms": 4.649,
+    "run_numpy_p99_ms": 4.876,
+    "drivable": true,
+    "engine": {
+     "size": 68455844,
+     "mtime_ns": 1792069034088881224
+    },
+    "outside_drive_range_share": 0.00371
+   },
+   "brake_lowspeed_frac": 0.00196,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     5,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_ENS.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.00215,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      7,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-v0-s2.npz",
+      "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-msf-s2.npz"
+     ],
+     "sha256": [
+      "bc0b4b58a6abb202e4618b77488ac40d06aa8c4ccbc5136a8e4f82eac7e7b6be",
+      "4a96ffe6aefb46f87539ed9329367731f88c2f01a155ec3ed7648e438637e672"
+     ],
+     "how": "2 本の予測の平均(ens_average と同じ。S4 の確かめ: まとめた best.pth と 0.00009 µs 以内)"
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-v0-s2_last.npz",
+      "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-msf-s2_last.npz"
+     ],
+     "sha256": [
+      "5a0f709ce449bd7108c2292e556971a2aa2dbc0559af943110f9a17cba34b0d8",
+      "1243023c92764438ea1346deb6580d70d5df226e311133ba16da2f8c9f77d247"
+     ],
+     "how": "2 本の予測の平均(ens_average と同じ。S4 の確かめ: まとめた best.pth と 0.00009 µs 以内)"
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "SLOW",
+   "label": "遅く入る型",
+   "run": "bench_20261021-slow-s0",
+   "family": "label_r1",
+   "l1_best_us": 63.365,
+   "l1_steer_best_us": 54.594,
+   "l1_thr_best_us": 72.137,
+   "l1_interv_us": 140.259,
+   "r1_app_thr_diff_us": 31.859,
+   "steer_amp_ratio": 1.0184,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": 32.549,
+    "r1_app_pred_thr_row2_us": 1370.547,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 1.0465,
+    "l1_interv_steer_us": 162.871,
+    "l1_interv_thr_us": 117.648,
+    "r1_app_thr_diff_ci90_us": [
+     16.9,
+     46.028
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 40.192,
+    "r1_app_thr_vs_B_ci90_us": [
+     25.762,
+     56.64
+    ],
+    "l1_interv_last_us": 136.074
+   },
+   "l1_last_us": 66.015,
+   "engine_ok": true,
+   "trt_median_ms": 2.344,
+   "trt_p99_ms": 2.48,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/bench_20261021-slow-s0/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 1.125,
+    "actions_p99_us": 0.655,
+    "run_numpy_median_ms": 2.344,
+    "run_numpy_p99_ms": 2.48,
+    "checked_at": "2026-10-21 11:21:50",
+    "source": "/home/jetson/jetformer/experiments/20261021_bench_prep/logs/engine_check_bench_20261021-slow-s0.json"
+   },
+   "engine_sha256": "dab4b31c8b652a45ef82439ef89123c5ef190333604555cfabdbcf0df65614fe",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 4846,
+    "values": 435180,
+    "steer_min_us": 882.32421875,
+    "steer_max_us": 1951.416015625,
+    "thr_min_us": 1123.53515625,
+    "thr_max_us": 1693.115234375,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.252,
+    "run_numpy_p99_ms": 2.467,
+    "drivable": true,
+    "engine": {
+     "size": 29149692,
+     "mtime_ns": 1792549242107916982
+    },
+    "outside_drive_range_share": 0.01114
+   },
+   "brake_lowspeed_frac": 0.00353,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     9,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_SLOW.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.00387,
+    "ref_any_speed": {
+     "heldout": [
+      1,
+      4670
+     ],
+     "ai_1010": [
+      11,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-slow-s0.npz"
+     ],
+     "sha256": [
+      "ae211fb0d8152b888a0bb59819092d0253b5d56bff3fcb74e27a5759a977d626"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-slow-s0_last.npz"
+     ],
+     "sha256": [
+      "ac9a915738dc4f92938585c6e461f01943f435b8075f972906111f56feb95f81"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates + A1(5 番目 = l1_steer_best_us の差 < 10.0、brake_lowspeed_frac ≤ 0.01)",
+   "gates_without_A1": {
+    "pass": false,
+    "fail": [
+     "l1_best_us"
+    ]
+   }
+  },
+  {
+   "id": "WGT",
+   "label": "苦手区間重み型",
+   "run": "bench_20261021-wgt-s0",
+   "family": "weight",
+   "l1_best_us": 50.431,
+   "l1_steer_best_us": 51.755,
+   "l1_thr_best_us": 49.107,
+   "l1_interv_us": 128.231,
+   "r1_app_thr_diff_us": -1.299,
+   "steer_amp_ratio": 0.9936,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -1.024,
+    "r1_app_pred_thr_row2_us": 1337.389,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 0.987,
+    "l1_interv_steer_us": 157.07,
+    "l1_interv_thr_us": 99.392,
+    "r1_app_thr_diff_ci90_us": [
+     -12.507,
+     9.204
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": 7.033,
+    "r1_app_thr_vs_B_ci90_us": [
+     4.174,
+     10.045
+    ],
+    "l1_interv_last_us": 128.312
+   },
+   "l1_last_us": 50.716,
+   "engine_ok": true,
+   "trt_median_ms": 2.308,
+   "trt_p99_ms": 2.523,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/bench_20261021-wgt-s0/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 1.401,
+    "actions_p99_us": 0.738,
+    "run_numpy_median_ms": 2.308,
+    "run_numpy_p99_ms": 2.523,
+    "checked_at": "2026-10-21 11:50:20",
+    "source": "/home/jetson/jetformer/experiments/20261021_bench_prep/logs/engine_check_bench_20261021-wgt-s0.json"
+   },
+   "engine_sha256": "52cd626c80005bc35b1090a1a5acca4c4bffbd78ad9c0cdd50ea4c9af94287c8",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 1519,
+    "values": 435180,
+    "steer_min_us": 932.12890625,
+    "steer_max_us": 1982.421875,
+    "thr_min_us": 1094.970703125,
+    "thr_max_us": 1747.802734375,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.201,
+    "run_numpy_p99_ms": 2.423,
+    "drivable": true,
+    "engine": {
+     "size": 29152700,
+     "mtime_ns": 1792550955807599004
+    },
+    "outside_drive_range_share": 0.00349
+   },
+   "brake_lowspeed_frac": 0.05495,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     140,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_WGT.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.06019,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      146,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-wgt-s0.npz"
+     ],
+     "sha256": [
+      "bc963641d3f13aa19dea9db189ff982152a4916d40551fa01c5b477fb8ca1e6b"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-wgt-s0_last.npz"
+     ],
+     "sha256": [
+      "ccdc45056ef426cb75fd6a0ea1b300f88548075e99b3dce458f9e55f1ffaaaae"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  },
+  {
+   "id": "AUG",
+   "label": "ずれに強い型",
+   "run": "bench_20261021-aug-s0",
+   "family": "robust",
+   "l1_best_us": 48.82,
+   "l1_steer_best_us": 50.904,
+   "l1_thr_best_us": 46.735,
+   "l1_interv_us": 123.555,
+   "r1_app_thr_diff_us": -9.722,
+   "steer_amp_ratio": 0.9822,
+   "ref": {
+    "r1_app_thr_diff_allrows_us": -7.561,
+    "r1_app_pred_thr_row2_us": 1328.966,
+    "r1_app_human_thr_row2_us": 1338.688,
+    "steer_amp_ratio_row2": 0.9811,
+    "l1_interv_steer_us": 149.518,
+    "l1_interv_thr_us": 97.593,
+    "r1_app_thr_diff_ci90_us": [
+     -20.197,
+     0.095
+    ],
+    "r1_app_anchors": 12,
+    "r1_app_thr_vs_B_us": -1.39,
+    "r1_app_thr_vs_B_ci90_us": [
+     -4.914,
+     2.088
+    ],
+    "l1_interv_last_us": 122.775
+   },
+   "l1_last_us": 49.026,
+   "engine_ok": true,
+   "trt_median_ms": 2.304,
+   "trt_p99_ms": 2.428,
+   "engine_check": {
+    "file": "/home/jetson/jetformer/data/runs/bench_20261021-aug-s0/engine_check.json",
+    "current": true,
+    "ok": true,
+    "accuracy_ok": true,
+    "speed_ok": true,
+    "actions_max_us": 0.967,
+    "actions_p99_us": 0.539,
+    "run_numpy_median_ms": 2.304,
+    "run_numpy_p99_ms": 2.428,
+    "checked_at": "2026-10-21 12:21:17",
+    "source": "/home/jetson/jetformer/experiments/20261021_bench_prep/logs/engine_check_bench_20261021-aug-s0.json"
+   },
+   "engine_sha256": "a7dcb4821f7101884eda23b02d73cc3034f994f86f66b203fcbeefa262a89d2d",
+   "sanity_ok": true,
+   "sanity": {
+    "frames": 21759,
+    "check_io_ok": true,
+    "nonfinite_frames": 0,
+    "out_of_range_values": 0,
+    "sanity_range_us": [
+     500.0,
+     2500.0
+    ],
+    "outside_drive_range_values": 3022,
+    "values": 435180,
+    "steer_min_us": 927.24609375,
+    "steer_max_us": 1962.646484375,
+    "thr_min_us": 1110.83984375,
+    "thr_max_us": 1744.384765625,
+    "post_kind": null,
+    "run_numpy_median_ms": 2.16,
+    "run_numpy_p99_ms": 2.359,
+    "drivable": true,
+    "engine": {
+     "size": 29138516,
+     "mtime_ns": 1792552806887912418
+    },
+    "outside_drive_range_share": 0.00694
+   },
+   "brake_lowspeed_frac": 0.0102,
+   "brake_lowspeed": {
+    "heldout": [
+     0,
+     222
+    ],
+    "ai_1010": [
+     26,
+     2326
+    ],
+    "ai_file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/sanity_AUG.npz",
+    "heldout_frac": 0.0,
+    "ai_frac": 0.01118,
+    "ref_any_speed": {
+     "heldout": [
+      0,
+      4670
+     ],
+     "ai_1010": [
+      37,
+      21759
+     ]
+    }
+   },
+   "pred_sources": {
+    "best": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-aug-s0.npz"
+     ],
+     "sha256": [
+      "e52599decb13280928fcbc2a464cf19ca7d2e32ee8654d730b8e6e833d9bfc34"
+     ]
+    },
+    "last": {
+     "files": [
+      "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/bench_20261021-aug-s0_last.npz"
+     ],
+     "sha256": [
+      "b3494827b86b322caf94a0c07d3f079d36cdae547a1a71815ee2d14a5b8d262f"
+     ]
+    }
+   },
+   "notes": [],
+   "gates_pass": true,
+   "gate_fail_reasons": [],
+   "gate_rule": "protocol gates(5 つ)"
+  }
+ ],
+ "seed_spread_ref": {
+  "jetformer_v0(B と同じ形・同じデータ)": {
+   "runs": {
+    "A_s0": {
+     "l1_best_us": 49.146,
+     "l1_interv_us": 128.9,
+     "r1_app_thr_diff_us": -8.873,
+     "steer_amp_ratio": 0.9914,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/jetformer_v0_s0.npz"
+    },
+    "A_s1": {
+     "l1_best_us": 49.457,
+     "l1_interv_us": 127.772,
+     "r1_app_thr_diff_us": -3.792,
+     "steer_amp_ratio": 0.9995,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/jetformer_v0_s1.npz"
+    },
+    "v0-s2": {
+     "l1_best_us": 49.937,
+     "l1_interv_us": 126.942,
+     "r1_app_thr_diff_us": -13.279,
+     "steer_amp_ratio": 0.9821,
+     "file": "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-v0-s2.npz"
+    },
+    "v0-s3": {
+     "l1_best_us": 50.389,
+     "l1_interv_us": 129.853,
+     "r1_app_thr_diff_us": -5.091,
+     "steer_amp_ratio": 0.9886,
+     "file": "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-v0-s3.npz"
+    },
+    "B": {
+     "l1_best_us": 49.144,
+     "l1_interv_us": 129.501,
+     "r1_app_thr_diff_us": -8.333,
+     "steer_amp_ratio": 0.9964,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/B.npz"
+    }
+   },
+   "range": {
+    "l1_best_us": 1.245,
+    "l1_interv_us": 2.911,
+    "r1_app_thr_diff_us": 9.487,
+    "steer_amp_ratio": 0.017
+   }
+  },
+  "msfusion(MSF の形)": {
+   "runs": {
+    "msf_s0": {
+     "l1_best_us": 49.299,
+     "l1_interv_us": 129.744,
+     "r1_app_thr_diff_us": -2.147,
+     "steer_amp_ratio": 1.0158,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/msfusion_s0.npz"
+    },
+    "msf_s1": {
+     "l1_best_us": 49.306,
+     "l1_interv_us": 119.884,
+     "r1_app_thr_diff_us": -2.435,
+     "steer_amp_ratio": 0.9867,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/msfusion_s1.npz"
+    },
+    "msf-s2": {
+     "l1_best_us": 49.244,
+     "l1_interv_us": 119.555,
+     "r1_app_thr_diff_us": 3.286,
+     "steer_amp_ratio": 0.9734,
+     "file": "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-msf-s2.npz"
+    },
+    "msf-s3": {
+     "l1_best_us": 48.461,
+     "l1_interv_us": 120.511,
+     "r1_app_thr_diff_us": -0.27,
+     "steer_amp_ratio": 1.0038,
+     "file": "/home/jetson/jetformer/data/zoo/real_accuracy_20261015/pred/realacc_20261015-msf-s3.npz"
+    }
+   },
+   "range": {
+    "l1_best_us": 0.845,
+    "l1_interv_us": 10.189,
+    "r1_app_thr_diff_us": 5.721,
+    "steer_amp_ratio": 0.042
+   }
+  },
+  "tcp": {
+   "runs": {
+    "tcp_s0": {
+     "l1_best_us": 49.7,
+     "l1_interv_us": 133.971,
+     "r1_app_thr_diff_us": -2.916,
+     "steer_amp_ratio": 0.9987,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/tcp_s0.npz"
+    },
+    "tcp_s1": {
+     "l1_best_us": 49.768,
+     "l1_interv_us": 132.176,
+     "r1_app_thr_diff_us": -8.389,
+     "steer_amp_ratio": 0.9926,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/tcp_s1.npz"
+    }
+   },
+   "range": {
+    "l1_best_us": 0.068,
+    "l1_interv_us": 1.795,
+    "r1_app_thr_diff_us": 5.473,
+    "steer_amp_ratio": 0.006
+   }
+  },
+  "act": {
+   "runs": {
+    "act_s0": {
+     "l1_best_us": 50.812,
+     "l1_interv_us": 125.403,
+     "r1_app_thr_diff_us": 0.979,
+     "steer_amp_ratio": 0.9892,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/act_s0.npz"
+    },
+    "act_s1": {
+     "l1_best_us": 49.941,
+     "l1_interv_us": 124.145,
+     "r1_app_thr_diff_us": -13.102,
+     "steer_amp_ratio": 0.9798,
+     "file": "/home/jetson/jetformer/data/zoo/policy_zoo_20261012/pred/act_s1.npz"
+    }
+   },
+   "range": {
+    "l1_best_us": 0.871,
+    "l1_interv_us": 1.258,
+    "r1_app_thr_diff_us": 14.081,
+    "steer_amp_ratio": 0.009
+   }
+  }
+ },
+ "inputs_bundle": {
+  "file": "/home/jetson/jetformer_reports/bench_prep_20261021/desk/pred/desk_inputs.npz",
+  "sha256": "52f0460d23b930fcff5e4315bbebb35e51dbe995b5a83901523cda403264e18e"
+ },
+ "seconds": 4.5
+}

@@ -1388,8 +1388,14 @@ def main():
     all_logs = sorted(d.name for d in raw.iterdir() if (d / 'log.json').exists())
     logs = args.logs or all_logs
     infos = {}
+    failed = []
     for log in logs:
-        info, arrays = label_log(log, raw, args.impact_g, args.gamma, args.signed_progress, args.bumps_as_collisions)
+        try:                # 1 本の壊れた記録で残りのラベルが作られないことが無いように(10/21 Fix-all、V-tools minor 7)
+            info, arrays = label_log(log, raw, args.impact_g, args.gamma, args.signed_progress, args.bumps_as_collisions)
+        except Exception as e:      # noqa: BLE001
+            failed.append(log)
+            print('%s ラベルを作れません(飛ばして続けます): %s: %s' % (log, type(e).__name__, e), file=sys.stderr)
+            continue
         info['created_at'] = datetime.now().isoformat(timespec='seconds')
         _write_json(out_dir / (log + '.json'), info)
         if arrays is not None:
@@ -1430,7 +1436,11 @@ def main():
                                             for k in ('reference', 'matched', 'agreement')})
     print('割り戻しの検算(AI、assist=0・hold なし):', tot['label_check_ai'])
     print('書き出し:', out_dir)
+    if failed:      # 作れなかったログがあれば終了コード 1(夜の 1 コマンドが気づくように)。ほかのログのラベルは書いてある
+        print('ラベルを作れなかった記録 %d 本: %s' % (len(failed), ' '.join(failed)), file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

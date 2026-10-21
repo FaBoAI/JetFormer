@@ -1,7 +1,9 @@
 """安全層 v1: 区間の速度上限(R1 2.5・GM 2.2・DE 3.0 m/s)と、ジャイロの位相による区間判定(2026-10-16)
 
-**drive.py にはつないでいない。** 走行の既定値も変えない。走行ループに入れるのは、机上のゲート G1(記録の再生)に
-合格し、ユーザーが了承したあと(action_plan_20261016/plan.md 項目 9・13)。ここにあるのは純粋な関数だけで、
+drive.py には走行のパラメータ zone_caps(既定 0 = OFF。起動のたびに OFF)でつないだ(2026-10-21、末尾の zone_frame)。
+OFF でも区間・上限・「上限ならこう出した」スロットルを毎フレーム計算して記録に残す(影の判定)。出力は変えない。
+**ON で走るのは、**10/23 の記録で机上のゲート G1(記録の再生)に合格し、ユーザーがもう一度了承したあと
+(action_plan_20261016/plan.md 項目 9・13、bench_prep_20261021)。ここにあるのは純粋な関数だけで、
 入出力・時刻の取得・ハードウェア(PCA9685・I2C)には触れない。同じ入力には同じ出力を返す。
 
 仕様(summary_20261010/fast_and_safe_plan.md の N1・explore_control.md の C1/C2/C7、
@@ -366,3 +368,79 @@ def combine_zone(zone_gyro: str, turning_right: bool, pred_signal: bool, v: Opti
 def pred_signal_of(pred_steer_us, threshold_us: float = 1150.0) -> bool:
     """モデルの予測ステア(ゲイン前、先の数フレーム)のどれかが threshold_us 以下(右いっぱい)"""
     return any(x <= threshold_us for x in pred_steer_us)
+
+
+# ------------------------------------------------------------------ 走行ループの包み(drive.py の zone_caps。2026-10-21)
+# 区間の判定(ジャイロの位相)とブレーキの保持などの状態を、1 つの値(ZoneState)にまとめた純粋な包み。
+# 入出力・時刻の取得・ハードウェアには触れない(時刻・速さ・ヨー・指令は呼ぶ側が渡す)。同じ入力の列には同じ出力。
+# 規則は G1 の再生(experiments/20261016_sim_calibration/g1_replay.py の prepare・shadow、版 v1.1・R1 2.5 m/s)と同じ:
+#   - IMU のサンプルごとに phase_step(速さは、そのサンプルの時刻までの最新の車両の eRPM から)
+#   - AI のフレームの区間 = そのフレームの撮像時刻までの最後の IMU のサンプルの区間(ジャイロ)と、
+#     モデルの予測ステアの合図 (b)(ゲイン前の予測のどれかが 1150 µs 以下・AI 側のフレームだけ)を combine_zone で合わせたもの
+#   - 上限の層は AI 側のフレーム(AI 側・中立で止めていない・推論の確認でない・車両の値が 0.1 秒以内)だけで動かす。
+#     それ以外のフレームで状態を戻す。AI 側のフレームの間が 0.5 秒を超えても戻す
+#   - 層への指令は、車に出す直前のスロットル(ゲイン・ToF ガード・補助のあと)。舵は車に出す舵(中心 1443 µs で正規化)
+class ZoneCapConfig(NamedTuple):
+    cap: CapParams = CapParams()             # 実車の v1.1(R1 2.5・GM 2.2・DE 3.0 m/s、上限 → 指令は較正の T⁻¹)
+    phase: PhaseParams = PhaseParams()       # v1.1 の位相
+    pred_min_speed: float = PRED_MIN_SPEED   # v1.1 (C)
+    pred_threshold_us: float = 1150.0        # 予測ステアの合図 (b)
+    reset_gap_s: float = 0.5                 # AI 側のフレームの間がこれを超えたら層の状態を戻す
+    fresh_s: float = 0.1                     # 車両の値がこれより古いフレームは層を動かさない
+    steer_center_us: float = 1443.0          # 舵の正規化の中心(ブリッジ・G1 の再生と同じ)
+
+
+ZONE_CAPS_VERSION = 'v1.1'
+ZONE_CAPS_V1_1 = ZoneCapConfig()
+CAP_MODES = ('pass', 'cap', 'neutral', 'brake')     # 記録の番号 0〜3(-1 = 層を動かしていない、-2 = 計算の失敗)
+
+
+class ZoneState(NamedTuple):
+    phase: PhaseState = PhaseState()
+    cap: CapState = CapState()
+    imu_t: Optional[float] = None      # 最後に入れた IMU のサンプルの時刻
+    zone_gyro: str = 'unknown'         # そのサンプルの区間(ジャイロだけ)
+    turning: bool = False              # そのサンプルで右旋回の候補の中
+    rel_psi: Optional[float] = None    # そのサンプルの、直前の R1 の起点からの向き [deg]
+    last_active_t: float = -INF        # 最後に層を動かしたフレームの時刻
+
+
+class ZoneOut(NamedTuple):
+    zone: str                  # このフレームの区間(ジャイロ + 予測ステアの合図)
+    zone_gyro: str
+    pred_signal: bool          # 予測ステアの合図 (b)(速さの条件の前)
+    rel_psi: Optional[float]
+    active: bool               # 層を動かしたか(AI 側のフレーム)
+    mode: str                  # 'off'(動かしていない)/ 'pass' / 'cap' / 'neutral' / 'brake'
+    cap_eff: float             # 今の上限 [m/s](なしは inf)
+    thr_us: float              # 上限を入れたら出すスロットル [µs](いつも ≥ 入力 = 前進を強めない)。'off' なら入力のまま
+    brake_start: bool
+
+
+def zone_imu(state: ZoneState, t: float, gz_dps: float, v: float, cfg: ZoneCapConfig = ZONE_CAPS_V1_1) -> ZoneState:
+    """IMU の 1 サンプル(時刻 t [秒]、ヨー gz [deg/s]、そのときの速さ v [m/s])。時刻が前のサンプルより前なら捨てる"""
+    if state.imu_t is not None and t < state.imu_t:
+        return state
+    ph, o = phase_step(state.phase, t, gz_dps, v, cfg.phase)
+    return state._replace(phase=ph, imu_t=t, zone_gyro=o.zone, turning=o.turning_right, rel_psi=o.rel_psi)
+
+
+def zone_frame(state: ZoneState, t: float, thr_us: float, steer_us: float, v: float, pred_steer_us, active: bool,
+               cfg: ZoneCapConfig = ZONE_CAPS_V1_1) -> Tuple[ZoneState, ZoneOut]:
+    """AI のフレームの 1 回(撮像時刻 t [秒])。thr_us・steer_us は車に出す直前の値、v は撮像時刻までの最新の車両の速さ、
+    pred_steer_us はモデルの予測ステア(ゲイン前、先の数フレーム)、active は層を動かすか(AI 側のフレーム)。
+    返り値の thr_us を出すかどうかは呼ぶ側が決める(zone_caps が OFF なら出さない = 影の判定だけ)"""
+    pred_sig = bool(active) and pred_signal_of(pred_steer_us, cfg.pred_threshold_us)
+    zone = combine_zone(state.zone_gyro, state.turning, pred_sig, v=v, pred_min_speed=cfg.pred_min_speed)
+    if not active:
+        return (state._replace(cap=CapState()),
+                ZoneOut(zone, state.zone_gyro, pred_sig, state.rel_psi, False, 'off', INF, thr_us, False))
+    cap = state.cap if t - state.last_active_t <= cfg.reset_gap_s else CapState()
+    cap, thr, o = cap_throttle_us(cap, t, zone, v, thr_us, cfg.cap, steer_us, cfg.steer_center_us)
+    return (state._replace(cap=cap, last_active_t=t),
+            ZoneOut(zone, state.zone_gyro, pred_sig, state.rel_psi, True, o.mode, o.cap_eff, thr, o.brake_start))
+
+
+def zone_inactive(state: ZoneState) -> ZoneState:
+    """中立で止めたフレーム(記録しない・層を動かさない)。層の状態だけ戻す(位相はそのまま)"""
+    return state._replace(cap=CapState())

@@ -24,6 +24,7 @@ from .. import actuator, config, dataset, dataset_import, drive, hf_export, mode
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..sim import web as sim_web
+from . import bench as bench_web
 from ..training import TrainingManager
 from ..training import start_args as training_start_args
 
@@ -200,6 +201,8 @@ jobs = Jobs()
 sim_web.init(jobs=jobs, busy=lambda: {'training': trainer.running, 'driving': driver.running,
                                       'recording': bool(recorder.recording or collect.active)})
 app.include_router(sim_web.router)
+# 走行タブの「ベンチマークの候補」・「基準の設定」: GET /api/bench/candidates(data/bench_candidates.json を読むだけ)
+app.include_router(bench_web.router)
 
 
 # ---------------------------------------------------------------- 画像ユーティリティ

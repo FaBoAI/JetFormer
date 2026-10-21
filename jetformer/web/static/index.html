@@ -286,6 +286,42 @@
   <section id="tab-drive" class="tab-page">
     <div class="ds-grid">
       <div>
+        <div class="card" id="dr-prep">
+          <div class="card-title">走る日の準備</div>
+          <details class="prep-check" open><summary class="small">走る前のチェック <span id="dr-check-count" class="badge">0 / 6</span>
+            <span class="muted">(この画面の中だけ。保存しません)</span></summary>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> ip_status.service を止めた
+              <span class="muted small">(sudo systemctl stop ip_status。OLED が同じ I2C bus 7 でエラーを出し続けるため。走り終わったら戻す)</span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 空き容量 10 GB 以上 <span id="dr-check-disk" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 重い処理(学習・ワークフロー)が動いていない <span id="dr-check-heavy" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> プロポの CH3 が人側(SELECT = 0)</label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 「基準の設定」の値を画面で確かめた <span id="dr-check-base" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 電池の番号と電圧を測った
+              <span class="muted small">(説明欄の battery=#__ V_before=__ に書く)</span></label>
+            <div class="row"><button id="btn-dr-check-clear" class="small">チェックを全部外す</button></div>
+          </details>
+          <label>この日のステア <span class="muted">(B が R1・LH を回り切れない日は 1.3。その日の全ブロックを同じにする。選んだ値はその日のあいだ、この画面が覚える)</span>
+            <select id="dr-base-steer" autocomplete="off">
+              <option value="" selected>基準どおり</option>
+              <option value="1.3">1.30(B が回り切れなかった日)</option>
+            </select></label>
+          <div class="row buttons"><button id="btn-dr-baseline">基準の設定を画面に入れる</button></div>
+          <div id="dr-base-info" class="muted small"></div>
+          <div id="dr-base-note" class="small hidden"><span id="dr-base-note-text"></span>
+            <button id="btn-dr-base-undo" class="small">取り消す(サーバーの値に戻す)</button></div>
+        </div>
+
+        <div class="card hidden" id="bench-card">
+          <div class="card-title">ベンチマークの候補</div>
+          <div id="bench-head" class="muted small"></div>
+          <div class="muted small">ブロックを押すと、そのモデル・基準の値・説明欄の雛形が画面に入ります(走行は始めません)。
+            電池の番号・電圧・点検の結果は、説明欄に書き足してください。</div>
+          <div id="bench-error" class="warn-text small"></div>
+          <div id="bench-days"></div>
+          <div id="bench-applied" class="small"></div>
+          <details class="adv"><summary class="small">候補の一覧</summary><div id="bench-cands"></div></details>
+        </div>
+
         <div class="card">
           <div class="card-title">AI走行</div>
           <p class="muted small">学習結果のモデル(TensorRT)で車を操作します。プロポの<b>CH3をAI側(LED紫)</b>にすると、
@@ -339,6 +375,15 @@
               <option value="2">減速(衝突まで0.5秒未満で前進を弱め、0.3秒未満でブレーキ)</option>
               <option value="3">減速+ハンドル(近い側から離す)</option>
             </select></label>
+          <div class="zone-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-zone-caps" autocomplete="off"> 区間の速度上限を出力に掛ける
+              <span id="dr-zone-spec" class="muted small">(v1.1: R1 2.5・GM 2.2・DE 3.0 m/s)</span></label>
+            <div class="warn-text small">ON にするのは、10/23 の記録で G1 に合格し、ユーザーが了承したあとです。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div id="dr-zone-unknown" class="warn-text small">4 つめの上限: 位相が不確か(unknown)のときも 3.0 m/s で切ります。走行の始めから最初の R1 を見つけるまで(1 周目のほぼ全部)・R1 から 16 秒を超えたとき・1 秒以上止まったあと。ユーザーの了承は 3 区間(R1・GM・DE)だけです。ON の了承をもらうときに、これも含めて確かめてください</div>
+            <div class="muted small">OFF でも、区間と「上限ならこう出した」スロットルは記録(AI_CMD)に残ります。上限は前進を弱めるだけで、舵は変えません。</div>
+            <div id="dr-zone-note" class="small"></div>
+          </div>
           <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
           <div class="indent">

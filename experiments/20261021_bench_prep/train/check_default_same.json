@@ -1,0 +1,56 @@
+{
+ "created_at": "2026-10-21T10:41:15",
+ "dataset": "clean_driving_20261011",
+ "settings": {
+  "stride": 3,
+  "use_command": false,
+  "mask_impacts": true,
+  "impact_g": 2.5
+ },
+ "train_samples": {
+  "head": 5912,
+  "new": 5912,
+  "new_explicit_none": 5912
+ },
+ "index_same": true,
+ "items_same_64": true,
+ "batch_same": true,
+ "loss_head": 0.4305945634841919,
+ "loss_new": 0.4305945634841919,
+ "loss_same": true,
+ "val_index_same": true,
+ "val_items_same_32": true,
+ "slow": {
+  "rows_all": 83323,
+  "rows_used": 22910,
+  "card_rows_all": 83323,
+  "card_rows_used": 22910,
+  "index_same_as_default": true,
+  "steer_same": true,
+  "throttle_never_stronger": true,
+  "val_rejected": true
+ },
+ "wgt": {
+  "train_samples": 5912,
+  "weight_mean": 1.7578,
+  "share_3x": 0.3789,
+  "effective_n": 4531.5,
+  "val_all_one": true,
+  "index_same_as_default": true
+ },
+ "aug": {
+  "settings": {
+   "brightness": 0.2,
+   "contrast": 0.2,
+   "shift_px": 4,
+   "tof_noise": 0.02
+  },
+  "target_same": true,
+  "image_changed": true,
+  "tof_dist_changed": true,
+  "tof_conf_same": true
+ },
+ "args_default_unused": true,
+ "all_ok": true,
+ "duration_s": 14.6
+}

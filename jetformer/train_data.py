@@ -10,6 +10,13 @@
     weights     損失の重み(return_weight=True のとき 7番目の値として返す)
     mode_remap  学習するジャンルを付け替える(-1 = そのまま)。remap_dropout の確率で元のジャンルに戻す(分類器なし誘導の形)
 
+ベンチマークの学習用(2026-10-21。既定では使わない。tools/train.py の --label-override-npz・--aug-* から渡す):
+    label_override  フレームの表(scene, frame, future_throttle_us [M,10] µs。NaN = 元のまま)。学習の正解の
+                    1〜10 フレーム先のスロットルを差し替える(区間の速度上限の出力に付け替えた正解など)
+    aug             入力の拡張 {'brightness': 明るさ ±割合, 'contrast': コントラスト ±割合, 'shift_px': 上下左右のずれ
+                    (モデルの入力の画素), 'tof_noise': ToF の距離(正規化)に足す雑音の標準偏差}。0・None = 使わない。
+                    使わないときは乱数を引かないので、同じ種なら今までと同じサンプルになる
+
 方策の追加の正解(既定では使わない。jetformer/policies の方策のモジュールの extra_targets が作る):
     extra_targets  {シーン名: {キー: np.ndarray [シーンのフレーム数, ...]}}。渡すと各サンプルの最後に
                    {'y_<キー>': Tensor} の dict を足す(tcp の通過点・目標速度など)。渡さなければ今までと同じタプル
@@ -95,13 +102,52 @@ def _per_frame(table, scene, n, fill, dtype):
     return out
 
 
+AUG_KEYS = ('brightness', 'contrast', 'shift_px', 'tof_noise')
+
+
+def augment_image(image, brightness=0.0, contrast=0.0, shift_px=0):
+    """カメラの画像(BGR uint8)の拡張: コントラスト ×U(1±contrast)(画像の平均の周り)・明るさ +U(±brightness)×255・
+    上下左右に整数の画素ずらし(モデルの入力 IMAGE_SIZE の画素で ±shift_px、端は写し足す)。0 の項目は乱数を引かない"""
+    img = image
+    if contrast > 0 or brightness > 0:
+        img = img.astype(np.float32)
+        if contrast > 0:
+            c = np.random.uniform(1.0 - contrast, 1.0 + contrast)
+            mean = float(img.mean())
+            img = (img - mean) * c + mean
+        if brightness > 0:
+            img = img + np.random.uniform(-brightness, brightness) * 255.0
+        img = np.clip(img, 0, 255).astype(np.uint8)
+    if shift_px > 0:
+        dx, dy = np.random.randint(-int(shift_px), int(shift_px) + 1, size=2)
+        if dx or dy:
+            sx, sy = img.shape[1] / float(IMAGE_SIZE), img.shape[0] / float(IMAGE_SIZE)
+            m = np.float32([[1, 0, round(dx * sx)], [0, 1, round(dy * sy)]])
+            img = cv2.warpAffine(img, m, (img.shape[1], img.shape[0]), flags=cv2.INTER_NEAREST,
+                                 borderMode=cv2.BORDER_REPLICATE)
+    return img
+
+
+def augment_tof(tof, noise=0.0):
+    """正規化した ToF [2,H,W] の距離(0 番目)に N(0, noise) を足して 0〜1 に切る。信頼度は変えない"""
+    if noise <= 0:
+        return tof
+    tof = tof.copy()
+    tof[0] = np.clip(tof[0] + np.random.normal(0.0, noise, tof[0].shape).astype(np.float32), 0.0, 1.0)
+    return tof
+
+
 class JetFormerDataset(torch.utils.data.Dataset):
     def __init__(self, root, split='train', color_jitter=False, include_unset=False, stride=1, use_command=True,
                  mask_impacts=False, impact_g=IMPACT_G, drop=None, keep_impact=None, weights=None, mode_remap=None,
-                 remap_dropout=0.0, extra_modes=None, return_weight=False, extra_targets=None):
+                 remap_dropout=0.0, extra_modes=None, return_weight=False, extra_targets=None,
+                 label_override=None, aug=None):
         """drop・keep_impact・weights・mode_remap は load_frame_table の表(None = 使わない。既定はどれも使わない)。
         extra_modes: mode_remap の付け替え先のジャンル(data/modes.json の項目)で、データセットの表に無いもの。
-        extra_targets: 方策の追加の正解 {シーン名: {キー: [フレーム数, ...]}}(None = 使わない)"""
+        extra_targets: 方策の追加の正解 {シーン名: {キー: [フレーム数, ...]}}(None = 使わない)
+        label_override: 正解のスロットルの差し替えの表(load_frame_table(..., 'future_throttle_us'))。表に無いシーンは
+        そのまま。表のシーンがこの分け方に無ければエラー(検証の分け方に渡してしまわないように)
+        aug: 入力の拡張の設定(AUG_KEYS。None・全部 0 = 使わない)"""
         self.root = root
         self.color_jitter = color_jitter
         self.use_command = use_command
@@ -111,6 +157,10 @@ class JetFormerDataset(torch.utils.data.Dataset):
         self.remap_dropout = float(remap_dropout)
         self.return_weight = return_weight
         self.extra_keys = []                 # 追加の正解のキー(__getitem__ の最後の dict の 'y_<キー>')
+        self.aug = {k: float((aug or {}).get(k, 0) or 0) for k in AUG_KEYS} if aug and any(
+            float(aug.get(k, 0) or 0) > 0 for k in AUG_KEYS) else None
+        self.label_overridden = 0            # 差し替えた正解の行の数(間引きの前の全フレーム)
+        self.label_overridden_used = 0       # そのうち学習に使うフレームの行の数
         with open(os.path.join(root, 'dataset_card.json'), encoding='utf-8') as f:
             card = json.load(f)
         self.modes = card.get('modes', [{'id': 0, 'name': '未設定'}])
@@ -120,6 +170,10 @@ class JetFormerDataset(torch.utils.data.Dataset):
         self.num_modes = max(m['id'] for m in self.modes) + 1
         with open(os.path.join(root, 'splits.json')) as f:
             scenes = json.load(f)[split]
+        if label_override is not None:
+            stray = sorted(set(label_override) - set(scenes))
+            if stray:
+                raise KeyError('正解の差し替えの表のシーン %s が %s の分け方にありません' % (', '.join(stray[:3]), split))
         self.scenes = []
         self.index = []
         for s in scenes:
@@ -128,6 +182,23 @@ class JetFormerDataset(torch.utils.data.Dataset):
                 continue
             ok = a['future_valid'] & a['vehicle_valid']
             n = len(ok)
+            ov_rows = None
+            if label_override is not None and s in label_override:
+                fr, val = label_override[s]
+                val = np.asarray(val, np.float32)
+                fa = np.array(a['future_actions'], np.float32, copy=True)
+                if val.ndim != 2 or val.shape[1] != fa.shape[1]:
+                    raise ValueError('シーン %s: 正解の差し替えの形 %s が [M,%d] ではありません' % (s, val.shape, fa.shape[1]))
+                if len(fr) and (fr.min() < 0 or fr.max() >= n):
+                    raise ValueError('正解の差し替えのフレーム番号がシーン %s の範囲(0〜%d)の外です' % (s, n - 1))
+                sub = fa[fr, :, 1]
+                m = np.isfinite(val)
+                sub[m] = val[m]
+                fa[fr, :, 1] = sub
+                a['future_actions'] = fa
+                ov_rows = np.zeros(n, np.int64)
+                np.add.at(ov_rows, fr, m.sum(axis=1))
+                self.label_overridden += int(ov_rows.sum())
             if 'mode' not in a:
                 a['mode'] = np.zeros(len(ok), dtype=np.int16)
             if not include_unset:
@@ -170,6 +241,8 @@ class JetFormerDataset(torch.utils.data.Dataset):
                     if len(arr) != n:
                         raise ValueError('シーン %s の追加の正解 %s の長さ %d がフレーム数 %d と違います' % (s, key, len(arr), n))
                     a['_y_' + key] = arr
+            if ov_rows is not None:
+                self.label_overridden_used += int(ov_rows[ok].sum())
             k = len(self.scenes)
             self.scenes.append(a)
             self.index.extend((k, int(i)) for i in np.nonzero(ok)[0])
@@ -193,7 +266,11 @@ class JetFormerDataset(torch.utils.data.Dataset):
         if self.color_jitter:
             gain = np.random.uniform(0.8, 1.2, size=3)
             image = np.clip(image.astype(np.float32) * gain, 0, 255).astype(np.uint8)
+        if self.aug is not None:
+            image = augment_image(image, self.aug['brightness'], self.aug['contrast'], int(self.aug['shift_px']))
         img, tof, imu, state = normalize_inputs(image, a['tof'][i], a['imu'][i], a['vehicle'][i], self.use_command)
+        if self.aug is not None:
+            tof = augment_tof(tof, self.aug['tof_noise'])
         target = (a['future_actions'][i] - PWM_CENTER) / PWM_SCALE
         mode = np.zeros(self.num_modes, dtype=np.float32)
         mode[self.mode_of(k, i, train_draw=True) if '_remap' in a else int(a['mode'][i])] = 1.0

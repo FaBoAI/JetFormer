@@ -20,6 +20,19 @@
 CH3 の交代・センサーの途切れで中立はそのまま効く。推論の直後・先読みの前に、方策の後処理(model_config.json の
 postprocess。tcp の制御器)と予測の重ね合わせ(ensemble_j > 0)を通せる(policies.post.Stage。評価の道具と同じ手順)。
 エンジンには基本の5つの入力を全部渡す(エンジンが使わない入力は読まれないだけ)。
+
+区間の速度上限(safety_caps v1.1: R1 2.5・GM 2.2・DE 3.0 m/s。2026-10-21): パラメータ zone_caps(既定 0 = OFF、
+起動のたびに OFF)。ON/OFF に関係なく、毎フレーム区間・上限・「上限ならこう出した」スロットル・ブレーキを計算して
+AI の記録(AI_CMD の cap_*)に残す(影の判定)。車への出力を変えるのは zone_caps = 1 のときだけ。上限を掛けるのは
+車に出す直前のスロットル(ゲイン・ToF ガード・補助のあと。上限は速さ [m/s] の決まりで、ゲインの前に掛けるとゲインで
+上限の速さが変わるため。G1 の再生も記録の out = この値で判定した)。上限は前進を弱めるだけ(PWM は入力以上)。
+計算が例外になったら、その走行のあいだは上限を外す(OFF と同じ出力)・記録とメッセージに残す。
+v1.1 は位相が不確か(unknown: 最初の R1 の前・R1 から 16 秒超・1 秒以上止まったあと)でも 3.0 m/s で切る(4 つめの上限。
+ユーザーの了承は 3 区間だけなので、画面の ON の確認で示す。ZONE_CAPS_SPEC['unknown_note'])。
+走行中に OFF → ON にはできない(set_params が断る。1 走行 = 1 設定)。ON → OFF は走行中でもできる。
+
+AI の時間(stats['ai_s']、2026-10-21): CH3 が AI 側で dry run でない時間の和。道具(label_events の dt_s)と同じ決め方で、
+ベンチマークの「AI の時間が数える時間 + 1 分を過ぎたら止める」を画面で見るため。数えるだけで出力は変えない。
 """
 
 import collections
@@ -36,6 +49,7 @@ import numpy as np
 
 from . import assist as assist_mod
 from . import clock, config, modes, policies
+from . import safety_caps
 from .laps import LapCounter
 from .policies import post as post_mod
 
@@ -44,6 +58,7 @@ RUNS_DIR = config.DATA_DIR / 'runs'
 ENGINE_FILE = 'jetformer_fp16.engine'
 IMU_STEPS = 10                     # model.IMU_STEPS(torchを読み込まずに使うため複製)
 PWM_CENTER, PWM_SCALE = 1500.0, 500.0
+AI_GAP_S = 0.2                     # AI の時間: これより空いたフレームの間は 1 フレーム分だけ数える(tools/label_events.GAP_S と同じ)
 
 PARAM_LIMITS = {
     'steer_gain': (0.0, 2.0),      # ステアリングのゲイン(中心からの切れ角を何倍にするか)
@@ -62,8 +77,10 @@ PARAM_LIMITS = {
     'tcp_mode': (0, 3),            # tcp の出し方 0=操作の枝だけ(既定・比較で評価した出力) 1=ハイブリッド 2=混ぜる 3=通過点を追う
     'ensemble_j': (0, 3),          # 予測の重ね合わせ: 何フレーム前の予測まで混ぜるか(0 = オフ)
     'ensemble_m': (0.0, 2.0),      # 予測の重ね合わせ: 古い予測を軽くする強さ(重み exp(-m·j))
+    'zone_caps': (0, 1),           # 区間の速度上限 v1.1(R1 2.5・GM 2.2・DE 3.0 m/s)1 = 出力に掛ける 0 = 記録だけ(影の判定)
 }
-RESET_ON_BOOT = ('tcp_mode', 'speed_scale')       # 起動のたびに既定へ戻す項目(drive_settings.json から読まない)
+# 起動のたびに既定へ戻す項目(drive_settings.json から読まない)。区間の速度上限は ON のまま別の日に持ち越さない
+RESET_ON_BOOT = ('tcp_mode', 'speed_scale', 'zone_caps')
 ENGINE_CHECK_FILE = 'engine_check.json'          # エンジンの確認(精度・速さ)の結果。あれば走行タブに出す(精度の不合格は走らせない)
 # 走行タブで最初に選ぶ「推奨のモデル」(方策の比較などの評価で決めたもの。tools/policy_zoo.py recommend で書く)。
 # 無ければ今まで通り(前回のモデル → 一番新しいモデル)
@@ -72,7 +89,8 @@ GUARD_NAMES = {0: '', 1: '減速', 2: 'ブレーキ'}
 FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床の基準(自由走行から作る)
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
                   'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S,
-                  'tof_guard': 1, 'speed_cap': 0.0, 'speed_scale': 1.0, 'tcp_mode': 0, 'ensemble_j': 0, 'ensemble_m': 0.5}
+                  'tof_guard': 1, 'speed_cap': 0.0, 'speed_scale': 1.0, 'tcp_mode': 0, 'ensemble_j': 0, 'ensemble_m': 0.5,
+                  'zone_caps': 0}
 
 
 def _read_json(path):
@@ -339,6 +357,142 @@ class _Output(object):
         return ok
 
 
+# 区間の速度上限の説明(画面・道具の表示用。値は走行ループが使う safety_caps.ZONE_CAPS_V1_1)
+# v1.1 は 3 区間(R1・GM・DE)のほかに「位相が不確か(unknown)」でも上限を掛ける(4 つめ)。ユーザーの了承(2026-10-21)は
+# 3 区間だけなので、画面の ON の確認でこれも示す(Fix-drive。値は変えない: G1 はこの形で判定した)
+_ZC_CAP, _ZC_PHASE = safety_caps.ZONE_CAPS_V1_1.cap, safety_caps.ZONE_CAPS_V1_1.phase
+ZONE_CAPS_SPEC = {'version': safety_caps.ZONE_CAPS_VERSION, 'zones': list(safety_caps.ZONES),
+                  'caps_mps': {'R1': _ZC_CAP.cap_R1_app, 'GM': _ZC_CAP.cap_GM,
+                               'DE': _ZC_CAP.cap_DE, 'unknown': _ZC_CAP.cap_unknown},
+                  'approved_zones': ['R1', 'GM', 'DE'],      # ユーザーが了承した区間(2026-10-21)。unknown は含まない
+                  'unknown_rule': {'cap_mps': _ZC_CAP.cap_unknown, 'lost_s': _ZC_PHASE.lost_s,
+                                   'stop_reset_s': _ZC_PHASE.stop_reset_s},
+                  'unknown_note': ('4 つめの上限: 位相が不確か(unknown)のときも %.1f m/s で切ります。走行の始めから最初の R1 を'
+                                   '見つけるまで(1 周目のほぼ全部)・R1 から %g 秒を超えたとき・%g 秒以上止まったあと。'
+                                   'ユーザーの了承は 3 区間(R1・GM・DE)だけです。ON の了承をもらうときに、これも含めて確かめてください'
+                                   % (_ZC_CAP.cap_unknown, _ZC_PHASE.lost_s, _ZC_PHASE.stop_reset_s)
+                                   if np.isfinite(_ZC_CAP.cap_unknown) else ''),
+                  'brake_zones': list(_ZC_CAP.brake_zones), 'brake_us': _ZC_CAP.brake_us,
+                  'modes': {'-2': '計算の失敗', '-1': '動かしていない', '0': 'そのまま', '1': '上限で切った',
+                            '2': '中立にした', '3': 'ブレーキ'}}
+ZONE_CODES = {z: i for i, z in enumerate(safety_caps.ZONES)}       # 記録の cap_zone(-1 = 計算していない・失敗)
+CAP_MODE_CODES = dict({m: i for i, m in enumerate(safety_caps.CAP_MODES)}, off=-1)   # 記録の cap_mode(-2 = 失敗)
+
+
+class _ZoneCaps(object):
+    """区間の速度上限(safety_caps v1.1)の走行ループ側のつなぎ: センサーのバッファの値を数にして、純粋な包み
+    (safety_caps.zone_imu・zone_frame)へ渡すだけ。状態は ZoneState 1 つ。計算が例外になったら failed に理由を残し、
+    その走行のあいだは何もしない(呼ぶ側は出力を変えない = OFF と同じ)。時刻は最初のサンプルを原点にした秒"""
+
+    def __init__(self, cfg=safety_caps.ZONE_CAPS_V1_1):
+        self.cfg = cfg
+        self.state = safety_caps.ZoneState()
+        self.imu_done = None            # 位相へ入れた最後の IMU の時刻 [ns]
+        self.origin = None
+        self.failed = None              # 失敗の説明(None = 動いている)
+        self.ms = collections.deque(maxlen=30)
+        self.ms_max = 0.0
+
+    def _sec(self, t_ns):
+        if self.origin is None:
+            self.origin = int(t_ns)
+        return (int(t_ns) - self.origin) / 1e9
+
+    @staticmethod
+    def _speed_at(veh, t_ns):
+        """t_ns までの最新の車両の速さ [m/s](無ければ最初の値。G1 の再生の prev_idx と同じ)"""
+        if not veh:
+            return 0.0
+        e = veh[0][1]['erpm']
+        for tv, d in reversed(veh):
+            if tv <= t_ns:
+                e = d['erpm']
+                break
+        return -float(e) * safety_caps.KV
+
+    def _feed(self, imu_buf, veh_buf, upto_ns):
+        """前回より後・upto_ns 以前(None なら全部)の IMU のサンプルを位相へ"""
+        veh = list(veh_buf)
+        st = self.state
+        for t_ns, x in list(imu_buf):
+            if self.imu_done is not None and t_ns <= self.imu_done:
+                continue
+            if upto_ns is not None and t_ns > upto_ns:
+                break
+            st = safety_caps.zone_imu(st, self._sec(t_ns), float(np.degrees(x[5])), self._speed_at(veh, t_ns), self.cfg)
+            self.imu_done = t_ns
+        self.state = st
+
+    def _fail(self, e):
+        if not self.failed:             # 最初の失敗を残す
+            traceback.print_exc()
+            self.failed = '%s: %s' % (type(e).__name__, e)
+
+    def frame(self, cam_t_ns, out_us, veh, pred, active, imu_buf, veh_buf):
+        """AI のフレーム(推論して出力を決めたフレーム)→ ZoneOut(失敗していれば None)。出力は変えない"""
+        if self.failed:
+            return None
+        t0 = time.perf_counter()
+        try:
+            self._feed(imu_buf, veh_buf, cam_t_ns)
+            veh_t = None
+            for tv, d in reversed(list(veh_buf)):
+                if d is veh:
+                    veh_t = tv
+                    break
+            fresh = veh_t is not None and self._sec(cam_t_ns) - self._sec(veh_t) < self.cfg.fresh_s
+            v = -float(veh['erpm']) * safety_caps.KV
+            thr_in = float(out_us[1])
+            self.state, z = safety_caps.zone_frame(self.state, self._sec(cam_t_ns), thr_in, float(out_us[0]), v,
+                                                   np.asarray(pred)[:, 0].tolist(), bool(active) and fresh, self.cfg)
+            if not (np.isfinite(z.thr_us) and z.thr_us >= thr_in):       # 前進を強める値は出さない(起きないはず)
+                raise ValueError('上限の出力 %r が入力 %r より前進側です' % (z.thr_us, thr_in))
+        except Exception as e:      # noqa: BLE001  上限が無くても走れる(OFF と同じ)
+            self._fail(e)
+            return None
+        ms = (time.perf_counter() - t0) * 1000.0
+        self.ms.append(ms)
+        self.ms_max = max(self.ms_max, ms)
+        return z
+
+    def hold(self, cam_t_ns, imu_buf, veh_buf):
+        """中立で止めたフレーム: 位相は進め、層の状態だけ戻す"""
+        if self.failed:
+            return
+        try:
+            self._feed(imu_buf, veh_buf, cam_t_ns)
+            self.state = safety_caps.zone_inactive(self.state)
+        except Exception as e:      # noqa: BLE001
+            self._fail(e)
+
+    def record(self, z, on, applied, thr_in):
+        """AI の記録(AI_CMD)の cap_* の欄。z = frame() の戻り値(None = 中立で止めた / 失敗)。例外は出さない"""
+        if z is not None:
+            try:
+                return {'cap_on': bool(on), 'cap_zone': ZONE_CODES.get(z.zone, -1),
+                        'cap_zone_gyro': ZONE_CODES.get(z.zone_gyro, -1), 'cap_pred_sig': bool(z.pred_signal),
+                        'cap_rel_psi': np.nan if z.rel_psi is None else float(z.rel_psi),
+                        'cap_mode': CAP_MODE_CODES.get(z.mode, -1), 'cap_limit': float(z.cap_eff), 'cap_in_us': thr_in,
+                        'cap_thr_us': float(z.thr_us), 'cap_brake_start': bool(z.brake_start), 'cap_applied': bool(applied)}
+            except Exception as e:      # noqa: BLE001
+                self._fail(e)
+        return {'cap_on': bool(on), 'cap_zone': -1, 'cap_zone_gyro': -1, 'cap_pred_sig': False, 'cap_rel_psi': np.nan,
+                'cap_mode': -2 if self.failed else -1, 'cap_limit': np.nan, 'cap_in_us': thr_in, 'cap_thr_us': np.nan,
+                'cap_brake_start': False, 'cap_applied': False}
+
+    def view(self, z, on, applied):
+        """画面の表示用(st['now']['zone'])。例外は出さない"""
+        if z is not None:
+            try:
+                return {'on': bool(on), 'error': None, 'zone': str(z.zone), 'zone_gyro': str(z.zone_gyro), 'mode': str(z.mode),
+                        'limit': _num(z.cap_eff), 'thr_us': _num(z.thr_us, 1), 'applied': bool(applied),
+                        'brake': z.mode == 'brake'}
+            except Exception as e:      # noqa: BLE001
+                self._fail(e)
+        return {'on': bool(on), 'error': self.failed, 'zone': None, 'zone_gyro': None, 'mode': None, 'limit': None,
+                'thr_us': None, 'applied': False, 'brake': False}
+
+
 class Driver(object):
     def __init__(self, hub, recorder):
         self.hub = hub
@@ -393,7 +547,7 @@ class Driver(object):
                     raise ValueError('%s が数値ではありません' % k)
                 p[k] = min(max(v, lo), hi)
         p['lookahead'] = int(round(p['lookahead']))
-        for k in ('esc_reverse', 'recovery'):         # 古い設定ファイル・古い画面には無い項目
+        for k in ('esc_reverse', 'recovery', 'zone_caps'):     # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
         for k in ('tcp_mode', 'ensemble_j'):           # 整数の項目(古い設定ファイルには無い)
@@ -417,6 +571,9 @@ class Driver(object):
             p = self._clean_params(values)
             if self.running and self.st.get('post_failed') and uses_post(p) and not uses_post(self.params):
                 raise ValueError('後処理を読み込めなかったため、速度の上限・TCP の出し方は使えません(操作の枝だけで走っています)')
+            if self.running and p['zone_caps'] == 1 and int(self.params.get('zone_caps', 0) or 0) == 0:
+                # 区間の速度上限は 1 走行 = 1 設定(画面と同じ決まりをサーバーでも守る)。OFF にするのは走行中でもできる
+                raise ValueError('走行中は区間の速度上限を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)')
             if values.get('mode_id') is not None:
                 mode_id = int(values['mode_id'])
                 info = self.st.get('model')
@@ -656,6 +813,31 @@ class Driver(object):
         laps = LapCounter()                 # ジャイロで周回を数え、1周のタイムを測る
         st['laps'] = laps.summary()
         imu_done = [0]
+        zcaps = _ZoneCaps()                 # 区間の速度上限(OFF でも影の判定を記録する)
+        st['zone_caps_error'] = None
+        stats.update(zone_ms=0.0, zone_ms_max=0.0, zone_brakes=0, zone_applied=0)
+        # AI の時間(画面の「AI の時間」。ベンチマークの「数える 240 秒 + 1 分」で止める目安。2026-10-21 Fix-all)
+        stats['ai_s'] = 0.0
+        ai_sum, ai_t_prev, ai_was = 0.0, None, False
+
+        def zone_failed():
+            """上限の計算が例外になった(この走行のあいだは上限を外す)ことを、1 回だけ記録とメッセージに残す"""
+            if not zcaps.failed or st.get('zone_caps_error'):
+                return
+            st['zone_caps_error'] = zcaps.failed
+            zc_on = int(self.params.get('zone_caps', 0) or 0)
+            if zc_on == 1:
+                note = '区間の速度上限の計算が失敗したため、この走行では上限を外しました(%s)' % zcaps.failed
+            else:                   # OFF の日: 出力はもとから変えていない。止まったのは記録だけの影の判定
+                note = ('区間の速度上限(OFF・記録だけ)の影の判定が計算の失敗で止まりました。車への出力は変わりません(%s)'
+                        % zcaps.failed)
+            st['recording_note'] = ((st.get('recording_note') or '') + ' ' + note).strip()
+            st['message'] = (st.get('message') or '') + '・' + note
+            try:
+                self.recorder.add_event('zone_caps_error', {'error': zcaps.failed, 'run': st.get('run'),
+                                                            'zone_caps': zc_on})
+            except Exception:       # noqa: BLE001  記録できなくても走行は続ける
+                traceback.print_exc()
 
         def count_laps(veh_now):
             """前のフレームから届いたIMUのサンプルを周回の計測へ"""
@@ -694,6 +876,8 @@ class Driver(object):
             st['hold_reason'] = reason
             st['hold_since'] = st.get('hold_since') or time.time()
             st['now'] = {'raw': None, 'out': [round(n_s, 1), round(n_t, 1)], 'select': veh_select, 'hold': True, 'pred': None}
+            zcaps.hold(cam.t_ns if cam is not None else None, imu_buf, veh_buf)
+            zone_failed()
             if cam is not None:
                 self.recorder.add_ai(cam.t_ns, {
                     'pred': np.full((10, 2), np.nan, np.float32), 'raw': (np.nan, np.nan), 'out': (n_s, n_t),
@@ -702,7 +886,8 @@ class Driver(object):
                     'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': assist_mod.ASSIST_NONE,
                     'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False,
                     'model_pred': np.full((10, 2), np.nan, np.float32), 'post_mode': -1, 'v_hat': np.nan,
-                    'v_cmd': np.nan, 'ens_j': int(p.get('ensemble_j', 0))})
+                    'v_cmd': np.nan, 'ens_j': int(p.get('ensemble_j', 0)),
+                    **zcaps.record(None, int(p.get('zone_caps', 0) or 0) == 1, False, n_t)})
             helper.reset()                  # 中立で止めた後は、補助の手順を最初から
             stage.reset()                   # 後処理・重ね合わせも最初から(止めていた間の予測を混ぜない)
 
@@ -730,6 +915,14 @@ class Driver(object):
             if last_seq is not None and seq > last_seq + 1:
                 stats['skipped'] += seq - last_seq - 1
             last_seq = seq
+            # AI の時間: 道具(tools/label_events の dt_s・ai)と同じ決め方。前のフレームが AI 側(CH3 が AI・dry run でない)なら、
+            # そのフレームから今のフレームまでの時間を足す(0.2 秒を超えて空いたら 1 フレーム分)。数えるだけで出力は変えない
+            if ai_t_prev is not None and ai_was:
+                gap_s = (cam.t_ns - ai_t_prev) / 1e9
+                ai_sum += gap_s if 0.0 <= gap_s <= AI_GAP_S else 1.0 / fps
+                stats['ai_s'] = round(ai_sum, 1)
+            ai_t_prev = cam.t_ns
+            ai_was = bool(veh_buf) and not dry_run and bool(veh_buf[-1][1]['select'])
             if clock.now_ns() - cam.t_ns > max_age:
                 hold('処理が遅れています(画像が%dms前)' % ((clock.now_ns() - cam.t_ns) / 1e6), cam)
                 applied = False
@@ -822,12 +1015,31 @@ class Driver(object):
             if stats['frames'] % 15 == 0:
                 st['laps'] = laps.summary()
             stats['esc_assists'] = helper.esc_count
+            # 区間の速度上限: 車に出す直前のスロットルに(ゲイン・ToF ガード・補助のあと)。OFF でも計算して記録する(影の判定)。
+            # 出力を変えるのは zone_caps = 1 で、AI 側のフレームで、上限が前進を弱めたときだけ(計算の失敗後は外す)
+            zone_on = int(p.get('zone_caps', 0) or 0) == 1
+            cap_in = out_us[1]
+            zout = zcaps.frame(cam.t_ns, out_us, veh, pred, bool(veh['select']) and not dry_run, imu_buf, veh_buf)
+            zone_failed()
+            zone_applied = False
+            if zone_on and zout is not None and zout.active and zout.thr_us != out_us[1]:
+                out_us = (out_us[0], float(np.clip(zout.thr_us, lo, hi)))
+                zone_applied = True
+            if zcaps.ms:
+                stats['zone_ms'] = round(float(np.mean(zcaps.ms)), 3)
+                stats['zone_ms_max'] = round(zcaps.ms_max, 3)
             written = out.neutral() if dry_run else out.write(*out_us)
             stats['i2c_errors'] = out.errors
             if not written:
                 hold('PCA9685への書き込みに失敗しました(読み直します)', cam, bool(veh['select']), infer_ms)
                 applied = False
                 continue
+            # 画面の数(出力を変えたフレーム・ブレーキの始まり)は、書けたフレームだけ数える(記録の cap_applied・
+            # cap_brake_start と同じ。書けなかったフレームは中立で止めた行として記録される)
+            if zone_applied:
+                stats['zone_applied'] += 1
+            if zout is not None and zout.brake_start:
+                stats['zone_brakes'] += 1
             # リカバリー中はモデルの出力を車に出していないので、次のフレームの「今の操作値」は中立にする
             prev_pred, prev_cam_t = pred, cam.t_ns
             applied = not dry_run and kind in (assist_mod.ASSIST_NONE, assist_mod.ASSIST_ESC)
@@ -850,7 +1062,8 @@ class Driver(object):
                          'ttc': None if not np.isfinite(g_ttc) else round(min(g_ttc, 9.9), 2),
                          'guard': GUARD_NAMES[g_code] + ('' if g_applied or not g_code else '(記録だけ)'),
                          'model_out': [round(model_us[0], 1), round(model_us[1], 1)],
-                         'post': post_view(pinfo, v_now), 'ens_j': int(p.get('ensemble_j', 0))}
+                         'post': post_view(pinfo, v_now), 'ens_j': int(p.get('ensemble_j', 0)),
+                         'zone': zcaps.view(zout, zone_on, zone_applied)}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
@@ -861,7 +1074,7 @@ class Driver(object):
                 'model_pred': np.asarray(model_pred, np.float32), 'post_mode': int(pinfo.get('mode', -1)) if pinfo else -1,
                 'v_hat': float(pinfo.get('v_hat', np.nan)) if pinfo else np.nan,
                 'v_cmd': float(pinfo.get('v_cmd', np.nan)) if pinfo else np.nan,
-                'ens_j': int(p.get('ensemble_j', 0))})
+                'ens_j': int(p.get('ensemble_j', 0)), **zcaps.record(zout, zone_on, zone_applied, cap_in)})
 
     # ------------------------------------------------------------ 状態
     def status(self):
@@ -881,6 +1094,7 @@ class Driver(object):
                          'raw_throttle': [round(r[2]) for r in h], 'out_steer': [round(r[3]) for r in h],
                          'out_throttle': [round(r[4]) for r in h], 'select': [int(r[5]) for r in h]}
         st['limits'] = {k: list(v) for k, v in PARAM_LIMITS.items()}
+        st['zone_caps_spec'] = ZONE_CAPS_SPEC
         st['pca9685'] = {'address': config.PCA9685['address'], 'freq_hz': config.PCA9685['freq_hz'],
                          'steering_ch': config.PCA9685['steering_ch'], 'throttle_ch': config.PCA9685['throttle_ch']}
         return st

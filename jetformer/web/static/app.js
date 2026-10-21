@@ -1088,7 +1088,8 @@ $('#run-list').addEventListener('click', async (e) => {
 
 
 // ------------------------------------------------------------ AI走行
-state.drive = { models: [], st: null, paramsLoaded: false };
+// pending: 「基準の設定」・ベンチマークの候補で画面に入れ、まだサーバーへ送っていない項目(走行開始で送る。表示の同期で戻さない)
+state.drive = { models: [], st: null, paramsLoaded: false, pending: {} };
 const DR_PARAMS = [
   ['#dr-steer-gain', 'steer_gain', (v) => (+v).toFixed(2)],
   ['#dr-throttle-gain', 'throttle_gain', (v) => (+v).toFixed(2)],
@@ -1134,6 +1135,7 @@ async function loadDrive() {
   renderDriveModel();
   state.drive.restored = true;
   pollDrive();
+  loadBench();
 }
 function renderDriveModel() {
   const m = drModel();
@@ -1184,9 +1186,11 @@ $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.
 // 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
 const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery']];
 $('#dr-tof-guard').addEventListener('change', async () => {
+  delete state.drive.pending.tof_guard;
   try { await api('POST', '/api/drive/params', { tof_guard: +$('#dr-tof-guard').value }); } catch (e) { toast(e.message, true); }
 });
 $('#dr-tcp-mode').addEventListener('change', async () => {
+  delete state.drive.pending.tcp_mode;
   try { await api('POST', '/api/drive/params', { tcp_mode: +$('#dr-tcp-mode').value }); } catch (e) { toast(e.message, true); }
   updateTcpWarn();
 });
@@ -1208,6 +1212,7 @@ function updateNoPostNote() {
   }
 }
 $('#btn-dr-nopost-reset').addEventListener('click', async () => {
+  delete state.drive.pending.speed_cap; delete state.drive.pending.tcp_mode;
   try {
     const p = await api('POST', '/api/drive/params', { speed_cap: 0, tcp_mode: 0 });
     if (state.drive.st) state.drive.st.params = p;
@@ -1217,6 +1222,7 @@ $('#btn-dr-nopost-reset').addEventListener('click', async () => {
 });
 for (const [sel, key] of DR_FLAGS) {
   $(sel).addEventListener('change', async () => {
+    delete state.drive.pending[key];
     try { await api('POST', '/api/drive/params', { [key]: $(sel).checked ? 1 : 0 }); } catch (e) { toast(e.message, true); }
   });
 }
@@ -1226,6 +1232,7 @@ function readDriveParams() {
   for (const [sel, key] of DR_FLAGS) p[key] = $(sel).checked ? 1 : 0;
   p.tof_guard = +$('#dr-tof-guard').value;
   p.tcp_mode = +$('#dr-tcp-mode').value;
+  p.zone_caps = $('#dr-zone-caps').checked ? 1 : 0;     // 区間の速度上限(古いサーバーは知らない項目として読み飛ばす)
   return p;
 }
 // スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
@@ -1236,6 +1243,7 @@ for (const [sel, key, fmt] of DR_PARAMS) {
   for (const ev of ['pointerup', 'pointercancel', 'change']) el.addEventListener(ev, () => { drBusy[key] = (drBusy[key] || 0) & ~1; });
   el.addEventListener('input', () => {
     $(sel + '-v').textContent = fmt(el.value);
+    delete state.drive.pending[key];                // 動かした項目は、今まで通りすぐ送る
     drBusy[key] = (drBusy[key] || 0) | 2;
     clearTimeout(drTimers[key]);
     drTimers[key] = setTimeout(async () => {
@@ -1245,11 +1253,13 @@ for (const [sel, key, fmt] of DR_PARAMS) {
   });
 }
 function setDriveParams(p) {
-  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) $(sel).checked = !!+p[key];
-  if (p.tof_guard !== undefined && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
-  if (p.tcp_mode !== undefined && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
+  const pend = state.drive.pending || {};         // 基準の設定で入れて、まだ送っていない項目は戻さない
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined && !pend[key]) $(sel).checked = !!+p[key];
+  if (p.tof_guard !== undefined && !pend.tof_guard && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
+  if (p.tcp_mode !== undefined && !pend.tcp_mode && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
+  if (p.zone_caps !== undefined && !pend.zone_caps) $('#dr-zone-caps').checked = +p.zone_caps === 1;
   for (const [sel, key, fmt] of DR_PARAMS) {
-    if (p[key] === undefined || drBusy[key]) continue;
+    if (p[key] === undefined || drBusy[key] || pend[key]) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
     $(sel + '-v').textContent = fmt(p[key]);
   }
@@ -1269,12 +1279,15 @@ $('#btn-dr-start').addEventListener('click', async () => {
   // TCP の出し方 1〜3 は机上の比較で評価していない(制御器のスロットルの写像はまだ粗い)ので、始める前に確かめる
   const tcpLine = isTcp && tcpMode >= 1 ? `\n\n注意: TCP の出し方が「${TCP_MODES[tcpMode] || tcpMode}」です。比較で評価したのは「操作の枝だけ」です(車で試すのはこちらを勧めます)。` : '';
   const capLine = isTcp && cap > 0 ? `\n速度の上限 ${cap.toFixed(2)} m/s` : '';
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${tcpLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
+  const zoneLine = $('#dr-zone-caps').checked ? `\n区間の速度上限: ON(${zoneSpecText(state.drive.st)})${zoneUnknownCap(state.drive.st) != null ? '\n  位相が不確かなとき(1 周目のほぼ全部)も上限が掛かります' : ''}` : '';
+  const prepLine = prepStartLines();
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${zoneLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
   const body = { client: 6, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);
     setDriveToken(r.token);
+    benchSent();                                    // 基準の設定で入れた値は、走行開始で送って保存された
     toast(dry ? '推論の確認を開始しました(出力は中立)' : '走行を開始しました'); pollDrive();
   } catch (e) { toast(e.message, true); }
 });
@@ -1317,6 +1330,7 @@ function gaugePos(us) { return `${Math.max(0, Math.min(100, (us - 1000) / 10))}%
 function renderDrive(st) {
   const prev = state.drive.st;
   state.drive.st = st;
+  if (st.running && Object.keys(state.drive.pending).length) benchSent();     // 走り出したらサーバーの値が正
   if (st.params) setDriveParams(st.params);
   if (prev && prev.running && !st.running && state.tab === 'scenes') loadScenes();
   const [cls, txt] = PHASE[st.phase] || ['', st.phase];
@@ -1359,7 +1373,8 @@ function renderDrive(st) {
               ['補助', `リカバリー ${s.recoveries ?? 0}回 ・ 後退の受け付け ${s.esc_assists ?? 0}回`
                 + (s.giveups ? ` ・ <span class="warn-text">中止 ${s.giveups}回</span>` : '')
                 + (now && now.assist ? ` ・ <b class="warn-text">${esc(now.assist)}中</b>` : '')],
-              ['走行時間', fmtDur(st.elapsed_s)]);
+              ['走行時間', fmtDur(st.elapsed_s)],
+              ['AI の時間', aiTimeText(s.ai_s)]);
     const L = st.laps || {};
     if (L.laps !== undefined) {
       rows.push(['周回(ジャイロ)', `${L.laps}周${L.direction ? `(${L.direction})` : ''} ・ 今の周 ${Math.min(359, L.progress_deg || 0)}°`],
@@ -1371,6 +1386,7 @@ function renderDrive(st) {
     if (now && now.erpm !== undefined) rows.push(['モーター', `${now.erpm} eRPM`]);
     if (now && now.post) rows.push(['TCP の制御器', tcpLiveText(now.post)]);
     if (now && now.ens_j) rows.push(['予測の重ね合わせ', `${now.ens_j} フレーム前まで`]);
+    if (now && now.zone) rows.push(['区間の速度上限', zoneLiveText(now.zone, s)]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);
   }
   $('#dr-stats').innerHTML = rows.map(([k, v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
@@ -1395,6 +1411,21 @@ function renderDrive(st) {
   document.body.classList.toggle('driving', !!st.running);
   $('#dr-model').disabled = st.running;
   $('#dr-dry').disabled = st.running; $('#dr-record').disabled = st.running;
+  renderZoneSwitch(st);
+  renderPrepHints();
+  $('#btn-dr-baseline').disabled = !!st.running;
+  if (state.bench.shownRunning !== !!st.running) { state.bench.shownRunning = !!st.running; renderBench(); }
+}
+
+// AI の時間(CH3 が AI 側で dry run でない時間の和。drive.py の stats.ai_s。道具の数える時間と同じ決め方)。
+// ベンチマークは「数える時間 + 1 分」を過ぎたら次の直線で CH3 を人側へ戻して止める(240 秒 → 5:00)。2026-10-21 Fix-all
+const AI_STOP_S = 300;
+function fmtMinSec(x) { const t = Math.max(0, Math.floor(+x || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`; }
+function aiTimeText(ai) {
+  if (ai === undefined || ai === null) return '-(古いサーバー)';
+  const head = `<b id="dr-ai-time">${fmtMinSec(ai)}</b>`;
+  if (ai >= AI_STOP_S) return `${head} ・ <b class="warn-text">5:00 を過ぎました: 次の直線で CH3 を人側へ戻して止める(数える 240 秒のとき)</b>`;
+  return `${head} <span class="muted">(止める目安: 数える 240 秒 → 5:00・300 秒 → 6:00・180 秒 → 4:00。人の操縦と dry run は入らない)</span>`;
 }
 
 // TCP の制御器の今の値(目標速度・上限の後・今の速さ・曲がれる速さの目安・出力を決めた枝)
@@ -1404,6 +1435,309 @@ function tcpLiveText(q) {
   const e = (x) => (x == null ? '' : `(${Math.round(x / 0.5e-3)} eRPM)`);
   return `予測の目標速度 <b>${v(q.v_hat)}</b> ・ 上限の後 <b>${v(q.v_cmd)}</b>${q.cap ? `(上限 ${q.cap.toFixed(2)})` : ''}`
     + ` ・ 今 ${v(q.v_now)}${e(q.v_now)} ・ 曲がれる目安 ${v(q.v_curv)} ・ ${esc(TCP_MODES[q.mode] || String(q.mode))}(${esc(q.branch || '')})`;
+}
+
+// ------------------------------------------------------------ 走る日の準備(基準の設定・走る前のチェック)・ベンチマークの候補・区間の速度上限
+// 「基準の設定」・候補のブロックは、画面の欄に値を入れるだけ(走行は始めない)。入れた値は走行開始(推論の確認も)で送り、
+// 今まで通り保存される。欄を動かした項目は、今まで通りすぐ送る。区間の速度上限はここでは ON にしない(スイッチで、確かめてから)
+// 基準の値の控え(/api/bench/candidates が無い古いサーバーのとき)。web/bench.py の fallback_baseline と同じ(試験で確かめる)
+const BENCH_FALLBACK = {
+  run: 'clean_driving_20261011-nocmd-s3-20261011-024626', mode_id: 5, source: '10/18 plan.md 3.4',
+  params: { steer_gain: 1.0, throttle_gain: 1.0, steer_trim_us: 0.0, lookahead: 3, osc_percent: 0.0, esc_reverse: 1, recovery: 1,
+            rev_us: 300.0, rev_s: 0.4, tof_guard: 1, speed_cap: 0.0, speed_scale: 1.0, tcp_mode: 0, ensemble_j: 0, ensemble_m: 0.5,
+            zone_caps: 0 },
+};
+const BENCH_LABEL = { steer_gain: 'ステア', throttle_gain: '速度', steer_trim_us: 'トリム', lookahead: '先読み', osc_percent: '時計補正',
+                      esc_reverse: '後退の前に中立', recovery: 'リカバリー', rev_us: '後退の強さ', rev_s: '下がる時間', tof_guard: 'ToF ガード',
+                      speed_cap: '上限(speed_cap)', speed_scale: '目標速度の倍率', tcp_mode: 'TCP の出し方', ensemble_j: '重ね合わせ',
+                      ensemble_m: '重ね合わせの強さ', zone_caps: '区間の速度上限' };
+const TOF_GUARD_LABEL = { 0: 'OFF', 1: '記録だけ', 2: '減速', 3: '減速+ハンドル' };
+const RISK_BADGE = { low: 'ok', mid: 'warn', high: 'bad' };
+const ZONE_MODE_LABEL = { pass: 'そのまま', cap: '上限で切った', neutral: '中立にした', brake: 'ブレーキ' };
+state.bench = { data: null, applied: null, prev: null, shownRunning: null };
+
+// 基準の値 → 画面に入れる値(DOM を使わない。tests/test_bench_ui.py が node で確かめる)。
+// steer: その日のステア(「この日のステア」の選択。'' なら基準どおり)。区間の速度上限は ON にしない
+function benchFieldValues(baseline, steer) {
+  const b = baseline || {};
+  const p = Object.assign({}, b.params || {});
+  const notes = [];
+  if (+p.zone_caps === 1) notes.push('区間の速度上限は ON にしていません(ON にするのは G1 に合格し、ユーザーが了承したあと。スイッチで入れてください)');
+  p.zone_caps = 0;
+  if (steer !== undefined && steer !== null && steer !== '' && Number.isFinite(+steer)) p.steer_gain = +steer;
+  return { run: b.run || '', mode_id: b.mode_id == null ? 5 : +b.mode_id, params: p, notes };
+}
+// 画面の値と入れる値の違い [[項目, 今, 入れる値], ...](DOM を使わない。tests/test_bench_ui.py が node で確かめる)
+function benchDiff(cur, want) {
+  const out = [];
+  for (const k of Object.keys(want || {})) {
+    if (cur[k] === undefined || want[k] === undefined || want[k] === null) continue;
+    if (Math.abs(+cur[k] - +want[k]) > 1e-6) out.push([k, +cur[k], +want[k]]);
+  }
+  return out;
+}
+function benchFmt(k, v) {
+  if (k === 'esc_reverse' || k === 'recovery' || k === 'zone_caps') return +v ? 'ON' : 'OFF';
+  if (k === 'tof_guard') return TOF_GUARD_LABEL[+v] || String(v);
+  if (k === 'tcp_mode') return TCP_MODES[+v] || String(v);
+  if (k === 'lookahead' || k === 'ensemble_j' || k === 'rev_us' || k === 'steer_trim_us') return (+v).toFixed(0);
+  return (+v).toFixed(2);                         // ゲイン・秒・m/s など(1.0 も「1.00」と出す)
+}
+const benchDiffText = (diff) => diff.map(([k, a, b]) => `${BENCH_LABEL[k] || k} ${benchFmt(k, a)} → ${benchFmt(k, b)}`).join('、');
+function benchBaseline() {
+  const d = state.bench.data;
+  return d && d.baseline ? d.baseline : BENCH_FALLBACK;
+}
+async function loadBench() {
+  let d = null;
+  try { d = await api('GET', '/api/bench/candidates'); } catch (e) { d = null; }     // 古いサーバー(404)ではパネルを出さない
+  state.bench.data = d;
+  renderBench();
+}
+function renderBaseInfo() {
+  const f = benchFieldValues(benchBaseline(), $('#dr-base-steer').value);
+  const p = f.params, base = benchBaseline();
+  const isB = f.run === BENCH_FALLBACK.run;
+  $('#dr-base-info').textContent = `基準(${base.source || '-'}): モデル ${isB ? 'B' : ''}(${f.run || '-'})・ジャンル ${f.mode_id}`
+    + `・ステア ${benchFmt('steer_gain', p.steer_gain)}${$('#dr-base-steer').value ? '(この日)' : ''}・速度 ${benchFmt('throttle_gain', p.throttle_gain)}`
+    + `・先読み ${benchFmt('lookahead', p.lookahead)}・ToF ガード ${benchFmt('tof_guard', p.tof_guard)}・重ね合わせ ${benchFmt('ensemble_j', p.ensemble_j)}`
+    + `・speed_cap ${+p.speed_cap ? benchFmt('speed_cap', p.speed_cap) : '0(上限なし)'}`
+    + `・区間の速度上限 OFF。ほかは drive.py の既定(リカバリー・後退は ON)。押しても走行は始めません。`;
+}
+function renderBench() {
+  renderBaseInfo();
+  const d = state.bench.data, card = $('#bench-card');
+  const show = !!(d && d.exists);
+  card.classList.toggle('hidden', !show);
+  if (!show) return;
+  $('#bench-head').textContent = [d.bench, d.protocol_sha256 ? `手順 sha256 ${String(d.protocol_sha256).slice(0, 12)}…` : '',
+                                  d.created_at ? `作成 ${d.created_at}` : ''].filter(Boolean).join(' ・ ');
+  $('#bench-error').innerHTML = (d.error ? `<div>data/bench_candidates.json を読めません: ${esc(d.error)}</div>` : '')
+    + (d.warnings || []).map((w) => `<div>${esc(w)}</div>`).join('');
+  const running = !!(state.drive.st && state.drive.st.running);
+  const ap = state.bench.applied || {};
+  $('#bench-days').innerHTML = (d.days || []).map((day, di) => {
+    const bad = day.blocks.filter((b) => !b.drivable);
+    return `<div class="bench-day"><div class="small"><b>${esc(day.date)}</b>${day.date === d.today ? ' <span class="badge ok">今日</span>' : ''}`
+      + `${day.note ? ` <span class="muted">${esc(day.note)}</span>` : ''}</div>`
+      + (day.blocks.length ? `<div class="bench-blocks">${day.blocks.map((b, bi) =>
+        `<button class="small${ap.day === di && ap.i === bi ? ' active' : ''}" data-bench-day="${di}" data-bench-i="${bi}"`
+        + `${b.drivable && !running ? '' : ' disabled'} title="${esc(b.drivable ? `${b.label} ・ ${b.run}` : `走れません: ${b.why_not || ''}`)}">`
+        + `${esc(b.block)}. ${esc(b.id)}</button>`).join('')}</div>` : '<div class="muted small">ブロックはまだありません</div>')
+      + bad.map((b) => `<div class="warn-text small bench-why">ブロック ${esc(b.block)}(${esc(b.id)}): 走れません — ${esc(b.why_not || '')}</div>`).join('')
+      + '</div>';
+  }).join('') || (d.ok ? '<div class="muted small">日ごとのブロック(days)がありません</div>' : '');
+  if (running) $('#bench-days').insertAdjacentHTML('beforeend', '<div class="muted small bench-why">走行中は選べません(止めてから)</div>');
+  const cands = d.candidates || [];
+  $('#bench-cands').innerHTML = cands.length ? '<table class="bench-table"><tr><th>id</th><th>名前・仮説・モデル</th><th>危なさ</th><th>走れるか</th></tr>'
+    + cands.map((c) => `<tr><td><b>${esc(c.id)}</b></td><td>${esc(c.label)}${c.policy_title ? ` <span class="muted">${esc(c.policy_title)}</span>` : ''}`
+      + `<div>${esc(c.hypothesis)}</div><div class="run">${esc(c.run || '-')}</div></td>`
+      + `<td>${c.risk ? `<span class="badge ${RISK_BADGE[c.risk] || ''}">${esc(c.risk)}</span>` : '-'}</td>`
+      + `<td>${c.drivable ? '<span class="badge ok">走れる</span>' : `<span class="badge bad">走れない</span><div class="warn-text">${esc(c.why_not || '')}</div>`}</td></tr>`).join('')
+    + '</table>' : '<div class="muted small">候補がありません</div>';
+}
+// 画面の欄に値を入れる(送らない)。サーバーの値と違う項目は pending にして、表示の同期で戻さない
+function benchSetFields(p) {
+  const srv = (state.drive.st && state.drive.st.params) || {};
+  const mark = (k) => {
+    if (srv[k] !== undefined && Math.abs(+srv[k] - +p[k]) > 1e-6) state.drive.pending[k] = true;
+    else delete state.drive.pending[k];
+  };
+  for (const [sel, key, fmt] of DR_PARAMS) {
+    if (p[key] === undefined) continue;
+    $(sel).value = p[key]; $(sel + '-v').textContent = fmt($(sel).value); mark(key);
+  }
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) { $(sel).checked = !!+p[key]; mark(key); }
+  if (p.tof_guard !== undefined) { $('#dr-tof-guard').value = String(p.tof_guard); mark('tof_guard'); }
+  if (p.tcp_mode !== undefined) { $('#dr-tcp-mode').value = String(p.tcp_mode); mark('tcp_mode'); }
+  $('#dr-zone-caps').checked = false; mark('zone_caps');
+}
+// block: ベンチマークのブロック(null なら「基準の設定」= モデル B)
+function benchApply(block, where) {
+  const st = state.drive.st || {};
+  if (st.running) { toast('走行中は変えられません(止めてから)', true); return; }
+  const f = benchFieldValues(benchBaseline(), $('#dr-base-steer').value);
+  const run = block ? block.run : f.run;
+  const m = state.drive.models.find((x) => x.name === run);
+  if (!m) { toast(`モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return; }
+  if (m.drivable === false) { toast(`このモデルでは走行できません: ${m.why_not || ''}`, true); return; }
+  const before = { run: $('#dr-model').value, mode: $('#dr-mode').value, desc: $('#dr-desc').value, record: $('#dr-record').checked,
+                   params: readDriveParams() };
+  if (!state.bench.prev) state.bench.prev = before;            // 取り消しで戻す値(最初に入れる前のもの)
+  const changes = [];
+  if (before.run !== run) changes.push(`モデル ${before.run || '-'} → ${run}`);
+  $('#dr-model').value = run;
+  state.drive.restoreNote = '';
+  renderDriveModel();
+  const notes = f.notes.slice();
+  const modeOk = [...$('#dr-mode').options].some((o) => o.value === String(f.mode_id) && !o.disabled);
+  if (modeOk) $('#dr-mode').value = String(f.mode_id);
+  else notes.push(`このモデルではジャンル ${f.mode_id} を選べません。ジャンルを確かめてください`);
+  if (before.mode !== $('#dr-mode').value) changes.push(`ジャンル ${before.mode || '-'} → ${$('#dr-mode').value}`);
+  const diff = benchDiff(before.params, f.params);
+  benchSetFields(f.params);
+  if (block) {
+    $('#dr-record').checked = true;                            // 説明欄は収集するときだけ記録に残る
+    $('#dr-record-opts').classList.remove('hidden');
+    if (!before.record) changes.push('収集 OFF → ON');
+    $('#dr-desc').value = block.description || '';
+    changes.push('説明欄に雛形');
+  }
+  state.bench.applied = block ? { day: where.day, i: where.i } : { baseline: true };
+  updateTcpWarn(); updateNoPostNote(); renderBench(); renderPrepHints();
+  const what = block ? `ブロック ${block.block}(${block.id} ${block.label})` : '基準の設定';
+  const all = changes.concat(diff.length ? [benchDiffText(diff)] : []);
+  $('#dr-base-note-text').innerHTML = `<b>${esc(what)}</b>を画面に入れました。`
+    + (all.length ? `変えた所: ${esc(all.join('、'))}。` : '画面の値はすでに同じでした。')
+    + (Object.keys(state.drive.pending).length ? ' まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。' : '')
+    + (block ? ' 説明欄の battery・V_before・check を書き足してください。' : '')
+    + notes.map((n) => `<div class="warn-text">${esc(n)}</div>`).join('');
+  $('#dr-base-note').classList.remove('hidden');
+  toast(`${what}を画面に入れました(走行は始めていません)`);
+}
+// 走行開始で送った・走行が始まった: 入れた値はサーバーの値になった
+function benchSent() {
+  state.drive.pending = {};
+  state.bench.prev = null;
+  $('#dr-base-note').classList.add('hidden');
+}
+$('#btn-dr-baseline').addEventListener('click', () => benchApply(null));
+$('#dr-base-steer').addEventListener('change', () => { saveDaySteer($('#dr-base-steer').value); renderBaseInfo(); renderPrepHints(); });
+// 「この日のステア」は、その日のあいだだけ、この画面(ブラウザ)に覚える。再読み込みや Jetson の立ち上げ直しのあとも同じ値に戻す。
+// 日付が変わったら「基準どおり」。サーバーには送らない(送るのは今までどおり走行開始のときだけ)。2026-10-21 Fix-all
+const DAY_STEER_KEY = 'jetformer.bench.daySteer';
+function localDay() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function saveDaySteer(v) {
+  try { if (v) localStorage.setItem(DAY_STEER_KEY, JSON.stringify({ day: localDay(), value: v })); else localStorage.removeItem(DAY_STEER_KEY); }
+  catch (e) { /* 覚えられなくても画面は動く */ }
+}
+function restoreDaySteer() {
+  try {
+    const o = JSON.parse(localStorage.getItem(DAY_STEER_KEY) || 'null'), sel = $('#dr-base-steer');
+    if (o && o.day === localDay() && [...sel.options].some((x) => x.value === o.value)) sel.value = o.value;
+  } catch (e) { /* 読めなければ基準どおり */ }
+}
+restoreDaySteer();
+$('#btn-dr-base-undo').addEventListener('click', () => {
+  const prev = state.bench.prev, st = state.drive.st || {};
+  state.drive.pending = {};
+  if (prev && !st.running) {
+    $('#dr-model').value = prev.run; renderDriveModel();
+    if ([...$('#dr-mode').options].some((o) => o.value === prev.mode && !o.disabled)) $('#dr-mode').value = prev.mode;
+    $('#dr-desc').value = prev.desc; $('#dr-record').checked = prev.record;
+    $('#dr-record-opts').classList.toggle('hidden', !prev.record);
+  }
+  if (st.params) setDriveParams(st.params);
+  state.bench.prev = null; state.bench.applied = null;
+  $('#dr-base-note').classList.add('hidden');
+  updateTcpWarn(); updateNoPostNote(); renderBench(); renderPrepHints();
+  toast('入れた値を取り消しました(サーバーの値に戻しました)');
+});
+$('#bench-days').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-bench-day]');
+  const d = state.bench.data;
+  if (!b || b.disabled || !d) return;
+  const di = +b.dataset.benchDay, bi = +b.dataset.benchI;
+  const block = ((d.days[di] || {}).blocks || [])[bi];
+  if (block && block.drivable) benchApply(block, { day: di, i: bi });
+});
+
+// 走る前のチェック(この画面の中だけ。保存しない)
+const drChecks = () => [...document.querySelectorAll('.dr-check')];
+function renderCheckCount() {
+  const cs = drChecks(), n = cs.filter((c) => c.checked).length;
+  const b = $('#dr-check-count');
+  b.textContent = `${n} / ${cs.length}`;
+  b.className = 'badge' + (n === cs.length ? ' ok' : ' warn');
+}
+drChecks().forEach((c) => c.addEventListener('change', renderCheckCount));
+$('#btn-dr-check-clear').addEventListener('click', () => { drChecks().forEach((c) => { c.checked = false; }); renderCheckCount(); });
+renderCheckCount();
+function renderPrepHints() {
+  const s = state.status || {};
+  const free = s.disk ? s.disk.free_gb : null;
+  $('#dr-check-disk').innerHTML = free == null ? '' : `<span class="${free >= 10 ? 'ok-text' : 'warn-text'}">今 ${esc(free)} GB</span>`;
+  $('#dr-check-heavy').innerHTML = s.training ? '<span class="warn-text">学習が動いています</span>'
+    : (s.training === false ? '<span class="ok-text">学習は動いていません</span> <span class="muted">(ワークフロー・jf-heavy は端末で確かめる)</span>' : '');
+  const f = benchFieldValues(benchBaseline(), $('#dr-base-steer').value);
+  const diff = benchDiff(readDriveParams(), f.params);
+  const mode = $('#dr-mode').value;
+  const bad = (mode && mode !== String(f.mode_id) ? [`ジャンル ${mode}(基準 ${f.mode_id})`] : [])
+    .concat(diff.map(([k, a, b]) => `${BENCH_LABEL[k] || k} ${benchFmt(k, a)}(基準 ${benchFmt(k, b)})`));
+  $('#dr-check-base').innerHTML = bad.length ? `<span class="warn-text">基準と違う: ${esc(bad.join('、'))}</span>`
+    : '<span class="ok-text">画面の値は基準と同じ</span> <span class="muted">(モデルはブロックごとに替わる)</span>';
+}
+// 走行開始の確認に足す行: チェックが残っている・説明欄の電池が空欄
+function prepStartLines() {
+  const cs = drChecks(), n = cs.filter((c) => c.checked).length;
+  const lines = [];
+  if (n < cs.length) lines.push(`走る前のチェックが ${n} / ${cs.length} です`);
+  if ($('#dr-record').checked && /battery=#__/.test($('#dr-desc').value)) lines.push('説明欄の電池の番号がまだ空欄です(走ったあと、シーンの説明でも直せます)');
+  return lines.length ? '\n\n' + lines.join('\n') : '';
+}
+
+// 区間の速度上限(drive.py の zone_caps。既定 OFF・起動のたびに OFF)
+const zoneSupported = (st) => !!(st && st.zone_caps_spec && st.params && st.params.zone_caps !== undefined);
+function zoneSpecText(st) {
+  const sp = st && st.zone_caps_spec;
+  if (!sp || !sp.caps_mps) return 'v1.1: R1 2.5・GM 2.2・DE 3.0 m/s';
+  const c = sp.caps_mps, n = (x) => (x == null || !Number.isFinite(+x) ? '-' : (+x).toFixed(1));
+  return `${sp.version || ''}: R1 ${n(c.R1)}・GM ${n(c.GM)}・DE ${n(c.DE)} m/s${c.unknown != null && Number.isFinite(+c.unknown) ? `。4 つめ: 位相が不確かなとき(1 周目のほぼ全部など)も ${n(c.unknown)}` : ''}`;
+}
+// v1.1 の 4 つめの上限(位相が不確か = unknown)。ユーザーの了承は 3 区間(R1・GM・DE)だけなので、ON の確認で必ず示す
+const ZONE_UNKNOWN_FALLBACK = '4 つめの上限: 位相が不確か(unknown)のときも 3.0 m/s で切ります。走行の始めから最初の R1 を見つけるまで(1 周目のほぼ全部)・R1 から 16 秒を超えたとき・1 秒以上止まったあと。ユーザーの了承は 3 区間(R1・GM・DE)だけです。ON の了承をもらうときに、これも含めて確かめてください';
+function zoneUnknownCap(st) {                 // m/s(4 つめの上限が無ければ null)。サーバーが説明を返さないときは v1.1 の 3.0
+  const sp = st && st.zone_caps_spec;
+  if (!sp || !sp.caps_mps) return 3.0;
+  const u = sp.caps_mps.unknown;
+  return u != null && Number.isFinite(+u) ? +u : null;
+}
+function zoneUnknownNote(st) {
+  const sp = st && st.zone_caps_spec;
+  if (sp && typeof sp.unknown_note === 'string') return sp.unknown_note;      // '' = 4 つめの上限なし
+  return zoneUnknownCap(st) != null ? ZONE_UNKNOWN_FALLBACK : '';
+}
+function renderZoneSwitch(st) {
+  const el = $('#dr-zone-caps'), ok = zoneSupported(st);
+  const srvOn = ok && +st.params.zone_caps === 1;
+  el.disabled = !ok || (!!st.running && !srvOn);              // 走行中は OFF にだけできる
+  if (!ok) el.checked = false;
+  $('#dr-zone-spec').textContent = `(${zoneSpecText(st)})`;
+  const unk = zoneUnknownNote(st), unkEl = $('#dr-zone-unknown');
+  if (unkEl) { unkEl.textContent = unk; unkEl.hidden = !unk; }
+  el.closest('.zone-panel').classList.toggle('on', el.checked);
+  const note = $('#dr-zone-note');
+  if (!ok) note.innerHTML = '<span class="muted">今のサーバーは区間の速度上限に対応していません(管理画面のサーバーを再起動すると使えます)</span>';
+  else if (st.zone_caps_error) note.innerHTML = srvOn
+    ? `<span class="warn-text">計算が失敗したため、この走行では上限を外しました: ${esc(st.zone_caps_error)}</span>`
+    : `<span class="warn-text">OFF(記録だけ)の影の判定が計算の失敗で止まりました。車への出力は変わりません: ${esc(st.zone_caps_error)}</span>`;
+  else if (state.drive.pending.zone_caps) note.innerHTML = '<span class="muted">基準の設定で OFF にしました(走行開始で送ります)</span>';
+  else note.innerHTML = srvOn ? '<b class="warn-text">ON: 車への出力に上限を掛けます</b>' : '';
+}
+$('#dr-zone-caps').addEventListener('change', async () => {
+  const el = $('#dr-zone-caps'), st = state.drive.st || {};
+  const on = el.checked;
+  if (on) {
+    if (st.running) { el.checked = false; toast('走行中は区間の速度上限を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
+    const unk = zoneUnknownNote(st);
+    if (!confirm(`区間の速度上限を ON にします(${zoneSpecText(st)})。\n\n${unk ? unk + '。\n\n' : ''}ON にするのは、10/23 の記録で G1 に合格し、ユーザーが了承したあとです。\n了承は${unk ? '、3 区間に加えて 4 つめ(位相が不確かなときの上限)にも' : ''}出ていますか?`)) { el.checked = false; return; }
+  }
+  delete state.drive.pending.zone_caps;
+  try {
+    const p = await api('POST', '/api/drive/params', { zone_caps: on ? 1 : 0 });
+    if (p && p.zone_caps === undefined) { el.checked = false; toast('今のサーバーは区間の速度上限に対応していません(再起動が必要)', true); }
+    else if (state.drive.st) state.drive.st.params = p;
+    if (p && p.zone_caps !== undefined) toast(on ? '区間の速度上限を ON にしました' : '区間の速度上限を OFF にしました');
+  } catch (e) { toast(e.message, true); el.checked = !on; }
+  if (state.drive.st) renderZoneSwitch(state.drive.st);
+});
+function zoneLiveText(z, s) {
+  if (z.error) return z.on ? `<span class="warn-text">計算が失敗したので外しました(${esc(z.error)})</span>`
+    : `<span class="warn-text">OFF(記録だけ)の影の判定が計算の失敗で止まりました。出力は変わりません(${esc(z.error)})</span>`;
+  const lim = z.limit != null && Number.isFinite(+z.limit) ? `上限 ${(+z.limit).toFixed(2)} m/s` : '上限なし';
+  return `${z.on ? '<b class="warn-text">ON</b>' : 'OFF(記録だけ)'} ・ 区間 ${esc(z.zone || '-')} ・ ${lim}`
+    + `${z.mode ? ` ・ ${esc(ZONE_MODE_LABEL[z.mode] || z.mode)}${z.on ? '' : '(ON なら)'}` : ''}`
+    + ` ・ 出力を変えた ${s.zone_applied ?? 0} フレーム ・ ブレーキ ${s.zone_brakes ?? 0} 回`;
 }
 
 // ------------------------------------------------------------ シミュレーター(CourseLab)

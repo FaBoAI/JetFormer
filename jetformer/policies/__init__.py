@@ -48,11 +48,13 @@ class PolicySpec(object):
     genre_keys: ジャンルの層 {'embed': 'mode_embed.weight', 'heads': {層の名前: 1ジャンルの行の数}}(--init-mode-copy 用。
                 None = ジャンルを広げられない)
     requires: 学習に要るファイル(リポジトリからの相対パス。存在だけ確かめる)
-    train_only_keys: 構造を変えない学習だけの設定(--init の一致の確認で比べない)"""
+    train_only_keys: 構造を変えない学習だけの設定(--init の一致の確認で比べない)
+    trainable: False = 学習では作らない方策(学習済みの方策を組み合わせるアンサンブルなど。register_run_only で登録し、
+               ready() は学習できない理由を返す。走行・評価で読むだけ)"""
 
     def __init__(self, name, title, module, slug, description, status='experimental', defaults=None, options=(),
                  hints=None, genre_keys=None, outputs=('actions',), postprocess=None, requires=(),
-                 requires_pretrained=False, train_only_keys=()):
+                 requires_pretrained=False, train_only_keys=(), trainable=True, how_to_make=''):
         self.name, self.title, self.module, self.slug = name, title, module, slug
         self.description, self.status = description, status
         self.defaults = dict(defaults or {})
@@ -64,6 +66,8 @@ class PolicySpec(object):
         self.requires = tuple(requires)
         self.requires_pretrained = bool(requires_pretrained)
         self.train_only_keys = tuple(train_only_keys)
+        self.trainable = bool(trainable)
+        self.how_to_make = how_to_make or ''
         unknown = [o['key'] for o in self.options if o['key'] not in self.defaults]
         unknown += [k for k in self.train_only_keys if k not in self.defaults]
         if unknown:
@@ -125,7 +129,11 @@ class PolicySpec(object):
 
     # ---------------------------------------------------------------- 準備ができているか(torch なし・速い)
     def ready(self):
-        """→ (True, '') / (False, 理由)。モジュールがあるか(実行しない)・仮のモジュールでないか・requires のファイルがあるか"""
+        """→ (True, '') / (False, 理由)。モジュールがあるか(実行しない)・仮のモジュールでないか・requires のファイルがあるか。
+        学習では作らない方策(trainable False)は (False, 学習できない理由)"""
+        if not self.trainable:
+            return False, '%s は学習では作れません(学習済みのモデルを組み合わせます%s)' % (
+                self.title, '。' + self.how_to_make if self.how_to_make else '')
         try:
             found = importlib.util.find_spec(self.module)
         except (ImportError, ValueError):
@@ -197,19 +205,39 @@ def _convert(key, value, default):
 
 
 REGISTRY = {}
+# 学習では作らず、走行・評価で読むだけの方策(アンサンブルなど。2026-10-21)。names()・list_specs()(学習の選択肢・
+# GET /api/policies)には出さない。get()・from_config()・title_of() は両方を見る(学習結果の model_config.json を読むため)
+RUN_ONLY = {}
 
 
 def register(spec):
-    if spec.name in REGISTRY:
+    if spec.name in REGISTRY or spec.name in RUN_ONLY:
         raise ValueError('同じ名前の方策があります: %s' % spec.name)
     REGISTRY[spec.name] = spec
     return spec
 
 
+def register_run_only(spec):
+    """学習では作らない方策(trainable False)の登録。学習の選択肢には出ない"""
+    if spec.name in REGISTRY or spec.name in RUN_ONLY:
+        raise ValueError('同じ名前の方策があります: %s' % spec.name)
+    if spec.trainable:
+        raise ValueError('%s: 走行・評価だけの方策は trainable=False にしてください' % spec.name)
+    RUN_ONLY[spec.name] = spec
+    return spec
+
+
 def get(name):
-    if name not in REGISTRY:
-        raise KeyError('知らないモデルの種類です: %s(登録されているもの: %s)' % (name, ', '.join(REGISTRY)))
-    return REGISTRY[name]
+    if name in REGISTRY:
+        return REGISTRY[name]
+    if name in RUN_ONLY:
+        return RUN_ONLY[name]
+    raise KeyError('知らないモデルの種類です: %s(登録されているもの: %s)' % (name, ', '.join(REGISTRY)))
+
+
+def run_only_names():
+    """走行・評価だけの方策の名前(登録の順)"""
+    return list(RUN_ONLY)
 
 
 def names():
@@ -223,7 +251,7 @@ def list_specs():
 
 def title_of(name):
     """登録簿に無ければ名前のまま(走行・一覧は登録簿に無い方策も表示できる)"""
-    s = REGISTRY.get(name or DEFAULT)
+    s = REGISTRY.get(name or DEFAULT) or RUN_ONLY.get(name or DEFAULT)
     return s.title if s else str(name)
 
 
@@ -377,3 +405,17 @@ register(PolicySpec(
            'engine_precision': 'fp16_norm_fp32'},
     genre_keys=_V0_GENRES, requires=('data/pretrained/dinov2_vits14_pretrain.pth',), requires_pretrained=True,
     train_only_keys=('finetune_last', 'lr_mult')))
+
+
+# ==================================================================== 走行・評価だけの方策(学習の選択肢には出さない)
+
+register_run_only(PolicySpec(
+    'ens_average', '2本の平均(アンサンブル)', 'jetformer.policies.ens_average', 'ens',
+    '学習済みの方策(形が違ってよい)の actions を平均する。各方策は同じ入力を受け、出力の 10 フレーム先までの操作を'
+    'そのまま平均する(追加の出力・後処理は使わない)。1 つの ONNX・エンジンにまとめて走らせる。',
+    defaults={'members': [], 'member_runs': []}, options=(),
+    # 実測(experiments/20261015_real_accuracy/ens/gate.json、v0 + msfusion の 2 本): run_numpy の中央値 4.1 ms
+    hints={'train_rate': 0, 'val_rate': 0, 'min_free_mb': 3500, 'amp': False, 'infer_ms': 4.1, 'params_m': 33.0,
+           'engine_s': 280},
+    genre_keys=None, trainable=False,
+    how_to_make='experiments/20261021_bench_prep/ens/place_ens.py で作ります'))

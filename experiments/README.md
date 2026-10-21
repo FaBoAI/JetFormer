@@ -2,7 +2,7 @@
 
 JetFormer の実車走行・学習・解析の検証の記録。作業で使った解析スクリプト・レポート(Markdown)・図をそのまま置いている。
 ツールとして整えたものは `tools/` にある(`label_events.py`・`build_ai_dataset.py`・`make_intervention_set.py`・
-`offline_rl.py`・`rl_*.py`・`course_*.py`・`policy_zoo.py`・`sim_cotrain*.py`、方策は `jetformer/policies/`)。
+`offline_rl.py`・`rl_*.py`・`course_*.py`・`policy_zoo.py`・`sim_cotrain*.py`、実車のベンチマークの `section_scorecard.py`・`cap_replay.py`・`brake_table.py`・`bench_report.py`・`bench_nightly.sh`・`bench_day2.py`・`tof_floor_ref.py`、方策は `jetformer/policies/`)。
 
 | フォルダ | 中身 |
 |---|---|
@@ -20,6 +20,7 @@ JetFormer の実車走行・学習・解析の検証の記録。作業で使っ�
 | [`20261015_real_accuracy/`](20261015_real_accuracy/notes/README.md) | 実機の保留データの精度に効く方策(3 つの観点で案 → 審査 → 固定した手順 → 夜通し 2 種ずつ)。形の違う 2 本の平均(v0 + 多段型)は A より −2.6 µs(「良い」だが際どい)、電池の効きの補正(後処理)は −4.2 µs(ほぼ電池の減った 1 シーン分)、同じ形の平均・時間の平均・位相を回す学習は「同等」。データ量を減らすと悪くなる(半分で +3〜4 µs)ので録画を増やす価値あり。人の揺れから見た床は約 31 µs。走行の推奨はモデル B のまま、実車の A/B/A カードつき |
 | [`20261016_b2_curation/`](20261016_b2_curation/notes/README.md) | 実車を走らせない週の机上の作業 1: B2 = モデル B の作り方で、R1 に 6200 eRPM 以上で入った通過の手前と R1 で当たった通過を外し、ジャンルの付け間違い 2 シーンを直して 2 種学習。R1 の手前 1 秒のスロットルは −1.2 µs(合格線 +30)で机上の no-go、L1 は A と同等。走行の推奨はモデル B のまま |
 | [`20261016_sim_calibration/`](20261016_sim_calibration/notes/README.md) | 机上の作業 2: 実車のログから車の応答(加速・ブレーキ・ステア・グリップ・遅れ)を同定してシミュレーターを較正(保留の窓で誤差 −27〜−34%、偏りの基準で不合格)。区間の速度上限 v1 を純粋な関数 `jetformer/safety_caps.py` に(drive.py には入れていない)。較正したシミュレーターでは GM の上限が GM 出口の衝突を 18→0 本にしたが、R1 は衝突が出ず試せず、決まりどおりの判定は「直す」。週のまとめと動画の台本は `week/notes/` |
+| [`20261021_bench_prep/`](20261021_bench_prep/notes/README.md) | 実車のベンチマーク(10/23・10/24)の準備: 候補 9 本の机上のベンチ(新しく SLOW = 上限 v1.1 でスロットルの正解を付け替えて R1 の手前で緩める・WGT = 苦手区間の重み 3 倍・AUG = 入力のずれの拡張を学習、ENS = 2 本の平均を走行だけの方策で配置)。走る前に固定した決まり(`protocol.json` + 直し A1〜A9)で 1 日目を B・SLOW・ENS・B・AUG・ACT・WGT・B に。区間の速度上限を drive.py に既定 OFF でつなぎ(OFF は変更前とビット単位で同じ)、走行タブに基準の設定・候補のパネル・AI の時間、夜の 1 コマンド(成績表・G1・ブレーキの表・レポート)。机上の差は種の幅と同じくらい(ENS −2.7 µs を除く)で、順位は実車で決める。実車はまだ走らせていない |
 
 ## 注意
 

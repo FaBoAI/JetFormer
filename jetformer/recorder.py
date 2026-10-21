@@ -11,7 +11,8 @@
                          AUDIO.npz       timestamps_us[M](20msごとの受信時刻), pcm[M*320] int32 16kHz モノラル
                          AI_CMD.npz      (AI走行中のみ)timestamps_us(=推論に使ったカメラ時刻), pred[N,10,2] µs,
                                          raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...,
-                                         model_pred[N,10,2](方策の後処理・重ね合わせの前), post_mode, v_hat, v_cmd, ens_j
+                                         model_pred[N,10,2](方策の後処理・重ね合わせの前), post_mode, v_hat, v_cmd, ens_j,
+                                         cap_*(区間の速度上限の影の判定。drive.py の zone_caps)
                          thumb.jpg
 
 サンプルは計測時刻で「どのシーンに属するか」を決めるので、センサー間でシーン境界がずれない。
@@ -494,7 +495,23 @@ class Recorder(object):
                      post_mode=np.array([x.get('post_mode', -1) for x in a], dtype=np.int8),
                      v_hat=np.array([x.get('v_hat', np.nan) for x in a], dtype=np.float32),
                      v_cmd=np.array([x.get('v_cmd', np.nan) for x in a], dtype=np.float32),
-                     ens_j=np.array([x.get('ens_j', 0) for x in a], dtype=np.int8))
+                     ens_j=np.array([x.get('ens_j', 0) for x in a], dtype=np.int8),
+                     # 区間の速度上限 v1.1(safety_caps・drive の zone_caps。2026-10-21)の影の判定。ON/OFF に関係なく毎フレーム:
+                     # ON だったか・区間(safety_caps.ZONES の番号、-1 = 計算していない)・ジャイロだけの区間・予測ステアの合図・
+                     # R1 の起点からの向き [deg]・層の出し方(-2 失敗 -1 動かしていない 0 そのまま 1 上限で切った 2 中立 3 ブレーキ)・
+                     # 上限 [m/s](inf = なし)・層への入力のスロットル(車に出す直前)/ 上限ならこう出したスロットル [µs]・
+                     # ブレーキを始めたフレーム・実際に出力を変えたか
+                     cap_on=np.array([x.get('cap_on', False) for x in a], dtype=bool),
+                     cap_zone=np.array([x.get('cap_zone', -1) for x in a], dtype=np.int8),
+                     cap_zone_gyro=np.array([x.get('cap_zone_gyro', -1) for x in a], dtype=np.int8),
+                     cap_pred_sig=np.array([x.get('cap_pred_sig', False) for x in a], dtype=bool),
+                     cap_rel_psi=np.array([x.get('cap_rel_psi', np.nan) for x in a], dtype=np.float32),
+                     cap_mode=np.array([x.get('cap_mode', -1) for x in a], dtype=np.int8),
+                     cap_limit=np.array([x.get('cap_limit', np.nan) for x in a], dtype=np.float32),
+                     cap_in_us=np.array([x.get('cap_in_us', x['out'][1]) for x in a], dtype=np.float32),
+                     cap_thr_us=np.array([x.get('cap_thr_us', np.nan) for x in a], dtype=np.float32),
+                     cap_brake_start=np.array([x.get('cap_brake_start', False) for x in a], dtype=bool),
+                     cap_applied=np.array([x.get('cap_applied', False) for x in a], dtype=bool))
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:

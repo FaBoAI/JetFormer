@@ -18,6 +18,13 @@ SIGINT/SIGTERM で止めると、そこまでで最良のモデルを書き出�
     --sample-weights-npz <npz>   フレームの表(weight)。損失の重み(学習の平均が1になるよう割ってから掛ける)
     --mode-remap-npz <npz>       フレームの表(mode)。学習するジャンルを付け替える。--mode-remap-dropout の確率で元のジャンルに戻す
 
+ベンチマークの学習(2026-10-21。既定ではどれも使わず、今までと同じ学習になる):
+    --label-override-npz <npz>   フレームの表(future_throttle_us [M,10] µs、NaN = そのまま)。学習の正解の 1〜10 フレーム先の
+                                 スロットルを差し替える(区間の速度上限の出力に付け替えた正解など)。検証の正解は変えない
+    --aug-brightness F / --aug-contrast F / --aug-shift-px N / --aug-tof-noise F
+                                 学習の入力の拡張(カメラの明るさ ±F・コントラスト ±F・上下左右に ±N 画素のずれ、
+                                 ToF の距離(正規化、1.0 = 4000 mm)に標準偏差 F の雑音)。0 = 使わない。検証には掛けない
+
 モデルの種類(方策。jetformer/policies の登録簿。既定は jetformer_v0 = 今までの JetFormer v0 で、今までと同じ学習・同じファイル):
     --policy NAME                jetformer_v0(既定)・act・tcp・msfusion・dinov2
     --policy-cfg JSON            方策の設定(既定値から変えるものだけ。例 '{"dec_layers": 3}')
@@ -54,6 +61,8 @@ PROGRESS = {'enabled': False}
 # オフライン強化学習の方策用に足した引数と既定値(既定値なら使わない・記録しない)
 RL_ARGS = {'init': None, 'init_mode_copy': None, 'seed': None, 'drop_mask': None, 'sample_weights_npz': None,
            'mode_remap_npz': None, 'mode_remap_dropout': 0.0}
+# ベンチマークの学習用に足した引数と既定値(既定値なら使わない・記録しない → 前からの last.pth で --resume できる)
+BENCH_ARGS = {'label_override_npz': None, 'aug_brightness': 0.0, 'aug_contrast': 0.0, 'aug_shift_px': 0, 'aug_tof_noise': 0.0}
 # モデルの種類(方策)の引数と既定値(既定値なら記録しない → 前からの last.pth で --resume できる)
 POLICY_ARGS = {'policy': policies.DEFAULT, 'policy_cfg': None}
 
@@ -61,6 +70,21 @@ POLICY_ARGS = {'policy': policies.DEFAULT, 'policy_cfg': None}
 def rl_args_used(args):
     """既定値から変えた RL_ARGS {名前: 値}"""
     return {k: getattr(args, k) for k, d in RL_ARGS.items() if getattr(args, k) != d}
+
+
+def bench_args_used(args):
+    """既定値から変えた BENCH_ARGS {名前: 値}"""
+    return {k: getattr(args, k, d) for k, d in BENCH_ARGS.items() if getattr(args, k, d) != d}
+
+
+def aug_of(args):
+    """--aug-* → JetFormerDataset の aug(全部 0 なら None = 使わない)"""
+    aug = {'brightness': args.aug_brightness, 'contrast': args.aug_contrast, 'shift_px': args.aug_shift_px,
+           'tof_noise': args.aug_tof_noise}
+    for k, v in aug.items():
+        if v < 0:
+            raise SystemExit('--aug-%s は 0 以上にしてください' % k.replace('_', '-'))
+    return aug if any(v > 0 for v in aug.values()) else None
 
 
 def norm_policy_cfg(text):
@@ -243,6 +267,13 @@ def main():
     ap.add_argument('--mode-remap-npz', default=None, help='フレームの表の npz(scene, frame, mode)。学習するジャンルの付け替え(-1=そのまま)')
     ap.add_argument('--mode-remap-dropout', type=float, default=0.0,
                     help='学習中、付け替えたフレームを元のジャンルに戻す確率(検証では戻さない)')
+    ap.add_argument('--label-override-npz', default=None,
+                    help='フレームの表の npz(scene, frame, future_throttle_us [M,10])。学習の正解のスロットルの差し替え(NaN=そのまま)')
+    ap.add_argument('--aug-brightness', type=float, default=0.0, help='学習の拡張: カメラの明るさ ±この割合(0 = 使わない)')
+    ap.add_argument('--aug-contrast', type=float, default=0.0, help='学習の拡張: カメラのコントラスト ±この割合(0 = 使わない)')
+    ap.add_argument('--aug-shift-px', type=int, default=0, help='学習の拡張: 画像を上下左右に ±N 画素ずらす(0 = 使わない)')
+    ap.add_argument('--aug-tof-noise', type=float, default=0.0,
+                    help='学習の拡張: ToF の距離(正規化、1.0 = 4000 mm)に足す雑音の標準偏差(0 = 使わない)')
     ap.add_argument('--policy', default=policies.DEFAULT, choices=policies.names(),
                     help='モデルの種類(既定 %s = 今までの JetFormer v0)' % policies.DEFAULT)
     ap.add_argument('--policy-cfg', default=None, help='方策の設定の JSON(既定値から変えるものだけ。例 \'{"dec_layers": 3}\')')
@@ -299,9 +330,15 @@ def main():
                 raise SystemExit('--mode-remap-npz: ジャンル %d が data/modes.json にありません(先に登録してください)' % i)
             extra.append(m)
         rl['extra_modes'] = extra
+    bench = {}                                # ベンチマークの学習の設定(使ったときだけ。学習の分け方だけに渡す)
+    if args.label_override_npz:
+        bench['label_override'] = load_frame_table(args.label_override_npz, 'future_throttle_us')
+    aug = aug_of(args)
+    if aug is not None:
+        bench['aug'] = aug
     train_ds = JetFormerDataset(args.data, 'train', color_jitter=True, stride=args.stride, use_command=use_command,
                                 mask_impacts=mask_impacts, impact_g=args.impact_g, remap_dropout=args.mode_remap_dropout,
-                                return_weight='weights' in rl, extra_targets=extra_targets, **rl)
+                                return_weight='weights' in rl, extra_targets=extra_targets, **rl, **bench)
     val_ds = JetFormerDataset(args.data, 'val', stride=args.stride, use_command=use_command, mask_impacts=mask_impacts,
                               impact_g=args.impact_g, return_weight='weights' in rl, extra_targets=extra_targets, **rl)
     if mask_impacts:
@@ -309,6 +346,11 @@ def main():
     if rl:
         print('フレームの表: drop で外した 学習 %d / 検証 %d、衝突の前後の除外から戻した 学習 %d / 検証 %d' % (
             train_ds.dropped, val_ds.dropped, train_ds.impact_kept, val_ds.impact_kept))
+    if 'label_override' in bench:
+        print('正解の差し替え(学習だけ): 行 %d(学習に使うフレームの行 %d)' % (
+            train_ds.label_overridden, train_ds.label_overridden_used))
+    if aug is not None:
+        print('学習の拡張:', json.dumps(aug, ensure_ascii=False))
     weight_scale = 1.0
     if 'weights' in rl and len(train_ds):
         w = train_ds.sample_weights()
@@ -352,6 +394,7 @@ def main():
                                                'impact_g', 'no_pretrained')}
     same_args.update(rl_args_used(args))     # 新しい引数は使ったときだけ記録する(前からの last.pth で再開できるように)
     same_args.update(policy_args_used(args))
+    same_args.update(bench_args_used(args))
     if args.resume:
         if not os.path.exists(last_path):
             raise SystemExit('--resume: %s がありません(最初から学習してください)' % last_path)
@@ -443,6 +486,11 @@ def main():
             'impact_kept_frames': {'train': train_ds.impact_kept, 'val': val_ds.impact_kept},
             'sha1': {k: file_digest(getattr(args, k)) for k in ('init', 'drop_mask', 'sample_weights_npz', 'mode_remap_npz')
                      if getattr(args, k)}}
+    if bench_args_used(args):                # 使ったときだけ(既定の result.json は今までと同じ)
+        result['bench_options'] = {
+            'label_override_npz': args.label_override_npz, 'aug': aug,
+            'label_overridden_rows': {'all': train_ds.label_overridden, 'used': train_ds.label_overridden_used},
+            'sha1': ({'label_override_npz': file_digest(args.label_override_npz)} if args.label_override_npz else {})}
     if best_epoch:
         model.load_state_dict(torch.load(os.path.join(args.out, 'best.pth'), map_location='cpu', weights_only=True))
         io = export_onnx(model, os.path.join(args.out, 'jetformer.onnx'), num_modes)

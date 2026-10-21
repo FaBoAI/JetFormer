@@ -220,3 +220,23 @@ input.snd-text { flex: 1; margin: 0 !important; }
 .sim-rl-plan-table td, .sim-rl-plan-table th { padding: 3px 6px; border-bottom: 1px dashed var(--line); text-align: left; }
 .sim-rl-plan-table input { width: 5em; }
 .badge.rl { background: #e0e7ff; color: #3730a3; }
+
+/* 走行タブ: 走る日の準備(走る前のチェック・基準の設定)・ベンチマークの候補・区間の速度上限 */
+.prep-check summary { cursor: pointer; }
+.prep-check label.check-line { flex-wrap: wrap; align-items: baseline; margin-top: 6px; }
+.prep-check .ok-text, .ok-text { color: var(--ok); }
+#dr-base-note { margin-top: 8px; padding: 6px 8px; border: 1px solid #fde68a; border-radius: 6px; background: #fffbeb; }
+#dr-base-note button { margin-top: 4px; }
+.zone-panel { margin-top: 12px; padding: 8px 10px; border: 1px solid #fecaca; border-radius: 8px; background: #fef2f2; }
+.zone-panel label.check-line { margin-top: 0; flex-wrap: wrap; align-items: baseline; }
+.zone-panel.on { border-color: var(--danger); background: #fee2e2; }
+.bench-day { margin-top: 10px; }
+.bench-blocks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.bench-blocks button { flex: 0 0 auto; min-width: 64px; }
+.bench-blocks button.active { border-color: var(--accent); background: #eff6ff; font-weight: 600; }
+.bench-why { margin-top: 4px; }
+.bench-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+.bench-table td, .bench-table th { padding: 4px 4px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.bench-table th { color: var(--muted); font-weight: 600; }
+.bench-table .run { word-break: break-all; color: var(--muted); }
+#bench-applied { margin-top: 8px; }
