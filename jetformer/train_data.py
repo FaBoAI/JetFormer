@@ -14,8 +14,13 @@
     label_override  フレームの表(scene, frame, future_throttle_us [M,10] µs。NaN = 元のまま)。学習の正解の
                     1〜10 フレーム先のスロットルを差し替える(区間の速度上限の出力に付け替えた正解など)
     aug             入力の拡張 {'brightness': 明るさ ±割合, 'contrast': コントラスト ±割合, 'shift_px': 上下左右のずれ
-                    (モデルの入力の画素), 'tof_noise': ToF の距離(正規化)に足す雑音の標準偏差}。0・None = 使わない。
+                    (モデルの入力の画素), 'tof_noise': ToF の距離(正規化)に足す雑音の標準偏差,
+                    'top_brightness': 上 1/3 の明るさ ±割合(上ほど強く、なだらかに。2026-10-25 C1)}。0・None = 使わない。
                     使わないときは乱数を引かないので、同じ種なら今までと同じサンプルになる
+
+学習 v3 用(2026-10-26 段 data。既定では使わない。tools/train.py の --action-ref-from-samples・--probe-npz から使う):
+    action_reference_from_samples  作用の基準を学習に使うサンプル(index)のフレームだけから出す(action_reference は変えない)
+    ProbeSet                       学習中の物差しのフレーム(直線・止まった場面・低速。probe_gates.py と同じ式)。乱数を引かない
 
 方策の追加の正解(既定では使わない。jetformer/policies の方策のモジュールの extra_targets が作る):
     extra_targets  {シーン名: {キー: np.ndarray [シーンのフレーム数, ...]}}。渡すと各サンプルの最後に
@@ -102,14 +107,23 @@ def _per_frame(table, scene, n, fill, dtype):
     return out
 
 
-AUG_KEYS = ('brightness', 'contrast', 'shift_px', 'tof_noise')
+AUG_KEYS = ('brightness', 'contrast', 'shift_px', 'tof_noise', 'top_brightness')
+TOP_FRACTION = 1.0 / 3.0           # --aug-top-brightness が掛かる上の割合(10/25 の棚卸し: 昼と夕方の差は上 1/3 に出る)
 
 
-def augment_image(image, brightness=0.0, contrast=0.0, shift_px=0):
+def top_ramp(height):
+    """上ほど強い重み [height, 1, 1]: 一番上の行 1.0 から、上 1/3 の境まで直線で 0 に下がる(それより下は 0)"""
+    w = 1.0 - np.arange(height, dtype=np.float32) / (height * TOP_FRACTION)
+    return np.clip(w, 0.0, 1.0).reshape(height, 1, 1)
+
+
+def augment_image(image, brightness=0.0, contrast=0.0, shift_px=0, top_brightness=0.0):
     """カメラの画像(BGR uint8)の拡張: コントラスト ×U(1±contrast)(画像の平均の周り)・明るさ +U(±brightness)×255・
-    上下左右に整数の画素ずらし(モデルの入力 IMAGE_SIZE の画素で ±shift_px、端は写し足す)。0 の項目は乱数を引かない"""
+    上 1/3 の明るさ +U(±top_brightness)×255×top_ramp(一番上で全部、上 1/3 の境で 0。--aug-brightness と同じ単位)・
+    上下左右に整数の画素ずらし(モデルの入力 IMAGE_SIZE の画素で ±shift_px、端は写し足す)。0 の項目は乱数を引かない
+    (乱数の順: コントラスト → 明るさ → 上 1/3 → ずれ。top_brightness = 0 なら今までと同じ順・同じ値)"""
     img = image
-    if contrast > 0 or brightness > 0:
+    if contrast > 0 or brightness > 0 or top_brightness > 0:
         img = img.astype(np.float32)
         if contrast > 0:
             c = np.random.uniform(1.0 - contrast, 1.0 + contrast)
@@ -117,6 +131,8 @@ def augment_image(image, brightness=0.0, contrast=0.0, shift_px=0):
             img = (img - mean) * c + mean
         if brightness > 0:
             img = img + np.random.uniform(-brightness, brightness) * 255.0
+        if top_brightness > 0:
+            img = img + np.float32(np.random.uniform(-top_brightness, top_brightness) * 255.0) * top_ramp(img.shape[0])
         img = np.clip(img, 0, 255).astype(np.uint8)
     if shift_px > 0:
         dx, dy = np.random.randint(-int(shift_px), int(shift_px) + 1, size=2)
@@ -267,7 +283,8 @@ class JetFormerDataset(torch.utils.data.Dataset):
             gain = np.random.uniform(0.8, 1.2, size=3)
             image = np.clip(image.astype(np.float32) * gain, 0, 255).astype(np.uint8)
         if self.aug is not None:
-            image = augment_image(image, self.aug['brightness'], self.aug['contrast'], int(self.aug['shift_px']))
+            image = augment_image(image, self.aug['brightness'], self.aug['contrast'], int(self.aug['shift_px']),
+                                  self.aug['top_brightness'])
         img, tof, imu, state = normalize_inputs(image, a['tof'][i], a['imu'][i], a['vehicle'][i], self.use_command)
         if self.aug is not None:
             tof = augment_tof(tof, self.aug['tof_noise'])
@@ -305,3 +322,103 @@ class JetFormerDataset(torch.utils.data.Dataset):
         if len(rows) < 10:
             return float(PWM_CENTER), float(PWM_CENTER)
         return round(float(np.median(rows[:, 0])), 1), round(float(np.median(rows[:, 1])), 1)
+
+    def action_reference_from_samples(self):
+        """action_reference と同じ式(止まっている間の操作値の中央値)を、学習に使うサンプル(index のフレーム。drop・
+        衝突の前後・間引きのあと)だけから出す(2026-10-26 段 data、protocol_v3 案 4。tools/train.py の
+        --action-ref-from-samples)。→ (ステアリング中心, スロットル中立, 数えた行の数)。行が 10 未満なら PWM_CENTER。
+        今の action_reference は drop で外したフレーム(AI の記録の止まったフレームなど)も数えるので、学習に使わない
+        データの止まり方で中立がずれる(dataset_v2 で 1433/1500、学習のサンプルだけなら 1441/1496)"""
+        by_scene = {}
+        for k, i in self.index:
+            by_scene.setdefault(k, []).append(i)
+        rows = []
+        for k, idx in sorted(by_scene.items()):
+            a = self.scenes[k]
+            idx = np.asarray(idx, np.int64)
+            ev = a['erpm_valid'][idx] if 'erpm_valid' in a else True
+            m = a['vehicle_valid'][idx] & ev & (np.abs(a['vehicle'][idx, 3]) < 1)
+            rows.append(a['vehicle'][idx][m])
+        rows = np.concatenate(rows) if rows else np.zeros((0, 4), np.float32)
+        if len(rows) < 10:
+            return float(PWM_CENTER), float(PWM_CENTER), int(len(rows))
+        return round(float(np.median(rows[:, 0])), 1), round(float(np.median(rows[:, 1])), 1), int(len(rows))
+
+
+# ---------------------------------------------------------------- 学習中の物差し(2026-10-26 段 data、protocol_v3 案 5)
+PROBE_PARTS = ('st10', 'st23', 'stand', 'low10')
+PROBE_GENRE = 5                    # C3 の机上・probe_gates.py と同じジャンル(低速走行)
+PROBE_NEUTRAL_US = 1498.0          # 門の決まり(desk_lib.NEUTRAL_US)。probe_gates.py の NEUTRAL と同じ
+PROBE_GO_NEUTRAL_US = 1496.0       # probe_gates.py の stand_go_frac の中立(B の中立)
+
+
+class ProbeSet(object):
+    """学習の途中で「直線で緩めていないか」「止まった場面・低速でブレーキ側を出していないか」を見る小さな物差しのフレーム。
+    experiments/20261026_fix/diag_data/probe_gates.py の Probe と同じフレーム・同じ入力(use_command=False と同じ正規化)・
+    同じ式。見るだけ: 学習の損失・最良のエポックの選び方・データには使わない。乱数を引かない(DataLoader を使わない)。
+
+    npz(probe_gates.py make が作る probe_set.npz): <part>_ds(データセットの名前か絶対パス)・<part>_scene・<part>_frame・
+    <part>_B [M,3](B の行 0〜2 のスロットル µs)。part = st10・st23・stand・low10。任意で genre(既定 5)。
+    データセットの名前は datasets_root(学習の --data の親)の下で探す。
+
+    使い方(tools/train.py の --probe-npz): P = ProbeSet(npz, datasets_root, use_command); P.batches(part) で入力の組を
+    順に作り、モデルの行 0〜2 のスロットル [µs] を P.metrics({part: [M,3]}) に渡す → probe_gates.py と同じ欄の dict"""
+
+    def __init__(self, path, datasets_root, use_command=False):
+        self.path = str(path)
+        self.use_command = use_command
+        self.parts = {}
+        with np.load(path, allow_pickle=False) as z:
+            self.genre = int(z['genre']) if 'genre' in z.files else PROBE_GENRE
+            for k in PROBE_PARTS:
+                ds = str(z[k + '_ds'])
+                root = ds if os.path.isabs(ds) else os.path.join(str(datasets_root), ds)
+                scenes, frames = z[k + '_scene'].astype(str), z[k + '_frame'].astype(np.int64)
+                base = z[k + '_B'].astype(np.float64)
+                if not (len(scenes) == len(frames) == len(base)) or base.ndim != 2 or base.shape[1] < 3:
+                    raise ValueError('%s: %s の scene・frame・B の形が合いません' % (path, k))
+                self.parts[k] = {'root': root, 'items': self._items(root, scenes, frames), 'B': base}
+
+    @staticmethod
+    def _items(root, scenes, frames):
+        items, cur, a = [], None, None
+        for s, i in zip(scenes, frames):
+            if s != cur:
+                with np.load(os.path.join(root, 'aligned', s + '.npz'), allow_pickle=False) as z:
+                    a = {k: z[k] for k in ('cam_files', 'tof', 'imu', 'vehicle')}
+                cur = s
+            i = int(i)
+            if i < 0 or i >= len(a['cam_files']):
+                raise ValueError('物差しのフレーム番号 %d がシーン %s の範囲の外です' % (i, s))
+            items.append((os.path.join(root, str(a['cam_files'][i])), a['tof'][i].copy(), a['imu'][i].copy(),
+                          a['vehicle'][i].copy()))
+        return items
+
+    def counts(self):
+        return {k: len(v['items']) for k, v in self.parts.items()}
+
+    def batches(self, part, batch=64):
+        """part のフレームを並びの順に batch 個ずつ → (image, tof, imu, state) の numpy の組(乱数を引かない)"""
+        items = self.parts[part]['items']
+        for s in range(0, len(items), batch):
+            out = ([], [], [], [])
+            for path, tof, imu, veh in items[s:s + batch]:
+                img = cv2.imread(path)
+                if img is None:
+                    raise RuntimeError('物差しの画像が読めません: %s' % path)
+                for lst, x in zip(out, normalize_inputs(img, tof, imu, veh, use_command=self.use_command)):
+                    lst.append(x)
+            # C の並びにそろえる(probe_gates.py の DataLoader の torch.stack と同じ形。転置のままの並びだと GPU の畳み込みの
+            # 計算の順が変わり、値が 0.1〜0.3 µs ずれる)
+            yield tuple(np.ascontiguousarray(np.stack(x)) for x in out)
+
+    def metrics(self, pred):
+        """pred {part: [M,3] 行 0〜2 のスロットル µs(生の予測。ゲインの前)} → probe_gates.py の Probe と同じ欄・同じ丸め"""
+        r = {}
+        for k in ('st10', 'st23'):
+            r['%s_thr_vs_b_us' % k] = round(float(np.mean(pred[k][:, 2] - self.parts[k]['B'][:, 2])), 2)
+        r['stand_brake_side_frac'] = round(float(np.mean(pred['stand'][:, 0] > PROBE_NEUTRAL_US + 30)), 4)
+        r['stand_go_frac'] = round(float(np.mean(pred['stand'][:, 0] < PROBE_GO_NEUTRAL_US - 30)), 4)
+        r['low10_brake_frac'] = round(float(np.mean(pred['low10'][:, 0] > PROBE_NEUTRAL_US + 100)), 4)
+        r['n'] = {k: int(len(v)) for k, v in pred.items()}
+        return r

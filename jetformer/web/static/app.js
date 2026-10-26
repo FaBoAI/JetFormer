@@ -294,7 +294,9 @@ function renderValues(v) {
     const ch = (i, label) => [label, ok[i] === false ? '<span class="warn-text">受信なし</span>' : `${p[i]} µs`];
     rows.push(ch(0, 'ステアリング(CH1)'), ch(1, 'スロットル(CH2)'), ch(2, 'モード(CH3)'),
               ['モーター', `${n.erpm} eRPM${n.moving ? '(回転中)' : ''}`],
-              ['操縦', n.select ? '<span class="warn-text">AI(学習には使わない)</span>' : '人(プロポ)']);
+              ['操縦', n.select ? '<span class="warn-text">AI(学習には使わない)</span>' : '人(プロポ)'],
+              ['電池の電圧', vbatText(v.vbat) + (v.vbat && v.vbat.supported && Math.abs((+v.vbat.scale || 1) - 1) > 1e-6
+                ? ` <span class="muted">(較正の係数 ${(+v.vbat.scale).toFixed(4)})</span>` : '')]);
   }
   if (v.tof) rows.push(['ToF 最小/中央', `${v.tof.min} / ${v.tof.center} mm`], ['ToF 無効ゾーン', `${v.tof.invalid} / 2268`]);
   if (v.imu_now) {
@@ -309,6 +311,65 @@ function renderValues(v) {
     : a.zero ? '<span class="warn-text">信号なし: 40ピンヘッダのI2S(pin12/35/38)が無効です。scripts/i2s_mic/enable.sh で有効にしてください</span>'
     : `${a.rms_dbfs} dBFS(ピーク ${a.peak_dbfs} dBFS)・${a.channel === 1 ? 'R' : 'L'}チャネル`;
 }
+
+// ------------------------------------------------------------ 電池の電圧(2026-10-25。基板が flags bit5 と予備のバイトで送るとき)
+// 7.90 V 以上はふつう・7.70〜7.90 V は黄・7.70 V 未満は赤「パックを替える」(qualify_plan 3.7。境の値はサーバーの warn_v・bad_v)
+// 6.0〜9.0 V の外の値(broken_v)は使わない(走行のゲインにも説明欄にも入れない。2026-10-25 fix.md)。来ていれば赤で出す
+function vbatBrokenText(vb) {
+  if (!vb || vb.broken_v == null || !Number.isFinite(+vb.broken_v)) return '';
+  const r = Array.isArray(vb.range_v) && vb.range_v.length === 2 ? vb.range_v : [6.0, 9.0];
+  return ` <b class="vbat-bad-text" id="vbat-broken">電圧の値がおかしい(${(+vb.broken_v).toFixed(2)} V。${(+r[0]).toFixed(1)}〜${(+r[1]).toFixed(1)} V の外なので使いません。配線・分圧を確かめる)</b>`;
+}
+function vbatText(vb) {
+  if (!vb) return '<span class="muted">-(古いサーバー)</span>';
+  if (!vb.supported) return '<span class="muted">電圧: 基板が対応していません</span>';
+  const broken = vbatBrokenText(vb);
+  if (vb.v == null || !Number.isFinite(+vb.v)) return broken ? broken.trim() : `<span class="warn-text">電圧の値が来ていません${vb.age_s != null ? `(最後は ${esc(vb.age_s)} 秒前)` : ''}</span>`;
+  const lv = vb.level || 'ok', badV = vb.bad_v ?? 7.70, warnV = vb.warn_v ?? 7.90;
+  return `<span class="badge ${lv} vbat-v" id="vbat-badge">${(+vb.v).toFixed(2)} V</span>`
+    + (lv === 'bad' ? ` <b class="vbat-bad-text">パックを替える(${(+badV).toFixed(2)} V 未満)</b>`
+      : lv === 'warn' ? ` <span class="warn-text">低め(${(+warnV).toFixed(2)} V 未満)</span>` : '') + broken;
+}
+// 最後の走行の前後の電圧(走行タブの上・走り終わりのメモ)
+function vbatRunText(r) {
+  if (!r) return '';
+  const f = (x) => (x == null || !Number.isFinite(+x) ? '-' : `${(+x).toFixed(2)} V`);
+  const parts = [`走る前 ${r.v_before != null ? `${f(r.v_before)}(基板)` : r.human_before ? `${esc(r.human_before)} V(説明欄)` : '-'}`];
+  if (r.state === 'waiting') parts.push('走ったあと: 止まって 1 秒たつのを待っています(15 秒まで)');
+  else if (r.state === 'done') parts.push(`走ったあと ${f(r.v_after)}`, `走行中の最小 ${f(r.v_min)}`);
+  if (r.scenes_written) parts.push(`説明欄に書きました(シーン ${esc(r.scenes_written)} 個)`);
+  if (r.note) parts.push(`<span class="muted">${esc(r.note)}</span>`);
+  return parts.join(' ・ ');
+}
+function renderVbatStrip(st) {
+  const el = $('#dr-vbat'), vb = st && st.vbat;
+  if (!el) return;
+  if (!vb) { el.className = 'vbat-strip small'; el.innerHTML = '<span class="muted">電池の電圧: -(古いサーバー)</span>'; return; }
+  const r = vb.run;
+  const runText = r && (vb.supported || r.v_before != null || r.human_before) ? ` ・ 最後の走行: ${vbatRunText(r)}` : '';
+  el.innerHTML = `電池の電圧 ${vbatText(vb)}`
+    + (!vb.supported ? ' <span class="muted">(LiPo チェッカーで測って、説明欄の V_before・V_after に書いてください)</span>'
+      : st.running ? ' <span class="muted">(走行中は加速で一時的に下がります)</span>' : '') + runText;
+  const broken = vb.broken_v != null && Number.isFinite(+vb.broken_v);
+  el.className = 'vbat-strip small' + (broken ? ' bad' : vb.supported && (vb.level === 'warn' || vb.level === 'bad') ? ' ' + vb.level : '');
+}
+async function vbatCalib(body, what) {
+  try {
+    const r = await api('POST', '/api/vbat/calib', body);
+    $('#vbat-calib-note').textContent = body.reset ? '係数を 1.0 に戻しました'
+      : `係数 ${(+r.scale).toFixed(4)} を保存しました(基板 ${r.board_v} V → 電圧計 ${r.meter_v} V)`;
+    toast(what);
+  } catch (e) { $('#vbat-calib-note').innerHTML = `<span class="warn-text">${esc(e.message)}</span>`; toast(e.message, true); }
+}
+$('#btn-vbat-calib').addEventListener('click', () => {
+  const v = +$('#vbat-meter').value;
+  if (!$('#vbat-meter').value || !Number.isFinite(v)) { toast('電圧計の値を入れてください', true); return; }
+  if (!confirm(`基板の電圧に掛ける係数を、電圧計の値 ${v.toFixed(2)} V に合わせて保存します。\n車は止めたまま(モーターが回っていないとき)にしてください。`)) return;
+  vbatCalib({ meter_v: v }, '電圧の係数を保存しました');
+});
+$('#btn-vbat-calib-reset').addEventListener('click', () => {
+  if (confirm('電圧の係数を 1.0(較正なし)に戻します。')) vbatCalib({ reset: true }, '電圧の係数を 1.0 に戻しました');
+});
 
 // ------------------------------------------------------------ サウンド(車のスピーカーで収集・走行の開始/終了などを知らせる)
 async function loadSound() {
@@ -1184,7 +1245,7 @@ $('#dr-model').addEventListener('change', async () => {
 });
 $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
 // 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
-const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery']];
+const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery'], ['#dr-start-kick', 'start_kick']];
 $('#dr-tof-guard').addEventListener('change', async () => {
   delete state.drive.pending.tof_guard;
   try { await api('POST', '/api/drive/params', { tof_guard: +$('#dr-tof-guard').value }); } catch (e) { toast(e.message, true); }
@@ -1233,6 +1294,9 @@ function readDriveParams() {
   p.tof_guard = +$('#dr-tof-guard').value;
   p.tcp_mode = +$('#dr-tcp-mode').value;
   p.zone_caps = $('#dr-zone-caps').checked ? 1 : 0;     // 区間の速度上限(古いサーバーは知らない項目として読み飛ばす)
+  p.speed_ceiling = $('#dr-speed-ceiling').checked ? 1 : 0;                              // 速さの天井(2026-10-25)
+  p.speed_auto = $('#dr-speed-ceiling').checked && $('#dr-speed-auto').checked ? 1 : 0;  // 自動合わせは天井が ON のときだけ
+  p.launch_boost = $('#dr-launch-boost').checked ? 1 : 0;                                  // 発進の前進(2026-10-26)
   return p;
 }
 // スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
@@ -1258,6 +1322,9 @@ function setDriveParams(p) {
   if (p.tof_guard !== undefined && !pend.tof_guard && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
   if (p.tcp_mode !== undefined && !pend.tcp_mode && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
   if (p.zone_caps !== undefined && !pend.zone_caps) $('#dr-zone-caps').checked = +p.zone_caps === 1;
+  if (p.speed_ceiling !== undefined && !pend.speed_ceiling) $('#dr-speed-ceiling').checked = +p.speed_ceiling === 1;
+  if (p.speed_auto !== undefined && !pend.speed_auto) $('#dr-speed-auto').checked = +p.speed_auto === 1;
+  if (p.launch_boost !== undefined && !pend.launch_boost) $('#dr-launch-boost').checked = +p.launch_boost === 1;
   for (const [sel, key, fmt] of DR_PARAMS) {
     if (p[key] === undefined || drBusy[key] || pend[key]) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
@@ -1281,14 +1348,16 @@ $('#btn-dr-start').addEventListener('click', async () => {
   const capLine = isTcp && cap > 0 ? `\n速度の上限 ${cap.toFixed(2)} m/s` : '';
   const zoneLine = $('#dr-zone-caps').checked ? `\n区間の速度上限: ON(${zoneSpecText(state.drive.st)})${zoneUnknownCap(state.drive.st) != null ? '\n  位相が不確かなとき(1 周目のほぼ全部)も上限が掛かります' : ''}` : '';
   const prepLine = prepStartLines();
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${zoneLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
+  const speedLine = speedStartLines(state.drive.st) + launchStartLine(state.drive.st);
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${zoneLine}${speedLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
   const body = { client: 6, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
                  description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
   try {
     const r = await api('POST', '/api/drive/start', body);
     setDriveToken(r.token);
     benchSent();                                    // 基準の設定で入れた値は、走行開始で送って保存された
-    toast(dry ? '推論の確認を開始しました(出力は中立)' : '走行を開始しました'); pollDrive();
+    toast(dry ? '推論の確認を開始しました(出力は中立)' : (r.ai_no ? `AI走行 No.${r.ai_no} を開始しました` : '走行を開始しました')); pollDrive();
+    if (r.plan_diffs && r.plan_diffs.length) toast(`ブロックの計画と違うので「試し」(cand=EXP)として記録します: ${r.plan_diffs.join('、')}`, true);
   } catch (e) { toast(e.message, true); }
 });
 async function stopDrive(reason) {
@@ -1336,7 +1405,7 @@ function renderDrive(st) {
   const [cls, txt] = PHASE[st.phase] || ['', st.phase];
   const ph = $('#dr-phase');
   ph.className = 'badge ' + cls;
-  ph.textContent = st.phase === 'driving' && st.dry_run ? '推論の確認中' : txt;
+  ph.textContent = (st.phase === 'driving' && st.dry_run ? '推論の確認中' : txt) + (st.ai_no ? ` ・ AI走行 No.${st.ai_no}` : '');
   $('#dr-message').innerHTML = esc(st.message || '') + (st.error ? `<div class="warn-text">${esc(st.error)}</div>` : '')
     + (st.recording_note ? `<div class="muted">${esc(st.recording_note)}</div>` : '')
     + (st.running && st.recording ? '<div><span class="badge warn">● 収集中</span></div>' : '')
@@ -1347,6 +1416,7 @@ function renderDrive(st) {
     if (now.hold) who.textContent = now.select ? 'CH3: AI側 ・ 中立で停止中' : 'CH3: 人側 ・ 中立で待機中';
     else if (now.assist === 'リカバリー中止') who.textContent = 'CH3: AI側 ・ リカバリーをやめて中立(CH3を人側へ戻して助けてください)';
     else if (now.assist === 'リカバリー') who.textContent = 'CH3: AI側 ・ ぶつかったので自動で下がっています';
+    else if (now.assist === '発進の前進') who.textContent = 'CH3: AI側 ・ 発進の前進(強い前進を出しています)';
     else who.textContent = now.select ? (st.dry_run ? 'CH3: AI側(出力は中立)' : 'CH3: AI側 ・ 車はAIが操作中') : 'CH3: 人側 ・ プロポで操作中';
     who.className = 'who ' + (now.hold ? 'hold' : now.select && !st.dry_run ? 'ai' : 'human');
   } else { who.textContent = ''; who.className = 'who'; }
@@ -1387,6 +1457,9 @@ function renderDrive(st) {
     if (now && now.post) rows.push(['TCP の制御器', tcpLiveText(now.post)]);
     if (now && now.ens_j) rows.push(['予測の重ね合わせ', `${now.ens_j} フレーム前まで`]);
     if (now && now.zone) rows.push(['区間の速度上限', zoneLiveText(now.zone, s)]);
+    if (now && now.ceil) rows.push(['速さの天井', ceilLiveText(now.ceil, s)]);
+    if (now && now.auto) rows.push(['速さのゲインの自動合わせ', autoLiveText(now.auto, st)]);
+    if (!st.running && st.auto_end) rows.push(['自動合わせ(走り終わり)', autoEndText(st.auto_end)]);
     if (now && now.human) rows.push(['プロポの値', `${now.human[0]} / ${now.human[1]} µs`]);
   }
   $('#dr-stats').innerHTML = rows.map(([k, v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
@@ -1412,10 +1485,73 @@ function renderDrive(st) {
   $('#dr-model').disabled = st.running;
   $('#dr-dry').disabled = st.running; $('#dr-record').disabled = st.running;
   renderZoneSwitch(st);
+  renderSpeedSwitches(st);
+  renderLaunchSwitch(st);
+  renderVbatStrip(st);
   renderPrepHints();
   $('#btn-dr-baseline').disabled = !!st.running;
   if (state.bench.shownRunning !== !!st.running) { state.bench.shownRunning = !!st.running; renderBench(); }
+  renderAfter(st);
 }
+
+// 走り終わりのメモ(2026-10-24、10/23 の課題「電池・電圧・止めた理由が記録に無い」)。ベンチマークの説明欄(bench=)で
+// 収集した走行が止まったら出す。POST /api/bench/after がその記録のシーンの説明に書き、夜の集計が重ねて読む。
+const AFTER_DONE_KEY = 'jetformer.bench.afterDone';
+function afterDone(log) { try { return localStorage.getItem(AFTER_DONE_KEY) === log; } catch (e) { return false; } }
+function descField(desc, key) {
+  const head = String(desc || '').replace(/(^|\s)memo=.*$/, '');
+  const m = head.match(new RegExp(`(?:^|\\s)${key}=(\\S*)`));
+  const v = m ? m[1].replace(/^#/, '') : '';
+  return /^[_#]*$/.test(v) ? '' : v;
+}
+function renderAfter(st) {
+  const box = $('#dr-after'), log = st && st.record_log;
+  const show = !!(log && !st.running && !st.dry_run && /(^|\s)bench=/.test(st.description || '') && !afterDone(log));
+  box.classList.toggle('hidden', !show);
+  if (show && box.dataset.log === log) fillAfterVoltage(st);       // 走ったあとの基板の電圧は止まってから届く
+  if (!show || box.dataset.log === log) return;
+  box.dataset.log = log;                          // 記録が替わったときだけ欄を入れ直す(書いている途中の値を消さない)
+  const desc = st.description || '', ai = ((st.stats || {}).ai_s) || 0;
+  $('#dr-after-log').textContent = `${log}${st.ai_no ? ` ・ AI走行 No.${st.ai_no}` : ''}`;
+  $('#dr-after-ai').innerHTML = `AI の時間 ${Math.round(ai)} 秒` + (ai < 240 ? ' <span class="warn-text">(240 秒に届いていません。止めた理由を選んでください)</span>' : '');
+  $('#dr-after-battery').value = descField(desc, 'battery');
+  $('#dr-after-vb').value = descField(desc, 'V_before');
+  $('#dr-after-va').value = '';
+  $('#dr-after-reason').value = ai >= 240 ? '240秒走った' : '';
+  $('#dr-after-memo').value = '';
+  $('#dr-after-va').dataset.auto = '';
+  $('#dr-after-vnote').textContent = '';
+  fillAfterVoltage(st);
+}
+// 走り終わりのメモに、基板の電圧(走ったあと)を前もって入れる。人が書いた値・書いている途中の欄は替えない
+function fillAfterVoltage(st) {
+  const r = st && st.vbat && st.vbat.run, el = $('#dr-after-va');
+  if (!r || (r.log && r.log !== st.record_log)) return;
+  if (r.v_after != null && el !== document.activeElement && (!el.value || el.dataset.auto === '1')) {
+    el.value = (+r.v_after).toFixed(2); el.dataset.auto = '1';
+  }
+  const f = (x) => (x == null ? '-' : `${(+x).toFixed(2)} V`);
+  $('#dr-after-vnote').textContent = r.state === 'waiting' ? '基板の電圧: 止まってから 1 秒たつのを待っています(15 秒まで)'
+    : (r.v_before != null || r.v_after != null || r.v_min != null)
+      ? `基板の電圧: 走る前 ${f(r.v_before)}・走ったあと ${f(r.v_after)}・走行中の最小 ${f(r.v_min)}(空の欄に入れました。電圧計の値があれば書き替えてください)` : '';
+}
+$('#dr-after-va').addEventListener('input', () => { $('#dr-after-va').dataset.auto = ''; });
+$('#btn-dr-after').addEventListener('click', async () => {
+  const log = $('#dr-after').dataset.log;
+  const body = { log, battery: $('#dr-after-battery').value.trim(), V_before: $('#dr-after-vb').value, V_after: $('#dr-after-va').value,
+                 reason: $('#dr-after-reason').value || null, memo: $('#dr-after-memo').value };
+  if (!body.reason) { toast('止めた理由を選んでください', true); return; }
+  try {
+    const r = await api('POST', '/api/bench/after', body);
+    try { localStorage.setItem(AFTER_DONE_KEY, log); } catch (e) { /* 覚えられなくても書けている */ }
+    $('#dr-after').classList.add('hidden');
+    toast(`記録 ${log} のシーン ${r.scenes} 個にメモを書きました`);
+  } catch (e) { toast(e.message, true); }
+});
+$('#btn-dr-after-skip').addEventListener('click', () => {
+  try { localStorage.setItem(AFTER_DONE_KEY, $('#dr-after').dataset.log || ''); } catch (e) { /* 閉じるだけ */ }
+  $('#dr-after').classList.add('hidden');
+});
 
 // AI の時間(CH3 が AI 側で dry run でない時間の和。drive.py の stats.ai_s。道具の数える時間と同じ決め方)。
 // ベンチマークは「数える時間 + 1 分」を過ぎたら次の直線で CH3 を人側へ戻して止める(240 秒 → 5:00)。2026-10-21 Fix-all
@@ -1445,12 +1581,17 @@ const BENCH_FALLBACK = {
   run: 'clean_driving_20261011-nocmd-s3-20261011-024626', mode_id: 5, source: '10/18 plan.md 3.4',
   params: { steer_gain: 1.0, throttle_gain: 1.0, steer_trim_us: 0.0, lookahead: 3, osc_percent: 0.0, esc_reverse: 1, recovery: 1,
             rev_us: 300.0, rev_s: 0.4, tof_guard: 1, speed_cap: 0.0, speed_scale: 1.0, tcp_mode: 0, ensemble_j: 0, ensemble_m: 0.5,
-            zone_caps: 0 },
+            zone_caps: 0, start_kick: 1,
+            speed_ceiling: 0, ceil_all_mps: 4.5, ceil_left_mps: 4.1, speed_auto: 0, auto_target_mps: 4.27, auto_vref_v: 8.35,
+            launch_boost: 0, launch_us: 250.0, launch_mps: 2.5, launch_max_s: 1.2 },
 };
 const BENCH_LABEL = { steer_gain: 'ステア', throttle_gain: '速度', steer_trim_us: 'トリム', lookahead: '先読み', osc_percent: '時計補正',
                       esc_reverse: '後退の前に中立', recovery: 'リカバリー', rev_us: '後退の強さ', rev_s: '下がる時間', tof_guard: 'ToF ガード',
                       speed_cap: '上限(speed_cap)', speed_scale: '目標速度の倍率', tcp_mode: 'TCP の出し方', ensemble_j: '重ね合わせ',
-                      ensemble_m: '重ね合わせの強さ', zone_caps: '区間の速度上限' };
+                      ensemble_m: '重ね合わせの強さ', zone_caps: '区間の速度上限', start_kick: '発進の補助',
+                      speed_ceiling: '速さの天井', ceil_all_mps: '天井(全体)', ceil_left_mps: '天井(左旋回中)',
+                      speed_auto: '速さのゲインの自動合わせ', auto_target_mps: '自動合わせの目標', auto_vref_v: '自動合わせの基準の電圧',
+                      launch_boost: '発進の前進', launch_us: '発進の前進の強さ', launch_mps: '発進の前進の速さ', launch_max_s: '発進の前進の時間' };
 const TOF_GUARD_LABEL = { 0: 'OFF', 1: '記録だけ', 2: '減速', 3: '減速+ハンドル' };
 const RISK_BADGE = { low: 'ok', mid: 'warn', high: 'bad' };
 const ZONE_MODE_LABEL = { pass: 'そのまま', cap: '上限で切った', neutral: '中立にした', brake: 'ブレーキ' };
@@ -1464,6 +1605,14 @@ function benchFieldValues(baseline, steer) {
   const notes = [];
   if (+p.zone_caps === 1) notes.push('区間の速度上限は ON にしていません(ON にするのは G1 に合格し、ユーザーが了承したあと。スイッチで入れてください)');
   p.zone_caps = 0;
+  // 速さの天井・自動合わせ(2026-10-25)も、基準の設定・ブロックでは ON にしない(スイッチで、確かめてから)
+  for (const [k, name] of [['speed_ceiling', '速さの天井'], ['speed_auto', '速さのゲインの自動合わせ']]) {
+    if (+p[k] === 1) notes.push(`${name}は ON にしていません(スイッチで入れてください)`);
+    if (p[k] !== undefined) p[k] = 0;
+  }
+  // 発進の前進(2026-10-26)も ON にしない(スイッチで、確かめてから)。値(launch_us など)はそのまま
+  if (+p.launch_boost === 1) notes.push('発進の前進は ON にしていません(スイッチで入れてください)');
+  if (p.launch_boost !== undefined) p.launch_boost = 0;
   if (steer !== undefined && steer !== null && steer !== '' && Number.isFinite(+steer)) p.steer_gain = +steer;
   return { run: b.run || '', mode_id: b.mode_id == null ? 5 : +b.mode_id, params: p, notes };
 }
@@ -1477,7 +1626,8 @@ function benchDiff(cur, want) {
   return out;
 }
 function benchFmt(k, v) {
-  if (k === 'esc_reverse' || k === 'recovery' || k === 'zone_caps') return +v ? 'ON' : 'OFF';
+  if (k === 'esc_reverse' || k === 'recovery' || k === 'zone_caps' || k === 'speed_ceiling' || k === 'speed_auto'
+      || k === 'launch_boost') return +v ? 'ON' : 'OFF';
   if (k === 'tof_guard') return TOF_GUARD_LABEL[+v] || String(v);
   if (k === 'tcp_mode') return TCP_MODES[+v] || String(v);
   if (k === 'lookahead' || k === 'ensemble_j' || k === 'rev_us' || k === 'steer_trim_us') return (+v).toFixed(0);
@@ -1504,9 +1654,66 @@ function renderBaseInfo() {
     + `・speed_cap ${+p.speed_cap ? benchFmt('speed_cap', p.speed_cap) : '0(上限なし)'}`
     + `・区間の速度上限 OFF。ほかは drive.py の既定(リカバリー・後退は ON)。押しても走行は始めません。`;
 }
+// 「AI走行」のカードの「ベンチマーク」の選択(2026-10-23 ユーザーの依頼: ベンチマーク 1, 2, 3… の順に select で選ぶ)。
+// 今日のブロック(無ければブロックのある最初の日)を並べる。選ぶとブロックのボタンと同じ(モデル・基準の値・説明欄)
+function renderBenchPick(d) {
+  const sel = $('#dr-bench-pick'), days = (d && d.exists && d.days) || [];
+  let di = days.findIndex((x) => x.date === d.today && x.blocks.length);
+  if (di < 0) di = days.findIndex((x) => x.blocks.length);
+  $('#dr-bench-pick-wrap').classList.toggle('hidden', di < 0);
+  if (di < 0) return;
+  const ap = state.bench.applied || {};
+  sel.innerHTML = '<option value="">— ベンチマークを選ぶ —</option>' + days[di].blocks.map((b, bi) =>
+    `<option value="${di}:${bi}"${b.drivable ? '' : ' disabled'}>ベンチマーク${esc(b.block)}: ${esc(b.id)} ${esc(b.label || '')}`
+    + `${b.tune ? ` ・ ${esc(b.tune)}` : ''}${b.drivable ? '' : '(走れません)'}</option>`).join('');
+  sel.value = ap.day === di && ap.i !== undefined ? `${di}:${ap.i}` : '';
+  sel.disabled = !!(state.drive.st && state.drive.st.running);
+}
+// モデルを手で替えて、選んだベンチマークのモデルと違ってしまったら、ベンチマークの選択を外す(説明欄と食い違わないように知らせる)
+$('#dr-model').addEventListener('change', () => {
+  const d = state.bench.data, ap = state.bench.applied;
+  const block = ap && ap.i !== undefined && d && d.days ? ((d.days[ap.day] || {}).blocks || [])[ap.i] : null;
+  if (block && block.run !== $('#dr-model').value) {
+    state.bench.applied = null; renderBench();
+    toast(`ベンチマーク${block.block}(${block.id})のモデルではなくなりました。説明欄を確かめてください`, true);
+  }
+});
+$('#dr-bench-pick').addEventListener('change', (e) => {
+  const d = state.bench.data, v = e.target.value;
+  if (!v || !d) return;
+  const [di, bi] = v.split(':').map(Number);
+  const block = ((d.days[di] || {}).blocks || [])[bi];
+  if (!block || !block.drivable) return;
+  benchApply(block, { day: di, i: bi });
+  // 本番の印(official=1)と予定の周(plan_laps=3)を説明欄に足す(夜の集計で試しの走行と分ける)
+  const desc = $('#dr-desc').value;
+  if (!/(^|\s)official=1(\s|$)/.test(desc)) {
+    const i = desc.search(/(^|\s)memo=/);
+    $('#dr-desc').value = i < 0 ? `${desc} official=1`.trim()
+      : `${desc.slice(0, i).trimEnd()} official=1 ${desc.slice(i).trimStart()}`;
+  }
+});
+// 「モデル(学習結果)」の一覧にも、ベンチマークの番号を付けて先頭に並べる(値は学習結果の名前のまま。選択は変えない)
+function labelDriveModels(d) {
+  const sel = $('#dr-model'), days = (d && d.exists && d.days) || [], tags = {};
+  let di = days.findIndex((x) => x.date === d.today && x.blocks.length);
+  if (di < 0) di = days.findIndex((x) => x.blocks.length);
+  if (di >= 0) days[di].blocks.forEach((b) => { (tags[b.run] = tags[b.run] || { nums: [], id: b.id, label: b.label || '' }).nums.push(b.block); });
+  const cur = sel.value, opts = [...sel.options];
+  for (const o of opts) {
+    if (o.dataset.base === undefined) o.dataset.base = o.textContent;
+    const t = tags[o.value];
+    o.textContent = t ? `ベンチマーク${t.nums.join('・')}: ${t.id} ${t.label} ― ${o.dataset.base}` : o.dataset.base;
+  }
+  opts.filter((o) => tags[o.value]).sort((a, b) => tags[b.value].nums[0] - tags[a.value].nums[0])
+    .forEach((o) => sel.insertBefore(o, sel.firstChild));
+  sel.value = cur;
+}
 function renderBench() {
   renderBaseInfo();
   const d = state.bench.data, card = $('#bench-card');
+  renderBenchPick(d);
+  labelDriveModels(d);
   const show = !!(d && d.exists);
   card.classList.toggle('hidden', !show);
   if (!show) return;
@@ -1551,12 +1758,19 @@ function benchSetFields(p) {
   if (p.tof_guard !== undefined) { $('#dr-tof-guard').value = String(p.tof_guard); mark('tof_guard'); }
   if (p.tcp_mode !== undefined) { $('#dr-tcp-mode').value = String(p.tcp_mode); mark('tcp_mode'); }
   $('#dr-zone-caps').checked = false; mark('zone_caps');
+  for (const [sel, key] of [['#dr-speed-ceiling', 'speed_ceiling'], ['#dr-speed-auto', 'speed_auto'], ['#dr-launch-boost', 'launch_boost']]) {
+    $(sel).checked = false;
+    if (srv[key] !== undefined && +srv[key] !== 0) state.drive.pending[key] = true; else delete state.drive.pending[key];
+  }
+  if (state.drive.st) { renderSpeedSwitches(state.drive.st); renderLaunchSwitch(state.drive.st); }   // OFF にしたことをすぐ出す
 }
 // block: ベンチマークのブロック(null なら「基準の設定」= モデル B)
 function benchApply(block, where) {
   const st = state.drive.st || {};
   if (st.running) { toast('走行中は変えられません(止めてから)', true); return; }
   const f = benchFieldValues(benchBaseline(), $('#dr-base-steer').value);
+  if (block && block.params) f.params = Object.assign({}, f.params, block.params);       // ブロックの上書き(速度ゲインなど)
+  if (block && block.mode_id != null) f.mode_id = +block.mode_id;
   const run = block ? block.run : f.run;
   const m = state.drive.models.find((x) => x.name === run);
   if (!m) { toast(`モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return; }
@@ -1738,6 +1952,204 @@ function zoneLiveText(z, s) {
   return `${z.on ? '<b class="warn-text">ON</b>' : 'OFF(記録だけ)'} ・ 区間 ${esc(z.zone || '-')} ・ ${lim}`
     + `${z.mode ? ` ・ ${esc(ZONE_MODE_LABEL[z.mode] || z.mode)}${z.on ? '' : '(ON なら)'}` : ''}`
     + ` ・ 出力を変えた ${s.zone_applied ?? 0} フレーム ・ ブレーキ ${s.zone_brakes ?? 0} 回`;
+}
+
+// 速さの天井・速さのゲインの自動合わせ(drive.py の speed_ceiling・speed_auto。2026-10-25。既定 OFF・起動のたびに OFF・
+// 走行中は ON にできない・OFF でも影の判定を記録)。文の値はサーバーの speed_ctrl_spec(drive.speed_ctrl_spec。走行ループが
+// 使う値から作る)から出す。古いサーバーで欄が無いときだけ params・控えの値(SPEED_FALLBACK)
+const speedSupported = (st) => !!(st && st.speed_ctrl_spec && st.params && st.params.speed_ceiling !== undefined);
+const autoSupported = (st) => speedSupported(st) && st.params.speed_auto !== undefined;
+const SPEED_FALLBACK = { all: 4.5, left: 4.0, steer: 100, gz: 45, hold: 0.25, over: 0.2, target: 4.2, mlo: 0.85, mhi: 1.2,
+                         raise: 1.1, step: 0.03, vref: 8.35, lapA: 14.52, lapB: 1.50, band: 0.10 };
+function speedSpec(st) {
+  const sp = (st && st.speed_ctrl_spec) || {}, p = (st && st.params) || {};
+  const c = sp.ceiling || {}, a = sp.auto || {}, lr = c.left_rule || {};
+  const num = (...xs) => { for (const x of xs) if (x !== undefined && x !== null && x !== '' && Number.isFinite(+x)) return +x; return null; };
+  const mr = Array.isArray(a.m_range) ? a.m_range : [];
+  const F = SPEED_FALLBACK;
+  return {
+    all: num(c.all_mps, p.ceil_all_mps, F.all), left: num(c.left_mps, p.ceil_left_mps, F.left),
+    steer: num(lr.steer_us, F.steer), gz: num(lr.gz_dps, F.gz), hold: num(lr.hold_s, F.hold), over: num(c.neutral_over_mps, F.over),
+    target: num(a.target_mps, p.auto_target_mps, F.target), mlo: num(mr[0], F.mlo), mhi: num(mr[1], F.mhi),
+    raise: num(a.raise_max_gain, F.raise), step: num(a.step_max, F.step), vref: num(a.vref_v, p.auto_vref_v, F.vref),
+    lapA: F.lapA, lapB: F.lapB, band: num(a.deadband_s, F.band),
+    // 周の直しの物差しは周の時間(2026-10-25 fix.md)。目標の周の時間はサーバーの値(無ければ 14.52 − 1.50 × 目標の速さ)
+    lapTarget: num(a.target_lap_s, F.lapA - F.lapB * num(a.target_mps, p.auto_target_mps, F.target)),
+    ceilRule: typeof c.rule_text === 'string' ? c.rule_text : '', ceilNote: typeof c.note === 'string' ? c.note : '',
+    autoNote: typeof a.note === 'string' ? a.note : '', sources: a.sources || null, warnText: sp.auto_warn_text || {},
+  };
+}
+const ceilSpecText = (sp) => `全体 ${sp.all.toFixed(1)}・左旋回中 ${sp.left.toFixed(1)} m/s`;
+const autoLapText = (sp) => `目標 1 周 ${sp.lapTarget.toFixed(2)} 秒(周の速さ p90 ${sp.target.toFixed(2)} m/s 相当)`;
+function vbatSourceText(st) {
+  const vb = st && st.vbat;
+  if (vb && vb.supported) return '基板の電圧(走り始めから)';
+  return /(^|\s)V_before=\d/.test($('#dr-desc').value || '') ? '説明欄の V_before(走行のあいだ一定)' : 'なし(1.00 倍。周ごとの直しだけ)';
+}
+function ceilConfirmText(sp) {
+  const rule = sp.ceilRule || `左旋回 = 車に出す舵 +${sp.steer} µs 以上 か ヨー +${sp.gz} deg/s 以上(どちらも切れてから ${sp.hold} 秒は左旋回のまま)`;
+  const note = sp.ceilNote || `前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + ${sp.over.toFixed(1)} m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)`;
+  return `速さの天井を ON にします(${ceilSpecText(sp)})。\n\n${rule}。\n${note}。\n`
+    + '走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?';
+}
+function autoConfirmText(sp, st) {
+  const note = sp.autoNote || `速さのゲインに ${sp.mlo.toFixed(2)}〜${sp.mhi.toFixed(2)} 倍を掛けます(上げるのは ${sp.raise.toFixed(2)} まで)。天井が ON のときだけ。OFF にするまで続く(管理画面の再起動で OFF)`;
+  return `速さのゲインの自動合わせを ON にします(${autoLapText(sp)})。\n\n`
+    + `電圧の源: ${vbatSourceText(st)}\n範囲: 速度ゲインの ${sp.mlo.toFixed(2)}〜${sp.mhi.toFixed(2)} 倍(上げるのは ${sp.raise.toFixed(2)} まで)。\n`
+    + `${note}。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?`;
+}
+function speedStartLines(st) {
+  const sp = speedSpec(st), lines = [];
+  if ($('#dr-speed-ceiling').checked) lines.push(`速さの天井: ON(${ceilSpecText(sp)}。前進を弱めるだけ)`);
+  if ($('#dr-speed-ceiling').checked && $('#dr-speed-auto').checked) lines.push(`速さのゲインの自動合わせ: ON(目標 1 周 ${sp.lapTarget.toFixed(2)} 秒・電圧の源 ${vbatSourceText(st)})`);
+  return lines.length ? '\n' + lines.join('\n') : '';
+}
+function renderSpeedSwitches(st) {
+  const ce = $('#dr-speed-ceiling'), au = $('#dr-speed-auto'), ok = speedSupported(st), aok = autoSupported(st);
+  const running = !!(st && st.running), p = (st && st.params) || {};
+  const srvCeil = ok && +p.speed_ceiling === 1, srvAuto = aok && +p.speed_auto === 1;
+  ce.disabled = !ok || (running && !srvCeil);                 // 走行中は OFF にだけできる
+  if (!ok) ce.checked = false;
+  if (!aok || !ce.checked) au.checked = false;                // 自動合わせは天井が ON のときだけ
+  au.disabled = !aok || !ce.checked || (running && !srvAuto);
+  const sp = speedSpec(st);
+  $('#dr-ceil-spec').textContent = `(${ceilSpecText(sp)})`;
+  $('#dr-auto-spec').textContent = `(${autoLapText(sp)})`;
+  $('#dr-speed-panel').classList.toggle('on', ce.checked);
+  const errs = (st && st.speed_ctrl_error) || {};             // drive.py: {ceil: 理由, auto: 理由}(失敗した部分だけ)
+  const err = typeof errs === 'string' ? errs : errs.ceil, aerr = typeof errs === 'string' ? '' : errs.auto;
+  const cn = $('#dr-ceil-note'), an = $('#dr-auto-note');
+  if (!ok) cn.innerHTML = '<span class="muted">今のサーバーは速さの天井に対応していません(管理画面のサーバーを再起動すると使えます)</span>';
+  else if (err) cn.innerHTML = `<span class="warn-text">${srvCeil ? '計算が失敗したため、この走行では天井・自動合わせを外しました' : 'OFF(記録だけ)の影の判定が計算の失敗で止まりました。車への出力は変わりません'}: ${esc(err)}</span>`;
+  else if (state.drive.pending.speed_ceiling) cn.innerHTML = '<span class="muted">基準の設定で OFF にしました(走行開始で送ります)</span>';
+  else cn.innerHTML = srvCeil ? '<b class="warn-text">ON: 車への出力に速さの天井を掛けます</b>' : '';
+  if (ok && !aok) an.innerHTML = '<span class="muted">今のサーバーは自動合わせに対応していません</span>';
+  else if (aerr) an.innerHTML = `<span class="warn-text">自動合わせの計算が失敗したため、速度ゲインは設定のままです: ${esc(aerr)}</span>`;
+  else if (ok && !ce.checked) an.innerHTML = '<span class="muted">天井が OFF のあいだは押せません</span>';
+  else an.innerHTML = srvAuto ? '<b class="warn-text">ON: 速度ゲインを電圧と周の時間で合わせます</b>' : '';
+}
+$('#dr-speed-ceiling').addEventListener('change', async () => {
+  const el = $('#dr-speed-ceiling'), st = state.drive.st || {}, on = el.checked;
+  if (on) {
+    if (st.running) { el.checked = false; toast('走行中は速さの天井を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
+    if (!confirm(ceilConfirmText(speedSpec(st)))) { el.checked = false; return; }
+  } else $('#dr-speed-auto').checked = false;
+  delete state.drive.pending.speed_ceiling; delete state.drive.pending.speed_auto;
+  try {
+    const p = await api('POST', '/api/drive/params', on ? { speed_ceiling: 1 } : { speed_ceiling: 0, speed_auto: 0 });
+    if (p && p.speed_ceiling === undefined) { el.checked = false; toast('今のサーバーは速さの天井に対応していません(再起動が必要)', true); }
+    else {
+      if (state.drive.st) state.drive.st.params = p;
+      toast(on ? '速さの天井を ON にしました' : '速さの天井を OFF にしました(自動合わせも OFF)');
+    }
+  } catch (e) { toast(e.message, true); el.checked = !on; }
+  if (state.drive.st) renderSpeedSwitches(state.drive.st);
+});
+$('#dr-speed-auto').addEventListener('change', async () => {
+  const el = $('#dr-speed-auto'), st = state.drive.st || {}, on = el.checked;
+  if (on) {
+    if (!$('#dr-speed-ceiling').checked) { el.checked = false; toast('自動合わせは、速さの天井が ON のときだけ使えます', true); return; }
+    if (st.running) { el.checked = false; toast('走行中は自動合わせを ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
+    if (!confirm(autoConfirmText(speedSpec(st), st))) { el.checked = false; return; }
+  }
+  delete state.drive.pending.speed_auto;
+  try {
+    const p = await api('POST', '/api/drive/params', { speed_auto: on ? 1 : 0 });
+    if (p && p.speed_auto === undefined) { el.checked = false; toast('今のサーバーは自動合わせに対応していません(再起動が必要)', true); }
+    else {
+      if (state.drive.st) state.drive.st.params = p;
+      toast(on ? '速さのゲインの自動合わせを ON にしました' : '速さのゲインの自動合わせを OFF にしました');
+    }
+  } catch (e) { toast(e.message, true); el.checked = !on; }
+  if (state.drive.st) renderSpeedSwitches(state.drive.st);
+});
+// 発進の前進(drive.py の launch_boost・assist.LaunchBoost。2026-10-26。既定 OFF・起動のたびに OFF・走行中は ON にできない)。
+// 文の値はサーバーの launch_spec(drive.launch_spec。走行ループが使う値から作る)から出す。古いサーバーで欄が無ければ押せない
+const launchSupported = (st) => !!(st && st.params && st.params.launch_boost !== undefined);
+const LAUNCH_FALLBACK = { us: 250, mps: 2.5, max_s: 1.2 };
+function launchSpec(st) {
+  const sp = (st && st.launch_spec) || {}, p = (st && st.params) || {}, F = LAUNCH_FALLBACK;
+  const num = (...xs) => { for (const x of xs) if (x !== undefined && x !== null && x !== '' && Number.isFinite(+x)) return +x; return null; };
+  return { us: num(sp.us, p.launch_us, F.us), mps: num(sp.mps, p.launch_mps, F.mps), max_s: num(sp.max_s, p.launch_max_s, F.max_s),
+           note: typeof sp.note === 'string' ? sp.note : '' };
+}
+const launchSpecText = (sp) => `前進 ${sp.us.toFixed(0)} µs 以上・${sp.mps.toFixed(1)} m/s まで・最大 ${sp.max_s.toFixed(1)} 秒`;
+function launchConfirmText(sp) {
+  const note = sp.note || `CH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − ${sp.us.toFixed(0)} µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF`;
+  return `発進の前進を ON にします(${launchSpecText(sp)})。\n\n${note}。\n\n`
+    + '試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\n'
+    + 'ToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?';
+}
+function launchStartLine(st) {
+  return $('#dr-launch-boost').checked ? `\n発進の前進: ON(${launchSpecText(launchSpec(st))}。AI 側にした最初のフレームから強い前進)` : '';
+}
+function renderLaunchSwitch(st) {
+  const el = $('#dr-launch-boost'), ok = launchSupported(st);
+  const running = !!(st && st.running), srvOn = ok && +st.params.launch_boost === 1;
+  el.disabled = !ok || (running && !srvOn);                   // 走行中は OFF にだけできる
+  if (!ok) el.checked = false;
+  const sp = launchSpec(st);
+  $('#dr-launch-spec').textContent = `(${launchSpecText(sp)})`;
+  $('#dr-launch-panel').classList.toggle('on', el.checked);
+  const note = $('#dr-launch-note'), lv = (st && st.launch) || {}, s = (st && st.stats) || {};
+  if (!ok) note.innerHTML = '<span class="muted">今のサーバーは発進の前進に対応していません(管理画面のサーバーを再起動すると使えます)</span>';
+  else if (state.drive.pending.launch_boost) note.innerHTML = '<span class="muted">基準の設定で OFF にしました(走行開始で送ります)</span>';
+  else if (srvOn || (running && (lv.count || lv.last_end))) {
+    const live = running ? ` ・ 出した ${s.launch_boosts ?? lv.count ?? 0} 回${lv.active ? ' ・ <b>出しています</b>' : ''}`
+      + `${lv.last_end ? ` ・ 最後の終わり: ${esc(lv.last_end)}` : ''}${lv.last_skip ? ` ・ 始めなかった: ${esc(lv.last_skip)}` : ''}` : '';
+    note.innerHTML = (srvOn ? '<b class="warn-text">ON: AI 側にした最初のフレームから強い前進を出します</b>' : 'OFF') + live;
+  } else note.innerHTML = '';
+}
+$('#dr-launch-boost').addEventListener('change', async () => {
+  const el = $('#dr-launch-boost'), st = state.drive.st || {}, on = el.checked;
+  if (on) {
+    if (st.running) { el.checked = false; toast('走行中は発進の前進を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
+    if (!confirm(launchConfirmText(launchSpec(st)))) { el.checked = false; return; }
+  }
+  delete state.drive.pending.launch_boost;
+  try {
+    const p = await api('POST', '/api/drive/params', { launch_boost: on ? 1 : 0 });
+    if (p && p.launch_boost === undefined) { el.checked = false; toast('今のサーバーは発進の前進に対応していません(再起動が必要)', true); }
+    else {
+      if (state.drive.st) state.drive.st.params = p;
+      toast(on ? '発進の前進を ON にしました' : '発進の前進を OFF にしました');
+    }
+  } catch (e) { toast(e.message, true); el.checked = !on; }
+  if (state.drive.st) renderLaunchSwitch(state.drive.st);
+});
+const fmtN = (x, d = 2) => (x === undefined || x === null || !Number.isFinite(+x) ? '-' : (+x).toFixed(d));
+// 走行中の表示(drive.py の now.ceil: on・error・active・left・cap・v・mode(名前)・applied・thr_us)
+function ceilLiveText(c, s) {
+  if (c.error) return c.on ? `<span class="warn-text">計算が失敗したので外しました(${esc(c.error)})</span>`
+    : `<span class="warn-text">OFF(記録だけ)の影の判定が計算の失敗で止まりました。出力は変わりません(${esc(c.error)})</span>`;
+  const mode = c.mode ? String(c.mode) : '';
+  return `${c.on ? '<b class="warn-text">ON</b>' : 'OFF(記録だけ)'} ・ 天井 ${c.active ? `${fmtN(c.cap)} m/s` : '-'}${c.left ? '(左旋回中)' : ''}`
+    + ` ・ 速さ ${fmtN(c.v)} m/s${mode ? ` ・ ${esc(mode)}${c.on ? '' : '(ON なら)'}` : ''}`
+    + ` ・ 出力を変えた ${s.ceil_applied ?? 0} フレーム(うち中立 ${s.ceil_neutral ?? 0})${s.ceil_ms != null ? ` ・ 計算 ${fmtN(s.ceil_ms, 3)} ms` : ''}`;
+}
+const SA_SRC = { 0: 'なし(1.00)', 1: '基板の電圧', 2: '説明欄の V_before' };
+// 走行中の表示(drive.py の now.auto: on・error・m・m_ff・m_fb・gain・v・src・lap_p90・lap_s・laps_used・warn・warn_text)
+function autoLiveText(a, st) {
+  if (a.error) return `<span class="warn-text">計算が失敗したので外しました(速度ゲインは設定のまま。${esc(a.error)})</span>`;
+  const sources = speedSpec(st).sources || SA_SRC;
+  const src = sources[String(a.src)] || SA_SRC[a.src] || '-';
+  return `${a.on ? '<b class="warn-text">ON</b>' : 'OFF(記録だけ)'} ・ m ${fmtN(a.m, 3)}(電圧 ${fmtN(a.m_ff, 3)} × 周 ${fmtN(a.m_fb, 3)})`
+    + ` ・ ゲイン ${fmtN(a.gain, 3)}${a.on ? '' : '(ON なら)'} ・ 電圧 ${a.v != null ? `${fmtN(a.v)} V` : '-'}(${esc(src)})`
+    + (a.lap_p90 != null ? ` ・ 前の周 p90 ${fmtN(a.lap_p90)} m/s・${fmtN(a.lap_s)} 秒` : '')
+    + ` ・ 使った周 ${a.laps_used ?? 0}` + (a.warn_text ? ` ・ <b class="warn-text">${esc(a.warn_text)}</b>` : '');
+}
+// 走り終わり(drive.py の auto_end。speed_auto.end_summary)。速度ゲインを変えるのは人(1 走行 = 1 設定)
+function autoEndText(e) {
+  if (e.error) return `<span class="warn-text">計算の失敗: ${esc(e.error)}</span>`;
+  const parts = [`${e.on ? 'ON' : 'OFF(記録だけ)'}`, `使った周 ${e.laps_used ?? 0}`];
+  if (e.m_fb_end != null) parts.push(`終わりの周の直し ${fmtN(e.m_fb_end, 3)}`);
+  // 目安(2026-10-25 fix.md): 使った周ごとに「目標の周の時間に合ったはずのゲイン」の中央値。ON・OFF とも両方を出す
+  const nl = e.suggest_laps ? `(${esc(e.suggest_laps)} 周から${e.target_lap_s != null ? `・目標 1 周 ${fmtN(e.target_lap_s)} 秒` : ''})` : '';
+  if (e.suggest_throttle_gain_auto != null) parts.push(`次も自動合わせなら速度ゲインの目安 <b>${fmtN(e.suggest_throttle_gain_auto, 3)}</b>${nl}`);
+  else if (e.on && e.suggest_throttle_gain != null) parts.push(`次も自動合わせなら速度ゲインの目安 <b>${fmtN(e.suggest_throttle_gain, 3)}</b>`);
+  if (e.suggest_throttle_gain_fixed != null) parts.push(`使わないなら <b>${fmtN(e.suggest_throttle_gain_fixed, 3)}</b>`);
+  if (e.warn_text) parts.push(`<b class="warn-text">${esc(e.warn_text)}</b>`);
+  return parts.join(' ・ ') + ' <span class="muted">(画面に出すだけ。速度ゲインは人が変える)</span>';
 }
 
 // ------------------------------------------------------------ シミュレーター(CourseLab)

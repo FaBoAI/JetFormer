@@ -7,12 +7,14 @@
                          CAM_FRONT.npz   timestamps_us, seq, files
                          TOF_FRONT.npz   timestamps_us, seq, depth[N,H,W] uint16
                          IMU.npz         timestamps_us, accel[N,3] m/s^2, gyro[N,3] deg/s, mag[N,3] µT, temp[N]
-                         VEHICLE.npz     timestamps_us, pwm[N,3] µs, valid[N,3], select[N], erpm[N], ...
+                         VEHICLE.npz     timestamps_us, pwm[N,3] µs, valid[N,3], select[N], erpm[N], ...,
+                                         vbat_v[N] V(電池の電圧。無しは NaN)・vbat_ok[N]・vbat_scale(較正の係数。2026-10-25)
                          AUDIO.npz       timestamps_us[M](20msごとの受信時刻), pcm[M*320] int32 16kHz モノラル
                          AI_CMD.npz      (AI走行中のみ)timestamps_us(=推論に使ったカメラ時刻), pred[N,10,2] µs,
                                          raw[N,2] / out[N,2] µs(ゲイン適用前/後), gains[N,2], hold[N], ...,
                                          model_pred[N,10,2](方策の後処理・重ね合わせの前), post_mode, v_hat, v_cmd, ens_j,
-                                         cap_*(区間の速度上限の影の判定。drive.py の zone_caps)
+                                         cap_*(区間の速度上限の影の判定。drive.py の zone_caps)、
+                                         ceil_*(速さの天井)・sa_*(速さのゲインの自動合わせ)の影の判定(2026-10-25)
                          thumb.jpg
 
 サンプルは計測時刻で「どのシーンに属するか」を決めるので、センサー間でシーン境界がずれない。
@@ -59,6 +61,43 @@ def depth_colormap(raw, width=None, height=None, vmin=None, vmax=None):
     if width and height:
         color = cv2.resize(color, (width, height), interpolation=cv2.INTER_NEAREST)
     return color
+
+
+# AI_CMD の速さの天井(ceil_*)・速さのゲインの自動合わせ(sa_*)の欄(2026-10-25、speed_control_20261025/spec.md 2.6・3.9 節)。
+# (名前, 型, 無いときの値)。drive.py が add_ai の dict に入れる。古い行(無い欄)・None は無いときの値(-1 = 計算していない。
+# drive.py の中立で止めた行と同じ)。ceil_in_us は既定 = out[1]
+CEIL_FIELDS = (('ceil_on', bool, False), ('ceil_left', bool, False), ('ceil_cap', np.float32, np.nan),
+               ('ceil_v', np.float32, np.nan), ('ceil_vpred', np.float32, np.nan), ('ceil_steer', np.float32, np.nan),
+               ('ceil_gz', np.float32, np.nan), ('ceil_mode', np.int8, -1), ('ceil_in_us', np.float32, None),
+               ('ceil_thr_us', np.float32, np.nan), ('ceil_applied', bool, False))
+SA_FIELDS = (('sa_on', bool, False), ('sa_m', np.float32, np.nan), ('sa_m_ff', np.float32, np.nan),
+             ('sa_m_fb', np.float32, np.nan), ('sa_gain', np.float32, np.nan), ('sa_src', np.int8, -1),
+             ('sa_v', np.float32, np.nan), ('sa_eff', np.float32, np.nan), ('sa_event', np.int8, -1),
+             ('sa_lap_p90', np.float32, np.nan), ('sa_lap_s', np.float32, np.nan), ('sa_applied', bool, False))
+# 発進の前進(2026-10-26、drive の launch_boost・assist.LaunchBoost): このフレームで前進を出したか・終わった理由
+# (0 = 無し 1 速さ 2 最大の時間 3 ヨー 4 舵 5 衝撃 6 前が近い・ガード 7 CH3 を人側 8 中立で止めた・停止 9 車両の値・後ろへ
+# 10 OFF にした。assist.LAUNCH_END_NAMES)。OFF の走行・古い行は False・0
+LAUNCH_FIELDS = (('launch_on', bool, False), ('launch_end', np.int8, 0))
+
+
+def _ai_column(rows, key, dtype, default):
+    """AI の行の欄 → 配列。無い・None は default(ceil_in_us の default None = その行の out[1])"""
+    vals = []
+    for x in rows:
+        v = x.get(key)
+        if v is None:
+            v = x['out'][1] if default is None else default
+        vals.append(v)
+    return np.array(vals, dtype=dtype)
+
+
+def vbat_stats(veh_rows):
+    """シーンの電圧の要約(scene.json の stats.vbat): 使える値の 最初・最後・最小・中央 [V]。無ければ None"""
+    vals = [float(x['vbat_v']) for x in veh_rows if x.get('vbat_ok') and np.isfinite(x.get('vbat_v', np.nan))]
+    if not vals:
+        return None
+    return {'first': round(vals[0], 3), 'last': round(vals[-1], 3), 'min': round(min(vals), 3),
+            'median': round(float(np.median(vals)), 3), 'n': len(vals)}
 
 
 def mode_segments(events, t_start, t_end):
@@ -124,6 +163,13 @@ class Recorder(object):
         self.run_count = 0
         self.active_run = None
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
+
+    def _vbat_scale(self):
+        """VEHICLE.npz に残す電圧の較正の係数(車両のセンサーが持つ値。無ければ 1.0)"""
+        try:
+            return float(getattr(self.hub['VEHICLE'], 'vbat_scale', 1.0))
+        except Exception:
+            return 1.0
 
     def _emit(self, event, **info):
         for cb in list(self.listeners):
@@ -459,7 +505,12 @@ class Recorder(object):
                      hall_state=np.array([x['hall_state'] for x in v], dtype=np.uint8),
                      seq=np.array([x['seq'] for x in v], dtype=np.int64),
                      board_t_us=np.array([x['board_t_us'] for x in v], dtype=np.int64),
-                     quality=np.array(v[0]['quality']))
+                     quality=np.array(v[0]['quality']),
+                     # 電池の電圧 [V](較正の係数を掛けた後。基板が送らない・古いファームは NaN)・使えるか・係数(2026-10-25)
+                     vbat_v=np.array([x.get('vbat_v', np.nan) if x.get('vbat_ok') else np.nan for x in v],
+                                     dtype=np.float32),
+                     vbat_ok=np.array([bool(x.get('vbat_ok', False)) for x in v], dtype=bool),
+                     vbat_scale=np.array(float(self._vbat_scale()), dtype=np.float32))
         if buf.audio:
             np.savez(buf.path / 'AUDIO.npz',
                      timestamps_us=ts([s[0] for s in buf.audio]),             # 各20msチャンクの末尾の受信時刻
@@ -483,6 +534,7 @@ class Recorder(object):
                      infer_ms=np.array([x['infer_ms'] for x in a], dtype=np.float32),
                      dry_run=np.array([x['dry_run'] for x in a], dtype=bool),
                      # 補助 0=なし 1=後退の受け付け(中立を挟んだ) 2=自動リカバリー 3=リカバリー中止(中立)
+                     # 4=発進の補助 5=発進の前進(2026-10-26)
                      assist=np.array([x.get('assist', 0) for x in a], dtype=np.int8),
                      model_out=np.array([x.get('model_out', x['out']) for x in a], dtype=np.float32),  # 補助の前の値
                      # ToFガード: 衝突までの時間[s]、判定 0=なし 1=減速 2=ブレーキ、実際に出力を変えたか(記録だけのときは False)
@@ -511,7 +563,13 @@ class Recorder(object):
                      cap_in_us=np.array([x.get('cap_in_us', x['out'][1]) for x in a], dtype=np.float32),
                      cap_thr_us=np.array([x.get('cap_thr_us', np.nan) for x in a], dtype=np.float32),
                      cap_brake_start=np.array([x.get('cap_brake_start', False) for x in a], dtype=bool),
-                     cap_applied=np.array([x.get('cap_applied', False) for x in a], dtype=bool))
+                     cap_applied=np.array([x.get('cap_applied', False) for x in a], dtype=bool),
+                     # 速さの天井・速さのゲインの自動合わせ(2026-10-25)の影の判定。ON/OFF に関係なく AI のフレームごと。
+                     # ceil_mode: -2 失敗 -1 動かしていない 0 そのまま 1 弱めた 2 中立にした。sa_src: -1 計算していない 0 なし
+                     # 1 基板 2 説明欄。sa_event: -1 計算していない 0 なし 1 直した 2 周を使わない 3 上げない(天井)
+                     # 4 上げない(板の衝撃) 5 上げない(衝突の次) 6 不感帯 7 偽の起点 8 閉じられない周(衝突。fix.md)。
+                     # 実際に掛けた速さのゲインはいつも gains[:,1]
+                     **{k: _ai_column(a, k, t, d) for k, t, d in CEIL_FIELDS + SA_FIELDS + LAUNCH_FIELDS})
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:
@@ -540,6 +598,7 @@ class Recorder(object):
             stats['erpm'] = {'min': int(erpm.min()), 'max': int(erpm.max()), 'mean': round(float(erpm.mean()), 1)}
             stats['ai_driving_ratio'] = round(float(np.mean([x['select'] for x in vd])), 3)
             stats['rc_lost_ratio'] = round(float(1.0 - np.mean(valid[:, 0] & valid[:, 1])), 3)
+            stats['vbat'] = vbat_stats(vd)          # 電池の電圧(基板が送らないときは None)
         if buf.ai:
             a = [s[1] for s in buf.ai]
             lat = np.array([x['latency_ms'] for x in a if not x['hold']] or [0.0])

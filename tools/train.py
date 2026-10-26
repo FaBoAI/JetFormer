@@ -24,6 +24,18 @@ SIGINT/SIGTERM で止めると、そこまでで最良のモデルを書き出�
     --aug-brightness F / --aug-contrast F / --aug-shift-px N / --aug-tof-noise F
                                  学習の入力の拡張(カメラの明るさ ±F・コントラスト ±F・上下左右に ±N 画素のずれ、
                                  ToF の距離(正規化、1.0 = 4000 mm)に標準偏差 F の雑音)。0 = 使わない。検証には掛けない
+    --aug-top-brightness F       学習の入力の拡張(2026-10-25 C1): 画像の上 1/3 の明るさ ±F(--aug-brightness と同じ単位。
+                                 一番上の行で全部、上 1/3 の境まで直線で 0 に下がる。夕方と昼の光の差)。0 = 使わない
+
+学習 v3(2026-10-26 段 data、protocol_v3。既定ではどれも使わず、今までと同じ学習・同じファイルになる):
+    --action-ref-from-samples    作用の基準(model_config の steer_center_us・throttle_neutral_us)を、学習に使うサンプル
+                                 (drop・衝突の前後・間引きのあと)の止まったフレームだけから出す。学習そのもの(損失・重み)は変えない
+    --probe-npz <npz>            学習中の物差し(直線 10/10・10/23 のスロットルの B との差・止まった場面のブレーキ側・
+                                 10/10 の低速のブレーキ側。experiments/20261026_fix/diag_data/probe_gates.py と同じ式)を
+                                 1 エポック目・--probe-every エポックごと・最後に流して history[n]['probe'] に入れる。
+                                 学習のあとの best.pth でも流して result.json の probe_best に入れる。見るだけ(損失・最良の
+                                 エポックの選び方・データには使わない)。乱数を引かない(同じ種なら物差しなしと同じ学習)
+    --probe-every N              物差しを流す間隔 [エポック](既定 5)
 
 モデルの種類(方策。jetformer/policies の登録簿。既定は jetformer_v0 = 今までの JetFormer v0 で、今までと同じ学習・同じファイル):
     --policy NAME                jetformer_v0(既定)・act・tcp・msfusion・dinov2
@@ -49,7 +61,7 @@ from jetformer import model as jm  # noqa: E402
 from jetformer import policies  # noqa: E402
 from jetformer.model import TOF_CHANNELS  # noqa: E402
 from jetformer.policies import runtime  # noqa: E402
-from jetformer.train_data import JetFormerDataset, load_frame_table  # noqa: E402
+from jetformer.train_data import PROBE_PARTS, JetFormerDataset, ProbeSet, load_frame_table  # noqa: E402
 
 
 class Stopped(Exception):
@@ -62,9 +74,64 @@ PROGRESS = {'enabled': False}
 RL_ARGS = {'init': None, 'init_mode_copy': None, 'seed': None, 'drop_mask': None, 'sample_weights_npz': None,
            'mode_remap_npz': None, 'mode_remap_dropout': 0.0}
 # ベンチマークの学習用に足した引数と既定値(既定値なら使わない・記録しない → 前からの last.pth で --resume できる)
-BENCH_ARGS = {'label_override_npz': None, 'aug_brightness': 0.0, 'aug_contrast': 0.0, 'aug_shift_px': 0, 'aug_tof_noise': 0.0}
+BENCH_ARGS = {'label_override_npz': None, 'aug_brightness': 0.0, 'aug_contrast': 0.0, 'aug_shift_px': 0, 'aug_tof_noise': 0.0,
+              'aug_top_brightness': 0.0}
 # モデルの種類(方策)の引数と既定値(既定値なら記録しない → 前からの last.pth で --resume できる)
 POLICY_ARGS = {'policy': policies.DEFAULT, 'policy_cfg': None}
+# 学習 v3 の引数と既定値(2026-10-26。既定値なら記録しない → 前からの last.pth で --resume できる)。
+# 物差し(--probe-npz・--probe-every)は見るだけなので --resume の比べに入れない(途中から付け外ししてよい)
+V3_ARGS = {'action_ref_from_samples': False}
+PROBE_ARGS = {'probe_npz': None, 'probe_every': 5}
+
+
+def v3_args_used(args):
+    """既定値から変えた V3_ARGS {名前: 値}"""
+    return {k: getattr(args, k, d) for k, d in V3_ARGS.items() if getattr(args, k, d) != d}
+
+
+def probe_due(epoch, epochs, every):
+    """物差しを流すエポックか: 1 エポック目・every の倍数・最後"""
+    return epoch == 1 or epoch == epochs or (every > 0 and epoch % every == 0)
+
+
+def run_probe(model, device, probe, num_modes, batch=64):
+    """物差し(ProbeSet)のフレームでモデルの行 0〜2 のスロットルを出し、probe_gates.py と同じ欄を返す。
+    FP32・評価の形(model.eval・勾配なし)。終わったら学習の形に戻す。乱数の状態(random・numpy・torch・CUDA)は
+    前後で保存して戻す(DataLoader を使わないので引かないが、念のため)。学習の損失・最良の選び方には使わない"""
+    states = (random.getstate(), np.random.get_state(), torch.get_rng_state(),
+              torch.cuda.get_rng_state_all() if device.type == 'cuda' else None)
+    was_training = model.training
+    model.eval()
+    if device.type == 'cuda':           # Jetson は GPU のメモリ = プロセスのメモリ(上限 3872M に数える)。学習のキャッシュを
+        torch.cuda.empty_cache()        # 返してから流し、終わったら物差しの分も返す(10/26 段 data の試しで、返さないと
+    try:                                # 書き出しのところでメモリの上限に当たった。計算の値は変わらない)
+        pred = {}
+        with torch.no_grad():
+            for part in PROBE_PARTS:
+                outs = []
+                for image, tof, imu, state in probe.batches(part, batch):
+                    oh = torch.nn.functional.one_hot(torch.full((len(image),), probe.genre, dtype=torch.int64),
+                                                     num_modes).float()
+                    x = dict(image=torch.from_numpy(image).to(device), tof=torch.from_numpy(tof).to(device),
+                             imu=torch.from_numpy(imu).to(device), state=torch.from_numpy(state).to(device),
+                             mode=oh.to(device))
+                    outs.append(runtime.forward(model, x)['actions'][:, :3, 1].float().cpu().numpy())
+                pred[part] = np.concatenate(outs).astype(np.float64) * jm.PWM_SCALE + jm.PWM_CENTER
+    finally:
+        model.train(was_training)
+        random.setstate(states[0])
+        np.random.set_state(states[1])
+        torch.set_rng_state(states[2])
+        if states[3] is not None:
+            torch.cuda.set_rng_state_all(states[3])
+        if device.type == 'cuda':
+            torch.cuda.empty_cache()
+    return probe.metrics(pred)
+
+
+def probe_line(r):
+    return 'st10 %+.1fµs  st23 %+.1fµs  止まった場面のブレーキ側 %.3f  前へ %.3f  10/10 の低速のブレーキ側 %.3f' % (
+        r['st10_thr_vs_b_us'], r['st23_thr_vs_b_us'], r['stand_brake_side_frac'], r['stand_go_frac'], r['low10_brake_frac'])
 
 
 def rl_args_used(args):
@@ -78,9 +145,13 @@ def bench_args_used(args):
 
 
 def aug_of(args):
-    """--aug-* → JetFormerDataset の aug(全部 0 なら None = 使わない)"""
+    """--aug-* → JetFormerDataset の aug(全部 0 なら None = 使わない)。top_brightness は使ったときだけ入れる
+    (上 1/3 を使わない拡張の result.json・表示は 10/21 と同じ)"""
     aug = {'brightness': args.aug_brightness, 'contrast': args.aug_contrast, 'shift_px': args.aug_shift_px,
            'tof_noise': args.aug_tof_noise}
+    top = getattr(args, 'aug_top_brightness', 0.0)
+    if top != 0.0:
+        aug['top_brightness'] = top
     for k, v in aug.items():
         if v < 0:
             raise SystemExit('--aug-%s は 0 以上にしてください' % k.replace('_', '-'))
@@ -274,6 +345,13 @@ def main():
     ap.add_argument('--aug-shift-px', type=int, default=0, help='学習の拡張: 画像を上下左右に ±N 画素ずらす(0 = 使わない)')
     ap.add_argument('--aug-tof-noise', type=float, default=0.0,
                     help='学習の拡張: ToF の距離(正規化、1.0 = 4000 mm)に足す雑音の標準偏差(0 = 使わない)')
+    ap.add_argument('--aug-top-brightness', type=float, default=0.0,
+                    help='学習の拡張: 画像の上 1/3 の明るさ ±この割合(上ほど強く、境で 0。0 = 使わない)')
+    ap.add_argument('--action-ref-from-samples', action='store_true',
+                    help='作用の基準(ステアの中心・スロットルの中立)を学習に使うサンプルの止まったフレームだけから出す(既定: 学習のシーン全部)')
+    ap.add_argument('--probe-npz', default=None,
+                    help='学習中の物差しの npz(probe_gates.py make の probe_set.npz)。1 エポック目・--probe-every ごと・最後に流す(見るだけ)')
+    ap.add_argument('--probe-every', type=int, default=5, help='物差しを流す間隔 [エポック](既定 5)')
     ap.add_argument('--policy', default=policies.DEFAULT, choices=policies.names(),
                     help='モデルの種類(既定 %s = 今までの JetFormer v0)' % policies.DEFAULT)
     ap.add_argument('--policy-cfg', default=None, help='方策の設定の JSON(既定値から変えるものだけ。例 \'{"dec_layers": 3}\')')
@@ -358,6 +436,18 @@ def main():
         print('損失の重み(学習): 平均 %.3f(これで割る)・中央値 %.3f・最大 %.2f・有効サンプル数 %.0f / %d' % (
             weight_scale, float(np.median(w)), float(w.max()), float(w.sum() ** 2 / max((w ** 2).sum(), 1e-12)), len(w)))
     names = {m['id']: m['name'] for m in train_ds.modes}
+    ref_samples = None                        # --action-ref-from-samples(--max-steps で抜き出す前の学習のサンプルから)
+    if args.action_ref_from_samples:
+        ref_samples = train_ds.action_reference_from_samples()
+        print('作用の基準(学習のサンプルの止まったフレーム %d 行から): ステアの中心 %.1f・スロットルの中立 %.1f µs'
+              '(学習のシーン全部なら %.1f・%.1f)' % ((ref_samples[2], ref_samples[0], ref_samples[1]) + train_ds.action_reference()))
+    probe = None
+    if args.probe_npz:
+        if args.probe_every < 1:
+            raise SystemExit('--probe-every は 1 以上にしてください')
+        probe = ProbeSet(args.probe_npz, os.path.dirname(os.path.abspath(args.data.rstrip('/'))), use_command=use_command)
+        print('学習中の物差し: %s(%s。1 エポック目・%d エポックごと・最後。見るだけ)' % (
+            args.probe_npz, '・'.join('%s %d' % kv for kv in probe.counts().items()), args.probe_every))
     if args.max_steps:      # 動作確認用: ジャンルが偏らないようランダムに抜き出す
         rng = random.Random(0)
         for ds in (train_ds, val_ds):
@@ -395,6 +485,7 @@ def main():
     same_args.update(rl_args_used(args))     # 新しい引数は使ったときだけ記録する(前からの last.pth で再開できるように)
     same_args.update(policy_args_used(args))
     same_args.update(bench_args_used(args))
+    same_args.update(v3_args_used(args))
     if args.resume:
         if not os.path.exists(last_path):
             raise SystemExit('--resume: %s がありません(最初から学習してください)' % last_path)
@@ -450,6 +541,11 @@ def main():
                 history[-1]['train_loss'] = round(float(tr_stats.get('loss', float('nan'))), 5)
                 if tr_stats.get('parts'):
                     history[-1]['train_parts'] = {k: round(float(v), 5) for k, v in tr_stats['parts'].items()}
+            if probe is not None and probe_due(epoch, args.epochs, args.probe_every):     # 学習中の物差し(見るだけ)
+                tp = time.time()
+                history[-1]['probe'] = run_probe(model, device, probe, num_modes)
+                history[-1]['probe_s'] = round(time.time() - tp, 1)
+                print('probe %3d  %s  %.0fs' % (epoch, probe_line(history[-1]['probe']), history[-1]['probe_s']), flush=True)
             emit('epoch', **history[-1])
             tmp = last_path + '.tmp'                     # 途中保存(書き終えてから置き換える)
             torch.save({'model': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict(),
@@ -463,7 +559,7 @@ def main():
         state = 'stopped'
         print('停止の指示を受けました。ここまでで最良のモデルを書き出します。', flush=True)
 
-    steer_center, throttle_neutral = train_ds.action_reference()
+    steer_center, throttle_neutral = train_ds.action_reference() if ref_samples is None else ref_samples[:2]
     train_mode_counts = {str(m): c for m, c in sorted(train_ds.mode_counts().items())}
     result = {'state': state, 'dataset': os.path.basename(args.data.rstrip('/')), 'stride': args.stride,
               'epochs_planned': args.epochs, 'epochs_done': len(history), 'batch': args.batch, 'lr': args.lr,
@@ -491,8 +587,22 @@ def main():
             'label_override_npz': args.label_override_npz, 'aug': aug,
             'label_overridden_rows': {'all': train_ds.label_overridden, 'used': train_ds.label_overridden_used},
             'sha1': ({'label_override_npz': file_digest(args.label_override_npz)} if args.label_override_npz else {})}
+    if ref_samples is not None:              # 使ったときだけ(既定の result.json は今までと同じ)
+        sc_all, tn_all = train_ds.action_reference()
+        result['v3_options'] = {'action_ref_from_samples': True, 'action_ref_rows': ref_samples[2],
+                                'action_ref_scene_all_us': [sc_all, tn_all]}
+    if probe is not None:                    # 使ったときだけ。物差しは見るだけ(best は検証の L1 のまま)
+        done = [h for h in history if 'probe' in h]
+        result['probe_options'] = {'probe_npz': args.probe_npz, 'sha1': file_digest(args.probe_npz), 'every': args.probe_every,
+                                   'genre': probe.genre, 'frames': probe.counts(), 'epochs': [h['epoch'] for h in done]}
+        result['probe_history'] = [dict(epoch=h['epoch'], **{k: v for k, v in h['probe'].items() if k != 'n'}) for h in done]
+        if history and 'probe' in history[-1]:        # 最後のエポック = last.pth の重み(止めたときは無いことがある)
+            result['probe_last'] = dict(history[-1]['probe'], epoch=history[-1]['epoch'])
     if best_epoch:
         model.load_state_dict(torch.load(os.path.join(args.out, 'best.pth'), map_location='cpu', weights_only=True))
+        if probe is not None:                # best.pth の重みで(書き出しの前。書き出しはモデルを CPU に動かす)
+            result['probe_best'] = dict(run_probe(model, device, probe, num_modes), epoch=best_epoch)
+            print('probe best(%d エポック目)  %s' % (best_epoch, probe_line(result['probe_best'])), flush=True)
         io = export_onnx(model, os.path.join(args.out, 'jetformer.onnx'), num_modes)
         model_config = {'num_modes': num_modes, 'modes': train_ds.modes, 'future_steps': jm.FUTURE_STEPS,
                         'inputs': io['inputs'], 'tof_channels': TOF_CHANNELS,       # 入力は書き出した ONNX から読み直した名前

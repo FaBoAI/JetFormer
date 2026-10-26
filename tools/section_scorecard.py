@@ -29,6 +29,8 @@ tools/label_events.py の label_log をその場で呼ぶ(書き出さない)。
               どちらも「立て直し中」(失敗による交代のあと、人が AI に戻してから 2.5 秒以内)の衝突は数えず、別に出す
               (collision_map.md の「回復」3 件と同じもの)。強い衝突 = 4G 以上(label の strong)
   通過        R1 の起点(label_events.course_anchors、1 周に 1 回の大きな右ヘアピンの入口)ごと。AI の通過 = 起点の時刻に AI 側。
+              偽の起点(衝突で右へ回ったもの)は外す(label_events.reject_false_anchors。外したものは r1_anchors_rejected、
+              ラベルのファイルが外す前のものなら衝突・交代・フレームの場所を付け直す = loc_relabeled)。
               R1 の衝突 = 起点 −0.5 秒〜緑マット出口 −0.3 秒(出口が無ければ起点 +3.5 秒)の場所 R1 の衝突、
               GM = 起点 〜 出口 +0.3 秒の場所 GM、DE = 出口 −0.3 〜 +2.3 秒の場所 DE(通過の数え方は course_passes と同じ。
               通過あたりの衝突は rule=label の全衝突で数える = passes.json と同じ)
@@ -41,6 +43,9 @@ tools/label_events.py の label_log をその場で呼ぶ(書き出さない)。
   信頼区間    衝突/周などの率は、件数のポアソンの正確な 90% 区間 ÷ 周相当。通過あたりは Clopper-Pearson の 90% 区間
   説明欄      走行開始の「説明」欄の bench=… day=… block=… cand=… model=… battery=#… V_before=… V_after=… check=… memo=…
               (data/bench_candidates.json の description_template)。cand・battery・block ごとにまとめる
+  速さの制御  走行ごとに speed_ceiling・speed_auto(log.json の drive.params)と、AI_CMD の天井(ceil_*)・自動合わせ(sa_*)の
+              要約(speed_ctrl。天井が出力を変えた・影で弱める/中立・左旋回の割合、m_fb の終わり・使った周、印)
+  電圧        vbat: VEHICLE.npz の vbat_v(基板)→ scene.json の stats.vbat → 説明欄の V_before・V_after の順
 """
 
 import argparse
@@ -324,12 +329,15 @@ def cmap_collisions(it, accel, thr=CMAP_G, merge_s=le.IMPACT_MERGE_S):
     return [e for e in ev if not e['suspect']]
 
 
-def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None, warmup_anchors=None, counted_ai_s=None):
+def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None, warmup_anchors=None, counted_ai_s=None,
+              labels=None, loaded=None, extras=None):
     """1 本のログの成績(数と分母。率は aggregate で出す)。warmup_anchors・counted_ai_s を渡すと、手順の数える区間
-    (K 番目の AI の R1 の起点の 0.5 秒前から AI の時間 counted_ai_s 秒まで)の周の表 laps_protocol も作る"""
+    (K 番目の AI の R1 の起点の 0.5 秒前から AI の時間 counted_ai_s 秒まで)の周の表 laps_protocol も作る。
+    labels = (info, lab, 元) と loaded = le.load_log の結果を渡すと読み直さない(tools/car_check.py)。
+    extras に dict を渡すと、使った起点・緑マット出口・IMU の時刻・向き・平滑したヨー・場所(loc_code)・出来事を入れて返す"""
     labels_dir = Path(labels_dir or config.DATA_DIR / 'labels')
     raw_dir = Path(raw_dir or config.RAW_DIR)
-    info, lab, lab_src = _labels(log, labels_dir, raw_dir)
+    info, lab, lab_src = labels if labels is not None else _labels(log, labels_dir, raw_dir)
     if desc_override is not None:
         desc_raw = desc_override
     else:                                   # 走ったあとにシーンの説明で直した欄(V_after など)も入れる
@@ -349,7 +357,7 @@ def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None
     dt = lab['dt_s'].astype(np.float64)
     assist = lab['assist']
     ev = info['events']
-    L = le.load_log(log, raw_dir)
+    L = loaded if loaded is not None else le.load_log(log, raw_dir)
     V, I = L['VEHICLE'], L['IMU']
     t0 = info['t0_us']
     sec = lambda x: (np.asarray(x, np.int64) - t0) / 1e6      # noqa: E731
@@ -364,9 +372,23 @@ def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None
     gz = I['gyro'][:, 2].astype(np.float64)
     still = (np.abs(np.interp(it, vt, verpm)) < 50) & (np.abs(gz) < 5)
     hd, gzu = le.heading_deg(it, gz, still)
-    anchors, gm_exit, gzs = le.course_anchors(it, hd, gzu, vt, verpm)
+    # R1 の起点。偽の起点(衝突で右へ回ったもの)は外す(label_events.reject_false_anchors、spec 5.1)。
+    # 人/AI はラベルの ai(CH3。dry run も AI 側)、衝撃はラベルの衝突(水平 4G 以上)。label_log と同じ結果になる
+    anchors, gm_exit, gzs, rejected = le.checked_anchors(it, hd, gzu, vt, verpm, t, lab['ai'].astype(bool),
+                                                         ev.get('collisions', []))
     anchors = np.asarray(anchors, float)
     gm_exit = np.asarray(gm_exit, float)
+    res['r1_anchors_rejected'] = rejected
+    res['anchor_rule'] = le.ANCHOR_RULE
+    loc_code = lab['loc_code'].astype(int)
+    res['loc_relabeled'] = False
+    if rejected and info.get('anchor_rule') != le.ANCHOR_RULE:
+        # ラベルのファイルが偽の起点を外す前に作られた → 衝突・交代の場所とフレームの場所を、外したあとの起点で付け直す
+        ev, loc_code = relocate_events(ev, t, anchors, gm_exit, it, hd, gzs)
+        res['loc_relabeled'] = True
+    if extras is not None:
+        extras.update(anchors=anchors, gm_exit=gm_exit, it=it, hd=hd, gzs=gzs, gzu=gzu, loc_code=loc_code, ev=ev,
+                      vt=vt, verpm=verpm)
 
     # AI 側かを IMU の時刻で(最後のフレームの値。0.2 秒を超えてフレームが無ければ AI ではない)
     fi = np.clip(np.searchsorted(t, it, side='right') - 1, 0, n - 1)
@@ -445,7 +467,7 @@ def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None
     tk_t = np.array([x['t_s'] for x in tks])
     rb_t = np.array([b['t_last_s'] for b in ev.get('board_reboots', [])])
     ai_coll_t = np.array([c['t_s'] for c in coll])
-    loc_code = lab['loc_code'].astype(int)
+    _, Df = le.cumulative_distance(vt, verpm)
     laps = []
     for j in range(len(anchors) - 1):
         a, b = float(anchors[j]), float(anchors[j + 1])
@@ -464,7 +486,9 @@ def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None
             if code == 0:
                 continue
             sect[name] = _r(dt[m & (loc_code == code)].sum(), 3)
-        laps.append({'t_start': _r(a, 3), 'lap_s': _r(dur, 3), 'clean': bool(clean), 'sections_s': sect})
+        laps.append({'t_start': _r(a, 3), 'lap_s': _r(dur, 3), 'clean': bool(clean), 'sections_s': sect,
+                     'dpsi_deg': _r(float(np.interp(b, it, hd) - np.interp(a, it, hd)), 1),
+                     'dist_m': _r(float(np.interp(b, vt, Df) - np.interp(a, vt, Df)), 2)})
     res['laps'] = laps
     lc = [x for x in ev.get('laps', []) if x.get('ai_only') and not x.get('first')]
     res['lapcounter'] = {'ai_laps': len(lc), 'clean_laps': sum(1 for x in lc if x.get('clean')),
@@ -508,8 +532,212 @@ def score_log(log, labels_dir=None, raw_dir=None, desc_override=None, bench=None
     if A is not None and 'cap_mode' in A:
         res['window']['cap'] = cap_counts(sec(A['timestamps_us']), A, t, ai, res['window'].get('start_s'),
                                           res['window'].get('end_s'), anchors, gm_exit)
+    # 速さの天井・自動合わせ(AI_CMD の ceil_*・sa_*、log.json の drive.params)と電圧(spec 5.3)
+    res['speed_ctrl'] = speed_ctrl_summary(A, t0, t, ai, res.get('params_at_start'))
+    res['vbat'] = vbat_summary(V, t0, log, raw_dir, desc)
     del L
     return res
+
+
+def relocate_events(ev, t, anchors, gm_exit, it, hd, gzs):
+    """衝突・交代の場所(loc・loc_detail)とフレームの場所(loc_code)を、与えた起点で付け直す(元の ev は変えない)"""
+    ev = dict(ev)
+
+    def fix(rows):
+        out = []
+        for x in rows or []:
+            x = dict(x)
+            det = int(le.locate([x['t_s']], anchors, gm_exit, it, hd, gzs)[0])
+            x['loc'] = le.LOC_NAMES[le._DETAIL_TO_LOC[det]]
+            if 'loc_detail' in x:
+                x['loc_detail'] = le.LOC_DETAIL[det]
+            out.append(x)
+        return out
+    for k in ('collisions', 'collision_suspects', 'bumps', 'takeovers'):
+        if k in ev:
+            ev[k] = fix(ev[k])
+    loc_code = le._DETAIL_TO_LOC[le.locate(t, anchors, gm_exit, it, hd, gzs)].astype(int)
+    return ev, loc_code
+
+
+# ------------------------------------------------------------------ 速さの天井・自動合わせ・電圧の要約(spec 2.6・3.9・4.2・5.3)
+CEIL_MODES = {-2: 'failed', -1: 'off', 0: 'pass', 1: 'weak', 2: 'neutral'}
+SA_EVENTS = {0: 'none', 1: 'corrected', 2: 'lap_not_used', 3: 'no_raise_ceiling', 4: 'no_raise_r1_shock',
+             5: 'no_raise_after_collision', 6: 'deadband', 7: 'false_anchor', 8: 'abandoned_collision'}
+SA_USED = (1, 3, 4, 5, 6)            # 周の速さで直しを決めた周(上げないも不感帯も「使った周」)
+SA_MFB_EDGES = (0.90, 1.10)
+CEIL_SWITCH_MAX_PER_S = 10           # 天井の出し方(そのまま・弱めた・中立)の入れ替わりがこれより多い 1 秒があれば印
+AUTO_EDGE_LAPS = 3                   # m_fb が端に続けて張り付いた周の数の印
+AUTO_FLIP_LAPS = 3                   # 上げ下げの向きが続けて入れ替わった回数の印
+VBAT_EDGE_S = 2.0                    # 走り始め・終わりの電圧 = 最初・最後の 2 秒の中央値
+
+
+def _runmax(flags):
+    best = cur = 0
+    for f in flags:
+        cur = cur + 1 if f else 0
+        best = max(best, cur)
+    return best
+
+
+def speed_ctrl_summary(A, t0, t, ai, params=None):
+    """AI_CMD の速さの天井(ceil_*)・自動合わせ(sa_*)の要約と、log.json の drive.params の speed_ceiling・speed_auto。
+    ai はラベルのフレームの AI(dry run を除いたもの)。欄の無い古い記録は recorded = False"""
+    p = params or {}
+    out = {'speed_ceiling': p.get('speed_ceiling'), 'speed_auto': p.get('speed_auto'),
+           'ceil_recorded': bool(A is not None and 'ceil_mode' in A), 'auto_recorded': bool(A is not None and 'sa_m' in A),
+           'flags': []}
+    if A is None or not (out['ceil_recorded'] or out['auto_recorded']) or not len(t):
+        return out
+    at = (np.asarray(A['timestamps_us'], np.int64) - int(t0)) / 1e6
+    o = np.argsort(at, kind='stable')
+    at = at[o]
+    k = np.clip(np.searchsorted(t, at, side='right') - 1, 0, len(t) - 1)
+    aif = np.asarray(ai, bool)[k] & (at >= t[0]) & (np.abs(at - t[k]) <= le.GAP_S)
+    if 'dry_run' in A:
+        aif &= ~np.asarray(A['dry_run'], bool)[o]
+    n_ai = int(aif.sum())
+    out['ai_frames'] = n_ai
+
+    def col(name, default, dtype):
+        return np.asarray(A[name], dtype)[o] if name in A else np.full(len(at), default, dtype)
+    if out['ceil_recorded']:
+        mode = col('ceil_mode', -1, np.int64)
+        on = col('ceil_on', False, bool)
+        applied = col('ceil_applied', False, bool)
+        left = col('ceil_left', False, bool)
+        ev_ = aif & (mode >= 0)
+        n_ev = int(ev_.sum())
+        frac = lambda m, d: _r(float(m.sum()) / d, 4) if d else None      # noqa: E731
+        out['ceil'] = {'on_frames': int((aif & on).sum()), 'eval_frames': n_ev,
+                       'applied_frames': int((aif & applied).sum()), 'applied_frac': frac(aif & applied, n_ai),
+                       'weak_frac': frac(ev_ & (mode == 1), n_ev), 'neutral_frac': frac(ev_ & (mode == 2), n_ev),
+                       'limit_frac': frac(ev_ & (mode >= 1), n_ev), 'left_frac': frac(ev_ & left, n_ev),
+                       'failed_frames': int((aif & (mode == -2)).sum())}
+        # 出し方の入れ替わり(続いた計算のフレームどうし)。いちばん多い 1 秒の回数
+        idx = np.nonzero(ev_)[0]
+        sw = []
+        for a_, b_ in zip(idx[:-1], idx[1:]):
+            if at[b_] - at[a_] <= le.GAP_S and mode[a_] != mode[b_]:
+                sw.append(at[b_])
+        sw = np.asarray(sw)
+        mx = int(max((np.searchsorted(sw, x + 1.0, side='left') - j for j, x in enumerate(sw)), default=0))
+        out['ceil']['switches'] = int(len(sw))
+        out['ceil']['switch_max_per_s'] = mx
+        if mx > CEIL_SWITCH_MAX_PER_S:
+            out['flags'].append('ceil_switch_gt%d_per_s' % CEIL_SWITCH_MAX_PER_S)
+        if out['ceil']['failed_frames']:
+            out['flags'].append('ceil_failed')
+    if out['auto_recorded']:
+        m = col('sa_m', np.nan, np.float64)
+        mfb = col('sa_m_fb', np.nan, np.float64)
+        mff = col('sa_m_ff', np.nan, np.float64)
+        gain = col('sa_gain', np.nan, np.float64)
+        on = col('sa_on', False, bool)
+        src = col('sa_src', 0, np.int64)
+        vv = col('sa_v', np.nan, np.float64)
+        evc = col('sa_event', 0, np.int64)
+        lp90 = col('sa_lap_p90', np.nan, np.float64)
+        ls = col('sa_lap_s', np.nan, np.float64)
+        last = lambda x: _r(float(x[aif & np.isfinite(x)][-1]), 4) if (aif & np.isfinite(x)).any() else None   # noqa: E731
+        close = np.nonzero(aif & np.isfinite(lp90))[0]
+        laps = []
+        for i in close:
+            j = min(i + 1, len(at) - 1) if i + 1 < len(at) and aif[min(i + 1, len(at) - 1)] else i
+            laps.append({'t_s': _r(at[i], 3), 'p90_mps': _r(lp90[i], 3), 'lap_s': _r(ls[i], 3),
+                         'event': SA_EVENTS.get(int(evc[i]), str(int(evc[i]))),
+                         'm_fb': _r(mfb[j], 4) if np.isfinite(mfb[j]) else None})
+        evs = {}
+        for i in np.nonzero(aif & (evc > 0))[0]:
+            nm = SA_EVENTS.get(int(evc[i]), str(int(evc[i])))
+            evs[nm] = evs.get(nm, 0) + 1
+        fbs = [x['m_fb'] for x in laps if x['m_fb'] is not None]
+        edge = [any(abs(v - e) <= 1e-3 for e in SA_MFB_EDGES) for v in fbs]
+        d = [b - a for a, b in zip(fbs[:-1], fbs[1:]) if abs(b - a) > 1e-6]
+        flips = [np.sign(x) != np.sign(y) for x, y in zip(d[:-1], d[1:])]
+        srcs = src[aif]
+        out['auto'] = {'on_frames': int((aif & on).sum()), 'm_end': last(m), 'm_ff_end': last(mff), 'm_fb_end': last(mfb),
+                       'gain_end': last(gain), 'src': int(np.bincount(srcs[srcs >= 0]).argmax()) if (srcs >= 0).any() else None,
+                       'v_first': _r(float(vv[aif & np.isfinite(vv)][0]), 3) if (aif & np.isfinite(vv)).any() else None,
+                       'laps': laps, 'events': evs,
+                       'laps_used': sum(1 for i in close if int(evc[i]) in SA_USED),
+                       'laps_skipped': sum(1 for i in close if int(evc[i]) not in SA_USED),
+                       'edge_run_max': _runmax(edge), 'flip_run_max': _runmax(flips),
+                       'applied_frames': int((aif & col('sa_applied', False, bool)).sum())}
+        if out['auto']['edge_run_max'] >= AUTO_EDGE_LAPS:
+            out['flags'].append('auto_edge_%dlaps' % AUTO_EDGE_LAPS)
+        if out['auto']['flip_run_max'] >= AUTO_FLIP_LAPS:
+            out['flags'].append('auto_flip_%dlaps' % AUTO_FLIP_LAPS)
+    return out
+
+
+def _volt(x):
+    """説明欄の電圧の文('8.31'・'8.31V')→ float。読めなければ None"""
+    if x is None:
+        return None
+    m = re.match(r'^\s*([0-9]+(?:\.[0-9]+)?)\s*[Vv]?\s*$', str(x))
+    if not m:
+        return None
+    v = float(m.group(1))
+    return v if 3.0 <= v <= 20.0 else None
+
+
+def _scene_vbat(log, raw_dir):
+    """シーン(scene.json)の stats.vbat(最初・最後・最小・中央)を記録の順につなぐ。無ければ None"""
+    root = Path(raw_dir or config.RAW_DIR) / log
+    rows = []
+    for sj in sorted(root.glob('*/scene.json')) if root.is_dir() else []:
+        try:
+            st = (json.loads(sj.read_text(encoding='utf-8')).get('stats') or {}).get('vbat')
+        except (OSError, ValueError):
+            continue
+        if not isinstance(st, dict):
+            continue
+        g = lambda *ks: next((float(st[k]) for k in ks if st.get(k) is not None), None)    # noqa: E731
+        rows.append((g('first', 'start'), g('last', 'end'), g('min'), g('median', 'p50')))
+    rows = [r for r in rows if any(x is not None for x in r)]
+    if not rows:
+        return None
+    firsts = [r[0] for r in rows if r[0] is not None]
+    lasts = [r[1] for r in rows if r[1] is not None]
+    mins = [r[2] for r in rows if r[2] is not None]
+    meds = [r[3] for r in rows if r[3] is not None]
+    return {'start_v': _r(firsts[0], 3) if firsts else None, 'end_v': _r(lasts[-1], 3) if lasts else None,
+            'min_v': _r(min(mins), 3) if mins else None, 'median_v': _r(float(np.median(meds)), 3) if meds else None}
+
+
+def vbat_summary(V, t0, log=None, raw_dir=None, desc=None):
+    """電圧の要約。上から順に: VEHICLE.npz の vbat_v(基板。最初・最後の 2 秒の中央値・1 秒ごとの中央値の最小)→
+    scene.json の stats.vbat → 説明欄の V_before・V_after(Vb_before・Vb_after・Vb_min)。source = board / scene / description / None"""
+    d = desc or {}
+    out = {'source': None, 'start_v': None, 'end_v': None, 'min_v': None, 'median_v': None, 'n': 0,
+           'V_before': _volt(d.get('V_before')), 'V_after': _volt(d.get('V_after')),
+           'Vb_before': _volt(d.get('Vb_before')), 'Vb_after': _volt(d.get('Vb_after')), 'Vb_min': _volt(d.get('Vb_min'))}
+    if V is not None and 'vbat_v' in V and t0 is not None:
+        v = np.asarray(V['vbat_v'], np.float64)
+        ok = np.isfinite(v) & (v > 0)
+        if 'vbat_ok' in V:
+            ok &= np.asarray(V['vbat_ok'], bool)
+        if ok.any():
+            tt = (np.asarray(V['timestamps_us'], np.int64)[ok] - int(t0)) / 1e6
+            vv = v[ok]
+            o = np.argsort(tt, kind='stable')
+            tt, vv = tt[o], vv[o]
+            b = np.floor((tt - tt[0])).astype(int)
+            meds = [float(np.median(vv[b == i])) for i in np.unique(b) if (b == i).sum() >= 5]
+            out.update(source='board', n=int(len(vv)), start_v=_r(float(np.median(vv[tt <= tt[0] + VBAT_EDGE_S])), 3),
+                       end_v=_r(float(np.median(vv[tt >= tt[-1] - VBAT_EDGE_S])), 3),
+                       min_v=_r(min(meds), 3) if meds else _r(float(np.min(vv)), 3), median_v=_r(float(np.median(vv)), 3))
+            return out
+    sc = _scene_vbat(log, raw_dir) if log else None
+    if sc:
+        out.update(source='scene', **sc)
+        return out
+    vb = out['Vb_before'] if out['Vb_before'] is not None else out['V_before']
+    va = out['Vb_after'] if out['Vb_after'] is not None else out['V_after']
+    if vb is not None or va is not None:
+        out.update(source='description', start_v=vb, end_v=va, min_v=out['Vb_min'])
+    return out
 
 
 def _cap_codes():
@@ -1132,6 +1360,7 @@ def to_markdown(sc, title='区間の成績表'):
     L += ['', '## 4. 区間の時間(きれいな周の中央値、秒)', '', '| 区間 | 秒 |', '|---|---|']
     for k, v in A['section_s_clean_median'].items():
         L.append('| %s | %s |' % (k, _f(v)))
+    L += per_log_ctrl_table(sc['per_log'])
     for key, title_ in (('by_cand', '候補'), ('by_block', 'ブロック'), ('by_battery', '電池'), ('by_log', 'ログ')):
         if g.get(key):
             L += ['', '## %s ごと(手順の指標)' % title_, '', protocol_table(g[key], title_),
@@ -1148,6 +1377,55 @@ def to_markdown(sc, title='区間の成績表'):
         if comp:
             L.append('- ラベルのファイルが無く、その場で作った: %s' % '・'.join(comp))
     return '\n'.join(L) + '\n'
+
+
+def _onoff(x):
+    return '—' if x is None else ('ON' if int(x) else 'OFF')
+
+
+def ctrl_cells(s):
+    """走行ごとの表の「天井」「自動合わせ」「電圧」「印」の文(scorecard・bench_report で使う)"""
+    sp = s.get('speed_ctrl') or {}
+    c, a = sp.get('ceil') or {}, sp.get('auto') or {}
+    if sp.get('ceil_recorded'):
+        ceil = '%s・変えた %s・影 弱め %s/中立 %s・左 %s' % (
+            _onoff(sp.get('speed_ceiling')), _f((c.get('applied_frac') or 0) * 100, '%.1f%%'),
+            _f((c.get('weak_frac') or 0) * 100, '%.1f%%'), _f((c.get('neutral_frac') or 0) * 100, '%.1f%%'),
+            _f((c.get('left_frac') or 0) * 100, '%.0f%%'))
+    else:
+        ceil = '%s(記録なし)' % _onoff(sp.get('speed_ceiling'))
+    if sp.get('auto_recorded'):
+        auto = '%s・m_fb %s・m %s・周 %d(外した %d)' % (_onoff(sp.get('speed_auto')), _f(a.get('m_fb_end'), '%.3f'),
+                                                   _f(a.get('m_end'), '%.3f'), a.get('laps_used', 0), a.get('laps_skipped', 0))
+    else:
+        auto = '%s(記録なし)' % _onoff(sp.get('speed_auto'))
+    vb = s.get('vbat') or {}
+    volt = '—' if not vb.get('source') else '%s / %s / %s(%s)' % (
+        _f(vb.get('start_v')), _f(vb.get('end_v')), _f(vb.get('min_v')),
+        {'board': '基板', 'scene': 'シーン', 'description': '説明欄'}.get(vb['source'], vb['source']))
+    flags = '・'.join(sp.get('flags') or []) or '—'
+    return ceil, auto, volt, flags
+
+
+def per_log_ctrl_table(per_log):
+    """5 章: 外した R1 の起点・速さの天井・自動合わせ・電圧(走行ごと。どれかがある走行だけ)"""
+    rows = [s for s in per_log.values() if 'error' not in s and (
+        s.get('r1_anchors_rejected') or (s.get('speed_ctrl') or {}).get('ceil_recorded')
+        or (s.get('speed_ctrl') or {}).get('auto_recorded') or (s.get('vbat') or {}).get('source'))]
+    if not rows:
+        return ['', '## 5. 外した R1 の起点・速さの制御・電圧', '', '- 外した起点・天井と自動合わせの記録・電圧のある走行はありません。']
+    L = ['', '## 5. 外した R1 の起点・速さの制御・電圧(走行ごと)', '',
+         '- 外した起点: 最後に使った起点からの向きの変化 < 270°(16 秒以内・ずっと AI。impact = 起点の −0.05〜+0.25 秒に水平 4G 以上の衝突も'
+         'あった。heading_next = 次の起点とつじつまが合わない前の起点。label_events.reject_false_anchors)。通過・周・場所は外したあとの起点で数えた。',
+         '- 天井: 設定・実際に出力を変えたフレームの割合・影の判定で弱める/中立にする割合・左旋回の割合(AI のフレーム)。'
+         '自動合わせ: 設定・最後の m_fb と m・使った周(外した周)。電圧: 始め / 終わり / 最小 [V](元)。',
+         '', '| ログ | 外した起点(時刻・理由・向き・g) | 天井 | 自動合わせ | 電圧 | 印 |', '|---|---|---|---|---|---|']
+    for s in sorted(rows, key=lambda x: x['log']):
+        rj = '・'.join('%.2f 秒 %s %s° %s' % (r['t_s'], r['reason'], _f(r.get('dpsi_deg'), '%.0f'),
+                                            '%.1fG' % r['g'] if r.get('g') is not None else '')
+                      for r in s.get('r1_anchors_rejected') or []) or '—'
+        L.append('| %s | %s | %s | %s | %s | %s |' % ((s['log'], rj) + ctrl_cells(s)))
+    return L
 
 
 def _json_default(o):

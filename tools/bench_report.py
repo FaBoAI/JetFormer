@@ -20,6 +20,10 @@
   ラップだけ、電圧(V_before・V_after)がそろっていて B の周の傾きがはっきり負なら、電池の直しを先に入れる。
 順位: S = Δ失敗/周 + λ × Δラップの中央値(λ = 1.0 は既定の仮定。0.5・2.0 も並べる)。1 日目は上位 2 本(T1・T2)、
   2 日目は 10/24 の周だけで「B より良い」の 5 条件を判定する(protocol ranking)。
+走行ごとの速さの制御・電圧・車の確認(13 章、2026-10-25 spec 5.3): 電圧(始め・終わり・最小)・速さの天井(出力を変えた・
+  影で弱める/中立・左旋回の割合)・自動合わせ(m_fb の終わり・使った周)・tools/car_check.py の判定(--no-car-check で外す)。
+  異常の印(自動合わせの m_fb が 3 周続けて端・天井の出し方が 1 秒に 10 回より多く入れ替わる・天井の計算の失敗)は「外れたこと」にも書く。
+  周・通過は偽の R1 の起点を外したもの(section_scorecard と同じ)。
 """
 
 import argparse
@@ -40,6 +44,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'tools'))
 from jetformer import config  # noqa: E402
 import section_scorecard as ss  # noqa: E402
+import car_check as cc  # noqa: E402
 
 SCHEMA = 'jf-bench-report/v1'
 PREP = Path('/home/jetson/jetformer_reports/bench_prep_20261021')
@@ -1264,6 +1269,7 @@ def to_markdown(rep):
           '- B+上限は約 20 周の初見で、カード 2(上限を ON で走る判断)の代わりにならない。',
           '- 通過あたりの率の 90% 区間は、protocol どおり 3 周のかたまりのブートストラップ。かたまりが少ないと狭く出るので、'
           '正確な二項の区間も並べた(順位・判定にはブートストラップの区間を使う)。']
+    L += [''] + ctrl_section(rep)
     if rep.get('deviations'):
         L += ['', '## 外れたこと(自動で見つけたもの。deviations.md にも書く)', ''] + ['- ' + x for x in rep['deviations']]
     if rep.get('unassigned'):
@@ -1310,8 +1316,63 @@ def git_commit():
         return None
 
 
+CTRL_FLAG_TEXT = {'auto_edge_3laps': '自動合わせの m_fb が 3 周続けて端(0.90 か 1.10)に張り付いた(車・電池を確かめる。止める条件)',
+                  'auto_flip_3laps': '自動合わせの上げ下げの向きが 3 周続けて入れ替わった(揺れ。止める条件)',
+                  'ceil_switch_gt10_per_s': '速さの天井の出し方が 1 秒に 10 回より多く入れ替わった(止める条件)',
+                  'ceil_failed': '速さの天井の計算が失敗した(その走行は OFF と同じ出力)'}
+
+
+def car_checks(entries, labels_dir, raw_dir):
+    """走行ごとに tools/car_check.py の判定を付ける(e['car_check'])。読めなければ None と理由"""
+    for e in entries:
+        try:
+            r = cc.check_log(e['log'], labels_dir, raw_dir)
+            j = r.get('judge') or {}
+            e['car_check'] = {'code': j.get('code'), 'label': j.get('label'), 'headline': j.get('headline'),
+                              'ratio': (r.get('turn') or {}).get('ratio'), 's0_us': (r.get('s0') or {}).get('s0_us'),
+                              'r1_a3_median': (r.get('r1_bump') or {}).get('a3_median'), 'r1_a3_max': (r.get('r1_bump') or {}).get('a3_max'),
+                              'lap_p90_median_mps': (r.get('laps') or {}).get('p90_median_mps'),
+                              'speed_advice': (j.get('speed_advice') or {}).get('text'),
+                              'items': j.get('items') or [], 'error': r.get('error')}
+        except Exception as ex:      # 車の確認が壊れてもレポートは出す
+            e['car_check'] = {'code': None, 'label': None, 'error': '%s: %s' % (type(ex).__name__, ex)}
+    return entries
+
+
+def ctrl_section(rep):
+    """13 章: 走行ごとの電圧・速さの天井・自動合わせ・車の確認"""
+    L = ['## 13. 速さの制御・電圧・車の確認(走行ごと)', '',
+         '- 電圧: 始め / 終わり / 最小 [V](基板 = VEHICLE.npz の vbat_v、シーン = scene.json の stats.vbat、説明欄 = V_before・V_after)。',
+         '- 天井: 設定(log.json の drive.params の speed_ceiling)・実際に出力を変えたフレームの割合・影の判定で弱める/中立にする割合・'
+         '左旋回の割合。自動合わせ: 設定・最後の m_fb と m・使った周(外した周)。OFF の走行も影の判定を記録している。',
+         '- 車の確認: tools/car_check.py(左右の比 ≥ 0.90・s0 −10〜+10 µs・R1 の板 中央 < 4.5G かつ 最大 < 7.0G・電圧 ≥ 7.70 V)。'
+         '0 合格・1 直す/注意・2 不合格・3 足りない。', '',
+         '| 日 | ブロック | 候補 | 記録 | 電圧 | 天井 | 自動合わせ | 車の確認(比・s0・板) | 印 |', '|---|---|---|---|---|---|---|---|---|']
+    n = 0
+    for d in rep['days']:
+        for e in d['entries']:
+            s = e.get('score') or {}
+            if s.get('error'):
+                continue
+            c, a, v, f = ss.ctrl_cells(s)
+            ck = e.get('car_check')
+            if ck is None:
+                ckt = '—'
+            elif ck.get('code') is None:
+                ckt = '読めない(%s)' % (ck.get('error') or '?')
+            else:
+                ckt = '%s(%s・%s µs・%s/%s G)' % (ck['label'], ss._f(ck.get('ratio'), '%.3f'), ss._f(ck.get('s0_us'), '%+.1f'),
+                                                ss._f(ck.get('r1_a3_median')), ss._f(ck.get('r1_a3_max')))
+            L.append('| %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (d['day'], e['block'], e['cand'], e['log'], v, c, a, ckt, f))
+            n += 1
+    if not n:
+        L.append('| — | — | — | — | — | — | — | — | — |')
+    return L + ['']
+
+
 def build_report(days, bench_path=BENCH, desk_path=DESK, protocol_path=PROTOCOL, labels_dir=None, raw_dir=None, assign=None,
-                 cap_replay_path=None, brake_path=None, n_boot=ss.BOOT_N, min_laps=12, mock=False, logs=None, k_first=3, k_later=2):
+                 cap_replay_path=None, brake_path=None, n_boot=ss.BOOT_N, min_laps=12, mock=False, logs=None, k_first=3, k_later=2,
+                 car_check=True):
     labels_dir = Path(labels_dir or config.DATA_DIR / 'labels')
     raw_dir = Path(raw_dir or config.RAW_DIR)
     bench = load_json(bench_path, None)
@@ -1325,7 +1386,16 @@ def build_report(days, bench_path=BENCH, desk_path=DESK, protocol_path=PROTOCOL,
             logs += sorted(d.name for d in raw_dir.glob(dd.replace('-', '') + '-*') if (d / 'log.json').exists())
     entries, unassigned = collect(logs, bench, assign, labels_dir, raw_dir)
     entries = score_entries(entries, bench, labels_dir, raw_dir, k_first, k_later)
+    if car_check:
+        car_checks(entries, labels_dir, raw_dir)
     devs = []
+    for e in entries:
+        for fl in ((e.get('score') or {}).get('speed_ctrl') or {}).get('flags') or []:
+            devs.append('%s(ブロック %s・%s): %s' % (e['log'], e['block'], e['cand'], CTRL_FLAG_TEXT.get(fl, fl)))
+        rj = (e.get('score') or {}).get('r1_anchors_rejected') or []
+        if rj:
+            devs.append('%s(ブロック %s・%s): 偽の R1 の起点 %d 個を外した(%s)' % (
+                e['log'], e['block'], e['cand'], len(rj), '・'.join('%.2f 秒 %s' % (r['t_s'], r['reason']) for r in rj)))
     if (k_first, k_later) != (3, 2):
         devs.append('慣らしの R1 の起点の数を K = %d(初めて)・%d(2 回目から)にした(protocol は 3・2)' % (k_first, k_later))
     if min_laps != 12:
@@ -1467,6 +1537,8 @@ def report_json(rep):
                      'entry_bins': d['entry_bins'],
                      'laps': [{'log': e['log'], 'block': e['block'], 'cand': e['cand'], 'K': e['K'], 'window': e['score'].get('window'),
                                'drive_run': e.get('drive_run'), 'checks': [t for _, t in e.get('checks', [])],
+                               'speed_ctrl': e['score'].get('speed_ctrl'), 'vbat': e['score'].get('vbat'),
+                               'r1_anchors_rejected': e['score'].get('r1_anchors_rejected'), 'car_check': e.get('car_check'),
                                'rows': [{k: v for k, v in r.items() if k != 'infer_ms'} for r in e['rows']]} for e in d['entries']]})
     out = {k: rep[k] for k in ('schema', 'created_at', 'tool', 'bench_name', 'bench_path', 'protocol_path', 'protocol_sha256',
                                'protocol_sha_ok', 'desk_path', 'desk_fake', 'gates_recomputed', 'families', 'software', 'unassigned', 'deviations',
@@ -1515,10 +1587,11 @@ def main(argv=None):
     ap.add_argument('--k-first', type=int, default=3, help='ベンチで初めての候補の慣らしの R1 の起点の数(protocol は 3)')
     ap.add_argument('--k-later', type=int, default=2, help='2 回目から・走り直しの K(protocol は 2)')
     ap.add_argument('--out', default=None, help='既定 ~/jetformer_reports/<bench>/')
+    ap.add_argument('--no-car-check', action='store_true', help='走行ごとの車の確認(tools/car_check.py)を付けない')
     args = ap.parse_args(argv)
     assign = load_json(args.assign, None) if args.assign else None
     rep = build_report(args.day, args.bench, args.desk, args.protocol, args.labels, args.raw, assign, args.cap_replay, args.brake,
-                       args.boot, args.min_laps, args.mock, args.logs, args.k_first, args.k_later)
+                       args.boot, args.min_laps, args.mock, args.logs, args.k_first, args.k_later, not args.no_car_check)
     rep['command'] = '$PY tools/bench_report.py ' + ' '.join(a if ' ' not in a else repr(a) for a in (argv if argv is not None else sys.argv[1:]))
     out = Path(args.out) if args.out else Path('/home/jetson/jetformer_reports') / (rep['bench_name'] or 'real_bench')
     write_report(rep, out)

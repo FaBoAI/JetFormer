@@ -193,7 +193,9 @@ def test_server_includes_bench_router_and_client_version_unchanged():
     assert 'DRIVE_CLIENT_VERSION = 6' in src
     assert "@app.post('/api/bench" not in src                              # 読むだけ(書く API は無い)
     bsrc = open(os.path.join(ROOT, 'jetformer', 'web', 'bench.py'), encoding='utf-8').read()
-    assert '@router.post' not in bsrc and 'open(path, \'w\'' not in bsrc and 'driver.start' not in bsrc
+    # 書く API は走り終わりのメモ(シーンの説明だけ。2026-10-24)の 1 つ。候補の表は書かない・走行は始めない
+    assert re.findall(r"@router\.post\('([^']+)'", bsrc) == ['/api/bench/after']
+    assert 'open(path, \'w\'' not in bsrc and 'driver.start' not in bsrc and 'BENCH_PATH, \'w\'' not in bsrc
 
 
 def test_static_ui_has_prep_bench_and_zone_controls():
@@ -260,7 +262,7 @@ def test_js_field_values_force_zone_caps_off_and_steer_of_the_day():
 
 @pytest.mark.skipif(NODE is None, reason='node がありません')
 def test_js_diff_lists_only_changed_fields():
-    saved = dict(drive.DEFAULT_PARAMS, steer_gain=1.5, throttle_gain=1.0, lookahead=3)       # 今の保存値(ステア 1.5)
+    saved = dict(drive.DEFAULT_PARAMS, steer_gain=1.5, throttle_gain=1.0, lookahead=3, start_kick=1)     # 今の保存値(ステア 1.5)
     want = bench.fallback_baseline()['params']
     got = _node('process.stdout.write(JSON.stringify([benchDiff(%s, %s), benchDiff(%s, %s), benchDiff({steer_gain: 1}, %s)]));'
                 % (json.dumps(saved), json.dumps(want), json.dumps(want), json.dumps(want), json.dumps(want)))

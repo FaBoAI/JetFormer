@@ -35,10 +35,15 @@ summary.json には、目視で確かめた衝突の一覧(collision_map.md)・0
   起点から 1秒以内 = R1、R1 の後に向きが −25° まで戻った時刻(緑マット出口)の手前 = GM、±0.3秒 = GM(出口)、
   その 2秒後まで = DE、その後は起点からの向き(<150° = SW、<215° = HS、それ以上 = LH)。次の起点の 1.2秒前から = LH。
   起点が見つからない区間(止まっている・人が置き直した・15秒以上起点が無い)は unknown。
+  偽の起点(衝突で車が右へ回ったのを R1 と取り違えたもの)は外す(reject_false_anchors、2026-10-25):
+  最後に使った起点からの向きの変化が 270° 未満(16 秒以内・ずっと AI・途切れや停止なし)。起点の −0.05〜+0.25 秒の
+  水平 4G 以上の衝突は証拠として理由に足す(それだけでは外さない)。外した起点は info の r1_anchors_rejected
+  (時刻・理由・向きの変化・g)に残す。
 
 フレームごと(<ログ>.npz): AI_CMD のフレーム(30fps)。AI_CMD が無い人のログはカメラのフレーム。
   ai           そのフレームで車を操作していたのが AI か(CH3。基板の再起動直後の無効な値と 0.1秒未満の揺れは除く)
-  valid_action 行動ラベルを学習に使ってよいか。AI のフレーム: hold・assist≠0・ガードが効いた・dry_run・基板の再起動の
+  valid_action 行動ラベルを学習に使ってよいか。AI のフレーム: hold・assist≠0・ガードが効いた・速さの天井か区間の速度上限で
+               出力を変えた(ceil_applied・cap_applied、mask の cap)・dry_run・基板の再起動の
                前後 0.5秒・交代/戻しの前後 0.3秒・車両データが古い・ゲイン 0 を除く。人のフレーム: スティックが受信中で、
                再起動・交代の前後でないこと。外した理由は mask_bits(MASK_BITS のビット和)
   progress_m   進み [m] = −eRPM × 0.5e-3 × Δt(100Hz の車両データを積分。後退は負)。progress_fwd_m は max(0, ·)
@@ -109,11 +114,23 @@ TAKEOVER_CLASSES = ['operational', 'after_collision', 'stuck', 'preemptive']
 FAILURE_CLASSES = ('after_collision', 'stuck', 'preemptive')
 END_CODES = {0: 'none', 1: 'failure_takeover', 2: 'operational_takeover', 3: 'handback', 4: 'log_end', 5: 'truncated'}
 MASK_BITS = {'hold': 1, 'assist': 2, 'guard': 4, 'dry_run': 8, 'vehicle': 16, 'reboot': 32, 'handover': 64,
-             'no_label': 128}
+             'no_label': 128, 'cap': 256}
 LOC_NAMES = ['unknown', 'R1', 'GM', 'DE', 'other', 'HS', 'LH']
 LOC_DETAIL = ['?', 'R1', 'GM_in', 'GM_out', 'DE', 'SW', 'HS', 'LH']
 _DETAIL_TO_LOC = np.array([0, 1, 2, 2, 3, 4, 5, 6], np.int8)
 MAX_LAP_S = 15.0                # R1 の起点からこれより経ったら場所は分からない(止まった・置き直した)
+# 偽の R1 の起点(衝突で車が右へ回ったのを R1 と取り違えたもの)を外す(2026-10-25、speed_control_20261025/spec.md 5.1)
+ANCHOR_RULE = 'false_anchor_v1'
+FALSE_ANCHOR_DPSI_DEG = 270.0   # (G) 最後に使った起点からの向きの変化がこれ未満なら偽(ふつうの周 323〜379°、偽 173〜200°)
+FALSE_ANCHOR_MAX_S = 16.0       # (G) を使うのは、最後に使った起点からこの秒数以内だけ(周の上限と同じ)
+FALSE_ANCHOR_SELECT_GAP_S = 0.5  # (G) CH3(人/AI)の値がこれより長く途切れたら「ずっと AI」と言えない → 使わない
+FALSE_ANCHOR_STOP_S = 1.0       # (G) その間に止まっていた(|eRPM| < FALSE_ANCHOR_STOP_ERPM)のがこれ以上続けば使わない
+FALSE_ANCHOR_STOP_ERPM = 600.0  # 0.3 m/s
+FALSE_ANCHOR_HIT_S = (-0.05, 0.25)   # (I) 起点のこの範囲の強い衝突(水平 STRONG_G 以上)
+# (I) だけで外すか。False(既定): (I) は (G) の証拠として記録するだけ。10/10 の 173445 では、本物の R1 の起点 2 つ
+# (106.17 秒 = 人が戻した直後に R1 で 4.03G、270.86 秒 = 向き 347° のふつうの周で 0.25 秒後に R1 で 7.92G。collision_map.md で
+# 目で確かめた R1 の衝突)が (I) だけで外れ、R1 の衝突が別の場所に移る。10/23・10/24 で外れるものは (G) だけで同じ
+FALSE_ANCHOR_IMPACT_ALONE = False
 GAIN_RULE_SINCE = datetime(2026, 10, 10, 18, 33)   # f198431(速度のゲインを前進側だけに)。証拠が無いときだけ使う
 
 SENSORS = ('AI_CMD', 'VEHICLE', 'IMU', 'CAM_FRONT')
@@ -372,7 +389,8 @@ def _right_turns(t_s, gzs, thr=-170.0):
 
 def course_anchors(t_s, hd, gz_unbiased, vt_s, erpm):
     """R1 の起点(1周に1回だけある、左ヘアピンの直後の大きな右ヘアピンの入口)と、その後の緑マット出口の時刻 [秒]、
-    平滑したヨーレート [deg/s](11サンプルの移動平均)"""
+    平滑したヨーレート [deg/s](11サンプルの移動平均)。偽の起点(衝突で右へ回ったもの)はまだ入っている。
+    外すのは reject_false_anchors(まとめて呼ぶなら checked_anchors)"""
     gzs = np.convolve(gz_unbiased, np.ones(11) / 11, 'same') if len(t_s) >= 11 else np.asarray(gz_unbiased, float)
     if len(t_s) < 20:
         return np.zeros(0), np.zeros(0), gzs
@@ -389,6 +407,12 @@ def course_anchors(t_s, hd, gz_unbiased, vt_s, erpm):
                 continue
             anchors.append(float(ta))
     anchors = np.array(anchors)
+    return anchors, gm_exits(anchors, t_s, hd, gzs), gzs
+
+
+def gm_exits(anchors, t_s, hd, gzs):
+    """起点ごとの緑マット出口の時刻 [秒](見つからなければ inf)。探すのは次の起点まで(15 秒まで)"""
+    anchors = np.asarray(anchors, float)
     gm = np.full(len(anchors), np.inf)
     for k, a in enumerate(anchors):        # 止まって人が置き直したときも続きを追えるように、次の起点まで探す
         end = min(anchors[k + 1] if k + 1 < len(anchors) else np.inf, a + MAX_LAP_S)
@@ -402,7 +426,144 @@ def course_anchors(t_s, hd, gz_unbiased, vt_s, erpm):
         j = np.nonzero((psi[i_min:] > -25) | ((back >= 60) & (gzs[m][i_min:] < 30)))[0]
         if len(j):
             gm[k] = float(t_s[m][i_min + j[0]])
-    return anchors, gm, gzs
+    return gm
+
+
+def _strong_hits(collisions, thr=STRONG_G):
+    """衝突の一覧([{'t_s', 'g'}] か [(t, g)])→ 水平 thr 以上のものの (時刻, g) の配列。上下の衝撃(kind = bump)は入れない"""
+    ts, gs = [], []
+    for c in collisions or ():
+        if isinstance(c, dict):
+            if c.get('kind', 'impact') != 'impact':
+                continue
+            t, g = c.get('t_s', c.get('t')), c.get('g')
+        else:
+            t, g = c[0], c[1]
+        if t is None or g is None or not np.isfinite(t) or float(g) < thr:
+            continue
+        ts.append(float(t))
+        gs.append(float(g))
+    return np.asarray(ts, float), np.asarray(gs, float)
+
+
+def _heading_rule_usable(a, b, t_s, vt_s, erpm, select_t, select):
+    """(G) 向きの決まりを a → b で使えるか。(使えるか, 使えない理由)。
+    使えない: b − a > 16 秒・IMU の途切れ(0.2 秒超)・CH3 がずっと AI 側でない(値の途切れ 0.5 秒超も)・1 秒以上止まった"""
+    if b - a > FALSE_ANCHOR_MAX_S:
+        return False, 'long'
+    i0 = max(int(np.searchsorted(t_s, a, side='right')) - 1, 0)
+    i1 = min(int(np.searchsorted(t_s, b, side='left')), len(t_s) - 1)
+    seg = t_s[i0:i1 + 1]
+    if len(seg) < 2 or seg[0] > a + GAP_S or seg[-1] < b - GAP_S or np.max(np.diff(seg)) > GAP_S:
+        return False, 'imu_gap'
+    st = np.asarray(select_t, float)
+    if not len(st):
+        return False, 'not_ai'
+    j0 = int(np.searchsorted(st, a, side='right')) - 1
+    j1 = int(np.searchsorted(st, b, side='right')) - 1
+    if j0 < 0 or j1 < j0:
+        return False, 'not_ai'
+    sel = np.asarray(select, bool)[j0:j1 + 1]
+    pts = np.concatenate([[a], st[j0 + 1:j1 + 1], [b]])
+    if not sel.all() or np.max(np.diff(pts)) > FALSE_ANCHOR_SELECT_GAP_S:
+        return False, 'not_ai'
+    vt_s = np.asarray(vt_s, float)
+    k0 = max(int(np.searchsorted(vt_s, a, side='right')) - 1, 0)
+    k1 = min(int(np.searchsorted(vt_s, b, side='left')), len(vt_s) - 1)
+    vt = vt_s[k0:k1 + 1]
+    if len(vt) < 2 or np.max(np.diff(np.concatenate([[a], vt[(vt > a) & (vt < b)], [b]]))) >= FALSE_ANCHOR_STOP_S:
+        return False, 'vehicle_gap'
+    slow = np.abs(np.asarray(erpm, float)[k0:k1 + 1]) < FALSE_ANCHOR_STOP_ERPM
+    for r0, r1 in runs(slow):            # 止まっていた長さ = 止まった最初のサンプル → 動いた最初のサンプル
+        end = vt[r1 + 1] if r1 + 1 < len(vt) else vt[r1]
+        if min(end, b) - max(vt[r0], a) >= FALSE_ANCHOR_STOP_S - 1e-9:
+            return False, 'stopped'
+    return True, None
+
+
+def reject_false_anchors(anchors, t_s, hd, vt_s, erpm, select_t, select, collisions):
+    """偽の R1 の起点を外す(spec 5.1)。起点を時刻の順に見て、a_p = 最後に使った(外さなかった)起点とする:
+      (G) 向き: a_p があり、a_k − a_p ≤ 16 秒・その間 IMU の途切れ(0.2 秒超)なし・ずっと AI 側・1 秒以上止まっていない
+          → 向きの変化 ψ(a_k) − ψ(a_p) < 270° なら外す(衝突で右へ回った半周。ふつうの周は 323〜379°)
+      (I) 衝撃: 起点の −0.05〜+0.25 秒の水平 4.0G 以上(label の strong)の衝突。外した理由に足す(heading+impact)。
+          (I) だけで外すのは FALSE_ANCHOR_IMPACT_ALONE = True のときだけ(既定は外さない。理由は定数の注)
+    外した起点は a_p にしない(すぐ前の起点から測ると、偽の起点の次の本物の起点まで外れる)。
+
+    次の起点で決める(段 tools の足し、2026-10-25): a_p が確かめられていない起点(最初の起点、または前の起点から (G) を
+    使えなかった = 人・停止・途切れ・16 秒超のあと)のとき、(G) で a_k を外す前に次の起点 a_n を見る。a_k に強い衝突が無く、
+    a_k → a_n で (G) が使えて向きの変化が 270° 以上(a_k が次の周とつじつまが合う)なら、偽なのは a_p の方とみて a_p を外し
+    (reason = heading_next)、a_k を残す。人が運転したあとに偽の起点ができると、その偽の起点が a_p になって次の本物の起点が
+    外れてしまうのを防ぐ。10/23・10/24 の記録では、これで変わる起点は無い。
+
+    t_s・hd: IMU の時刻 [秒] と向き [deg](heading_deg)。vt_s・erpm: 車両データ。select_t・select: 人/AI(True = AI)の
+    時刻と値(フレームの t と ai)。collisions: 衝突の一覧(label の events.collisions か [(t, g)])。
+    戻り値 (keep, rejected): keep は起点ごとの bool、rejected は外した起点の [{t_s, reason, dpsi_deg, ...}](時刻の順)"""
+    A = np.asarray(anchors, float)
+    keep = np.ones(len(A), bool)
+    rejected = []
+    if not len(A):
+        return keep, rejected
+    t_s = np.asarray(t_s, float)
+    hd = np.asarray(hd, float)
+    ct, cg = _strong_hits(collisions)
+    psi = lambda x: float(np.interp(x, t_s, hd))      # noqa: E731
+    usable = lambda a, b: _heading_rule_usable(a, b, t_s, vt_s, erpm, select_t, select)      # noqa: E731
+    p_idx, p_verified, p_row = None, False, None
+    for k, ta in enumerate(A):
+        a_p = float(A[p_idx]) if p_idx is not None else None
+        reasons = []
+        row = {'t_s': _r(ta, 3), 'prev_kept_s': _r(a_p, 3) if a_p is not None else None,
+               'dt_s': _r(ta - a_p, 3) if a_p is not None else None, 'dpsi_deg': None, 'heading_rule': None,
+               'g': None, 'hit_dt_s': None}
+        w = (ct >= ta + FALSE_ANCHOR_HIT_S[0]) & (ct <= ta + FALSE_ANCHOR_HIT_S[1])
+        hit = bool(w.any())
+        if hit:
+            i = int(np.argmax(np.where(w, cg, -np.inf)))
+            row['g'], row['hit_dt_s'] = _r(cg[i], 2), _r(ct[i] - ta, 3)
+        verified = False
+        heading_bad = False
+        if a_p is not None:
+            ok, why = usable(a_p, ta)
+            dpsi = psi(ta) - psi(a_p)
+            row['dpsi_deg'] = _r(dpsi, 1)
+            row['heading_rule'] = 'used' if ok else why
+            if ok and dpsi < FALSE_ANCHOR_DPSI_DEG:
+                flip = False
+                if not hit and not p_verified and k + 1 < len(A):
+                    ok_n, _ = usable(ta, float(A[k + 1]))
+                    flip = ok_n and psi(float(A[k + 1])) - psi(ta) >= FALSE_ANCHOR_DPSI_DEG
+                if flip:                 # 偽なのは a_p の方(次の起点とつじつまが合うのは a_k)
+                    keep[p_idx] = False
+                    p_row.update(reason='heading_next', next_s=_r(ta, 3), dpsi_next_deg=_r(dpsi, 1))
+                    rejected.append(p_row)
+                    row['heading_rule'] = 'used_next'
+                    verified = True
+                else:
+                    heading_bad = True
+            elif ok:
+                verified = True
+        if heading_bad:
+            reasons.append('heading')
+        if hit and (heading_bad or FALSE_ANCHOR_IMPACT_ALONE):
+            reasons.append('impact')
+        if reasons:
+            keep[k] = False
+            row['reason'] = '+'.join(reasons)
+            rejected.append(row)
+        else:
+            p_idx, p_verified, p_row = k, verified, row
+    rejected.sort(key=lambda r: r['t_s'])
+    return keep, rejected
+
+
+def checked_anchors(t_s, hd, gz_unbiased, vt_s, erpm, select_t, select, collisions):
+    """course_anchors → reject_false_anchors。戻り値 (起点, 緑マット出口, 平滑したヨー, 外した起点の一覧)。
+    緑マット出口は外す前に求めた値のまま(探す範囲は偽の起点で切れるが、出口は起点の 2〜3 秒後なので変わらない)"""
+    anchors, gm, gzs = course_anchors(t_s, hd, gz_unbiased, vt_s, erpm)
+    keep, rejected = reject_false_anchors(anchors, t_s, hd, vt_s, erpm, select_t, select, collisions)
+    if not keep.all():
+        anchors, gm = anchors[keep], gm[keep]
+    return anchors, gm, gzs, rejected
 
 
 def locate(times, anchors, gm_exit, t_s, hd, gzs=None):
@@ -651,6 +812,8 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
     gains = a_get('gains', [1.0, 1.0], np.float64)
     trim = a_get('trim', 0.0, np.float64)
     lookahead = a_get('lookahead', 0, np.int16)
+    # 速さの天井(ceil_applied)・区間の速度上限(cap_applied)で出力を変えたフレーム: out はゲインの逆では raw に戻らない
+    limited = a_get('ceil_applied', False, bool) | a_get('cap_applied', False, bool)
 
     # 操作者: 車両データが新しければ整えた CH3、無ければ AI_CMD の select(AI_CMD も無ければ人)
     if len(vt):
@@ -664,6 +827,7 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
     collisions, suspects, bumps, laps = [], [], [], []
     loc_frame = np.zeros(n, np.int8)
     anchors = np.zeros(0)
+    info['r1_anchors_rejected'] = []
     if I is not None:
         it = sec(I['timestamps_us'])
         ie = np.interp(it, vt, verpm) if len(vt) else np.zeros(len(it))
@@ -672,9 +836,14 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
         hg, acc_bias = horizontal_g(I['accel'], still)
         info['accel_bias_ms2'] = [round(float(x), 3) for x in acc_bias]
         hd, gzu = heading_deg(it, gz, still)
-        anchors, gm_exit, gzs = course_anchors(it, hd, gzu, vt, verpm)
+        impacts = detect_collisions(it, hg, thr=impact_g)
+        # 偽の R1 の起点(衝突で右へ回ったもの)を外す。衝撃の時刻は events.collisions と同じ丸め(score_log と同じ結果にする)
+        hits = [(round(float(it[e['i']]), 3), e['g']) for e in impacts if not e['suspect']]
+        anchors, gm_exit, gzs, anchors_rejected = checked_anchors(it, hd, gzu, vt, verpm, t, ai, hits)
         loc_frame = locate(t, anchors, gm_exit, it, hd, gzs)
         info['r1_anchors'] = len(anchors)
+        info['r1_anchors_rejected'] = anchors_rejected
+        info['anchor_rule'] = ANCHOR_RULE
         dyn = dynamic_g(I['accel'], still)
 
         def shock_event(e, kind):
@@ -704,7 +873,7 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
                     'erpm_0.5s': _r(e05, 0), 'speed_before_mps': _r(-vmean(-0.5, -0.1) * KV, 2),
                     'outcome': 'glance' if np.isfinite(e05) and e05 < GLANCE_ERPM else 'stop',
                     'loc': LOC_NAMES[_DETAIL_TO_LOC[det]], 'loc_detail': LOC_DETAIL[det], 'samples': e['n']}
-        for e in detect_collisions(it, hg, thr=impact_g):
+        for e in impacts:
             (suspects if e['suspect'] else collisions).append(shock_event(e, 'impact'))
         # 上下の衝撃(水平は 2.5G 未満): R1 の手前で仕切りの台の板に乗り上げた・軽く触れたなど。既定では報酬に入れない
         th = np.array([c['t_s'] for c in collisions + suspects])
@@ -822,13 +991,13 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
 
     # 行動ラベル
     rule = detect_gain_rule(raw, out, gains, trim, ref,
-                            ~hold & ((assist == 0) | (assist == -1)) & ~guard_applied, _log_time(log)) \
+                            ~hold & ((assist == 0) | (assist == -1)) & ~guard_applied & ~limited, _log_time(log)) \
         if A is not None else {'rule': None, 'source': 'no_ai_cmd'}
     fwd = rule['rule'] != 'both'
     label = np.where(ai[:, None], invert_gains(out, gains, trim, ref, fwd), human_pwm) if A is not None else human_pwm
     action_exec = np.where(ai[:, None], out, human_pwm)
     sat = saturated(out) & ai[:, None] if A is not None else np.zeros((n, 2), bool)
-    check = (A is not None) & ~hold & ((assist == 0) | (assist == -1)) & ~guard_applied \
+    check = (A is not None) & ~hold & ((assist == 0) | (assist == -1)) & ~guard_applied & ~limited \
         & np.isfinite(raw).all(axis=1) & ~saturated(out).any(axis=1)
     ai_label_all = invert_gains(out, gains, trim, ref, fwd) if A is not None else np.full((n, 2), np.nan)
     label_err = np.where(check[:, None], ai_label_all - raw, np.nan)
@@ -837,6 +1006,7 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
     bits |= np.where(ai & hold, MASK_BITS['hold'], 0).astype(np.int16)
     bits |= np.where(ai & (assist > 0), MASK_BITS['assist'], 0).astype(np.int16)
     bits |= np.where(ai & guard_applied, MASK_BITS['guard'], 0).astype(np.int16)
+    bits |= np.where(ai & limited, MASK_BITS['cap'], 0).astype(np.int16)
     bits |= np.where(ai & dry, MASK_BITS['dry_run'], 0).astype(np.int16)
     veh_bad = np.where(ai, ~sel_ok, ~(sel_ok & stick_ok))     # 車両データが古い・CH3 やスティックが無効
     bits |= np.where(veh_bad, MASK_BITS['vehicle'], 0).astype(np.int16)
@@ -955,7 +1125,7 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
             rule['check_other_rule_brake_side'] = {
                 'n': int(m.sum()), 'match_0.5us': _r(np.mean(np.abs(other[m, 1] - raw[m, 1]) <= 0.5), 4)}
     if A is not None and 'model_out' in A:
-        m = ~hold & (assist == 0) & ~guard_applied & np.isfinite(model_out).all(axis=1)
+        m = ~hold & (assist == 0) & ~guard_applied & ~limited & np.isfinite(model_out).all(axis=1)
         rule['out_equals_model_out'] = {'n': int(m.sum()), 'match_0.01us': _r(
             np.mean(np.abs(out[m] - model_out[m]).max(axis=1) <= 0.01), 4) if m.any() else None}
     rule['saturated_ai_frames'] = [int(sat[:, 0].sum()), int(sat[:, 1].sum())]

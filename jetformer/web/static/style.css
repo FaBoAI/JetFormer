@@ -240,3 +240,13 @@ input.snd-text { flex: 1; margin: 0 !important; }
 .bench-table th { color: var(--muted); font-weight: 600; }
 .bench-table .run { word-break: break-all; color: var(--muted); }
 #bench-applied { margin-top: 8px; }
+/* 電池の電圧(2026-10-25): 走行タブの上の帯・速さの天井と自動合わせのスイッチ */
+.vbat-strip { margin: 0 0 10px; padding: 6px 10px; border-radius: 8px; background: #f8fafc; border: 1px solid #e5e7eb; }
+.vbat-strip .vbat-v { font-weight: 700; font-size: 15px; }
+.vbat-strip.bad { background: #fee2e2; border-color: var(--danger); }
+.vbat-strip.warn { background: #fef3c7; border-color: #f59e0b; }
+.vbat-bad-text { color: var(--danger); }
+.speed-panel { border-color: #bfdbfe; background: #eff6ff; }
+.speed-panel.on { border-color: #2563eb; background: #dbeafe; }
+.launch-panel { border-color: #fde68a; background: #fffbeb; }      /* 発進の前進(2026-10-26) */
+.launch-panel.on { border-color: #d97706; background: #fef3c7; }

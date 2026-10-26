@@ -444,3 +444,144 @@ def zone_frame(state: ZoneState, t: float, thr_us: float, steer_us: float, v: fl
 def zone_inactive(state: ZoneState) -> ZoneState:
     """中立で止めたフレーム(記録しない・層を動かさない)。層の状態だけ戻す(位相はそのまま)"""
     return state._replace(cap=CapState())
+
+
+# ------------------------------------------------------------------ 速さの天井(drive.py の speed_ceiling。2026-10-25)
+# 仕様: jetformer_reports/speed_control_20261025/spec.md 2 章。区間の判定(ジャイロの位相)は使わない。使うのは速さ・舵・ヨーだけ。
+#   天井 C = 全体 cap_all(4.5 m/s)。左旋回 L(車に出す舵 ≥ +100 µs または 5 サンプル平均のヨー ≥ +45 deg/s、両方が
+#   下回ってから 0.25 秒は L のまま)の間は cap_left(4.0 m/s)。L が終わったら 1.5 m/s² で cap_all へ戻す。
+#   前進を PI で弱めて C に保つ(0.1 秒先の速さで早めに)。v ≥ C + 0.2 m/s の間は中立(惰性)。
+#   いつも「入力以上(前進を強めない)・中立以下(ブレーキを出さない)」。舵は変えない。
+# 仕様からの 2 つの直し(build_drive.md。偽物の車の閉ループで決めた。どちらも False にすると仕様の文のまま):
+#   start_from_hold: 天井の手前(e < 0)で掛け始めるとき、許す量を入力のまま(仕様の手順 3)でなく
+#       min(入力, f_hold(C) − Kp·e) から始める。入力(例 400 µs)から始めると、PI が保つ量(約 290 µs)まで下げるのに
+#       大きな行き過ぎが要り(電池 b = 1.0 で C + 0.25 m/s・中立 6 フレーム)、試験 D-c4(≤ C + 0.15)に落ちる
+#   release_bumpless: 外す(手順 7)のは、e < −0.2 が 0.2 秒続き、かつ PI の許す量が入力まで戻ったときだけ。
+#       戻る前に外すと、入力の前進がいきなり戻り、掛け直しの行き過ぎをくり返す(左旋回 4.0 m/s の中で 4.32 m/s)
+class CeilParams(NamedTuple):
+    cap_all: float = 4.5               # 全体の天井 [m/s]
+    cap_left: float = 4.0              # 左旋回中の天井 [m/s](cap_all より大きければ cap_all。走行の既定は drive.DEFAULT_PARAMS の ceil_left_mps)
+    left_steer_us: float = 100.0       # 左旋回: 車に出す舵(中心 + トリムから、左 +)がこれ以上
+    left_gz_dps: float = 45.0          # 左旋回: ヨー(5 サンプル平均、左 +)がこれ以上
+    left_hold_s: float = 0.25          # 両方が下回ってからも左旋回とみる時間
+    release_accel: float = 1.5         # 左旋回が終わったあと天井を戻す速さ [m/s²]
+    pred_s: float = 0.10               # 先の速さ v̂ = v + clip(a, 0, accel_max) × pred_s
+    accel_max: float = 3.0
+    engage_e: float = -0.10            # e = v̂ − C がこれ以上で掛け始める [m/s]
+    kp: float = 120.0                  # µs / (m/s)
+    ki: float = 380.0                  # µs / (m/s·s)
+    dt_max: float = 0.1                # PI の Δt の上限 [秒]
+    neutral_margin: float = 0.20       # v ≥ C + これ の間は中立 [m/s]
+    release_e: float = -0.20           # e がこれ未満で
+    release_s: float = 0.20            # これだけ続いたら外す [秒]
+    reset_gap_s: float = 0.5           # 動かすフレームの間がこれを超えたら状態を戻す [秒]
+    hold_slope: float = 26.314         # f_hold: 落ち着いた直線の eRPM = slope × 指令 + offset(10/24 の 20 本の当てはめ)
+    hold_offset: float = 1343.5
+    start_from_hold: bool = True       # 仕様からの直し(上の説明)。False = 仕様の文のまま
+    release_bumpless: bool = True      # 仕様からの直し(上の説明)。False = 仕様の文のまま
+
+    def cap_left_eff(self) -> float:
+        return min(self.cap_left, self.cap_all)
+
+
+CEIL_OFF, CEIL_PASS, CEIL_LIMIT, CEIL_NEUTRAL = -1, 0, 1, 2     # 記録の ceil_mode(-2 = 計算の失敗は drive.py が入れる)
+CEIL_MODE_NAMES = {-2: '計算の失敗', -1: '動かしていない', 0: 'そのまま', 1: '弱めた', 2: '中立にした'}
+
+
+def ceil_params(cap_all: float = 4.5, cap_left: float = 4.0, **kw) -> CeilParams:
+    """走行のパラメータ(ceil_all_mps・ceil_left_mps)から。左旋回中の天井は全体より大きくしない"""
+    cap_all = float(cap_all)
+    return CeilParams(cap_all=cap_all, cap_left=min(float(cap_left), cap_all), **kw)
+
+
+def ceil_hold_us(cap: float, p: CeilParams = CeilParams()) -> float:
+    """速さ cap [m/s] を保つ前進の量の目安 f_hold [µs](中立から)。4.0 m/s → 253、4.5 m/s → 291"""
+    return max(0.0, (cap / KV - p.hold_offset) / p.hold_slope)
+
+
+class CeilState(NamedTuple):
+    t: Optional[float] = None          # 前に動かしたフレームの時刻
+    cap: Optional[float] = None        # 今の天井 C
+    left_t: float = -INF               # 左旋回の条件が最後に成り立った時刻
+    engaged: bool = False              # 掛けている
+    allow: float = INF                 # 許す前進の量 A [µs](中立から)
+    e_prev: float = 0.0                # 前のフレームの e
+    below_t0: Optional[float] = None   # e < release_e が始まった時刻
+
+
+class CeilOut(NamedTuple):
+    active: bool                       # 動かしたか(AI のフレーム)
+    left: bool                         # 左旋回 L
+    cap: float                         # 天井 C [m/s](動かしていなければ nan)
+    v: float                           # 使った速さ
+    v_pred: float                      # 先の速さ v̂(動かしていなければ nan)
+    mode: int                          # CEIL_OFF / CEIL_PASS / CEIL_LIMIT / CEIL_NEUTRAL
+    thr_us: float                      # 天井ならこう出すスロットル [µs](いつも 入力以上・中立以下。前進でない入力はそのまま)
+    allow_us: float                    # 許す前進の量 A(掛けていなければ inf)
+    engaged: bool
+
+
+def ceil_step(state: CeilState, t: float, v: float, a: float, steer_rel_us: float, gz5_dps: float, thr_in_us: float,
+              neutral_us: float, active: bool, p: CeilParams = CeilParams()) -> Tuple[CeilState, CeilOut]:
+    """速さの天井の 1 フレーム。t 撮像時刻 [秒]、v 速さ [m/s](前へ +)、a 加速 [m/s²](分からなければ nan = 0 とみる)、
+    steer_rel_us 車に出す舵 − (中心 + トリム) [µs](左 +)、gz5_dps ヨーの 5 サンプル平均 [deg/s](左 +)、
+    thr_in_us 天井への入力のスロットル [µs]、neutral_us スロットルの中立、active 動かすか(AI のフレーム)。
+    入出力・時刻の取得・ハードウェアには触れない。同じ入力の列には同じ出力"""
+    nan = float('nan')
+    if not active:
+        return CeilState(), CeilOut(False, False, nan, v, nan, CEIL_OFF, thr_in_us, INF, False)
+    if state.t is not None and t - state.t > p.reset_gap_s:
+        state = CeilState()
+    dt_raw = 0.0 if state.t is None else max(0.0, t - state.t)
+    dt = min(dt_raw, p.dt_max)
+    raw_left = steer_rel_us >= p.left_steer_us or gz5_dps >= p.left_gz_dps        # nan は成り立たない
+    left_t = t if raw_left else state.left_t
+    left = t - left_t <= p.left_hold_s + 1e-9
+    target = p.cap_left_eff() if left else p.cap_all
+    if state.cap is None or target <= state.cap:
+        cap = target                                   # 下げるのはすぐ
+    else:
+        cap = min(target, state.cap + p.release_accel * dt_raw)
+    dropped = state.cap is not None and cap < state.cap
+    a_c = min(max(a, 0.0), p.accel_max) if math.isfinite(a) else 0.0
+    v_pred = v + a_c * p.pred_s
+    e = v_pred - cap
+    f_in = neutral_us - thr_in_us
+    if not f_in > 0.0:                 # 中立・ブレーキ・後退(と nan)はそのまま。掛けている状態を外す
+        return (CeilState(t, cap, left_t, False, INF, e, None),
+                CeilOut(True, left, cap, v, v_pred, CEIL_PASS, thr_in_us, INF, False))
+    engaged, allow, below_t0 = state.engaged, state.allow, state.below_t0
+    f_hold = ceil_hold_us(cap, p)
+    if not engaged:
+        if e >= p.engage_e:            # 掛け始め
+            engaged, below_t0 = True, None
+            if e >= 0.0:
+                allow = min(f_in, f_hold)
+            elif p.start_from_hold:
+                allow = min(f_in, f_hold - p.kp * e)
+            else:
+                allow = f_in
+    else:
+        if dropped:
+            allow = min(allow, f_hold)
+        allow = min(max(allow - p.kp * (e - state.e_prev) - p.ki * e * dt, 0.0), f_in)
+    if engaged:
+        f_out = min(f_in, allow)
+        if v >= cap + p.neutral_margin:
+            f_out = 0.0
+        if e < p.release_e:
+            below_t0 = t if below_t0 is None else below_t0
+            if t - below_t0 >= p.release_s - 1e-9 and (not p.release_bumpless or allow >= f_in):
+                engaged, allow, below_t0 = False, INF, None
+        else:
+            below_t0 = None
+    else:
+        f_out = f_in
+    if f_out >= f_in:
+        mode, thr = CEIL_PASS, thr_in_us
+    elif f_out <= 0.0:
+        mode, thr = CEIL_NEUTRAL, neutral_us
+    else:
+        mode, thr = CEIL_LIMIT, min(max(neutral_us - f_out, thr_in_us), neutral_us)
+    return (CeilState(t, cap, left_t, engaged, allow, e, below_t0),
+            CeilOut(True, left, cap, v, v_pred, mode, thr, allow, engaged))

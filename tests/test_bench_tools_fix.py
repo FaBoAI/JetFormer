@@ -294,7 +294,10 @@ def test_nightly_takes_day1_from_bench(tmp_path):
     head = (tmp_path / 'n' / 'nightly.log').read_text(encoding='utf-8').splitlines()[0]
     assert '1 日目 20261023、bench_candidates.json の days から' in head      # --day1 を忘れても K を誤らない
     assert r.returncode == 1 and 'data/raw/20261024-* がありません' in r.stdout   # 記録が無いのでここで止まる
-    r1 = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20261023', '--bench', str(b), '--out', str(tmp_path / 'n1'),
+    # 1 日目そのもの: 記録の無い日(10/01)で確かめる(10/23 は本物の記録ができたので、ここで止まらない)
+    b1 = tmp_path / 'bench1.json'
+    b1.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2026-10-01', 'blocks': []}, {'date': '2026-10-02', 'blocks': []}]}))
+    r1 = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20261001', '--bench', str(b1), '--out', str(tmp_path / 'n1'),
                          '--report', str(tmp_path / 'r1')], capture_output=True, text=True, timeout=120)
     assert r1.returncode == 1 and '1 日目 なし' in (tmp_path / 'n1' / 'nightly.log').read_text(encoding='utf-8').splitlines()[0]
 

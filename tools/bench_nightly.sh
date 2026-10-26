@@ -1,6 +1,6 @@
 #!/bin/bash
 # bench_nightly.sh: 実車の日の夜の 1 コマンド(2026-10-21、段 S3)
-#   その日の記録 → ラベル → 区間の成績表 → B の記録で G1(上限の再生) → ブレーキの表 → ベンチマークレポート
+#   その日の記録 → ラベル → 区間の成績表 → B の記録で G1(上限の再生) → ブレーキの表 → DE の揺れの表 → ベンチマークレポート
 #
 #   bash tools/bench_nightly.sh 20261023                       # 1 日目の夜
 #   bash tools/bench_nightly.sh 20261024 --day1 20261023       # 2 日目の夜(レポートは 2 日分。2 日目の判定は 10/24 の周だけ)
@@ -113,6 +113,8 @@ run "2 区間の成績表" "$PY" tools/section_scorecard.py --day "$DAY" --label
 run "3 G1(B の記録)" "$PY" tools/cap_replay.py --day "$DAY" --labels "$LABELS" --cand B "${AS[@]}" --out "$OUT/cap_replay" || true
 # 4. ブレーキの表
 run "4 ブレーキの表" "$PY" tools/brake_table.py --day "$DAY" --labels "$LABELS" --out "$OUT/brake_table" || true
+# 4b. DE の揺れの表(2026-10-24。GM の出口の行き過ぎと DE の切り返しを設定ごとに。レポートには入れない)
+run "4b DE の揺れの表" "$PY" tools/de_swing.py --day "$DAY" --labels "$LABELS" "${AS[@]}" --out "$OUT/de_swing" || true
 # 5. ベンチマークレポート
 DAYS=(--day "$DAY"); [ -n "$DAY1" ] && DAYS=(--day "$DAY1" --day "$DAY")
 CR=(); [ -f "$OUT/cap_replay/cap_replay.json" ] && CR=(--cap-replay "$OUT/cap_replay/cap_replay.json")
@@ -122,5 +124,5 @@ if [ -n "$ASSIGN" ] && [ -n "$DAY1" ]; then
 fi
 run "5 ベンチマークレポート" "$PY" tools/bench_report.py "${DAYS[@]}" --labels "$LABELS" --bench "$BENCH" "${AS[@]}" "${CR[@]}" "${BR[@]}" $MOCK --out "$REPORT" "${EXTRA[@]}"
 RC=$?
-echo "# 終わり $(date '+%T')。成績表 $OUT/scorecard/scorecard.md・G1 $OUT/cap_replay/cap_replay.md・ブレーキ $OUT/brake_table/brake_table.md・レポート $REPORT/README.md" | tee -a "$LOG"
+echo "# 終わり $(date '+%T')。成績表 $OUT/scorecard/scorecard.md・G1 $OUT/cap_replay/cap_replay.md・ブレーキ $OUT/brake_table/brake_table.md・DE の揺れ $OUT/de_swing/de_swing.md・レポート $REPORT/README.md" | tee -a "$LOG"
 exit $RC

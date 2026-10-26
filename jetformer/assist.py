@@ -20,15 +20,23 @@
    リカバリーがONのときは、止まっている間のモデルの後退は中立にして、下がるのはリカバリーに任せる
    (2026-10-10、AIが自分で長く下がって後ろにぶつかった例があるため、下がる量を決まった範囲にする)。
 
+3. 発進の補助(StartKick)・発進の前進(LaunchBoost、2026-10-26。既定 OFF)
+   発進の前進: CH3 を AI 側にした最初のフレームで、止まっていて前が空いていれば、前進を少なくとも launch_us(中立から)
+   出す。速さ・時間・ヨー・舵・衝撃・前が近い・CH3・中立で止めた・車両の値 のどれかで終わり、同じ AI の区間ではもう
+   出さない(StartKick も出さない)。仕様は jetformer_reports/fix_20261026/protocol_v3.md 14 章。
+
 時刻は秒(time.monotonic())で渡す。どちらも人が操縦中(select=False)なら何もしない。
 """
 
 import collections
+import math
+from typing import NamedTuple, Tuple
 
 import numpy as np
 
-ASSIST_NONE, ASSIST_ESC, ASSIST_RECOVERY, ASSIST_GIVEUP = 0, 1, 2, 3
-ASSIST_NAMES = {ASSIST_NONE: '', ASSIST_ESC: '後退の受け付け', ASSIST_RECOVERY: 'リカバリー', ASSIST_GIVEUP: 'リカバリー中止'}
+ASSIST_NONE, ASSIST_ESC, ASSIST_RECOVERY, ASSIST_GIVEUP, ASSIST_START, ASSIST_LAUNCH = 0, 1, 2, 3, 4, 5
+ASSIST_NAMES = {ASSIST_NONE: '', ASSIST_ESC: '後退の受け付け', ASSIST_RECOVERY: 'リカバリー', ASSIST_GIVEUP: 'リカバリー中止',
+                ASSIST_START: '発進の補助', ASSIST_LAUNCH: '発進の前進'}
 
 DEFAULT_REV_US = 300.0       # 後退の強さ(中立から)。人は約+210µs。2026-10-10 の +180µs は弱かった
 DEFAULT_REV_S = 0.4          # 下がり始めてから後退を出し続ける時間(その後は惰性)
@@ -257,6 +265,221 @@ class EscReverse(object):
         return want, want != thr
 
 
+class StartKick(object):
+    """発進の補助(2026-10-23 ユーザーの依頼「AIモードにしたら、すぐ走り出すように」)。
+    CH3 を AI 側にした直後、止まっていてモデルが前へ進まない(中立付近)とき、弱い前進(中立 − KICK_US)を出して走り出させる。
+    - 一度 MOVE_ERPM より速く前へ動いたら終わり(その AI の区間ではもう出さない。CH3 を人側へ戻すと次の AI 側で 1 回)
+    - MAX_S 出しても動かなければやめる。前が近い(blocked)・モデルが後退かブレーキを出しているときは出さない
+    - モデルがもっと強く前へ出しているときは、モデルのまま(補助は前進を弱めない)"""
+    KICK_US = 80.0           # 中立から前へ(約 1.2 m/s の定常。人の発進は 1379〜1423 µs)
+    MOVE_ERPM = -800         # これより速く前へ動いたら発進できた(eRPM は負 = 前進)
+    MAX_S = 2.0
+
+    def __init__(self, neutral_us):
+        self.n = float(neutral_us)
+        self.reset()
+
+    def reset(self):
+        self.done = False
+        self.t0 = None
+
+    def step(self, thr, erpm, now, blocked=False):
+        """戻り値: 出すスロットル [µs]、補助しないなら None"""
+        if self.done:
+            return None
+        if erpm <= self.MOVE_ERPM:
+            self.done = True
+            return None
+        if self.t0 is None:
+            self.t0 = now
+        if now - self.t0 > self.MAX_S:
+            self.done = True
+            return None
+        if blocked or thr > self.n + EscReverse.DEADBAND_US:
+            return None
+        want = self.n - self.KICK_US
+        return want if thr > want else None
+
+
+# ---------------------------------------------------------------- 発進の前進(2026-10-26。既定 OFF)
+# 終わりの理由(AI_CMD の launch_end。0 = このフレームでは終わっていない)。1〜9 は protocol_v3 14 章の ①〜⑨。
+# 10 は仕様に無い足し: 走行中に launch_boost を 1 → 0 にした(build_launch.md)
+LAUNCH_END_NAMES = {0: '', 1: '速さに届いた', 2: '最大の時間', 3: 'ヨー 60 deg/s', 4: '舵 200 µs(1 m/s 以上)',
+                    5: '衝撃 2.5G', 6: '前が近い・ToF ガード', 7: 'CH3 を人側', 8: '中立で止めた・走行の停止',
+                    9: '車両の値が古い・後ろへ動いた', 10: 'OFF にした'}
+# 始めなかった理由(記録の出来事と画面だけ。AI_CMD には書かない)
+LAUNCH_SKIP_NAMES = {'off': 'OFF', 'no_switch': 'AI 側にしたのを見ていない(走行の始めから AI 側)',
+                     'hold': '中立で止めたあと', 'model': 'モデルの出力が数でない', 'moving': '止まっていない(|eRPM| ≥ 400)',
+                     'veh': '車両の値が古い', 'tof': 'ToF が無い・古い・ガード 0', 'ttc_n': 'TTC が 5 フレームそろわない',
+                     'near': '前が近い(TTC の中央値 < 3.3 秒)', 'end': '始めのフレームで終わりの条件'}
+
+
+class LaunchIn(NamedTuple):
+    """発進の前進の 1 フレームの入力(drive.py が launch_boost = 1 のときだけ作る。OFF は None)"""
+    us: float = 250.0                  # launch_us: 出す前進の下限 [µs](中立から。ゲインは掛けない)
+    mps: float = 2.5                   # launch_mps: 0.1 秒先の速さの見込みがこれに届いたら終わり [m/s]
+    max_s: float = 1.2                 # launch_max_s [秒]
+    v: float = float('nan')            # 速さ [m/s](速さの天井と同じ: 車両の値 3 つの中央値)
+    a: float = float('nan')            # 加速 [m/s²](速さの天井と同じ: 0.1 秒前の v との差)
+    gz: float = float('nan')           # ヨー [deg/s](IMU 5 サンプルの平均、左 +)
+    steer_rel: float = float('nan')    # 車に出す舵 − 中心 − trim [µs]
+    ttc: float = float('nan')          # このフレームの ToF ガードの TTC [秒]
+    ttc5: Tuple[float, ...] = ()       # 直近のフレームの TTC(このフレームを含む。中立で止めたら空にする)
+    tof_ok: bool = False               # ToF ガードがある(tof_guard ≥ 1)・ToF の値が 0.1 秒以内
+    veh_ok: bool = False               # 車両の値が 0.1 秒以内
+    impact_g: float = 0.0              # 水平の衝撃 [G](直近 0.15 秒の最大)
+    guard_changed: bool = False        # ToF ガードがこのフレームの出力を変えた
+
+
+class LaunchBoost(object):
+    """発進の前進(protocol_v3 14 章)。AI 側にした最初のフレームで、止まっていて前が空いていれば始め、
+    スロットル = min(モデル, 中立 − us) を出す(前進だけ。止まっている間のモデルのブレーキは無視。舵はモデルのまま)。
+    終わったら(どの理由でも)同じ AI の区間ではもう出さない。CH3 を人側へ戻すと、次の AI 側で 1 回"""
+    US_RANGE = (150.0, 300.0)          # drive.PARAM_LIMITS と同じ(念のためここでも切る)
+    MPS_RANGE = (2.0, 3.0)
+    MAX_S_RANGE = (0.5, 2.0)
+    START_ERPM = 400.0                 # |eRPM| < これ = 止まっている
+    TTC_START_S = 3.3                  # 直近 5 フレームの TTC の中央値がこれ以上(止まっていれば前 1.0 m 以上空き)
+    TTC_N = 5
+    END_YAW_DPS = 60.0                 # ③
+    END_STEER_US = 200.0               # ④(END_STEER_MPS 以上のとき)
+    END_STEER_MPS = 1.0
+    END_IMPACT_G = 2.5                 # ⑤
+    END_TTC_S = 0.8                    # ⑥ v ≥ END_TTC_MPS で TTC < これが END_TTC_N フレーム続いた
+    END_TTC_N = 2
+    END_TTC_MPS = 0.3
+    END_BACK_ERPM = 200.0              # ⑨ eRPM > これ = 後ろへ動いた(eRPM は負 = 前進)
+    PRED_S, ACCEL_MAX = 0.10, 3.0      # ① 0.1 秒先の見込み v + clip(a, 0, 3) × 0.1(safety_caps.CeilParams と同じ)
+
+    def __init__(self, neutral_us):
+        self.n = float(neutral_us)
+        self.count = 0                 # 始めた回数(stats の launch_boosts)
+        self.armed = False             # この走行で人側のフレームを見た(「AI 側にした」と分かる)
+        self.last_end = 0              # 最後に終わった理由
+        self.last_skip = ''            # 最後に始めなかった理由(LAUNCH_SKIP_NAMES の鍵)
+        self.event = None              # このフレームの出来事 (種類, 情報)。drive.py が記録の出来事に書く
+        self._section()
+
+    def _section(self):
+        self.decided = False           # この AI の区間で、始めるかを決めた
+        self.active = False
+        self.used = False              # この AI の区間で出した(終わったあとも StartKick を出さない)
+        self.held = False              # 人側のフレームのあとに中立で止めた
+        self.t0 = None
+        self.cfg = None                # 始めたときの (us, mps, max_s)
+        self.near_n = 0
+        self.frames = 0
+
+    @staticmethod
+    def _clip(x, rng):
+        return min(max(float(x), rng[0]), rng[1])
+
+    def _end(self, code, now=None):
+        self.active = False
+        self.last_end = int(code)
+        self.event = ('end', {'code': int(code), 'reason': LAUNCH_END_NAMES.get(int(code), ''), 'frames': self.frames,
+                              's': None if now is None or self.t0 is None else round(now - self.t0, 3)})
+        return int(code)
+
+    def human(self):
+        """CH3 が人側(または dry run)のフレーム。戻り値: このフレームで終わった理由(⑦。出していなければ 0)"""
+        code = self._end(7) if self.active else 0
+        self._section()
+        self.armed = True
+        return code
+
+    def hold(self):
+        """中立で止めた(⑧)。戻り値: 終わった理由(出していなければ 0)。止めたあとの最初の AI 側では始めない"""
+        self.held = True
+        return self._end(8) if self.active else 0
+
+    def stop(self):
+        """走行の停止(⑧)"""
+        return self._end(8) if self.active else 0
+
+    def _why_not(self, thr, erpm, inp):
+        if inp is None:
+            return 'off'
+        if not self.armed:
+            return 'no_switch'
+        if self.held:
+            return 'hold'
+        if not math.isfinite(thr):
+            return 'model'
+        if not abs(float(erpm)) < self.START_ERPM:
+            return 'moving'
+        if not inp.veh_ok:
+            return 'veh'
+        if not inp.tof_ok:
+            return 'tof'
+        xs = [float(x) for x in inp.ttc5[-self.TTC_N:]]
+        if len(xs) < self.TTC_N or not all(math.isfinite(x) for x in xs):
+            return 'ttc_n'
+        if not float(np.median(xs)) >= self.TTC_START_S:
+            return 'near'
+        return ''
+
+    def _end_reason(self, erpm, now, inp):
+        """終わりの条件(安全の順に見る)。0 = まだ続ける"""
+        v = float(inp.v)
+        if not inp.veh_ok or not math.isfinite(v) or float(erpm) > self.END_BACK_ERPM:
+            return 9
+        moving = v >= self.END_TTC_MPS
+        self.near_n = self.near_n + 1 if (moving and math.isfinite(inp.ttc) and inp.ttc < self.END_TTC_S) else 0
+        if inp.guard_changed or not inp.tof_ok or not math.isfinite(inp.ttc) or self.near_n >= self.END_TTC_N:
+            return 6
+        if float(inp.impact_g) >= self.END_IMPACT_G:
+            return 5
+        if math.isfinite(inp.gz) and abs(float(inp.gz)) >= self.END_YAW_DPS:
+            return 3
+        if v >= self.END_STEER_MPS and math.isfinite(inp.steer_rel) and abs(float(inp.steer_rel)) >= self.END_STEER_US:
+            return 4
+        a = float(inp.a)
+        a_c = min(max(a, 0.0), self.ACCEL_MAX) if math.isfinite(a) else 0.0
+        if v + a_c * self.PRED_S >= self.cfg[1]:
+            return 1
+        if now - self.t0 >= self.cfg[2]:
+            return 2
+        return 0
+
+    def step(self, thr, erpm, now, inp):
+        """AI 側のフレーム。thr = モデルのスロットル(ゲイン・ガードのあと)、inp = LaunchIn か None(OFF)。
+        戻り値 (出すスロットル [µs] か None(モデルのまま), このフレームで終わった理由 0〜10)"""
+        if not self.decided:
+            self.decided = True
+            why = self._why_not(thr, erpm, inp)
+            if not why:
+                self.cfg = (self._clip(inp.us, self.US_RANGE), self._clip(inp.mps, self.MPS_RANGE),
+                            self._clip(inp.max_s, self.MAX_S_RANGE))
+                self.t0, self.near_n, self.frames = now, 0, 0
+                code = self._end_reason(erpm, now, inp)
+                if code:
+                    why = 'end'
+                    self.last_skip = why
+                    self.event = ('skip', {'why': why, 'reason': LAUNCH_SKIP_NAMES[why], 'code': code,
+                                           'code_reason': LAUNCH_END_NAMES[code]})
+                    return None, 0
+                self.active = self.used = True
+                self.count += 1
+                self.event = ('start', {'us': self.cfg[0], 'mps': self.cfg[1], 'max_s': self.cfg[2],
+                                        'erpm': float(erpm), 'ttc_med': round(float(np.median(inp.ttc5[-self.TTC_N:])), 3)})
+            else:
+                if inp is not None:
+                    self.last_skip = why
+                    self.event = ('skip', {'why': why, 'reason': LAUNCH_SKIP_NAMES[why]})
+                return None, 0
+        if not self.active:
+            return None, 0
+        if inp is None:                 # 走行中に OFF にした
+            return None, self._end(10, now)
+        code = self._end_reason(erpm, now, inp)
+        if code:
+            return None, self._end(code, now)
+        want = self.n - self.cfg[0]
+        self.frames += 1
+        return (thr if (math.isfinite(thr) and thr < want) else want), 0     # 前進だけ(thr が nan・inf なら want)
+
+
 class Assist(object):
     """走行ループから使う窓口。人が操縦中・出力しない確認中は何もしない"""
 
@@ -264,20 +487,54 @@ class Assist(object):
         self.ref = (float(ref[0]), float(ref[1]))
         self.esc = EscReverse(self.ref[1])
         self.rec = Recovery(self.ref)
+        self.kick = StartKick(self.ref[1])
+        self.boost = LaunchBoost(self.ref[1])
         self.esc_count = 0
+        self.kick_count = 0
         self._esc_active = False
+        self._kick_active = False
+        self.launch_on = False          # このフレームで発進の前進を出した(AI_CMD の launch_on)
+        self.launch_end = 0             # このフレームで発進の前進が終わった理由(AI_CMD の launch_end)
 
     def reset(self):
+        """中立で止めたあとなど。発進の補助は戻さない(CH3 を人側へ戻したときだけ、次の AI 側で 1 回)"""
         self.esc.reset()
         self.rec.reset()
         self._esc_active = False
 
+    def launch_hold(self):
+        """中立で止めたフレーム(drive.py の hold が記録の前に呼ぶ)。戻り値: 発進の前進が終わった理由(⑧。無ければ 0)"""
+        self.launch_on = False
+        self.launch_end = self.boost.hold()
+        return self.launch_end
+
     def step(self, model_us, erpm, select, now, esc_on=True, rec_on=True, impact_g=0.0,
-             rev_us=DEFAULT_REV_US, rev_s=DEFAULT_REV_S):
-        """戻り値 (出す値 (steer, throttle), 補助の種類)"""
+             rev_us=DEFAULT_REV_US, rev_s=DEFAULT_REV_S, kick_on=False, blocked=False, launch=None):
+        """戻り値 (出す値 (steer, throttle), 補助の種類)。blocked = 前が近い(発進の補助を出さない)。
+        launch = 発進の前進の入力 LaunchIn(launch_boost = 1 のとき。None = OFF で今までと同じ)"""
+        self.boost.event = None
+        self.launch_on = False
         if not select:
+            self.launch_end = self.boost.human()
             self.reset()
+            self.kick.reset()
+            self._kick_active = False
             return model_us, ASSIST_NONE
+        lb, self.launch_end = self.boost.step(model_us[1], erpm, now, launch)
+        if lb is not None:              # 発進の前進(StartKick の場所。リカバリー・後退の受け付けより先)
+            self.launch_on = True
+            self._kick_active = False
+            if abs(erpm) >= self.rec.ARM_ERPM:      # 出している間に動いたことはリカバリーに残す(終わったあとの衝突に備える)
+                self.rec.armed = True
+            return (model_us[0], float(lb)), ASSIST_LAUNCH
+        if kick_on and not self.boost.used:     # 発進の前進を出した区間では、終わったあとも StartKick を出さない
+            k = self.kick.step(model_us[1], erpm, now, blocked)
+            if k is not None:
+                if not self._kick_active:
+                    self.kick_count += 1
+                self._kick_active = True
+                return (model_us[0], float(k)), ASSIST_START
+        self._kick_active = False
         if rec_on:
             o, k = self.rec.step(model_us, erpm, now, impact_g, rev_us, rev_s)
             if o is not None:

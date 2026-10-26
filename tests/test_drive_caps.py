@@ -224,8 +224,10 @@ def assert_rows_equal_before(rows_before, rows_new):
 def test_default_off_and_reset_on_boot(monkeypatch, tmp_path):
     before = load_before()
     assert drive.DEFAULT_PARAMS['zone_caps'] == 0
-    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k != 'zone_caps'} == before.DEFAULT_PARAMS
-    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k != 'zone_caps'} == before.PARAM_LIMITS
+    added = (('zone_caps', 'start_kick') + drive.SPEED_CTRL_SWITCHES + drive.SPEED_CTRL_VALUES
+             + drive.LAUNCH_KEYS)          # 30b71e8 より後に足した項目(発進の前進は 2026-10-26)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in added} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in added} == before.PARAM_LIMITS
     assert drive.PARAM_LIMITS['zone_caps'] == (0, 1)
     assert 'zone_caps' in drive.RESET_ON_BOOT and set(before.RESET_ON_BOOT) <= set(drive.RESET_ON_BOOT)
     path = tmp_path / 'drive_settings.json'

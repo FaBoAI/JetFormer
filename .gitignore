@@ -26,3 +26,8 @@ experiments/20261015_real_accuracy/**/*.onnx
 experiments/20261015_real_accuracy/**/*.engine
 experiments/20261015_real_accuracy/**/*.npz
 experiments/20261015_real_accuracy/**/cache/
+# 10/22〜10/26 の実験: 予測・表・作業のキャッシュ(npz)・モデル(pth・onnx・engine)は入れない
+experiments/2026102*/**/*.npz
+experiments/2026102*/**/*.pth
+experiments/2026102*/**/*.onnx
+experiments/2026102*/**/*.engine

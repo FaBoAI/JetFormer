@@ -137,6 +137,14 @@
         <div class="card">
           <div class="card-title">現在値</div>
           <div class="values" id="values"></div>
+          <details class="adv" id="vbat-calib"><summary class="small">電池の電圧の較正(基板の値 ↔ 電圧計)</summary>
+            <div class="muted small">車を止めて、LiPo チェッカー・電圧計で測った電池の電圧を入れて保存すると、基板の値に掛ける係数
+              (data/vbat_calib.json)を作ります。走行中はできません。</div>
+            <div class="row"><label class="inline small">電圧計の値 <input id="vbat-meter" type="number" step="0.01" min="5" max="13" placeholder="8.31"> V</label>
+              <button id="btn-vbat-calib" class="small">係数を保存</button>
+              <button id="btn-vbat-calib-reset" class="small">係数を 1.0 に戻す</button></div>
+            <div id="vbat-calib-note" class="small"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -284,6 +292,7 @@
 
   <!-- ======================= AI走行 ======================= -->
   <section id="tab-drive" class="tab-page">
+    <div id="dr-vbat" class="vbat-strip small"><span class="muted">電池の電圧: -</span></div>
     <div class="ds-grid">
       <div>
         <div class="card" id="dr-prep">
@@ -297,7 +306,7 @@
             <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> プロポの CH3 が人側(SELECT = 0)</label>
             <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 「基準の設定」の値を画面で確かめた <span id="dr-check-base" class="small"></span></label>
             <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 電池の番号と電圧を測った
-              <span class="muted small">(説明欄の battery=#__ V_before=__ に書く)</span></label>
+              <span class="muted small">(説明欄の battery=#__ V_before=__ に書く。基板が電圧を送るときは、走行開始で V_before が空なら自動で入ります)</span></label>
             <div class="row"><button id="btn-dr-check-clear" class="small">チェックを全部外す</button></div>
           </details>
           <label>この日のステア <span class="muted">(B が R1・LH を回り切れない日は 1.3。その日の全ブロックを同じにする。選んだ値はその日のあいだ、この画面が覚える)</span>
@@ -326,6 +335,7 @@
           <div class="card-title">AI走行</div>
           <p class="muted small">学習結果のモデル(TensorRT)で車を操作します。プロポの<b>CH3をAI側(LED紫)</b>にすると、
             この出力がサーボ・ESCに届きます。<b>CH3を戻せば、いつでも人の操縦に戻ります。</b></p>
+          <label id="dr-bench-pick-wrap" class="hidden">ベンチマーク(本番は 1 から順番に選ぶ)<select id="dr-bench-pick"></select></label>
           <label>モデル(学習結果)<select id="dr-model"></select></label>
           <div id="dr-model-info" class="small muted"></div>
           <label>走行ジャンル <span class="muted">(走行中に変えると、すぐ切り替わります)</span><select id="dr-mode"></select></label>
@@ -384,6 +394,31 @@
             <div class="muted small">OFF でも、区間と「上限ならこう出した」スロットルは記録(AI_CMD)に残ります。上限は前進を弱めるだけで、舵は変えません。</div>
             <div id="dr-zone-note" class="small"></div>
           </div>
+          <div class="zone-panel speed-panel" id="dr-speed-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-speed-ceiling" autocomplete="off"> 速さの天井を出力に掛ける
+              <span id="dr-ceil-spec" class="muted small">(全体 4.5・左旋回中 4.1 m/s)</span></label>
+            <div class="warn-text small">前進を弱めるだけです(ブレーキは出さない・舵は変えない)。速すぎる当たりを減らすもので、当たりを 0 にはしません。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。ON は OFF にするまで次の走行にも残ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div id="dr-ceil-note" class="small"></div>
+            <label class="inline check-line"><input type="checkbox" id="dr-speed-auto" autocomplete="off"> 速さのゲインの自動合わせ
+              <span id="dr-auto-spec" class="muted small">(目標 1 周 8.12 秒(周の速さ p90 4.27 m/s 相当))</span></label>
+            <div class="warn-text small">天井が ON のときだけ使えます。電池の電圧と周の時間(目標 1 周 約 8.1 秒)で、速度ゲインを 0.85〜1.20 倍(上げるのは 1.10 まで)に合わせます。
+              既定は OFF・起動のたびに OFF・走行中は ON にできません。</div>
+            <div class="muted small">OFF でも、天井と自動合わせの「効いたらこう出した」は記録(AI_CMD の ceil_*・sa_*)に残ります。</div>
+            <div id="dr-auto-note" class="small"></div>
+          </div>
+          <div class="zone-panel launch-panel" id="dr-launch-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-launch-boost" autocomplete="off"> 発進の前進(止まってからの発進を速くする)
+              <span id="dr-launch-spec" class="muted small">(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)</span></label>
+            <div class="warn-text small">試験の選択肢です(2026-10-26。机上の見積もりは 1 回の発進で約 0.3 秒縮む)。CH3 を AI 側にした最初のフレームで、
+              止まっていて前が 1 m 以上空いているときだけ、強い前進を出します。LH の入口に少し速く入ります。
+              コースで ON にするのはユーザーの了承のあとで、車輪を浮かせた確かめ(dry run ではなく実際の出力)を先にしてください。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div class="muted small">終わり: 速さ・最大の時間・ヨー 60 deg/s・舵 200 µs・衝撃・前が近い(TTC 0.8 秒)・CH3 を人側・中立で止めた。
+              終わったら同じ AI の区間ではもう出しません(下の発進の補助も出しません)。ToF ガードが OFF のときは始めません。</div>
+            <div id="dr-launch-note" class="small"></div>
+          </div>
+          <label class="inline check-line"><input type="checkbox" id="dr-start-kick"> AI側にしたら走り出す(発進の補助: 止まっていてモデルが進まないとき、弱い前進を最大2秒。前が近いときは出さない)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
           <div class="indent">
@@ -439,6 +474,23 @@
 
           <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button></div>
           <button id="btn-dr-stop" class="stop-big" disabled>■ 停止(スペースキー)</button>
+          <div id="dr-after" class="hidden">
+            <div class="card-title small">走り終わりのメモ <span id="dr-after-log" class="muted small"></span></div>
+            <div id="dr-after-ai" class="small"></div>
+            <div class="row">
+              <label>電池の番号<input id="dr-after-battery" placeholder="例: 3" size="4"></label>
+              <label>走る前の電圧 V<input id="dr-after-vb" type="number" step="0.01" placeholder="8.20"></label>
+              <label>走ったあとの電圧 V<input id="dr-after-va" type="number" step="0.01" placeholder="7.60"></label>
+            </div>
+            <div id="dr-after-vnote" class="muted small"></div>
+            <label>止めた理由<select id="dr-after-reason">
+              <option value="">選んでください</option><option>240秒走った</option><option>安全で中止</option>
+              <option>回れない</option><option>B止め</option><option>電池</option><option>その他</option></select></label>
+            <label>メモ<input id="dr-after-memo" placeholder="例: DE で 2 回当たって止めた"></label>
+            <div class="row buttons"><button id="btn-dr-after">記録に書く</button>
+              <button id="btn-dr-after-skip" class="small">書かずに閉じる</button></div>
+            <div class="muted small">夜の集計は、この欄(シーンの説明)を記録の説明欄に重ねて読みます。電池の直しには番号と電圧の両方が要ります。</div>
+          </div>
         </div>
       </div>
 

@@ -31,12 +31,20 @@ v1.1 は位相が不確か(unknown: 最初の R1 の前・R1 から 16 秒超・
 ユーザーの了承は 3 区間だけなので、画面の ON の確認で示す。ZONE_CAPS_SPEC['unknown_note'])。
 走行中に OFF → ON にはできない(set_params が断る。1 走行 = 1 設定)。ON → OFF は走行中でもできる。
 
+発進の前進(assist.LaunchBoost、2026-10-26、jetformer_reports/fix_20261026/protocol_v3.md 14 章): パラメータ launch_boost
+(既定 0、起動のたびに 0・値も既定へ)。CH3 を AI 側にした最初のフレームで止まっていて前が空いていれば(ToF の TTC の
+直近 5 フレームの中央値 ≥ 3.3 秒)、スロットルを min(モデル, 中立 − launch_us) にする(前進だけ・舵はモデルのまま)。
+順番は ゲイン → ToF ガード → 発進の前進(StartKick の場所)→ リカバリー → 区間の上限 → 速さの天井。走行中は 0 → 1 に
+できない(1 → 0 はできる)・値は変えられない。OFF のとき、PCA9685 に書く値と記録の今までの欄は手を入れる前と同じ
+(新しい欄 launch_on・launch_end は False・0)。記録: AI_CMD の assist = 5・launch_on・launch_end、stats の launch_boosts。
+
 AI の時間(stats['ai_s']、2026-10-21): CH3 が AI 側で dry run でない時間の和。道具(label_events の dt_s)と同じ決め方で、
 ベンチマークの「AI の時間が数える時間 + 1 分を過ぎたら止める」を画面で見るため。数えるだけで出力は変えない。
 """
 
 import collections
 import json
+import math
 import os
 import threading
 import time
@@ -50,6 +58,7 @@ import numpy as np
 from . import assist as assist_mod
 from . import clock, config, modes, policies
 from . import safety_caps
+from . import speed_auto
 from .laps import LapCounter
 from .policies import post as post_mod
 
@@ -78,9 +87,32 @@ PARAM_LIMITS = {
     'ensemble_j': (0, 3),          # 予測の重ね合わせ: 何フレーム前の予測まで混ぜるか(0 = オフ)
     'ensemble_m': (0.0, 2.0),      # 予測の重ね合わせ: 古い予測を軽くする強さ(重み exp(-m·j))
     'zone_caps': (0, 1),           # 区間の速度上限 v1.1(R1 2.5・GM 2.2・DE 3.0 m/s)1 = 出力に掛ける 0 = 記録だけ(影の判定)
+    'start_kick': (0, 1),          # 1 = 発進の補助(AI 側にした直後、止まっていてモデルが進まないとき弱い前進を出す。assist.StartKick)
+    # 速さの天井・速さのゲインの自動合わせ(2026-10-25、speed_control_20261025/spec.md)。どちらも既定 OFF・起動のたびに OFF・
+    # 走行中は ON にできない(OFF はできる)・値は走行中に変えられない。OFF でも影の判定を記録する(AI_CMD の ceil_*・sa_*)
+    'speed_ceiling': (0, 1),       # 1 = 速さの天井(全体 ceil_all_mps・左旋回中 ceil_left_mps)。前進を弱めるだけ。ブレーキなし・舵は変えない
+    'ceil_all_mps': (4.0, 5.0),    # 全体の天井 [m/s]
+    'ceil_left_mps': (3.5, 4.5),   # 左旋回中の天井 [m/s](全体より大きければ全体)
+    'speed_auto': (0, 1),          # 1 = 速さのゲインの自動合わせ(speed_ceiling = 1 のときだけ)
+    'auto_target_mps': (3.8, 4.4), # 周の速さ p90 の目標 [m/s]
+    'auto_vref_v': (7.0, 9.0),     # throttle_gain を決めた電圧 [V](較正の値。起動しても残す)
+    # 発進の前進(2026-10-26、protocol_v3 14 章)。既定 OFF・起動のたびに 0(値も既定へ)・走行中は ON にできない・値は変えられない
+    'launch_boost': (0, 1),        # 1 = 発進の前進(AI 側にした最初のフレームから前進を少なくとも launch_us。assist.LaunchBoost)
+    'launch_us': (150.0, 300.0),   # 出す前進の下限 [µs](モデルの中立から。速さのゲインは掛けない)
+    'launch_mps': (2.0, 3.0),      # 0.1 秒先の速さの見込みがこれに届いたら終わり [m/s]
+    'launch_max_s': (0.5, 2.0),    # これより長く出さない [秒]
 }
+START_KICK_TTC_S = 1.0             # 発進の補助を出さない ToF の衝突までの時間 [秒](これより近い)
 # 起動のたびに既定へ戻す項目(drive_settings.json から読まない)。区間の速度上限は ON のまま別の日に持ち越さない
-RESET_ON_BOOT = ('tcp_mode', 'speed_scale', 'zone_caps')
+RESET_ON_BOOT = ('tcp_mode', 'speed_scale', 'zone_caps',
+                 'speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto', 'auto_target_mps',
+                 'launch_boost', 'launch_us', 'launch_mps', 'launch_max_s')
+SPEED_CTRL_SWITCHES = ('speed_ceiling', 'speed_auto')                               # 走行中は 0 → 1 にできない
+SPEED_CTRL_VALUES = ('ceil_all_mps', 'ceil_left_mps', 'auto_target_mps', 'auto_vref_v')   # 走行中は変えられない
+LAUNCH_VALUES = ('launch_us', 'launch_mps', 'launch_max_s')                         # 発進の前進の値(走行中は変えられない)
+LAUNCH_KEYS = ('launch_boost',) + LAUNCH_VALUES
+LAUNCH_FRESH_NS = 100_000_000       # 発進の前進: ToF・車両の値がこれより古ければ始めない・終わる(0.1 秒)
+LAUNCH_VERSION = '2026-10-26'
 ENGINE_CHECK_FILE = 'engine_check.json'          # エンジンの確認(精度・速さ)の結果。あれば走行タブに出す(精度の不合格は走らせない)
 # 走行タブで最初に選ぶ「推奨のモデル」(方策の比較などの評価で決めたもの。tools/policy_zoo.py recommend で書く)。
 # 無ければ今まで通り(前回のモデル → 一番新しいモデル)
@@ -90,7 +122,10 @@ FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
                   'esc_reverse': 1, 'recovery': 1, 'rev_us': assist_mod.DEFAULT_REV_US, 'rev_s': assist_mod.DEFAULT_REV_S,
                   'tof_guard': 1, 'speed_cap': 0.0, 'speed_scale': 1.0, 'tcp_mode': 0, 'ensemble_j': 0, 'ensemble_m': 0.5,
-                  'zone_caps': 0}
+                  'zone_caps': 0, 'start_kick': 0,
+                  'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0, 'auto_target_mps': 4.27,
+                  'auto_vref_v': 8.35,
+                  'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2}
 
 
 def _read_json(path):
@@ -493,6 +528,518 @@ class _ZoneCaps(object):
                 'thr_us': None, 'applied': False, 'brake': False}
 
 
+# ------------------------------------------------------------------ 速さの天井・速さのゲインの自動合わせ(2026-10-25)
+# 仕様: jetformer_reports/speed_control_20261025/spec.md 2・3 章(記録 build_drive.md)。どちらも既定 OFF。
+# OFF でも AI のフレームごとに計算して記録する(AI_CMD の ceil_*・sa_*、影の判定)。車への出力を変えるのは ON・AI のフレームだけ。
+# 計算が例外になったら、その走行のあいだは外す(OFF と同じ出力)。天井が失敗したら自動合わせも外す
+SPEED_CTRL_VERSION = '2026-10-25'
+G0 = 9.80665
+VEH_FRESH_NS = 100_000_000          # 車両の値が撮像からこれより古いフレームは天井を動かさない(0.1 秒)
+ACCEL_LAG_NS = 100_000_000          # 加速 a = (v − 0.1 秒前の v) ÷ 0.1
+
+
+def speed_ctrl_spec(params=None):
+    """画面・道具の表示用(st['speed_ctrl_spec'])。値は走行ループが使うものから作る(文と値をずらさない)"""
+    p = dict(DEFAULT_PARAMS, **(params or {}))
+    cp = safety_caps.ceil_params(p['ceil_all_mps'], p['ceil_left_mps'])
+    ap = speed_auto.auto_params(p['auto_target_mps'], p['auto_vref_v'])
+    return {
+        'version': SPEED_CTRL_VERSION,
+        'ceiling': {
+            'all_mps': cp.cap_all, 'left_mps': cp.cap_left_eff(),
+            'left_rule': {'steer_us': cp.left_steer_us, 'gz_dps': cp.left_gz_dps, 'hold_s': cp.left_hold_s},
+            'release_mps2': cp.release_accel, 'neutral_over_mps': cp.neutral_margin, 'pred_s': cp.pred_s,
+            'kp': cp.kp, 'ki': cp.ki, 'brake': False, 'changes_steer': False, 'per_run': True,
+            'start_from_hold': cp.start_from_hold, 'release_bumpless': cp.release_bumpless,
+            'title': '速さの天井(全体 %.1f・左旋回中 %.1f m/s)' % (cp.cap_all, cp.cap_left_eff()),
+            'rule_text': ('左旋回 = 車に出す舵 +%.0f µs 以上 か ヨー +%.0f deg/s 以上(どちらも切れてから %.2f 秒は左旋回のまま。'
+                          '終わったら %.1f m/s² で全体の天井へ戻す)'
+                          % (cp.left_steer_us, cp.left_gz_dps, cp.left_hold_s, cp.release_accel)),
+            # 「この走行のあいだだけ」は誤りだった: ON は OFF にするまで次の走行にも残る(区間の速度上限と同じ)。fix.md
+            'note': ('前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + %.1f m/s を超えたら中立(惰性)。'
+                     '速すぎる当たり(奥の左スイーパーの出口・LH の手前)を減らすもので、当たりを 0 にはしない(DE の当たりには効かない)。'
+                     'OFF にするまで続く(管理画面の再起動で OFF)' % cp.neutral_margin)},
+        'auto': {
+            'target_mps': ap.target_mps, 'vref_v': ap.vref_v, 'm_range': [ap.m_lo, ap.m_hi],
+            'raise_max_gain': ap.gain_raise_max, 'ff_range': [ap.ff_lo, ap.ff_hi], 'fb_range': [ap.fb_lo, ap.fb_hi],
+            'step_max': ap.step_max, 'deadband_mps': ap.deadband, 'requires_ceiling': True, 'per_run': True,
+            # 周の直しの物差し(fix.md): 周の時間。目標 T* = 14.52 − 1.50 × target_mps(4.27 → 8.12 秒。2026-10-25 ユーザー: 25.0 秒ちょうど = 8.12 秒)・不感帯 ±0.10 秒
+            'metric': ap.metric, 'target_lap_s': round(ap.target_lap_s(), 3), 'deadband_s': ap.deadband_s,
+            'ceil_frac_max': ap.ceil_frac_max_lap if ap.metric == speed_auto.METRIC_LAP else ap.ceil_frac_max,
+            'v_range': [ap.vboard_lo, ap.vboard_hi],
+            'sources': {'0': 'なし(1.00)', '1': '基板の電圧', '2': '説明欄の V_before'},
+            'title': ('速さのゲインの自動合わせ(目標 1 周 %.2f 秒 = 周の速さ p90 %.2f m/s 相当)'
+                      % (ap.target_lap_s(), ap.target_mps)),
+            'note': ('速さのゲインに %.2f〜%.2f 倍を掛けます(上げるのは %.2f まで)。電圧の前送り(%.2f V が 1.00 倍。'
+                     '%.1f〜%.1f V の外の値は使わない)と、R1 の起点ごとの周の時間の直し(1 周 %.0f%% まで・%.2f±%.2f 秒は直さない)。'
+                     '天井が ON のときだけ。OFF にするまで続く(管理画面の再起動で OFF)。走り終わりに次の走行の速度ゲインの目安を出す'
+                     % (ap.m_lo, ap.m_hi, ap.gain_raise_max, ap.vref_v, ap.vboard_lo, ap.vboard_hi, ap.step_max * 100,
+                        ap.target_lap_s(), ap.deadband_s))},
+        'ceil_modes': {str(k): v for k, v in safety_caps.CEIL_MODE_NAMES.items()},
+        'auto_events': {str(k): v for k, v in speed_auto.EVENT_NAMES.items()},
+        'auto_skip_reasons': dict(speed_auto.SKIP_NAMES), 'auto_warn_text': dict(speed_auto.WARN_TEXT),
+    }
+
+
+def _median3_speed(veh, t_ns):
+    """t_ns 以前の最新 3 つの車両のサンプルの速さ [m/s] の中央値と、最新のサンプルの時刻。3 つ無ければ古い方で埋める
+    (下見の ceiling_shadow.py と同じ)。無ければ (nan, None)"""
+    xs, t_last = [], None
+    for tv, d in reversed(veh):
+        if tv <= t_ns:
+            if t_last is None:
+                t_last = tv
+            xs.append(-float(d['erpm']) * safety_caps.KV)
+            if len(xs) == 3:
+                break
+    if not xs:
+        return np.nan, None
+    while len(xs) < 3:
+        xs.append(xs[-1])
+    xs.sort()
+    return xs[1], t_last
+
+
+def _gz5(imu, t_ns):
+    """t_ns 以前の最新 5 つの IMU のヨー [deg/s] の平均(5 つ無ければ古い方で埋める。無ければ nan)"""
+    xs = []
+    for ti, x in reversed(imu):
+        if ti <= t_ns:
+            xs.append(float(np.degrees(x[5])))
+            if len(xs) == 5:
+                break
+    if not xs:
+        return np.nan
+    while len(xs) < 5:
+        xs.append(xs[-1])
+    xs.reverse()                    # 古い順に足す(試験・再生と同じ順)
+    return sum(xs) / 5.0
+
+
+def speed_inputs(veh, imu, t_ns):
+    """天井の入力 (v, a, gz5, 最新の車両のサンプルの時刻) を、撮像時刻 t_ns までのバッファから(spec 1.1 節)"""
+    v, t_last = _median3_speed(veh, t_ns)
+    v_old, t_old = _median3_speed(veh, t_ns - ACCEL_LAG_NS)
+    a = (v - v_old) / 0.1 if t_old is not None else np.nan
+    return v, a, _gz5(imu, t_ns), t_last
+
+
+def launch_inputs(p, t_ns, tof_buf, imu_buf, veh_buf, ref, base_us, ttc, ttc_hist, guard_on, impact_g, guard_changed):
+    """発進の前進の 1 フレームの入力 assist.LaunchIn(launch_boost = 1 のときだけ呼ぶ)。速さ・加速・ヨーは速さの天井と同じ
+    (speed_inputs)。ToF・車両の値は撮像時刻 t_ns から 0.1 秒以内なら使える"""
+    v, a, gz5, veh_t = speed_inputs(list(veh_buf), list(imu_buf), t_ns)
+    tof_t = max((x[0] for x in list(tof_buf) if x[0] <= t_ns), default=None)
+    tof_ok = bool(guard_on) and tof_t is not None and t_ns - tof_t < LAUNCH_FRESH_NS and bool(np.isfinite(ttc))
+    return assist_mod.LaunchIn(
+        us=float(p.get('launch_us', DEFAULT_PARAMS['launch_us'])), mps=float(p.get('launch_mps', DEFAULT_PARAMS['launch_mps'])),
+        max_s=float(p.get('launch_max_s', DEFAULT_PARAMS['launch_max_s'])), v=float(v), a=float(a), gz=float(gz5),
+        steer_rel=float(base_us[0]) - float(ref[0]) - float(p.get('steer_trim_us', 0.0)), ttc=float(ttc),
+        ttc5=tuple(float(x) for x in ttc_hist), tof_ok=tof_ok,
+        veh_ok=veh_t is not None and t_ns - veh_t < LAUNCH_FRESH_NS, impact_g=float(impact_g),
+        guard_changed=bool(guard_changed))
+
+
+def launch_spec(params=None):
+    """画面・道具の表示用(st['launch_spec'])。値は走行ループ・assist.LaunchBoost が使うものから作る"""
+    pp = dict(DEFAULT_PARAMS, **(params or {}))
+    B = assist_mod.LaunchBoost
+    return {
+        'version': LAUNCH_VERSION, 'us': float(pp['launch_us']), 'mps': float(pp['launch_mps']),
+        'max_s': float(pp['launch_max_s']),
+        'limits': {k: list(PARAM_LIMITS[k]) for k in LAUNCH_KEYS},
+        'start_erpm': B.START_ERPM, 'ttc_start_s': B.TTC_START_S, 'ttc_n': B.TTC_N,
+        'end_yaw_dps': B.END_YAW_DPS, 'end_steer_us': B.END_STEER_US, 'end_steer_mps': B.END_STEER_MPS,
+        'end_impact_g': B.END_IMPACT_G, 'end_ttc_s': B.END_TTC_S, 'end_ttc_n': B.END_TTC_N,
+        'end_names': {str(k): v for k, v in assist_mod.LAUNCH_END_NAMES.items()},
+        'title': '発進の前進(前進 %.0f µs 以上・%.1f m/s まで・最大 %.1f 秒)' % (pp['launch_us'], pp['launch_mps'],
+                                                                   pp['launch_max_s']),
+        'note': ('CH3 を AI 側にした最初のフレームで、止まっていて前が %.1f m 以上空いている(TTC の中央値 %.1f 秒以上)ときだけ、'
+                 'スロットルを 中立 − %.0f µs より前に出します(モデルが強ければモデル。前進だけ・舵はモデルのまま)。'
+                 '%.1f m/s・%.1f 秒・ヨー %.0f deg/s・舵 %.0f µs・衝撃 %.1fG・前が近い・CH3 を人側・中立で止めた のどれかで終わり、'
+                 '同じ AI の区間ではもう出しません(発進の補助も出しません)。既定は OFF で、管理画面を起動するたびに OFF。'
+                 '走行中は ON にできません(OFF にはできます)'
+                 % (B.TTC_START_S * 0.3, B.TTC_START_S, pp['launch_us'], pp['launch_mps'], pp['launch_max_s'],
+                    B.END_YAW_DPS, B.END_STEER_US, B.END_IMPACT_G)),
+    }
+
+
+class _SpeedCeil(object):
+    """速さの天井(safety_caps.ceil_step)の走行ループ側のつなぎ。バッファの値を数にして渡すだけ。状態は CeilState 1 つ。
+    例外は failed に残し、その走行のあいだは何もしない(呼ぶ側は出力を変えない = OFF と同じ)。時刻は最初のフレームが原点の秒"""
+
+    def __init__(self, params):
+        self.cfg = safety_caps.ceil_params(params.get('ceil_all_mps', DEFAULT_PARAMS['ceil_all_mps']),
+                                           params.get('ceil_left_mps', DEFAULT_PARAMS['ceil_left_mps']))
+        self.state = safety_caps.CeilState()
+        self.origin = None
+        self.failed = None
+        self.ms = collections.deque(maxlen=30)
+        self.ms_max = 0.0
+        self.inputs = None              # 最後のフレームの (v, a, steer_rel, gz5)
+
+    def _sec(self, t_ns):
+        if self.origin is None:
+            self.origin = int(t_ns)
+        return (int(t_ns) - self.origin) / 1e9
+
+    def _fail(self, e):
+        if not self.failed:
+            traceback.print_exc()
+            self.failed = '%s: %s' % (type(e).__name__, e)
+
+    def frame(self, cam_t_ns, out_us, steer_center_us, neutral_us, active, imu_buf, veh_buf):
+        """推論して出力を決めたフレーム → CeilOut(失敗していれば None)。出力は変えない"""
+        if self.failed:
+            return None
+        t0 = time.perf_counter()
+        try:
+            v, a, gz5, veh_t = speed_inputs(list(veh_buf), list(imu_buf), cam_t_ns)
+            steer_rel = float(out_us[0]) - float(steer_center_us)
+            fresh = veh_t is not None and cam_t_ns - veh_t < VEH_FRESH_NS
+            thr_in = float(out_us[1])
+            self.state, c = safety_caps.ceil_step(self.state, self._sec(cam_t_ns), v, a, steer_rel, gz5, thr_in,
+                                                  float(neutral_us), bool(active) and fresh, self.cfg)
+            if not (c.thr_us >= thr_in and (c.thr_us <= neutral_us or c.thr_us == thr_in)):
+                raise ValueError('天井の出力 %r が入力 %r より前進側か、中立 %r より後ろです' % (c.thr_us, thr_in, neutral_us))
+            self.inputs = (v, a, steer_rel, gz5)
+        except Exception as e:      # noqa: BLE001  天井が無くても走れる(OFF と同じ)
+            self._fail(e)
+            return None
+        ms = (time.perf_counter() - t0) * 1000.0
+        self.ms.append(ms)
+        self.ms_max = max(self.ms_max, ms)
+        return c
+
+    def hold(self):
+        """中立で止めたフレーム: 状態を戻す"""
+        self.state = safety_caps.CeilState()
+        self.inputs = None
+
+    def record(self, c, on, applied, thr_in):
+        """AI_CMD の ceil_* の欄(spec 2.6 節)。c = frame() の戻り値(None = 中立で止めた / 失敗)。例外は出さない"""
+        nan = np.nan
+        if c is not None and self.inputs is not None:
+            try:
+                v, a, steer_rel, gz5 = self.inputs
+                return {'ceil_on': bool(on), 'ceil_left': bool(c.left), 'ceil_cap': float(c.cap) if c.active else nan,
+                        'ceil_v': float(v), 'ceil_vpred': float(c.v_pred) if c.active else nan,
+                        'ceil_steer': float(steer_rel), 'ceil_gz': float(gz5), 'ceil_mode': int(c.mode),
+                        'ceil_in_us': float(thr_in), 'ceil_thr_us': float(c.thr_us) if c.active else nan,
+                        'ceil_applied': bool(applied)}
+            except Exception as e:      # noqa: BLE001
+                self._fail(e)
+        return {'ceil_on': bool(on), 'ceil_left': False, 'ceil_cap': nan, 'ceil_v': nan, 'ceil_vpred': nan,
+                'ceil_steer': nan, 'ceil_gz': nan, 'ceil_mode': -2 if self.failed else -1, 'ceil_in_us': float(thr_in),
+                'ceil_thr_us': nan, 'ceil_applied': False}
+
+    def view(self, c, on, applied):
+        """画面の表示用(st['now']['ceil'])。例外は出さない"""
+        if c is not None and self.inputs is not None:
+            try:
+                return {'on': bool(on), 'error': None, 'active': bool(c.active), 'left': bool(c.left),
+                        'cap': _num(c.cap) if c.active else None, 'v': _num(self.inputs[0]),
+                        'mode': safety_caps.CEIL_MODE_NAMES.get(int(c.mode), ''), 'applied': bool(applied),
+                        'thr_us': _num(c.thr_us, 1) if c.active else None}
+            except Exception as e:      # noqa: BLE001
+                self._fail(e)
+        return {'on': bool(on), 'error': self.failed, 'active': False, 'left': False, 'cap': None, 'v': None,
+                'mode': None, 'applied': False, 'thr_us': None}
+
+
+class _SpeedAuto(object):
+    """速さのゲインの自動合わせ(jetformer.speed_auto)の走行ループ側のつなぎ。
+    gain(): 推論のあと・apply_gains の前に、電圧の前送り m_ff と周ごとの直し m_fb から m を作る(OFF でも影で毎フレーム)。
+    after()/hold(): フレームの値を周のために残し、R1 の起点(区間の判定のジャイロの位相。失敗したら LapCounter の周の区切り)
+    ごとに周を閉じて m_fb を直す。時刻は最初のフレームが原点の秒"""
+    EFF_N_MIN = 30                  # 直線の効き(記録だけ)を出し始めるフレームの数
+    EFF_TAU_S = 5.0
+
+    def __init__(self, params, description=''):
+        self.cfg = speed_auto.auto_params(params.get('auto_target_mps', DEFAULT_PARAMS['auto_target_mps']),
+                                          params.get('auto_vref_v', DEFAULT_PARAMS['auto_vref_v']))
+        self.v_desc = speed_auto.v_before_of(description or '', self.cfg)
+        self.origin = None
+        self.failed = None
+        self.ms = collections.deque(maxlen=30)
+        self.ms_max = 0.0
+        # 電圧
+        self.vb = collections.deque()           # 直近 3 秒の基板の電圧 (t, V)
+        self.vb_done = None                     # 取り込んだ最後の車両のサンプルの時刻 [ns]
+        self.vb_last_t = None                   # 最後に来た基板の電圧の時刻 [秒]
+        self.v_level = np.nan                   # 基板の電圧の上の包絡(最後に出せた値)
+        self.src, self.v_used = speed_auto.SRC_NONE, np.nan
+        self.m_ff = self.m = self.t_prev = None
+        self.moved = False
+        self.fb = speed_auto.FbState()
+        # 周
+        self.frames = collections.deque(maxlen=1500)     # LapFrame(50 秒分)
+        self.anchor = None                      # 最後に使った起点 (t, ψ)
+        self.anchor_src = None                  # 'phase' / 'laps'
+        self.seen_anchor = None                 # 位相の起点(zcaps の秒)で最後に見たもの
+        self.marks_done = 0                     # LapCounter の周の区切りのうち見たもの
+        self.imu_done = None
+        self.imu_hg = self.imu_a3 = 0.0
+        self.event, self.lap_p90, self.lap_s = speed_auto.EV_NONE, np.nan, np.nan
+        # 直線の効き(記録だけ、spec 3.3 節)
+        self.eff, self.eff_n = np.nan, 0
+        self.cmd_hist = collections.deque()     # (t, 前進の指令 µs)
+        self.erpm_hist = collections.deque()    # (t, eRPM)
+        self.last_gain = None
+        self._frame_ms = 0.0
+
+    def _sec(self, t_ns):
+        if self.origin is None:
+            self.origin = int(t_ns)
+        return (int(t_ns) - self.origin) / 1e9
+
+    def _fail(self, e):
+        if not self.failed:
+            traceback.print_exc()
+            self.failed = '%s: %s' % (type(e).__name__, e)
+
+    def _timed(self, t0, close):
+        """gain() と after() の時間を足して、1 フレームの時間として残す"""
+        self._frame_ms += (time.perf_counter() - t0) * 1000.0
+        if close:
+            self.ms.append(self._frame_ms)
+            self.ms_max = max(self.ms_max, self._frame_ms)
+            self._frame_ms = 0.0
+
+    # ---- 電圧
+    def _voltage(self, t, veh):
+        cfg = self.cfg
+        for tv, d in veh:
+            if self.vb_done is not None and tv <= self.vb_done:
+                continue
+            self.vb_done = tv
+            vb = d.get('vbat_v', np.nan)
+            # 6.0〜9.0 V の外(分圧の外れ・張り付き)は来なかったのと同じ(解読も外すが、古い解読・偽物でも守る。fix.md)
+            if d.get('vbat_ok', False) and vb is not None and speed_auto.board_v_ok(float(vb), cfg):
+                ts = self._sec(tv)
+                self.vb.append((ts, float(vb)))
+                self.vb_last_t = ts
+        while self.vb and self.vb[0][0] < t - cfg.vbat_window_s:
+            self.vb.popleft()
+        # 走り出す前は約 0.2 秒(20 サンプル)で出してよい(止まっていれば加速の下がりは無い)。走り出したら 100 サンプル
+        level = speed_auto.vbat_level([x[1] for x in self.vb], cfg,
+                                      None if self.moved else cfg.vbat_min_n_still)
+        if np.isfinite(level):
+            self.v_level = level
+        if np.isfinite(self.v_level):
+            stale = self.vb_last_t is None or t - self.vb_last_t > cfg.vbat_stale_s
+            self.src, self.v_used = speed_auto.SRC_BOARD, self.v_level
+            return None if stale else speed_auto.ff_of_voltage(self.v_level, cfg)      # 途切れたら最後の m_ff を保つ
+        if np.isfinite(self.v_desc):
+            self.src, self.v_used = speed_auto.SRC_DESC, self.v_desc
+        else:
+            self.src, self.v_used = speed_auto.SRC_NONE, np.nan
+        return speed_auto.ff_of_voltage(self.v_used, cfg)
+
+    def gain(self, cam_t_ns, throttle_gain, v_now, veh_buf):
+        """このフレームに掛けるはずの速さのゲイン g(失敗していれば None)"""
+        if self.failed:
+            return None
+        t0 = time.perf_counter()
+        try:
+            cfg = self.cfg
+            t = self._sec(cam_t_ns)
+            dt = 0.0 if self.t_prev is None else max(0.0, t - self.t_prev)
+            self.t_prev = t
+            if v_now >= cfg.moving_v:
+                self.moved = True
+            was_board = self.src == speed_auto.SRC_BOARD
+            ff = self._voltage(t, list(veh_buf))
+            if ff is None:
+                ff = self.m_ff if self.m_ff is not None else 1.0
+            # そのまま入れる: 走り出す前(止まっている間の電圧がいちばん正しい。基板の電圧は 20 サンプルで出す)。
+            # 走り出したあとに基板の電圧の最初の値が来たら、止まっているときか、今の m_ff(説明欄の V_before・なし)との差が
+            # 0.02 以下のときだけそのまま入れる。ほかは 1 秒 0.01・0.03 まで(走っている最中に 1 フレームで跳ばない。fix.md)
+            first_board = self.src == speed_auto.SRC_BOARD and not was_board
+            direct = not self.moved or (first_board and (
+                v_now < cfg.moving_v or self.m_ff is None or abs(ff - self.m_ff) <= cfg.ff_jump_max + 1e-12))
+            self.m_ff = ff if direct else speed_auto.rate_limit(self.m_ff, ff, cfg.ff_rate * dt)
+            m_raw = speed_auto.m_of(self.m_ff, self.fb.m_fb, cfg)
+            self.m = m_raw if direct else speed_auto.rate_limit(self.m, m_raw, cfg.m_rate * dt)
+            g = speed_auto.gain_of(throttle_gain, self.m, cfg)
+            if not np.isfinite(g) or g < 0:
+                raise ValueError('自動合わせのゲイン %r が正しくありません' % g)
+            self.last_gain = g
+        except Exception as e:      # noqa: BLE001  自動合わせが無くても走れる(throttle_gain のまま)
+            self._fail(e)
+            return None
+        self._frame_ms = 0.0
+        self._timed(t0, False)
+        return g
+
+    # ---- 周
+    def _imu(self, cam_t_ns, imu_buf):
+        hg = a3 = 0.0
+        for ti, x in list(imu_buf):
+            if self.imu_done is not None and ti <= self.imu_done:
+                continue
+            if ti > cam_t_ns:
+                break
+            self.imu_done = ti
+            ax, ay, az = float(x[0]), float(x[1]), float(x[2])
+            hg = max(hg, math.hypot(ax, ay) / G0)
+            a3 = max(a3, abs(math.sqrt(ax * ax + ay * ay + az * az) / G0 - 1.0))
+        return hg, a3
+
+    def _new_anchors(self, zcaps, lap_marks):
+        """新しく確かめた R1 の起点 [(t, ψ or None)]。位相が不確かに戻ったら、前の起点を忘れる"""
+        if zcaps is not None and not zcaps.failed:
+            if zcaps.origin is None:            # まだ IMU が来ていない
+                return []
+            self.anchor_src = 'phase'
+            ph = zcaps.state.phase
+            if ph.anchor_t is None:
+                if self.seen_anchor is not None:
+                    self._forget()              # 止まった・引き返した(v1.1 (B)): 次の起点は「前の起点なし」
+                self.seen_anchor = None
+                return []
+            if ph.anchor_t == self.seen_anchor:
+                return []
+            self.seen_anchor = ph.anchor_t
+            t_ns = zcaps.origin + ph.anchor_t * 1e9
+            return [((t_ns - self.origin) / 1e9, float(ph.anchor_psi))]
+        if self.anchor_src != 'laps':           # 位相が使えない: LapCounter の周の区切り(向きの決まりは使わない)
+            self._forget()
+            self.anchor_src, self.marks_done = 'laps', len(lap_marks)
+            return []
+        new = lap_marks[self.marks_done:]
+        self.marks_done = len(lap_marks)
+        return [((float(x) * 1e9 - self.origin) / 1e9, None) for x in new]
+
+    def _forget(self):
+        """前の起点を忘れる(その周は閉じられない)。前の起点からのフレームに衝突(水平 2.5G 以上)があれば、使わない周
+        (衝突)と数えて次の 1 周は上げない(衝突 → 人が持って止める、のいちばん多い形で「衝突の次」を守る。fix.md)"""
+        if self.anchor is not None:
+            t_p, lim = self.anchor[0], self.cfg.impact_g
+            hit = any(f.impact_g >= lim for f in self.frames if f.t >= t_p)
+            self.fb, ev = speed_auto.fb_abandon(self.fb, hit)
+            if ev != speed_auto.EV_NONE:
+                self.event = ev
+        self.anchor = None
+
+    def _close(self, t_a, psi):
+        cfg = self.cfg
+        if self.anchor is None:
+            self.anchor = (t_a, psi)
+            while self.frames and self.frames[0].t < t_a:     # 周に入らないフレーム(周を閉じるフレームで見ない)
+                self.frames.popleft()
+            return
+        t_p, psi_p = self.anchor
+        if (psi is not None and psi_p is not None and t_a - t_p <= cfg.lap_max_s
+                and psi - psi_p < cfg.false_anchor_deg):
+            self.event = speed_auto.EV_FALSE_ANCHOR         # 衝突で右へ回ったもの。前に使った起点はそのまま
+            return
+        lap = speed_auto.lap_stats(self.frames, t_p, t_a, cfg)
+        self.fb, self.event, _ = speed_auto.fb_lap(self.fb, lap, self.m_ff if self.m_ff is not None else 1.0, cfg)
+        self.lap_p90, self.lap_s = lap.v90, lap.dur
+        self.anchor = (t_a, psi)
+        while self.frames and self.frames[0].t < t_a:
+            self.frames.popleft()
+
+    def _lap_frame(self, t, cam_t_ns, v, ai, assist, guard, ceil_lim, imu_buf, zcaps, lap_marks, hold=False,
+                   gain=np.nan):
+        hg, a3 = self._imu(cam_t_ns, imu_buf)
+        self.frames.append(speed_auto.LapFrame(t, v, ai, int(assist), bool(guard), hg, a3, bool(ceil_lim), bool(hold),
+                                               float(gain)))
+        self.event, self.lap_p90, self.lap_s = speed_auto.EV_NONE, np.nan, np.nan
+        for t_a, psi in self._new_anchors(zcaps, lap_marks):
+            self._close(t_a, psi)
+
+    def _eff(self, t, f_us, erpm, steer_rel, gz5):
+        """直線の効き(記録だけ): eRPM ÷ (26.314 × 直前 0.5 秒の指令の平均 + 1343.5)の 5 秒の指数平均"""
+        self.cmd_hist.append((t, f_us))
+        self.erpm_hist.append((t, erpm))
+        while self.cmd_hist and self.cmd_hist[0][0] < t - 0.5:
+            self.cmd_hist.popleft()
+        while len(self.erpm_hist) > 1 and self.erpm_hist[1][0] <= t - 0.3:
+            self.erpm_hist.popleft()
+        cmds = [x[1] for x in self.cmd_hist]
+        mean = sum(cmds) / len(cmds)
+        sd = math.sqrt(max(sum((x - mean) ** 2 for x in cmds) / len(cmds), 0.0))
+        fwd = -erpm
+        if (abs(steer_rel) <= 60 and abs(gz5) <= 20 and mean > 60 and sd < 30 and fwd > 1500
+                and self.erpm_hist[0][0] <= t - 0.3 + 1e-9 and abs(erpm - self.erpm_hist[0][1]) < 500):
+            x = fwd / (safety_caps.CeilParams().hold_slope * mean + safety_caps.CeilParams().hold_offset)
+            self.eff = x if not np.isfinite(self.eff) else self.eff + (x - self.eff) * min(1.0, (1.0 / 30) / self.EFF_TAU_S)
+            self.eff_n += 1
+
+    def after(self, cam_t_ns, v, ai, assist, guard, ceil_lim, f_out_us, erpm, steer_rel, gz5, imu_buf, zcaps, lap_marks,
+              gain=np.nan):
+        """出力を決めたフレームのあと(周の数・直し)。gain = このフレームで実際に掛けた速さのゲイン(走り終わりの目安)。
+        例外は failed に残す"""
+        if self.failed:
+            return
+        t0 = time.perf_counter()
+        try:
+            t = self._sec(cam_t_ns)
+            self._lap_frame(t, cam_t_ns, v, ai, assist, guard, ceil_lim, imu_buf, zcaps, lap_marks,
+                            gain=gain if ai else np.nan)
+            if ai and np.isfinite(steer_rel) and np.isfinite(gz5):
+                self._eff(t, f_out_us, float(erpm), steer_rel, gz5)
+        except Exception as e:      # noqa: BLE001
+            self._fail(e)
+            return
+        self._timed(t0, True)
+
+    def hold(self, cam_t_ns, imu_buf, zcaps, lap_marks):
+        """中立で止めたフレーム(周の中に 4 つ = 約 0.13 秒までなら周を使う。それより多ければ使わない。fix.md)"""
+        if self.failed:
+            return
+        try:
+            self._lap_frame(self._sec(cam_t_ns), cam_t_ns, np.nan, False, 0, False, False, imu_buf, zcaps, lap_marks,
+                            hold=True)
+        except Exception as e:      # noqa: BLE001
+            self._fail(e)
+
+    def record(self, on, g_applied, throttle_gain):
+        """AI_CMD の sa_* の欄(spec 3.9 節)。例外は出さない"""
+        nan = np.nan
+        if not self.failed and self.m is not None:
+            try:
+                return {'sa_on': bool(on), 'sa_m': float(self.m), 'sa_m_ff': float(self.m_ff), 'sa_m_fb': float(self.fb.m_fb),
+                        'sa_gain': float(self.last_gain), 'sa_src': int(self.src), 'sa_v': float(self.v_used),
+                        'sa_eff': float(self.eff) if self.eff_n >= self.EFF_N_MIN else nan, 'sa_event': int(self.event),
+                        'sa_lap_p90': float(self.lap_p90), 'sa_lap_s': float(self.lap_s),
+                        'sa_applied': bool(g_applied != throttle_gain)}
+            except Exception as e:      # noqa: BLE001
+                self._fail(e)
+        return {'sa_on': bool(on), 'sa_m': nan, 'sa_m_ff': nan, 'sa_m_fb': nan, 'sa_gain': nan, 'sa_src': -1, 'sa_v': nan,
+                'sa_eff': nan, 'sa_event': -1, 'sa_lap_p90': nan, 'sa_lap_s': nan, 'sa_applied': False}
+
+    def record_hold(self, on):
+        """中立で止めた行: sa_on・sa_m と周の値(m_fb・出来事・閉じた周の p90 と時間。周はこの行で閉じることもある)。
+        ほかは「計算していない」"""
+        r = self.record(on, 0.0, 0.0)
+        r.update(sa_gain=np.nan, sa_src=-1, sa_v=np.nan, sa_eff=np.nan, sa_m_ff=np.nan, sa_applied=False)
+        return r
+
+    def view(self, on, g_applied):
+        """画面の表示用(st['now']['auto'])。例外は出さない"""
+        try:
+            fb = self.fb
+            return {'on': bool(on), 'error': self.failed, 'm': _num(self.m, 3), 'm_ff': _num(self.m_ff, 3),
+                    'm_fb': _num(fb.m_fb, 3), 'gain': _num(g_applied, 3), 'v': _num(self.v_used),
+                    'src': int(self.src), 'lap_p90': _num(fb.last_v90), 'lap_s': _num(fb.last_lap_s),
+                    'laps_used': int(fb.laps_used), 'warn': fb.warn, 'warn_text': speed_auto.WARN_TEXT.get(fb.warn, '')}
+        except Exception as e:      # noqa: BLE001
+            self._fail(e)
+            return {'on': bool(on), 'error': self.failed}
+
+    def end(self, on, throttle_gain):
+        """走り終わりの目安(st['auto_end'])"""
+        try:
+            out = speed_auto.end_summary(self.fb, on, throttle_gain, self.cfg)
+        except Exception as e:      # noqa: BLE001
+            self._fail(e)
+            out = {'on': bool(on)}
+        out['error'] = self.failed
+        return out
+
+
 class Driver(object):
     def __init__(self, hub, recorder):
         self.hub = hub
@@ -547,11 +1094,45 @@ class Driver(object):
                     raise ValueError('%s が数値ではありません' % k)
                 p[k] = min(max(v, lo), hi)
         p['lookahead'] = int(round(p['lookahead']))
-        for k in ('esc_reverse', 'recovery', 'zone_caps'):     # 古い設定ファイル・古い画面には無い項目
+        for k in ('esc_reverse', 'recovery', 'zone_caps', 'start_kick', 'speed_ceiling', 'speed_auto',
+                  'launch_boost'):     # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
         for k in ('tcp_mode', 'ensemble_j'):           # 整数の項目(古い設定ファイルには無い)
             p[k] = int(round(float(p.get(k, DEFAULT_PARAMS[k]))))
+        for k in SPEED_CTRL_VALUES + LAUNCH_VALUES:    # 古い設定ファイルには無い
+            p[k] = float(p.get(k, DEFAULT_PARAMS[k]))
+        return p
+
+    def _launch_rules(self, p, running):
+        """発進の前進の決まり(protocol_v3 14 章)。走行中は 0 → 1 にできない(1 → 0 はできる)・値は変えられない
+        (1 走行 = 1 設定)。断るときは ValueError(サーバーは 400)"""
+        if running:
+            prev = self.params
+            if p['launch_boost'] == 1 and int(prev.get('launch_boost', 0) or 0) == 0:
+                raise ValueError('走行中は発進の前進を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)')
+            for k in LAUNCH_VALUES:
+                if p[k] != float(prev.get(k, DEFAULT_PARAMS[k])):
+                    raise ValueError('走行中は %s を変えられません。止めてから変えてください(1 走行 = 1 設定)' % k)
+        return p
+
+    def _speed_ctrl_rules(self, p, running):
+        """速さの天井・自動合わせの決まり(spec 1.2 節。画面と同じ決まりをサーバーでも守る)。p は _clean_params のあと。
+        天井を OFF にしたら自動合わせも OFF。走行中は 0 → 1 にできない・値は変えられない(1 走行 = 1 設定)。
+        自動合わせは天井が ON のときだけ。断るときは ValueError(サーバーは 400)"""
+        prev = self.params
+        if int(prev.get('speed_ceiling', 0) or 0) == 1 and p['speed_ceiling'] == 0:
+            p['speed_auto'] = 0
+        if running:
+            names = {'speed_ceiling': '速さの天井', 'speed_auto': '速さのゲインの自動合わせ'}
+            for k in SPEED_CTRL_SWITCHES:
+                if p[k] == 1 and int(prev.get(k, 0) or 0) == 0:
+                    raise ValueError('走行中は%sを ON にできません。止めてから ON にしてください(1 走行 = 1 設定)' % names[k])
+            for k in SPEED_CTRL_VALUES:
+                if p[k] != float(prev.get(k, DEFAULT_PARAMS[k])):
+                    raise ValueError('走行中は %s を変えられません。止めてから変えてください(1 走行 = 1 設定)' % k)
+        if p['speed_auto'] == 1 and p['speed_ceiling'] == 0:
+            raise ValueError('速さのゲインの自動合わせは、速さの天井が ON のときだけ使えます(先に天井を ON にしてください)')
         return p
 
     def _save_settings(self):
@@ -574,6 +1155,8 @@ class Driver(object):
             if self.running and p['zone_caps'] == 1 and int(self.params.get('zone_caps', 0) or 0) == 0:
                 # 区間の速度上限は 1 走行 = 1 設定(画面と同じ決まりをサーバーでも守る)。OFF にするのは走行中でもできる
                 raise ValueError('走行中は区間の速度上限を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)')
+            p = self._speed_ctrl_rules(p, self.running)
+            p = self._launch_rules(p, self.running)
             if values.get('mode_id') is not None:
                 mode_id = int(values['mode_id'])
                 info = self.st.get('model')
@@ -604,7 +1187,7 @@ class Driver(object):
             mode_id = int(mode_id)
             if mode_id not in info['trained_modes']:
                 raise ValueError('このモデルはジャンル %d(%s)を学習していません' % (mode_id, modes.name_of(mode_id)))
-            new_params = self._clean_params(params or {})
+            new_params = self._launch_rules(self._speed_ctrl_rules(self._clean_params(params or {}), False), False)
             if info.get('postprocess') and uses_post(new_params):
                 ref0 = (float(info.get('steer_center_us') or PWM_CENTER), float(info.get('throttle_neutral_us') or PWM_CENTER))
                 obj, note = post_mod.make(info, ref0)
@@ -623,7 +1206,7 @@ class Driver(object):
             self.st = {'phase': 'starting', 'message': 'モデルとセンサーを準備中…', 'error': None, 'run': run,
                        'model': info, 'mode_id': mode_id, 'dry_run': bool(dry_run), 'record': bool(record),
                        'recording_note': '', 'ref': None, 'started': time.time(), 'stop_reason': '',
-                       'stats': {}, 'now': None}
+                       'stats': {}, 'now': None, 'description': description or ''}
             self.thread = threading.Thread(target=self._run, args=(info, bool(record), description or '',
                                                                    list(tags or []), bool(dry_run)),
                                            name='drive', daemon=True)
@@ -736,6 +1319,7 @@ class Driver(object):
                 try:
                     started_log = self.recorder.start(description=description, tags=tags, mode_id=st['mode_id'],
                                                       drive=drive_info)
+                    st['record_log'] = started_log            # 走り終わりのメモを書く記録(走行タブ)
                 except RuntimeError:
                     st['recording_note'] = 'すでに収集中のため、その収集にAIの指令も記録します'
             self._loop(st, runner, normalize_inputs, pca, out, ref, num_modes, osc_pct,
@@ -792,9 +1376,14 @@ class Driver(object):
         jpeg = [cv2.IMWRITE_JPEG_QUALITY, config.CAMERA['jpeg_quality']]
         lo, hi = dcfg['min_us'], dcfg['max_us']
         stats = {'frames': 0, 'skipped': 0, 'holds': 0, 'fps': 0.0, 'latency_ms': 0.0, 'infer_ms': 0.0, 'i2c_errors': 0,
-                 'recoveries': 0, 'esc_assists': 0, 'giveups': 0}
+                 'recoveries': 0, 'esc_assists': 0, 'giveups': 0, 'start_kicks': 0, 'launch_boosts': 0}
         helper = assist_mod.Assist(ref)
         last_kind = assist_mod.ASSIST_NONE
+        # 発進の前進(launch_boost。既定 OFF): 直近 5 フレームの ToF ガードの TTC(中立で止めたら空にする)。OFF でも数を
+        # 残すだけで出力は変えない
+        ttc_hist = collections.deque(maxlen=assist_mod.LaunchBoost.TTC_N)
+        st['launch'] = {'on': int(self.params.get('launch_boost', 0) or 0) == 1, 'active': False, 'count': 0,
+                        'last_end': '', 'last_skip': ''}
         # 方策の後処理(tcp の制御器)と予測の重ね合わせ。後処理の無い方策・ensemble_j = 0 なら actions のまま
         stage = post_mod.Stage(st.get('model') or {}, ref, fps=fps)
         if stage.note:
@@ -816,6 +1405,14 @@ class Driver(object):
         zcaps = _ZoneCaps()                 # 区間の速度上限(OFF でも影の判定を記録する)
         st['zone_caps_error'] = None
         stats.update(zone_ms=0.0, zone_ms_max=0.0, zone_brakes=0, zone_applied=0)
+        # 速さの天井・速さのゲインの自動合わせ(OFF でも影の判定を記録する。値はこの走行のあいだ変わらない)
+        sceil = _SpeedCeil(self.params)
+        sauto = _SpeedAuto(self.params, st.get('description') or '')
+        lap_marks = []                      # LapCounter の周の区切りの時刻(位相が失敗したときの R1 の起点の代わり)
+        st['speed_ctrl_error'] = None
+        st['auto_end'] = None
+        stats.update(ceil_applied=0, ceil_neutral=0, ceil_ms=0.0, ceil_ms_max=0.0, auto_ms=0.0, auto_ms_max=0.0,
+                     auto_laps=0)
         # AI の時間(画面の「AI の時間」。ベンチマークの「数える 240 秒 + 1 分」で止める目安。2026-10-21 Fix-all)
         stats['ai_s'] = 0.0
         ai_sum, ai_t_prev, ai_was = 0.0, None, False
@@ -839,6 +1436,56 @@ class Driver(object):
             except Exception:       # noqa: BLE001  記録できなくても走行は続ける
                 traceback.print_exc()
 
+        def speed_failed():
+            """天井・自動合わせの計算が例外になった(この走行のあいだは外す)ことを、それぞれ 1 回だけ記録とメッセージに残す。
+            天井が失敗したら自動合わせも外す(自動合わせは天井がある前提)"""
+            if sceil.failed and not sauto.failed:
+                sauto.failed = '速さの天井の失敗のため外しました(%s)' % sceil.failed
+            errs = st.get('speed_ctrl_error') or {}
+            for part, obj, name, key in (('ceil', sceil, '速さの天井', 'speed_ceiling'),
+                                         ('auto', sauto, '速さのゲインの自動合わせ', 'speed_auto')):
+                if not obj.failed or part in errs:
+                    continue
+                if part == 'auto' and 'ceil' in errs:
+                    errs[part] = obj.failed
+                    continue                # 天井の文に含めた
+                on = int(self.params.get(key, 0) or 0)
+                if on == 1:
+                    note = '%sの計算が失敗したため、この走行では%sを外しました(%s)' % (
+                        name, '天井と自動合わせ' if part == 'ceil' else '自動合わせ', obj.failed)
+                else:
+                    note = '%s(OFF・記録だけ)の影の判定が計算の失敗で止まりました。車への出力は変わりません(%s)' % (name, obj.failed)
+                errs[part] = obj.failed
+                st['recording_note'] = ((st.get('recording_note') or '') + ' ' + note).strip()
+                st['message'] = (st.get('message') or '') + '・' + note
+                try:
+                    self.recorder.add_event('speed_ctrl_error', {'part': part, 'error': obj.failed, 'run': st.get('run'),
+                                                                 'speed_ceiling': int(self.params.get('speed_ceiling', 0) or 0),
+                                                                 'speed_auto': int(self.params.get('speed_auto', 0) or 0)})
+                except Exception:       # noqa: BLE001  記録できなくても走行は続ける
+                    traceback.print_exc()
+            if errs:
+                st['speed_ctrl_error'] = errs
+
+        def launch_note(cam_t_ns=None):
+            """発進の前進の出来事(始めた・始めなかった・終わった)を記録の出来事と画面の状態へ。OFF のときは何もしない"""
+            b = helper.boost
+            ev, b.event = b.event, None
+            lst = st['launch']
+            lst.update(on=int(self.params.get('launch_boost', 0) or 0) == 1, active=bool(b.active), count=b.count,
+                       last_end=assist_mod.LAUNCH_END_NAMES.get(b.last_end, ''),
+                       last_skip=assist_mod.LAUNCH_SKIP_NAMES.get(b.last_skip, ''))
+            stats['launch_boosts'] = b.count
+            if ev is None:
+                return
+            info = dict(ev[1], event=ev[0], run=st.get('run'))
+            if cam_t_ns is not None:
+                info['cam_t_us'] = int(cam_t_ns // 1000)
+            try:
+                self.recorder.add_event('launch_boost', info)
+            except Exception:       # noqa: BLE001  記録できなくても走行は続ける
+                traceback.print_exc()
+
         def count_laps(veh_now):
             """前のフレームから届いたIMUのサンプルを周回の計測へ"""
             if veh_now is None:
@@ -851,6 +1498,7 @@ class Driver(object):
                                float(np.hypot(x[0], x[1])) / 9.80665)
                 if lap:
                     st['laps'] = laps.summary()
+                    lap_marks.append(lap['t_end'])
                     self._emit('lap', **lap)
         st['stats'] = stats
         st['phase'] = 'driving'
@@ -869,6 +1517,9 @@ class Driver(object):
         def hold(reason, cam=None, veh_select=None, infer_ms=np.nan):
             if veh_select is None:          # 最新の車両値から(AI側のまま止めているのか分かるように)
                 veh_select = bool(veh_buf[-1][1]['select']) if veh_buf else False
+            lb_end = helper.launch_hold()   # 発進の前進は中立で止めたら終わり(⑧)
+            ttc_hist.clear()
+            launch_note(cam.t_ns if cam is not None else None)
             out.neutral()
             stats['holds'] += 1
             stats['i2c_errors'] = out.errors
@@ -878,6 +1529,10 @@ class Driver(object):
             st['now'] = {'raw': None, 'out': [round(n_s, 1), round(n_t, 1)], 'select': veh_select, 'hold': True, 'pred': None}
             zcaps.hold(cam.t_ns if cam is not None else None, imu_buf, veh_buf)
             zone_failed()
+            sceil.hold()
+            if cam is not None:
+                sauto.hold(cam.t_ns, imu_buf, zcaps, lap_marks)
+            speed_failed()
             if cam is not None:
                 self.recorder.add_ai(cam.t_ns, {
                     'pred': np.full((10, 2), np.nan, np.float32), 'raw': (np.nan, np.nan), 'out': (n_s, n_t),
@@ -887,7 +1542,10 @@ class Driver(object):
                     'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False,
                     'model_pred': np.full((10, 2), np.nan, np.float32), 'post_mode': -1, 'v_hat': np.nan,
                     'v_cmd': np.nan, 'ens_j': int(p.get('ensemble_j', 0)),
-                    **zcaps.record(None, int(p.get('zone_caps', 0) or 0) == 1, False, n_t)})
+                    **zcaps.record(None, int(p.get('zone_caps', 0) or 0) == 1, False, n_t),
+                    **sceil.record(None, int(p.get('speed_ceiling', 0) or 0) == 1, False, n_t),
+                    **sauto.record_hold(int(p.get('speed_auto', 0) or 0) == 1),
+                    'launch_on': False, 'launch_end': int(lb_end)})
             helper.reset()                  # 中立で止めた後は、補助の手順を最初から
             stage.reset()                   # 後処理・重ね合わせも最初から(止めていた間の予測を混ぜない)
 
@@ -980,7 +1638,17 @@ class Driver(object):
                 continue
             k = min(max(p['lookahead'], 1), len(pred)) - 1
             raw = (float(pred[k, 0]), float(pred[k, 1]))
-            model_us = apply_gains(raw, ref, p, lo, hi)
+            # 速さのゲインの自動合わせ: g = throttle_gain × m(OFF でも影で計算する)。掛けるのは ON(天井も ON)・AI のフレームだけ。
+            # 前進側だけに掛かるのは apply_gains のまま。モデルに戻す「今の操作値」はゲインの前の予測のまま
+            ai_frame = bool(veh['select']) and not dry_run
+            ceil_on = int(p.get('speed_ceiling', 0) or 0) == 1
+            auto_on = ceil_on and int(p.get('speed_auto', 0) or 0) == 1
+            g_auto = sauto.gain(cam.t_ns, p['throttle_gain'], -float(veh['erpm']) * safety_caps.KV, veh_buf)
+            speed_failed()
+            g_used = p['throttle_gain']
+            if auto_on and ai_frame and g_auto is not None and not sceil.failed:
+                g_used = g_auto
+            model_us = apply_gains(raw, ref, p if g_used == p['throttle_gain'] else dict(p, throttle_gain=g_used), lo, hi)
             # ToFガード: 衝突までの時間(TTC)が短ければ減速(・近い側から離すハンドル)。1 = 記録だけ
             g_mode, g_code, g_ttc, g_applied, base_us = int(p.get('tof_guard', 1)), 0, np.nan, False, model_us
             if guard is not None and g_mode >= 1:
@@ -994,14 +1662,25 @@ class Driver(object):
                 if g_code and not last_guard:
                     stats['guard_brake' if g_code == 2 else 'guard_slow'] += 1
                 last_guard = g_code
+            ttc_hist.append(g_ttc)
             # 補助: 後退の受け付け(中立を挟む)・ぶつかって止まったときの自動リカバリー
             recent = [x[1] for x in list(imu_buf)[-10:] if x[0] > cam.t_ns - 150_000_000]
             impact_g = max((float(np.hypot(a[0], a[1])) / 9.80665 for a in recent), default=0.0)
+            # 発進の前進の入力(launch_boost = 1 のときだけ作る。OFF は None = 今までと同じ)
+            launch_in = None
+            if int(p.get('launch_boost', 0) or 0) == 1:
+                launch_in = launch_inputs(p, cam.t_ns, tof_buf, imu_buf, veh_buf, ref, base_us, g_ttc, ttc_hist,
+                                          guard is not None and g_mode >= 1, impact_g, g_applied)
             out_us, kind = helper.step(base_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
                                        time.monotonic(), esc_on=p.get('esc_reverse', 1) == 1,
                                        rec_on=p.get('recovery', 1) == 1,
                                        impact_g=impact_g, rev_us=float(p.get('rev_us', assist_mod.DEFAULT_REV_US)),
-                                       rev_s=float(p.get('rev_s', assist_mod.DEFAULT_REV_S)))
+                                       rev_s=float(p.get('rev_s', assist_mod.DEFAULT_REV_S)),
+                                       kick_on=int(p.get('start_kick', 0) or 0) == 1,
+                                       blocked=bool(np.isfinite(g_ttc) and g_ttc < START_KICK_TTC_S),
+                                       launch=launch_in)
+            launch_on, launch_end = helper.launch_on, helper.launch_end
+            launch_note(cam.t_ns)
             out_us = (float(np.clip(out_us[0], lo, hi)), float(np.clip(out_us[1], lo, hi)))
             if kind != last_kind:
                 if kind == assist_mod.ASSIST_RECOVERY:
@@ -1015,6 +1694,7 @@ class Driver(object):
             if stats['frames'] % 15 == 0:
                 st['laps'] = laps.summary()
             stats['esc_assists'] = helper.esc_count
+            stats['start_kicks'] = helper.kick_count
             # 区間の速度上限: 車に出す直前のスロットルに(ゲイン・ToF ガード・補助のあと)。OFF でも計算して記録する(影の判定)。
             # 出力を変えるのは zone_caps = 1 で、AI 側のフレームで、上限が前進を弱めたときだけ(計算の失敗後は外す)
             zone_on = int(p.get('zone_caps', 0) or 0) == 1
@@ -1028,6 +1708,18 @@ class Driver(object):
             if zcaps.ms:
                 stats['zone_ms'] = round(float(np.mean(zcaps.ms)), 3)
                 stats['zone_ms_max'] = round(zcaps.ms_max, 3)
+            # 速さの天井: 車に出す直前(ゲイン・ToF ガード・補助・区間の上限のあと)。OFF でも計算して記録する(影の判定)。
+            # 出力を変えるのは speed_ceiling = 1 で、AI のフレームで、天井が前進を弱めたときだけ(計算の失敗後は外す)
+            ceil_in = out_us[1]
+            cout = sceil.frame(cam.t_ns, out_us, ref[0] + p['steer_trim_us'], ref[1], ai_frame, imu_buf, veh_buf)
+            speed_failed()
+            ceil_applied = False
+            if ceil_on and cout is not None and cout.active and cout.thr_us != out_us[1]:
+                out_us = (out_us[0], float(np.clip(cout.thr_us, lo, hi)))
+                ceil_applied = True
+            if sceil.ms:
+                stats['ceil_ms'] = round(float(np.mean(sceil.ms)), 3)
+                stats['ceil_ms_max'] = round(sceil.ms_max, 3)
             written = out.neutral() if dry_run else out.write(*out_us)
             stats['i2c_errors'] = out.errors
             if not written:
@@ -1040,6 +1732,22 @@ class Driver(object):
                 stats['zone_applied'] += 1
             if zout is not None and zout.brake_start:
                 stats['zone_brakes'] += 1
+            if ceil_applied:
+                stats['ceil_applied'] += 1
+                stats['ceil_neutral'] += int(cout.mode == safety_caps.CEIL_NEUTRAL)
+            # 自動合わせ: このフレームを周の数へ(R1 の起点で周を閉じて m_fb を直す)。天井の失敗後は外す
+            ci = sceil.inputs if cout is not None else None
+            sauto.after(cam.t_ns, ci[0] if ci else np.nan, ai_frame, kind, g_applied,
+                        bool(cout is not None and cout.active and cout.mode >= safety_caps.CEIL_LIMIT),
+                        ref[1] - out_us[1], veh['erpm'], ci[2] if ci else np.nan, ci[3] if ci else np.nan,
+                        imu_buf, zcaps, lap_marks, gain=g_used)
+            speed_failed()
+            if sauto.ms:
+                stats['auto_ms'] = round(float(np.mean(sauto.ms)), 3)
+                stats['auto_ms_max'] = round(sauto.ms_max, 3)
+            if sauto.event != speed_auto.EV_NONE or stats['auto_laps'] != sauto.fb.laps_used:
+                stats['auto_laps'] = sauto.fb.laps_used
+                st['auto_end'] = sauto.end(auto_on, p['throttle_gain'])
             # リカバリー中はモデルの出力を車に出していないので、次のフレームの「今の操作値」は中立にする
             prev_pred, prev_cam_t = pred, cam.t_ns
             applied = not dry_run and kind in (assist_mod.ASSIST_NONE, assist_mod.ASSIST_ESC)
@@ -1063,18 +1771,31 @@ class Driver(object):
                          'guard': GUARD_NAMES[g_code] + ('' if g_applied or not g_code else '(記録だけ)'),
                          'model_out': [round(model_us[0], 1), round(model_us[1], 1)],
                          'post': post_view(pinfo, v_now), 'ens_j': int(p.get('ensemble_j', 0)),
-                         'zone': zcaps.view(zout, zone_on, zone_applied)}
+                         'zone': zcaps.view(zout, zone_on, zone_applied),
+                         'ceil': sceil.view(cout, ceil_on, ceil_applied),
+                         # OFF のときは「ON なら掛けたはず」のゲイン(影)。ON は実際に掛けたゲイン(fix.md)
+                         'auto': sauto.view(auto_on, g_used if auto_on else sauto.last_gain)}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
-                'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
+                'gains': (p['steer_gain'], g_used), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                 'mode_id': mode_id, 'hold': False, 'select': bool(veh['select']), 'latency_ms': latency,
                 'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': kind, 'model_out': model_us,
                 'ttc': g_ttc, 'guard': g_code, 'guard_applied': g_applied,
                 'model_pred': np.asarray(model_pred, np.float32), 'post_mode': int(pinfo.get('mode', -1)) if pinfo else -1,
                 'v_hat': float(pinfo.get('v_hat', np.nan)) if pinfo else np.nan,
                 'v_cmd': float(pinfo.get('v_cmd', np.nan)) if pinfo else np.nan,
-                'ens_j': int(p.get('ensemble_j', 0)), **zcaps.record(zout, zone_on, zone_applied, cap_in)})
+                'ens_j': int(p.get('ensemble_j', 0)), **zcaps.record(zout, zone_on, zone_applied, cap_in),
+                **sceil.record(cout, ceil_on, ceil_applied, ceil_in),
+                **sauto.record(int(p.get('speed_auto', 0) or 0) == 1, g_used, p['throttle_gain']),
+                'launch_on': bool(launch_on), 'launch_end': int(launch_end)})
+        # 発進の前進の途中で走行を止めた(⑧)
+        helper.boost.stop()
+        launch_note()
+        # 走り終わりの自動合わせの目安(throttle_gain を変えるのは人)
+        pe = self.params
+        st['auto_end'] = sauto.end(int(pe.get('speed_ceiling', 0) or 0) == 1 and int(pe.get('speed_auto', 0) or 0) == 1,
+                                   pe['throttle_gain'])
 
     # ------------------------------------------------------------ 状態
     def status(self):
@@ -1095,6 +1816,8 @@ class Driver(object):
                          'out_throttle': [round(r[4]) for r in h], 'select': [int(r[5]) for r in h]}
         st['limits'] = {k: list(v) for k, v in PARAM_LIMITS.items()}
         st['zone_caps_spec'] = ZONE_CAPS_SPEC
+        st['speed_ctrl_spec'] = speed_ctrl_spec(self.params)
+        st['launch_spec'] = launch_spec(self.params)
         st['pca9685'] = {'address': config.PCA9685['address'], 'freq_hz': config.PCA9685['freq_hz'],
                          'steering_ch': config.PCA9685['steering_ch'], 'throttle_ch': config.PCA9685['throttle_ch']}
         return st

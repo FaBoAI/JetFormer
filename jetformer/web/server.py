@@ -7,6 +7,7 @@ import atexit
 import collections
 import contextlib
 import json
+import math
 import os
 import queue
 import shutil
@@ -20,9 +21,10 @@ from fastapi import Body, FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .. import actuator, config, dataset, dataset_import, drive, hf_export, model_export, modes, policies, session, sound, tof_format
+from .. import actuator, clock, config, dataset, dataset_import, drive, hf_export, model_export, modes, policies, session, sound, tof_format
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
+from ..sensors import vehicle as vehicle_mod
 from ..sim import web as sim_web
 from . import bench as bench_web
 from ..training import TrainingManager
@@ -132,6 +134,105 @@ class LiveHistory(object):
 
 
 history = LiveHistory()
+
+
+# ---------------------------------------------------------------- 電池の電圧(2026-10-25、speed_control_20261025/spec.md 4.2 節)
+# 基板が flags bit5 と予備のバイトで送る電圧を、時刻つきで覚える(100 Hz、30 秒 + 1 秒ごとの中央値)。古いファームでは何も来ない。
+# 走行の開始: 止まっている 2 秒の中央値を説明欄の V_before(人の数があれば Vb_before)へ。走行の終わり: 止まってから
+# 15 秒の中で 1 秒止まっていたらその中央値を V_after(または Vb_after)、走行中の 1 秒ごとの中央値の最小を Vb_min として、
+# 記録のすべてのシーンの説明に書く(空の欄だけ。web/bench.py の決まり)。記録していない走行は画面に出すだけ
+vbat = vehicle_mod.VbatTracker()
+hub['VEHICLE'].subscribe(vbat.on_sample)
+VBAT_WARN_V, VBAT_BAD_V = 7.90, 7.70        # 黄・赤「パックを替える」(qualify_plan 3.7)
+VBAT_START = {'span_s': 2.0, 'min_n': 20}   # 走行の開始: 直近 2 秒・使える値 20 以上・止まっている
+VBAT_END = {'span_s': 1.0, 'min_n': 10, 'wait_s': 15.0, 'q': 0.95}   # 走行の終わり: 止まってから 15 秒の中で 1 秒止まっていたら
+VBAT_RUN = {}                               # 最後の走行の電圧(走行タブ・走り終わりのメモに前もって入れる)
+VBAT_LOCK = threading.Lock()
+VBAT_SEQ = [0]                              # 走行の番号(前の走行の「終わりの電圧」を次の走行の表示に書かないため)
+
+
+def _now_s():
+    return clock.now_ns() / 1e9
+
+
+def _r2(x):
+    return None if x is None else round(float(x), 2)
+
+
+def _vbat_ok_v(v):
+    """説明欄に書いてよい電圧か(6.0〜9.0 V。追跡は範囲の外を持たないが、書く前にもう一度確かめる。fix.md)"""
+    return v if v is not None and vehicle_mod.vbat_in_range(float(v)) else None
+
+
+def vbat_view():
+    """画面に出す電圧(JSON にするので NaN は使わない)。broken_v = 直近 2 秒に来た 6.0〜9.0 V の外の値(使っていない)"""
+    now = _now_s()
+    v, age = vbat.latest(now)
+    bad = vbat.bad_latest(now)
+    return {'supported': bool(vbat.seen or vbat.bad_seen), 'v': _r2(v), 'age_s': age,
+            'level': vehicle_mod.vbat_level(v, VBAT_WARN_V, VBAT_BAD_V), 'warn_v': VBAT_WARN_V, 'bad_v': VBAT_BAD_V,
+            'broken_v': _r2(bad) if bad is not None and math.isfinite(bad) else None,
+            'range_v': list(vehicle_mod.VBAT_RANGE_V), 'scale': getattr(hub['VEHICLE'], 'vbat_scale', 1.0)}
+
+
+def _vbat_run_view():
+    with VBAT_LOCK:
+        return dict(VBAT_RUN) if VBAT_RUN else None
+
+
+def vbat_start_description(description):
+    """走行開始の説明欄に、止まっているときの基板の電圧を入れる → (説明欄, 走行の電圧の記録)"""
+    v, why = vbat.still_check(_now_s(), VBAT_START['span_s'], VBAT_START['min_n'])
+    if v is not None and _vbat_ok_v(v) is None:
+        v, why = None, '基板の電圧の値がおかしい(%.2f V。%.1f〜%.1f V の外)' % ((v,) + tuple(vehicle_mod.VBAT_RANGE_V))
+    human = bench_web.get_field(description, 'V_before')
+    run = {'v_before': _r2(v), 'v_before_note': why if v is None else '',
+           'human_before': None if bench_web.blank(human) else human,
+           'v_after': None, 'v_min': None, 'state': 'starting', 'log': None, 'scenes_written': 0, 'note': ''}
+    return (bench_web.vbat_before_description(description, v) if v is not None else description), run
+
+
+def _vbat_on_drive(event, **info):
+    """走行の始まりと終わり(drive.Driver の listeners。走行ループから呼ばれるので待たせない)"""
+    if event == 'drive_start':
+        with VBAT_LOCK:
+            if VBAT_RUN.get('state') in ('waiting', 'done'):     # 画面の API を通らずに始めた走行
+                VBAT_RUN.clear()
+            VBAT_RUN.update(state='running', t_start=_now_s())
+    elif event == 'drive_stop':
+        st = driver.st
+        with VBAT_LOCK:
+            t0, rid = VBAT_RUN.get('t_start'), VBAT_RUN.get('id')
+            VBAT_RUN.update(state='waiting', t_stop=_now_s(), log=st.get('record_log'))
+        threading.Thread(target=vbat_after_run, args=(st.get('record_log'), t0, _now_s()), kwargs={'run_id': rid},
+                         name='vbat-after', daemon=True).start()
+
+
+def vbat_after_run(log, t_start, t_stop, wait_s=None, poll_s=0.2, run_id=None, sleep=time.sleep):
+    """走行が止まったあと: 止まった状態が 1 秒続いたらその中央値(15 秒まで待つ)。記録があれば説明欄に書く"""
+    wait_s = VBAT_END['wait_s'] if wait_s is None else wait_s
+    v_after, why = None, ''
+    end = t_stop + wait_s
+    while True:
+        v_after, why = vbat.still_check(_now_s(), VBAT_END['span_s'], VBAT_END['min_n'], q=VBAT_END['q'])
+        if v_after is not None or _now_s() >= end or SHUTDOWN.is_set():
+            break
+        sleep(poll_s)
+    v_min = vbat.bin_min(t_start, t_stop) if t_start is not None else None
+    v_after, v_min = _vbat_ok_v(v_after), _vbat_ok_v(v_min)      # 範囲の外は書かない(fix.md)
+    written, note = 0, ('' if v_after is not None else why)
+    if log and (v_after is not None or v_min is not None):
+        try:
+            written = bench_web.write_vbat_after(log, v_after, v_min)
+        except Exception as e:                    # 書けなくても走行・収集には関係しない(画面に出す)
+            note = '説明欄に書けませんでした: %s: %s' % (type(e).__name__, e)
+    with VBAT_LOCK:
+        if VBAT_RUN.get('id') == run_id:          # 次の走行がもう始まっていたら、その表示は替えない
+            VBAT_RUN.update(v_after=_r2(v_after), v_min=_r2(v_min), state='done', scenes_written=written, note=note)
+    return v_after, v_min, written
+
+
+driver.listeners.append(_vbat_on_drive)
 
 
 # ---------------------------------------------------------------- バックグラウンドジョブ
@@ -380,6 +481,7 @@ def api_live_values():
     veh = hub['VEHICLE'].latest
     if veh is not None:
         out['vehicle_now'] = {k: veh.data[k] for k in ('pwm', 'erpm', 'valid', 'select', 'moving', 'quality')}
+        out['vbat'] = vbat_view()                   # 電池の電圧(基板が送らないときは supported False)
     aud = hub['AUDIO'].latest if 'AUDIO' in hub.sensors else None
     if aud is not None and hub['AUDIO'].connected:
         out['audio_now'] = {k: aud.data[k] for k in ('rms_dbfs', 'peak_dbfs', 'channel', 'zero')}
@@ -870,6 +972,8 @@ def api_drive_status(token: str = Query(default='')):
     alive = driver.heartbeat(token)
     st = driver.status()
     st['controller'] = alive
+    st['vbat'] = vbat_view()                        # 電池の電圧・最後の走行の前後の電圧(2026-10-25)
+    st['vbat']['run'] = _vbat_run_view()
     return st
 
 
@@ -882,15 +986,74 @@ def api_drive_start(body: dict = Body(...)):
         raise HTTPException(409, '管理画面が古いままです。ページを再読み込み(更新)してから走行を開始してください')
     if trainer.running:
         raise HTTPException(409, '学習中は走行できません(GPUを奪い合い、30fpsを守れないため)')
+    dry = bool(body.get('dry_run'))
+    description = body.get('description', '')
+    plan_diffs = []
+    if not dry:                                   # ベンチマークのブロックの計画と違えば cand=EXP にする(2026-10-24)
+        try:
+            description, plan_diffs = bench_web.plan_check(description, body.get('run', ''), body.get('mode_id'),
+                                                           body.get('params') or {})
+        except Exception:                         # 照らし合わせの失敗で走行を止めない(夜の集計でも照らし合わせる)
+            plan_diffs = []
+    try:                                          # 止まっているときの基板の電圧を V_before へ(無ければ今まで通り手で書く)
+        description, vrun = vbat_start_description(description)
+    except Exception as e:                        # 電圧の失敗で走行を止めない
+        vrun = {'v_before': None, 'v_before_note': '電圧を読めませんでした: %s' % e, 'state': 'starting'}
+    with bench_web.AI_NO_LOCK:
+        ai_no = None if dry else bench_web.next_ai_no()          # モーターに出力する AI 走行だけに番号を付ける
+        if ai_no is not None:
+            description = bench_web.with_ai_no(description, ai_no)
+        try:
+            run, token = driver.start(body.get('run', ''), body.get('mode_id', -1), record=bool(body.get('record')),
+                                      description=description, tags=body.get('tags') or [],
+                                      dry_run=dry, params=body.get('params') or {})
+        except (ValueError, TypeError) as e:
+            raise HTTPException(400, str(e))
+        except RuntimeError as e:
+            raise HTTPException(409, str(e))
+        if ai_no is not None:
+            bench_web.commit_ai_no(ai_no)
+            driver.st['ai_no'] = ai_no
+    with VBAT_LOCK:
+        # 走行ループが先に始まっていたら(drive_start が先)、始まりの時刻は残す。前の走行は drive_stop で running でなくなる
+        keep = VBAT_RUN.get('t_start') if VBAT_RUN.get('state') == 'running' else None
+        VBAT_RUN.clear()
+        VBAT_SEQ[0] += 1
+        VBAT_RUN.update(vrun, id=VBAT_SEQ[0], ai_no=ai_no, dry_run=dry)
+        if keep is not None:
+            VBAT_RUN.update(state='running', t_start=keep)
+    return {'ok': True, 'run': run, 'token': token, 'ai_no': ai_no, 'plan_diffs': plan_diffs,
+            'v_before': vrun.get('v_before')}
+
+
+@app.post('/api/vbat/calib')
+def api_vbat_calib(body: dict = Body(...)):
+    """電圧の較正: 止まっているときの電圧計の値 meter_v [V] ÷ 基板の値 = 係数(data/vbat_calib.json)。reset で 1.0"""
+    if driver.running:
+        raise HTTPException(409, '走行中は較正できません(止めてから)')
+    sensor = hub['VEHICLE']
+    if body.get('reset'):
+        scale, meter, board = 1.0, None, None
+    else:
+        try:
+            meter = float(body.get('meter_v'))
+        except (TypeError, ValueError):
+            raise HTTPException(400, '電圧計の値を数で入れてください')
+        if not 5.0 <= meter <= 13.0:
+            raise HTTPException(400, '電圧計の値 %.2f V は 5〜13 V の外です' % meter)
+        v, why = vbat.still_check(_now_s(), VBAT_START['span_s'], VBAT_START['min_n'])
+        if v is None:
+            raise HTTPException(409, '止まっているときの基板の電圧がありません: %s' % why)
+        board = v / float(getattr(sensor, 'vbat_scale', 1.0) or 1.0)     # 係数を掛ける前の値
+        scale = meter / board
     try:
-        run, token = driver.start(body.get('run', ''), body.get('mode_id', -1), record=bool(body.get('record')),
-                                  description=body.get('description', ''), tags=body.get('tags') or [],
-                                  dry_run=bool(body.get('dry_run')), params=body.get('params') or {})
-    except (ValueError, TypeError) as e:
+        doc = vehicle_mod.save_vbat_scale(scale, meter_v=meter, board_v=_r2(board))
+    except ValueError as e:
         raise HTTPException(400, str(e))
-    except RuntimeError as e:
-        raise HTTPException(409, str(e))
-    return {'ok': True, 'run': run, 'token': token}
+    except OSError as e:
+        raise HTTPException(500, '較正のファイルを書けません: %s' % e)
+    sensor.set_vbat_scale(doc['scale'])
+    return {'ok': True, 'scale': doc['scale'], 'meter_v': meter, 'board_v': _r2(board)}
 
 
 @app.post('/api/drive/stop')
