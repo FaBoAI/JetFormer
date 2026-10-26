@@ -1,0 +1,203 @@
+{
+ "decisions": {
+  "x": "v2h",
+  "E": 60,
+  "aug": null
+ },
+ "checks": [
+  {
+   "name": "AUG2 の定義(protocol choice_placeholders)は 5 つの引数",
+   "ok": true,
+   "info": {
+    "--aug-brightness": "0.15",
+    "--aug-contrast": "0.2",
+    "--aug-shift-px": "4",
+    "--aug-tof-noise": "0.02",
+    "--aug-top-brightness": "0.15"
+   }
+  },
+  {
+   "name": "AUG2 の定義の値が AUG2_detail の表(±0.15・±0.2・±4 画素・σ 0.02・上 1/3 ±0.15)と同じ",
+   "ok": true,
+   "info": {
+    "AUG2_detail": {
+     "色の揺らぎ(チャンネルごと)": "×0.8〜1.2(いつも入る)",
+     "明るさ(全体)": "±0.15",
+     "コントラスト": "±0.2",
+     "上下左右のずれ": "±4 画素",
+     "ToF の距離の雑音": "σ 0.02",
+     "上 1/3 の明るさ(上ほど強く)": "±0.15(C1 で足す --aug-top-brightness)",
+     "左右の反転": "使わない(左回りのコースが別のコースになる)"
+    }
+   }
+  },
+  {
+   "name": "段 3 の種 0: 名前 v2_20261025-v2h-aug2-e60-s0・コマンドが protocol の型(x=v2h・E=60・workers 2)と同じ",
+   "ok": true,
+   "info": {
+    "got": [
+     "RUN",
+     "v2_20261025-v2h-aug2-e60-s0"
+    ]
+   }
+  },
+  {
+   "name": "段 3 の種 0: 拡張の引数が AUG2 と同じ・反転なし・エポック 60・種 0",
+   "ok": true,
+   "info": {
+    "--aug-brightness": "0.15",
+    "--aug-contrast": "0.2",
+    "--aug-shift-px": "4",
+    "--aug-tof-noise": "0.02",
+    "--aug-top-brightness": "0.15"
+   }
+  },
+  {
+   "name": "段 3 の種 0: 段 2 の同じ種(v2h-e60-s0)との違いは拡張 5 つと --out だけ",
+   "ok": true,
+   "info": [
+    "--aug-brightness",
+    "--aug-contrast",
+    "--aug-shift-px",
+    "--aug-tof-noise",
+    "--aug-top-brightness",
+    "--out"
+   ]
+  },
+  {
+   "name": "段 3 の種 1: 名前 v2_20261025-v2h-aug2-e60-s1・コマンドが protocol の型(x=v2h・E=60・workers 2)と同じ",
+   "ok": true,
+   "info": {
+    "got": [
+     "RUN",
+     "v2_20261025-v2h-aug2-e60-s1"
+    ]
+   }
+  },
+  {
+   "name": "段 3 の種 1: 拡張の引数が AUG2 と同じ・反転なし・エポック 60・種 1",
+   "ok": true,
+   "info": {
+    "--aug-brightness": "0.15",
+    "--aug-contrast": "0.2",
+    "--aug-shift-px": "4",
+    "--aug-tof-noise": "0.02",
+    "--aug-top-brightness": "0.15"
+   }
+  },
+  {
+   "name": "段 3 の種 1: 段 2 の同じ種(v2h-e60-s1)との違いは拡張 5 つと --out だけ",
+   "ok": true,
+   "info": [
+    "--aug-brightness",
+    "--aug-contrast",
+    "--aug-shift-px",
+    "--aug-tof-noise",
+    "--aug-top-brightness",
+    "--out"
+   ]
+  },
+  {
+   "name": "段 3 の種 2: 名前 v2_20261025-v2h-aug2-e60-s2・コマンドが protocol の型(x=v2h・E=60・workers 2)と同じ",
+   "ok": true,
+   "info": {
+    "got": [
+     "RUN",
+     "v2_20261025-v2h-aug2-e60-s2"
+    ]
+   }
+  },
+  {
+   "name": "段 3 の種 2: 拡張の引数が AUG2 と同じ・反転なし・エポック 60・種 2",
+   "ok": true,
+   "info": {
+    "--aug-brightness": "0.15",
+    "--aug-contrast": "0.2",
+    "--aug-shift-px": "4",
+    "--aug-tof-noise": "0.02",
+    "--aug-top-brightness": "0.15"
+   }
+  },
+  {
+   "name": "段 3 の種 2: 段 2 の同じ種(v2h-e60-s2)との違いは拡張 5 つと --out だけ",
+   "ok": true,
+   "info": [
+    "--aug-brightness",
+    "--aug-contrast",
+    "--aug-shift-px",
+    "--aug-tof-noise",
+    "--aug-top-brightness",
+    "--out"
+   ]
+  },
+  {
+   "name": "段 3 の種 3: 名前 v2_20261025-v2h-aug2-e60-s3・コマンドが protocol の型(x=v2h・E=60・workers 2)と同じ",
+   "ok": true,
+   "info": {
+    "got": [
+     "RUN",
+     "v2_20261025-v2h-aug2-e60-s3"
+    ]
+   }
+  },
+  {
+   "name": "段 3 の種 3: 拡張の引数が AUG2 と同じ・反転なし・エポック 60・種 3",
+   "ok": true,
+   "info": {
+    "--aug-brightness": "0.15",
+    "--aug-contrast": "0.2",
+    "--aug-shift-px": "4",
+    "--aug-tof-noise": "0.02",
+    "--aug-top-brightness": "0.15"
+   }
+  },
+  {
+   "name": "段 3 の種 3: 段 2 の同じ種(v2h-e60-s3)との違いは拡張 5 つと --out だけ",
+   "ok": true,
+   "info": [
+    "--aug-brightness",
+    "--aug-contrast",
+    "--aug-shift-px",
+    "--aug-tof-noise",
+    "--aug-top-brightness",
+    "--out"
+   ]
+  },
+  {
+   "name": "段 4 の種 0: D3 が null なので STOP(名前は未定のまま)",
+   "ok": true,
+   "info": [
+    "STOP",
+    "D3(拡張)の答えが /home/jetson/jetformer_reports/train_v2_20261025/decisions.json にありません。10/26 夕の D3 のあとに書いて、同じコマンドをもう一度"
+   ]
+  },
+  {
+   "name": "段 4 の種 1: D3 が null なので STOP(名前は未定のまま)",
+   "ok": true,
+   "info": [
+    "STOP",
+    "D3(拡張)の答えが /home/jetson/jetformer_reports/train_v2_20261025/decisions.json にありません。10/26 夕の D3 のあとに書いて、同じコマンドをもう一度"
+   ]
+  },
+  {
+   "name": "status の段 3 の名前が決まりどおり(v2h-aug2-e60-s0〜s3)",
+   "ok": true,
+   "info": [
+    "v2_20261025-v2h-aug2-e60-s0",
+    "v2_20261025-v2h-aug2-e60-s1",
+    "v2_20261025-v2h-aug2-e60-s2",
+    "v2_20261025-v2h-aug2-e60-s3"
+   ]
+  },
+  {
+   "name": "status の段 4 は型のまま(未定)",
+   "ok": true,
+   "info": [
+    "v2_20261025-{x}-msf{A}-e{E}-s0",
+    "v2_20261025-{x}-msf{A}-e{E}-s1"
+   ]
+  }
+ ],
+ "status_stdout": "B-FAST  bfast_20261025-e15-s0              学習 done   ep 15   best 49.5   last 49.5   エンジン True  確認 True  精度 0.997  走行 True\nB-FAST  bfast_20261025-e15-s1              学習 done   ep 15   best 49.5   last 49.5   エンジン True  確認 True  精度 0.933  走行 True\nB-FAST  bfast_20261025-e15-s2              学習 done   ep 15   best 49.4   last 49.4   エンジン True  確認 True  精度 1.602  走行 True\n1       v2_20261025-v2h-e30-s0             学習 done   ep 30   best 49.2   last 49.2   エンジン True  確認 True  精度 0.98   走行 True\n1       v2_20261025-v2m-e30-s0             学習 done   ep 30   best 49.4   last 50.0   エンジン True  確認 True  精度 1.09   走行 True\n1       v2_20261025-v2h-e30-s1             学習 done   ep 30   best 49.4   last 49.7   エンジン True  確認 True  精度 0.878  走行 True\n1       v2_20261025-v2m-e30-s1             学習 done   ep 30   best 48.3   last 48.5   エンジン True  確認 True  精度 0.851  走行 True\n1       v2_20261025-v2h-e30-s2             学習 done   ep 30   best 48.8   last 49.1   エンジン True  確認 True  精度 0.895  走行 True\n1       v2_20261025-v2m-e30-s2             学習 done   ep 30   best 49.0   last 49.2   エンジン True  確認 True  精度 1.571  走行 True\n1       v2_20261025-v2h-e30-s3             学習 done   ep 30   best 49.1   last 49.2   エンジン True  確認 True  精度 1.02   走行 True\n1       v2_20261025-v2m-e30-s3             学習 done   ep 30   best 49.0   last 49.7   エンジン True  確認 True  精度 0.715  走行 True\n2       v2_20261025-v2h-e60-s0             学習 done   ep 60   best 49.3   last 50.4   エンジン True  確認 True  精度 0.944  走行 True\n2       v2_20261025-v2h-e60-s1             学習 done   ep 60   best 49.3   last 49.5   エンジン True  確認 True  精度 0.882  走行 True\n2       v2_20261025-v2h-e60-s2             学習 done   ep 60   best 48.9   last 49.0   エンジン True  確認 True  精度 0.931  走行 True\n2       v2_20261025-v2h-e60-s3             学習 done   ep 60   best 49.3   last 49.7   エンジン True  確認 True  精度 0.764  走行 True\n2       v2_20261025-v2h-e100-s0            学習 done   ep 100  best 49.1   last 49.3   エンジン True  確認 True  精度 1.075  走行 True\n3       v2_20261025-v2h-aug2-e60-s0        学習 fresh  ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n3       v2_20261025-v2h-aug2-e60-s1        学習 fresh  ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n3       v2_20261025-v2h-aug2-e60-s2        学習 fresh  ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n3       v2_20261025-v2h-aug2-e60-s3        学習 fresh  ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n4       v2_20261025-{x}-msf{A}-e{E}-s0     学習 未定     ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n4       v2_20261025-{x}-msf{A}-e{E}-s1     学習 未定     ep None best None   last None   エンジン False 確認 None  精度 None   走行 None\n",
+ "all_ok": true
+}

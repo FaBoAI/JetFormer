@@ -1,0 +1,10 @@
+フレーム 11990(学習 6506・直線 2043・止まった場面 1115・10/10 低速 2326)
+/home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+clean_driving_20261011-nocmd-s3-20261011-024626: 54 秒
+clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30: 43 秒
+v2_20261025-v2h-e30-s0: 42 秒
+v2_20261025-v2h-e30-s1: 42 秒
+v2_20261025-v2h-e60-s2: 42 秒
+v2_20261025-v2h-aug2-e60-s1: 41 秒
+bfast_20261025-e15-s0: 42 秒

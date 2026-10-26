@@ -1,0 +1,52 @@
+OK  protocol_v2.sha256 の 6 つ {"protocol_v2.json": true, "protocol_v2.md": true, "protocol_numbers.json": true, "/home/jetson/jetformer/experiments/20261025_train_v2/protocol_numbers.py": true, "/home/jetson/jetformer/experiments/20261025_train_v2/write_protocol_v2.py": true, "/home/jetson/jetformer/experiments/20261025_train_v2
+OK  protocol_v2_lock2.sha256 {"sha256": "7dea723de889bc07b0efba2885177689ee3c4a6df11cc0f585f1c1f86f599442"}
+OK  decisions.json の protocol_v2_sha256 = 今のファイル 
+OK  decisions.json の protocol_v2_lock2_sha256 = 今のファイル 
+OK  lock2 の台本・表・データセットの sha256 = 今のファイル {"gpu_queue_v2.sh": true, "gpu_queue_v2.py": true, "gpu_queue_v2.tsv": true, "eval_v2.py": true, "test_eval_v2.py": true, "protocol_numbers.py": true, "drop_v2h.npz": true, "drop_v2m.npz": true, "weights_v2m.npz": true, "remap_v2m.npz": true, "drop_bfast.npz": true, "weights_bfast.npz": true, "table
+OK  D1.x = v2h・D2.E = 60(D3 の型を埋める値) {"x": "v2h", "E": 60}
+OK  protocol の腕に {x}-aug2-e{E}(段 3・種 0〜3)と {x}-e{E}(段 2・種 0〜3)がある 
+OK  8 本とも 60 エポックまで学習した(missing_seed なし・k = 4) {"v2_20261025-v2h-aug2-e60-s0": 60, "v2_20261025-v2h-aug2-e60-s1": 60, "v2_20261025-v2h-aug2-e60-s2": 60, "v2_20261025-v2h-aug2-e60-s3": 60, "v2_20261025-v2h-e60-s0": 60, "v2_20261025-v2h-e60-s1": 60, "v2_20261025-v2h-e60-s2": 60, "v2_20261025-v2h-e60-s3": 60}
+OK  desk_inputs_20261022.npz の sha256 = protocol 
+OK  H1 4,670・介入 1,570 フレーム(protocol holdouts) {"H1": 4670, "interv": 1570}
+OK  H1・介入の正解に NaN が無い(nan_to_num に依らない) {"H1": 0, "interv": 0}
+OK  H1 の 11 シーン = protocol(昼 4・夜 7)、昼と夜で H1 を分けきる {"day_frames": 1605, "night_frames": 3065}
+OK  予測の表に封の記録が無い 
+OK  protocol sets.shift_tests は 7 つ 
+OK  v2_20261025-v2h-aug2-e60-s0 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-aug2-e60-s0 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.195529, "desk_v2_stage3": 0.19553, "snapshot": 0.19553}
+OK  v2_20261025-v2h-aug2-e60-s1 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-aug2-e60-s1 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.299116, "desk_v2_stage3": 0.29912, "snapshot": 0.29912}
+OK  v2_20261025-v2h-aug2-e60-s2 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-aug2-e60-s2 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.262458, "desk_v2_stage3": 0.26246, "snapshot": 0.26246}
+OK  v2_20261025-v2h-aug2-e60-s3 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-aug2-e60-s3 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.224972, "desk_v2_stage3": 0.22497, "snapshot": 0.22497}
+OK  v2_20261025-v2h-e60-s0 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-e60-s0 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.452419, "desk_v2_stage3": 0.45242, "snapshot": 0.45242}
+OK  v2_20261025-v2h-e60-s1 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-e60-s1 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.626071, "desk_v2_stage3": 0.62607, "snapshot": 0.62607}
+OK  v2_20261025-v2h-e60-s2 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-e60-s2 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.785922, "desk_v2_stage3": 0.78592, "snapshot": 0.78592}
+OK  v2_20261025-v2h-e60-s3 の shift.npz(H1 の行・7 つ・key・best.pth の sha256・そのまま = 保存した best) {"rows_are_H1_in_order": true, "kinds": ["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"], "best_pth_sha256_same_as_now": true, "pred_none_rows": 256, "pred_none_vs_saved_best_max_abs_us": 0.0}
+OK  v2_20261025-v2h-e60-s3 の robust_dl1_us が desk の値と同じ(desk は 5 桁に丸め)・7 つの内訳も {"mine": 0.566432, "desk_v2_stage3": 0.56643, "snapshot": 0.56643}
+OK  8 本とも同じ 7 つのずれ [["bright_0.8", "bright_1.2", "img_down3", "img_up3", "tof_down1", "top_0.85", "top_1.15"]]
+OK  5 本の A_s0 の保存した予測の sha256 = protocol 
+OK  5 本の A_s1 の保存した予測の sha256 = protocol 
+OK  5 本の v0-s2 の保存した予測の sha256 = protocol 
+OK  5 本の v0-s3 の保存した予測の sha256 = protocol 
+OK  5 本の B の保存した予測の sha256 = protocol 
+OK  5 本の平均(介入 best・steer_bias best)の丸めが protocol five_mean と同じ {"interv": 128.59381463234288, "steer_bias": 0.1320511890223501, "protocol": [128.594, 0.132]}
+OK  D3 の答え(aug)が同じ {"decisions": "AUG2", "mine": "AUG2"}
+OK  D3 の 6 つの条件が全部同じ {"H1 が悪くない": true, "robust_dl1_us が全部の組で AUG2 < なし": true, "平均(AUG2) ÷ 平均(なし) ≤ 0.8": true, "l1_day_us の差の平均 ≤ +1.0": true, "l1_night_us の差の平均 ≤ +1.0": true, "AUG2 の腕に拒否権が無い": true}
+OK  D3 の数の差の最大 ≤ 0.00001 µs {"h1.d_best": "0.00e+00", "h1.d_last": "0.00e+00", "h1.mean_d_best": "0.00e+00", "h1.mean_d_last": "0.00e+00", "robust.aug2": "0.00e+00", "robust.none": "0.00e+00", "robust.ratio": "0.00e+00", "day": "0.00e+00", "night": "0.00e+00", "veto.interv_diff": "0.00e+00", "veto.bias_value(= 平均 − 5 本の平均 として)
+OK  D3 の閾値(0.5・0.765・1.087・1.63・3.913)が protocol と同じ 
+OK  H1 の同じ種の判定(参考)が同じ {"decisions": "良い", "mine": "良い"}
+OK  D3 の sources の sha256 = 今のファイル(desk_v2_stage3.json・写し・stage3_judge.json) 
+OK  参考: 今の desk/desk_v2.json の 8 本の robust_dl1_us も同じ(読むだけ) {"v2_20261025-v2h-aug2-e60-s0": 0.19553, "v2_20261025-v2h-aug2-e60-s1": 0.29912, "v2_20261025-v2h-aug2-e60-s2": 0.26246, "v2_20261025-v2h-aug2-e60-s3": 0.22497, "v2_20261025-v2h-e60-s0": 0.45242, "v2_20261025-v2h-e60-s1": 0.62607, "v2_20261025-v2h-e60-s2": 0.78592, "v2_20261025-v2h-e60-s3": 0.56643}
+OK  lock2 段 0 の 6: workers = 2(メモリの最大 3,720 MB > 3.5 GB) 
+OK  段 3(AUG2)・段 2(v2h-e60)の 8 本の学習のコマンド = protocol の型(x = v2h・E = 60・workers 2) {"v2_20261025-v2h-aug2-e60-s0": true, "v2_20261025-v2h-aug2-e60-s1": true, "v2_20261025-v2h-aug2-e60-s2": true, "v2_20261025-v2h-aug2-e60-s3": true, "v2_20261025-v2h-e60-s0": true, "v2_20261025-v2h-e60-s1": true, "v2_20261025-v2h-e60-s2": true, "v2_20261025-v2h-e60-s3": true}
+OK  protocol の段 4 は 2 本(種 0・1)・msfusion 
+OK  段 4 v2_20261025-v2h-msf-aug2-e60-s0: 表の行 = protocol・resolve = 型を自分で埋めたもの・引数・まだ学習していない {"protocol_template": "v2_20261025-{x}-msf{A}-e{E}-s0", "resolve_rc": 0, "tsv_row_same_as_protocol": true, "resolve_same_as_expected": true, "args_ok": true, "prefix_ok": true, "run_dir_not_yet": true}
+OK  段 4 v2_20261025-v2h-msf-aug2-e60-s1: 表の行 = protocol・resolve = 型を自分で埋めたもの・引数・まだ学習していない {"protocol_template": "v2_20261025-{x}-msf{A}-e{E}-s1", "resolve_rc": 0, "tsv_row_same_as_protocol": true, "resolve_same_as_expected": true, "args_ok": true, "prefix_ok": true, "run_dir_not_yet": true}
+OK  段 4 の名前 = v2_20261025-v2h-msf-aug2-e60-s0・-s1 
+OK  段 4 の train.py の引数が全部 tools/train.py にある []
+答え: AUG2(decisions.json は AUG2)・確かめ 51 個のうち NG 0・/home/jetson/jetformer_reports/train_v2_20261025/verify_d3.json

@@ -1,0 +1,2139 @@
+{
+ "note": "fix.md(2026-10-25): 自動合わせの物差しを「周の速さ p90」から「周の時間」に替えたあとの再生。読むだけ。\n\n    cd ~/jetformer/experiments/20261025_speed_control/replay\n    /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python -I rr_cache.py   # 初回だけ\n    /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python -I ../fix_auto_replay.py\n\n反証 V-replay の仮想の閉ループ(replay/rr_ceiling.virtual。むだ時間 0.05 秒・モデルの反応なし・天井は実装の ceil_step)を\nそのまま使う。自動合わせは実装の純粋な関数(jetformer.speed_auto の lap_stats・fb_lap・end_summary)。電圧の記録は無いので m_ff = 1。\n  A. 周の水準の閉ループ(天井 ON): 周 k は m_k = m_fb(k) をゲイン倍 gm にして記録の周を仮想の車で走らせ、仮想の周の時間・\n     天井の割合で次の m_fb を決める。物差し 周の時間(既定・fix)と p90(仕様の文のまま)を並べる\n  B. ゲイン倍の掃き出し(No.9): gm ごとの仮想の周の時間・天井の割合・p90(目標 8.22 秒はどこか)\n  C. 目安で次の走行の throttle_gain を決める(人が 1 走行 = 1 設定で直す): 天井 ON の影(gm 1)の目安 → その gm で同じ記録を\n     走らせ直す → もう一度目安、を 3 回。止まってからの 3 周 = 続いた 3 周の最速 + 0.63 秒(analysis_tt 5 章)\n",
+ "target_lap_s": 8.219999999999999,
+ "A": [
+  {
+   "run": "10/24 No.9",
+   "log": "20261024-162033",
+   "tg": 0.8999999761581421,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 22.46,
+     "m_fb": 1.0,
+     "lap_v": 8.431,
+     "v90": 3.868,
+     "ceil_frac": 0.226,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.0127
+    },
+    {
+     "t": 30.71,
+     "m_fb": 1.0128,
+     "lap_v": 8.307,
+     "v90": 3.96,
+     "ceil_frac": 0.054,
+     "ok": true,
+     "reason": "",
+     "event": "不感帯",
+     "delta": 0.0
+    },
+    {
+     "t": 39.07,
+     "m_fb": 1.0128,
+     "lap_v": 9.052,
+     "v90": 3.876,
+     "ceil_frac": 0.118,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 48.06,
+     "m_fb": 1.0128,
+     "lap_v": 8.439,
+     "v90": 3.919,
+     "ceil_frac": 0.19,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 56.46,
+     "m_fb": 1.0128,
+     "lap_v": 8.51,
+     "v90": 3.908,
+     "ceil_frac": 0.222,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.0173
+    },
+    {
+     "t": 64.96,
+     "m_fb": 1.0304,
+     "lap_v": 8.405,
+     "v90": 3.945,
+     "ceil_frac": 0.269,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 73.35,
+     "m_fb": 1.0304,
+     "lap_v": 8.532,
+     "v90": 3.948,
+     "ceil_frac": 0.075,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 82.03,
+     "m_fb": 1.0304,
+     "lap_v": 8.469,
+     "v90": 3.859,
+     "ceil_frac": 0.177,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.0149
+    },
+    {
+     "t": 90.56,
+     "m_fb": 1.0459,
+     "lap_v": 8.631,
+     "v90": 3.873,
+     "ceil_frac": 0.076,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.0244
+    },
+    {
+     "t": 99.46,
+     "m_fb": 1.0717,
+     "lap_v": 8.409,
+     "v90": 3.932,
+     "ceil_frac": 0.059,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.0114
+    },
+    {
+     "t": 108.29,
+     "m_fb": 1.084,
+     "lap_v": 8.493,
+     "v90": 3.918,
+     "ceil_frac": 0.165,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(板の衝撃)",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.084,
+   "laps_used": 9,
+   "warn_seen": [],
+   "events": {
+    "直した": 5,
+    "上げない(板の衝撃)": 1,
+    "周を使わない": 2,
+    "上げない(衝突の次)": 2,
+    "不感帯": 1
+   },
+   "lap_v_used_first": 8.431,
+   "lap_v_used_last": 8.493,
+   "suggest_auto": 0.955,
+   "suggest_fixed": 0.955
+  },
+  {
+   "run": "10/24 No.9",
+   "log": "20261024-162033",
+   "tg": 0.8999999761581421,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 22.46,
+     "m_fb": 1.0,
+     "lap_v": 8.431,
+     "v90": 3.868,
+     "ceil_frac": 0.226,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    },
+    {
+     "t": 30.71,
+     "m_fb": 1.0,
+     "lap_v": 8.392,
+     "v90": 3.924,
+     "ceil_frac": 0.05,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 39.07,
+     "m_fb": 1.0305,
+     "lap_v": 8.94,
+     "v90": 3.921,
+     "ceil_frac": 0.137,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 48.06,
+     "m_fb": 1.0305,
+     "lap_v": 8.35,
+     "v90": 3.953,
+     "ceil_frac": 0.231,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    },
+    {
+     "t": 56.46,
+     "m_fb": 1.0305,
+     "lap_v": 8.4,
+     "v90": 3.968,
+     "ceil_frac": 0.235,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    },
+    {
+     "t": 64.96,
+     "m_fb": 1.0305,
+     "lap_v": 8.405,
+     "v90": 3.945,
+     "ceil_frac": 0.269,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 73.35,
+     "m_fb": 1.0305,
+     "lap_v": 8.532,
+     "v90": 3.948,
+     "ceil_frac": 0.075,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 82.03,
+     "m_fb": 1.0305,
+     "lap_v": 8.469,
+     "v90": 3.859,
+     "ceil_frac": 0.177,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    },
+    {
+     "t": 90.56,
+     "m_fb": 1.0305,
+     "lap_v": 8.725,
+     "v90": 3.833,
+     "ceil_frac": 0.053,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 99.46,
+     "m_fb": 1.0618,
+     "lap_v": 8.468,
+     "v90": 3.938,
+     "ceil_frac": 0.051,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 108.29,
+     "m_fb": 1.0942,
+     "lap_v": 8.432,
+     "v90": 3.94,
+     "ceil_frac": 0.176,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0942,
+   "laps_used": 9,
+   "warn_seen": [],
+   "events": {
+    "直した": 3,
+    "上げない(天井)": 5,
+    "周を使わない": 2,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 8.431,
+   "lap_v_used_last": 8.432,
+   "suggest_auto": 0.963,
+   "suggest_fixed": 0.963
+  },
+  {
+   "run": "10/24 No.10",
+   "log": "20261024-162305",
+   "tg": 1.0,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 7.45,
+     "m_fb": 1.0,
+     "lap_v": 8.837,
+     "v90": 3.96,
+     "ceil_frac": 0.238,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    }
+   ],
+   "m_fb_end": 1.0305,
+   "laps_used": 1,
+   "warn_seen": [],
+   "events": {
+    "直した": 1
+   },
+   "lap_v_used_first": 8.837,
+   "lap_v_used_last": 8.837,
+   "suggest_auto": 1.075,
+   "suggest_fixed": 1.075
+  },
+  {
+   "run": "10/24 No.10",
+   "log": "20261024-162305",
+   "tg": 1.0,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 7.45,
+     "m_fb": 1.0,
+     "lap_v": 8.837,
+     "v90": 3.96,
+     "ceil_frac": 0.238,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 1,
+   "warn_seen": [],
+   "events": {
+    "上げない(天井)": 1
+   },
+   "lap_v_used_first": 8.837,
+   "lap_v_used_last": 8.837,
+   "suggest_auto": 1.0,
+   "suggest_fixed": 1.0
+  },
+  {
+   "run": "10/24 No.7",
+   "log": "20261024-160654",
+   "tg": 1.0,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 9.56,
+     "m_fb": 1.0,
+     "lap_v": 9.402,
+     "v90": 3.988,
+     "ceil_frac": 0.199,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 18.57,
+     "m_fb": 1.0,
+     "lap_v": 9.766,
+     "v90": 3.957,
+     "ceil_frac": 0.197,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 42.65,
+     "m_fb": 1.0,
+     "lap_v": 9.51,
+     "v90": 3.821,
+     "ceil_frac": 0.193,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 51.73,
+     "m_fb": 1.0,
+     "lap_v": 9.906,
+     "v90": 3.912,
+     "ceil_frac": 0.168,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 0,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 4
+   },
+   "lap_v_used_first": null,
+   "lap_v_used_last": null,
+   "suggest_auto": null,
+   "suggest_fixed": null
+  },
+  {
+   "run": "10/24 No.7",
+   "log": "20261024-160654",
+   "tg": 1.0,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 9.56,
+     "m_fb": 1.0,
+     "lap_v": 9.402,
+     "v90": 3.988,
+     "ceil_frac": 0.199,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 18.57,
+     "m_fb": 1.0,
+     "lap_v": 9.766,
+     "v90": 3.957,
+     "ceil_frac": 0.197,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 42.65,
+     "m_fb": 1.0,
+     "lap_v": 9.51,
+     "v90": 3.821,
+     "ceil_frac": 0.193,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 51.73,
+     "m_fb": 1.0,
+     "lap_v": 9.906,
+     "v90": 3.912,
+     "ceil_frac": 0.168,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 0,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 4
+   },
+   "lap_v_used_first": null,
+   "lap_v_used_last": null,
+   "suggest_auto": null,
+   "suggest_fixed": null
+  },
+  {
+   "run": "10/24 No.8",
+   "log": "20261024-160847",
+   "tg": 1.100000023841858,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 25.82,
+     "m_fb": 1.0,
+     "lap_v": 9.316,
+     "v90": 3.865,
+     "ceil_frac": 0.267,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 68.77,
+     "m_fb": 1.0,
+     "lap_v": 10.501,
+     "v90": 4.07,
+     "ceil_frac": 0.246,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 0,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 2
+   },
+   "lap_v_used_first": null,
+   "lap_v_used_last": null,
+   "suggest_auto": null,
+   "suggest_fixed": null
+  },
+  {
+   "run": "10/24 No.8",
+   "log": "20261024-160847",
+   "tg": 1.100000023841858,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 25.82,
+     "m_fb": 1.0,
+     "lap_v": 9.316,
+     "v90": 3.865,
+     "ceil_frac": 0.267,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 68.77,
+     "m_fb": 1.0,
+     "lap_v": 10.501,
+     "v90": 4.07,
+     "ceil_frac": 0.246,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 0,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 2
+   },
+   "lap_v_used_first": null,
+   "lap_v_used_last": null,
+   "suggest_auto": null,
+   "suggest_fixed": null
+  },
+  {
+   "run": "10/24 No.11",
+   "log": "20261024-183123",
+   "tg": 0.8999999761581421,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 73.07,
+     "m_fb": 1.0,
+     "lap_v": 9.099,
+     "v90": 3.516,
+     "ceil_frac": 0.008,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 82.16,
+     "m_fb": 1.0,
+     "lap_v": 9.043,
+     "v90": 3.591,
+     "ceil_frac": 0.015,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 91.19,
+     "m_fb": 1.0,
+     "lap_v": 9.566,
+     "v90": 3.583,
+     "ceil_frac": 0.021,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 100.72,
+     "m_fb": 1.0,
+     "lap_v": 10.2,
+     "v90": 3.035,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 110.92,
+     "m_fb": 1.0,
+     "lap_v": 9.28,
+     "v90": 3.406,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 120.2,
+     "m_fb": 1.0,
+     "lap_v": 9.352,
+     "v90": 3.589,
+     "ceil_frac": 0.03,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 129.51,
+     "m_fb": 1.0,
+     "lap_v": 9.422,
+     "v90": 3.268,
+     "ceil_frac": 0.011,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 138.93,
+     "m_fb": 1.0,
+     "lap_v": 8.912,
+     "v90": 3.556,
+     "ceil_frac": 0.027,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 2,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 6,
+    "上げない(衝突の次)": 2
+   },
+   "lap_v_used_first": 9.566,
+   "lap_v_used_last": 9.352,
+   "suggest_auto": 0.99,
+   "suggest_fixed": 1.036
+  },
+  {
+   "run": "10/24 No.11",
+   "log": "20261024-183123",
+   "tg": 0.8999999761581421,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 73.07,
+     "m_fb": 1.0,
+     "lap_v": 9.099,
+     "v90": 3.516,
+     "ceil_frac": 0.008,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 82.16,
+     "m_fb": 1.0,
+     "lap_v": 9.043,
+     "v90": 3.591,
+     "ceil_frac": 0.015,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 91.19,
+     "m_fb": 1.0,
+     "lap_v": 9.566,
+     "v90": 3.583,
+     "ceil_frac": 0.021,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 100.72,
+     "m_fb": 1.0,
+     "lap_v": 10.2,
+     "v90": 3.035,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 110.92,
+     "m_fb": 1.0,
+     "lap_v": 9.28,
+     "v90": 3.406,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 120.2,
+     "m_fb": 1.0,
+     "lap_v": 9.352,
+     "v90": 3.589,
+     "ceil_frac": 0.03,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 129.51,
+     "m_fb": 1.0,
+     "lap_v": 9.422,
+     "v90": 3.268,
+     "ceil_frac": 0.011,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 138.93,
+     "m_fb": 1.0,
+     "lap_v": 8.912,
+     "v90": 3.556,
+     "ceil_frac": 0.027,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 2,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 6,
+    "上げない(衝突の次)": 2
+   },
+   "lap_v_used_first": 9.566,
+   "lap_v_used_last": 9.352,
+   "suggest_auto": 0.99,
+   "suggest_fixed": 1.054
+  },
+  {
+   "run": "10/24 No.12",
+   "log": "20261024-183437",
+   "tg": 0.8999999761581421,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 20.62,
+     "m_fb": 1.0,
+     "lap_v": 9.199,
+     "v90": 3.297,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 29.82,
+     "m_fb": 1.0,
+     "lap_v": 8.851,
+     "v90": 3.473,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 38.67,
+     "m_fb": 1.0,
+     "lap_v": 9.339,
+     "v90": 3.42,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 48.01,
+     "m_fb": 1.0,
+     "lap_v": 9.36,
+     "v90": 3.472,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 57.37,
+     "m_fb": 1.0305,
+     "lap_v": 9.498,
+     "v90": 3.479,
+     "ceil_frac": 0.011,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 67.1,
+     "m_fb": 1.0305,
+     "lap_v": 9.327,
+     "v90": 3.375,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0305,
+   "laps_used": 2,
+   "warn_seen": [],
+   "events": {
+    "直した": 1,
+    "周を使わない": 4,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 9.339,
+   "lap_v_used_last": 9.36,
+   "suggest_auto": 0.99,
+   "suggest_fixed": 1.024
+  },
+  {
+   "run": "10/24 No.12",
+   "log": "20261024-183437",
+   "tg": 0.8999999761581421,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 20.62,
+     "m_fb": 1.0,
+     "lap_v": 9.199,
+     "v90": 3.297,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 29.82,
+     "m_fb": 1.0,
+     "lap_v": 8.851,
+     "v90": 3.473,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 38.67,
+     "m_fb": 1.0,
+     "lap_v": 9.339,
+     "v90": 3.42,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 48.01,
+     "m_fb": 1.0,
+     "lap_v": 9.36,
+     "v90": 3.472,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 57.37,
+     "m_fb": 1.0305,
+     "lap_v": 9.498,
+     "v90": 3.479,
+     "ceil_frac": 0.011,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 67.1,
+     "m_fb": 1.0305,
+     "lap_v": 9.327,
+     "v90": 3.375,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0305,
+   "laps_used": 2,
+   "warn_seen": [],
+   "events": {
+    "直した": 1,
+    "周を使わない": 4,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 9.339,
+   "lap_v_used_last": 9.36,
+   "suggest_auto": 0.99,
+   "suggest_fixed": 1.08
+  },
+  {
+   "run": "10/24 No.17",
+   "log": "20261024-184549",
+   "tg": 0.949999988079071,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 11.68,
+     "m_fb": 1.0,
+     "lap_v": 8.675,
+     "v90": 3.718,
+     "ceil_frac": 0.016,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.027
+    },
+    {
+     "t": 20.34,
+     "m_fb": 1.0273,
+     "lap_v": 9.131,
+     "v90": 3.409,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 29.68,
+     "m_fb": 1.0273,
+     "lap_v": 8.757,
+     "v90": 3.498,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 38.64,
+     "m_fb": 1.0273,
+     "lap_v": 9.331,
+     "v90": 3.082,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 48.18,
+     "m_fb": 1.0273,
+     "lap_v": 8.91,
+     "v90": 3.539,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 57.28,
+     "m_fb": 1.0273,
+     "lap_v": 8.938,
+     "v90": 3.437,
+     "ceil_frac": 0.011,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 66.4,
+     "m_fb": 1.0586,
+     "lap_v": 8.677,
+     "v90": 3.597,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.027
+    }
+   ],
+   "m_fb_end": 1.0876,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 3,
+    "周を使わない": 3,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 8.675,
+   "lap_v_used_last": 8.677,
+   "suggest_auto": 1.045,
+   "suggest_fixed": 1.06
+  },
+  {
+   "run": "10/24 No.17",
+   "log": "20261024-184549",
+   "tg": 0.949999988079071,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 11.68,
+     "m_fb": 1.0,
+     "lap_v": 8.675,
+     "v90": 3.718,
+     "ceil_frac": 0.016,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 20.34,
+     "m_fb": 1.0305,
+     "lap_v": 9.108,
+     "v90": 3.417,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 29.68,
+     "m_fb": 1.0305,
+     "lap_v": 8.734,
+     "v90": 3.506,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 38.64,
+     "m_fb": 1.0305,
+     "lap_v": 9.307,
+     "v90": 3.089,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 48.18,
+     "m_fb": 1.0305,
+     "lap_v": 8.889,
+     "v90": 3.547,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    },
+    {
+     "t": 57.28,
+     "m_fb": 1.0305,
+     "lap_v": 8.916,
+     "v90": 3.445,
+     "ceil_frac": 0.011,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 66.4,
+     "m_fb": 1.0618,
+     "lap_v": 8.656,
+     "v90": 3.606,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    }
+   ],
+   "m_fb_end": 1.0942,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 3,
+    "周を使わない": 3,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 8.675,
+   "lap_v_used_last": 8.656,
+   "suggest_auto": 1.045,
+   "suggest_fixed": 1.1
+  },
+  {
+   "run": "10/24 No.14",
+   "log": "20261024-183826",
+   "tg": 0.8500000238418579,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 51.34,
+     "m_fb": 1.0,
+     "lap_v": 9.968,
+     "v90": 3.074,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 61.3,
+     "m_fb": 1.0305,
+     "lap_v": 9.824,
+     "v90": 3.254,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 71.35,
+     "m_fb": 1.0618,
+     "lap_v": 9.522,
+     "v90": 3.265,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 81.33,
+     "m_fb": 1.0942,
+     "lap_v": 9.596,
+     "v90": 2.914,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 91.62,
+     "m_fb": 1.0942,
+     "lap_v": 9.856,
+     "v90": 2.879,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0942,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 3,
+    "周を使わない": 1,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 9.968,
+   "lap_v_used_last": 9.856,
+   "suggest_auto": 0.935,
+   "suggest_fixed": 1.02
+  },
+  {
+   "run": "10/24 No.14",
+   "log": "20261024-183826",
+   "tg": 0.8500000238418579,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 51.34,
+     "m_fb": 1.0,
+     "lap_v": 9.968,
+     "v90": 3.074,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 61.3,
+     "m_fb": 1.0305,
+     "lap_v": 9.824,
+     "v90": 3.254,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 71.35,
+     "m_fb": 1.0618,
+     "lap_v": 9.522,
+     "v90": 3.265,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 81.33,
+     "m_fb": 1.0942,
+     "lap_v": 9.596,
+     "v90": 2.914,
+     "ceil_frac": 0.0,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 91.62,
+     "m_fb": 1.0942,
+     "lap_v": 9.856,
+     "v90": 2.879,
+     "ceil_frac": 0.0,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(衝突の次)",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0942,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 3,
+    "周を使わない": 1,
+    "上げない(衝突の次)": 1
+   },
+   "lap_v_used_first": 9.968,
+   "lap_v_used_last": 9.856,
+   "suggest_auto": 0.935,
+   "suggest_fixed": 1.02
+  },
+  {
+   "run": "10/24 No.2",
+   "log": "20261024-134907",
+   "tg": 1.0,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 14.06,
+     "m_fb": 1.0,
+     "lap_v": 9.803,
+     "v90": 3.353,
+     "ceil_frac": 0.035,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 23.85,
+     "m_fb": 1.0305,
+     "lap_v": 9.524,
+     "v90": 3.632,
+     "ceil_frac": 0.042,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 33.55,
+     "m_fb": 1.0618,
+     "lap_v": 9.301,
+     "v90": 3.57,
+     "ceil_frac": 0.024,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 43.3,
+     "m_fb": 1.0942,
+     "lap_v": 9.423,
+     "v90": 3.52,
+     "ceil_frac": 0.068,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    }
+   ],
+   "m_fb_end": 1.1,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 4
+   },
+   "lap_v_used_first": 9.803,
+   "lap_v_used_last": 9.423,
+   "suggest_auto": 1.1,
+   "suggest_fixed": 1.1
+  },
+  {
+   "run": "10/24 No.2",
+   "log": "20261024-134907",
+   "tg": 1.0,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 14.06,
+     "m_fb": 1.0,
+     "lap_v": 9.803,
+     "v90": 3.353,
+     "ceil_frac": 0.035,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 23.85,
+     "m_fb": 1.0305,
+     "lap_v": 9.524,
+     "v90": 3.632,
+     "ceil_frac": 0.042,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 33.55,
+     "m_fb": 1.0618,
+     "lap_v": 9.301,
+     "v90": 3.57,
+     "ceil_frac": 0.024,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    },
+    {
+     "t": 43.3,
+     "m_fb": 1.0942,
+     "lap_v": 9.423,
+     "v90": 3.52,
+     "ceil_frac": 0.068,
+     "ok": true,
+     "reason": "",
+     "event": "直した",
+     "delta": 0.03
+    }
+   ],
+   "m_fb_end": 1.1,
+   "laps_used": 4,
+   "warn_seen": [],
+   "events": {
+    "直した": 4
+   },
+   "lap_v_used_first": 9.803,
+   "lap_v_used_last": 9.423,
+   "suggest_auto": 1.1,
+   "suggest_fixed": 1.1
+  },
+  {
+   "run": "10/23 No.17",
+   "log": "20261023-211828",
+   "tg": 1.2000000476837158,
+   "metric": "lap_s",
+   "laps": [
+    {
+     "t": 90.52,
+     "m_fb": 1.0,
+     "lap_v": 9.349,
+     "v90": 4.049,
+     "ceil_frac": 0.36,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 99.19,
+     "m_fb": 1.0,
+     "lap_v": 9.238,
+     "v90": 3.865,
+     "ceil_frac": 0.294,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 108.05,
+     "m_fb": 1.0,
+     "lap_v": 9.429,
+     "v90": 4.0,
+     "ceil_frac": 0.296,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 116.79,
+     "m_fb": 1.0,
+     "lap_v": 9.928,
+     "v90": 4.044,
+     "ceil_frac": 0.498,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 157.42,
+     "m_fb": 1.0,
+     "lap_v": 6.605,
+     "v90": 3.928,
+     "ceil_frac": 0.342,
+     "ok": false,
+     "reason": "short",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 162.69,
+     "m_fb": 1.0,
+     "lap_v": 10.479,
+     "v90": 4.012,
+     "ceil_frac": 0.478,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 171.32,
+     "m_fb": 1.0,
+     "lap_v": 12.959,
+     "v90": 4.015,
+     "ceil_frac": 0.392,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 0,
+   "warn_seen": [],
+   "events": {
+    "周を使わない": 7
+   },
+   "lap_v_used_first": null,
+   "lap_v_used_last": null,
+   "suggest_auto": null,
+   "suggest_fixed": null
+  },
+  {
+   "run": "10/23 No.17",
+   "log": "20261023-211828",
+   "tg": 1.2000000476837158,
+   "metric": "p90",
+   "laps": [
+    {
+     "t": 90.52,
+     "m_fb": 1.0,
+     "lap_v": 9.349,
+     "v90": 4.049,
+     "ceil_frac": 0.36,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 99.19,
+     "m_fb": 1.0,
+     "lap_v": 9.238,
+     "v90": 3.865,
+     "ceil_frac": 0.294,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 108.05,
+     "m_fb": 1.0,
+     "lap_v": 9.429,
+     "v90": 4.0,
+     "ceil_frac": 0.296,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 116.79,
+     "m_fb": 1.0,
+     "lap_v": 9.928,
+     "v90": 4.044,
+     "ceil_frac": 0.498,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 157.42,
+     "m_fb": 1.0,
+     "lap_v": 6.605,
+     "v90": 3.928,
+     "ceil_frac": 0.342,
+     "ok": true,
+     "reason": "",
+     "event": "上げない(天井)",
+     "delta": 0.0
+    },
+    {
+     "t": 162.69,
+     "m_fb": 1.0,
+     "lap_v": 10.479,
+     "v90": 4.012,
+     "ceil_frac": 0.478,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    },
+    {
+     "t": 171.32,
+     "m_fb": 1.0,
+     "lap_v": 12.959,
+     "v90": 4.015,
+     "ceil_frac": 0.392,
+     "ok": false,
+     "reason": "collision",
+     "event": "周を使わない",
+     "delta": 0.0
+    }
+   ],
+   "m_fb_end": 1.0,
+   "laps_used": 1,
+   "warn_seen": [],
+   "events": {
+    "上げない(天井)": 1,
+    "周を使わない": 6
+   },
+   "lap_v_used_first": 6.605,
+   "lap_v_used_last": 6.605,
+   "suggest_auto": 1.2,
+   "suggest_fixed": 1.2
+  }
+ ],
+ "B": [
+  {
+   "gm": 1.0,
+   "gain": 0.9,
+   "lap_mean": 8.697,
+   "v90_mean": 3.853,
+   "ceil_frac": 0.109,
+   "stand3_best": 26.244
+  },
+  {
+   "gm": 1.02,
+   "gain": 0.918,
+   "lap_mean": 8.581,
+   "v90_mean": 3.889,
+   "ceil_frac": 0.14,
+   "stand3_best": 25.952
+  },
+  {
+   "gm": 1.04,
+   "gain": 0.936,
+   "lap_mean": 8.478,
+   "v90_mean": 3.906,
+   "ceil_frac": 0.175,
+   "stand3_best": 25.651
+  },
+  {
+   "gm": 1.06,
+   "gain": 0.954,
+   "lap_mean": 8.374,
+   "v90_mean": 3.931,
+   "ceil_frac": 0.199,
+   "stand3_best": 25.366
+  },
+  {
+   "gm": 1.08,
+   "gain": 0.972,
+   "lap_mean": 8.281,
+   "v90_mean": 3.962,
+   "ceil_frac": 0.226,
+   "stand3_best": 25.096
+  },
+  {
+   "gm": 1.1,
+   "gain": 0.99,
+   "lap_mean": 8.19,
+   "v90_mean": 3.987,
+   "ceil_frac": 0.253,
+   "stand3_best": 24.874
+  },
+  {
+   "gm": 1.12,
+   "gain": 1.008,
+   "lap_mean": 8.108,
+   "v90_mean": 4.004,
+   "ceil_frac": 0.28,
+   "stand3_best": 24.679
+  },
+  {
+   "gm": 1.15,
+   "gain": 1.035,
+   "lap_mean": 7.995,
+   "v90_mean": 4.036,
+   "ceil_frac": 0.324,
+   "stand3_best": 24.347
+  }
+ ],
+ "C": [
+  {
+   "run": "10/24 No.9",
+   "log": "20261024-162033",
+   "tg": 0.8999999761581421,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 0.9,
+     "gm": 1.0,
+     "laps": 11,
+     "lap_mean": 8.697,
+     "lap_med": 8.616,
+     "w3_best": 25.614,
+     "stand3_best": 26.244,
+     "ceil_frac_mean": 0.109,
+     "laps_used": 9,
+     "suggest_fixed": 0.937
+    },
+    {
+     "iter": 1,
+     "gain": 0.937,
+     "gm": 1.0411,
+     "laps": 11,
+     "lap_mean": 8.471,
+     "lap_med": 8.414,
+     "w3_best": 25.001,
+     "stand3_best": 25.631,
+     "ceil_frac_mean": 0.175,
+     "laps_used": 9,
+     "suggest_fixed": 0.952
+    },
+    {
+     "iter": 2,
+     "gain": 0.952,
+     "gm": 1.0578,
+     "laps": 11,
+     "lap_mean": 8.386,
+     "lap_med": 8.316,
+     "w3_best": 24.771,
+     "stand3_best": 25.401,
+     "ceil_frac_mean": 0.198,
+     "laps_used": 9,
+     "suggest_fixed": 0.96
+    },
+    {
+     "iter": 3,
+     "gain": 0.96,
+     "gm": 1.0667,
+     "laps": 11,
+     "lap_mean": 8.345,
+     "lap_med": 8.285,
+     "w3_best": 24.633,
+     "stand3_best": 25.263,
+     "ceil_frac_mean": 0.207,
+     "laps_used": 9,
+     "suggest_fixed": 0.962
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.10",
+   "log": "20261024-162305",
+   "tg": 1.0,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 1.0,
+     "gm": 1.0,
+     "laps": 1,
+     "lap_mean": 8.837,
+     "lap_med": 8.837,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.238,
+     "laps_used": 1,
+     "suggest_fixed": 1.075
+    },
+    {
+     "iter": 1,
+     "gain": 1.075,
+     "gm": 1.075,
+     "laps": 1,
+     "lap_mean": 8.518,
+     "lap_med": 8.518,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.341,
+     "laps_used": 1,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 2,
+     "gain": 1.1,
+     "gm": 1.1,
+     "laps": 1,
+     "lap_mean": 8.471,
+     "lap_med": 8.471,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.381,
+     "laps_used": 1,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 3,
+     "gain": 1.1,
+     "gm": 1.1,
+     "laps": 1,
+     "lap_mean": 8.471,
+     "lap_med": 8.471,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.381,
+     "laps_used": 1,
+     "suggest_fixed": 1.1
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.7",
+   "log": "20261024-160654",
+   "tg": 1.0,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 1.0,
+     "gm": 1.0,
+     "laps": 4,
+     "lap_mean": 9.646,
+     "lap_med": 9.638,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.189,
+     "laps_used": 0,
+     "suggest_fixed": null
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.8",
+   "log": "20261024-160847",
+   "tg": 1.100000023841858,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 1.1,
+     "gm": 1.0,
+     "laps": 2,
+     "lap_mean": 9.909,
+     "lap_med": 9.909,
+     "w3_best": null,
+     "stand3_best": null,
+     "ceil_frac_mean": 0.257,
+     "laps_used": 0,
+     "suggest_fixed": null
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.11",
+   "log": "20261024-183123",
+   "tg": 0.8999999761581421,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 0.9,
+     "gm": 1.0,
+     "laps": 8,
+     "lap_mean": 9.359,
+     "lap_med": 9.316,
+     "w3_best": 27.686,
+     "stand3_best": 28.316,
+     "ceil_frac_mean": 0.014,
+     "laps_used": 2,
+     "suggest_fixed": 1.036
+    },
+    {
+     "iter": 1,
+     "gain": 1.036,
+     "gm": 1.1511,
+     "laps": 8,
+     "lap_mean": 8.424,
+     "lap_med": 8.383,
+     "w3_best": 24.975,
+     "stand3_best": 25.605,
+     "ceil_frac_mean": 0.088,
+     "laps_used": 2,
+     "suggest_fixed": 1.08
+    },
+    {
+     "iter": 2,
+     "gain": 1.08,
+     "gm": 1.2,
+     "laps": 8,
+     "lap_mean": 8.204,
+     "lap_med": 8.172,
+     "w3_best": 24.316,
+     "stand3_best": 24.946,
+     "ceil_frac_mean": 0.163,
+     "laps_used": 2,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 3,
+     "gain": 1.1,
+     "gm": 1.2222,
+     "laps": 8,
+     "lap_mean": 8.109,
+     "lap_med": 8.065,
+     "w3_best": 24.03,
+     "stand3_best": 24.66,
+     "ceil_frac_mean": 0.185,
+     "laps_used": 2,
+     "suggest_fixed": 1.1
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.12",
+   "log": "20261024-183437",
+   "tg": 0.8999999761581421,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 0.9,
+     "gm": 1.0,
+     "laps": 6,
+     "lap_mean": 9.34,
+     "lap_med": 9.349,
+     "w3_best": 27.389,
+     "stand3_best": 28.019,
+     "ceil_frac_mean": 0.0,
+     "laps_used": 2,
+     "suggest_fixed": 1.024
+    },
+    {
+     "iter": 1,
+     "gain": 1.024,
+     "gm": 1.1378,
+     "laps": 6,
+     "lap_mean": 8.429,
+     "lap_med": 8.464,
+     "w3_best": 24.734,
+     "stand3_best": 25.364,
+     "ceil_frac_mean": 0.026,
+     "laps_used": 2,
+     "suggest_fixed": 1.054
+    },
+    {
+     "iter": 2,
+     "gain": 1.054,
+     "gm": 1.1711,
+     "laps": 6,
+     "lap_mean": 8.258,
+     "lap_med": 8.32,
+     "w3_best": 24.219,
+     "stand3_best": 24.849,
+     "ceil_frac_mean": 0.065,
+     "laps_used": 2,
+     "suggest_fixed": 1.067
+    },
+    {
+     "iter": 3,
+     "gain": 1.067,
+     "gm": 1.1856,
+     "laps": 6,
+     "lap_mean": 8.191,
+     "lap_med": 8.26,
+     "w3_best": 24.033,
+     "stand3_best": 24.663,
+     "ceil_frac_mean": 0.081,
+     "laps_used": 2,
+     "suggest_fixed": 1.072
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.17",
+   "log": "20261024-184549",
+   "tg": 0.949999988079071,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 0.95,
+     "gm": 1.0,
+     "laps": 7,
+     "lap_mean": 9.118,
+     "lap_med": 9.1,
+     "w3_best": 26.975,
+     "stand3_best": 27.605,
+     "ceil_frac_mean": 0.004,
+     "laps_used": 4,
+     "suggest_fixed": 1.051
+    },
+    {
+     "iter": 1,
+     "gain": 1.051,
+     "gm": 1.1063,
+     "laps": 7,
+     "lap_mean": 8.428,
+     "lap_med": 8.44,
+     "w3_best": 24.942,
+     "stand3_best": 25.572,
+     "ceil_frac_mean": 0.044,
+     "laps_used": 4,
+     "suggest_fixed": 1.076
+    },
+    {
+     "iter": 2,
+     "gain": 1.076,
+     "gm": 1.1326,
+     "laps": 7,
+     "lap_mean": 8.281,
+     "lap_med": 8.296,
+     "w3_best": 24.499,
+     "stand3_best": 25.129,
+     "ceil_frac_mean": 0.057,
+     "laps_used": 4,
+     "suggest_fixed": 1.083
+    },
+    {
+     "iter": 3,
+     "gain": 1.083,
+     "gm": 1.14,
+     "laps": 7,
+     "lap_mean": 8.243,
+     "lap_med": 8.263,
+     "w3_best": 24.398,
+     "stand3_best": 25.028,
+     "ceil_frac_mean": 0.068,
+     "laps_used": 4,
+     "suggest_fixed": 1.086
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.14",
+   "log": "20261024-183826",
+   "tg": 0.8500000238418579,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 0.85,
+     "gm": 1.0,
+     "laps": 5,
+     "lap_mean": 10.162,
+     "lap_med": 10.05,
+     "w3_best": 29.992,
+     "stand3_best": 30.622,
+     "ceil_frac_mean": 0.0,
+     "laps_used": 4,
+     "suggest_fixed": 1.02
+    },
+    {
+     "iter": 1,
+     "gain": 1.02,
+     "gm": 1.2,
+     "laps": 5,
+     "lap_mean": 8.839,
+     "lap_med": 8.738,
+     "w3_best": 26.068,
+     "stand3_best": 26.698,
+     "ceil_frac_mean": 0.0,
+     "laps_used": 4,
+     "suggest_fixed": 1.081
+    },
+    {
+     "iter": 2,
+     "gain": 1.081,
+     "gm": 1.2718,
+     "laps": 5,
+     "lap_mean": 8.461,
+     "lap_med": 8.394,
+     "w3_best": 24.977,
+     "stand3_best": 25.607,
+     "ceil_frac_mean": 0.021,
+     "laps_used": 4,
+     "suggest_fixed": 1.097
+    },
+    {
+     "iter": 3,
+     "gain": 1.097,
+     "gm": 1.2906,
+     "laps": 5,
+     "lap_mean": 8.371,
+     "lap_med": 8.306,
+     "w3_best": 24.717,
+     "stand3_best": 25.347,
+     "ceil_frac_mean": 0.03,
+     "laps_used": 4,
+     "suggest_fixed": 1.1
+    }
+   ]
+  },
+  {
+   "run": "10/24 No.2",
+   "log": "20261024-134907",
+   "tg": 1.0,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 1.0,
+     "gm": 1.0,
+     "laps": 4,
+     "lap_mean": 9.829,
+     "lap_med": 9.779,
+     "w3_best": 29.279,
+     "stand3_best": 29.909,
+     "ceil_frac_mean": 0.016,
+     "laps_used": 4,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 1,
+     "gain": 1.1,
+     "gm": 1.1,
+     "laps": 4,
+     "lap_mean": 9.195,
+     "lap_med": 9.169,
+     "w3_best": 27.393,
+     "stand3_best": 28.023,
+     "ceil_frac_mean": 0.072,
+     "laps_used": 4,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 2,
+     "gain": 1.1,
+     "gm": 1.1,
+     "laps": 4,
+     "lap_mean": 9.195,
+     "lap_med": 9.169,
+     "w3_best": 27.393,
+     "stand3_best": 28.023,
+     "ceil_frac_mean": 0.072,
+     "laps_used": 4,
+     "suggest_fixed": 1.1
+    },
+    {
+     "iter": 3,
+     "gain": 1.1,
+     "gm": 1.1,
+     "laps": 4,
+     "lap_mean": 9.195,
+     "lap_med": 9.169,
+     "w3_best": 27.393,
+     "stand3_best": 28.023,
+     "ceil_frac_mean": 0.072,
+     "laps_used": 4,
+     "suggest_fixed": 1.1
+    }
+   ]
+  },
+  {
+   "run": "10/23 No.17",
+   "log": "20261023-211828",
+   "tg": 1.2000000476837158,
+   "iters": [
+    {
+     "iter": 0,
+     "gain": 1.2,
+     "gm": 1.0,
+     "laps": 7,
+     "lap_mean": 9.713,
+     "lap_med": 9.429,
+     "w3_best": 28.016,
+     "stand3_best": 28.646,
+     "ceil_frac_mean": 0.38,
+     "laps_used": 0,
+     "suggest_fixed": null
+    }
+   ]
+  }
+ ]
+}

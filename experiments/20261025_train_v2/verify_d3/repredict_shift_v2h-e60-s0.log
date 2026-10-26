@@ -1,0 +1,60 @@
+[jf-heavy] ほかの重い処理(big)が終わるのを待っています
+/home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+{
+ "schema": "jf-train-v2-verify-d3-shift/v1",
+ "made_at": "2026-10-26 04:17:18",
+ "run": "v2_20261025-v2h-e60-s0",
+ "script": "/home/jetson/jetformer/experiments/20261025_train_v2/verify_d3/repredict_shift_one.py",
+ "script_sha256": "dd587f1a97d334dfc4c6f6f33a804cc7a46e2bfdad6027ce1c1f7630853b0f1e",
+ "best_pth_sha256": "5a6fab614d423ea0d08f088848cb4193de6a3630368f8f6ca7a3a60ce940fae8",
+ "c3_shift_best_sha256_same": true,
+ "c3_shift_script_sha256": "22cd62549b77a49994a79bf5cd2f8e6751c234a37dd133d0bc2c6defec538f95",
+ "rows": 4670,
+ "rows_same_as_c3": true,
+ "genre_same_as_c3": true,
+ "genre_substituted": 0,
+ "none_vs_saved_best_max_abs_us": 0.2889450788497925,
+ "none_vs_saved_best_mean_abs_us": 0.01823493811287927,
+ "shift_vs_c3_max_abs_us": {
+  "img_up3": 0.4119035005569458,
+  "img_down3": 0.29156923294067383,
+  "bright_0.8": 0.3317852020263672,
+  "bright_1.2": 0.25964081287384033,
+  "tof_down1": 0.32040953636169434,
+  "top_0.85": 0.26204419136047363,
+  "top_1.15": 0.4673490524291992
+ },
+ "shift_vs_c3_mean_abs_us": {
+  "img_up3": 0.018454053577871263,
+  "img_down3": 0.01852939370931854,
+  "bright_0.8": 0.020844154630975133,
+  "bright_1.2": 0.01709488776167436,
+  "tof_down1": 0.018701499655545635,
+  "top_0.85": 0.018507855135849748,
+  "top_1.15": 0.018231175699913414
+ },
+ "robust_dl1_us_mine": 0.45232169278017614,
+ "robust_dl1_us_mine_base_saved": 0.4524979959315181,
+ "robust_dl1_us_c3_npz": 0.45241863373260166,
+ "per_shift_mine_us": {
+  "img_up3": 0.3817983344599014,
+  "img_down3": 2.1270024575673574,
+  "bright_0.8": 0.3375803135332802,
+  "bright_1.2": -0.026207735349721872,
+  "tof_down1": 0.35333056153309883,
+  "top_0.85": 0.05033177889894347,
+  "top_1.15": -0.05758386118162662
+ },
+ "per_shift_c3_us": {
+  "img_up3": 0.38227438818464066,
+  "img_down3": 2.126876044263163,
+  "bright_0.8": 0.33770165388283147,
+  "bright_1.2": -0.02605363800898175,
+  "tof_down1": 0.3532345528776162,
+  "top_0.85": 0.050382536861576455,
+  "top_1.15": -0.057485101932634564
+ },
+ "seconds": 208.1
+}
+rc=0

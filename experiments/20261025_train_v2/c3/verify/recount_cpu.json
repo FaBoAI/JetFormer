@@ -1,0 +1,1964 @@
+{
+ "schema": "jf-verify-c3-cpu/v1",
+ "made_at": "2026-10-26 04:44:04",
+ "script": "/home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/recount_c3_cpu.py",
+ "script_sha256": "ce0f3e4344bb2b9b05da45b60a45dd77991995f7bab9ad940f2564d5499812fa",
+ "desk_v2_json_sha256": "6f7e59af8d9cc6b9afa556233c4e580c8e3cf738b9411289e316a56c03e568a6",
+ "desk_made_at": "2026-10-26 04:30:40",
+ "protocol_v2_sha256": "ca2556a28584ef922411525bc8a1eac46a42764c6df3fdc56ca6a1d7aa91de3a",
+ "checks": [
+  {
+   "name": "deviations7: top_ramp = 一番上 1・上 1/3 の境で 0 の直線",
+   "ok": true,
+   "mine": {
+    "w0": 1.0,
+    "w37": 0.5045,
+    "w74": 0.0089,
+    "w75": 0.0
+   },
+   "c3": null,
+   "note": ""
+  },
+  {
+   "name": "止まった場面のラベルの行(ToF の前) = protocol の上限 1,622",
+   "ok": true,
+   "mine": 1622,
+   "c3": 1622,
+   "note": ""
+  },
+  {
+   "name": "止まった場面の aligned(ToF の前)",
+   "ok": true,
+   "mine": 1619,
+   "c3": 1619,
+   "note": ""
+  },
+  {
+   "name": "止まった場面(ToF の後)= desk の standstill_frames",
+   "ok": true,
+   "mine": 1115,
+   "c3": 1115,
+   "note": ""
+  },
+  {
+   "name": "止まった場面 ≥ 300 → 門",
+   "ok": true,
+   "mine": "門",
+   "c3": "門",
+   "note": ""
+  },
+  {
+   "name": "gb_de の数",
+   "ok": true,
+   "mine": 403,
+   "c3": 403,
+   "note": ""
+  },
+  {
+   "name": "gb_sw の数",
+   "ok": true,
+   "mine": 821,
+   "c3": 821,
+   "note": ""
+  },
+  {
+   "name": "gb_hs の数",
+   "ok": true,
+   "mine": 702,
+   "c3": 702,
+   "note": ""
+  },
+  {
+   "name": "gb_main の全部の数",
+   "ok": true,
+   "mine": 3392,
+   "c3": 3392,
+   "note": ""
+  },
+  {
+   "name": "集合 stand のフレームが C3 と同じ",
+   "ok": true,
+   "mine": {
+    "only_mine": 0
+   },
+   "c3": {
+    "only_c3": 0
+   },
+   "note": ""
+  },
+  {
+   "name": "集合 gb_de のフレームが C3 と同じ",
+   "ok": true,
+   "mine": {
+    "only_mine": 0
+   },
+   "c3": {
+    "only_c3": 0
+   },
+   "note": ""
+  },
+  {
+   "name": "集合 gb_sw のフレームが C3 と同じ",
+   "ok": true,
+   "mine": {
+    "only_mine": 0
+   },
+   "c3": {
+    "only_c3": 0
+   },
+   "note": ""
+  },
+  {
+   "name": "集合 gb_hs のフレームが C3 と同じ",
+   "ok": true,
+   "mine": {
+    "only_mine": 0
+   },
+   "c3": {
+    "only_c3": 0
+   },
+   "note": ""
+  },
+  {
+   "name": "集合 gb_all のフレームが C3 と同じ",
+   "ok": true,
+   "mine": {
+    "only_mine": 0
+   },
+   "c3": {
+    "only_c3": 0
+   },
+   "note": ""
+  },
+  {
+   "name": "H1 = 4,670 フレーム",
+   "ok": true,
+   "mine": 4670,
+   "c3": 4670,
+   "note": ""
+  },
+  {
+   "name": "H1 の正解 = aligned の future_actions(読み直し)",
+   "ok": true,
+   "mine": 0.0,
+   "c3": null,
+   "note": ""
+  },
+  {
+   "name": "H1 の eRPM = aligned の vehicle[:,3]",
+   "ok": true,
+   "mine": 0.0,
+   "c3": null,
+   "note": ""
+  },
+  {
+   "name": "低速のブレーキ: H1 の低速 = 222",
+   "ok": true,
+   "mine": 222,
+   "c3": 222,
+   "note": ""
+  },
+  {
+   "name": "10/10 の AI 走行 = 21,759 フレーム",
+   "ok": true,
+   "mine": 21759,
+   "c3": 21759,
+   "note": ""
+  },
+  {
+   "name": "低速のブレーキ: 10/10 の低速 = 2,326",
+   "ok": true,
+   "mine": 2326,
+   "c3": 2326,
+   "note": ""
+  }
+ ],
+ "sets_diag": {
+  "stand_near_aligned_vs_label_mismatch": 0,
+  "gb_excluded_by_vehicle_valid": 0,
+  "stand_excluded_by_vehicle_valid": 3,
+  "stand_with_aligned_erpm": 1619,
+  "stand_pre_tof_label_rows_in_aligned": 1619,
+  "stand_label_rows_in_aligned_spans": 1622,
+  "logs_without_aligned": [
+   "20261023-203740",
+   "20261023-204403"
+  ],
+  "stand_label_rows_ondisk": 1622,
+  "stand_label_rows_any": 1624,
+  "stand_xfree_min": 1.0083399479793285
+ },
+ "sets_counts": {
+  "stand": 1115,
+  "stand_pre_tof": 1619,
+  "gb_de": 403,
+  "gb_sw": 821,
+  "gb_hs": 702,
+  "gb_all": 3392
+ },
+ "fields": {
+  "clean_driving_20261011-nocmd-s3-20261011-024626": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.19641255605381167,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    21,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.008241758241758242,
+   "brake_ref_own_neutral_plus_100": 0.00902668759811617
+  },
+  "bench_20261021-ens-p2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.17040358744394618
+  },
+  "bfast_20261025-e15-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.26905829596412556,
+   "gb_genre_all_5": true,
+   "bfast_gb_fwd_vs_b_us": -6.6716523769612355,
+   "bfast_gb_fwd_vs_b_us_de": -12.189525488765893,
+   "bfast_gb_fwd_vs_b_us_sw": -6.509777683346344,
+   "bfast_gb_fwd_vs_b_us_hs": -3.6932994701244137,
+   "ref_gb_own_neutral_us": -2.671652376961237,
+   "ref_gb_mean_of_three_us": -7.464200880745551,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.6408056789992155,
+   "robust_per_shift": {
+    "img_up3": 0.833663009872275,
+    "img_down3": 1.6784983541419223,
+    "bright_0.8": 0.16415275361349302,
+    "bright_1.2": 0.013939360592040373,
+    "tof_down1": 1.7735463209785252,
+    "top_0.85": 0.01781124989021521,
+    "top_1.15": 0.004028703906037379
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    127,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.049843014128728415,
+   "brake_ref_own_neutral_plus_100": 0.04709576138147567
+  },
+  "bfast_20261025-e15-s1": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.3399103139013453,
+   "gb_genre_all_5": true,
+   "bfast_gb_fwd_vs_b_us": -6.283555322569854,
+   "bfast_gb_fwd_vs_b_us_de": -10.409804669325759,
+   "bfast_gb_fwd_vs_b_us_sw": -6.792178638379271,
+   "bfast_gb_fwd_vs_b_us_hs": -3.3199396117120727,
+   "ref_gb_own_neutral_us": -2.2835553225698533,
+   "ref_gb_mean_of_three_us": -6.840640973139034,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.6969009194034176,
+   "robust_per_shift": {
+    "img_up3": 0.8987287252618046,
+    "img_down3": 1.9047476124406089,
+    "bright_0.8": 0.14406075651180572,
+    "bright_1.2": 0.10876788709096985,
+    "tof_down1": 1.78163751638931,
+    "top_0.85": 0.01469395704901899,
+    "top_1.15": 0.02566998108040508
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    117,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.04591836734693878,
+   "brake_ref_own_neutral_plus_100": 0.04317111459968603
+  },
+  "bfast_20261025-e15-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.35874439461883406,
+   "gb_genre_all_5": true,
+   "bfast_gb_fwd_vs_b_us": -5.9325877220336025,
+   "bfast_gb_fwd_vs_b_us_de": -10.833972349711145,
+   "bfast_gb_fwd_vs_b_us_sw": -5.880610877907093,
+   "bfast_gb_fwd_vs_b_us_hs": -3.179617613876644,
+   "ref_gb_own_neutral_us": -1.9325877220336025,
+   "ref_gb_mean_of_three_us": -6.631400280498294,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.6588692055437063,
+   "robust_per_shift": {
+    "img_up3": 0.8656456630796683,
+    "img_down3": 1.686548093350595,
+    "bright_0.8": 0.09425596314783746,
+    "bright_1.2": 0.0730692005361746,
+    "tof_down1": 1.8762940100071575,
+    "top_0.85": 0.007305021428962277,
+    "top_1.15": 0.008966487255548827
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    105,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.04120879120879121,
+   "brake_ref_own_neutral_plus_100": 0.03728414442700157
+  },
+  "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.21973094170403587
+  },
+  "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.15067264573991032
+  },
+  "realacc_20261015-v0-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.18475336322869956
+  },
+  "realacc_20261015-v0-s3": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.2430493273542601
+  },
+  "v2_20261025-v2h-aug2-e60-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.15874439461883408,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.1955293445231224,
+   "robust_per_shift": {
+    "img_up3": 0.06524564297857438,
+    "img_down3": 0.2369932925369298,
+    "bright_0.8": -0.045940634749946696,
+    "bright_1.2": 0.1469113035018239,
+    "tof_down1": 0.9387348529562445,
+    "top_0.85": 0.027415422525344013,
+    "top_1.15": -0.0006544680871130026
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    539,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.21153846153846154,
+   "brake_ref_own_neutral_plus_100": 0.20957613814756673
+  },
+  "v2_20261025-v2h-aug2-e60-s1": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.16143497757847533,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.2991164221053282,
+   "robust_per_shift": {
+    "img_up3": -0.05385033160256114,
+    "img_down3": 0.008270881211736025,
+    "bright_0.8": 0.08834508009590536,
+    "bright_1.2": -0.024811015813199333,
+    "tof_down1": 2.070347214888713,
+    "top_0.85": 0.009229981383626296,
+    "top_1.15": -0.003716855426922905
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    447,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.17543171114599687,
+   "brake_ref_own_neutral_plus_100": 0.16875981161695447
+  },
+  "v2_20261025-v2h-aug2-e60-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.13901345291479822,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.26245819782620167,
+   "robust_per_shift": {
+    "img_up3": 0.20293988246223194,
+    "img_down3": 0.03667568950122302,
+    "bright_0.8": 0.10012060063299089,
+    "bright_1.2": 0.09018262385301057,
+    "tof_down1": 1.3985961371673028,
+    "top_0.85": -0.0036647762323056554,
+    "top_1.15": 0.01235722739895806
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    215,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.08437990580847723,
+   "brake_ref_own_neutral_plus_100": 0.08241758241758242
+  },
+  "v2_20261025-v2h-aug2-e60-s3": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.19103139013452916,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.22497188835342286,
+   "robust_per_shift": {
+    "img_up3": -0.0954389911137028,
+    "img_down3": -0.005175853786425932,
+    "bright_0.8": 0.0026796616221389513,
+    "bright_1.2": 0.14558914347940544,
+    "tof_down1": 1.5171156771739476,
+    "top_0.85": 0.0010272210262058934,
+    "top_1.15": 0.009006360072390862
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    153,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.060047095761381473,
+   "brake_ref_own_neutral_plus_100": 0.057692307692307696
+  },
+  "v2_20261025-v2h-e100-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.11928251121076233,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.743523988627481,
+   "robust_per_shift": {
+    "img_up3": 0.9443480733017822,
+    "img_down3": 2.5395419206966423,
+    "bright_0.8": 0.600050823203496,
+    "bright_1.2": 0.16310402913062916,
+    "tof_down1": 0.8625446824394416,
+    "top_0.85": -0.029211167656129078,
+    "top_1.15": 0.1242895592765052
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    159,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.06240188383045526,
+   "brake_ref_own_neutral_plus_100": 0.05886970172684458
+  },
+  "v2_20261025-v2h-e30-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.12825112107623318,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.6735248821231689,
+   "robust_per_shift": {
+    "img_up3": 0.6424203765673084,
+    "img_down3": 2.93174996876359,
+    "bright_0.8": 0.45147461721677473,
+    "bright_1.2": 0.14104446378458846,
+    "tof_down1": 0.5069648000974425,
+    "top_0.85": 0.06252101661306142,
+    "top_1.15": -0.021501068180583616
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    179,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.07025117739403454,
+   "brake_ref_own_neutral_plus_100": 0.06750392464678179
+  },
+  "v2_20261025-v2h-e30-s1": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.16502242152466368,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.7037914863556044,
+   "robust_per_shift": {
+    "img_up3": 0.7625337150622684,
+    "img_down3": 2.5349958471261402,
+    "bright_0.8": 0.49292391268548386,
+    "bright_1.2": 0.3087795628418988,
+    "tof_down1": 0.7975394951046368,
+    "top_0.85": 0.030338222985598406,
+    "top_1.15": -0.0005703513167958363
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    49,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.019230769230769232,
+   "brake_ref_own_neutral_plus_100": 0.018445839874411302
+  },
+  "v2_20261025-v2h-e30-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.15515695067264573,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    175,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.06868131868131869,
+   "brake_ref_own_neutral_plus_100": 0.06436420722135008
+  },
+  "v2_20261025-v2h-e30-s3": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.1452914798206278,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    139,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.054552590266875985,
+   "brake_ref_own_neutral_plus_100": 0.045133437990580845
+  },
+  "v2_20261025-v2h-e60-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.13452914798206278,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.45241863373260166,
+   "robust_per_shift": {
+    "img_up3": 0.38227438818464066,
+    "img_down3": 2.126876044263163,
+    "bright_0.8": 0.33770165388283147,
+    "bright_1.2": -0.02605363800898175,
+    "tof_down1": 0.3532345528776162,
+    "top_0.85": 0.050382536861576455,
+    "top_1.15": -0.057485101932634564
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    114,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.044740973312401885,
+   "brake_ref_own_neutral_plus_100": 0.04356357927786499
+  },
+  "v2_20261025-v2h-e60-s1": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.14349775784753363,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.6260714650730311,
+   "robust_per_shift": {
+    "img_up3": 0.9045599652766185,
+    "img_down3": 2.6339426841980895,
+    "bright_0.8": 0.14007177316147335,
+    "bright_1.2": 0.12555620671339796,
+    "tof_down1": 0.5609217360698722,
+    "top_0.85": 0.013762226635691377,
+    "top_1.15": 0.0036856634560749058
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    297,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.11656200941915228,
+   "brake_ref_own_neutral_plus_100": 0.1130298273155416
+  },
+  "v2_20261025-v2h-e60-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.16143497757847533,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.7859221839846425,
+   "robust_per_shift": {
+    "img_up3": 1.2297402379037976,
+    "img_down3": 3.814664294224478,
+    "bright_0.8": 0.053646893062222034,
+    "bright_1.2": 0.12072542962476263,
+    "tof_down1": 0.2750868378665743,
+    "top_0.85": -0.057372410384182615,
+    "top_1.15": 0.06496400559484528
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    317,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.12441130298273155,
+   "brake_ref_own_neutral_plus_100": 0.12166405023547881
+  },
+  "v2_20261025-v2h-e60-s3": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.14080717488789238,
+   "robust_rows_same": true,
+   "robust_dl1_us": 0.5664316579142488,
+   "robust_per_shift": {
+    "img_up3": 0.722509895667784,
+    "img_down3": 2.3263125211727953,
+    "bright_0.8": 0.012374586477015725,
+    "bright_1.2": 0.16414779434367688,
+    "tof_down1": 0.7490168843892206,
+    "top_0.85": 0.02418971386404678,
+    "top_1.15": -0.03352979051479821
+   },
+   "robust_none_rows_vs_saved_max_abs_us": 0.0,
+   "robust_best_sha_same": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    91,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.03571428571428571,
+   "brake_ref_own_neutral_plus_100": 0.034929356357927786
+  },
+  "v2_20261025-v2m-e30-s0": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.14260089686098654,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    213,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.08359497645211932,
+   "brake_ref_own_neutral_plus_100": 0.07967032967032966
+  },
+  "v2_20261025-v2m-e30-s1": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.16591928251121077,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    117,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.04591836734693878,
+   "brake_ref_own_neutral_plus_100": 0.04356357927786499
+  },
+  "v2_20261025-v2m-e30-s2": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.16860986547085202,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    88,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.03453689167974882,
+   "brake_ref_own_neutral_plus_100": 0.03296703296703297
+  },
+  "v2_20261025-v2m-e30-s3": {
+   "stand_genre_all_5": true,
+   "standstill_go_frac": 0.14887892376681613,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    155,
+    2326
+   ],
+   "brake_trt_erpm_order_same": true,
+   "brake_pred_eq_model_pred": true,
+   "brake_lowspeed_frac": 0.060832025117739406,
+   "brake_ref_own_neutral_plus_100": 0.05690737833594976
+  }
+ },
+ "compare": {
+  "clean_driving_20261011-nocmd-s3-20261011-024626": {
+   "standstill_go_frac": {
+    "mine": 0.19641255605381167,
+    "c3": 0.19641,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.008241758241758242,
+    "c3": 0.00824,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      21,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      21,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "bench_20261021-ens-p2": {
+   "standstill_go_frac": {
+    "mine": 0.17040358744394618,
+    "c3": 0.1704,
+    "ok": true
+   }
+  },
+  "bfast_20261025-e15-s0": {
+   "standstill_go_frac": {
+    "mine": 0.26905829596412556,
+    "c3": 0.26906,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us": {
+    "mine": -6.6716523769612355,
+    "c3": -6.67165,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_de": {
+    "mine": -12.189525488765893,
+    "c3": -12.18953,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_sw": {
+    "mine": -6.509777683346344,
+    "c3": -6.50978,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_hs": {
+    "mine": -3.6932994701244137,
+    "c3": -3.6933,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.6408056789992155,
+    "c3": 0.64081,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.049843014128728415,
+    "c3": 0.04984,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      127,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      127,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "bfast_20261025-e15-s1": {
+   "standstill_go_frac": {
+    "mine": 0.3399103139013453,
+    "c3": 0.33991,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us": {
+    "mine": -6.283555322569854,
+    "c3": -6.28356,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_de": {
+    "mine": -10.409804669325759,
+    "c3": -10.4098,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_sw": {
+    "mine": -6.792178638379271,
+    "c3": -6.79218,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_hs": {
+    "mine": -3.3199396117120727,
+    "c3": -3.31994,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.6969009194034176,
+    "c3": 0.6969,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.04591836734693878,
+    "c3": 0.04592,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      117,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      117,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "bfast_20261025-e15-s2": {
+   "standstill_go_frac": {
+    "mine": 0.35874439461883406,
+    "c3": 0.35874,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us": {
+    "mine": -5.9325877220336025,
+    "c3": -5.93259,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_de": {
+    "mine": -10.833972349711145,
+    "c3": -10.83397,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_sw": {
+    "mine": -5.880610877907093,
+    "c3": -5.88061,
+    "ok": true
+   },
+   "bfast_gb_fwd_vs_b_us_hs": {
+    "mine": -3.179617613876644,
+    "c3": -3.17962,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.6588692055437063,
+    "c3": 0.65887,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.04120879120879121,
+    "c3": 0.04121,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      105,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      105,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30": {
+   "standstill_go_frac": {
+    "mine": 0.21973094170403587,
+    "c3": 0.21973,
+    "ok": true
+   }
+  },
+  "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30": {
+   "standstill_go_frac": {
+    "mine": 0.15067264573991032,
+    "c3": 0.15067,
+    "ok": true
+   }
+  },
+  "realacc_20261015-v0-s2": {
+   "standstill_go_frac": {
+    "mine": 0.18475336322869956,
+    "c3": 0.18475,
+    "ok": true
+   }
+  },
+  "realacc_20261015-v0-s3": {
+   "standstill_go_frac": {
+    "mine": 0.2430493273542601,
+    "c3": 0.24305,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s0": {
+   "standstill_go_frac": {
+    "mine": 0.15874439461883408,
+    "c3": 0.15874,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.1955293445231224,
+    "c3": 0.19553,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.21153846153846154,
+    "c3": 0.21154,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      539,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      539,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s1": {
+   "standstill_go_frac": {
+    "mine": 0.16143497757847533,
+    "c3": 0.16143,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.2991164221053282,
+    "c3": 0.29912,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.17543171114599687,
+    "c3": 0.17543,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      447,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      447,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s2": {
+   "standstill_go_frac": {
+    "mine": 0.13901345291479822,
+    "c3": 0.13901,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.26245819782620167,
+    "c3": 0.26246,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.08437990580847723,
+    "c3": 0.08438,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      215,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      215,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s3": {
+   "standstill_go_frac": {
+    "mine": 0.19103139013452916,
+    "c3": 0.19103,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.22497188835342286,
+    "c3": 0.22497,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.060047095761381473,
+    "c3": 0.06005,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      153,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      153,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e100-s0": {
+   "standstill_go_frac": {
+    "mine": 0.11928251121076233,
+    "c3": 0.11928,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.743523988627481,
+    "c3": 0.74352,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.06240188383045526,
+    "c3": 0.0624,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      159,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      159,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e30-s0": {
+   "standstill_go_frac": {
+    "mine": 0.12825112107623318,
+    "c3": 0.12825,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.6735248821231689,
+    "c3": 0.67352,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.07025117739403454,
+    "c3": 0.07025,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      179,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      179,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e30-s1": {
+   "standstill_go_frac": {
+    "mine": 0.16502242152466368,
+    "c3": 0.16502,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.7037914863556044,
+    "c3": 0.70379,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.019230769230769232,
+    "c3": 0.01923,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      49,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      49,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e30-s2": {
+   "standstill_go_frac": {
+    "mine": 0.15515695067264573,
+    "c3": 0.15516,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.06868131868131869,
+    "c3": 0.06868,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      175,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      175,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e30-s3": {
+   "standstill_go_frac": {
+    "mine": 0.1452914798206278,
+    "c3": 0.14529,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.054552590266875985,
+    "c3": 0.05455,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      139,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      139,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e60-s0": {
+   "standstill_go_frac": {
+    "mine": 0.13452914798206278,
+    "c3": 0.13453,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.45241863373260166,
+    "c3": 0.45242,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.044740973312401885,
+    "c3": 0.04474,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      114,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      114,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e60-s1": {
+   "standstill_go_frac": {
+    "mine": 0.14349775784753363,
+    "c3": 0.1435,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.6260714650730311,
+    "c3": 0.62607,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.11656200941915228,
+    "c3": 0.11656,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      297,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      297,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e60-s2": {
+   "standstill_go_frac": {
+    "mine": 0.16143497757847533,
+    "c3": 0.16143,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.7859221839846425,
+    "c3": 0.78592,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.12441130298273155,
+    "c3": 0.12441,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      317,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      317,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2h-e60-s3": {
+   "standstill_go_frac": {
+    "mine": 0.14080717488789238,
+    "c3": 0.14081,
+    "ok": true
+   },
+   "robust_dl1_us": {
+    "mine": 0.5664316579142488,
+    "c3": 0.56643,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.03571428571428571,
+    "c3": 0.03571,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      91,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      91,
+      2326
+     ]
+    ],
+    "ok": true
+   },
+   "robust_per_shift": {
+    "max_abs_diff_4dp": 0.0,
+    "ok": true
+   }
+  },
+  "v2_20261025-v2m-e30-s0": {
+   "standstill_go_frac": {
+    "mine": 0.14260089686098654,
+    "c3": 0.1426,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.08359497645211932,
+    "c3": 0.08359,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      213,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      213,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "v2_20261025-v2m-e30-s1": {
+   "standstill_go_frac": {
+    "mine": 0.16591928251121077,
+    "c3": 0.16592,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.04591836734693878,
+    "c3": 0.04592,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      117,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      117,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "v2_20261025-v2m-e30-s2": {
+   "standstill_go_frac": {
+    "mine": 0.16860986547085202,
+    "c3": 0.16861,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.03453689167974882,
+    "c3": 0.03454,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      88,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      88,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  },
+  "v2_20261025-v2m-e30-s3": {
+   "standstill_go_frac": {
+    "mine": 0.14887892376681613,
+    "c3": 0.14888,
+    "ok": true
+   },
+   "brake_lowspeed_frac": {
+    "mine": 0.060832025117739406,
+    "c3": 0.06083,
+    "ok": true
+   },
+   "brake_counts": {
+    "mine": [
+     [
+      0,
+      222
+     ],
+     [
+      155,
+      2326
+     ]
+    ],
+    "c3": [
+     [
+      0,
+      222
+     ],
+     [
+      155,
+      2326
+     ]
+    ],
+    "ok": true
+   }
+  }
+ },
+ "gates_mine": {
+  "clean_driving_20261011-nocmd-s3-20261011-024626": {
+   "mine": {
+    "brake": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "bench_20261021-ens-p2": {
+   "mine": {
+    "standstill_or_G-d": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "bfast_20261025-e15-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false,
+    "G-b": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true,
+    "G-b": true
+   }
+  },
+  "bfast_20261025-e15-s1": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false,
+    "G-b": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true,
+    "G-b": true
+   }
+  },
+  "bfast_20261025-e15-s2": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false,
+    "G-b": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true,
+    "G-b": true
+   }
+  },
+  "clean_driving_20261011-jetformer_v0-s0-nocmd-stride3-e30": {
+   "mine": {
+    "standstill_or_G-d": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "clean_driving_20261011-jetformer_v0-s1-nocmd-stride3-e30": {
+   "mine": {
+    "standstill_or_G-d": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "realacc_20261015-v0-s2": {
+   "mine": {
+    "standstill_or_G-d": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "realacc_20261015-v0-s3": {
+   "mine": {
+    "standstill_or_G-d": true
+   },
+   "same_as_desk_gates": {}
+  },
+  "v2_20261025-v2h-aug2-e60-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s1": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s2": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-aug2-e60-s3": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e100-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e30-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e30-s1": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e30-s2": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e30-s3": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e60-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e60-s1": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e60-s2": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2h-e60-s3": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2m-e30-s0": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2m-e30-s1": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2m-e30-s2": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  },
+  "v2_20261025-v2m-e30-s3": {
+   "mine": {
+    "standstill_or_G-d": true,
+    "brake": false
+   },
+   "same_as_desk_gates": {
+    "standstill_or_G-d": true,
+    "brake": true
+   }
+  }
+ },
+ "compare_ng": 0,
+ "seconds": 49.7
+}

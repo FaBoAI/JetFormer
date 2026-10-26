@@ -1,0 +1,29 @@
+04:44:14 OK deviations7: top_ramp = 一番上 1・上 1/3 の境で 0 の直線  mine={'w0': 1.0, 'w37': 0.5045, 'w74': 0.0089, 'w75': 0.0} c3=None 
+04:44:14 集合を作ります(46 本)
+04:44:24 数 {'stand': 1115, 'stand_pre_tof': 1619, 'gb_de': 403, 'gb_sw': 821, 'gb_hs': 702, 'gb_all': 3392} {'stand_near_aligned_vs_label_mismatch': 0, 'gb_excluded_by_vehicle_valid': 0, 'stand_excluded_by_vehicle_valid': 3, 'stand_with_aligned_erpm': 1619, 'stand_pre_tof_label_rows_in_aligned': 1619, 'stand_label_rows_in_aligned_spans': 1622, 'logs_without_aligned': ['20261023-203740', '20261023-204403'], 'stand_label_rows_ondisk': 1622, 'stand_label_rows_any': 1624, 'stand_xfree_min': 1.0083399479793285}
+04:44:24 OK 止まった場面のラベルの行(ToF の前) = protocol の上限 1,622  mine=1622 c3=1622 
+04:44:24 OK 止まった場面の aligned(ToF の前)  mine=1619 c3=1619 
+04:44:24 OK 止まった場面(ToF の後)= desk の standstill_frames  mine=1115 c3=1115 
+04:44:24 OK 止まった場面 ≥ 300 → 門  mine=門 c3=門 
+04:44:24 OK gb_de の数  mine=403 c3=403 
+04:44:24 OK gb_sw の数  mine=821 c3=821 
+04:44:24 OK gb_hs の数  mine=702 c3=702 
+04:44:24 OK gb_main の全部の数  mine=3392 c3=3392 
+04:44:24 OK 集合 stand のフレームが C3 と同じ  mine={'only_mine': 0} c3={'only_c3': 0} 
+04:44:24 OK 集合 gb_de のフレームが C3 と同じ  mine={'only_mine': 0} c3={'only_c3': 0} 
+04:44:24 OK 集合 gb_sw のフレームが C3 と同じ  mine={'only_mine': 0} c3={'only_c3': 0} 
+04:44:24 OK 集合 gb_hs のフレームが C3 と同じ  mine={'only_mine': 0} c3={'only_c3': 0} 
+04:44:24 OK 集合 gb_all のフレームが C3 と同じ  mine={'only_mine': 0} c3={'only_c3': 0} 
+04:44:24 H1 を読みます
+04:44:24 OK H1 = 4,670 フレーム  mine=4670 c3=4670 
+04:44:24 OK H1 の正解 = aligned の future_actions(読み直し)  mine=0.0 c3=None 
+04:44:24 OK H1 の eRPM = aligned の vehicle[:,3]  mine=0.0 c3=None 
+04:44:24 OK 低速のブレーキ: H1 の低速 = 222  mine=222 c3=222 
+04:44:24 10/10 の AI 走行のフレームを読みます
+04:44:38 OK 10/10 の AI 走行 = 21,759 フレーム  mine=21759 c3=21759 
+04:44:38 OK 低速のブレーキ: 10/10 の低速 = 2,326  mine=2326 c3=2326 
+04:44:54 clean_driving_20261011-nocmd-s3-20261011-024626 {"standstill_go_frac": 0.19641255605381167, "brake_lowspeed_frac": 0.008241758241758242, "brake_counts": [[0, 222], [21, 2326]]}
+04:44:54 v2_20261025-v2h-e60-s0 {"standstill_go_frac": 0.13452914798206278, "robust_dl1_us": 0.45241863373260166, "brake_lowspeed_frac": 0.044740973312401885, "brake_counts": [[0, 222], [114, 2326]], "robust_per_shift": {"max_abs_diff_4dp": 0.0, "ok": true}}
+04:44:54 v2_20261025-v2h-e60-s1 {"standstill_go_frac": 0.14349775784753363, "robust_dl1_us": 0.6260714650730311, "brake_lowspeed_frac": 0.11656200941915228, "brake_counts": [[0, 222], [297, 2326]], "robust_per_shift": {"max_abs_diff_4dp": 0.0, "ok": true}}
+04:44:54 bfast_20261025-e15-s0 {"standstill_go_frac": 0.26905829596412556, "bfast_gb_fwd_vs_b_us": -6.6716523769612355, "bfast_gb_fwd_vs_b_us_de": -12.189525488765893, "bfast_gb_fwd_vs_b_us_sw": -6.509777683346344, "bfast_gb_fwd_vs_b_us_hs": -3.6932994701244137, "robust_dl1_us": 0.6408056789992155, "brake_lowspeed_frac": 0.049843014128728415, "brake_counts": [[0, 222], [127, 2326]], "robust_per_shift": {"max_abs_diff_4dp": 0.0, "ok": true}}
+04:44:54 書きました /home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/recount_cpu.json 照らしの NG 0 確かめの NG 0

@@ -1,0 +1,545 @@
+{
+ "lap_equiv": {
+  "1": 16.6,
+  "2": 25.1,
+  "3": 49.1
+ },
+ "ai_s": {
+  "1": 162.7,
+  "2": 241.8,
+  "3": 490.1
+ },
+ "by_loc_detail": {
+  "1": {
+   "R1": 0,
+   "GM": 0,
+   "DE": 2,
+   "SW": 0,
+   "HS": 0,
+   "LH": 0
+  },
+  "2": {
+   "R1": 5,
+   "GM": 0,
+   "DE": 8,
+   "SW": 9,
+   "HS": 3,
+   "LH": 3
+  },
+  "3": {
+   "R1": 4,
+   "GM": 1,
+   "DE": 25,
+   "SW": 1,
+   "HS": 3,
+   "LH": 0
+  }
+ },
+ "by_place": {
+  "1": {
+   "R1": 0,
+   "GM": 0,
+   "DE": 2,
+   "SWO": 0,
+   "SWX": 0,
+   "HS": 0,
+   "LH": 0
+  },
+  "2": {
+   "R1": 2,
+   "GM": 0,
+   "DE": 8,
+   "SWO": 6,
+   "SWX": 9,
+   "HS": 0,
+   "LH": 3
+  },
+  "3": {
+   "R1": 4,
+   "GM": 1,
+   "DE": 25,
+   "SWO": 1,
+   "SWX": 0,
+   "HS": 3,
+   "LH": 0
+  }
+ },
+ "strong_by_place": {
+  "1": {
+   "R1": 0,
+   "GM": 0,
+   "DE": 1,
+   "SWO": 0,
+   "SWX": 0,
+   "HS": 0,
+   "LH": 0
+  },
+  "2": {
+   "R1": 0,
+   "GM": 0,
+   "DE": 7,
+   "SWO": 4,
+   "SWX": 9,
+   "HS": 0,
+   "LH": 2
+  },
+  "3": {
+   "R1": 1,
+   "GM": 0,
+   "DE": 17,
+   "SWO": 0,
+   "SWX": 0,
+   "HS": 2,
+   "LH": 0
+  }
+ },
+ "restart_events": [
+  [
+   "4",
+   "R1",
+   49.92
+  ],
+  [
+   "4",
+   "GM",
+   51.974
+  ]
+ ],
+ "pre_collision": [
+  {
+   "place": "R1",
+   "n": 6,
+   "strong": 1,
+   "sessions": {
+    "1": 0,
+    "2": 2,
+    "3": 4
+   },
+   "v_before": "2.60(2.31〜3.04)",
+   "v_max_1p5": "3.40(2.60〜3.54)",
+   "steer_last": "-431(-441〜-222)",
+   "steer_min": "-441(-441〜-434)",
+   "steer_max": "-186(-304〜-65)",
+   "thr_mean": "145(134〜149)",
+   "thr_raw": "155(149〜164)",
+   "g": "2.8(2.6〜4.1)",
+   "side": {
+    "front": 1,
+    "right": 0,
+    "left": 5
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "GM",
+   "n": 1,
+   "strong": 0,
+   "sessions": {
+    "1": 0,
+    "2": 0,
+    "3": 1
+   },
+   "v_before": "2.67(2.67〜2.67)",
+   "v_max_1p5": "3.20(3.20〜3.20)",
+   "steer_last": "383(383〜383)",
+   "steer_min": "383(383〜383)",
+   "steer_max": "440(440〜440)",
+   "thr_mean": "194(194〜194)",
+   "thr_raw": "194(194〜194)",
+   "g": "2.7(2.7〜2.7)",
+   "side": {
+    "front": 0,
+    "right": 1,
+    "left": 0
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "DE",
+   "n": 35,
+   "strong": 25,
+   "sessions": {
+    "1": 2,
+    "2": 8,
+    "3": 25
+   },
+   "v_before": "2.89(2.35〜3.58)",
+   "v_max_1p5": "3.17(2.44〜3.85)",
+   "steer_last": "69(16〜215)",
+   "steer_min": "-31(-174〜54)",
+   "steer_max": "105(16〜215)",
+   "thr_mean": "190(139〜242)",
+   "thr_raw": "205(139〜242)",
+   "g": "7.2(2.5〜11.3)",
+   "side": {
+    "front": 26,
+    "right": 9,
+    "left": 0
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "SWO",
+   "n": 7,
+   "strong": 4,
+   "sessions": {
+    "1": 0,
+    "2": 6,
+    "3": 1
+   },
+   "v_before": "4.11(2.67〜5.36)",
+   "v_max_1p5": "4.23(3.52〜5.60)",
+   "steer_last": "148(-88〜224)",
+   "steer_min": "46(-245〜135)",
+   "steer_max": "191(0〜257)",
+   "thr_mean": "249(153〜267)",
+   "thr_raw": "226(184〜267)",
+   "g": "5.0(2.6〜10.3)",
+   "side": {
+    "front": 2,
+    "right": 3,
+    "left": 2
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "SWX",
+   "n": 9,
+   "strong": 9,
+   "sessions": {
+    "1": 0,
+    "2": 9,
+    "3": 0
+   },
+   "v_before": "4.39(3.57〜4.88)",
+   "v_max_1p5": "4.73(3.88〜5.31)",
+   "steer_last": "198(56〜281)",
+   "steer_min": "81(0〜152)",
+   "steer_max": "243(112〜288)",
+   "thr_mean": "264(209〜316)",
+   "thr_raw": "278(232〜307)",
+   "g": "8.4(4.8〜10.6)",
+   "side": {
+    "front": 6,
+    "right": 3,
+    "left": 0
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "HS",
+   "n": 3,
+   "strong": 2,
+   "sessions": {
+    "1": 0,
+    "2": 0,
+    "3": 3
+   },
+   "v_before": "3.05(3.01〜3.13)",
+   "v_max_1p5": "3.10(3.08〜3.21)",
+   "steer_last": "103(53〜230)",
+   "steer_min": "-19(-24〜-3)",
+   "steer_max": "107(62〜230)",
+   "thr_mean": "150(144〜160)",
+   "thr_raw": "167(160〜178)",
+   "g": "5.7(2.6〜9.3)",
+   "side": {
+    "front": 3,
+    "right": 0,
+    "left": 0
+   },
+   "model_vs_out_max_us": 0
+  },
+  {
+   "place": "LH",
+   "n": 3,
+   "strong": 2,
+   "sessions": {
+    "1": 0,
+    "2": 3,
+    "3": 0
+   },
+   "v_before": "3.42(3.00〜4.06)",
+   "v_max_1p5": "5.75(5.26〜5.75)",
+   "steer_last": "254(151〜414)",
+   "steer_min": "254(19〜375)",
+   "steer_max": "419(260〜447)",
+   "thr_mean": "33(6〜151)",
+   "thr_raw": "30(6〜137)",
+   "g": "6.3(2.5〜9.1)",
+   "side": {
+    "front": 1,
+    "right": 2,
+    "left": 0
+   },
+   "model_vs_out_max_us": 0
+  }
+ ],
+ "de_pass_hits": {
+  "1": [
+   1,
+   15
+  ],
+  "2": [
+   11,
+   26
+  ],
+  "3": [
+   23,
+   50
+  ]
+ },
+ "de_hit_rel_s": "0.80(0.27〜1.93)",
+ "de_groups": {
+  "all_ok": {
+   "n": 56,
+   "hits": 0,
+   "steer_med_at": {
+    "0.0": -31.0,
+    "0.2": -22.0,
+    "0.4": 8.0,
+    "0.5": 27.0,
+    "0.6": 52.0,
+    "0.7": 56.0
+   },
+   "overshoot_med": "-66(-300〜27)",
+   "late_left_med": "105(2〜387)",
+   "entry_v": "2.33(1.52〜3.08)",
+   "vmax": "3.12(2.03〜4.22)",
+   "track_y_0p5_m": "-3.70(-4.19〜-2.44)"
+  },
+  "all_hit": {
+   "n": 35,
+   "hits": 35,
+   "steer_med_at": {
+    "0.0": -32.0,
+    "0.2": -29.0,
+    "0.4": 9.0,
+    "0.5": 38.0,
+    "0.6": 66.0,
+    "0.7": 75.0
+   },
+   "overshoot_med": "-47(-226〜6)",
+   "late_left_med": "105(29〜215)",
+   "entry_v": "2.39(1.84〜3.28)",
+   "vmax": "3.11(2.44〜5.30)",
+   "track_y_0p5_m": "-3.79(-4.42〜-2.77)"
+  },
+  "no9": {
+   "n": 12,
+   "hits": 1,
+   "steer_med_at": {
+    "0.0": -111.0,
+    "0.2": -91.0,
+    "0.4": -52.0,
+    "0.5": -22.0,
+    "0.6": -22.0,
+    "0.7": -6.0
+   },
+   "overshoot_med": "-131(-300〜-68)",
+   "late_left_med": "49(2〜115)",
+   "entry_v": "2.27(1.52〜2.64)",
+   "vmax": "3.25(2.53〜3.65)",
+   "track_y_0p5_m": "-3.31(-3.90〜-2.44)"
+  },
+  "s3_b090": {
+   "n": 19,
+   "hits": 11,
+   "steer_med_at": {
+    "0.0": -25.0,
+    "0.2": -20.0,
+    "0.4": 6.0,
+    "0.5": 38.0,
+    "0.6": 60.0,
+    "0.7": 75.0
+   },
+   "overshoot_med": "-47(-93〜6)",
+   "late_left_med": "104(49〜207)",
+   "entry_v": "2.39(1.88〜2.60)",
+   "vmax": "3.14(2.55〜3.37)",
+   "track_y_0p5_m": "-3.85(-4.19〜-3.21)"
+  }
+ },
+ "swx_by_speed": {
+  "3.5 m/s 未満": [
+   0,
+   47
+  ],
+  "3.5〜4.0": [
+   2,
+   34
+  ],
+  "4.0〜4.5": [
+   2,
+   11
+  ],
+  "4.5 m/s 以上": [
+   4,
+   6
+  ]
+ },
+ "swx_matched": "8/9",
+ "sw_vmax_by_session": {
+  "1": "3.42(3.02〜4.07)",
+  "2": "4.06(3.53〜5.31)",
+  "3": "3.38(2.47〜4.10)"
+ },
+ "sw_vmax_p90_by_session": {
+  "1": 3.74,
+  "2": 4.71,
+  "3": 3.71
+ },
+ "steer_offset": {
+  "10/23 公式": {
+   "median": 10.1,
+   "runs": [
+    [
+     8,
+     0.8
+    ],
+    [
+     9,
+     20.1
+    ],
+    [
+     10,
+     10.6
+    ],
+    [
+     11,
+     -0.6
+    ],
+    [
+     12,
+     10.8
+    ],
+    [
+     13,
+     9.6
+    ],
+    [
+     14,
+     7.5
+    ],
+    [
+     15,
+     10.8
+    ]
+   ]
+  },
+  "1 回目": {
+   "median": 1.4,
+   "runs": [
+    [
+     1,
+     -0.9
+    ],
+    [
+     2,
+     9.0
+    ],
+    [
+     4,
+     1.4
+    ]
+   ]
+  },
+  "2 回目": {
+   "median": 0.1,
+   "runs": [
+    [
+     6,
+     7.7
+    ],
+    [
+     7,
+     12.4
+    ],
+    [
+     8,
+     0.1
+    ],
+    [
+     9,
+     -17.8
+    ],
+    [
+     10,
+     -12.0
+    ]
+   ]
+  },
+  "3 回目": {
+   "median": 21.9,
+   "runs": [
+    [
+     11,
+     19.2
+    ],
+    [
+     12,
+     26.1
+    ],
+    [
+     13,
+     17.1
+    ],
+    [
+     14,
+     19.7
+    ],
+    [
+     15,
+     35.2
+    ],
+    [
+     16,
+     26.4
+    ],
+    [
+     17,
+     12.8
+    ],
+    [
+     18,
+     24.0
+    ]
+   ]
+  }
+ },
+ "swx_speed_before": "4.4(3.6〜4.9)",
+ "swx_n": 9,
+ "camera": [
+  {
+   "file": "/home/jetson/jetformer_reports/bench_20261024_report/fig/cam_de_hit.png",
+   "source": "/home/jetson/jetformer/data/raw/20261024-183437/20261024-183437-0002/CAM_FRONT/1792834500772871.jpg",
+   "t_s": 23.548,
+   "title": "DE で当たる直前"
+  },
+  {
+   "file": "/home/jetson/jetformer_reports/bench_20261024_report/fig/cam_de_clean.png",
+   "source": "/home/jetson/jetformer/data/raw/20261024-162033/20261024-162033-0003/CAM_FRONT/1792826483880302.jpg",
+   "t_s": 50.861,
+   "title": "当たらなかった通過の同じ場所"
+  },
+  {
+   "file": "/home/jetson/jetformer_reports/bench_20261024_report/fig/cam_sw_exit.png",
+   "source": "/home/jetson/jetformer/data/raw/20261024-162033/20261024-162033-0002/CAM_FRONT/1792826469424593.jpg",
+   "t_s": 36.406,
+   "title": "SW の出口(駐車場の出っ張り)"
+  },
+  {
+   "file": "/home/jetson/jetformer_reports/bench_20261024_report/fig/cam_no9_straight.png",
+   "source": "/home/jetson/jetformer/data/raw/20261024-162033/20261024-162033-0002/CAM_FRONT/1792826462163409.jpg",
+   "t_s": 29.145,
+   "title": "No.9 の 8 秒台の周の直線(HS)"
+  }
+ ],
+ "figures": [
+  "/home/jetson/jetformer_reports/bench_20261024_report/fig/col_f1_by_loc.png",
+  "/home/jetson/jetformer_reports/bench_20261024_report/fig/col_f2_de_steer.png",
+  "/home/jetson/jetformer_reports/bench_20261024_report/fig/col_f3_cam.png",
+  "/home/jetson/jetformer_reports/bench_20261024_report/fig/col_f4_sw_speed.png",
+  "/home/jetson/jetformer_reports/bench_20261024_report/fig/col_f5_steer_offset.png"
+ ]
+}

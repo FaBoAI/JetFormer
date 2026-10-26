@@ -1,0 +1,6787 @@
+{
+ "note": "速さの天井の下見(2026-10-25、spec.md のため)。読むだけ。生の記録・ラベル・設定は変えない。GPU なし。\n\n    /home/jetson/bin/jf-heavy --lock none --mem 1500M -- python3 -I ceiling_shadow.py [出力.json]\n\n1. 「左に曲がっている最中」の決め方の候補(車に出した舵 out − 中央 ≥ S、ジャイロ gz(5 サンプル平均)≥ G、その OR)ごとに、\n   AI のフレーム(AI 側・dry run でない・前へ 0.5 m/s 超)のうち天井(全体 4.5・左旋回中 4.0 m/s)を超えたフレームの割合。\n2. 駐車場の出っ張り 9 件・LH の黒いカーテン 3 件(cam_check.json の SWX・LHC)で、当たる前 2.0 秒の中で天井が最初に\n   掛かる時刻(当たる何秒前か)と、そのときの速さ。\n3. 理想の天井(速さが天井を超えたら、惰性 c0 + こすれ k_s·v²·|κ| で落ち、天井で止まる。モデルの反応は入れない)の\n   縦の仮想の再生で、周ごとの失う時間(10/16 の g1_replay.virtual_laps の簡単な形)。\n速さ v = −eRPM × 0.5e-3(撮像の時刻までの最新 3 サンプルの中央値)。舵 + = 左。\n",
+ "caps": [
+  4.5,
+  4.0
+ ],
+ "hold_s": 0.25,
+ "cands": [
+  "steer>=100",
+  "steer>=60",
+  "steer>=150",
+  "gz>=30",
+  "gz>=45",
+  "gz>=60",
+  "gz>=90",
+  "steer>=100|gz>=45",
+  "steer>=100|gz>=60",
+  "steer>=150|gz>=45",
+  "none(4.5 only)"
+ ],
+ "runs": [
+  {
+   "log": "20261023-210840",
+   "no": "8",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 1652,
+   "v_p90": 3.52,
+   "v_max": 3.87,
+   "steer>=100": {
+    "left_frac": 0.564,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.627,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.465,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.66,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.618,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.583,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.501,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.663,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.646,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.639,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211020",
+   "no": "9",
+   "session": "10/23 公式",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "ai_frames": 912,
+   "v_p90": 3.43,
+   "v_max": 3.95,
+   "steer>=100": {
+    "left_frac": 0.541,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.621,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.461,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.595,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.552,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.504,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.427,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.601,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.582,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.578,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211118",
+   "no": "10",
+   "session": "10/23 公式",
+   "setting": "2本の平均 速さ1.00 ステア1.00",
+   "ai_frames": 829,
+   "v_p90": 4.5,
+   "v_max": 4.86,
+   "steer>=100": {
+    "left_frac": 0.574,
+    "over_frac": 0.2147,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1158
+   },
+   "steer>=60": {
+    "left_frac": 0.627,
+    "over_frac": 0.2183,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1194
+   },
+   "steer>=150": {
+    "left_frac": 0.419,
+    "over_frac": 0.1749,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.076
+   },
+   "gz>=30": {
+    "left_frac": 0.638,
+    "over_frac": 0.2232,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1242
+   },
+   "gz>=45": {
+    "left_frac": 0.613,
+    "over_frac": 0.222,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.123
+   },
+   "gz>=60": {
+    "left_frac": 0.598,
+    "over_frac": 0.2207,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1218
+   },
+   "gz>=90": {
+    "left_frac": 0.501,
+    "over_frac": 0.2002,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1013
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.647,
+    "over_frac": 0.222,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.123
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.638,
+    "over_frac": 0.2207,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.1218
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.626,
+    "over_frac": 0.222,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.123
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0989,
+    "over_all_frac": 0.0989,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211209",
+   "no": "11",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 1120,
+   "v_p90": 3.3,
+   "v_max": 3.6,
+   "steer>=100": {
+    "left_frac": 0.561,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.631,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.391,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.646,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.612,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.556,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.466,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.662,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.632,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.631,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211308",
+   "no": "12",
+   "session": "10/23 公式",
+   "setting": "ずれに強い型 速さ1.00 ステア1.00",
+   "ai_frames": 867,
+   "v_p90": 3.77,
+   "v_max": 4.15,
+   "steer>=100": {
+    "left_frac": 0.572,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "steer>=60": {
+    "left_frac": 0.667,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "steer>=150": {
+    "left_frac": 0.443,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "gz>=30": {
+    "left_frac": 0.675,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "gz>=45": {
+    "left_frac": 0.629,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "gz>=60": {
+    "left_frac": 0.592,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "gz>=90": {
+    "left_frac": 0.471,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.656,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.633,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.64,
+    "over_frac": 0.0058,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0058
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211357",
+   "no": "13",
+   "session": "10/23 公式",
+   "setting": "ACT型 速さ1.00 ステア1.00",
+   "ai_frames": 935,
+   "v_p90": 3.17,
+   "v_max": 3.48,
+   "steer>=100": {
+    "left_frac": 0.586,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.696,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.395,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.673,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.61,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.526,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.334,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.695,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.653,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.629,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211448",
+   "no": "14",
+   "session": "10/23 公式",
+   "setting": "苦手区間重み型 速さ1.00 ステア1.00",
+   "ai_frames": 1182,
+   "v_p90": 3.39,
+   "v_max": 3.76,
+   "steer>=100": {
+    "left_frac": 0.576,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.662,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.424,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.653,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.628,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.576,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.453,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.662,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.641,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.643,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261023-211547",
+   "no": "15",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 1135,
+   "v_p90": 3.3,
+   "v_max": 3.63,
+   "steer>=100": {
+    "left_frac": 0.633,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.707,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.473,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.7,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.663,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.636,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.478,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.708,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.7,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.676,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-134607",
+   "no": "1",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 1317,
+   "v_p90": 3.49,
+   "v_max": 4.07,
+   "steer>=100": {
+    "left_frac": 0.545,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=60": {
+    "left_frac": 0.634,
+    "over_frac": 0.0114,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0114
+   },
+   "steer>=150": {
+    "left_frac": 0.35,
+    "over_frac": 0.0023,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0023
+   },
+   "gz>=30": {
+    "left_frac": 0.675,
+    "over_frac": 0.0152,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0152
+   },
+   "gz>=45": {
+    "left_frac": 0.621,
+    "over_frac": 0.0114,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0114
+   },
+   "gz>=60": {
+    "left_frac": 0.586,
+    "over_frac": 0.0046,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0046
+   },
+   "gz>=90": {
+    "left_frac": 0.398,
+    "over_frac": 0.0015,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0015
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.648,
+    "over_frac": 0.0129,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0129
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.626,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.631,
+    "over_frac": 0.0121,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0121
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-134907",
+   "no": "2",
+   "session": "10/24 1回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "ai_frames": 1454,
+   "v_p90": 3.42,
+   "v_max": 4.2,
+   "steer>=100": {
+    "left_frac": 0.568,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "steer>=60": {
+    "left_frac": 0.693,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "steer>=150": {
+    "left_frac": 0.366,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "gz>=30": {
+    "left_frac": 0.677,
+    "over_frac": 0.0034,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0034
+   },
+   "gz>=45": {
+    "left_frac": 0.625,
+    "over_frac": 0.0028,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0028
+   },
+   "gz>=60": {
+    "left_frac": 0.533,
+    "over_frac": 0.0028,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0028
+   },
+   "gz>=90": {
+    "left_frac": 0.359,
+    "over_frac": 0.0014,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0014
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.675,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.631,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.636,
+    "over_frac": 0.0048,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0048
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-135656",
+   "no": "4",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 1854,
+   "v_p90": 3.16,
+   "v_max": 3.51,
+   "steer>=100": {
+    "left_frac": 0.551,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.669,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.341,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.696,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.638,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.585,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.387,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.693,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.663,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.66,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-160536",
+   "no": "6",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.10 ステア1.00",
+   "ai_frames": 592,
+   "v_p90": 4.7,
+   "v_max": 5.68,
+   "steer>=100": {
+    "left_frac": 0.583,
+    "over_frac": 0.174,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0389
+   },
+   "steer>=60": {
+    "left_frac": 0.649,
+    "over_frac": 0.1858,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0507
+   },
+   "steer>=150": {
+    "left_frac": 0.512,
+    "over_frac": 0.1706,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0355
+   },
+   "gz>=30": {
+    "left_frac": 0.659,
+    "over_frac": 0.1892,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0541
+   },
+   "gz>=45": {
+    "left_frac": 0.632,
+    "over_frac": 0.1841,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.049
+   },
+   "gz>=60": {
+    "left_frac": 0.595,
+    "over_frac": 0.1774,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0422
+   },
+   "gz>=90": {
+    "left_frac": 0.515,
+    "over_frac": 0.1639,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0287
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.679,
+    "over_frac": 0.1959,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0608
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.655,
+    "over_frac": 0.1892,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0541
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.659,
+    "over_frac": 0.1926,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0574
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.1351,
+    "over_all_frac": 0.1351,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-160654",
+   "no": "7",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "ai_frames": 1671,
+   "v_p90": 4.17,
+   "v_max": 5.19,
+   "steer>=100": {
+    "left_frac": 0.583,
+    "over_frac": 0.1185,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0814
+   },
+   "steer>=60": {
+    "left_frac": 0.658,
+    "over_frac": 0.1275,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0904
+   },
+   "steer>=150": {
+    "left_frac": 0.455,
+    "over_frac": 0.1011,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.064
+   },
+   "gz>=30": {
+    "left_frac": 0.67,
+    "over_frac": 0.1323,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0952
+   },
+   "gz>=45": {
+    "left_frac": 0.628,
+    "over_frac": 0.1299,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0928
+   },
+   "gz>=60": {
+    "left_frac": 0.602,
+    "over_frac": 0.1251,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.088
+   },
+   "gz>=90": {
+    "left_frac": 0.521,
+    "over_frac": 0.1095,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0724
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.673,
+    "over_frac": 0.1311,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.094
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.664,
+    "over_frac": 0.1275,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0904
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.647,
+    "over_frac": 0.1311,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.094
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0371,
+    "over_all_frac": 0.0371,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-160847",
+   "no": "8",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.10 ステア1.10",
+   "ai_frames": 1169,
+   "v_p90": 4.57,
+   "v_max": 5.71,
+   "steer>=100": {
+    "left_frac": 0.556,
+    "over_frac": 0.1882,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0787
+   },
+   "steer>=60": {
+    "left_frac": 0.615,
+    "over_frac": 0.195,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0855
+   },
+   "steer>=150": {
+    "left_frac": 0.476,
+    "over_frac": 0.166,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0565
+   },
+   "gz>=30": {
+    "left_frac": 0.632,
+    "over_frac": 0.1985,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.089
+   },
+   "gz>=45": {
+    "left_frac": 0.592,
+    "over_frac": 0.1899,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0804
+   },
+   "gz>=60": {
+    "left_frac": 0.558,
+    "over_frac": 0.1839,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0744
+   },
+   "gz>=90": {
+    "left_frac": 0.471,
+    "over_frac": 0.1634,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0539
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.644,
+    "over_frac": 0.201,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0915
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.621,
+    "over_frac": 0.1976,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0881
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.623,
+    "over_frac": 0.1942,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0847
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.1095,
+    "over_all_frac": 0.1095,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "ai_frames": 3004,
+   "v_p90": 3.96,
+   "v_max": 4.46,
+   "steer>=100": {
+    "left_frac": 0.451,
+    "over_frac": 0.027,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.027
+   },
+   "steer>=60": {
+    "left_frac": 0.552,
+    "over_frac": 0.0413,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0413
+   },
+   "steer>=150": {
+    "left_frac": 0.319,
+    "over_frac": 0.0206,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0206
+   },
+   "gz>=30": {
+    "left_frac": 0.704,
+    "over_frac": 0.0476,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0476
+   },
+   "gz>=45": {
+    "left_frac": 0.622,
+    "over_frac": 0.0399,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0399
+   },
+   "gz>=60": {
+    "left_frac": 0.548,
+    "over_frac": 0.0263,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0263
+   },
+   "gz>=90": {
+    "left_frac": 0.441,
+    "over_frac": 0.0117,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0117
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.642,
+    "over_frac": 0.0459,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0459
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.583,
+    "over_frac": 0.0363,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0363
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.63,
+    "over_frac": 0.0439,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0439
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-162305",
+   "no": "10",
+   "session": "10/24 2回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 552,
+   "v_p90": 4.19,
+   "v_max": 4.69,
+   "steer>=100": {
+    "left_frac": 0.536,
+    "over_frac": 0.125,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1051
+   },
+   "steer>=60": {
+    "left_frac": 0.587,
+    "over_frac": 0.1322,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1123
+   },
+   "steer>=150": {
+    "left_frac": 0.429,
+    "over_frac": 0.0851,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.0652
+   },
+   "gz>=30": {
+    "left_frac": 0.719,
+    "over_frac": 0.1594,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1395
+   },
+   "gz>=45": {
+    "left_frac": 0.658,
+    "over_frac": 0.1431,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1232
+   },
+   "gz>=60": {
+    "left_frac": 0.607,
+    "over_frac": 0.1413,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1214
+   },
+   "gz>=90": {
+    "left_frac": 0.518,
+    "over_frac": 0.1141,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.0942
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.705,
+    "over_frac": 0.1449,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.125
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.674,
+    "over_frac": 0.1431,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1232
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.676,
+    "over_frac": 0.1431,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.1232
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0199,
+    "over_all_frac": 0.0199,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "ai_frames": 2615,
+   "v_p90": 3.51,
+   "v_max": 4.27,
+   "steer>=100": {
+    "left_frac": 0.58,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=60": {
+    "left_frac": 0.644,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=150": {
+    "left_frac": 0.41,
+    "over_frac": 0.0069,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0069
+   },
+   "gz>=30": {
+    "left_frac": 0.663,
+    "over_frac": 0.0061,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0061
+   },
+   "gz>=45": {
+    "left_frac": 0.633,
+    "over_frac": 0.0054,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0054
+   },
+   "gz>=60": {
+    "left_frac": 0.59,
+    "over_frac": 0.0042,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0042
+   },
+   "gz>=90": {
+    "left_frac": 0.402,
+    "over_frac": 0.0027,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0027
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.671,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.648,
+    "over_frac": 0.0076,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0076
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.648,
+    "over_frac": 0.0069,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0069
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "ai_frames": 1895,
+   "v_p90": 3.4,
+   "v_max": 3.75,
+   "steer>=100": {
+    "left_frac": 0.609,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.687,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.413,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.682,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.645,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.62,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.412,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.682,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.672,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.658,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": "13",
+   "session": "10/24 3回目",
+   "setting": "遅く入る型 速さ0.90 ステア1.00",
+   "ai_frames": 1371,
+   "v_p90": 3.59,
+   "v_max": 4.33,
+   "steer>=100": {
+    "left_frac": 0.549,
+    "over_frac": 0.0146,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0146
+   },
+   "steer>=60": {
+    "left_frac": 0.662,
+    "over_frac": 0.019,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.019
+   },
+   "steer>=150": {
+    "left_frac": 0.389,
+    "over_frac": 0.0117,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0117
+   },
+   "gz>=30": {
+    "left_frac": 0.668,
+    "over_frac": 0.0102,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0102
+   },
+   "gz>=45": {
+    "left_frac": 0.604,
+    "over_frac": 0.0095,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0095
+   },
+   "gz>=60": {
+    "left_frac": 0.531,
+    "over_frac": 0.0088,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0088
+   },
+   "gz>=90": {
+    "left_frac": 0.43,
+    "over_frac": 0.0073,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0073
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.659,
+    "over_frac": 0.0146,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0146
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.629,
+    "over_frac": 0.0146,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0146
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.622,
+    "over_frac": 0.0117,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0117
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "ai_frames": 1760,
+   "v_p90": 3.09,
+   "v_max": 3.28,
+   "steer>=100": {
+    "left_frac": 0.566,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.652,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.369,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.645,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.602,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.556,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.346,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.65,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.628,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.613,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": "15",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "ai_frames": 1447,
+   "v_p90": 3.26,
+   "v_max": 3.38,
+   "steer>=100": {
+    "left_frac": 0.657,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.735,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.463,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.693,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.666,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.604,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.402,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.721,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.706,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.686,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": "16",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "ai_frames": 1734,
+   "v_p90": 3.23,
+   "v_max": 3.5,
+   "steer>=100": {
+    "left_frac": 0.637,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.717,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.443,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.68,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.646,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.605,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.385,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.705,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.694,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.67,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "ai_frames": 2146,
+   "v_p90": 3.44,
+   "v_max": 3.99,
+   "steer>=100": {
+    "left_frac": 0.556,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.638,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.386,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.654,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.625,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.588,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.422,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.661,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.643,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.64,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-185703",
+   "no": "18",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "ai_frames": 861,
+   "v_p90": 3.25,
+   "v_max": 3.65,
+   "steer>=100": {
+    "left_frac": 0.614,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=60": {
+    "left_frac": 0.661,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150": {
+    "left_frac": 0.424,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=30": {
+    "left_frac": 0.674,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=45": {
+    "left_frac": 0.649,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=60": {
+    "left_frac": 0.589,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "gz>=90": {
+    "left_frac": 0.432,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.696,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.679,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.664,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  },
+  {
+   "log": "20261024-185926",
+   "no": "20",
+   "session": "10/24 3回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "ai_frames": 235,
+   "v_p90": 3.9,
+   "v_max": 4.2,
+   "steer>=100": {
+    "left_frac": 0.557,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "steer>=60": {
+    "left_frac": 0.647,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "steer>=150": {
+    "left_frac": 0.468,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "gz>=30": {
+    "left_frac": 0.626,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "gz>=45": {
+    "left_frac": 0.621,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "gz>=60": {
+    "left_frac": 0.604,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "gz>=90": {
+    "left_frac": 0.489,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "steer>=100|gz>=45": {
+    "left_frac": 0.66,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "steer>=100|gz>=60": {
+    "left_frac": 0.651,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "steer>=150|gz>=45": {
+    "left_frac": 0.638,
+    "over_frac": 0.0681,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0681
+   },
+   "none(4.5 only)": {
+    "left_frac": 0.0,
+    "over_frac": 0.0,
+    "over_all_frac": 0.0,
+    "over_left_frac": 0.0
+   }
+  }
+ ],
+ "events": [
+  {
+   "kind": "SWX",
+   "log": "20261024-160536",
+   "no": "6",
+   "t_us": 1792825553736305,
+   "g": 10.48,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.00",
+   "t_hit": 17.44,
+   "v_max_2s": 4.79,
+   "v_at_hit": 4.66,
+   "steer_last": 236.6,
+   "gz5_last": 118.7,
+   "trace": [
+    [
+     1.98,
+     2.84,
+     73,
+     40
+    ],
+    [
+     1.88,
+     3.01,
+     107,
+     63
+    ],
+    [
+     1.78,
+     3.36,
+     103,
+     84
+    ],
+    [
+     1.68,
+     3.03,
+     129,
+     98
+    ],
+    [
+     1.58,
+     3.19,
+     143,
+     97
+    ],
+    [
+     1.48,
+     3.25,
+     128,
+     104
+    ],
+    [
+     1.39,
+     3.08,
+     151,
+     119
+    ],
+    [
+     1.29,
+     3.01,
+     99,
+     135
+    ],
+    [
+     1.19,
+     3.14,
+     39,
+     103
+    ],
+    [
+     1.09,
+     3.43,
+     -18,
+     64
+    ],
+    [
+     0.99,
+     3.75,
+     -26,
+     24
+    ],
+    [
+     0.89,
+     4.2,
+     1,
+     -4
+    ],
+    [
+     0.79,
+     4.29,
+     24,
+     19
+    ],
+    [
+     0.69,
+     4.31,
+     131,
+     1
+    ],
+    [
+     0.59,
+     4.35,
+     195,
+     66
+    ],
+    [
+     0.49,
+     4.44,
+     189,
+     151
+    ],
+    [
+     0.39,
+     4.57,
+     157,
+     144
+    ],
+    [
+     0.29,
+     4.26,
+     182,
+     114
+    ],
+    [
+     0.19,
+     4.77,
+     219,
+     104
+    ],
+    [
+     0.09,
+     4.22,
+     145,
+     109
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 0.69,
+    "v_then": 4.31,
+    "cap_then": 4.0,
+    "over_s": 0.67
+   },
+   "steer>=60": {
+    "lead_s": 0.69,
+    "v_then": 4.31,
+    "cap_then": 4.0,
+    "over_s": 0.67
+   },
+   "steer>=150": {
+    "lead_s": 0.65,
+    "v_then": 4.48,
+    "cap_then": 4.0,
+    "over_s": 0.63
+   },
+   "gz>=30": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "gz>=45": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.7
+   },
+   "gz>=60": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.67
+   },
+   "gz>=90": {
+    "lead_s": 0.52,
+    "v_then": 4.44,
+    "cap_then": 4.0,
+    "over_s": 0.5
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.8
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 0.92,
+    "v_then": 4.21,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "none(4.5 only)": {
+    "lead_s": 0.45,
+    "v_then": 4.57,
+    "cap_then": 4.5,
+    "over_s": 0.23
+   }
+  },
+  {
+   "kind": "LHC",
+   "log": "20261024-160536",
+   "no": "6",
+   "t_us": 1792825555966191,
+   "g": 6.33,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.00",
+   "t_hit": 19.669,
+   "v_max_2s": 5.68,
+   "v_at_hit": 2.06,
+   "steer_last": 253.9,
+   "gz5_last": 164.1,
+   "trace": [
+    [
+     1.98,
+     2.06,
+     -25,
+     143
+    ],
+    [
+     1.88,
+     2.75,
+     -120,
+     51
+    ],
+    [
+     1.78,
+     2.89,
+     -173,
+     -17
+    ],
+    [
+     1.68,
+     3.1,
+     -170,
+     -91
+    ],
+    [
+     1.58,
+     3.34,
+     -44,
+     -101
+    ],
+    [
+     1.48,
+     3.64,
+     -32,
+     -91
+    ],
+    [
+     1.38,
+     3.9,
+     -28,
+     -48
+    ],
+    [
+     1.28,
+     4.06,
+     -27,
+     -12
+    ],
+    [
+     1.18,
+     4.24,
+     -41,
+     -28
+    ],
+    [
+     1.08,
+     4.54,
+     3,
+     -21
+    ],
+    [
+     0.98,
+     4.7,
+     -4,
+     -19
+    ],
+    [
+     0.88,
+     4.79,
+     -39,
+     -2
+    ],
+    [
+     0.78,
+     5.0,
+     -38,
+     -15
+    ],
+    [
+     0.68,
+     5.22,
+     -12,
+     -34
+    ],
+    [
+     0.58,
+     5.62,
+     132,
+     -29
+    ],
+    [
+     0.48,
+     5.51,
+     358,
+     89
+    ],
+    [
+     0.38,
+     5.1,
+     397,
+     181
+    ],
+    [
+     0.28,
+     4.24,
+     396,
+     209
+    ],
+    [
+     0.18,
+     3.2,
+     418,
+     216
+    ],
+    [
+     0.08,
+     2.17,
+     303,
+     185
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "steer>=60": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "steer>=150": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "gz>=30": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "gz>=45": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "gz>=60": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "gz>=90": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.83
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.08,
+    "v_then": 4.54,
+    "cap_then": 4.5,
+    "over_s": 0.77
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160536",
+   "no": "6",
+   "t_us": 1792825562896522,
+   "g": 8.1,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.00",
+   "t_hit": 26.6,
+   "v_max_2s": 5.56,
+   "v_at_hit": 5.07,
+   "steer_last": 204.5,
+   "gz5_last": 88.1,
+   "trace": [
+    [
+     1.99,
+     4.81,
+     154,
+     73
+    ],
+    [
+     1.89,
+     5.12,
+     108,
+     93
+    ],
+    [
+     1.79,
+     5.31,
+     99,
+     75
+    ],
+    [
+     1.69,
+     5.45,
+     48,
+     75
+    ],
+    [
+     1.59,
+     5.56,
+     102,
+     79
+    ],
+    [
+     1.49,
+     5.25,
+     170,
+     66
+    ],
+    [
+     1.39,
+     5.27,
+     217,
+     67
+    ],
+    [
+     1.29,
+     3.63,
+     413,
+     476
+    ],
+    [
+     1.19,
+     2.04,
+     95,
+     8
+    ],
+    [
+     1.09,
+     3.26,
+     53,
+     174
+    ],
+    [
+     0.99,
+     3.68,
+     1,
+     109
+    ],
+    [
+     0.89,
+     3.98,
+     -64,
+     29
+    ],
+    [
+     0.79,
+     4.2,
+     -80,
+     -32
+    ],
+    [
+     0.69,
+     4.56,
+     -9,
+     -54
+    ],
+    [
+     0.59,
+     4.5,
+     31,
+     -25
+    ],
+    [
+     0.49,
+     4.7,
+     78,
+     3
+    ],
+    [
+     0.39,
+     4.81,
+     170,
+     58
+    ],
+    [
+     0.29,
+     5.05,
+     212,
+     118
+    ],
+    [
+     0.19,
+     4.86,
+     117,
+     121
+    ],
+    [
+     0.09,
+     5.0,
+     187,
+     93
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.33
+   },
+   "steer>=60": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.33
+   },
+   "steer>=150": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.33
+   },
+   "gz>=30": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "gz>=45": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "gz>=60": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "gz>=90": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.5,
+    "over_s": 1.47
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.0,
+    "over_s": 1.5
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.99,
+    "v_then": 4.81,
+    "cap_then": 4.5,
+    "over_s": 1.33
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160654",
+   "no": "7",
+   "t_us": 1792825629471124,
+   "g": 9.77,
+   "setting": "遅く入る型 速さ 1.00 ステア 1.00",
+   "t_hit": 15.433,
+   "v_max_2s": 4.49,
+   "v_at_hit": 4.01,
+   "steer_last": 198.4,
+   "gz5_last": 100.8,
+   "trace": [
+    [
+     1.98,
+     3.59,
+     45,
+     18
+    ],
+    [
+     1.88,
+     3.82,
+     68,
+     -6
+    ],
+    [
+     1.78,
+     4.05,
+     131,
+     42
+    ],
+    [
+     1.68,
+     4.2,
+     149,
+     89
+    ],
+    [
+     1.58,
+     4.49,
+     148,
+     90
+    ],
+    [
+     1.48,
+     4.2,
+     128,
+     87
+    ],
+    [
+     1.38,
+     4.05,
+     106,
+     96
+    ],
+    [
+     1.28,
+     3.74,
+     93,
+     79
+    ],
+    [
+     1.18,
+     4.03,
+     103,
+     65
+    ],
+    [
+     1.08,
+     4.02,
+     113,
+     62
+    ],
+    [
+     0.98,
+     4.0,
+     140,
+     84
+    ],
+    [
+     0.88,
+     3.98,
+     140,
+     136
+    ],
+    [
+     0.78,
+     3.85,
+     66,
+     5
+    ],
+    [
+     0.68,
+     4.09,
+     85,
+     76
+    ],
+    [
+     0.58,
+     4.09,
+     140,
+     90
+    ],
+    [
+     0.48,
+     4.23,
+     145,
+     81
+    ],
+    [
+     0.38,
+     4.25,
+     159,
+     84
+    ],
+    [
+     0.28,
+     4.23,
+     164,
+     98
+    ],
+    [
+     0.18,
+     3.98,
+     175,
+     95
+    ],
+    [
+     0.08,
+     4.07,
+     156,
+     98
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "steer>=60": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "steer>=150": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 0.9
+   },
+   "gz>=30": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "gz>=45": {
+    "lead_s": 1.74,
+    "v_then": 4.2,
+    "cap_then": 4.0,
+    "over_s": 1.17
+   },
+   "gz>=60": {
+    "lead_s": 1.71,
+    "v_then": 4.3,
+    "cap_then": 4.0,
+    "over_s": 1.13
+   },
+   "gz>=90": {
+    "lead_s": 1.58,
+    "v_then": 4.49,
+    "cap_then": 4.0,
+    "over_s": 0.97
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.78,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.2
+   },
+   "none(4.5 only)": null
+  },
+  {
+   "kind": "LHC",
+   "log": "20261024-160654",
+   "no": "7",
+   "t_us": 1792825640631257,
+   "g": 2.52,
+   "setting": "遅く入る型 速さ 1.00 ステア 1.00",
+   "t_hit": 26.593,
+   "v_max_2s": 5.19,
+   "v_at_hit": 1.62,
+   "steer_last": 414.2,
+   "gz5_last": 203.3,
+   "trace": [
+    [
+     1.98,
+     3.79,
+     113,
+     107
+    ],
+    [
+     1.88,
+     3.85,
+     124,
+     96
+    ],
+    [
+     1.78,
+     3.85,
+     64,
+     93
+    ],
+    [
+     1.68,
+     4.02,
+     -10,
+     90
+    ],
+    [
+     1.58,
+     4.0,
+     -79,
+     31
+    ],
+    [
+     1.48,
+     4.08,
+     -69,
+     -30
+    ],
+    [
+     1.38,
+     4.14,
+     -29,
+     -69
+    ],
+    [
+     1.28,
+     4.18,
+     -3,
+     -74
+    ],
+    [
+     1.18,
+     4.37,
+     6,
+     -24
+    ],
+    [
+     1.08,
+     4.31,
+     24,
+     -2
+    ],
+    [
+     0.98,
+     4.47,
+     9,
+     34
+    ],
+    [
+     0.88,
+     4.71,
+     -33,
+     2
+    ],
+    [
+     0.78,
+     4.82,
+     -48,
+     -24
+    ],
+    [
+     0.68,
+     5.19,
+     63,
+     -35
+    ],
+    [
+     0.58,
+     4.78,
+     316,
+     32
+    ],
+    [
+     0.48,
+     4.89,
+     394,
+     154
+    ],
+    [
+     0.38,
+     4.19,
+     380,
+     193
+    ],
+    [
+     0.28,
+     3.51,
+     416,
+     220
+    ],
+    [
+     0.18,
+     2.53,
+     375,
+     219
+    ],
+    [
+     0.08,
+     1.75,
+     447,
+     219
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.73
+   },
+   "steer>=60": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.8
+   },
+   "steer>=150": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.73
+   },
+   "gz>=30": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 1.0
+   },
+   "gz>=45": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.93
+   },
+   "gz>=60": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.9
+   },
+   "gz>=90": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.87
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.93
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.9
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.68,
+    "v_then": 4.02,
+    "cap_then": 4.0,
+    "over_s": 0.93
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.01,
+    "v_then": 4.51,
+    "cap_then": 4.5,
+    "over_s": 0.57
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160654",
+   "no": "7",
+   "t_us": 1792825647951203,
+   "g": 10.09,
+   "setting": "遅く入る型 速さ 1.00 ステア 1.00",
+   "t_hit": 33.913,
+   "v_max_2s": 4.43,
+   "v_at_hit": 3.98,
+   "steer_last": 56.3,
+   "gz5_last": 135.5,
+   "trace": [
+    [
+     1.97,
+     3.67,
+     125,
+     73
+    ],
+    [
+     1.87,
+     3.74,
+     199,
+     102
+    ],
+    [
+     1.77,
+     3.88,
+     197,
+     135
+    ],
+    [
+     1.67,
+     3.55,
+     166,
+     149
+    ],
+    [
+     1.57,
+     3.62,
+     99,
+     115
+    ],
+    [
+     1.47,
+     3.67,
+     57,
+     90
+    ],
+    [
+     1.37,
+     3.88,
+     83,
+     68
+    ],
+    [
+     1.27,
+     4.05,
+     79,
+     56
+    ],
+    [
+     1.17,
+     4.09,
+     61,
+     40
+    ],
+    [
+     1.07,
+     4.3,
+     62,
+     44
+    ],
+    [
+     0.97,
+     4.32,
+     82,
+     66
+    ],
+    [
+     0.87,
+     4.25,
+     122,
+     104
+    ],
+    [
+     0.77,
+     4.34,
+     135,
+     102
+    ],
+    [
+     0.67,
+     4.14,
+     118,
+     104
+    ],
+    [
+     0.57,
+     4.11,
+     165,
+     99
+    ],
+    [
+     0.47,
+     4.26,
+     175,
+     126
+    ],
+    [
+     0.37,
+     4.19,
+     162,
+     129
+    ],
+    [
+     0.27,
+     4.12,
+     243,
+     109
+    ],
+    [
+     0.17,
+     3.95,
+     252,
+     121
+    ],
+    [
+     0.07,
+     3.97,
+     72,
+     109
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.04,
+    "v_then": 4.35,
+    "cap_then": 4.0,
+    "over_s": 0.87
+   },
+   "steer>=60": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.1
+   },
+   "steer>=150": {
+    "lead_s": 0.74,
+    "v_then": 4.34,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "gz>=30": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.1
+   },
+   "gz>=45": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.1
+   },
+   "gz>=60": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.0
+   },
+   "gz>=90": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 0.8
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.1
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.03
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.27,
+    "v_then": 4.05,
+    "cap_then": 4.0,
+    "over_s": 1.1
+   },
+   "none(4.5 only)": null
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160654",
+   "no": "7",
+   "t_us": 1792825671892309,
+   "g": 8.37,
+   "setting": "遅く入る型 速さ 1.00 ステア 1.00",
+   "t_hit": 57.854,
+   "v_max_2s": 4.56,
+   "v_at_hit": 4.11,
+   "steer_last": 214.5,
+   "gz5_last": 162.7,
+   "trace": [
+    [
+     2.0,
+     2.72,
+     9,
+     6
+    ],
+    [
+     1.9,
+     2.77,
+     99,
+     15
+    ],
+    [
+     1.8,
+     2.87,
+     115,
+     69
+    ],
+    [
+     1.7,
+     3.0,
+     101,
+     91
+    ],
+    [
+     1.6,
+     3.0,
+     162,
+     97
+    ],
+    [
+     1.5,
+     2.9,
+     185,
+     112
+    ],
+    [
+     1.4,
+     2.89,
+     197,
+     122
+    ],
+    [
+     1.3,
+     2.83,
+     95,
+     120
+    ],
+    [
+     1.2,
+     3.05,
+     21,
+     99
+    ],
+    [
+     1.1,
+     3.07,
+     11,
+     51
+    ],
+    [
+     1.0,
+     3.37,
+     6,
+     38
+    ],
+    [
+     0.9,
+     3.53,
+     -52,
+     23
+    ],
+    [
+     0.8,
+     3.76,
+     -29,
+     2
+    ],
+    [
+     0.7,
+     3.79,
+     59,
+     -7
+    ],
+    [
+     0.6,
+     4.0,
+     131,
+     38
+    ],
+    [
+     0.5,
+     4.26,
+     167,
+     102
+    ],
+    [
+     0.4,
+     4.34,
+     119,
+     76
+    ],
+    [
+     0.3,
+     4.33,
+     271,
+     110
+    ],
+    [
+     0.2,
+     4.56,
+     288,
+     145
+    ],
+    [
+     0.1,
+     4.26,
+     164,
+     147
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "steer>=60": {
+    "lead_s": 0.63,
+    "v_then": 4.01,
+    "cap_then": 4.0,
+    "over_s": 0.6
+   },
+   "steer>=150": {
+    "lead_s": 0.5,
+    "v_then": 4.26,
+    "cap_then": 4.0,
+    "over_s": 0.5
+   },
+   "gz>=30": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "gz>=45": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "gz>=60": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "gz>=90": {
+    "lead_s": 0.5,
+    "v_then": 4.26,
+    "cap_then": 4.0,
+    "over_s": 0.5
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 0.56,
+    "v_then": 4.19,
+    "cap_then": 4.0,
+    "over_s": 0.57
+   },
+   "none(4.5 only)": {
+    "lead_s": 0.26,
+    "v_then": 4.56,
+    "cap_then": 4.5,
+    "over_s": 0.07
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160847",
+   "no": "8",
+   "t_us": 1792825742212334,
+   "g": 10.58,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.10",
+   "t_hit": 14.76,
+   "v_max_2s": 4.97,
+   "v_at_hit": 4.55,
+   "steer_last": 143.0,
+   "gz5_last": 101.2,
+   "trace": [
+    [
+     1.97,
+     4.67,
+     107,
+     73
+    ],
+    [
+     1.87,
+     4.82,
+     134,
+     62
+    ],
+    [
+     1.77,
+     4.92,
+     113,
+     72
+    ],
+    [
+     1.67,
+     4.63,
+     145,
+     79
+    ],
+    [
+     1.57,
+     4.66,
+     110,
+     84
+    ],
+    [
+     1.47,
+     4.42,
+     157,
+     74
+    ],
+    [
+     1.37,
+     4.63,
+     152,
+     79
+    ],
+    [
+     1.27,
+     4.57,
+     126,
+     101
+    ],
+    [
+     1.17,
+     3.62,
+     103,
+     30
+    ],
+    [
+     1.07,
+     3.9,
+     183,
+     141
+    ],
+    [
+     0.97,
+     3.94,
+     80,
+     77
+    ],
+    [
+     0.87,
+     4.0,
+     99,
+     65
+    ],
+    [
+     0.77,
+     4.13,
+     109,
+     43
+    ],
+    [
+     0.67,
+     4.11,
+     148,
+     74
+    ],
+    [
+     0.57,
+     4.22,
+     199,
+     99
+    ],
+    [
+     0.47,
+     4.29,
+     227,
+     114
+    ],
+    [
+     0.37,
+     4.4,
+     158,
+     112
+    ],
+    [
+     0.27,
+     4.46,
+     151,
+     88
+    ],
+    [
+     0.17,
+     4.33,
+     126,
+     80
+    ],
+    [
+     0.07,
+     4.51,
+     110,
+     84
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "steer>=60": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "steer>=150": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.5,
+    "over_s": 1.6
+   },
+   "gz>=30": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "gz>=45": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "gz>=60": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "gz>=90": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.5,
+    "over_s": 1.57
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.0,
+    "over_s": 1.7
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.97,
+    "v_then": 4.67,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-160847",
+   "no": "8",
+   "t_us": 1792825801725668,
+   "g": 4.82,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.10",
+   "t_hit": 74.274,
+   "v_max_2s": 5.07,
+   "v_at_hit": 4.57,
+   "steer_last": 281.4,
+   "gz5_last": 145.2,
+   "trace": [
+    [
+     2.0,
+     3.65,
+     2,
+     7
+    ],
+    [
+     1.9,
+     3.6,
+     -23,
+     16
+    ],
+    [
+     1.8,
+     3.64,
+     -49,
+     -13
+    ],
+    [
+     1.7,
+     3.83,
+     52,
+     -34
+    ],
+    [
+     1.6,
+     4.07,
+     181,
+     43
+    ],
+    [
+     1.5,
+     4.52,
+     202,
+     127
+    ],
+    [
+     1.4,
+     4.33,
+     250,
+     157
+    ],
+    [
+     1.3,
+     4.36,
+     139,
+     161
+    ],
+    [
+     1.2,
+     3.65,
+     65,
+     134
+    ],
+    [
+     1.1,
+     3.87,
+     34,
+     106
+    ],
+    [
+     1.0,
+     4.04,
+     -1,
+     33
+    ],
+    [
+     0.9,
+     4.19,
+     -19,
+     -2
+    ],
+    [
+     0.8,
+     4.33,
+     32,
+     -6
+    ],
+    [
+     0.7,
+     4.33,
+     143,
+     22
+    ],
+    [
+     0.6,
+     4.58,
+     185,
+     60
+    ],
+    [
+     0.5,
+     4.71,
+     224,
+     128
+    ],
+    [
+     0.4,
+     4.96,
+     152,
+     133
+    ],
+    [
+     0.3,
+     4.51,
+     234,
+     127
+    ],
+    [
+     0.2,
+     4.76,
+     235,
+     149
+    ],
+    [
+     0.1,
+     4.33,
+     207,
+     152
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.17
+   },
+   "steer>=60": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.23
+   },
+   "steer>=150": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.07
+   },
+   "gz>=30": {
+    "lead_s": 1.6,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.33
+   },
+   "gz>=45": {
+    "lead_s": 1.56,
+    "v_then": 4.25,
+    "cap_then": 4.0,
+    "over_s": 1.23
+   },
+   "gz>=60": {
+    "lead_s": 1.53,
+    "v_then": 4.29,
+    "cap_then": 4.0,
+    "over_s": 1.17
+   },
+   "gz>=90": {
+    "lead_s": 1.53,
+    "v_then": 4.29,
+    "cap_then": 4.0,
+    "over_s": 1.13
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.37
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.33
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.63,
+    "v_then": 4.07,
+    "cap_then": 4.0,
+    "over_s": 1.3
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.5,
+    "v_then": 4.52,
+    "cap_then": 4.5,
+    "over_s": 0.63
+   }
+  },
+  {
+   "kind": "LHC",
+   "log": "20261024-160847",
+   "no": "8",
+   "t_us": 1792825804643789,
+   "g": 9.13,
+   "setting": "遅く入る型 速さ 1.10 ステア 1.10",
+   "t_hit": 77.192,
+   "v_max_2s": 5.71,
+   "v_at_hit": 3.32,
+   "steer_last": 151.4,
+   "gz5_last": 67.3,
+   "trace": [
+    [
+     1.98,
+     4.45,
+     23,
+     -33
+    ],
+    [
+     1.88,
+     4.62,
+     4,
+     31
+    ],
+    [
+     1.78,
+     4.86,
+     -2,
+     37
+    ],
+    [
+     1.68,
+     4.86,
+     -32,
+     28
+    ],
+    [
+     1.58,
+     5.06,
+     -79,
+     -32
+    ],
+    [
+     1.48,
+     5.41,
+     -38,
+     -59
+    ],
+    [
+     1.38,
+     5.71,
+     193,
+     -38
+    ],
+    [
+     1.28,
+     5.48,
+     436,
+     118
+    ],
+    [
+     1.18,
+     4.94,
+     426,
+     220
+    ],
+    [
+     1.08,
+     3.75,
+     444,
+     265
+    ],
+    [
+     0.98,
+     2.61,
+     453,
+     248
+    ],
+    [
+     0.88,
+     1.76,
+     291,
+     187
+    ],
+    [
+     0.78,
+     1.78,
+     429,
+     193
+    ],
+    [
+     0.68,
+     2.18,
+     441,
+     107
+    ],
+    [
+     0.58,
+     2.42,
+     310,
+     152
+    ],
+    [
+     0.48,
+     2.67,
+     244,
+     184
+    ],
+    [
+     0.38,
+     2.96,
+     260,
+     165
+    ],
+    [
+     0.28,
+     3.06,
+     196,
+     133
+    ],
+    [
+     0.18,
+     2.93,
+     64,
+     112
+    ],
+    [
+     0.08,
+     3.14,
+     19,
+     81
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "steer>=60": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "steer>=150": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "gz>=30": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.0,
+    "over_s": 0.8
+   },
+   "gz>=45": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "gz>=60": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "gz>=90": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.8
+   },
+   "none(4.5 only)": {
+    "lead_s": 1.88,
+    "v_then": 4.62,
+    "cap_then": 4.5,
+    "over_s": 0.73
+   }
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-162033",
+   "no": "9",
+   "t_us": 1792826556514356,
+   "g": 6.01,
+   "setting": "B 速さ 0.90 ステア 1.00",
+   "t_hit": 123.496,
+   "v_max_2s": 3.79,
+   "v_at_hit": 3.59,
+   "steer_last": 70.8,
+   "gz5_last": 67.1,
+   "trace": [
+    [
+     1.99,
+     3.61,
+     112,
+     96
+    ],
+    [
+     1.89,
+     3.56,
+     91,
+     101
+    ],
+    [
+     1.79,
+     3.56,
+     60,
+     107
+    ],
+    [
+     1.69,
+     3.58,
+     3,
+     82
+    ],
+    [
+     1.59,
+     3.59,
+     -21,
+     58
+    ],
+    [
+     1.49,
+     3.59,
+     -2,
+     24
+    ],
+    [
+     1.39,
+     3.68,
+     15,
+     19
+    ],
+    [
+     1.29,
+     3.68,
+     70,
+     19
+    ],
+    [
+     1.19,
+     3.71,
+     108,
+     56
+    ],
+    [
+     1.09,
+     3.71,
+     125,
+     60
+    ],
+    [
+     0.99,
+     3.71,
+     148,
+     104
+    ],
+    [
+     0.89,
+     3.67,
+     110,
+     122
+    ],
+    [
+     0.79,
+     3.73,
+     115,
+     120
+    ],
+    [
+     0.69,
+     3.64,
+     125,
+     106
+    ],
+    [
+     0.59,
+     3.62,
+     0,
+     109
+    ],
+    [
+     0.46,
+     3.79,
+     95,
+     109
+    ],
+    [
+     0.29,
+     3.53,
+     56,
+     24
+    ],
+    [
+     0.19,
+     3.55,
+     51,
+     44
+    ],
+    [
+     0.09,
+     3.6,
+     112,
+     59
+    ]
+   ],
+   "steer>=100": null,
+   "steer>=60": null,
+   "steer>=150": null,
+   "gz>=30": null,
+   "gz>=45": null,
+   "gz>=60": null,
+   "gz>=90": null,
+   "steer>=100|gz>=45": null,
+   "steer>=100|gz>=60": null,
+   "steer>=150|gz>=45": null,
+   "none(4.5 only)": null
+  },
+  {
+   "kind": "SWX",
+   "log": "20261024-162305",
+   "no": "10",
+   "t_us": 1792826608185697,
+   "g": 5.45,
+   "setting": "B 速さ 1.00 ステア 1.00",
+   "t_hit": 22.816,
+   "v_max_2s": 4.69,
+   "v_at_hit": 3.88,
+   "steer_last": 77.7,
+   "gz5_last": 157.6,
+   "trace": [
+    [
+     2.0,
+     2.68,
+     195,
+     128
+    ],
+    [
+     1.9,
+     2.7,
+     243,
+     145
+    ],
+    [
+     1.8,
+     2.57,
+     161,
+     171
+    ],
+    [
+     1.7,
+     2.59,
+     68,
+     140
+    ],
+    [
+     1.6,
+     2.78,
+     27,
+     129
+    ],
+    [
+     1.5,
+     2.89,
+     -2,
+     65
+    ],
+    [
+     1.4,
+     3.12,
+     -40,
+     44
+    ],
+    [
+     1.3,
+     3.36,
+     -31,
+     18
+    ],
+    [
+     1.2,
+     3.58,
+     -38,
+     14
+    ],
+    [
+     1.1,
+     3.87,
+     -39,
+     16
+    ],
+    [
+     1.0,
+     4.01,
+     42,
+     8
+    ],
+    [
+     0.9,
+     4.1,
+     98,
+     59
+    ],
+    [
+     0.8,
+     4.27,
+     142,
+     90
+    ],
+    [
+     0.7,
+     4.19,
+     123,
+     108
+    ],
+    [
+     0.6,
+     4.19,
+     153,
+     108
+    ],
+    [
+     0.5,
+     4.35,
+     111,
+     132
+    ],
+    [
+     0.4,
+     4.4,
+     198,
+     124
+    ],
+    [
+     0.3,
+     4.38,
+     204,
+     133
+    ],
+    [
+     0.2,
+     4.08,
+     0,
+     120
+    ]
+   ],
+   "steer>=100": {
+    "lead_s": 0.87,
+    "v_then": 4.29,
+    "cap_then": 4.0,
+    "over_s": 0.73
+   },
+   "steer>=60": {
+    "lead_s": 0.9,
+    "v_then": 4.1,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "steer>=150": {
+    "lead_s": 0.67,
+    "v_then": 4.3,
+    "cap_then": 4.0,
+    "over_s": 0.53
+   },
+   "gz>=30": {
+    "lead_s": 0.9,
+    "v_then": 4.1,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "gz>=45": {
+    "lead_s": 0.9,
+    "v_then": 4.1,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "gz>=60": {
+    "lead_s": 0.87,
+    "v_then": 4.29,
+    "cap_then": 4.0,
+    "over_s": 0.73
+   },
+   "gz>=90": {
+    "lead_s": 0.8,
+    "v_then": 4.27,
+    "cap_then": 4.0,
+    "over_s": 0.67
+   },
+   "steer>=100|gz>=45": {
+    "lead_s": 0.9,
+    "v_then": 4.1,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "steer>=100|gz>=60": {
+    "lead_s": 0.87,
+    "v_then": 4.29,
+    "cap_then": 4.0,
+    "over_s": 0.73
+   },
+   "steer>=150|gz>=45": {
+    "lead_s": 0.9,
+    "v_then": 4.1,
+    "cap_then": 4.0,
+    "over_s": 0.77
+   },
+   "none(4.5 only)": {
+    "lead_s": 0.43,
+    "v_then": 4.69,
+    "cap_then": 4.5,
+    "over_s": 0.1
+   }
+  }
+ ],
+ "laps": [
+  {
+   "log": "20261023-210840",
+   "no": "8",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 27.579,
+   "lap_s": 9.03,
+   "kind": "軽い接触",
+   "p90": 3.76,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-210840",
+   "no": "8",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 36.609,
+   "lap_s": 9.523,
+   "kind": "きれい",
+   "p90": 3.29,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-210840",
+   "no": "8",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 46.132,
+   "lap_s": 9.209,
+   "kind": "きれい",
+   "p90": 3.61,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-210840",
+   "no": "8",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 65.019,
+   "lap_s": 9.09,
+   "kind": "きれい",
+   "p90": 3.49,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211020",
+   "no": "9",
+   "session": "10/23 公式",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 20.79,
+   "lap_s": 9.59,
+   "kind": "きれい",
+   "p90": 3.43,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211118",
+   "no": "10",
+   "session": "10/23 公式",
+   "setting": "2本の平均 速さ1.00 ステア1.00",
+   "t_start": 8.466,
+   "lap_s": 10.169,
+   "kind": "強い衝突",
+   "p90": 4.26,
+   "steer>=100": {
+    "loss_s": 0.069,
+    "touched_s": 1.53
+   },
+   "gz>=45": {
+    "loss_s": 0.083,
+    "touched_s": 1.53
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.089,
+    "touched_s": 1.53
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.086,
+    "touched_s": 1.53
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.022,
+    "touched_s": 0.73
+   }
+  },
+  {
+   "log": "20261023-211118",
+   "no": "10",
+   "session": "10/23 公式",
+   "setting": "2本の平均 速さ1.00 ステア1.00",
+   "t_start": 18.635,
+   "lap_s": 8.62,
+   "kind": "強い衝突",
+   "p90": 4.6,
+   "steer>=100": {
+    "loss_s": 0.21,
+    "touched_s": 2.9
+   },
+   "gz>=45": {
+    "loss_s": 0.244,
+    "touched_s": 2.9
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.251,
+    "touched_s": 2.9
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.243,
+    "touched_s": 2.9
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.052,
+    "touched_s": 1.33
+   }
+  },
+  {
+   "log": "20261023-211209",
+   "no": "11",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 7.584,
+   "lap_s": 9.35,
+   "kind": "きれい",
+   "p90": 3.45,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211209",
+   "no": "11",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 16.935,
+   "lap_s": 9.427,
+   "kind": "強い衝突",
+   "p90": 3.33,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211209",
+   "no": "11",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 26.361,
+   "lap_s": 9.693,
+   "kind": "強い衝突",
+   "p90": 3.16,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211308",
+   "no": "12",
+   "session": "10/23 公式",
+   "setting": "ずれに強い型 速さ1.00 ステア1.00",
+   "t_start": 5.945,
+   "lap_s": 9.741,
+   "kind": "きれい",
+   "p90": 3.77,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211308",
+   "no": "12",
+   "session": "10/23 公式",
+   "setting": "ずれに強い型 速さ1.00 ステア1.00",
+   "t_start": 15.686,
+   "lap_s": 9.408,
+   "kind": "きれい",
+   "p90": 3.72,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211357",
+   "no": "13",
+   "session": "10/23 公式",
+   "setting": "ACT型 速さ1.00 ステア1.00",
+   "t_start": 6.207,
+   "lap_s": 10.824,
+   "kind": "きれい",
+   "p90": 3.18,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211357",
+   "no": "13",
+   "session": "10/23 公式",
+   "setting": "ACT型 速さ1.00 ステア1.00",
+   "t_start": 17.031,
+   "lap_s": 10.63,
+   "kind": "きれい",
+   "p90": 3.24,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211448",
+   "no": "14",
+   "session": "10/23 公式",
+   "setting": "苦手区間重み型 速さ1.00 ステア1.00",
+   "t_start": 6.535,
+   "lap_s": 10.31,
+   "kind": "強い衝突",
+   "p90": 3.51,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211448",
+   "no": "14",
+   "session": "10/23 公式",
+   "setting": "苦手区間重み型 速さ1.00 ステア1.00",
+   "t_start": 16.845,
+   "lap_s": 9.91,
+   "kind": "きれい",
+   "p90": 3.4,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211448",
+   "no": "14",
+   "session": "10/23 公式",
+   "setting": "苦手区間重み型 速さ1.00 ステア1.00",
+   "t_start": 26.755,
+   "lap_s": 9.995,
+   "kind": "きれい",
+   "p90": 3.37,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211547",
+   "no": "15",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 17.121,
+   "lap_s": 9.83,
+   "kind": "きれい",
+   "p90": 3.3,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261023-211547",
+   "no": "15",
+   "session": "10/23 公式",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 26.951,
+   "lap_s": 9.492,
+   "kind": "きれい",
+   "p90": 3.36,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134607",
+   "no": "1",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 39.883,
+   "lap_s": 9.582,
+   "kind": "きれい",
+   "p90": 3.32,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134607",
+   "no": "1",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 49.465,
+   "lap_s": 9.793,
+   "kind": "きれい",
+   "p90": 3.19,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134607",
+   "no": "1",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 59.258,
+   "lap_s": 9.779,
+   "kind": "きれい",
+   "p90": 3.26,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134907",
+   "no": "2",
+   "session": "10/24 1回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 14.064,
+   "lap_s": 9.79,
+   "kind": "きれい",
+   "p90": 3.38,
+   "steer>=100": {
+    "loss_s": 0.001,
+    "touched_s": 0.03
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.001,
+    "touched_s": 0.03
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.001,
+    "touched_s": 0.03
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134907",
+   "no": "2",
+   "session": "10/24 1回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 23.854,
+   "lap_s": 9.701,
+   "kind": "きれい",
+   "p90": 3.55,
+   "steer>=100": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134907",
+   "no": "2",
+   "session": "10/24 1回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 33.555,
+   "lap_s": 9.75,
+   "kind": "きれい",
+   "p90": 3.42,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-134907",
+   "no": "2",
+   "session": "10/24 1回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 43.305,
+   "lap_s": 10.035,
+   "kind": "きれい",
+   "p90": 3.37,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-135656",
+   "no": "4",
+   "session": "10/24 1回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 92.709,
+   "lap_s": 10.19,
+   "kind": "きれい",
+   "p90": 3.1,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-160536",
+   "no": "6",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.10 ステア1.00",
+   "t_start": 10.839,
+   "lap_s": 9.82,
+   "kind": "強い衝突",
+   "p90": 4.48,
+   "steer>=100": {
+    "loss_s": 0.187,
+    "touched_s": 1.53
+   },
+   "gz>=45": {
+    "loss_s": 0.197,
+    "touched_s": 1.8
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.211,
+    "touched_s": 1.8
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.21,
+    "touched_s": 1.8
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.104,
+    "touched_s": 1.03
+   }
+  },
+  {
+   "log": "20261024-160654",
+   "no": "7",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 9.563,
+   "lap_s": 9.01,
+   "kind": "強い衝突",
+   "p90": 4.23,
+   "steer>=100": {
+    "loss_s": 0.09,
+    "touched_s": 1.6
+   },
+   "gz>=45": {
+    "loss_s": 0.083,
+    "touched_s": 1.53
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.09,
+    "touched_s": 1.6
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.09,
+    "touched_s": 1.6
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.024,
+    "touched_s": 0.33
+   }
+  },
+  {
+   "log": "20261024-160654",
+   "no": "7",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 18.573,
+   "lap_s": 8.973,
+   "kind": "軽い接触",
+   "p90": 4.23,
+   "steer>=100": {
+    "loss_s": 0.068,
+    "touched_s": 1.07
+   },
+   "gz>=45": {
+    "loss_s": 0.073,
+    "touched_s": 1.47
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.079,
+    "touched_s": 1.5
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.076,
+    "touched_s": 1.43
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.042,
+    "touched_s": 0.57
+   }
+  },
+  {
+   "log": "20261024-160654",
+   "no": "7",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 42.654,
+   "lap_s": 9.079,
+   "kind": "強い衝突",
+   "p90": 4.12,
+   "steer>=100": {
+    "loss_s": 0.065,
+    "touched_s": 0.77
+   },
+   "gz>=45": {
+    "loss_s": 0.06,
+    "touched_s": 1.03
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.068,
+    "touched_s": 1.03
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.068,
+    "touched_s": 1.03
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.035,
+    "touched_s": 0.4
+   }
+  },
+  {
+   "log": "20261024-160654",
+   "no": "7",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.00 ステア1.00",
+   "t_start": 51.733,
+   "lap_s": 9.57,
+   "kind": "強い衝突",
+   "p90": 4.3,
+   "steer>=100": {
+    "loss_s": 0.104,
+    "touched_s": 1.13
+   },
+   "gz>=45": {
+    "loss_s": 0.094,
+    "touched_s": 1.1
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.104,
+    "touched_s": 1.13
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.104,
+    "touched_s": 1.13
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.032,
+    "touched_s": 0.5
+   }
+  },
+  {
+   "log": "20261024-160847",
+   "no": "8",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.10 ステア1.10",
+   "t_start": 25.816,
+   "lap_s": 8.629,
+   "kind": "強い衝突",
+   "p90": 4.37,
+   "steer>=100": {
+    "loss_s": 0.114,
+    "touched_s": 0.97
+   },
+   "gz>=45": {
+    "loss_s": 0.131,
+    "touched_s": 1.6
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.136,
+    "touched_s": 1.63
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.133,
+    "touched_s": 1.63
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.086,
+    "touched_s": 0.7
+   }
+  },
+  {
+   "log": "20261024-160847",
+   "no": "8",
+   "session": "10/24 2回目",
+   "setting": "遅く入る型 速さ1.10 ステア1.10",
+   "t_start": 68.772,
+   "lap_s": 9.29,
+   "kind": "強い衝突",
+   "p90": 4.73,
+   "steer>=100": {
+    "loss_s": 0.269,
+    "touched_s": 2.3
+   },
+   "gz>=45": {
+    "loss_s": 0.274,
+    "touched_s": 2.4
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.298,
+    "touched_s": 2.5
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.296,
+    "touched_s": 2.5
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.132,
+    "touched_s": 1.4
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 22.462,
+   "lap_s": 8.252,
+   "kind": "きれい",
+   "p90": 4.12,
+   "steer>=100": {
+    "loss_s": 0.009,
+    "touched_s": 0.2
+   },
+   "gz>=45": {
+    "loss_s": 0.028,
+    "touched_s": 1.07
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.031,
+    "touched_s": 1.13
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.022,
+    "touched_s": 0.93
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 30.714,
+   "lap_s": 8.36,
+   "kind": "きれい",
+   "p90": 3.95,
+   "steer>=100": {
+    "loss_s": 0.007,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.03
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.007,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.007,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 39.074,
+   "lap_s": 8.988,
+   "kind": "軽い接触",
+   "p90": 4.06,
+   "steer>=100": {
+    "loss_s": 0.027,
+    "touched_s": 0.57
+   },
+   "gz>=45": {
+    "loss_s": 0.037,
+    "touched_s": 1.27
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.043,
+    "touched_s": 1.27
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.043,
+    "touched_s": 1.27
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 48.062,
+   "lap_s": 8.398,
+   "kind": "きれい",
+   "p90": 4.06,
+   "steer>=100": {
+    "loss_s": 0.008,
+    "touched_s": 0.23
+   },
+   "gz>=45": {
+    "loss_s": 0.02,
+    "touched_s": 0.57
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.02,
+    "touched_s": 0.57
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.009,
+    "touched_s": 0.4
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 56.46,
+   "lap_s": 8.498,
+   "kind": "きれい",
+   "p90": 4.0,
+   "steer>=100": {
+    "loss_s": 0.008,
+    "touched_s": 0.2
+   },
+   "gz>=45": {
+    "loss_s": 0.006,
+    "touched_s": 0.13
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.008,
+    "touched_s": 0.2
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.008,
+    "touched_s": 0.2
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 64.958,
+   "lap_s": 8.39,
+   "kind": "軽い接触",
+   "p90": 4.05,
+   "steer>=100": {
+    "loss_s": 0.008,
+    "touched_s": 0.2
+   },
+   "gz>=45": {
+    "loss_s": 0.027,
+    "touched_s": 0.7
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.027,
+    "touched_s": 0.7
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.009,
+    "touched_s": 0.33
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 73.348,
+   "lap_s": 8.681,
+   "kind": "きれい",
+   "p90": 3.87,
+   "steer>=100": {
+    "loss_s": 0.006,
+    "touched_s": 0.2
+   },
+   "gz>=45": {
+    "loss_s": 0.002,
+    "touched_s": 0.1
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.006,
+    "touched_s": 0.2
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.006,
+    "touched_s": 0.2
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 82.03,
+   "lap_s": 8.528,
+   "kind": "きれい",
+   "p90": 3.92,
+   "steer>=100": {
+    "loss_s": 0.007,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.015,
+    "touched_s": 0.37
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.015,
+    "touched_s": 0.37
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.007,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 90.558,
+   "lap_s": 8.902,
+   "kind": "きれい",
+   "p90": 3.77,
+   "steer>=100": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.004,
+    "touched_s": 0.13
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 99.459,
+   "lap_s": 8.833,
+   "kind": "きれい",
+   "p90": 3.83,
+   "steer>=100": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.001,
+    "touched_s": 0.07
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": "9",
+   "session": "10/24 2回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 108.292,
+   "lap_s": 8.96,
+   "kind": "きれい",
+   "p90": 3.79,
+   "steer>=100": {
+    "loss_s": 0.003,
+    "touched_s": 0.1
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.03
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.003,
+    "touched_s": 0.1
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.003,
+    "touched_s": 0.1
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-162305",
+   "no": "10",
+   "session": "10/24 2回目",
+   "setting": "B 速さ1.00 ステア1.00",
+   "t_start": 7.454,
+   "lap_s": 8.62,
+   "kind": "きれい",
+   "p90": 4.26,
+   "steer>=100": {
+    "loss_s": 0.073,
+    "touched_s": 1.2
+   },
+   "gz>=45": {
+    "loss_s": 0.079,
+    "touched_s": 1.8
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.085,
+    "touched_s": 1.8
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.085,
+    "touched_s": 1.8
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.002,
+    "touched_s": 0.23
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 73.074,
+   "lap_s": 9.09,
+   "kind": "強い衝突",
+   "p90": 3.5,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 82.164,
+   "lap_s": 9.03,
+   "kind": "強い衝突",
+   "p90": 3.6,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 91.194,
+   "lap_s": 9.53,
+   "kind": "きれい",
+   "p90": 3.58,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 100.724,
+   "lap_s": 10.2,
+   "kind": "強い衝突",
+   "p90": 3.04,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 110.924,
+   "lap_s": 9.28,
+   "kind": "軽い接触",
+   "p90": 3.41,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 120.204,
+   "lap_s": 9.31,
+   "kind": "きれい",
+   "p90": 3.61,
+   "steer>=100": {
+    "loss_s": 0.006,
+    "touched_s": 0.27
+   },
+   "gz>=45": {
+    "loss_s": 0.005,
+    "touched_s": 0.2
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.006,
+    "touched_s": 0.27
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.006,
+    "touched_s": 0.27
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 129.515,
+   "lap_s": 9.42,
+   "kind": "強い衝突",
+   "p90": 3.29,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": "11",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 138.934,
+   "lap_s": 8.88,
+   "kind": "軽い接触",
+   "p90": 3.58,
+   "steer>=100": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.003,
+    "touched_s": 0.13
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.004,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 20.619,
+   "lap_s": 9.199,
+   "kind": "強い衝突",
+   "p90": 3.3,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 29.818,
+   "lap_s": 8.851,
+   "kind": "強い衝突",
+   "p90": 3.47,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 38.669,
+   "lap_s": 9.339,
+   "kind": "きれい",
+   "p90": 3.42,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 48.008,
+   "lap_s": 9.36,
+   "kind": "きれい",
+   "p90": 3.46,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 57.368,
+   "lap_s": 9.73,
+   "kind": "軽い接触",
+   "p90": 3.4,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": "12",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 67.098,
+   "lap_s": 9.56,
+   "kind": "軽い接触",
+   "p90": 3.3,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": "13",
+   "session": "10/24 3回目",
+   "setting": "遅く入る型 速さ0.90 ステア1.00",
+   "t_start": 15.056,
+   "lap_s": 9.199,
+   "kind": "強い衝突",
+   "p90": 3.49,
+   "steer>=100": {
+    "loss_s": 0.005,
+    "touched_s": 0.17
+   },
+   "gz>=45": {
+    "loss_s": 0.001,
+    "touched_s": 0.07
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.005,
+    "touched_s": 0.17
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.005,
+    "touched_s": 0.17
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": "13",
+   "session": "10/24 3回目",
+   "setting": "遅く入る型 速さ0.90 ステア1.00",
+   "t_start": 24.255,
+   "lap_s": 9.427,
+   "kind": "強い衝突",
+   "p90": 3.6,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": "13",
+   "session": "10/24 3回目",
+   "setting": "遅く入る型 速さ0.90 ステア1.00",
+   "t_start": 33.682,
+   "lap_s": 8.98,
+   "kind": "きれい",
+   "p90": 3.62,
+   "steer>=100": {
+    "loss_s": 0.001,
+    "touched_s": 0.13
+   },
+   "gz>=45": {
+    "loss_s": 0.001,
+    "touched_s": 0.1
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.001,
+    "touched_s": 0.13
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.001,
+    "touched_s": 0.13
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": "13",
+   "session": "10/24 3回目",
+   "setting": "遅く入る型 速さ0.90 ステア1.00",
+   "t_start": 42.662,
+   "lap_s": 9.24,
+   "kind": "きれい",
+   "p90": 3.77,
+   "steer>=100": {
+    "loss_s": 0.012,
+    "touched_s": 0.3
+   },
+   "gz>=45": {
+    "loss_s": 0.008,
+    "touched_s": 0.2
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.012,
+    "touched_s": 0.3
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.012,
+    "touched_s": 0.3
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "t_start": 51.335,
+   "lap_s": 9.968,
+   "kind": "きれい",
+   "p90": 3.07,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "t_start": 61.303,
+   "lap_s": 10.05,
+   "kind": "きれい",
+   "p90": 3.18,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "t_start": 71.353,
+   "lap_s": 9.974,
+   "kind": "きれい",
+   "p90": 3.12,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "t_start": 81.328,
+   "lap_s": 10.297,
+   "kind": "強い衝突",
+   "p90": 2.75,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": "14",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.85 ステア1.00",
+   "t_start": 91.625,
+   "lap_s": 10.519,
+   "kind": "きれい",
+   "p90": 2.71,
+   "steer>=100": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": -0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": "15",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 12.321,
+   "lap_s": 9.709,
+   "kind": "軽い接触",
+   "p90": 3.29,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": "15",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 22.031,
+   "lap_s": 9.88,
+   "kind": "軽い接触",
+   "p90": 3.22,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": "15",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 31.91,
+   "lap_s": 9.83,
+   "kind": "軽い接触",
+   "p90": 3.26,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": "15",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 41.741,
+   "lap_s": 9.87,
+   "kind": "軽い接触",
+   "p90": 3.27,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": "16",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 10.416,
+   "lap_s": 9.219,
+   "kind": "きれい",
+   "p90": 3.33,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": "16",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 33.436,
+   "lap_s": 9.85,
+   "kind": "強い衝突",
+   "p90": 3.33,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": "16",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 43.285,
+   "lap_s": 9.81,
+   "kind": "きれい",
+   "p90": 3.03,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": "16",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.10",
+   "t_start": 53.095,
+   "lap_s": 10.13,
+   "kind": "軽い接触",
+   "p90": 3.2,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 11.677,
+   "lap_s": 8.66,
+   "kind": "きれい",
+   "p90": 3.72,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 20.336,
+   "lap_s": 9.341,
+   "kind": "強い衝突",
+   "p90": 3.34,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 29.677,
+   "lap_s": 8.959,
+   "kind": "強い衝突",
+   "p90": 3.44,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 38.637,
+   "lap_s": 9.54,
+   "kind": "強い衝突",
+   "p90": 3.02,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 48.176,
+   "lap_s": 9.1,
+   "kind": "きれい",
+   "p90": 3.44,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 57.276,
+   "lap_s": 9.12,
+   "kind": "きれい",
+   "p90": 3.37,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": "17",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.95 ステア1.00",
+   "t_start": 66.396,
+   "lap_s": 9.08,
+   "kind": "きれい",
+   "p90": 3.44,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  },
+  {
+   "log": "20261024-185703",
+   "no": "18",
+   "session": "10/24 3回目",
+   "setting": "B 速さ0.90 ステア1.00",
+   "t_start": 35.518,
+   "lap_s": 10.733,
+   "kind": "軽い接触",
+   "p90": 2.78,
+   "steer>=100": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=45": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "steer>=100|gz>=60": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   },
+   "none(4.5 only)": {
+    "loss_s": 0.0,
+    "touched_s": 0.0
+   }
+  }
+ ]
+}

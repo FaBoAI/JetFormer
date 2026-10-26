@@ -1,0 +1,38 @@
+OK  protocol_locked {}
+OK  tables_sha256_match_card {"sha256": {"drop_v2h.npz": "433a1a64057ed80c6058e700175b8794a1bf1d8a7584b7e943200210301c4050", "drop_v2m.npz": "e84da025f6edec6430534e645e0e86bc176fa8788698a508b804a85ffdf70de8", "weights_v2m.npz": "ef4a1a319aa9f628e593639d835a1ea9e2a3cfcfc77aac6219147956137deda0", "remap_v2m.npz": "341a587b27913e5
+OK  tables_card_dataset_card_same {}
+OK  recount_reproduces_B_trainlog {"clean_driving": {"train": {"samples": 5912, "impact_masked": 3522}, "val": {"samples": 1559, "impact_masked": 1083}}, "b_train_log": {"train": 5912, "val": 1559, "impact_masked": [3522, 1083]}}
+OK  sealed_not_in_source_scenes {"sealed_logs": 14}
+OK  ai_logs_equal_protocol_46 {}
+OK  val_equals_H1_11 {"val": 11}
+OK  H1_not_in_train {}
+OK  train_val_disjoint {}
+OK  genre9_in_card_modes {"card_modes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+OK  table_has_all_scenes_v2h {"missing": []}
+OK  table_has_all_scenes_v2m {"missing": []}
+OK  table_has_all_scenes_bfast {"missing": []}
+OK  table_has_all_scenes_w_v2m {"missing": []}
+OK  table_has_all_scenes_w_bf {"missing": []}
+OK  table_has_all_scenes_remap {"missing": []}
+OK  arrays_present_and_shapes {"problems": []}
+OK  weights_finite_for_used_frames {}
+OK  base41_in_v2_equals_B_5912 {"base41_samples_in_v2": 5912, "note": "build_ai_dataset の人のラベルのマスク(human_label_mask)で clean_driving の学習 41 シーンが減っていないか"}
+OK  train_samples_v2h_within_1pct {"samples": 6506, "expected": 6562, "diff": -56, "by_group": {"base41": 5912, "new_human": 594}, "by_mode": {"5": 4278, "4": 2228}}
+NG  train_samples_v2m_within_1pct {"samples": 7638, "expected": 7757, "diff": -119, "by_group": {"base41": 5912, "new_human": 594, "ai_w1": 785, "ai_w05": 347, "ai": 1132}, "by_mode": {"5": 4278, "4": 2228, "9": 1132}}
+OK  train_samples_bfast_within_1pct {"samples": 6697, "expected": 6748, "diff": -51, "by_group": {"base41": 5912, "new_human": 0, "ai_w1": 611, "ai_w05": 174, "ai": 785}, "by_mode": {"5": 4469, "4": 2228}}
+OK  val_samples_v2h_is_1559 {"val": 1559}
+OK  val_samples_v2m_is_1559 {"val": 1559}
+OK  val_samples_bfast_is_1559 {"val": 1559}
+OK  v2m_ai_weighted_share_le_15pct {"weighted": 0.1284, "unweighted": 0.1482, "plan_weighted": 0.134, "plan_unweighted": 0.154}
+NG  bfast_teacher_within_1pct {"teacher_samples": 785, "expected": 836, "share_unweighted": 0.1172, "share_weighted": 0.1056}
+OK  bfast_teacher_mode_5_only {"teacher_modes": {"5": 785}}
+OK  genre9_only_ai_lap_frames {"genre9_samples": 1132, "genre9_not_ai": 0}
+OK  v2h_has_no_ai_frames {"by_source": {"0": 6506}}
+OK  bfast_teacher_label_equals_car_output {"median_abs_us": [0.0, 0.0], "p99_abs_us": [0.0, 0.0], "note": "k=0 の正解 = このフレームで決めた out(ゲイン 1.0 の割り戻し)。action_exec はラベルの行の車に出た値"}
+NG  action_reference_within_2us_of_B {"v2_all": [1433.0, 1500.0], "v2_human_only": [1433.0, 1500.0], "n": 24723, "B": [1441.0, 1496.0], "note": "train_data.action_reference(学習シーンの止まっているフレーム。drop に関係なく全部)。段 0 の確かめ 7"}
+OK  sealed_images_not_in_dataset {"sealed_images": 33630, "dataset_images": 115335}
+OK  H1_images_not_in_train_scenes {"h1_images": 5865}
+OK  cam_files_not_from_sealed {}
+OK  interv_overlap_zero {"overlap_frames": 0}
+OK  images_readable_224x224x3 {"read": 9197, "unreadable": 0, "shapes": {"(224, 224, 3)": 9197}}
+外れ: ['train_samples_v2m_within_1pct', 'bfast_teacher_within_1pct', 'action_reference_within_2us_of_B']

@@ -1,0 +1,81 @@
+{
+ "schema": "jf-verify-c3-gpu/v1",
+ "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+ "script": "/home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/repredict_c3_gpu.py",
+ "script_sha256": "e9478132d5f6866cc556006a3a46f8171be5205e7786972e3edc4e2d2b6c4a14",
+ "best_pth_sha256": "8b0dc57f51b79a6c9059b6cf882fb7b53c9acfd0e70de8f03a0e9e6a99a02a04",
+ "ref": [
+  1441.0,
+  1496.0
+ ],
+ "tab": {
+  "c3_tab_script_sha256": "22cd62549b77a49994a79bf5cd2f8e6751c234a37dd133d0bc2c6defec538f95",
+  "c3_tab_best_sha256_same": true,
+  "vs_c3_tab_max_abs_us": 0.3358488082885742,
+  "vs_c3_tab_mean_abs_us": 0.024247992692612644,
+  "standstill_go_frac": 0.19641255605381167,
+  "standstill_go_frac_raw_nogain_ref": 0.2062780269058296,
+  "standstill_go_frac_from_c3_tab": 0.19641255605381167,
+  "standstill_go_flips_vs_c3_tab": 0,
+  "frames": {
+   "stand": 1115,
+   "gb_de": 403,
+   "gb_sw": 821,
+   "gb_hs": 702
+  },
+  "seconds": 26.8
+ },
+ "shift": {
+  "genre_same_as_saved": true,
+  "genre_substituted": 0,
+  "none_vs_saved_max_abs_us": 0.35266923904418945,
+  "none_vs_saved_mean_abs_us": 0.021690156050639654,
+  "robust_dl1_us_base_saved": 0.6861814062687525,
+  "robust_dl1_us_base_mine": 0.6858468690983354,
+  "per_shift_base_saved": {
+   "img_up3": 1.0809031374432791,
+   "img_down3": 1.4681633213362701,
+   "bright_0.8": 0.27951864650939484,
+   "bright_1.2": -0.014218781602785668,
+   "tof_down1": 1.9573617259216363,
+   "top_0.85": 0.036711436990721324,
+   "top_1.15": -0.005169642717248735
+  },
+  "per_shift_base_mine": {
+   "img_up3": 1.080568600272862,
+   "img_down3": 1.467828784165853,
+   "bright_0.8": 0.27918410933897775,
+   "bright_1.2": -0.014553318773202761,
+   "tof_down1": 1.9570271887512192,
+   "top_0.85": 0.03637689982030423,
+   "top_1.15": -0.005504179887665828
+  },
+  "seconds": 239.1
+ },
+ "trt": {
+  "ai_1010": [
+   21,
+   2326
+  ],
+  "engine_sha256": "a565ec9cfd62d938ded7ebbf477bb29d4e7959b2df6b00148ce576034cfdfc7f",
+  "seconds": 25.5,
+  "vs_c3_trt_max_abs_us": 0.0,
+  "vs_c3_trt_mean_abs_us": 0.0,
+  "c3_trt_job": "20261026-035310",
+  "brake_flips_vs_c3_trt": 0,
+  "heldout_fp32_mine": [
+   0,
+   222
+  ],
+  "brake_lowspeed_frac": 0.008241758241758242,
+  "ai_1010_fp32_ref": [
+   21,
+   2326
+  ],
+  "trt_vs_fp32_max_abs_us": 5.155384540557861
+ },
+ "made_at": "2026-10-26 05:35:50",
+ "seconds": {
+  "tab,shift,trt": 338.6
+ }
+}

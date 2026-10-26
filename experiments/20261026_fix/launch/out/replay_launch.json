@@ -1,0 +1,1727 @@
+{
+ "created_by": "experiments/20261026_fix/launch/replay_launch.py",
+ "launch": {
+  "us": 250.0,
+  "mps": 2.5,
+  "max_s": 1.2
+ },
+ "off_replay": [
+  {
+   "log": "20261024-162033",
+   "no": 9,
+   "frames": 4026,
+   "compared": 4010,
+   "same": 4010,
+   "launch_window_compared": 85,
+   "launch_window_same": 85,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-162305",
+   "no": 10,
+   "frames": 3579,
+   "compared": 2077,
+   "same": 2077,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-183123",
+   "no": 11,
+   "frames": 5225,
+   "compared": 5084,
+   "same": 5084,
+   "launch_window_compared": 319,
+   "launch_window_same": 319,
+   "stopped_sections": 7,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-183437",
+   "no": 12,
+   "frames": 2879,
+   "compared": 2879,
+   "same": 2879,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-183826",
+   "no": 14,
+   "frames": 3468,
+   "compared": 3431,
+   "same": 3431,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-184043",
+   "no": 15,
+   "frames": 2051,
+   "compared": 2051,
+   "same": 2051,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-184400",
+   "no": 16,
+   "frames": 2360,
+   "compared": 2360,
+   "same": 2358,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": [
+    {
+     "k": 868,
+     "rec": [
+      1441.0,
+      1506.0
+     ],
+     "sim": [
+      1441.0,
+      1796.0
+     ],
+     "kind_sim": 2
+    },
+    {
+     "k": 873,
+     "rec": [
+      1441.0,
+      1796.0
+     ],
+     "sim": [
+      1441.0,
+      1506.0
+     ],
+     "kind_sim": 2
+    }
+   ]
+  },
+  {
+   "log": "20261024-184549",
+   "no": 17,
+   "frames": 2797,
+   "compared": 2797,
+   "same": 2797,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  },
+  {
+   "log": "20261024-185703",
+   "no": 18,
+   "frames": 1621,
+   "compared": 1621,
+   "same": 1621,
+   "launch_window_compared": 91,
+   "launch_window_same": 91,
+   "stopped_sections": 1,
+   "first_diff": []
+  }
+ ],
+ "same_as_diag_sim": true,
+ "per_launch": [
+  {
+   "log": "20261023-210840",
+   "no": 8,
+   "model": "B",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 3.4,
+   "loss_s": 0.574,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": -371.0,
+    "ttc5": [
+     30.0,
+     1.01,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 0.471,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.57,
+     "t_off": 1.609,
+     "t_on": 1.361,
+     "save_vs_base": 0.209,
+     "save_vs_off": 0.248,
+     "v_lh_off": 3.4,
+     "v_lh_on": 3.44,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 1.57,
+     "t_off": 1.609,
+     "t_on": 1.432,
+     "save_vs_base": 0.138,
+     "save_vs_off": 0.177,
+     "v_lh_off": 3.4,
+     "v_lh_on": 3.42,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.57,
+     "t_off": 1.609,
+     "t_on": 1.352,
+     "save_vs_base": 0.218,
+     "save_vs_off": 0.257,
+     "v_lh_off": 3.4,
+     "v_lh_on": 3.43,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211020",
+   "no": 9,
+   "model": "SLOW-SEC1",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 5.6,
+   "loss_s": 0.754,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 1.808,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.43,
+     "t_off": 2.407,
+     "t_on": 2.203,
+     "save_vs_base": 0.227,
+     "save_vs_off": 0.204,
+     "v_lh_off": 2.84,
+     "v_lh_on": 2.81,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.43,
+     "t_off": 2.413,
+     "t_on": 2.281,
+     "save_vs_base": 0.149,
+     "save_vs_off": 0.132,
+     "v_lh_off": 2.83,
+     "v_lh_on": 2.77,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.43,
+     "t_off": 2.407,
+     "t_on": 2.191,
+     "save_vs_base": 0.239,
+     "save_vs_off": 0.216,
+     "v_lh_off": 2.84,
+     "v_lh_on": 2.8,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211020",
+   "no": 9,
+   "model": "SLOW-SEC1",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 6.0,
+   "loss_s": 0.667,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": -277.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 0.651,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.45,
+     "t_off": 2.483,
+     "t_on": 2.297,
+     "save_vs_base": 0.153,
+     "save_vs_off": 0.186,
+     "v_lh_off": 3.62,
+     "v_lh_on": 3.57,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.45,
+     "t_off": 2.489,
+     "t_on": 2.373,
+     "save_vs_base": 0.077,
+     "save_vs_off": 0.116,
+     "v_lh_off": 3.59,
+     "v_lh_on": 3.63,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.45,
+     "t_off": 2.483,
+     "t_on": 2.289,
+     "save_vs_base": 0.161,
+     "save_vs_off": 0.195,
+     "v_lh_off": 3.62,
+     "v_lh_on": 3.59,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211209",
+   "no": 11,
+   "model": "B",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 4.6,
+   "loss_s": 0.62,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 10.226,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.1,
+     "t_off": 2.075,
+     "t_on": 1.864,
+     "save_vs_base": 0.236,
+     "save_vs_off": 0.212,
+     "v_lh_off": 3.14,
+     "v_lh_on": 3.13,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.1,
+     "t_off": 2.075,
+     "t_on": 1.939,
+     "save_vs_base": 0.161,
+     "save_vs_off": 0.136,
+     "v_lh_off": 3.14,
+     "v_lh_on": 3.13,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.1,
+     "t_off": 2.075,
+     "t_on": 1.855,
+     "save_vs_base": 0.245,
+     "save_vs_off": 0.221,
+     "v_lh_off": 3.14,
+     "v_lh_on": 3.12,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211308",
+   "no": 12,
+   "model": "AUG",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 6.8,
+   "loss_s": 0.591,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     3.52,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 1.562,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.7,
+     "t_off": 2.697,
+     "t_on": 2.589,
+     "save_vs_base": 0.111,
+     "save_vs_off": 0.108,
+     "v_lh_off": 2.9,
+     "v_lh_on": 2.91,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.72,
+     "t_off": 2.717,
+     "t_on": 2.663,
+     "save_vs_base": 0.057,
+     "save_vs_off": 0.054,
+     "v_lh_off": 2.91,
+     "v_lh_on": 2.92,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.7,
+     "t_off": 2.697,
+     "t_on": 2.575,
+     "save_vs_base": 0.125,
+     "save_vs_off": 0.122,
+     "v_lh_off": 2.9,
+     "v_lh_on": 2.91,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211448",
+   "no": 14,
+   "model": "WGT",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 4.9,
+   "loss_s": 0.512,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 10.86,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.11,
+     "t_off": 2.107,
+     "t_on": 1.91,
+     "save_vs_base": 0.2,
+     "save_vs_off": 0.197,
+     "v_lh_off": 3.47,
+     "v_lh_on": 3.48,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.11,
+     "t_off": 2.107,
+     "t_on": 1.982,
+     "save_vs_base": 0.128,
+     "save_vs_off": 0.125,
+     "v_lh_off": 3.47,
+     "v_lh_on": 3.47,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.11,
+     "t_off": 2.107,
+     "t_on": 1.896,
+     "save_vs_base": 0.214,
+     "save_vs_off": 0.211,
+     "v_lh_off": 3.47,
+     "v_lh_on": 3.47,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211547",
+   "no": 15,
+   "model": "B",
+   "session": "10/23 公式",
+   "gain": 1.0,
+   "main_B_1024": false,
+   "x_lh_m": 5.1,
+   "loss_s": 0.434,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 2.11,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 2.29,
+     "t_off": 2.281,
+     "t_on": 2.133,
+     "save_vs_base": 0.157,
+     "save_vs_off": 0.148,
+     "v_lh_off": 2.55,
+     "v_lh_on": 2.56,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.433
+    },
+    "a5": {
+     "t_base": 2.3,
+     "t_off": 2.289,
+     "t_on": 2.21,
+     "save_vs_base": 0.09,
+     "save_vs_off": 0.079,
+     "v_lh_off": 2.56,
+     "v_lh_on": 2.56,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 2.29,
+     "t_off": 2.281,
+     "t_on": 2.121,
+     "save_vs_base": 0.169,
+     "save_vs_off": 0.16,
+     "v_lh_off": 2.55,
+     "v_lh_on": 2.56,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    }
+   }
+  },
+  {
+   "log": "20261023-211828",
+   "no": 17,
+   "model": "B",
+   "session": "10/23 後",
+   "gain": 1.2,
+   "main_B_1024": false,
+   "x_lh_m": 4.0,
+   "loss_s": 1.012,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     0.95,
+     0.93,
+     0.86,
+     0.96,
+     0.92
+    ],
+    "ttc_med": 0.93,
+    "veh_age_ms": 1.464,
+    "why_not": "near",
+    "would_start": false
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.58,
+     "t_off": 1.608,
+     "t_on": 1.608,
+     "save_vs_base": -0.028,
+     "save_vs_off": 0.0,
+     "v_lh_off": 2.92,
+     "v_lh_on": 2.92,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a5": {
+     "t_base": 1.7,
+     "t_off": 1.674,
+     "t_on": 1.674,
+     "save_vs_base": 0.026,
+     "save_vs_off": 0.0,
+     "v_lh_off": 2.94,
+     "v_lh_on": 2.94,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a9": {
+     "t_base": 1.58,
+     "t_off": 1.6,
+     "t_on": 1.6,
+     "save_vs_base": -0.02,
+     "save_vs_off": 0.0,
+     "v_lh_off": 2.92,
+     "v_lh_on": 2.92,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    }
+   }
+  },
+  {
+   "log": "20261023-212242",
+   "no": 19,
+   "model": "B",
+   "session": "10/23 後",
+   "gain": 1.2,
+   "main_B_1024": false,
+   "x_lh_m": 2.8,
+   "loss_s": 0.648,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 3.106,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.17,
+     "t_off": 1.159,
+     "t_on": 1.094,
+     "save_vs_base": 0.076,
+     "save_vs_off": 0.066,
+     "v_lh_off": 4.08,
+     "v_lh_on": 4.09,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.2,
+     "t_off": 1.198,
+     "t_on": 1.175,
+     "save_vs_base": 0.025,
+     "save_vs_off": 0.023,
+     "v_lh_off": 4.08,
+     "v_lh_on": 4.07,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.17,
+     "t_off": 1.159,
+     "t_on": 1.069,
+     "save_vs_base": 0.101,
+     "save_vs_off": 0.09,
+     "v_lh_off": 4.08,
+     "v_lh_on": 4.09,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.367
+    }
+   }
+  },
+  {
+   "log": "20261023-212934",
+   "no": 23,
+   "model": "WGT",
+   "session": "10/23 後",
+   "gain": 1.2,
+   "main_B_1024": false,
+   "x_lh_m": 4.1,
+   "loss_s": 0.683,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     NaN,
+     NaN,
+     NaN,
+     NaN,
+     NaN
+    ],
+    "ttc_med": null,
+    "veh_age_ms": 2.882,
+    "why_not": "ttc_n",
+    "would_start": false
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.45,
+     "t_off": 1.431,
+     "t_on": 1.431,
+     "save_vs_base": 0.019,
+     "save_vs_off": 0.0,
+     "v_lh_off": 4.91,
+     "v_lh_on": 4.91,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a5": {
+     "t_base": 1.47,
+     "t_off": 1.459,
+     "t_on": 1.459,
+     "save_vs_base": 0.011,
+     "save_vs_off": 0.0,
+     "v_lh_off": 4.87,
+     "v_lh_on": 4.87,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a9": {
+     "t_base": 1.45,
+     "t_off": 1.431,
+     "t_on": 1.431,
+     "save_vs_base": 0.019,
+     "save_vs_off": 0.0,
+     "v_lh_off": 4.91,
+     "v_lh_on": 4.91,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    }
+   }
+  },
+  {
+   "log": "20261024-160847",
+   "no": 8,
+   "model": "SLOW-SEC1",
+   "session": "10/24 2回目",
+   "gain": 1.1,
+   "main_B_1024": false,
+   "x_lh_m": 3.3,
+   "loss_s": 0.738,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": -43.0,
+    "ttc5": [
+     6.17,
+     0.95,
+     0.99,
+     0.96,
+     0.98
+    ],
+    "ttc_med": 0.98,
+    "veh_age_ms": 5.508,
+    "why_not": "near",
+    "would_start": false
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.63,
+     "t_off": 1.641,
+     "t_on": 1.641,
+     "save_vs_base": -0.011,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.35,
+     "v_lh_on": 3.35,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a5": {
+     "t_base": 1.63,
+     "t_off": 1.643,
+     "t_on": 1.643,
+     "save_vs_base": -0.013,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.33,
+     "v_lh_on": 3.33,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a9": {
+     "t_base": 1.63,
+     "t_off": 1.641,
+     "t_on": 1.641,
+     "save_vs_base": -0.011,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.35,
+     "v_lh_on": 3.35,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    }
+   }
+  },
+  {
+   "log": "20261024-160847",
+   "no": 8,
+   "model": "SLOW-SEC1",
+   "session": "10/24 2回目",
+   "gain": 1.1,
+   "main_B_1024": false,
+   "x_lh_m": 4.9,
+   "loss_s": 0.615,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     1.0,
+     1.0,
+     0.99,
+     1.02,
+     6.07
+    ],
+    "ttc_med": 1.0,
+    "veh_age_ms": 2.813,
+    "why_not": "near",
+    "would_start": false
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.92,
+     "t_off": 1.93,
+     "t_on": 1.93,
+     "save_vs_base": -0.01,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.9,
+     "v_lh_on": 3.9,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a5": {
+     "t_base": 1.93,
+     "t_off": 1.948,
+     "t_on": 1.948,
+     "save_vs_base": -0.018,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.92,
+     "v_lh_on": 3.92,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    },
+    "a9": {
+     "t_base": 1.92,
+     "t_off": 1.93,
+     "t_on": 1.93,
+     "save_vs_base": -0.01,
+     "save_vs_off": 0.0,
+     "v_lh_off": 3.9,
+     "v_lh_on": 3.9,
+     "end_code": 0,
+     "end": "",
+     "launch_s": 0.0
+    }
+   }
+  },
+  {
+   "log": "20261024-162033",
+   "no": 9,
+   "model": "B",
+   "session": "10/24 2回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 1.4,
+   "loss_s": 0.842,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": -184.0,
+    "ttc5": [
+     3.53,
+     3.76,
+     3.76,
+     4.04,
+     6.23
+    ],
+    "ttc_med": 3.76,
+    "veh_age_ms": 10.59,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.08,
+     "t_off": 1.039,
+     "t_on": 0.751,
+     "save_vs_base": 0.329,
+     "save_vs_off": 0.288,
+     "v_lh_off": 2.61,
+     "v_lh_on": 2.82,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.367
+    },
+    "a5": {
+     "t_base": 1.08,
+     "t_off": 1.039,
+     "t_on": 0.828,
+     "save_vs_base": 0.252,
+     "save_vs_off": 0.211,
+     "v_lh_off": 2.61,
+     "v_lh_on": 2.81,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.08,
+     "t_off": 1.039,
+     "t_on": 0.719,
+     "save_vs_base": 0.361,
+     "save_vs_off": 0.32,
+     "v_lh_off": 2.61,
+     "v_lh_on": 2.85,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-162305",
+   "no": 10,
+   "model": "B",
+   "session": "10/24 2回目",
+   "gain": 1.0,
+   "main_B_1024": true,
+   "x_lh_m": 4.0,
+   "loss_s": 0.598,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 0.739,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.54,
+     "t_off": 1.528,
+     "t_on": 1.422,
+     "save_vs_base": 0.118,
+     "save_vs_off": 0.106,
+     "v_lh_off": 4.62,
+     "v_lh_on": 4.63,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.367
+    },
+    "a5": {
+     "t_base": 1.56,
+     "t_off": 1.556,
+     "t_on": 1.507,
+     "save_vs_base": 0.053,
+     "save_vs_off": 0.049,
+     "v_lh_off": 4.62,
+     "v_lh_on": 4.63,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.54,
+     "t_off": 1.528,
+     "t_on": 1.389,
+     "save_vs_base": 0.151,
+     "save_vs_off": 0.14,
+     "v_lh_off": 4.62,
+     "v_lh_on": 4.63,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-183123",
+   "no": 11,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 3.9,
+   "loss_s": 0.69,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": -274.0,
+    "ttc5": [
+     30.0,
+     6.35,
+     30.0,
+     30.0,
+     6.21
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 1.805,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.78,
+     "t_off": 1.809,
+     "t_on": 1.532,
+     "save_vs_base": 0.248,
+     "save_vs_off": 0.277,
+     "v_lh_off": 3.75,
+     "v_lh_on": 3.8,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.78,
+     "t_off": 1.809,
+     "t_on": 1.618,
+     "save_vs_base": 0.162,
+     "save_vs_off": 0.191,
+     "v_lh_off": 3.75,
+     "v_lh_on": 3.76,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.78,
+     "t_off": 1.809,
+     "t_on": 1.52,
+     "save_vs_base": 0.26,
+     "save_vs_off": 0.289,
+     "v_lh_off": 3.75,
+     "v_lh_on": 3.76,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-183437",
+   "no": 12,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 2.5,
+   "loss_s": 0.632,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     4.51,
+     4.5,
+     3.68,
+     6.03
+    ],
+    "ttc_med": 4.51,
+    "veh_age_ms": 0.125,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.41,
+     "t_off": 1.367,
+     "t_on": 1.103,
+     "save_vs_base": 0.307,
+     "save_vs_off": 0.264,
+     "v_lh_off": 3.35,
+     "v_lh_on": 3.42,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.41,
+     "t_off": 1.37,
+     "t_on": 1.186,
+     "save_vs_base": 0.224,
+     "save_vs_off": 0.184,
+     "v_lh_off": 3.36,
+     "v_lh_on": 3.41,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.41,
+     "t_off": 1.367,
+     "t_on": 1.084,
+     "save_vs_base": 0.326,
+     "save_vs_off": 0.284,
+     "v_lh_off": 3.35,
+     "v_lh_on": 3.42,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-183656",
+   "no": 13,
+   "model": "SLOW-SEC1",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": false,
+   "x_lh_m": 2.0,
+   "loss_s": 0.72,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 4.891,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.25,
+     "t_off": 1.253,
+     "t_on": 0.997,
+     "save_vs_base": 0.253,
+     "save_vs_off": 0.256,
+     "v_lh_off": 2.59,
+     "v_lh_on": 2.73,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.25,
+     "t_off": 1.253,
+     "t_on": 1.076,
+     "save_vs_base": 0.174,
+     "save_vs_off": 0.177,
+     "v_lh_off": 2.59,
+     "v_lh_on": 2.71,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.25,
+     "t_off": 1.253,
+     "t_on": 0.987,
+     "save_vs_base": 0.263,
+     "save_vs_off": 0.266,
+     "v_lh_off": 2.59,
+     "v_lh_on": 2.7,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-183826",
+   "no": 14,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.85,
+   "main_B_1024": true,
+   "x_lh_m": 2.2,
+   "loss_s": 0.551,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 4.852,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.3,
+     "t_off": 1.297,
+     "t_on": 1.049,
+     "save_vs_base": 0.251,
+     "save_vs_off": 0.248,
+     "v_lh_off": 2.89,
+     "v_lh_on": 3.0,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.3,
+     "t_off": 1.297,
+     "t_on": 1.132,
+     "save_vs_base": 0.168,
+     "save_vs_off": 0.165,
+     "v_lh_off": 2.89,
+     "v_lh_on": 2.98,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.3,
+     "t_off": 1.297,
+     "t_on": 1.034,
+     "save_vs_base": 0.266,
+     "save_vs_off": 0.263,
+     "v_lh_off": 2.89,
+     "v_lh_on": 2.98,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-184043",
+   "no": 15,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 2.4,
+   "loss_s": 0.805,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 4.572,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.52,
+     "t_off": 1.498,
+     "t_on": 1.157,
+     "save_vs_base": 0.363,
+     "save_vs_off": 0.341,
+     "v_lh_off": 2.85,
+     "v_lh_on": 2.94,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.52,
+     "t_off": 1.498,
+     "t_on": 1.236,
+     "save_vs_base": 0.284,
+     "save_vs_off": 0.262,
+     "v_lh_off": 2.85,
+     "v_lh_on": 2.94,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.52,
+     "t_off": 1.498,
+     "t_on": 1.148,
+     "save_vs_base": 0.372,
+     "save_vs_off": 0.349,
+     "v_lh_off": 2.85,
+     "v_lh_on": 2.93,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-184400",
+   "no": 16,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 2.6,
+   "loss_s": 0.528,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 8.776,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.56,
+     "t_off": 1.555,
+     "t_on": 1.269,
+     "save_vs_base": 0.291,
+     "save_vs_off": 0.286,
+     "v_lh_off": 2.73,
+     "v_lh_on": 2.8,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.56,
+     "t_off": 1.555,
+     "t_on": 1.35,
+     "save_vs_base": 0.21,
+     "save_vs_off": 0.206,
+     "v_lh_off": 2.73,
+     "v_lh_on": 2.79,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.56,
+     "t_off": 1.555,
+     "t_on": 1.264,
+     "save_vs_base": 0.296,
+     "save_vs_off": 0.291,
+     "v_lh_off": 2.73,
+     "v_lh_on": 2.78,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-184549",
+   "no": 17,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.95,
+   "main_B_1024": true,
+   "x_lh_m": 2.5,
+   "loss_s": 0.657,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 2.51,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.41,
+     "t_off": 1.408,
+     "t_on": 1.13,
+     "save_vs_base": 0.28,
+     "save_vs_off": 0.278,
+     "v_lh_off": 3.39,
+     "v_lh_on": 3.44,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.41,
+     "t_off": 1.408,
+     "t_on": 1.21,
+     "save_vs_base": 0.2,
+     "save_vs_off": 0.198,
+     "v_lh_off": 3.39,
+     "v_lh_on": 3.46,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.41,
+     "t_off": 1.408,
+     "t_on": 1.119,
+     "save_vs_base": 0.291,
+     "save_vs_off": 0.29,
+     "v_lh_off": 3.39,
+     "v_lh_on": 3.45,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  },
+  {
+   "log": "20261024-185703",
+   "no": 18,
+   "model": "B",
+   "session": "10/24 3回目",
+   "gain": 0.9,
+   "main_B_1024": true,
+   "x_lh_m": 3.4,
+   "loss_s": 0.085,
+   "start": {
+    "armed": true,
+    "held": false,
+    "erpm": 0.0,
+    "ttc5": [
+     30.0,
+     30.0,
+     30.0,
+     30.0,
+     30.0
+    ],
+    "ttc_med": 30.0,
+    "veh_age_ms": 10.269,
+    "why_not": "",
+    "would_start": true
+   },
+   "res": {
+    "a7": {
+     "t_base": 1.53,
+     "t_off": 1.526,
+     "t_on": 1.333,
+     "save_vs_base": 0.197,
+     "save_vs_off": 0.193,
+     "v_lh_off": 3.42,
+     "v_lh_on": 3.46,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.4
+    },
+    "a5": {
+     "t_base": 1.53,
+     "t_off": 1.527,
+     "t_on": 1.416,
+     "save_vs_base": 0.114,
+     "save_vs_off": 0.111,
+     "v_lh_off": 3.42,
+     "v_lh_on": 3.45,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.5
+    },
+    "a9": {
+     "t_base": 1.53,
+     "t_off": 1.526,
+     "t_on": 1.316,
+     "save_vs_base": 0.214,
+     "save_vs_off": 0.21,
+     "v_lh_off": 3.42,
+     "v_lh_on": 3.45,
+     "end_code": 1,
+     "end": "速さに届いた",
+     "launch_s": 0.333
+    }
+   }
+  }
+ ],
+ "summary": {
+  "a7": {
+   "B_1024": {
+    "n": 9,
+    "save_vs_base": {
+     "median": 0.28,
+     "min": 0.118,
+     "max": 0.363
+    },
+    "save_vs_off": {
+     "median": 0.277,
+     "min": 0.106,
+     "max": 0.341
+    },
+    "launch_s": {
+     "median": 0.4,
+     "min": 0.367,
+     "max": 0.4
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.07,
+     "max": 0.21
+    },
+    "end_reasons": {
+     "速さに届いた": 9
+    },
+    "would_start_recorded": 9,
+    "why_not_recorded": {}
+   },
+   "wide_0p2_1p2": {
+    "n": 21,
+    "save_vs_base": {
+     "median": 0.209,
+     "min": -0.028,
+     "max": 0.363
+    },
+    "save_vs_off": {
+     "median": 0.204,
+     "min": 0.0,
+     "max": 0.341
+    },
+    "launch_s": {
+     "median": 0.4,
+     "min": 0.0,
+     "max": 0.433
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.01,
+     "max": 0.21
+    },
+    "end_reasons": {
+     "速さに届いた": 17,
+     "": 4
+    },
+    "would_start_recorded": 17,
+    "why_not_recorded": {
+     "near": 3,
+     "ttc_n": 1
+    }
+   }
+  },
+  "a5": {
+   "B_1024": {
+    "n": 9,
+    "save_vs_base": {
+     "median": 0.2,
+     "min": 0.053,
+     "max": 0.284
+    },
+    "save_vs_off": {
+     "median": 0.191,
+     "min": 0.049,
+     "max": 0.262
+    },
+    "launch_s": {
+     "median": 0.5,
+     "min": 0.5,
+     "max": 0.5
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.06,
+     "max": 0.2
+    },
+    "end_reasons": {
+     "速さに届いた": 9
+    },
+    "would_start_recorded": 9,
+    "why_not_recorded": {}
+   },
+   "wide_0p2_1p2": {
+    "n": 21,
+    "save_vs_base": {
+     "median": 0.138,
+     "min": -0.018,
+     "max": 0.284
+    },
+    "save_vs_off": {
+     "median": 0.132,
+     "min": 0.0,
+     "max": 0.262
+    },
+    "launch_s": {
+     "median": 0.5,
+     "min": 0.0,
+     "max": 0.5
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.01,
+     "max": 0.2
+    },
+    "end_reasons": {
+     "速さに届いた": 17,
+     "": 4
+    },
+    "would_start_recorded": 17,
+    "why_not_recorded": {
+     "near": 3,
+     "ttc_n": 1
+    }
+   }
+  },
+  "a9": {
+   "B_1024": {
+    "n": 9,
+    "save_vs_base": {
+     "median": 0.291,
+     "min": 0.151,
+     "max": 0.372
+    },
+    "save_vs_off": {
+     "median": 0.289,
+     "min": 0.14,
+     "max": 0.349
+    },
+    "launch_s": {
+     "median": 0.333,
+     "min": 0.333,
+     "max": 0.333
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.06,
+     "max": 0.24
+    },
+    "end_reasons": {
+     "速さに届いた": 9
+    },
+    "would_start_recorded": 9,
+    "why_not_recorded": {}
+   },
+   "wide_0p2_1p2": {
+    "n": 21,
+    "save_vs_base": {
+     "median": 0.218,
+     "min": -0.02,
+     "max": 0.372
+    },
+    "save_vs_off": {
+     "median": 0.216,
+     "min": 0.0,
+     "max": 0.349
+    },
+    "launch_s": {
+     "median": 0.333,
+     "min": 0.0,
+     "max": 0.4
+    },
+    "dv_lh_on_minus_off": {
+     "median": 0.01,
+     "max": 0.24
+    },
+    "end_reasons": {
+     "速さに届いた": 17,
+     "": 4
+    },
+    "would_start_recorded": 17,
+    "why_not_recorded": {
+     "near": 3,
+     "ttc_n": 1
+    }
+   }
+  }
+ }
+}

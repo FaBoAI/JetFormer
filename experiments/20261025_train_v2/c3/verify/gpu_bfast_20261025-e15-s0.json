@@ -1,0 +1,39 @@
+{
+ "schema": "jf-verify-c3-gpu/v1",
+ "run": "bfast_20261025-e15-s0",
+ "script": "/home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/repredict_c3_gpu.py",
+ "script_sha256": "e9478132d5f6866cc556006a3a46f8171be5205e7786972e3edc4e2d2b6c4a14",
+ "best_pth_sha256": "81d10c5a0e48dc6139bc919c62f188ee38683caa38ba1a769c90e27fee8bb435",
+ "ref": [
+  1433.0,
+  1500.0
+ ],
+ "tab": {
+  "c3_tab_script_sha256": "d12f0e26e96c9c50258ac4007ae865baf186b5d19162be81fa65eafad1f8864a",
+  "c3_tab_best_sha256_same": true,
+  "vs_c3_tab_max_abs_us": 0.5456403493881226,
+  "vs_c3_tab_mean_abs_us": 0.023911804415283136,
+  "standstill_go_frac": 0.26905829596412556,
+  "standstill_go_frac_raw_nogain_ref": 0.3219730941704036,
+  "standstill_go_frac_from_c3_tab": 0.26905829596412556,
+  "standstill_go_flips_vs_c3_tab": 0,
+  "frames": {
+   "stand": 1115,
+   "gb_de": 403,
+   "gb_sw": 821,
+   "gb_hs": 702
+  },
+  "seconds": 18.8,
+  "bfast_gb_fwd_vs_b_us": -6.691274861017428,
+  "bfast_gb_fwd_vs_b_us_per": {
+   "gb_de": -12.20680993916684,
+   "gb_sw": -6.531531227148715,
+   "gb_hs": -3.7117718509205613
+  },
+  "bfast_gb_B_from": "verify の B の予測(自分の予測)"
+ },
+ "made_at": "2026-10-26 05:44:17",
+ "seconds": {
+  "tab": 25.2
+ }
+}

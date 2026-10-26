@@ -1,0 +1,40 @@
+[2026-10-26 04:48:13] 仕事 1 を待ちます(B)
+[jf-heavy] ほかの重い処理(big)が終わるのを待っています
+/home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+05:30:16 clean_driving_20261011-nocmd-s3-20261011-024626 読みました ['tab', 'shift', 'trt']
+05:30:46 tab {"c3_tab_script_sha256": "22cd62549b77a49994a79bf5cd2f8e6751c234a37dd133d0bc2c6defec538f95", "c3_tab_best_sha256_same": true, "vs_c3_tab_max_abs_us": 0.3358488082885742, "vs_c3_tab_mean_abs_us": 0.024247992692612644, "standstill_go_frac": 0.19641255605381167, "standstill_go_frac_raw_nogain_ref": 0.2062780269058296, "standstill_go_frac_from_c3_tab": 0.19641255605381167, "standstill_go_flips_vs_c3_tab": 0, "frames": {"stand": 1115, "gb_de": 403, "gb_sw": 821, "gb_hs": 702}, "seconds": 26.8}
+05:31:42 shift img_up3
+05:32:10 shift img_down3
+05:32:42 shift bright_0.8
+05:33:13 shift bright_1.2
+05:33:41 shift tof_down1
+05:34:13 shift top_0.85
+05:34:46 shift top_1.15
+05:34:46 shift {"genre_same_as_saved": true, "genre_substituted": 0, "none_vs_saved_max_abs_us": 0.35266923904418945, "none_vs_saved_mean_abs_us": 0.021690156050639654, "robust_dl1_us_base_saved": 0.6861814062687525, "robust_dl1_us_base_mine": 0.6858468690983354, "seconds": 239.1}
+[10/26/2026-05:35:10] [TRT] [W] Using an engine plan file across different models of devices is not supported and is likely to affect performance or even cause errors or deadlock.
+05:35:50 trt {"ai_1010": [21, 2326], "engine_sha256": "a565ec9cfd62d938ded7ebbf477bb29d4e7959b2df6b00148ce576034cfdfc7f", "seconds": 25.5, "vs_c3_trt_max_abs_us": 0.0, "vs_c3_trt_mean_abs_us": 0.0, "c3_trt_job": "20261026-035310", "brake_flips_vs_c3_trt": 0, "heldout_fp32_mine": [0, 222], "brake_lowspeed_frac": 0.008241758241758242, "ai_1010_fp32_ref": [21, 2326], "trt_vs_fp32_max_abs_us": 5.155384540557861}
+05:35:51 書きました /home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/gpu_clean_driving_20261011-nocmd-s3-20261011-024626.json 339.4 秒
+[2026-10-26 05:35:52] 仕事 1 rc=0
+[2026-10-26 05:36:52] 仕事 2 を待ちます(v2h-e60-s1 と bfast-s0 の tab)
+[jf-heavy] ほかの重い処理(big)が終わるのを待っています
+/home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+05:38:40 v2_20261025-v2h-e60-s1 読みました ['tab', 'shift', 'trt']
+05:39:07 tab {"c3_tab_script_sha256": "d12f0e26e96c9c50258ac4007ae865baf186b5d19162be81fa65eafad1f8864a", "c3_tab_best_sha256_same": true, "vs_c3_tab_max_abs_us": 0.8050153255462646, "vs_c3_tab_mean_abs_us": 0.039242730905806884, "standstill_go_frac": 0.14349775784753363, "standstill_go_frac_raw_nogain_ref": 0.14887892376681613, "standstill_go_frac_from_c3_tab": 0.14349775784753363, "standstill_go_flips_vs_c3_tab": 0, "frames": {"stand": 1115, "gb_de": 403, "gb_sw": 821, "gb_hs": 702}, "seconds": 25.5}
+05:40:03 shift img_up3
+05:40:31 shift img_down3
+05:41:02 shift bright_0.8
+05:41:33 shift bright_1.2
+05:42:01 shift tof_down1
+05:42:33 shift top_0.85
+05:43:06 shift top_1.15
+05:43:06 shift {"genre_same_as_saved": true, "genre_substituted": 0, "none_vs_saved_max_abs_us": 0.3242301940917969, "none_vs_saved_mean_abs_us": 0.01895483475518004, "robust_dl1_us_base_saved": 0.6263018219219997, "robust_dl1_us_base_mine": 0.6257538468982357, "c3_shift_script_sha256": "d12f0e26e96c9c50258ac4007ae865baf186b5d19162be81fa65eafad1f8864a", "c3_robust_dl1_us": 0.6260714650730311, "seconds": 238.8}
+05:43:49 trt {"ai_1010": [297, 2326], "engine_sha256": "48633fb6bce61930248fd1ff856c852df2157d7d33dc34071806289165ecf390", "seconds": 12.8, "vs_c3_trt_max_abs_us": 0.0, "vs_c3_trt_mean_abs_us": 0.0, "c3_trt_job": "20261026-021559", "brake_flips_vs_c3_trt": 0, "heldout_fp32_mine": [0, 222], "brake_lowspeed_frac": 0.11656200941915228, "ai_1010_fp32_ref": [297, 2326], "trt_vs_fp32_max_abs_us": 7.921785116195679}
+05:43:49 書きました /home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/gpu_v2_20261025-v2h-e60-s1.json 314.8 秒
+/home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+05:43:56 bfast_20261025-e15-s0 読みました ['tab']
+05:44:17 tab {"c3_tab_script_sha256": "d12f0e26e96c9c50258ac4007ae865baf186b5d19162be81fa65eafad1f8864a", "c3_tab_best_sha256_same": true, "vs_c3_tab_max_abs_us": 0.5456403493881226, "vs_c3_tab_mean_abs_us": 0.023911804415283136, "standstill_go_frac": 0.26905829596412556, "standstill_go_frac_raw_nogain_ref": 0.3219730941704036, "standstill_go_frac_from_c3_tab": 0.26905829596412556, "standstill_go_flips_vs_c3_tab": 0, "frames": {"stand": 1115, "gb_de": 403, "gb_sw": 821, "gb_hs": 702}, "seconds": 18.8, "bfast_gb_fwd_vs_b_us": -6.691274861017428, "bfast_gb_fwd_vs_b_us_per": {"gb_de": -12.20680993916684, "gb_sw": -6.531531227148715, "gb_hs": -3.7117718509205613}, "bfast_gb_B_from": "verify の B の予測(自分の予測)"}
+05:44:17 書きました /home/jetson/jetformer/experiments/20261025_train_v2/c3/verify/gpu_bfast_20261025-e15-s0.json 25.2 秒
+[2026-10-26 05:44:18] 仕事 2 rc=0

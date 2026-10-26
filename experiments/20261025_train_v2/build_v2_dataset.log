@@ -1,0 +1,59 @@
+protocol_v2.json: OK
+protocol_v2.md: OK
+protocol_numbers.json: OK
+/home/jetson/jetformer/experiments/20261025_train_v2/protocol_numbers.py: OK
+/home/jetson/jetformer/experiments/20261025_train_v2/write_protocol_v2.py: OK
+/home/jetson/jetformer/experiments/20261025_train_v2/check_seal_v2.py: OK
+コマンド: /home/jetson/miniconda/envs/jetracer/bin/python -I tools/build_ai_dataset.py --name dataset_v2_20261025 --human-from clean_driving_20261011 --ai-logs 20261010-155820 20261010-160306 20261010-163247 20261010-171639 20261010-172505 20261010-172910 20261010-173445 20261010-181504 20261010-203924 20261010-204208 20261010-204605 20261023-203740 20261023-203753 20261023-203843 20261023-204403 20261023-204755 20261023-205205 20261023-205309 20261023-205418 20261023-205458 20261023-210109 20261023-210840 20261023-211020 20261023-211118 20261023-211209 20261023-211308 20261023-211357 20261023-211448 20261023-211547 20261023-211737 20261023-211828 20261023-212202 20261023-212242 20261023-212538 20261023-212657 20261023-212802 20261023-212934 20261023-213149 20261023-213243 20261023-213559 20261024-160133 20261024-160536 20261024-160654 20261024-160847 20261024-162033 20261024-162305 --val-ai-logs --keep-ai-log-human --label-gains eval --eval-steer-gain 1.0 --eval-throttle-gain 1.0
+シーン 212(検証 11)、外したシーン 19
+  build_dataset 20/212 20261010-152707-0003
+  build_dataset 40/212 20261010-201626-0005
+  build_dataset 60/212 20261010-163247-0001
+  build_dataset 80/212 20261010-173445-0001
+  build_dataset 100/212 20261010-181504-0006
+  build_dataset 120/212 20261023-205205-0001
+  build_dataset 140/212 20261023-211118-0001
+  build_dataset 160/212 20261023-211828-0005
+  build_dataset 180/212 20261023-212934-0003
+  build_dataset 200/212 20261024-160847-0004
+  build_dataset 212/212 20261024-162305-0004
+{
+ "name": "dataset_v2_20261025",
+ "scenes": 212,
+ "train_scenes": 201,
+ "val_scenes": 11,
+ "frames": 115335,
+ "hours": 1.082,
+ "frames_by_source": {
+  "human": 65729,
+  "ai": 49586,
+  "no_label": 20
+ },
+ "usable_frames": {
+  "train": {
+   "human": 53893,
+   "ai": 41974
+  },
+  "val": {
+   "human": 5753,
+   "ai": 0
+  }
+ },
+ "human_frames_removed_by_label_mask": 4,
+ "action_reference_check": {
+  "all": {
+   "n": 24723,
+   "steer_us": 1433.0,
+   "throttle_us": 1500.0
+  },
+  "human_only": {
+   "n": 22549,
+   "steer_us": 1433.0,
+   "throttle_us": 1500.0
+  }
+ },
+ "skipped_scenes": 19,
+ "seconds": 325.4
+}
+データセット: /home/jetson/jetformer/data/datasets/dataset_v2_20261025
+作った後の確かめ: OK(シーン 212・学習 201・検証 11・封 0)

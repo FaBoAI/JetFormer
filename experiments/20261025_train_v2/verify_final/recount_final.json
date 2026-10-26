@@ -1,0 +1,800 @@
+{
+ "schema": "jf-verify-final/v1",
+ "script": "/home/jetson/jetformer/experiments/20261025_train_v2/verify_final/recount_final.py",
+ "script_sha256": "ad4ff38b3a5d9ffffed49483f13476b69cedb975a6f3e773e402412f4f433959",
+ "protocol_v2_sha256": "ca2556a28584ef922411525bc8a1eac46a42764c6df3fdc56ca6a1d7aa91de3a",
+ "lock2_sha256": "7dea723de889bc07b0efba2885177689ee3c4a6df11cc0f585f1c1f86f599442",
+ "inputs_sha256": {
+  "bundle": "e0055571c2ed4af58c1dff4e90abdb66afd265207926d76c576959ae65a5c559",
+  "sets_v2.npz": "d7601fb655089735e550c4e5c12bb59feda2100539ba0d5027ebb328c4c06de9"
+ },
+ "five": {
+  "A_s0": {
+   "l1_best_us": 49.14592992027005,
+   "l1_steer_best_us": 50.23370988539506,
+   "l1_thr_best_us": 48.05814995514504,
+   "l1_interv_us": 128.90007988996567,
+   "steer_bias_us": 2.3399287287121924,
+   "thr_bias_us": 11.68024601742338,
+   "steer_amp_ratio": 0.9913931033069043,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 49.23489481564508,
+   "l1_interv_last_us": 127.61666742798629
+  },
+  "A_s1": {
+   "l1_best_us": 49.45651073382294,
+   "l1_steer_best_us": 51.31741373523655,
+   "l1_thr_best_us": 47.59560773240933,
+   "l1_interv_us": 127.77242410258883,
+   "steer_bias_us": -1.9184669380269674,
+   "thr_bias_us": 12.179651950615632,
+   "steer_amp_ratio": 0.9995438346130895,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 49.75222310819769,
+   "l1_interv_last_us": 127.92711035467258
+  },
+  "v0-s2": {
+   "l1_best_us": 49.93690630044876,
+   "l1_steer_best_us": 52.81170483607551,
+   "l1_thr_best_us": 47.062107764822,
+   "l1_interv_us": 126.94225918132028,
+   "steer_bias_us": -3.8184270495265658,
+   "thr_bias_us": 13.829396753086524,
+   "steer_amp_ratio": 0.9821114561418469,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 50.64643517046975,
+   "l1_interv_last_us": 129.0113630491609
+  },
+  "v0-s3": {
+   "l1_best_us": 50.389272127662025,
+   "l1_steer_best_us": 51.465005774161035,
+   "l1_thr_best_us": 49.31353848116301,
+   "l1_interv_us": 129.8528234902157,
+   "steer_bias_us": 3.0659113555189372,
+   "thr_bias_us": 13.16860571132227,
+   "steer_amp_ratio": 0.9885579752376707,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 50.72927680397442,
+   "l1_interv_last_us": 132.14513275924003
+  },
+  "B": {
+   "l1_best_us": 49.14351752074934,
+   "l1_steer_best_us": 50.889783055961004,
+   "l1_thr_best_us": 47.39725198553767,
+   "l1_interv_us": 129.50148649762392,
+   "steer_bias_us": 0.9913098484341542,
+   "thr_bias_us": 8.55175951155146,
+   "steer_amp_ratio": 0.9964165609593707,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 49.09091503984668,
+   "l1_interv_last_us": 130.04597702123556
+  }
+ },
+ "five_mean": {
+  "l1_best_us": 49.61442732059062,
+  "l1_last_us": 49.890748987626715,
+  "l1_interv_us": 128.59381463234288,
+  "steer_bias_us": 0.13205118902235008,
+  "thr_bias_us": 11.881931988799852
+ },
+ "B_ref": [
+  1441.0,
+  1496.0
+ ],
+ "B_standstill_go_frac": 0.19641255605381167,
+ "standstill_frames": 1115,
+ "B_p99_same_day_median_ms": 2.5001269912719724,
+ "B_p99_jobs": [
+  [
+   "20261026-001501",
+   2.622853784561157,
+   2.6228536959388293
+  ],
+  [
+   "20261026-021559",
+   2.4600043392181394,
+   2.4600043360260315
+  ],
+  [
+   "20261026-022229",
+   2.4258216261863708,
+   2.4258216470479965
+  ],
+  [
+   "20261026-023612",
+   2.6857772183418276,
+   2.685777117148973
+  ],
+  [
+   "20261026-024323",
+   2.686972563266754,
+   2.6869725403958
+  ],
+  [
+   "20261026-030510",
+   2.6058186984062193,
+   2.6058186413138174
+  ],
+  [
+   "20261026-031141",
+   2.4116872763633728,
+   2.4116871801379602
+  ],
+  [
+   "20261026-032118",
+   2.445566143989563,
+   2.4455662051332183
+  ],
+  [
+   "20261026-032720",
+   2.5001269912719724,
+   2.5001269951462746
+  ],
+  [
+   "20261026-033322",
+   2.609498369693756,
+   2.609498391102534
+  ],
+  [
+   "20261026-033925",
+   2.728377754688263,
+   2.728377807943616
+  ],
+  [
+   "20261026-035310",
+   2.4145292925834654,
+   2.414529354136903
+  ],
+  [
+   "20261026-085052",
+   2.425820996761322,
+   2.425820920021806
+  ]
+ ],
+ "inference_limit_ms": 3.250165088653564,
+ "human_throttle_limit_us": 15.963931988799853,
+ "rows": {
+  "v2_20261025-v2h-aug2-e60-s0": {
+   "l1_best_us": 48.17113407502593,
+   "l1_steer_best_us": 50.669704725767865,
+   "l1_thr_best_us": 45.67256342428399,
+   "l1_interv_us": 125.73496263054525,
+   "steer_bias_us": -1.2626323430390123,
+   "thr_bias_us": 15.616412105192719,
+   "steer_amp_ratio": 0.9902205963662252,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 48.46438294502602,
+   "l1_interv_last_us": 126.46158245888485,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-030510",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    539,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.21153846153846154,
+   "straight_thr_vs_b_us": 23.591131989137832,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.15874439461883408,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 2.424371340274811,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": true,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "brake",
+    "straight"
+   ]
+  },
+  "v2_20261025-v2h-aug2-e60-s1": {
+   "l1_best_us": 48.0660644949478,
+   "l1_steer_best_us": 50.240501065958746,
+   "l1_thr_best_us": 45.891627923936866,
+   "l1_interv_us": 118.62215540017291,
+   "steer_bias_us": 1.5312932604640659,
+   "thr_bias_us": 13.943663452932615,
+   "steer_amp_ratio": 1.0008811016619081,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 48.27306414585808,
+   "l1_interv_last_us": 119.0436961782662,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-030510",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    447,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.17543171114599687,
+   "straight_thr_vs_b_us": 20.311400590430736,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.16143497757847533,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 2.430594065189361,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": true,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "brake",
+    "straight"
+   ]
+  },
+  "v2_20261025-v2h-aug2-e60-s2": {
+   "l1_best_us": 48.29999373768841,
+   "l1_steer_best_us": 49.86976694895318,
+   "l1_thr_best_us": 46.73022052642365,
+   "l1_interv_us": 124.21165366008783,
+   "steer_bias_us": -5.676402214099304,
+   "thr_bias_us": 14.333469536268737,
+   "steer_amp_ratio": 0.9882057384268832,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 48.62191757626911,
+   "l1_interv_last_us": 125.98653817535207,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-031141",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    215,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.08437990580847723,
+   "straight_thr_vs_b_us": 53.802014016755,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.13901345291479822,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 2.4797749495506287,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": true,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "brake",
+    "straight"
+   ]
+  },
+  "v2_20261025-v2h-aug2-e60-s3": {
+   "l1_best_us": 48.53784547597489,
+   "l1_steer_best_us": 50.32660386275428,
+   "l1_thr_best_us": 46.7490870891955,
+   "l1_interv_us": 123.35162048339843,
+   "steer_bias_us": -3.2175437780212794,
+   "thr_bias_us": 12.319981472497323,
+   "steer_amp_ratio": 0.9917144339995895,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 48.57243942620157,
+   "l1_interv_last_us": 123.05025993590142,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-031141",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    153,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.060047095761381473,
+   "straight_thr_vs_b_us": 33.2989495978073,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.19103139013452916,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 2.399317750930786,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": true,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "brake",
+    "straight"
+   ]
+  },
+  "v2_20261025-v2h-msf-aug2-e60-s0": {
+   "l1_best_us": 48.278494191465846,
+   "l1_steer_best_us": 51.19441327178759,
+   "l1_thr_best_us": 45.3625751111441,
+   "l1_interv_us": 119.95276042573771,
+   "steer_bias_us": 8.982896041053266,
+   "thr_bias_us": 15.312267674317452,
+   "steer_amp_ratio": 1.0040346518522432,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 49.878999348871204,
+   "l1_interv_last_us": 115.50263678483903,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-085052",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    37,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.014521193092621664,
+   "straight_thr_vs_b_us": 13.280190509753199,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.17309417040358743,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 3.2582428646087647,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": false,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "inference",
+    "brake",
+    "straight"
+   ]
+  },
+  "v2_20261025-v2h-msf-aug2-e60-s1": {
+   "l1_best_us": 49.602209790248175,
+   "l1_steer_best_us": 52.59744532713798,
+   "l1_thr_best_us": 46.60697425335837,
+   "l1_interv_us": 110.54352998186829,
+   "steer_bias_us": -5.559627675091174,
+   "thr_bias_us": 15.494015417977115,
+   "steer_amp_ratio": 0.980992300250322,
+   "n_h1": 4670,
+   "n_interv": 1570,
+   "l1_last_us": 51.24623694867087,
+   "l1_interv_last_us": 117.19342814062811,
+   "ref": [
+    1433.0,
+    1500.0
+   ],
+   "trt_job": "20261026-085052",
+   "engine_current": true,
+   "brake_heldout": [
+    0,
+    222
+   ],
+   "brake_ai_1010": [
+    184,
+    2326
+   ],
+   "brake_lowspeed_frac": 0.07221350078492936,
+   "straight_thr_vs_b_us": 24.32629924518363,
+   "straight_frames": 2043,
+   "standstill_go_frac": 0.16233183856502242,
+   "sanity": {
+    "finite": true,
+    "in_500_2500": true,
+    "check_io_ok": true
+   },
+   "trt_p99_ms": 3.2154267263412475,
+   "gates": {
+    "engine_ok": true,
+    "sanity_ok": true,
+    "inference": true,
+    "amp": true,
+    "l1_vs_b": true,
+    "brake": false,
+    "standstill": true,
+    "human_throttle": true,
+    "straight": false
+   },
+   "gates_pass": false,
+   "failed": [
+    "brake",
+    "straight"
+   ]
+  }
+ },
+ "D5a": {
+  "final_arm": "v2h-aug2-e60",
+  "veto": {
+   "interv": false,
+   "interv_diff": -5.613716588791775,
+   "interv_thr": 1.63,
+   "bias": false,
+   "steer_bias_mean": -2.1563212686738824,
+   "bias_value_minus_five": -2.2883724576962323,
+   "bias_thr": 3.913
+  },
+  "C1": null,
+  "C2": null,
+  "seeds": {
+   "s0": {
+    "pass": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   },
+   "s1": {
+    "pass": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   },
+   "s2": {
+    "pass": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   },
+   "s3": {
+    "pass": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   }
+  }
+ },
+ "D4": {
+  "pairs": {
+   "s0": {
+    "l1_best_us": 46.10447406678945,
+    "l1_steer_best_us": 48.3648224719944,
+    "l1_thr_best_us": 43.8441256615845,
+    "l1_interv_us": 116.4067418607481,
+    "steer_bias_us": 3.860131849007127,
+    "thr_bias_us": 15.464339889755086,
+    "steer_amp_ratio": 0.9909098551219687,
+    "n_h1": 4670,
+    "n_interv": 1570,
+    "light": "v2_20261025-v2h-aug2-e60-s0",
+    "msf": "v2_20261025-v2h-msf-aug2-e60-s0",
+    "light_l1_best_us": 48.17113407502593,
+    "msf_l1_best_us": 48.278494191465846,
+    "d": -2.0666600082364823,
+    "brake_heldout": [
+     0,
+     222
+    ],
+    "brake_ai_1010": [
+     209,
+     2326
+    ],
+    "brake_lowspeed_frac": 0.08202511773940345,
+    "straight_thr_vs_b_us": 18.375968896508272,
+    "standstill_go_frac": 0.17757847533632287,
+    "gates_except_inference": {
+     "engine_ok": true,
+     "sanity_ok": true,
+     "amp": true,
+     "l1_vs_b": true,
+     "brake": false,
+     "standstill": true,
+     "human_throttle": true,
+     "straight": false
+    },
+    "gates_pass_except_inference": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   },
+   "s1": {
+    "l1_best_us": 46.46047395955316,
+    "l1_steer_best_us": 48.547393132277165,
+    "l1_thr_best_us": 44.37355478682916,
+    "l1_interv_us": 107.2968001911139,
+    "steer_bias_us": -2.014167207313554,
+    "thr_bias_us": 14.718839435454864,
+    "steer_amp_ratio": 0.9838547496211518,
+    "n_h1": 4670,
+    "n_interv": 1570,
+    "light": "v2_20261025-v2h-aug2-e60-s1",
+    "msf": "v2_20261025-v2h-msf-aug2-e60-s1",
+    "light_l1_best_us": 48.0660644949478,
+    "msf_l1_best_us": 49.602209790248175,
+    "d": -1.60559053539464,
+    "brake_heldout": [
+     0,
+     222
+    ],
+    "brake_ai_1010": [
+     127,
+     2326
+    ],
+    "brake_lowspeed_frac": 0.049843014128728415,
+    "straight_thr_vs_b_us": 22.298857868808888,
+    "standstill_go_frac": 0.16412556053811658,
+    "gates_except_inference": {
+     "engine_ok": true,
+     "sanity_ok": true,
+     "amp": true,
+     "l1_vs_b": true,
+     "brake": false,
+     "standstill": true,
+     "human_throttle": true,
+     "straight": false
+    },
+    "gates_pass_except_inference": false,
+    "failed": [
+     "brake",
+     "straight"
+    ]
+   }
+  },
+  "thr": 1.082,
+  "d_best": [
+   -2.0666600082364823,
+   -1.60559053539464
+  ],
+  "mean_d_best": -1.8361252718155612,
+  "all_d_negative": true,
+  "l1_good": true,
+  "reserve": false
+ },
+ "checks": [
+  {
+   "what": "H1 4,670・介入 1,570",
+   "ok": true,
+   "detail": "4670・1570"
+  },
+  {
+   "what": "sets の直線 2,043・止まった場面 1,115",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 A_s0 best",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 A_s0 last",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 A_s1 best",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 A_s1 last",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 v0-s2 best",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 v0-s2 last",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 v0-s3 best",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 v0-s3 last",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 B best",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "5 本の予測の sha256 B last",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "tab pred key・best clean_driving_20261011-nocmd-s3-20261011-024626",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s0 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s0 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-aug2-e60-s0",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s1 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s1 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-aug2-e60-s1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s2 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s2 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-aug2-e60-s2",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s3 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-aug2-e60-s3 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-aug2-e60-s3",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-msf-aug2-e60-s0 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-msf-aug2-e60-s0 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-msf-aug2-e60-s0",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-msf-aug2-e60-s1 best",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "eval pred key・ckpt v2_20261025-v2h-msf-aug2-e60-s1 last",
+   "ok": true,
+   "detail": "(10985, 10, 2)"
+  },
+  {
+   "what": "tab pred key・best v2_20261025-v2h-msf-aug2-e60-s1",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "D4 種 0 の 2 本の中心・中立が同じ",
+   "ok": true,
+   "detail": "((1433.0, 1500.0), (1433.0, 1500.0))"
+  },
+  {
+   "what": "D4 種 0 の TensorRT のフレームの並びが同じ",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "what": "D4 種 1 の 2 本の中心・中立が同じ",
+   "ok": true,
+   "detail": "((1433.0, 1500.0), (1433.0, 1500.0))"
+  },
+  {
+   "what": "D4 種 1 の TensorRT のフレームの並びが同じ",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}
