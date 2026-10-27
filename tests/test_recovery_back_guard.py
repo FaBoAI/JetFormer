@@ -350,15 +350,19 @@ def test_param_default_off_and_off_on_boot(monkeypatch, tmp_path):
 
 
 def recovery_scene(back_from=None, hit_at=None):
-    """走る(3 m/s)→ 2.0 秒で止まる(モデルは中立の帯)→ リカバリー。back_from 秒から後ろへ 1 m/s(開いたループ)。
-    hit_at 秒に後ろの衝撃(IMU の横 6G)"""
+    """走る(3 m/s)→ 2.0 秒で止まる(モデルは 1.8〜2.0 秒ブレーキ側 中立 + 200、そのあと中立の帯)→ リカバリー。back_from 秒から
+    後ろへ 1 m/s(開いたループ)。hit_at 秒に後ろの衝撃(IMU の横 6G)。
+    2026-10-27 fix7 safety s4-a: 止まる前のブレーキ側を足した(前は前進 → 中立の帯だけ)。このESCは前進のあとの後退側では後退しない
+    (ブレーキ側 → 中立 → 後退側 のときだけ下がる。10/10 のログ)ので、'brake' の段で後ろへ動くこの場面は「ESC が後退を待っていた
+    10/23 の形」でだけ起きる。drive の見張りは書いた値(EscMayReverse)からそれを見分け、前進 → 中立の帯 → 'brake' の後ろへの動きは
+    跳ねとして使わない(その形は tests/test_rec_fix7_safety.py が見る)"""
     def v(s):
         if s < 2.0:
             return 3.0
         if back_from is not None and s >= back_from and (hit_at is None or s < hit_at):
             return -1.0
         return 0.0
-    return build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else (C, N + 20.0),
+    return build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else ((C, N + 200.0) if s < 2.0 else (C, N + 20.0)),
                  ax=lambda s: 60.0 if (hit_at is not None and hit_at <= s < hit_at + 0.02) else 0.0)
 
 

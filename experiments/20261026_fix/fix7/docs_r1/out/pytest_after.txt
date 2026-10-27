@@ -1,0 +1,68 @@
+........................................................................ [ 40%]
+....................................F................................... [ 80%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+_____________________________ test_untouched_files _____________________________
+
+    }
+    
+    
+    def _sha(p):
+        return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+    
+    
+    def test_untouched_files():
+        """走行の動き・既定値(DEFAULT_PARAMS・RESET_ON_BOOT は drive.py)・画面・計画のファイルは直す前と同じ。
+        drive.py・bench.py は 10/27 fix4 の版でもよい(そのときは、この組のときの版の写しが上の sha256 と同じか見る)。
+        drive.py・assist.py は 10/27 fix5 safety の版でもよい(そのときは fix5 の直す前の写しから同じようにたどる)。
+        server.py・app.js は 10/27 fix5 画面の係の版でもよい(同じ)。app.js は 10/27 fix6 画面の係の版でもよい(fix5 の版へたどる)。
+        drive.py・assist.py は 10/27 fix6 安全の係の版でもよい(fix6 の直す前の写し = fix5 の版へたどる)。assist.py は 10/27 fix6
+        安全の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix6 画面の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix7 画面の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = 6-2 回目の版へたどる)"""
+        for rel, h in UNTOUCHED.items():
+            cur = _sha(JF / rel)
+            if rel in LATER_FIX6_SAFETY_R2 and cur == LATER_FIX6_SAFETY_R2[rel]:
+                cur = _sha(FIX6_SAFETY_R2_BEFORE / Path(rel).name)   # fix6 安全の係 6-2 回目の直す前の写し(LATER_FIX6 の版)
+            if rel in LATER_FIX6 and cur == LATER_FIX6[rel]:
+                cur = _sha(FIX6_BEFORE / Path(rel).name)          # fix6 安全の係の直す前の写し(LATER_FIX5 の版)
+            if rel in LATER_FIX7_UI and cur == LATER_FIX7_UI[rel]:
+                cur = _sha(FIX7_UI_BEFORE / Path(rel).name)       # fix7 画面の係 7-1 回目の直す前の写し(LATER_FIX6_UI_R2 の版)
+            if rel in LATER_FIX6_UI_R2 and cur == LATER_FIX6_UI_R2[rel]:
+>               cur = _sha(FIX6_UI_R2_BEFORE / Path(rel).name)    # fix6 画面の係 6-2 回目の直す前の写し(LATER_FIX6_UI の版)
+            ^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: jetformer/drive.py
+E               assert 'd308e84b7671...fdb391cc0554c' == 'b8c3ddba3968...ee88afbc85db6'
+E                 
+E                 - b8c3ddba39681d81f14249981c770a9349e6dba3bcf5b4a8d88ee88afbc85db6
+E                 + d308e84b7671ee002b45b9b6b4190c44d33a6cbe8065da82afbfdb391cc0554c
+
+tests/test_fix3_r3_2_tools.py:136: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix6_tools_r2.py: 192 warnings
+tests/test_fix6_tools.py: 156 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+tests/test_fix5_tools.py: 73 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:744: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools_r2.py: 184 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_r2_before/collect.py.orig:672: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools.py: 148 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_before/collect.py.orig:607: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix5_tools.py: 73 warnings
+  /home/jetson/jetformer/tests/fixtures/fix5_tools_before/collect.py.orig:597: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r3_2_tools.py::test_untouched_files - AssertionError: ...
+1 failed, 177 passed, 1251 warnings in 152.04s (0:02:32)

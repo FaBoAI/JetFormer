@@ -49,6 +49,13 @@ SHA_BEFORE = {'assist.py': '80f20890804170bede9c7df6e7f05892ab4e5397f8c5f837fda4
 FIX6_AFTER = {'assist.py': 'd1d62c66bef856002c14db8dd2fd9c35279a36878b2e4817a279e9fb8bf64165',
               'drive.py': '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec'}
 LATER_FIX6_R2 = {'assist.py': '951a4c122c954a12ecc5056d823729ab9934112977f30645f92b14b556bf50f4'}
+# さらに 10/27 fix7 safety の直す 7-1 回目が assist.py・drive.py を変えた。その直す前の写し tests/fixtures/fix7_safety_before/
+# (= 6-2 回目のあとの版)から同じようにたどる(違いは tests/test_rec_fix7_safety.py。tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY)
+LATER_FIX7_SAFETY = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f',
+                     'drive.py': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}
+# さらに 10/27 fix7 safety の直す 7-2 回目が assist.py を変えた。その直す前の写し tests/fixtures/fix7_safety_r2_before/(= 7-1 回目の
+# あとの版)から同じようにたどる(違いは tests/test_rec_fix7_safety_r2.py。tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY_R2)
+LATER_FIX7_SAFETY_R2 = {'assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f'}
 DT = R2.DT
 FDT = 1 / 30.0
 XF = R2.XF                  # 場面 rev の前の壁 2.0 m
@@ -90,6 +97,10 @@ def load_before():
 def _fix6_version(name):
     """この組のあとの版(jetformer/ の今の版。fix6 safety の 6-2 回目が変えたあとは、その直す前の写し = この組のあとの版)"""
     p = ROOT / 'jetformer' / name
+    if name in LATER_FIX7_SAFETY_R2 and sha(p) == LATER_FIX7_SAFETY_R2[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_r2_before' / name
+    if name in LATER_FIX7_SAFETY and sha(p) == LATER_FIX7_SAFETY[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_before' / name
     if name in LATER_FIX6_R2 and sha(p) == LATER_FIX6_R2[name]:
         p = ROOT / 'tests' / 'fixtures' / 'fix6_safety_r2_before' / name
     assert sha(p) == FIX6_AFTER[name], name

@@ -60,6 +60,15 @@ LATER_FIX6 = {'assist.py': 'd1d62c66bef856002c14db8dd2fd9c35279a36878b2e4817a279
 # 写し tests/fixtures/fix6_safety_r2_before/(= LATER_FIX6 の版)から同じようにたどる(違いは tests/test_rec_fix6_safety_r2.py が見る。
 # tests/test_fix3_r3_2_tools.py の LATER_FIX6_SAFETY_R2 と同じ値)
 LATER_FIX6_R2 = {'assist.py': '951a4c122c954a12ecc5056d823729ab9934112977f30645f92b14b556bf50f4'}
+# さらに 10/27 fix7 safety の直す 7-1 回目(反証 w1-safety-rv7-safety-r1-1)が assist.py・drive.py を変えた。その直す前の写し
+# tests/fixtures/fix7_safety_before/(assist.py = LATER_FIX6_R2 の版・drive.py = LATER_FIX6 の版)から同じようにたどる(違いは
+# tests/test_rec_fix7_safety.py が見る。tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY と同じ値)
+LATER_FIX7_SAFETY = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f',
+                     'drive.py': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}
+# さらに 10/27 fix7 safety の直す 7-2 回目(反証 w2-safety-rv7-safety-r2-1)が assist.py を変えた(drive.py は同じ)。その直す前の写し
+# tests/fixtures/fix7_safety_r2_before/(= LATER_FIX7_SAFETY の版)から同じようにたどる(違いは tests/test_rec_fix7_safety_r2.py が見る。
+# tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY_R2 と同じ値)
+LATER_FIX7_SAFETY_R2 = {'assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f'}
 FDT = 1 / 30.0
 DT = R2.DT
 XF = R2.XF
@@ -100,6 +109,10 @@ def _fix5_version(name):
     """この組のあとの版(jetformer/ の今の版。fix6 safety が変えたあとは、その直す前の写し = この組のあとの版。fix6 safety の
     6-2 回目が変えたあとは、その直す前の写し = fix6 の版からたどる)"""
     p = ROOT / 'jetformer' / name
+    if name in LATER_FIX7_SAFETY_R2 and sha(p) == LATER_FIX7_SAFETY_R2[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_r2_before' / name
+    if name in LATER_FIX7_SAFETY and sha(p) == LATER_FIX7_SAFETY[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_before' / name
     if name in LATER_FIX6_R2 and sha(p) == LATER_FIX6_R2[name]:
         p = ROOT / 'tests' / 'fixtures' / 'fix6_safety_r2_before' / name
     if sha(p) == LATER_FIX6[name]:

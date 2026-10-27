@@ -1,0 +1,344 @@
+........................................................................ [ 25%]
+........................................................................ [ 51%]
+........................................................................ [ 76%]
+..........................FFFFFFFF.......................FF..FF...       [100%]
+=================================== FAILURES ===================================
+______________ test_loop_brake_scene_identical_r1[None-None-None] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffffa605fa10>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica0')
+esc = None, vdt = None, rear = None
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[None-None-1.35] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227d35b0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica1')
+esc = None, vdt = None, rear = 1.35
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[None-0.01-None] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227d2eb0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica2')
+esc = None, vdt = 0.01, rear = None
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[None-0.01-1.35] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227d25f0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica3')
+esc = None, vdt = 0.01, rear = 1.35
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[esc1-None-None] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227d18d0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica4')
+esc = (0.12, 0.1), vdt = None, rear = None
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[esc1-None-1.35] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b5860>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica5')
+esc = (0.12, 0.1), vdt = None, rear = 1.35
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[esc1-0.01-None] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b6040>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica6')
+esc = (0.12, 0.1), vdt = 0.01, rear = None
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+______________ test_loop_brake_scene_identical_r1[esc1-0.01-1.35] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b5b00>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_brake_scene_identica7')
+esc = (0.12, 0.1), vdt = 0.01, rear = 1.35
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('vdt', [None, 0.01])
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_identical_r1(monkeypatch, tmp_path, esc, vdt, rear):
+        """場面 brake(ESC が後退を待っている 10/23 の形。'brake' の後退側がそのまま後退になり back_early): 今の ON は直す前の写しの
+        ON とビット単位で同じ(本当に下がっているので s4-c の道は通らない)。跳ね・'brake' の中の短い止まりがあっても同じ。見張りだけ
+        (keep 0)も同じ"""
+        amod, r1 = load_r1()
+        base = scene_brake(rear=rear, esc=esc, veh_dt=vdt)
+        for extra in ({}, {'glitch': [(2.70, 1322)]}, {'glitch': [(2.78, 1322)]}, {'drops': [(2.75, 2.85)]},
+                      {'drops': [(2.75, 2.85)], 'glitch': [(2.92, 1322)]}):
+            sc = dict(base, **extra)
+            for keep in (1, 0):
+                on = run(drive, monkeypatch, tmp_path, P(1, keep), sc)
+                F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(1, keep), sc))
+>           assert 'back_early' in F7.R2.guards(on[1])[:2] or 'back_hold' in F7.R2.guards(on[1])[:2]
+E           AssertionError: assert ('back_early' in [] or 'back_hold' in [])
+
+tests/test_rec_fix7_safety_r2.py:554: AssertionError
+_________________ test_loop_short_neutral_esc[False-0.05-None] _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b5860>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_short_neutral_esc_Fa2')
+neu = 0.05, rear = None, two = False
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('neu', [0.02, 0.05])
+    @pytest.mark.parametrize('two', [False, True])
+    def test_loop_short_neutral_esc(monkeypatch, tmp_path, neu, rear, two):
+        """中立 0.02・0.05 秒で下がれる偽物の ESC(本物は人の操作で中立 0.05 秒でも後退に入った)で、'brake' の中の短い止まり
+        (約 0.03 秒の中立で本当に下がり始める)。今の ON は直す前の写しの ON とビット単位で同じ(本当に下がるので s4-c の道は
+        通らない)。EscMayReverse を変える案 (a)(中立 0.08 秒)とは違い、見張りはこの 'brake' の後退を数える(back_early)"""
+        amod, r1 = load_r1()
+        sc = scene_rev(dur=9.0, esc=(neu, 0.08), drops=DROP, glitch=GL2 if two else [])
+        if rear is not None:
+            sc['xr'] = XF_REV - rear
+        on = run(drive, monkeypatch, tmp_path, P(), sc)
+        F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(), sc))
+>       assert F7.R2.guards(on[1])[:1] == ['back_early']
+E       AssertionError: assert [] == ['back_early']
+E         
+E         Right contains one more item: 'back_early'
+E         Use -v to get more diff
+
+tests/test_rec_fix7_safety_r2.py:593: AssertionError
+_________________ test_loop_short_neutral_esc[False-0.05-1.35] _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b6f20>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_short_neutral_esc_Fa3')
+neu = 0.05, rear = 1.35, two = False
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('neu', [0.02, 0.05])
+    @pytest.mark.parametrize('two', [False, True])
+    def test_loop_short_neutral_esc(monkeypatch, tmp_path, neu, rear, two):
+        """中立 0.02・0.05 秒で下がれる偽物の ESC(本物は人の操作で中立 0.05 秒でも後退に入った)で、'brake' の中の短い止まり
+        (約 0.03 秒の中立で本当に下がり始める)。今の ON は直す前の写しの ON とビット単位で同じ(本当に下がるので s4-c の道は
+        通らない)。EscMayReverse を変える案 (a)(中立 0.08 秒)とは違い、見張りはこの 'brake' の後退を数える(back_early)"""
+        amod, r1 = load_r1()
+        sc = scene_rev(dur=9.0, esc=(neu, 0.08), drops=DROP, glitch=GL2 if two else [])
+        if rear is not None:
+            sc['xr'] = XF_REV - rear
+        on = run(drive, monkeypatch, tmp_path, P(), sc)
+        F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(), sc))
+>       assert F7.R2.guards(on[1])[:1] == ['back_early']
+E       AssertionError: assert [] == ['back_early']
+E         
+E         Right contains one more item: 'back_early'
+E         Use -v to get more diff
+
+tests/test_rec_fix7_safety_r2.py:593: AssertionError
+_________________ test_loop_short_neutral_esc[True-0.05-None] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff227b6900>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_short_neutral_esc_Tr2')
+neu = 0.05, rear = None, two = True
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('neu', [0.02, 0.05])
+    @pytest.mark.parametrize('two', [False, True])
+    def test_loop_short_neutral_esc(monkeypatch, tmp_path, neu, rear, two):
+        """中立 0.02・0.05 秒で下がれる偽物の ESC(本物は人の操作で中立 0.05 秒でも後退に入った)で、'brake' の中の短い止まり
+        (約 0.03 秒の中立で本当に下がり始める)。今の ON は直す前の写しの ON とビット単位で同じ(本当に下がるので s4-c の道は
+        通らない)。EscMayReverse を変える案 (a)(中立 0.08 秒)とは違い、見張りはこの 'brake' の後退を数える(back_early)"""
+        amod, r1 = load_r1()
+        sc = scene_rev(dur=9.0, esc=(neu, 0.08), drops=DROP, glitch=GL2 if two else [])
+        if rear is not None:
+            sc['xr'] = XF_REV - rear
+        on = run(drive, monkeypatch, tmp_path, P(), sc)
+>       F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(), sc))
+
+tests/test_rec_fix7_safety_r2.py:592: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<test_rec_fix7_safety.GSim object at 0xffffa5db5630>, <test_drive_caps.FakeRecorder object at 0xffff225f9490>, <test_fix3_r2_1.TimedPCA object at 0xffff227d25f0>)
+b = (<test_rec_fix7_safety.GSim object at 0xffffa5db59b0>, <test_drive_caps.FakeRecorder object at 0xffff2223e150>, <test_fix3_r2_1.TimedPCA object at 0xffff227d2350>)
+
+    def same_loop(a, b):
+        """PCA9685 に書いた値・記録の行(infer_ms のほか。欄の名前も)・出来事がビット単位で同じ"""
+        (sa, ra, pa), (sb, rb, pb) = a, b
+>       assert pa.w == pb.w
+E       assert [(0.1, 1441.0... 1388.0), ...] == [(0.1, 1441.0... 1388.0), ...]
+E         
+E         At index 86 diff: (3.05, 1441.0, 1506.0) != (3.05, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_rec_fix5_safety.py:509: AssertionError
+_________________ test_loop_short_neutral_esc[True-0.05-1.35] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff2253b070>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety_r2/pt_r2file/test_loop_short_neutral_esc_Tr3')
+neu = 0.05, rear = 1.35, two = True
+
+    @pytest.mark.parametrize('rear', [None, 1.35])
+    @pytest.mark.parametrize('neu', [0.02, 0.05])
+    @pytest.mark.parametrize('two', [False, True])
+    def test_loop_short_neutral_esc(monkeypatch, tmp_path, neu, rear, two):
+        """中立 0.02・0.05 秒で下がれる偽物の ESC(本物は人の操作で中立 0.05 秒でも後退に入った)で、'brake' の中の短い止まり
+        (約 0.03 秒の中立で本当に下がり始める)。今の ON は直す前の写しの ON とビット単位で同じ(本当に下がるので s4-c の道は
+        通らない)。EscMayReverse を変える案 (a)(中立 0.08 秒)とは違い、見張りはこの 'brake' の後退を数える(back_early)"""
+        amod, r1 = load_r1()
+        sc = scene_rev(dur=9.0, esc=(neu, 0.08), drops=DROP, glitch=GL2 if two else [])
+        if rear is not None:
+            sc['xr'] = XF_REV - rear
+        on = run(drive, monkeypatch, tmp_path, P(), sc)
+>       F5.same_loop(on, run(r1, monkeypatch, tmp_path, P(), sc))
+
+tests/test_rec_fix7_safety_r2.py:592: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<test_rec_fix7_safety.GSim object at 0xffff21fd5b70>, <test_drive_caps.FakeRecorder object at 0xffff2228d610>, <test_fix3_r2_1.TimedPCA object at 0xffff2253b700>)
+b = (<test_rec_fix7_safety.GSim object at 0xffff21f5d470>, <test_drive_caps.FakeRecorder object at 0xffff2211ad50>, <test_fix3_r2_1.TimedPCA object at 0xffff2253ac10>)
+
+    def same_loop(a, b):
+        """PCA9685 に書いた値・記録の行(infer_ms のほか。欄の名前も)・出来事がビット単位で同じ"""
+        (sa, ra, pa), (sb, rb, pb) = a, b
+>       assert pa.w == pb.w
+E       assert [(0.1, 1441.0... 1388.0), ...] == [(0.1, 1441.0... 1388.0), ...]
+E         
+E         At index 86 diff: (3.05, 1441.0, 1506.0) != (3.05, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_rec_fix5_safety.py:509: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[None-None-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[None-None-1.35]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[None-0.01-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[None-0.01-1.35]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[esc1-None-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[esc1-None-1.35]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[esc1-0.01-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_brake_scene_identical_r1[esc1-0.01-1.35]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_short_neutral_esc[False-0.05-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_short_neutral_esc[False-0.05-1.35]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_short_neutral_esc[True-0.05-None]
+FAILED tests/test_rec_fix7_safety_r2.py::test_loop_short_neutral_esc[True-0.05-1.35]
+12 failed, 270 passed in 156.40s (0:02:36)
+exit 1

@@ -146,6 +146,36 @@
     (欠けた区間の発進は 2 回目以降。上の決まりと同じ)。欠けたシーンの間の start で入れた本は前と同じ(二重には入れない)。真ん中だけ
     欠けた本(あとのシーンが読める = 電源断の形でない)・発進の前進 OFF の本は前と同じ。AI のフレームが無い本の ON/OFF にも同じ手がかり
     を使う(前は log.json・計画・start だけ)。「記録が欠けている本 …」の行の後ろに 1 文。--skip 記録名 で外せる(本ごと)
+  2026-10-27 fix7(反証 7-1 回目 w1-tools-r7-1-tools-1。ほかの日だけ。その場面が無ければ出力は前と同じ。10/23・10/24 を読むとき(引数なし)は
+  今までとビット単位で同じ):
+  - 両方 ON の日(rec_back_guard = rec_hold_keep = 1。11/3 は全部の回)は、リカバリー中止(assist 3。中立で人を待つ)が CH3 を人側にする
+    まで解けない。中止で止まった車を、その場で人側 → AI 側に戻して走り直すと(手順書 7 章の中立止めの行・approvals 3 の「人が CH3 で戻す」
+    のとおり)、新しい AI の区間ができて発進の行が 1 つ増え、R1 の手前(コースの途中)から出たその発進が ON/OFF の起点までの中央値に入った
+    (作り物の回 3 で −0.125 秒「満たさない」→ −0.165 秒「使ってよい」)。今は、同じ本の中で一つ前の AI の区間がリカバリー中止で終わった
+    発進(tools/standing_3lap.abort_resumes。区間の最後のフレームは中立止め・AI_CMD が人側のフレームを除いて見る。走り直しで 0.5 m も
+    進まずにまた人側にしたら次の区間も)に after_abort(中止の始め・中止で終わった区間の終わり・人側の秒)を付け、R1 に届いた走り直しは
+    途中で変えた本・試しの本と同じに比べ(起点まで・失う・動く・空転・LH・2 回目以降の数)から外し、組に abort_resume_excluded(名前・
+    起点まで・その最初の周の衝突)と「リカバリー中止のあとの走り直し N 本 …」の行を出す。手で HS に置き直しても車輪の距離は 0 なので、
+    記録からは置き直したか分からない(一律に外す = 安全側)。ただし ON の走り直しの最初の周の衝突は「最初の周の衝突 0」に数える
+    (abort_resume_on_collisions。衝突は止める条件)。R1 に届かなかった走り直しは前と同じ「R1 に届かなかった発進」(ON なら on_all_reached_r1
+    = False で満たさない・その衝突も数える。比べの中央値にはもとから入らない)で、行の後ろに「うちリカバリー中止のあとの走り直し N」
+    (not_reached の after_abort)。発進ごとの行(launches)と標準出力の行にも印。中止の無い本は前と同じ
+  2026-10-27 fix7 r2(反証 7-2 回目 w2-tools-r7-2-tools-1・2。ほかの日だけ。その場面が無ければ出力は前と同じ。10/23・10/24 を読むとき
+  (引数なし)は今までとビット単位で同じ):
+  - tools-1  手順書 7 章「中立で停止中 → 車に近づく前に CH3 を人側」のとおり中立止めの途中で人側にすると、リカバリー中止(assist 3)は
+    1 フレームも書かれず(明けた最初のフレームでしか決まらない)、その場から戻した発進に印が付かなかった(作り物の回 3 で −0.165 秒
+    「使ってよい」のまま)。今は standing_3lap.abort_resumes に車輪の eRPM も渡し、中立止め(0.5 秒以上)・カメラの途切れ(フレームの
+    無い中立止め)のまま止まって終わった区間のあとの発進にも同じ after_abort(kind = 'hold' / 'stall'。中止は 'abort')を付ける。扱いは
+    fix7 r1 と同じ。名前は fix7 r1 の「リカバリー中止のあとの走り直し」のまま(手順書が引く言葉)。組の行・発進の行に止まった形
+    (中止 X 秒 = r1 と同じ文 / 中立止め X 秒から Y 秒 / カメラの途切れ X 秒から Y 秒)。組の行の説明の文に、中立止め・途切れのあとも
+    同じこと・空転と最初の周の欠けは数えることを足した(行の頭「リカバリー中止のあとの走り直し N 本(」は同じ)
+  - tools-2  fix7 r1 は走り直しの ON(出た)の発進を、起点まで・失う・動く・LH の中央値と一緒に、空転と最初の周の記録の欠けの決まり
+    からも外していた(退行。car_check の「発進の空転の比 … → ⑤ は空転の条件を満たさない」と食い違った)。今は、R1 に届いた走り直しの
+    ON(比べに使う強さ。launch_us が混ざった組は最後の強さの走り直しだけ)の空転(比 > 1.3・比が出ないのに車輪が増えた = いちばんひどい
+    空転)を組の abort_resume_slip に入れて checks の slip = False、比が出ない走り直しを abort_resume_slip_unmeasured に入れて
+    slip_all_measured = False、最初の周の記録が欠けた走り直し(first_lap_gap)を first_lap_gap_on に足して on_all_readable = False
+    (衝突の abort_resume_on_collisions と同じ考え)。起点まで・失う・動く・LH の中央値からは今まで通り外す。abort_resume_excluded の
+    行に、ON の走り直しの空転の比と最初の周の欠けを出す
 """
 import argparse
 import json
@@ -747,6 +777,33 @@ def slip_state(sl):
     return 'unknown'
 
 
+# tools/standing_3lap.RESUME_NAME と同じ(fix7 r1 の名前のまま = 手順書 7 章・8.1 が引く言葉。r2 で中立止め・途切れのあとも入る)
+RESUME_NAME = 'リカバリー中止のあとの走り直し'
+
+
+def abort_text(ab):
+    """after_abort の止まった形の文(2026-10-27 fix7 r2。standing_3lap.abort_text と同じ形。秒は印の値のまま):
+    「中止 X 秒」(fix7 r1 の文のまま)/「中立止め X 秒から Y 秒」/「カメラの途切れ X 秒から Y 秒」(kind の無い印は中止)"""
+    kind = ab.get('kind') or 'abort'
+    if kind == 'hold':
+        return '中立止め %s 秒から %s 秒' % (ab.get('abort_s'), ab.get('hold_s'))
+    if kind == 'stall':
+        return 'カメラの途切れ %s 秒から %s 秒' % (ab.get('abort_s'), ab.get('gap_s'))
+    return '中止 %s 秒' % ab.get('abort_s')
+
+
+def slip_text(sl):
+    """発進の空転の比の文(2026-10-27 fix7 r2。走り直しの ON の行に出す)"""
+    k = slip_state(sl)
+    if k in ('ok', 'high'):
+        return '空転の比 %.2f%s' % (sl['ratio'], ' > %.1f' % CRIT['slip_max'] if k == 'high' else '')
+    if k == 'extreme':
+        return '空転の比が出ない(車輪 +%.2f・IMU +%.2f m/s = いちばんひどい空転とみなす > %.1f)' % (
+            sl['dv_wheel'], sl['dv_imu'], CRIT['slip_max'])
+    return '空転の比が出ない(%s)' % ('車輪 +%.2f・IMU +%.2f m/s。どちらもほとんど増えない' % (sl['dv_wheel'], sl['dv_imu'])
+                                    if sl else '窓が短い(LH・R1 が近い)か IMU が抜けた')
+
+
 def launch_rows(d, laps_ref, ref_kind):
     z, lab = d['z'], d['lab']
     t, ai = z['t_s'], z['ai'].astype(bool)
@@ -756,6 +813,11 @@ def launch_rows(d, laps_ref, ref_kind):
     run = lab.get('run') or ''
     model = MODEL.get(run, run[:24]) if not d.get('extended') else d['model_name']
     rows = []
+    ab = {}
+    if d.get('extended'):              # 2026-10-27 fix7: リカバリー中止のあとの走り直し(ほかの日だけ。中止の無い本は {})
+        import standing_3lap as s3  # noqa: E402  ほかの日だけ読む(10/23・10/24 の道は前のまま)
+        # 2026-10-27 fix7 r2: 車輪の eRPM も渡す(中立止め・カメラの途切れのまま止まって終わった区間のあとも)
+        ab = s3.abort_resumes(t, ai, z.get('assist'), z.get('hold'), z.get('ai_cmd_select'), vt, d['Df'], d['erpm'])
     for i0, i1 in le.runs(ai):
         t0, t1 = float(t[i0]), float(t[i1])
         e0 = float(np.interp(t0, vt, d['erpm']))
@@ -802,6 +864,8 @@ def launch_rows(d, laps_ref, ref_kind):
                 row['midrun'] = d['midrun']
             if d.get('trial'):         # 人が memo に「試し」と書いた本(r3-r3-rec-3。まとめの比べに入れない。あるときだけ)
                 row['trial'] = d['trial']
+            if i0 in ab:               # 2026-10-27 fix7: リカバリー中止のあとの走り直し(まとめの比べに入れない。あるときだけ)
+                row['after_abort'] = ab[i0]
         nxt = [a for a in d['anchors'] if t0 < a <= t1]
         if not nxt or nxt[0] - t0 > MAX_TO_R1_S:
             row['to_r1_s'] = None
@@ -1009,7 +1073,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         return (r['session'], r['model'], None if ignore_gain else gain_key(S, r['gain']), int(_on(S.get('speed_ceiling'))),
                 S.get('ceil_left_mps') if _on(S.get('speed_ceiling')) else None,
                 int(_on(S.get('speed_auto'))), S.get('auto_target_mps') if _on(S.get('speed_auto')) else None)
-    groups, nreach, mids, trials = {}, {}, {}, {}
+    groups, nreach, mids, trials, aborts = {}, {}, {}, {}, {}
     for r in rows:
         if first_only and (r.get('start_no') or 1) != 1:
             continue
@@ -1018,6 +1082,11 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             continue
         if r.get('trial'):             # 2026-10-27 r3-r3-rec-3: 人が memo に「試し」と書いた本も比べに入れない(名前だけ出す)
             trials.setdefault(base(r), []).append(r)
+            continue
+        if r.get('after_abort') and r.get('to_r1_s') is not None:
+            # 2026-10-27 fix7: R1 に届いたリカバリー中止のあとの走り直しも比べに入れない(名前だけ出す)。届かなかった走り直しは前と
+            # 同じに下の「R1 に届かなかった発進」(ON なら満たさない。比べの中央値にはもとから入らない)
+            aborts.setdefault(base(r), []).append(r)
             continue
         if r.get('to_r1_s') is None:
             if 'launch_state' in r:    # r1-rec3-1: ほかの日の R1 に届かなかった発進(前は黙って外した)
@@ -1028,10 +1097,14 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
     def agg_nr(rs):
         """R1 に届かなかった発進(r1-rec3-1): 本数・名前・理由・AI の区間・その衝突(発進 → AI の区間の終わり + NO_R1_TAIL_S。
         2026-10-27 r2-rec2-3 から 0.5 秒。前は 0.2 秒)"""
-        return {'n': len(rs), 'logs': ['%s@%.2f' % (r['log'], r['t_ai']) for r in rs], 'no': [r.get('no') for r in rs],
+        out_ = {'n': len(rs), 'logs': ['%s@%.2f' % (r['log'], r['t_ai']) for r in rs], 'no': [r.get('no') for r in rs],
                 'why': [r.get('why_no_r1') for r in rs], 'ai_seg_s': [r.get('ai_seg_s') for r in rs],
                 'collisions': sum(len(r.get('collisions_first_lap') or []) for r in rs),
                 'hits': [[r['log']] + h for r in rs for h in r.get('collisions_first_lap') or []]}
+        ab_ = ['%s@%.2f' % (r['log'], r['t_ai']) for r in rs if r.get('after_abort')]
+        if ab_:                        # 2026-10-27 fix7: うちリカバリー中止のあとの走り直し(あるときだけ)
+            out_['after_abort'] = ab_
+        return out_
 
     def opts_of(r):
         S = r.get('settings') or {}
@@ -1067,7 +1140,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         return out_
     # r2-rec2-5: 読めなかった記録を組に入れる(鍵が同じ組 → ゲインのほかが同じ組の全部 → 自分の組)
     ur = {}
-    keys_all = set(groups) | set(nreach) | set(mids) | set(trials)
+    keys_all = set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts)
     unk_all = [u for u in unreadable or [] if u.get('meta') is False]    # r3-r3-rec-1: log.json も読めない(回・ON/OFF 不明)
     for u in unreadable or []:
         if u.get('meta') is False:
@@ -1082,7 +1155,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
     if unk_all:
         def has_on(k):
             rs = ([r for rs_ in groups.get(k, {}).values() for r in rs_] + [r for rs_ in nreach.get(k, {}).values() for r in rs_]
-                  + list(mids.get(k, [])) + list(trials.get(k, [])))
+                  + list(mids.get(k, [])) + list(trials.get(k, [])) + list(aborts.get(k, [])))
             return (any(r.get('launch_state') in ('on', 'on_not_started') for r in rs)
                     or any(u['launch_state'] == 'on' for u in ur.get(k, [])))
         for u in unk_all:
@@ -1095,7 +1168,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         """発進のフレームの場所で決めた LH の入口の速さ(r2-rec2-2。無ければ None)"""
         return (r.get('_lh_self') or r.get('lh_self') or {}).get('v_mps')
     out, sib, forms = [], {}, {}
-    for k in sorted(set(groups) | set(nreach) | set(mids) | set(trials) | set(ur), key=str):     # 届かなかった・途中で変えた・試し・読めない本だけの組も出す
+    for k in sorted(set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts) | set(ur), key=str):     # 届かなかった・途中で変えた・試し・中止のあと・読めない本だけの組も出す
         g = {'session': k[0], 'model': k[1], 'gain': k[2], 'speed_ceiling': k[3], 'ceil_left_mps': k[4], 'speed_auto': k[5],
              'auto_target_mps': k[6], 'by_launch': {}}
         for st_, rs in sorted(groups.get(k, {}).items()):
@@ -1117,6 +1190,18 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             tc = sum(len(r.get('collisions_first_lap') or []) for r in trials[k] if r.get('launch_state') == 'on')
             if tc:
                 g['trial_on_collisions'] = tc
+        if k in aborts:                # 2026-10-27 fix7: R1 に届いたリカバリー中止のあとの走り直し(名前・中止・人側の秒・起点まで・衝突)
+            # fix7 r2: 止まった形(中止・中立止め・カメラの途切れ)と、ON の走り直しの空転の比・最初の周の記録の欠け(比べの条件に数える)
+            g['abort_resume_excluded'] = ['%s@%.2f(%s・%s・人側 %s 秒・起点まで %.3f 秒%s%s%s)' % (
+                r['log'], r['t_ai'], r.get('launch_state', 'off'), abort_text(r['after_abort']), r['after_abort'].get('human_s'),
+                r['to_r1_s'], '・' + slip_text(r.get('slip')) if r.get('launch_state') == 'on' else '',
+                '・最初の周の記録が欠けた(%s)' % r['first_lap_gap'] if r.get('launch_state') == 'on' and r.get('first_lap_gap') else '',
+                '・最初の周の衝突 %s' % '・'.join('%.2f 秒 %.1fG %s' % tuple(h) for h in r['collisions_first_lap'])
+                if r.get('collisions_first_lap') else '') for r in aborts[k]]
+            # 走り直しの ON(出た)の発進の最初の周の衝突も「最初の周の衝突 0」に数える(衝突は止める条件。途中で変えた本・試しと同じ考え)
+            ac = sum(len(r.get('collisions_first_lap') or []) for r in aborts[k] if r.get('launch_state') == 'on')
+            if ac:
+                g['abort_resume_on_collisions'] = ac
         if k in ur:                    # r2-rec2-5: 読めなかった記録(名前・理由・発進の前進の ON/OFF)
             us_ = ur[k]
             g['unreadable'] = {'n': len(us_), 'logs': [u['log'] for u in us_], 'no': [u.get('no') for u in us_],
@@ -1128,8 +1213,12 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             if any(u.get('launch_on_from') for u in us_):    # 2026-10-27 fix6-2: ON の手がかり(あるときだけ)
                 g['unreadable']['launch_on_from'] = [u.get('launch_on_from') for u in us_]
         gap_on = [r for r in groups.get(k, {}).get('on', []) + nreach.get(k, {}).get('on', []) if r.get('first_lap_gap')]
+        # 2026-10-27 fix7 r2(w2-tools-r7-2-tools-2): R1 に届いた走り直しの ON(出た)の発進の最初の周の記録の欠けも数える(fix7 r1 は
+        # 比べから外したときに一緒に落としていた。欠けた最初の周の衝突は記録で確かめられない = 衝突と同じく止める条件の側)
+        gap_on += [r for r in aborts.get(k, []) if r.get('launch_state') == 'on' and r.get('first_lap_gap')]
         if gap_on:                     # r2-rec2-5: 最初の周の間で記録が欠けた ON の発進
-            g['first_lap_gap_on'] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], r['first_lap_gap']) for r in gap_on]
+            g['first_lap_gap_on'] = ['%s@%.2f(%s%s)' % (r['log'], r['t_ai'], r['first_lap_gap'],
+                                                        '。' + RESUME_NAME if r.get('after_abort') else '') for r in gap_on]
         # r2-rec2-3: 最初の周を AI の区間の終わり + 0.5 秒まで数えた ON(名前だけ。比べは変えない)。線の前に人側にした本と、A2 が
         # 無い(記録が A2 の前で終わった・当たって止まった・人側で R1 を通らなかった)ので線が分からない本
         ae = [r for r in groups.get(k, {}).get('on', []) if r.get('first_lap_end') == 'ai_end']
@@ -1160,6 +1249,21 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             rows_on_use = use
             g['launch_us_used'] = float(us_of(last))
             g['on_used'] = on_use
+        if k in aborts:
+            # 2026-10-27 fix7 r2(w2-tools-r7-2-tools-2): R1 に届いた走り直しの ON(出た)の発進の空転も、比べに使う ON と同じに見る
+            # (起点まで・失う・動く・LH の中央値からは外したまま)。空転は置いた場所によらず車輪で起きた事実(car_check の「発進の空転の比」
+            # と同じ)。launch_us が混ざった組は、比べに使う強さ(最後の ON の強さ)の走り直しだけ(r3-r3-rec-4・tools:F4 の残りと同じ)
+            ab_on = [r for r in aborts[k] if r.get('launch_state') == 'on']
+            if g.get('launch_us_used') is not None:
+                ab_on = [r for r in ab_on if (r.get('settings') or {}).get('launch_us') is not None
+                         and float(r['settings']['launch_us']) == float(g['launch_us_used'])]
+            ab_hi = [r for r in ab_on if slip_state(r.get('slip')) in ('high', 'extreme')]
+            ab_un = [r for r in ab_on if slip_state(r.get('slip')) == 'unknown']
+            if ab_hi:                  # 比 > 1.3・いちばんひどい空転 → checks の slip = False
+                g['abort_resume_slip'] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], slip_text(r.get('slip'))) for r in ab_hi]
+            if ab_un:                  # 比が出ない → checks の slip_all_measured = False
+                g['abort_resume_slip_unmeasured'] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], slip_text(r.get('slip')))
+                                                     for r in ab_un]
         if on and off:
             d_to = None if on_use['to_r1_median_s'] is None or off['to_r1_median_s'] is None else round(on_use['to_r1_median_s'] - off['to_r1_median_s'], 3)
             d_loss = None if on_use['loss_median_s'] is None or off['loss_median_s'] is None else round(on_use['loss_median_s'] - off['loss_median_s'], 3)
@@ -1178,16 +1282,19 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             chk = {'to_r1': d_to is not None and d_to <= -CRIT['to_r1_gain_s'],
                    # 衝突は強さによらず全部の ON。R1 に届かなかった ON の発進の衝突も(r1-rec3-1)
                    'first_lap_collisions_0': (on['collisions_first_lap'] == 0 and not (on_nr and on_nr['collisions'])
-                                              and not g.get('midrun_on_collisions') and not g.get('trial_on_collisions')),
+                                              and not g.get('midrun_on_collisions') and not g.get('trial_on_collisions')
+                                              and not g.get('abort_resume_on_collisions')),
                    # r3-r3-rec-4: いちばんひどい空転(比が出ない。> 1.3 とみなす)の ON があれば満たさない
+                   # fix7 r2: 走り直しの ON(比べに使う強さ)の空転も(abort_resume_slip)
                    'slip': (on_use['slip_max'] is not None and on_use['slip_max'] <= CRIT['slip_max']
-                            and not on_use.get('slip_extreme')),
+                            and not on_use.get('slip_extreme') and not g.get('abort_resume_slip')),
                    'lh_speed': d_v is not None and d_v <= CRIT['lh_dv_max']}
             if on_nr:                  # r1-rec3-1: 届かなかった ON があれば満たさない(最初の周を確かめられない。名前を出す)
                 chk['on_all_reached_r1'] = False
             if bad_read:               # r2-rec2-5: 読めない(欠けた)ON があれば満たさない(最初の周を確かめられない)
                 chk['on_all_readable'] = False
-            if on_use.get('slip_unmeasured'):     # r3-r3-rec-4: 空転の比が出ない ON があれば満たさない(確かめられない)
+            # r3-r3-rec-4: 空転の比が出ない ON があれば満たさない(確かめられない)。fix7 r2: 走り直しの ON も
+            if on_use.get('slip_unmeasured') or g.get('abort_resume_slip_unmeasured'):
                 chk['slip_all_measured'] = False
             g['compare'] = {'d_to_r1_s': d_to, 'd_loss_s': d_loss, 'd_v_lh_mps': d_v, 'checks': chk, 'all_ok': all(chk.values())}
             if on_use is not on:
@@ -1196,14 +1303,15 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
                 g['compare']['lh_src'] = lh_src
         elif (on_nr or bad_read) and off:   # r1-rec3-1・r2-rec2-5: 届いた・読めた ON が無い → 比べられない = 満たさない
             ck = {'to_r1': False, 'first_lap_collisions_0': not ((on_nr or {}).get('collisions') or g.get('midrun_on_collisions')
-                                                                 or g.get('trial_on_collisions')),
+                                                                 or g.get('trial_on_collisions')
+                                                                 or g.get('abort_resume_on_collisions')),
                   'slip': False, 'lh_speed': False}
             if on_nr:
                 ck['on_all_reached_r1'] = False
             if bad_read:
                 ck['on_all_readable'] = False
             g['compare'] = {'d_to_r1_s': None, 'd_loss_s': None, 'd_v_lh_mps': None, 'checks': ck, 'all_ok': False}
-        rs_all = allr + list(mids.get(k, [])) + list(trials.get(k, []))
+        rs_all = allr + list(mids.get(k, [])) + list(trials.get(k, [])) + list(aborts.get(k, []))
         if ignore_gain:                # r2-rec2-1: まとめたゲインの幅(組の鍵のゲイン。自動合わせ ON はスライダーの値)
             gk = [gain_key(r.get('settings') or {}, r['gain']) for r in rs_all]
             g['gain_ignored'] = True
@@ -1288,8 +1396,11 @@ def summary_lines(summary):
         # 2026-10-26 fix3 直す 1 回目 r1-rec3-1・3・5(あるときだけ)
         for st_, b in (g.get('not_reached') or {}).items():
             hits = '・'.join('%s %.2f 秒 %.1fG %s' % (h[0][-6:], h[1], h[2], h[3]) for h in b['hits']) or 'なし'
-            lines.append('  R1 に届かなかった発進(%s)%d 本(比べの数に入れない): %s。理由 %s。その衝突 %d(%s)' % (
-                st_, b['n'], '・'.join(b['logs']), '/'.join(sorted({w or '?' for w in b['why']})), b['collisions'], hits))
+            lines.append('  R1 に届かなかった発進(%s)%d 本(比べの数に入れない): %s。理由 %s。その衝突 %d(%s)%s' % (
+                st_, b['n'], '・'.join(b['logs']), '/'.join(sorted({w or '?' for w in b['why']})), b['collisions'], hits,
+                # 2026-10-27 fix7(あるときだけ)。r2: 名前を変えた(中立止め・カメラの途切れのあとも)
+                '。うち%s %d(%s)' % (RESUME_NAME, len(b['after_abort']), '・'.join(b['after_abort']))     # fix7 r1 と同じ文
+                if b.get('after_abort') else ''))
         if (g.get('not_reached') or {}).get('on'):
             lines.append('  → ON の発進が R1 の前で終わった本がある = 満たさない(最初の周を確かめられない)。当たった・人が危なくて'
                          '止めた → 回 4 は OFF(手順書 7 章)。車のせいでない理由(人・物がコースに入った・試し)で止めた本だけ、'
@@ -1334,6 +1445,22 @@ def summary_lines(summary):
                 len(g['trial_excluded']), '・'.join(g['trial_excluded']),
                 '。うち ON の発進の最初の周の衝突 %d(比べの「最初の周の衝突 0」には数える)' % g['trial_on_collisions']
                 if g.get('trial_on_collisions') else ''))
+        if g.get('abort_resume_excluded'):     # 2026-10-27 fix7(あるときだけ)。r2: 中立止め・カメラの途切れのあとも・空転と欠けは数える
+            lines.append('  %s %d 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中'
+                         '(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない'
+                         '(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも'
+                         ' OFF の組にも入れない。ON の発進の最初の周の衝突・空転・最初の周の記録の欠けは比べの条件に数える。手順書 7 章): %s%s' % (
+                             RESUME_NAME, len(g['abort_resume_excluded']), '・'.join(g['abort_resume_excluded']),
+                             '。うち ON の発進の最初の周の衝突 %d(比べの「最初の周の衝突 0」には数える)' % g['abort_resume_on_collisions']
+                             if g.get('abort_resume_on_collisions') else ''))
+        if g.get('abort_resume_slip'):         # 2026-10-27 fix7 r2(あるときだけ)
+            lines.append('  → %sの ON の発進が空転した %d 本(比 > %.1f か、比が出ないのに車輪が増えた = いちばんひどい空転): %s → 空転の'
+                         '条件は満たさない(checks の slip。空転は置いた場所によらず車輪で起きた事実。car_check の「発進の空転の比」と同じ)'
+                         % (RESUME_NAME, len(g['abort_resume_slip']), CRIT['slip_max'], '・'.join(g['abort_resume_slip'])))
+        if g.get('abort_resume_slip_unmeasured'):     # 2026-10-27 fix7 r2(あるときだけ)
+            lines.append('  → %sの ON の発進で空転の比が出ない %d 本: %s → 空転を確かめられない = 満たさない(checks の slip_all_measured)。'
+                         '動画で空転を見る' % (RESUME_NAME, len(g['abort_resume_slip_unmeasured']),
+                                         '・'.join(g['abort_resume_slip_unmeasured'])))
         sl_src = g.get('on_used') or g['by_launch'].get('on') or {}      # r3-r3-rec-4: 比べに使う ON(あるときだけ)
         if sl_src.get('slip_extreme'):
             lines.append('  空転がいちばんひどい ON の発進 %d 本(車輪が %.1f m/s より増えたのに IMU の積分が %.1f m/s 以下で比が出ない = '
@@ -1551,7 +1678,9 @@ def main(argv=None):
         print('%s No.%-3s %-10s g%.2f kick=%d(%3dfr) mv%-6s m80=%-6s toR1=%-6s d=%-5s loss=%-6s parts=%s fly=%s/%s %s' % (
             r['log'], r['no'], r['model'], r['gain'], r['kick'], r['kick_frames'], r['move_0p4_s'], r['model80_s'],
             r.get('to_r1_s'), r.get('dist_m'), r.get('loss_s'), r.get('loss_parts'), r.get('fly_n'), r.get('fly_ref'),
-            r.get('start_loc')))
+            r.get('start_loc')) + (' 中止のあとの走り直し(%s・人側 %s 秒。%s)' % (      # 2026-10-27 fix7(あるときだけ)。r2: 止まった形の文
+                abort_text(r['after_abort']), r['after_abort'].get('human_s'),
+                '比べに入れない' if r.get('to_r1_s') is not None else 'R1 に届かなかった発進に数える') if r.get('after_abort') else ''))
     if extended:
         print('\n'.join(summary_lines(res['summary'])))
         unk_sum = [u for u in ur_sum if u.get('meta') is False]

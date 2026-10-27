@@ -1,0 +1,1 @@
+S=$(date -d "$(systemctl show -p ActiveEnterTimestamp --value jetformer-web)" +%s); python3 -I -c "import pathlib,sys; s=int(sys.argv[1]); n=[str(p) for p in sorted(pathlib.Path('/home/jetson/jetformer/jetformer').rglob('*.py')) if p.stat().st_mtime > s]; print(chr(10).join('起動より新しい: ' + x for x in n) or '起動より新しいコードなし')" "$S"

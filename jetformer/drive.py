@@ -81,6 +81,13 @@ PCA9685 に書けたスロットル(人側は「分からない」)を assist.Es
 ところまで下がった時間に足す(s3-a)。前は、値が古いまま出した後退側で車が下がり始めても数えず、明けてから rev_s をまるごと
 下がり直す(後ろへ多く)か、値が来なかった間を全部二重に数えて後退を早く切る(前の壁へ escape)かが、明けたサンプルの速さで
 分かれた。'coast' の続きの直し(s3-b)は assist.py の中。
+反証 7-1 回目の直し(2026-10-27 fix7 係 safety。rec_back_guard = 1 の日だけ効く。rec_hold_keep は問わない。rec_back_guard = 0 なら
+PCA9685 に書く値・記録・出来事は直す前とビット単位で同じ): rec_back_guard = 1 の日は、書けた値(人側は「分からない」)を
+assist.EscMayReverse(EscTrack より多めに「後退で走らせていたかもしれない」とみる版。EscTrack・hold_rev_s は今まで通り)にも入れ、
+helper.step に esc_rev(前に helper.step を呼んでからいままでに、ESC が後退で走らせていたかもしれないか。最初のフレームは
+None = 分からない)を渡す
+(s4-a。前進のあとの 'brake'・'wait'・'gap' の間の eRPM の跳ねで、見張りが 'gap' の中立を飛ばさない・惰性に数えない。使い方と
+s4-b は assist.py の中)。
 
 発進の前進が出さない区間の発進の補助(2026-10-26 fix3 safety1-2): パラメータ launch_no_kick(既定 0・起動のたびに 0。
 画面の試験の選択肢のスイッチか API で入れる。走行開始では送らない。基準の設定・ブロックでは変えない)。launch_boost = 1 で発進の前進が「出さない」と決めた区間(前が近い・ToF が無い・TTC が
@@ -1676,9 +1683,18 @@ class Driver(object):
         # PCA9685 に書けたスロットルから、ESC が後退で走らせていたかもしれない区間(2026-10-27 fix6 safety r1。assist.EscTrack)。
         # rec_hold_keep = 1・rec_back_guard = 1 の日だけ値を入れ、残した中立止めのあと車両の値が来なかった間の数えにだけ使う
         esc_track = assist_mod.EscTrack(ref[1])
+        # 同じく、もっと多めにみる版(2026-10-27 fix7 safety s4-a。assist.EscMayReverse)。rec_back_guard = 1 の日だけ値を入れ、
+        # helper.step の esc_rev にだけ使う
+        esc_gate = assist_mod.EscMayReverse(ref[1])
 
         def keep_on():
             return int(p.get('rec_hold_keep', 0) or 0) == 1 and int(p.get('rec_back_guard', 0) or 0) == 1
+
+        def guard_on():
+            return int(p.get('rec_back_guard', 0) or 0) == 1
+
+        # 前に helper.step を呼んだときの clock.now_ns()(esc_gate から esc_rev を出す区間の始め。fix7 safety s4-a)
+        esc_q = [None]
 
         def veh_unseen_back(upto_ns=None):
             """前に見た車両の値のあとに来たサンプル(upto_ns まで)で、後ろへ動いていた秒(見た時刻を進める。veh_buf は 50 個 =
@@ -1739,6 +1755,11 @@ class Driver(object):
                     esc_track.unknown(clock.now_ns())
                 elif n_ok:
                     esc_track.write(clock.now_ns(), out.neutral_values()[1])
+            if guard_on():                  # 同じ(fix7 safety s4-a)
+                if not veh_select or dry_run:
+                    esc_gate.unknown(clock.now_ns())
+                elif n_ok:
+                    esc_gate.write(clock.now_ns(), out.neutral_values()[1])
             stats['holds'] += 1
             stats['i2c_errors'] = out.errors
             n_s, n_t = out.neutral_values()
@@ -1914,6 +1935,15 @@ class Driver(object):
             if int(p.get('launch_boost', 0) or 0) == 1:
                 launch_in = launch_inputs(p, cam.t_ns, tof_buf, imu_buf, veh_buf, ref, base_us, g_ttc, ttc_hist,
                                           guard is not None and g_mode >= 1, impact_g, g_applied)
+            # 前に helper.step を呼んでからいままでに、ESC が後退で走らせていたかもしれないか(書けた値の esc_gate から。
+            # 見張り ON のときだけ。None = 分からない = 今までと同じ。fix7 safety s4-a: 前進のあとの 'brake'・'wait'・'gap' の間の
+            # eRPM の跳ねで 'gap' を飛ばさない・惰性に数えない)
+            esc_rev = None
+            if guard_on():
+                q_ns = clock.now_ns()
+                if esc_q[0] is not None:
+                    esc_rev = esc_gate.rev_s(esc_q[0], q_ns) > 0.0
+                esc_q[0] = q_ns
             out_us, kind = helper.step(base_us, float(veh['erpm']), bool(veh['select']) and not dry_run,
                                        time.monotonic(), esc_on=p.get('esc_reverse', 1) == 1,
                                        rec_on=p.get('recovery', 1) == 1,
@@ -1925,7 +1955,8 @@ class Driver(object):
                                        launch_no_kick=int(p.get('launch_no_kick', 0) or 0) == 1, hold_g=hold_g,
                                        hold_since=hold_since, hold_back_s=hold_back_s, hold_rev_s=hold_rev_s,
                                        rec_keep=(int(p.get('rec_hold_keep', 0) or 0) == 1
-                                                 and int(p.get('rec_back_guard', 0) or 0) == 1))
+                                                 and int(p.get('rec_back_guard', 0) or 0) == 1),
+                                       esc_rev=esc_rev)
             launch_on, launch_end = helper.launch_on, helper.launch_end
             launch_note(cam.t_ns)
             if helper.rec.guard_event is not None:      # リカバリーの後ろの見張りが手順を変えた(rec_back_guard = 1 のときだけ)
@@ -1983,6 +2014,11 @@ class Driver(object):
                     esc_track.write(clock.now_ns(), out_us[1])
                 else:
                     esc_track.unknown(clock.now_ns())
+            if written and guard_on():      # 同じ(fix7 safety s4-a)
+                if ai_frame:
+                    esc_gate.write(clock.now_ns(), out_us[1])
+                else:
+                    esc_gate.unknown(clock.now_ns())
             stats['i2c_errors'] = out.errors
             if not written:
                 hold('PCA9685への書き込みに失敗しました(読み直します)', cam, bool(veh['select']), infer_ms)

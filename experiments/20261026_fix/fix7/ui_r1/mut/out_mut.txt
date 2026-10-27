@@ -1,0 +1,83 @@
+== トーストをいつも前の文(値を見ない)
+   落ちた動きの試験 6 本: test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 14.21s
+== 知らせのときの値でトーストを作らない(空の値)
+   落ちた動きの試験 6 本: test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 13.94s
+== 走行タブの文を知らせのときの値で固定(作り直さない)
+   落ちた動きの試験 1 本: test_note_follows_reentry_after_the_notice
+   落ちた表・形の試験: -
+   1 failed, 19 passed in 13.41s
+== 試験の選択肢を値を見ずに全部 OFF(前の形)
+   落ちた動きの試験 6 本: test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 13.59s
+== ON の印「(起動のあとに入れ直し済み)」なし
+   落ちた動きの試験 6 本: test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 13.57s
+== 天井の左・強さに「今 X(既定 Y)」を出さない(前の形)
+   落ちた動きの試験 5 本: test_note_follows_reentry_after_the_notice, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   5 failed, 15 passed in 13.63s
+== ほかの既定と違う項目を出さない
+   落ちた動きの試験 1 本: test_partial_reentry_and_other_reset_items
+   落ちた表・形の試験: -
+   1 failed, 19 passed in 13.41s
+== トーストに試験の選択肢を挙げない
+   落ちた動きの試験 6 本: test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 13.81s
+== 既定と違うかの判定が反対
+   落ちた動きの試験 11 本: test_all_earlier_flows_exactly_as_before, test_fix6_conclusions_hold_on_the_fixed_harness, test_no_reentry_texts_exactly_as_before[drive_tab], test_no_reentry_texts_exactly_as_before[live_tab], test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   11 failed, 9 passed in 10.23s
+== 既定の左を 4.2 に
+   落ちた動きの試験 11 本: test_all_earlier_flows_exactly_as_before, test_fix6_conclusions_hold_on_the_fixed_harness, test_no_reentry_texts_exactly_as_before[drive_tab], test_no_reentry_texts_exactly_as_before[live_tab], test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: test_boot_defaults_are_drive_defaults
+   12 failed, 8 passed in 10.28s
+== 既定の強さを 200 に
+   落ちた動きの試験 11 本: test_all_earlier_flows_exactly_as_before, test_fix6_conclusions_hold_on_the_fixed_harness, test_no_reentry_texts_exactly_as_before[drive_tab], test_no_reentry_texts_exactly_as_before[live_tab], test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: test_boot_defaults_are_drive_defaults
+   12 failed, 8 passed in 10.33s
+== ▶ の出し直しを前の固定の文に
+   落ちた動きの試験 2 本: test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page]
+   落ちた表・形の試験: test_before_copy_and_only_the_boot_note_changed
+   3 failed, 17 passed in 15.00s
+== 走行タブの文を出さない
+   落ちた動きの試験 9 本: test_all_earlier_flows_exactly_as_before, test_no_reentry_texts_exactly_as_before[drive_tab], test_no_reentry_texts_exactly_as_before[live_tab], test_note_follows_reentry_after_the_notice, test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   9 failed, 11 passed in 11.48s
+== TCP の出し方の名前を出さない
+   落ちた動きの試験 1 本: test_partial_reentry_and_other_reset_items
+   落ちた表・形の試験: -
+   1 failed, 19 passed in 15.04s
+== 単位を出さない
+   落ちた動きの試験 6 本: test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: test_boot_defaults_are_drive_defaults
+   7 failed, 13 passed in 15.67s
+== ON/OFF の項目を数で出す
+   落ちた動きの試験 6 本: test_partial_reentry_and_other_reset_items, test_reentered_before_opening_the_drive_tab, test_refused_start_appends_the_same_text_as_the_toast[boot_409], test_refused_start_appends_the_same_text_as_the_toast[net_fail], test_refused_start_appends_the_same_text_as_the_toast[old_page], test_second_reboot_uses_the_new_time_and_values
+   落ちた表・形の試験: -
+   6 failed, 14 passed in 19.30s
+== 台本: click・slide のあと長いタイマーを捨てる(もとの形)
+   落ちた動きの試験 4 本: test_fix6_r2_look_scenes_on_the_fixed_harness, test_fixed_harness_keeps_the_loop_after_click_and_slide[click], test_fixed_harness_keeps_the_loop_after_click_and_slide[slide], test_fixed_harness_respects_clear_before_fire[click]
+   落ちた表・形の試験: -
+   4 failed, 16 passed in 15.71s
+== 台本: 消されたタイマーも鳴らす(先に全部取り出す)
+   落ちた動きの試験 3 本: test_fixed_harness_respects_clear_before_fire[click], test_fixed_harness_respects_clear_before_fire[tick], test_fixed_harness_respects_clear_before_fire[timers]
+   落ちた表・形の試験: -
+   3 failed, 17 passed in 14.06s
+== 台本: ['timers'] がもとの形
+   落ちた動きの試験 1 本: test_fixed_harness_respects_clear_before_fire[timers]
+   落ちた表・形の試験: -
+   1 failed, 19 passed in 14.02s
+== 台本: ['tick'] がもとの形
+   落ちた動きの試験 1 本: test_fixed_harness_respects_clear_before_fire[tick]
+   落ちた表・形の試験: -
+   1 failed, 19 passed in 14.61s
+== 壊さない(今の app.js・台本)
+   20 passed in 46.09s
+見逃し 0 / 20

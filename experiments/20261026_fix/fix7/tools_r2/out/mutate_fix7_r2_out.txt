@@ -1,0 +1,37 @@
+| # | ファイル | 壊し | 結果 | 落ちた最初の試験 |
+|---|---|---|---|---|
+| 00 | S | ③ 中立止めの形を見ない | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 01 | S | ③ カメラの途切れの形を見ない | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-stall] |
+| 02 | S | ③ 中立止めの長さ 0.5 → 0.6 秒 | 落ちる | test_abort_resumes_hold_stall_unit |
+| 03 | S | ③ 中立止めの終わりで止まっているかを見ない | 落ちる | test_c5_not_marked_is_same_as_r1[hold_moving] |
+| 04 | S | ③ 区間で進んだかを見ない | 落ちる | test_c5_never_moved_segment_is_not_marked |
+| 05 | S | ③ 途切れの間に止まったかを見ない | 落ちる | test_c5_not_marked_is_same_as_r1[stall_moving] |
+| 06 | S | ③ 中立止めで AI_CMD が人側のフレームを除かない | 落ちる | test_abort_resumes_hold_stall_unit |
+| 07 | S | ③ 中立止めの長さを最初の中立止めのフレームから | 落ちる | test_abort_resumes_hold_stall_unit |
+| 08 | S | ③ 途切れの決まり GAP_S → 0.5 秒 | 落ちる | test_abort_resumes_hold_stall_unit |
+| 09 | S | ③ analyze_log が eRPM を渡さない | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 10 | S | ③ 中止の印に kind を付けない | 落ちる | test_c5_abort_resume_same_as_r1_but_names[3.5] |
+| 11 | S | ③ 表の文: 中立止めを中止の文で | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 12 | S | ③ 途切れの止まりを始めの時刻だけで見る | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-stall] |
+| 13 | S | ③ 中止の無い本は {}(r1 の早い戻り) | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 14 | S | ③ 中立止めのあとの続き(carried)を見ない | 落ちる | test_abort_resumes_hold_stall_unit |
+| 15 | C | ⑤ launch_rows が eRPM を渡さない | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 16 | C | ⑤ 走り直しの空転を checks の slip に入れない | 落ちる | test_c5_resume_spin_counts_for_slip[abort] |
+| 17 | C | ⑤ 走り直しの比が出ないを slip_all_measured に入れない | 落ちる | test_c5_resume_slip_unmeasured |
+| 18 | C | ⑤ 走り直しの最初の周の欠けを数えない | 落ちる | test_c5_resume_first_lap_gap[abort] |
+| 19 | C | ⑤ いちばんひどい空転を数えない | 落ちる | test_c5_resume_extreme_spin |
+| 20 | C | ⑤ OFF の走り直しの空転も数える | 落ちる | test_c5_off_resume_spin_and_gap_not_counted |
+| 21 | C | ⑤ launch_us が混ざっても全部の走り直しの空転を数える | 落ちる | test_c5_resume_spin_mixed_launch_us[250.0-False] |
+| 22 | C | ⑤ 空転の行を出さない | 落ちる | test_c5_resume_spin_counts_for_slip[abort] |
+| 23 | C | ⑤ 組の行に空転の比を出さない | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 24 | C | ⑤ 止まった形の文: 中立止めを中止の文で | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 25 | C | ⑤ 欠けた発進の行に走り直しの印を出さない | 落ちる | test_c5_resume_first_lap_gap[abort] |
+| 26 | C | ⑤ 届いた走り直しを比べに戻す(r1 の直しを外す) | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 27 | C | 対照: CRIT の起点の差 0.15 → 0.10 | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 28 | Q | ④ 1 章の印の名前を変える | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 29 | Q | ④ 2 章の下の行を出さない | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 30 | Q | ④ 2 章の下の行に中立止めの 1 文を足さない | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 31 | S | ③ 中立止めの注 HOLD_NOTE を出さない | 落ちる | test_s3_hold_stall_resume_not_counted[3.5-hold] |
+| 32 | S | ③ 中止の文を「リカバリー中止」に変える(手順書が引く言葉) | 落ちる | test_c5_s3_qp_keep_the_words_the_runbook_quotes |
+| 33 | C | ⑤ 発進の行の頭を変える(手順書が引く言葉) | 落ちる | test_c5_hold_stall_resume_is_excluded[0.5-hold] |
+| 34 | C | ⑤ 中止の文を「リカバリー中止」に変える | 落ちる | test_c5_abort_resume_same_as_r1_but_names[3.5] |

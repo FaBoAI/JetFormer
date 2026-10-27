@@ -1,0 +1,118 @@
+........................................................................ [  5%]
+........................................................................ [ 11%]
+.....FF................................................................. [ 17%]
+........................................................................ [ 23%]
+........................................................................ [ 29%]
+........................................................................ [ 35%]
+........................................................................ [ 41%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+........................................................................ [ 58%]
+........................................................................ [ 64%]
+........................................................................ [ 70%]
+........................................................................ [ 76%]
+........................................................................ [ 82%]
+........................................................................ [ 88%]
+........................................................................ [ 94%]
+.......................................................................  [100%]
+=================================== FAILURES ===================================
+______________________ test_loop_brake_scene_spike[None] _______________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff0deaa510>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety/pt_safety_all/test_loop_brake_scene_spike_No0')
+esc = None
+
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_spike(monkeypatch, tmp_path, esc):
+        """場面 brake の跳ね(1322)を 2.62〜2.94 秒に: EscTrack が後退とみる前('brake' を書いて 0.06 秒まで)の 'brake' の跳ねは使わない
+        = 跳ねなしの今と PCA9685 に書く値がビット単位で同じ(出来事 back_no_esc)。直す前の写しは跳ねを back_early に数えて後退が短い。
+        それ以外(手順の前・ESC が後退で走らせている間)の跳ねは直す前の写しとビット単位で同じ。両方の形を通る"""
+        amod, before = load_before()
+        clean = run(drive, monkeypatch, tmp_path, P(), scene_brake(esc=esc))
+        kinds = set()
+        for tg in (2.62, 2.70, 2.74, 2.76, 2.78, 2.80, 2.86, 2.94):
+            sc = scene_brake(esc=esc, glitch=[(tg, 1322)])
+            now = run(drive, monkeypatch, tmp_path, P(), sc)
+            bef = run(before, monkeypatch, tmp_path, P(), sc)
+            if 'back_no_esc' in R2.guards(now[1]):
+                assert now[2].w == clean[2].w and R2.guards(now[1]) == ['back_no_esc'] + R2.guards(clean[1])
+                assert first(bef[0], bef[2])['back'] < first(now[0], now[2])['back']
+                kinds.add('ignored')
+            else:
+                F5.same_loop(now, bef)
+                kinds.add('same')
+>       assert kinds == {'ignored', 'same'}
+E       AssertionError: assert {'same'} == {'ignored', 'same'}
+E         
+E         Extra items in the right set:
+E         'ignored'
+E         Use -v to get more diff
+
+tests/test_rec_fix7_safety.py:904: AssertionError
+______________________ test_loop_brake_scene_spike[esc1] _______________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff0d603070>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_safety/pt_safety_all/test_loop_brake_scene_spike_es0')
+esc = (0.12, 0.1)
+
+    @pytest.mark.parametrize('esc', [None, (0.12, 0.10)])
+    def test_loop_brake_scene_spike(monkeypatch, tmp_path, esc):
+        """場面 brake の跳ね(1322)を 2.62〜2.94 秒に: EscTrack が後退とみる前('brake' を書いて 0.06 秒まで)の 'brake' の跳ねは使わない
+        = 跳ねなしの今と PCA9685 に書く値がビット単位で同じ(出来事 back_no_esc)。直す前の写しは跳ねを back_early に数えて後退が短い。
+        それ以外(手順の前・ESC が後退で走らせている間)の跳ねは直す前の写しとビット単位で同じ。両方の形を通る"""
+        amod, before = load_before()
+        clean = run(drive, monkeypatch, tmp_path, P(), scene_brake(esc=esc))
+        kinds = set()
+        for tg in (2.62, 2.70, 2.74, 2.76, 2.78, 2.80, 2.86, 2.94):
+            sc = scene_brake(esc=esc, glitch=[(tg, 1322)])
+            now = run(drive, monkeypatch, tmp_path, P(), sc)
+            bef = run(before, monkeypatch, tmp_path, P(), sc)
+            if 'back_no_esc' in R2.guards(now[1]):
+                assert now[2].w == clean[2].w and R2.guards(now[1]) == ['back_no_esc'] + R2.guards(clean[1])
+                assert first(bef[0], bef[2])['back'] < first(now[0], now[2])['back']
+                kinds.add('ignored')
+            else:
+                F5.same_loop(now, bef)
+                kinds.add('same')
+>       assert kinds == {'ignored', 'same'}
+E       AssertionError: assert {'same'} == {'ignored', 'same'}
+E         
+E         Extra items in the right set:
+E         'ignored'
+E         Use -v to get more diff
+
+tests/test_rec_fix7_safety.py:904: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix3_r1_2.py: 50 warnings
+tests/test_fix3_r2_1_collect.py: 118 warnings
+tests/test_fix3_r2_2.py: 169 warnings
+tests/test_fix3_r3_1_tools.py: 90 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:744: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r1_2.py: 23 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r1_2_before/collect.py.orig:374: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r2_1_collect.py: 59 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r2_1_before/collect.py:420: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r2_2.py: 145 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r2_2_before/collect.py.orig:430: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_1_tools.py: 85 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_1_before/collect.py:520: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_rec_fix7_safety.py::test_loop_brake_scene_spike[None] - Ass...
+FAILED tests/test_rec_fix7_safety.py::test_loop_brake_scene_spike[esc1] - Ass...
+2 failed, 1221 passed, 1164 warnings in 803.72s (0:13:23)

@@ -44,7 +44,8 @@ FIX = ROOT / 'tests' / 'fixtures' / 'fix3_r3_1_before'
 # tests/test_fix3_r3_2_tools.py の LATER_FIX4・LATER_FIX5・LATER_FIX6 と同じ値)
 LATER_DRIVE = {'fix4_small': 'c575af1262836c3e10bfe32b2ee34293117a2144b3e568acb326ada57d59a471',
                'fix5_safety': '041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c',
-               'fix6_safety': '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec'}
+               'fix6_safety': '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec',
+               'fix7_safety': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}     # 10/27 fix7 safety 7-1 回目(LATER_FIX7_SAFETY)
 DT = 0.01
 FDT = 1 / 30.0
 MODEL = (C, N - 120.0)
@@ -87,10 +88,12 @@ def test_before_copies_and_defaults_unchanged():
     for name in ('assist.py', 'drive.py', 'app.js', 'index.html', 'collect.py', 'car_check.py'):
         assert sha(FIX / name) == s[name], name
     # この組は drive.py を変えていない。あとの組の版でもよい(10/27 fix4 small = 説明の文だけ・10/27 fix5 safety = 反証 4 回目の
-    # s2・s3・10/27 fix6 safety = 反証 6-1 回目の s3-a)。そのときは、その組の直す前の写しの sha256 をたどってこの組の版
+    # s2・s3・10/27 fix6 safety = 反証 6-1 回目の s3-a・10/27 fix7 safety = 反証 7-1 回目の s4-a)。そのときは、その組の直す前の写しの
+    # sha256 をたどってこの組の版
     # (SHA256SUMS)につながるか見る
     cur = sha(ROOT / 'jetformer' / 'drive.py')
-    chain = {LATER_DRIVE['fix6_safety']: ROOT / 'tests' / 'fixtures' / 'fix6_safety_before' / 'drive.py',
+    chain = {LATER_DRIVE['fix7_safety']: ROOT / 'tests' / 'fixtures' / 'fix7_safety_before' / 'drive.py',
+             LATER_DRIVE['fix6_safety']: ROOT / 'tests' / 'fixtures' / 'fix6_safety_before' / 'drive.py',
              LATER_DRIVE['fix5_safety']: ROOT / 'tests' / 'fixtures' / 'fix5_safety_before' / 'drive.py',
              LATER_DRIVE['fix4_small']: ROOT / 'tests' / 'fixtures' / 'fix4_small_before' / 'drive.py'}
     while cur != s['drive.py']:

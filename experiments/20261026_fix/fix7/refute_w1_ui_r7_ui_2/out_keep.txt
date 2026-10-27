@@ -1,0 +1,154 @@
+SIM -> test_ui_fix6_r2 /home/jetson/jetformer/experiments/20261026_fix/fix7/refute_w1_ui_r7_ui_2/keep_app_sim_fix6_r2.js
+SIM -> test_ui_fix6 /home/jetson/jetformer/experiments/20261026_fix/fix7/refute_w1_ui_r7_ui_2/keep_app_sim_fix6.js
+SIM -> test_ui_fix5 /home/jetson/jetformer/experiments/20261026_fix/fix7/refute_w1_ui_r7_ui_2/keep_app_sim_fix5.js
+.FFFFFF...................................................               [100%]
+=================================== FAILURES ===================================
+___________________ test_models_fail_then_curl_left_is_read ____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_models_fail_then_curl_lef0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_models_fail_then_curl_left_is_read(tmp_path, cands):
+        """指摘の B: ライブ → 走行タブ(一覧の GET だけ失敗)→ 手順書 5 章の curl で左 4.2 → ブロック 10 → 天井 ON → ▶。
+        直す前の写しは輪が止まり、天井の横の文・スイッチと ▶ の確認の文が 4.1 のまま(本物の Driver は 4.2 で走る)。今の版は輪が回り、
+        どれも 4.2。送った POST(curl・スイッチ・走行開始の body と返事)は直す前と同じ"""
+        c, di = cands
+        steps = BASE + [['models_fail', True], ['tab', 'drive'], ['models_fail', False], ['api', {'ceil_left_mps': 4.2}]] + LOOK + [
+            ['pick', di, blk(c, di, 10)], ['check', '#dr-speed-ceiling', True], ['tick'], ['start'], ['read', 'server'], ['posts']]
+        (new, tn), (old, to) = both(tmp_path, c, steps)
+>       assert look(old) == ([], False, True, 4.1, False, '(全体 4.5・左旋回中 4.1 m/s)', False)          # 指摘が起きる
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ([300, 1000],....1 m/s)', ...) == ([], False, T....1 m/s)', ...)
+E         
+E         At index 0 diff: [300, 1000] != []
+E         Use -v to get more diff
+
+tests/test_ui_fix6_r2.py:165: AssertionError
+___________________ test_models_fail_server_down_then_reboot ___________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_models_fail_server_down_t0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_models_fail_server_down_then_reboot(tmp_path, cands):
+        """指摘の A: 朝の設定(見張り・残す ON・左 4.2・launch_us 200)→ ライブ → サーバーが落ちる → 走行タブ(一覧の GET が失敗)→
+        既定の値で起き直す。直す前の写しは輪が止まり、▶ を押せて「つながっていません」も起動し直しの知らせも出ない(▶ は起き直す前の
+        4.2 の文で 409)。今の版は、落ちている間は ▶ を押せず「つながっていません」、起き直すと 1 秒の問い合わせで知らせが出て
+        4.1 を読み、▶ は新しい起動の時刻で通る(確認の文は今のサーバーの値。見張り・残すの行なし)"""
+        c, di = cands
+        steps = BASE + [['down_all', True], ['tab', 'drive'], ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'],
+                        ['el', '#dr-message', 'html'], ['tick'], ['reboot', 2000.0, RESET], ['down_all', False]] + LOOK + [
+            ['el', '#dr-launch-spec', 'text'], ['pick', di, blk(c, di, 10)], ['check', '#dr-speed-ceiling', True], ['start'],
+            ['read', 'server'], ['posts']]
+        (new, tn), (old, to) = both(tmp_path, c, steps, server=PRE_A)
+        on, oo = tagged(new)[:3], tagged(old)[:3]
+        assert oo[0] is True and oo[1] is False and LOST not in oo[2]                  # 直す前: 同期したまま・押せる・文なし
+        assert on[0] is False and on[1] is True and LOST in on[2]                     # 今: 落ちている間は断る
+>       assert look(old)[:5] == ([], False, True, 4.2, False)
+E       assert ([300, 1000],...e, 4.2, False) == ([], False, True, 4.2, False)
+E         
+E         At index 0 diff: [300, 1000] != []
+E         Use -v to get more diff
+
+tests/test_ui_fix6_r2.py:193: AssertionError
+_______________ test_models_fail_and_status_hangs_refuses_start ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_models_fail_and_status_ha0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_models_fail_and_status_hangs_refuses_start(tmp_path, cands):
+        """一覧の GET が失敗し、そのあと status の GET も返らない(通信の途切れ): 今の版はすぐ ▶ を断る(「つながっていません」。走行開始は
+        送らない)。5 秒で status の GET を打ち切り、次の問い合わせで同期すると押せる。直す前の写しは輪が止まり、▶ がそのまま通った"""
+        c, di = cands
+        steps = BASE + [['models_fail', True], ['hold', ST, True], ['tab', 'drive'], ['models_fail', False], ['ntimers'],
+                        ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'], ['el', '#dr-message', 'html'],
+                        ['start'], ['el', '#toast', 'text'], ['tick'], ['hold', ST, False], ['tick'], ['ntimers'],
+                        ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'], ['calls']]
+        (new, tn), (old, to) = both(tmp_path, c, steps)
+        n, o = tagged(new), tagged(old)
+>       assert vals(new, 'ntimers')[0] == [6000, WAIT] and vals(old, 'ntimers')[0] == [6000]   # トーストの 6 秒のほか、今: 打ち切りの 5 秒 / 前: 何も無い
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert ([1000, 300, 6000, 5000] == [6000, 5000]
+E         
+E         At index 0 diff: 1000 != 6000
+E         Left contains 2 more items, first extra item: 6000
+E         Use -v to get more diff)
+
+tests/test_ui_fix6_r2.py:219: AssertionError
+_______________________ test_models_hang_starts_the_loop _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_models_hang_starts_the_lo0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_models_hang_starts_the_loop(tmp_path, cands):
+        """一覧の GET が返らない(止まった GET): 今の版は 5 秒で輪を始め(drLost → 同期)、curl の 4.2 を読む。一覧の返事が来たら前と同じに
+        続ける(選ぶ欄・輪)。直す前の写しは一覧の返事が来るまで輪が止まったまま 4.1"""
+        c, di = cands
+        steps = BASE + [['hold', MD, True], ['tab', 'drive'], ['api', {'ceil_left_mps': 4.2}], ['ntimers']] + LOOK + [
+            ['pick', di, blk(c, di, 10)], ['check', '#dr-speed-ceiling', True], ['start'],
+            ['hold', MD, False], ['release', MD], ['tick'], ['ntimers'], ['read', 'st_params'], ['el', '#dr-model', 'value'], ['calls']]
+        (new, tn), (old, to) = both(tmp_path, c, steps)
+>       assert vals(new, 'ntimers')[0] == [WAIT] and vals(old, 'ntimers')[0] == []
+E       assert ([1000, 300, 5000] == [5000]
+E         
+E         At index 0 diff: 1000 != 5000
+E         Left contains 2 more items, first extra item: 300
+E         Use -v to get more diff)
+
+tests/test_ui_fix6_r2.py:239: AssertionError
+______________________ test_status_hang_while_idle_is_cut ______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_status_hang_while_idle_is0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_status_hang_while_idle_is_cut(tmp_path, cands):
+        """走行タブで止まっているとき status の GET が返らない: 今の版は 5 秒で打ち切って「つながっていません」・▶ を断る・1 秒後に
+        また問い合わせる(通れば同期して 4.2)。直す前の写しは輪が止まり、▶ が押せて 4.1 の文のまま(返事が来るまで)"""
+        c, di = cands
+        steps = [['tab', 'drive'], ['tick'], ['calls'], ['hold', ST, True], ['tick'], ['ntimers'], ['api', {'ceil_left_mps': 4.2}],
+                 ['tick'], ['ntimers'], ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'], ['el', '#dr-message', 'html'],
+                 ['confirm', False], ['start'], ['hold', ST, False], ['tick'], ['ntimers'], ['read', 'st_params'],
+                 ['el', '#dr-ceil-spec', 'text'], ['el', '#btn-dr-start', 'disabled'], ['release', ST], ['calls']]
+        (new, tn), (old, to) = both(tmp_path, c, steps)
+        tn_, to_ = vals(new, 'ntimers'), vals(old, 'ntimers')
+>       assert tn_[0] == [WAIT] and to_[0] == []                     # 今: GET を待つ間は打ち切りの 5 秒だけ
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert ([300, 5000, 1000] == [5000]
+E         
+E         At index 0 diff: 300 != 5000
+E         Left contains 2 more items, first extra item: 5000
+E         Use -v to get more diff)
+
+tests/test_ui_fix6_r2.py:262: AssertionError
+________________________ test_status_body_stall_is_cut _________________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_refute_w1_ui_r7_ui_2/keep/test_status_body_stall_is_cut0')
+cands = ({'exists': True, 'ok': True, 'error': None, 'warnings': [], ...}, 2)
+
+    @needs_node
+    def test_status_body_stall_is_cut(tmp_path, cands):
+        """status の返事の頭は来たが本文が来ない: 今の版は 5 秒で打ち切って失敗(api は本文なしの null を返すので、それも失敗にする)"""
+        c, di = cands
+        steps = [['tab', 'drive'], ['tick'], ['hold_body', ST, True], ['tick'], ['ntimers'], ['tick'], ['ntimers'],
+                 ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'], ['el', '#dr-message', 'html'],
+                 ['hold_body', ST, False], ['tick'], ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled']]
+        (new, tn), (old, to) = both(tmp_path, c, steps)
+>       assert vals(new, 'ntimers') == [[WAIT], [1000]] and vals(old, 'ntimers') == [[], []]
+E       assert ([[300, 5000, ..., 1000, 1000]] == [[5000], [1000]]
+E         
+E         At index 0 diff: [300, 5000, 1000] != [5000]
+E         Use -v to get more diff)
+
+tests/test_ui_fix6_r2.py:284: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_then_curl_left_is_read - As...
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_server_down_then_reboot - a...
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_and_status_hangs_refuses_start
+FAILED tests/test_ui_fix6_r2.py::test_models_hang_starts_the_loop - assert ([...
+FAILED tests/test_ui_fix6_r2.py::test_status_hang_while_idle_is_cut - assert ...
+FAILED tests/test_ui_fix6_r2.py::test_status_body_stall_is_cut - assert ([[30...
+6 failed, 52 passed in 21.84s

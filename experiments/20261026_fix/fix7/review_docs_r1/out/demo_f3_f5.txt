@@ -1,0 +1,28 @@
+== F3: e5_open_seal.py plan(既定 = 読むだけ)の答え
+   "V1": "v3_20261026-v3d-aug2-e60-s1",
+   "V2": "v3_20261026-v3n-aug2-e60-s1"
+  "final": true,
+    "V1": "v3_20261026-v3d-aug2-e60-s1",
+    "V2": "v3_20261026-v3n-aug2-e60-s1",
+    "final": true
+     "V1": "v3_20261026-v3d-aug2-e60-s1",
+     "V2": "v3_20261026-v3n-aug2-e60-s1"
+  "open": true,
+答え: 開ける(11/1 朝・1 回だけ)。予測 7 本 → T・V の拒否権 → BF2-1 → V1 → V2 の順の最初
+== F3: 文書の approvals 6(候補 0 のとき封を開けるか)を「答えがまだ」に数えている行
+10:- **今(10/27 17:3x。fix7 係 docs が今に合わせた。控え `approvals.md.bak-20261027-fix7-docs`)**: **1 は済み**(A1・A2・B1
+21:| 6 | 11/1 の E5 で候補が 0 のとき、封を開けるか | **(a) 開けない**(B のまま) | 11/1 朝 |
+9:- **10/27 17:3x fix7 係 docs**(`fix7/docs.md`。控え `todo_user_1026.md.bak-20261027-fix7-docs`): 画面の版 9(`fix6/ui/docs_ban9.py`
+17:| **11/2 まで** | `fix3/approvals.md` の **4・6〜11・13** に答える(補助なし・E5・24〜27・回 3 の判定の読み方・
+21:| 11/1 | 11/3 の新しいモデルの枠(v3 に候補があっても速くならない見込み。材料のために走るか)。候補�
+== F5: 10/27 の pytest 一式の終わりの空きと作業場所
+rc=1
+終了 10/27 17:13:18
+/dev/mmcblk0p1  116G  106G  3.4G  97% /
+7.1G	experiments/20261026_fix/tmp_pytest_full_20261027
+== F5: 文書と disk_check の数
+/home/jetson/jetformer_reports/fix_20261026/README.md:128:| 4 | pytest 一式 | 学習のあと・片付けのあと。fix2・fix3 の試験も入れる(6 章)�
+/home/jetson/jetformer_reports/fix_20261026/fix3/approvals.md:36:| なぜ | 今 7.8 GB。段 1 の残りと予測で約 1.1 GB 減って約 6.7 GB。**pytest �
+25:PYTEST_GB = 3.9       # pytest 一式 1 回の作業場所(verify.md)
+今の空き: 11.12 GB
+pytest 一式の最中: 7.10 GB(作業場所 3.9 GB)。終わって消せば 11.00 GB に戻る

@@ -1,0 +1,35 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................................................ [ 85%]
+..................................................                       [100%]
+=============================== warnings summary ===============================
+tests/test_fix6_tools_r2.py: 192 warnings
+tests/test_fix6_tools.py: 156 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+tests/test_fix5_tools.py: 73 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:730: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools_r2.py: 184 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_r2_before/collect.py.orig:672: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools.py: 148 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_before/collect.py.orig:607: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix5_tools.py: 73 warnings
+  /home/jetson/jetformer/tests/fixtures/fix5_tools_before/collect.py.orig:597: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+338 passed, 1251 warnings in 332.33s (0:05:32)
+
+real	5m33.804s
+user	5m12.938s
+sys	0m10.715s

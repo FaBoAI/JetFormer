@@ -1,0 +1,49 @@
+........................................................................ [ 14%]
+........................................................................ [ 29%]
+........................................................................ [ 43%]
+........................................................................ [ 58%]
+........................................................................ [ 73%]
+........................................................................ [ 87%]
+...........................................................              [100%]
+=============================== warnings summary ===============================
+tests/test_fix7_docs_r2.py: 34 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+tests/test_fix5_tools.py: 73 warnings
+tests/test_fix6_tools.py: 156 warnings
+tests/test_fix6_tools_r2.py: 192 warnings
+tests/test_fix7_tools.py: 224 warnings
+tests/test_fix7_tools_r2.py: 387 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:760: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix5_tools.py: 73 warnings
+  /home/jetson/jetformer/tests/fixtures/fix5_tools_before/collect.py.orig:597: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools.py: 148 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_before/collect.py.orig:607: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix6_tools_r2.py: 184 warnings
+  /home/jetson/jetformer/tests/fixtures/fix6_tools_r2_before/collect.py.orig:672: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix7_tools.py: 191 warnings
+tests/test_fix7_tools_r2.py: 86 warnings
+  /home/jetson/jetformer/tests/fixtures/fix7_tools_before/collect.py.orig:730: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix7_tools_r2.py: 222 warnings
+  /home/jetson/jetformer/tests/fixtures/fix7_tools_before/r2/collect.py.orig:744: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+491 passed, 2395 warnings in 460.79s (0:07:40)
+
+real	7m42.283s
+user	6m35.541s
+sys	0m16.806s

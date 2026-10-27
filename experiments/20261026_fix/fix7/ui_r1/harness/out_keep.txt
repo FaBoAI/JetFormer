@@ -1,0 +1,55 @@
+==== 台本: keep
+SIM -> test_bench_ui_round2 keep_app_sim_round2.js
+SIM -> test_ui_fix3 keep_app_sim_fix3.js
+SIM -> test_ui_fix3_r1 keep_app_sim_fix3_r1.js
+SIM -> test_ui_fix3_r1_2 keep_app_sim_fix3_r1_2.js
+SIM -> test_ui_fix3_r2_1 keep_app_sim_fix3_r2_1.js
+SIM -> test_ui_fix3_r3_1 keep_app_sim_fix3_r3_1.js
+SIM -> test_ui_fix5 keep_app_sim_fix5.js
+SIM -> test_ui_fix6 keep_app_sim_fix6.js
+SIM -> test_ui_fix6_r2 keep_app_sim_fix6_r2.js
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_then_curl_left_is_read - As...
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_server_down_then_reboot - a...
+FAILED tests/test_ui_fix6_r2.py::test_models_fail_and_status_hangs_refuses_start
+FAILED tests/test_ui_fix6_r2.py::test_models_hang_starts_the_loop - assert ([...
+FAILED tests/test_ui_fix6_r2.py::test_status_hang_while_idle_is_cut - assert ...
+FAILED tests/test_ui_fix6_r2.py::test_status_body_stall_is_cut - assert ([[30...
+6 failed, 151 passed in 92.23s (0:01:32)
+    E       AssertionError: assert ([300, 1000],....1 m/s)', ...) == ([], False, T....1 m/s)', ...)
+    E         
+    E         At index 0 diff: [300, 1000] != []
+    E         Use -v to get more diff
+    E       assert ([300, 1000],...e, 4.2, False) == ([], False, True, 4.2, False)
+    E         
+    E         At index 0 diff: [300, 1000] != []
+    E         Use -v to get more diff
+    E       assert ([1000, 300, 6000, 5000] == [6000, 5000]
+    E         
+    E         At index 0 diff: 1000 != 6000
+    E         Left contains 2 more items, first extra item: 6000
+    E         Use -v to get more diff)
+    E       assert ([1000, 300, 5000] == [5000]
+    E         
+    E         At index 0 diff: 1000 != 5000
+    E         Left contains 2 more items, first extra item: 300
+    E         Use -v to get more diff)
+    E       assert ([300, 5000, 1000] == [5000]
+    E         
+    E         At index 0 diff: 300 != 5000
+    E         Left contains 2 more items, first extra item: 5000
+    E         Use -v to get more diff)
+    E       assert ([[300, 5000, ..., 1000, 1000]] == [[5000], [1000]]
+    E         
+    E         At index 0 diff: [300, 5000, 1000] != [5000]
+    E         Use -v to get more diff)
+==== 台本: keepdrv
+SIM -> test_bench_ui_round2 keep_app_sim_round2.js
+SIM -> test_ui_fix3 keep_app_sim_fix3.js
+SIM -> test_ui_fix3_r1 keep_app_sim_fix3_r1.js
+SIM -> test_ui_fix3_r1_2 keep_app_sim_fix3_r1_2.js
+SIM -> test_ui_fix3_r2_1 keep_app_sim_fix3_r2_1.js
+SIM -> test_ui_fix3_r3_1 keep_app_sim_fix3_r3_1.js
+SIM -> test_ui_fix5 keep_app_sim_fix5.js
+SIM -> test_ui_fix6 keep_app_sim_fix6.js
+SIM -> test_ui_fix6_r2 keepdrv_app_sim_fix6_r2.js
+157 passed in 93.91s (0:01:33)

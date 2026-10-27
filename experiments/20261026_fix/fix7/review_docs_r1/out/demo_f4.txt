@@ -1,0 +1,9 @@
+== 文書のコマンドそのまま
+active
+18:Oct 10 09:23:27 jetson run_web.sh[12783]: AttributeError: 'AudioSensor' object has no attribute 'channel'
+== 60 行の最初と最後の日付
+Oct 10 09:23:27 jetson run_web.sh[12783]:     ^
+Oct 27 17:16:28 jetson systemd[1]: Started jetformer-web.service - JetFormer data collection web UI (port 8080).
+== 今の起動(ActiveEnterTimestamp)からだけ見たとき
+起動 Tue 2026-10-27 17:16:28 JST
+エラーの行なし

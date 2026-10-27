@@ -59,6 +59,16 @@
            から 3 周の「数えない(前に衝突)」も同じ数え方(standing_3lap)。前は AI 側だけで、手順書 6 章の「左 4.2 … SW の出口・LH の
            当たり 0」を 1 章で読むと car_check と食い違った。そういう衝突の無い本・組は前と同じ。① quick_eval(AI 側だけ)とは、その本の
            分だけ数が違う
+  リカバリー中止のあとの走り直し(2026-10-27 fix7 係 tools、反証 7-1 回目 w1-tools-r7-1-tools-1) standing_3lap が、一つ前の AI の区間が
+           リカバリー中止で終わり CH3 を人側 → AI 側にした発進(after_abort。中止で止まった所から出たかもしれない)を数えない(counted =
+           False)ので、1 章の止まってから 3 周は —、2 章の「数えない」に入る。1 章の印に「数えない発進 N(リカバリー中止のあとの走り直し)」
+           (前に衝突のあった発進は今まで通り「前に衝突」の方に数える)。2 章の「動く → A1 中央値」にも入れない(R1 の手前から出ると短く
+           出る。⑤ collect.py の起点までと同じ)。入れなかった組は 2 章の下に 1 行・JSON の組に launch_to_r1_abort_excluded。そういう発進の
+           無い本・組は前と同じ
+  中立止めのまま人側にしたあとの走り直し(2026-10-27 fix7 r2 係 tools、反証 7-2 回目 w2-tools-r7-2-tools-1) standing_3lap の
+           after_abort が、中立止め(0.5 秒以上)・カメラの途切れのまま止まって終わった区間のあとの発進にも付く(kind 'hold'・'stall')。
+           扱いは上と同じ(1 章の印「数えない発進 N(リカバリー中止のあとの走り直し)」・止まってから 3 周・動く → A1。名前は fix7 r1 の
+           まま = 手順書が引く言葉)。2 章の下の行に、そういう発進があるときだけ「中立で停止中 … のあとの発進も同じ」の 1 文
 """
 
 import argparse
@@ -76,6 +86,7 @@ import standing_3lap as s3  # noqa: E402
 SCHEMA = 'jf-quick-eval-by-params/v1'
 PARTS = ('model', 'gain', 'steer', 'ceiling', 'auto', 'launch', 'zone', 'mode', 'trim')   # trim: 2026-10-26 critic
 FAST_LAP_S = 9.0             # quick_eval の「8 秒台の周」= 9.0 秒未満のきれいな周
+RESUME_NAME = 'リカバリー中止のあとの走り直し'     # standing_3lap.RESUME_NAME と同じ(fix7 r1 の名前のまま。r2 で中立止め・途切れのあとも入る)
 
 
 def _num(x, nd=3):
@@ -212,14 +223,19 @@ def flags_of(res):
     if res.get('midrun'):
         out.append('途中で変えた: ' + s3.midrun_text(res['midrun']))
     # 数えない発進のわけ: 前に衝突(coll_before)。試し・途中で変えた(fix5 c2)だけで数えない発進はここに入れない(わけが違う)
+    # 2026-10-27 fix7: リカバリー中止のあとの走り直し(after_abort)だけで数えない発進も、ここに入れない(わけが違う)
     excl = [s for s in res.get('standing') or [] if s.get('valid') and not s3.counted(s) and not s.get('trial')
-            and (s.get('coll_before') or not s.get('midrun'))]
+            and (s.get('coll_before') or not (s.get('midrun') or s.get('after_abort')))]
     if excl:
         out.append('数えない発進 %d(前に衝突)' % len(excl))
     exm = [s for s in res.get('standing') or [] if s.get('valid') and s.get('midrun') and not s.get('coll_before')
            and not s.get('trial')]
     if exm:                      # 2026-10-27 fix5 c2(あるときだけ)
         out.append('数えない発進 %d(3 周目の終わりより前に途中で変えた)' % len(exm))
+    exa = [s for s in res.get('standing') or [] if s.get('valid') and s.get('after_abort') and not s.get('coll_before')
+           and not s.get('trial') and not s.get('midrun')]
+    if exa:                      # 2026-10-27 fix7(あるときだけ)。r2: 中立止め・カメラの途切れのあとも(名前を変えた)
+        out.append('数えない発進 %d(%s)' % (len(exa), RESUME_NAME))
     if res.get('trial'):     # 2026-10-27 r3-r3-rec-3(あるときだけ)
         out.append('試し(%s。止まってから 3 周を数えない)' % res['trial'][:40])
     # 2026-10-26 fix3(反証 1 回目 tools:F7・F5)
@@ -246,6 +262,14 @@ def _f(x, fmt='%.2f'):
 def _i(x):
     """quick_eval と同じ int()(切り捨て)の表示"""
     return '—' if x is None else '%d' % int(x)
+
+
+def r_log_of(results, s):
+    """発進(standing の行)の記録の名前(2026-10-27 fix7。同じ入れ物の行を探す)"""
+    for r in results:
+        if any(x is s for x in r.get('standing') or []):
+            return r['log']
+    return '?'
 
 
 def group_rows(results, ignore=()):
@@ -289,8 +313,10 @@ def group_rows(results, ignore=()):
         sv = [s['from_move_s'] for s in stand]
         sclean = [s['from_move_s'] for s in stand if not (s.get('collisions') or {}).get('n')]
         best = min(stand, key=lambda s: s['from_move_s']) if stand else None          # standing_best_s の発進
+        # 2026-10-27 fix7: リカバリー中止のあとの走り直し(中止で止まった所から出たかもしれない)は動く → A1 に入れない
         to_r1 =[s['to_r1_s'] - s['move_after_s'] for s in starts
-                 if s.get('to_r1_s') is not None and s.get('move_after_s') is not None]
+                 if s.get('to_r1_s') is not None and s.get('move_after_s') is not None and not s.get('after_abort')]
+        to_r1_ab = [s for s in starts if s.get('to_r1_s') is not None and s.get('move_after_s') is not None and s.get('after_abort')]
         row = {'text': g['text'], 'key': g['key'], 'runs': len(rs), 'logs': [r['log'] for r in rs],
                'ai_no': [r.get('ai_no') for r in rs], 'cand': sorted({str(r.get('cand') or '—') for r in rs}),
                'ai_s': round(sum(r.get('ai_s') or 0 for r in rs), 1), 'passes': n, 'clean_laps': len(clean),
@@ -319,6 +345,8 @@ def group_rows(results, ignore=()):
         aa = sum(len((r['collisions'] or {}).get('after_ai') or []) for r in rs)
         if aa:                       # 2026-10-27 fix6-2(あるときだけ): 衝突・強い衝突に入れた、人側にした直後の衝突の数
             row['collisions_after_ai'] = aa
+        if to_r1_ab:                 # 2026-10-27 fix7(あるときだけ): 動く → A1 に入れなかった、中止のあとの走り直しの発進
+            row['launch_to_r1_abort_excluded'] = ['%s@%.2f' % (r_log_of(results, s), s['t_ai']) for s in to_r1_ab]
         out.append(row)
     return out
 
@@ -403,6 +431,16 @@ def to_markdown(results, day, since, ignore=()):
                 '0.5 秒以内)の人側の衝突も入れた(car_check の「衝突」の行と同じ。手順書 7 章の止める条件・6 章の「左 4.2」に数える)。'
                 '入った組: %s。1 章の「(うち人側にした直後 N: 場所 G)」がその本の分。① quick_eval(AI 側だけ)とはその分だけ違う。'
                 % '・'.join('%s(%d)' % (g['text'], g['collisions_after_ai']) for g in groups if g.get('collisions_after_ai'))]
+    if any(g.get('launch_to_r1_abort_excluded') for g in groups):     # 2026-10-27 fix7(あるときだけ)
+        out += ['', '- リカバリー中止のあとの走り直し(一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中止で止まった'
+                '所から出たかもしれない)は、止まってから 3 周(2 章の「数えない」に入る)と「動く → A1 中央値」に入れていない: %s。%s'
+                % ('・'.join('%s(%s)' % (g['text'], '・'.join(g['launch_to_r1_abort_excluded'])) for g in groups
+                            if g.get('launch_to_r1_abort_excluded')),
+                   # 2026-10-27 fix7 r2(中立止め・カメラの途切れのあとの走り直しがあるときだけ)
+                   '中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとの発進も同じ(③ の表の'
+                   '「中立止め X 秒から Y 秒」「カメラの途切れ X 秒から Y 秒」)。'
+                   if any((s.get('after_abort') or {}).get('kind') in ('hold', 'stall')
+                          for r in results for s in r.get('standing') or []) else '')]
     if any(g.get('starts_from_other_runs') for g in groups):
         out += ['', '- ほかの本の発進 N = 発進の前進が「出た」発進と「出ず」の発進が混ざった本の、その組の状態の発進'
                 '(止まってから 3 周・動く → A1 は発進ごとの状態で分けた)。']

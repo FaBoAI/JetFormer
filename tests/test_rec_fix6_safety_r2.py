@@ -54,6 +54,28 @@ REV, GAP = N + 300.0, N + A.GAP_OFFSET_US
 RETRY = N + 300.0 + A.Recovery.RETRY_EXTRA_US
 ESCAPE = N - A.Recovery.ESCAPE_US
 STATE = R2.STATE + ('t_check',)
+# この組のあと 10/27 fix7 safety の直す 7-1 回目(反証 w1-safety-rv7-safety-r1-1)が assist.py・drive.py を変えた。そのときは、その直す前の
+# 写し tests/fixtures/fix7_safety_before/(= この組のあとの版。sha256 を照らす)をこの組の版として照らす(7-1 回目の違いは
+# tests/test_rec_fix7_safety.py が見る。tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY と同じ値)
+FIX6_R2_AFTER = {'assist.py': '951a4c122c954a12ecc5056d823729ab9934112977f30645f92b14b556bf50f4',
+                 'drive.py': '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec'}
+LATER_FIX7_SAFETY = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f',
+                     'drive.py': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}
+# さらに 10/27 fix7 safety の直す 7-2 回目(反証 w2-safety-rv7-safety-r2-1)が assist.py を変えた(drive.py は同じ)。その直す前の写し
+# tests/fixtures/fix7_safety_r2_before/(= 7-1 回目のあとの版)から同じようにたどる(違いは tests/test_rec_fix7_safety_r2.py。
+# tests/test_fix3_r3_2_tools.py の LATER_FIX7_SAFETY_R2 と同じ値)
+LATER_FIX7_SAFETY_R2 = {'assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f'}
+
+
+def _fix6r2_version(name):
+    """この組のあとの版(jetformer/ の今の版。fix7 safety の 7-1 回目が変えたあとは、その直す前の写し = この組のあとの版)"""
+    p = ROOT / 'jetformer' / name
+    if name in LATER_FIX7_SAFETY_R2 and sha(p) == LATER_FIX7_SAFETY_R2[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_r2_before' / name
+    if sha(p) == LATER_FIX7_SAFETY[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_before' / name
+    assert sha(p) == FIX6_R2_AFTER[name], name
+    return p
 
 
 def sha(p):
@@ -93,9 +115,10 @@ def fix5():
 def test_before_copy_defaults_and_changed_parts():
     """写しの sha256(= fix6 r1 のあとの版)。drive.py は変えていない(写しと同じ sha256)。既定値・Recovery の定数・EscTrack の定数・
     モジュールの定数は同じ。変えたのは assist.py の Recovery.reset・Recovery._start・Recovery._after_hold・Recovery.step だけ
-    (足した・消した関数や文は無い。AST を名前で照らす)"""
+    (足した・消した関数や文は無い。AST を名前で照らす)。10/27 fix7 safety(7-1 回目)が変えたあとは、その直す前の写し(= この組の
+    あとの版)で照らす(_fix6r2_version)"""
     amod, before = load_before()
-    assert sha(ROOT / 'jetformer' / 'drive.py') == SHA_BEFORE['drive.py']
+    assert sha(_fix6r2_version('drive.py')) == SHA_BEFORE['drive.py']
     assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS and drive.PARAM_LIMITS == before.PARAM_LIMITS
     assert drive.RESET_ON_BOOT == before.RESET_ON_BOOT
     for k in ('rec_back_guard', 'rec_hold_keep'):
@@ -107,7 +130,7 @@ def test_before_copy_defaults_and_changed_parts():
               'HOLD_EST_MIN_LEFT_S'):
         assert getattr(A, k) == getattr(amod, k)
     assert A.EscTrack.READY_NEUTRAL_S == 0.08 and A.EscTrack.DELAY_S == 0.06
-    a0, a1 = T6._defs(FIX / 'assist.py'), T6._defs(ROOT / 'jetformer' / 'assist.py')
+    a0, a1 = T6._defs(FIX / 'assist.py'), T6._defs(_fix6r2_version('assist.py'))
     assert set(a0) == set(a1)
     assert sorted(k for k in a0 if a0[k] != a1[k]) == ['Recovery._after_hold', 'Recovery._start', 'Recovery.reset',
                                                          'Recovery.step']

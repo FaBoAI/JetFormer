@@ -1,0 +1,308 @@
+{
+ "s4a_guard_revert": {
+  "failed": 66,
+  "passed": 123,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-313]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.54-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.54-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.58-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.58-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.64-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.64-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.7-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.7-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.78-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.78-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.54-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.54-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.58-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.58-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.64-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.64-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.7-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.7-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.78-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.78-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[0-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[14-20261010-152707-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[20-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[4-20261010-152707-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[9-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring0]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring1]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring2]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring0]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring1]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring2]",
+   "tests/test_rec_fix7_safety.py::test_open_scene_forward_neutral_guard_like_off_until_reverse",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[0-1322.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[0-313.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[1-1322.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[1-313.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[3-1322.0]"
+  ],
+  "tail": [
+   "66 failed, 123 passed in 128.79s (0:02:08)"
+  ],
+  "what": "s4-a を _guard で戻す('brake'・'wait'・'gap' の跳ねも見張りに使う = 指摘の形)"
+ },
+ "s4a_guard_gap_only_brake": {
+  "failed": 7,
+  "passed": 182,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[20-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[0-1322.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[0-313.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[1-1322.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[1-313.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[3-1322.0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_spike_ignored_before_esc_ran[3-313.0]"
+  ],
+  "tail": [
+   "7 failed, 182 passed in 128.57s (0:02:08)"
+  ],
+  "what": "s4-a を 'gap' で効かせない('gap' の跳ねを惰性に数える)"
+ },
+ "s4a_hold_revert": {
+  "failed": 2,
+  "passed": 187,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_hold_backing_ignored_when_esc_not_reversing[brake]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_hold_backing_ignored_when_esc_not_reversing[wait]"
+  ],
+  "tail": [
+   "2 failed, 187 passed in 120.82s (0:02:00)"
+  ],
+  "what": "s4-a を中立止めのあとで戻す(中立止めの間の跳ねで back_hold)"
+ },
+ "s4a_no_latch": {
+  "failed": 1,
+  "passed": 188,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_counts_after_esc_ran"
+  ],
+  "tail": [
+   "1 failed, 188 passed in 120.16s (0:02:00)"
+  ],
+  "what": "esc_ran を立てない(一度後退で走らせたあとの 'gap' の惰性も数えない)"
+ },
+ "s4a_none_as_false": {
+  "failed": 29,
+  "passed": 159,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.54]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.58]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.64]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.78]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.7]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[0-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[0-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[1-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[1-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[2-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[2-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[3-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[3-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[4-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[4-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[5-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[5-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[6-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[6-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[7-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_diverges_only_by_fix7[7-True]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_esc_rev_true_or_none_identical[0]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_esc_rev_true_or_none_identical[1]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_esc_rev_true_or_none_identical[2]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_esc_rev_true_or_none_identical[3]",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_gap_counts_after_esc_ran",
+   "tests/test_rec_fix7_safety.py::test_s4a_unit_no_rear_impact_from_ignored_spike",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_with_backing_identical",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_without_backing_restarts_from_gap"
+  ],
+  "tail": [
+   "29 failed, 159 passed, 1 skipped in 122.03s (0:02:02)"
+  ],
+  "what": "esc_rev = None(分からない)も False と同じにする(今までと同じにならない)"
+ },
+ "s4a_drive_none": {
+  "failed": 36,
+  "passed": 153,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_100hz_human_esc[3-313]",
+   "tests/test_rec_fix7_safety.py::test_loop_esc_rev_passed_only_with_guard",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.54-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.54-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.58-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.58-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.64-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.64-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.7-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.7-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.78-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[0-2.78-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.54-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.54-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.58-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.58-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.64-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.64-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.7-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.7-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.78-1322]",
+   "tests/test_rec_fix7_safety.py::test_loop_finding_reproduced_and_fixed[1-2.78-301]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[0-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[14-20261010-152707-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[20-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[4-20261010-152707-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_real_bursts[9-20261023-211828-0004]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring0]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring1]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.15-spring2]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring0]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring1]",
+   "tests/test_rec_fix7_safety.py::test_loop_spring_back[0.17-spring2]",
+   "tests/test_rec_fix7_safety.py::test_open_scene_forward_neutral_guard_like_off_until_reverse"
+  ],
+  "tail": [
+   "36 failed, 153 passed in 125.61s (0:02:05)"
+  ],
+  "what": "drive が esc_rev を渡さない(EscTrack を使わない)"
+ },
+ "s4a_drive_feed_keep_only": {
+  "failed": 10,
+  "passed": 179,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[None-0.01-1.35]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[None-0.01-None]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[None-None-1.35]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[None-None-None]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[esc1-0.01-1.35]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[esc1-0.01-None]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[esc1-None-1.35]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_identical[esc1-None-None]",
+   "tests/test_rec_fix7_safety.py::test_loop_esc_rev_passed_only_with_guard",
+   "tests/test_rec_fix7_safety.py::test_open_scene_brake_before_guard_as_before[0]"
+  ],
+  "tail": [
+   "10 failed, 179 passed in 126.16s (0:02:06)"
+  ],
+  "what": "EscMayReverse に書けた値を入れるのを rec_hold_keep = 1 の日だけにする(見張りだけの日は空のまま = 下がれるとみる区間が無い)"
+ },
+ "s4a_gate_is_esctrack": {
+  "failed": 2,
+  "passed": 187,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_spike_same_as_before[None]",
+   "tests/test_rec_fix7_safety.py::test_loop_brake_scene_spike_same_as_before[esc1]"
+  ],
+  "tail": [
+   "2 failed, 187 passed in 123.69s (0:02:03)"
+  ],
+  "what": "esc_rev に EscTrack(中立 0.08 秒・遅れ 0.06 秒)を使う(多めにみない)"
+ },
+ "s4b_check_revert": {
+  "failed": 11,
+  "passed": 178,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.54]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.58]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.64]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.78]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.7]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_fuzz_saw_divergence",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_without_backing_restarts_from_gap",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[1322.0-entry]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[1322.0-gap]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[313.0-entry]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[313.0-gap]"
+  ],
+  "tail": [
+   "11 failed, 178 passed in 125.74s (0:02:05)"
+  ],
+  "what": "s4-b を戻す(やり直しを backed_s − est_s で決める)"
+ },
+ "s4b_entry_counts": {
+  "failed": 9,
+  "passed": 180,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.54]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.58]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.64]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.78]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.7]",
+   "tests/test_rec_fix7_safety.py::test_recovery_on_fuzz_saw_divergence",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_without_backing_restarts_from_gap",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[1322.0-entry]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[313.0-entry]"
+  ],
+  "tail": [
+   "9 failed, 180 passed in 123.36s (0:02:03)"
+  ],
+  "what": "'reverse' に入ったフレームの後ろへの動きも、やり直しの決めの見た後退に数える"
+ },
+ "s4b_undo_as_retry": {
+  "failed": 6,
+  "passed": 183,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.54]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.58]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.64]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.78]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.7]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_without_backing_restarts_from_gap"
+  ],
+  "tail": [
+   "6 failed, 183 passed in 120.94s (0:02:00)"
+  ],
+  "what": "'gap' を飛ばした 'reverse' で下がらないとき、ふつうのやり直し(+50 µs・RETRY_GAP_S)にする"
+ },
+ "s4b_no_skip_flag_early": {
+  "failed": 6,
+  "passed": 183,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.54]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.58]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.64]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.78]",
+   "tests/test_rec_fix7_safety.py::test_loop_s4b_alone_also_backs[2.7]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_back_early_without_backing_restarts_from_gap"
+  ],
+  "tail": [
+   "6 failed, 183 passed in 128.76s (0:02:08)"
+  ],
+  "what": "back_early で skip_gap を立てない"
+ },
+ "off_break_check": {
+  "failed": 6,
+  "passed": 183,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_recovery_off_bit_identical[1-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_off_bit_identical[3-True]",
+   "tests/test_rec_fix7_safety.py::test_recovery_off_bit_identical[4-False]",
+   "tests/test_rec_fix7_safety.py::test_recovery_off_bit_identical[4-True]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[1322.0-entry]",
+   "tests/test_rec_fix7_safety.py::test_s4b_unit_gap_spike_then_no_backing_retries[313.0-entry]"
+  ],
+  "tail": [
+   "6 failed, 183 passed in 124.62s (0:02:04)"
+  ],
+  "what": "OFF を壊す(見張り OFF でも s4-b のやり直しの決めを使う)= OFF の写しとの比べが落ちるか"
+ },
+ "off_break_drive": {
+  "failed": 1,
+  "passed": 188,
+  "names": [
+   "tests/test_rec_fix7_safety.py::test_loop_esc_rev_passed_only_with_guard"
+  ],
+  "tail": [
+   "1 failed, 188 passed in 126.35s (0:02:06)"
+  ],
+  "what": "OFF を壊す(見張り OFF でも EscTrack を動かし esc_rev を渡す)= 渡す値の試験が落ちるか"
+ }
+}

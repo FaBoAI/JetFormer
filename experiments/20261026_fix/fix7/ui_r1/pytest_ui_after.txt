@@ -1,0 +1,569 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+.........s....................................F..F..F..F..F.FFF........F [ 45%]
+.FF.F.F................................................................. [ 56%]
+........................................................................ [ 68%]
+...........F............................................................ [ 79%]
+F...............................F....................................... [ 91%]
+.............F..........................................                 [100%]
+=================================== FAILURES ===================================
+__________________ test_rs1_1_off_bit_identical[0.0-None-0-1] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff1db19b00>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_off_bit_identical_01')
+keep = 0, guard = 1, drop_len = 0.0, veh_hold = None
+
+    @pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+    @pytest.mark.parametrize('drop_len,veh_hold', [(0.0, None), (0.134, None), (0.25, None), (0.5, None), (0.0, (3.10, 3.50))])
+    def test_rs1_1_off_bit_identical(monkeypatch, tmp_path, keep, guard, drop_len, veh_hold):
+        """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、直す前の写しとビット単位で同じ"""
+        _, before = load_before()
+        hit = 3.30 if veh_hold else HIT
+        frames, imu = rear_scene(hit_at=hit, drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None, veh_hold=veh_hold)
+        p = dict(PARAMS, recovery=1, rec_back_guard=guard, rec_hold_keep=keep)
+>       same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe852ec140>, <test_fix3_r1_1.TimedPCA object at 0xfffe75a5b5f0>, <test_drive_caps.FakeRecorder object at 0xfffe75937f50>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75956580>, <test_fix3_r1_1.TimedPCA object at 0xfffe75a5b6a0>, <test_drive_caps.FakeRecorder object at 0xfffe75937d90>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_________________ test_rs1_1_off_bit_identical[0.134-None-0-1] _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff1d624600>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_off_bit_identical_04')
+keep = 0, guard = 1, drop_len = 0.134, veh_hold = None
+
+    @pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+    @pytest.mark.parametrize('drop_len,veh_hold', [(0.0, None), (0.134, None), (0.25, None), (0.5, None), (0.0, (3.10, 3.50))])
+    def test_rs1_1_off_bit_identical(monkeypatch, tmp_path, keep, guard, drop_len, veh_hold):
+        """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、直す前の写しとビット単位で同じ"""
+        _, before = load_before()
+        hit = 3.30 if veh_hold else HIT
+        frames, imu = rear_scene(hit_at=hit, drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None, veh_hold=veh_hold)
+        p = dict(PARAMS, recovery=1, rec_back_guard=guard, rec_hold_keep=keep)
+>       same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe75b5d130>, <test_fix3_r1_1.TimedPCA object at 0xfffe759a0dd0>, <test_drive_caps.FakeRecorder object at 0xfffe757da090>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe7584e450>, <test_fix3_r1_1.TimedPCA object at 0xfffe7583bd90>, <test_drive_caps.FakeRecorder object at 0xfffe757dbe90>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_________________ test_rs1_1_off_bit_identical[0.25-None-0-1] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe7583bc40>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_off_bit_identical_07')
+keep = 0, guard = 1, drop_len = 0.25, veh_hold = None
+
+    @pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+    @pytest.mark.parametrize('drop_len,veh_hold', [(0.0, None), (0.134, None), (0.25, None), (0.5, None), (0.0, (3.10, 3.50))])
+    def test_rs1_1_off_bit_identical(monkeypatch, tmp_path, keep, guard, drop_len, veh_hold):
+        """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、直す前の写しとビット単位で同じ"""
+        _, before = load_before()
+        hit = 3.30 if veh_hold else HIT
+        frames, imu = rear_scene(hit_at=hit, drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None, veh_hold=veh_hold)
+        p = dict(PARAMS, recovery=1, rec_back_guard=guard, rec_hold_keep=keep)
+>       same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe758136b0>, <test_fix3_r1_1.TimedPCA object at 0xfffe755a9790>, <test_drive_caps.FakeRecorder object at 0xfffe755abb90>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75560750>, <test_fix3_r1_1.TimedPCA object at 0xfffe755a9b50>, <test_drive_caps.FakeRecorder object at 0xfffe755aa870>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+__________________ test_rs1_1_off_bit_identical[0.5-None-0-1] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff1d625400>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_off_bit_identical_010')
+keep = 0, guard = 1, drop_len = 0.5, veh_hold = None
+
+    @pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+    @pytest.mark.parametrize('drop_len,veh_hold', [(0.0, None), (0.134, None), (0.25, None), (0.5, None), (0.0, (3.10, 3.50))])
+    def test_rs1_1_off_bit_identical(monkeypatch, tmp_path, keep, guard, drop_len, veh_hold):
+        """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、直す前の写しとビット単位で同じ"""
+        _, before = load_before()
+        hit = 3.30 if veh_hold else HIT
+        frames, imu = rear_scene(hit_at=hit, drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None, veh_hold=veh_hold)
+        p = dict(PARAMS, recovery=1, rec_back_guard=guard, rec_hold_keep=keep)
+>       same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe758132f0>, <test_fix3_r1_1.TimedPCA object at 0xfffe755b7b90>, <test_drive_caps.FakeRecorder object at 0xfffe755b5a30>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe7582fd90>, <test_fix3_r1_1.TimedPCA object at 0xfffe755b63f0>, <test_drive_caps.FakeRecorder object at 0xfffe755b6990>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_______________ test_rs1_1_off_bit_identical[0.0-veh_hold4-0-1] ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe7583bee0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_off_bit_identical_013')
+keep = 0, guard = 1, drop_len = 0.0, veh_hold = (3.1, 3.5)
+
+    @pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+    @pytest.mark.parametrize('drop_len,veh_hold', [(0.0, None), (0.134, None), (0.25, None), (0.5, None), (0.0, (3.10, 3.50))])
+    def test_rs1_1_off_bit_identical(monkeypatch, tmp_path, keep, guard, drop_len, veh_hold):
+        """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、直す前の写しとビット単位で同じ"""
+        _, before = load_before()
+        hit = 3.30 if veh_hold else HIT
+        frames, imu = rear_scene(hit_at=hit, drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None, veh_hold=veh_hold)
+        p = dict(PARAMS, recovery=1, rec_back_guard=guard, rec_hold_keep=keep)
+>       same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe759ec410>, <test_fix3_r1_1.TimedPCA object at 0xfffe7556a8d0>, <test_drive_caps.FakeRecorder object at 0xfffe755699d0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe7591b230>, <test_fix3_r1_1.TimedPCA object at 0xfffe75568b30>, <test_drive_caps.FakeRecorder object at 0xfffe7556b770>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_____________ test_rs1_1_short_or_no_gap_unchanged_with_keep[0.0] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe7583bb60>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_short_or_no_gap_unc0')
+drop_len = 0.0
+
+    @pytest.mark.parametrize('drop_len', [0.0, 0.08, 0.1])
+    def test_rs1_1_short_or_no_gap_unchanged_with_keep(monkeypatch, tmp_path, drop_len):
+        """0.1 秒以下の止まり・止まりなし(見張りが前から見える場面)は、keep = 1・guard = 1 でも直す前と同じ(rear_impact のまま)"""
+        _, before = load_before()
+        frames, imu = rear_scene(drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None)
+        p = dict(PARAMS, recovery=1, rec_back_guard=1, rec_hold_keep=1)
+        a = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+>       same_out(a, run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe75813200>, <test_fix3_r1_1.TimedPCA object at 0xfffe75882030>, <test_drive_caps.FakeRecorder object at 0xfffe75775af0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75561550>, <test_fix3_r1_1.TimedPCA object at 0xfffe75883650>, <test_drive_caps.FakeRecorder object at 0xfffe75883e90>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_____________ test_rs1_1_short_or_no_gap_unchanged_with_keep[0.08] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe7583b770>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_short_or_no_gap_unc1')
+drop_len = 0.08
+
+    @pytest.mark.parametrize('drop_len', [0.0, 0.08, 0.1])
+    def test_rs1_1_short_or_no_gap_unchanged_with_keep(monkeypatch, tmp_path, drop_len):
+        """0.1 秒以下の止まり・止まりなし(見張りが前から見える場面)は、keep = 1・guard = 1 でも直す前と同じ(rear_impact のまま)"""
+        _, before = load_before()
+        frames, imu = rear_scene(drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None)
+        p = dict(PARAMS, recovery=1, rec_back_guard=1, rec_hold_keep=1)
+        a = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+>       same_out(a, run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe757a5f40>, <test_fix3_r1_1.TimedPCA object at 0xfffe759c5fd0>, <test_drive_caps.FakeRecorder object at 0xfffe75a4fc50>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe755610f0>, <test_fix3_r1_1.TimedPCA object at 0xfffe759c6870>, <test_drive_caps.FakeRecorder object at 0xfffe759c7b30>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_____________ test_rs1_1_short_or_no_gap_unchanged_with_keep[0.1] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe75937e70>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_short_or_no_gap_unc2')
+drop_len = 0.1
+
+    @pytest.mark.parametrize('drop_len', [0.0, 0.08, 0.1])
+    def test_rs1_1_short_or_no_gap_unchanged_with_keep(monkeypatch, tmp_path, drop_len):
+        """0.1 秒以下の止まり・止まりなし(見張りが前から見える場面)は、keep = 1・guard = 1 でも直す前と同じ(rear_impact のまま)"""
+        _, before = load_before()
+        frames, imu = rear_scene(drop=(HIT - 0.02, HIT - 0.02 + drop_len) if drop_len else None)
+        p = dict(PARAMS, recovery=1, rec_back_guard=1, rec_hold_keep=1)
+        a = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+>       same_out(a, run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe75631b80>, <test_fix3_r1_1.TimedPCA object at 0xfffe75649130>, <test_drive_caps.FakeRecorder object at 0xfffe75648f50>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75563070>, <test_fix3_r1_1.TimedPCA object at 0xfffe75649250>, <test_drive_caps.FakeRecorder object at 0xfffe756490d0>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 89 diff: (3.124667, 1441.0, 1506.0) != (3.124667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_ test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-2] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff1d6248a0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_fuzz_off_identical_8')
+kind = 'rec', seed = 2
+
+    @pytest.mark.parametrize('kind,seed', FUZZ)
+    def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
+        """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
+        全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
+        中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+        _, before = load_before()
+        rng = random.Random(seed)
+        frames, imu = _scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            p = _fuzz_params(rng, keep, guard)
+>           same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xffffa24ac050>, <test_fix3_r1_1.TimedPCA object at 0xfffe756de090>, <test_drive_caps.FakeRecorder object at 0xfffe756dd4f0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75563e70>, <test_fix3_r1_1.TimedPCA object at 0xfffe756df4d0>, <test_drive_caps.FakeRecorder object at 0xfffe756de750>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1316.0), ...] == [(0.158, 1441... 1316.0), ...]
+E         
+E         At index 88 diff: (3.224667, 1441.0, 1506.0) != (3.224667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_ test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-4] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe75937e70>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_fuzz_off_identical_10')
+kind = 'rec', seed = 4
+
+    @pytest.mark.parametrize('kind,seed', FUZZ)
+    def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
+        """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
+        全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
+        中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+        _, before = load_before()
+        rng = random.Random(seed)
+        frames, imu = _scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            p = _fuzz_params(rng, keep, guard)
+>           same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xffffa24ac050>, <test_fix3_r1_1.TimedPCA object at 0xfffe758ecdd0>, <test_drive_caps.FakeRecorder object at 0xfffe758edcd0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75560bb0>, <test_fix3_r1_1.TimedPCA object at 0xfffe758ec8f0>, <test_drive_caps.FakeRecorder object at 0xfffe758ef590>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1346.0), ...] == [(0.158, 1441... 1346.0), ...]
+E         
+E         At index 84 diff: (2.958, 1441.0, 1506.0) != (2.958, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_ test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-5] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff1d6248a0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_fuzz_off_identical_11')
+kind = 'rec', seed = 5
+
+    @pytest.mark.parametrize('kind,seed', FUZZ)
+    def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
+        """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
+        全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
+        中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+        _, before = load_before()
+        rng = random.Random(seed)
+        frames, imu = _scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            p = _fuzz_params(rng, keep, guard)
+>           same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe75633110>, <test_fix3_r1_1.TimedPCA object at 0xfffe75707950>, <test_drive_caps.FakeRecorder object at 0xfffe757079b0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75563bd0>, <test_fix3_r1_1.TimedPCA object at 0xfffe75704530>, <test_drive_caps.FakeRecorder object at 0xfffe75707f50>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1316.0), ...] == [(0.158, 1441... 1316.0), ...]
+E         
+E         At index 82 diff: (2.891333, 1441.0, 1506.0) != (2.891333, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_ test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-7] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe7583bc40>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_fuzz_off_identical_13')
+kind = 'rec', seed = 7
+
+    @pytest.mark.parametrize('kind,seed', FUZZ)
+    def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
+        """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
+        全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
+        中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+        _, before = load_before()
+        rng = random.Random(seed)
+        frames, imu = _scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            p = _fuzz_params(rng, keep, guard)
+>           same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe75632d50>, <test_fix3_r1_1.TimedPCA object at 0xfffe7548e6f0>, <test_drive_caps.FakeRecorder object at 0xfffe7548f470>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75560050>, <test_fix3_r1_1.TimedPCA object at 0xfffe7548e390>, <test_drive_caps.FakeRecorder object at 0xfffe7548c3b0>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.w == pca1.w
+E       assert [(0.158, 1441... 1376.0), ...] == [(0.158, 1441... 1376.0), ...]
+E         
+E         At index 80 diff: (2.824667, 1441.0, 1506.0) != (2.824667, 1441.0, 1796.0)
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:185: AssertionError
+_ test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-9] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe75601e80>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_rs1_1_fuzz_off_identical_15')
+kind = 'rec', seed = 9
+
+    @pytest.mark.parametrize('kind,seed', FUZZ)
+    def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
+        """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
+        全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
+        中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+        _, before = load_before()
+        rng = random.Random(seed)
+        frames, imu = _scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            p = _fuzz_params(rng, keep, guard)
+>           same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+
+tests/test_fix3_r1_1.py:344: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer.drive.Driver object at 0xfffe757467b0>, <test_fix3_r1_1.TimedPCA object at 0xfffe75917e30>, <test_drive_caps.FakeRecorder object at 0xfffe75914ef0>)
+b = (<jetformer._drive_before_fix3r1.Driver object at 0xfffe75d53a10>, <test_fix3_r1_1.TimedPCA object at 0xfffe75917d10>, <test_drive_caps.FakeRecorder object at 0xfffe75916b70>)
+
+    def same_out(a, b):
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+        assert pca0.w == pca1.w
+        assert_rows_equal_before(rec0.rows, rec1.rows)
+>       assert rec0.events == rec1.events
+E       AssertionError: assert [('launch_boo...: None, ...})] == [('launch_boo...: None, ...})]
+E         
+E         At index 1 diff: ('recovery_guard', {'what': 'back_no_esc', 'phase': 'brake', 'backed_s': 0.0, 'run': None, 'cam_epoch_us': 3592971699636018}) != ('recovery_guard', {'what': 'back_early', 'phase': 'brake', 'backed_s': 0.0, 'run': None, 'cam_epoch_us': 3592971699636018})
+E         Use -v to get more diff
+
+tests/test_fix3_r1_1.py:187: AssertionError
+__________________ test_before_copies_and_defaults_unchanged ___________________
+
+    def test_before_copies_and_defaults_unchanged():
+        s = sums()
+        for name in ('assist.py', 'drive.py', 'app.js', 'index.html', 'collect.py', 'car_check.py'):
+            assert sha(FIX / name) == s[name], name
+        # この組は drive.py を変えていない。あとの組の版でもよい(10/27 fix4 small = 説明の文だけ・10/27 fix5 safety = 反証 4 回目の
+        # s2・s3・10/27 fix6 safety = 反証 6-1 回目の s3-a)。そのときは、その組の直す前の写しの sha256 をたどってこの組の版
+        # (SHA256SUMS)につながるか見る
+        cur = sha(ROOT / 'jetformer' / 'drive.py')
+        chain = {LATER_DRIVE['fix6_safety']: ROOT / 'tests' / 'fixtures' / 'fix6_safety_before' / 'drive.py',
+                 LATER_DRIVE['fix5_safety']: ROOT / 'tests' / 'fixtures' / 'fix5_safety_before' / 'drive.py',
+                 LATER_DRIVE['fix4_small']: ROOT / 'tests' / 'fixtures' / 'fix4_small_before' / 'drive.py'}
+        while cur != s['drive.py']:
+>           assert cur in chain, cur
+E           AssertionError: ae0afab54dd800cb63bf5eef5741ef1644378bdd47fed6cae4f2630f955d4da1
+E           assert 'ae0afab54dd800cb63bf5eef5741ef1644378bdd47fed6cae4f2630f955d4da1' in {'696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec': PosixPath('/home/jetson/jetformer/tests/fixtures/...e34293117a2144b3e568acb326ada57d59a471': PosixPath('/home/jetson/jetformer/tests/fixtures/fix4_small_before/drive.py')}
+
+tests/test_fix3_r3_1.py:97: AssertionError
+_____________________________ test_untouched_files _____________________________
+
+    def test_untouched_files():
+        """走行の動き・既定値(DEFAULT_PARAMS・RESET_ON_BOOT は drive.py)・画面・計画のファイルは直す前と同じ。
+        drive.py・bench.py は 10/27 fix4 の版でもよい(そのときは、この組のときの版の写しが上の sha256 と同じか見る)。
+        drive.py・assist.py は 10/27 fix5 safety の版でもよい(そのときは fix5 の直す前の写しから同じようにたどる)。
+        server.py・app.js は 10/27 fix5 画面の係の版でもよい(同じ)。app.js は 10/27 fix6 画面の係の版でもよい(fix5 の版へたどる)。
+        drive.py・assist.py は 10/27 fix6 安全の係の版でもよい(fix6 の直す前の写し = fix5 の版へたどる)。assist.py は 10/27 fix6
+        安全の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix6 画面の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix7 画面の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = 6-2 回目の版へたどる)"""
+        for rel, h in UNTOUCHED.items():
+            cur = _sha(JF / rel)
+            if rel in LATER_FIX6_SAFETY_R2 and cur == LATER_FIX6_SAFETY_R2[rel]:
+                cur = _sha(FIX6_SAFETY_R2_BEFORE / Path(rel).name)   # fix6 安全の係 6-2 回目の直す前の写し(LATER_FIX6 の版)
+            if rel in LATER_FIX6 and cur == LATER_FIX6[rel]:
+                cur = _sha(FIX6_BEFORE / Path(rel).name)          # fix6 安全の係の直す前の写し(LATER_FIX5 の版)
+            if rel in LATER_FIX7_UI and cur == LATER_FIX7_UI[rel]:
+                cur = _sha(FIX7_UI_BEFORE / Path(rel).name)       # fix7 画面の係 7-1 回目の直す前の写し(LATER_FIX6_UI_R2 の版)
+            if rel in LATER_FIX6_UI_R2 and cur == LATER_FIX6_UI_R2[rel]:
+                cur = _sha(FIX6_UI_R2_BEFORE / Path(rel).name)    # fix6 画面の係 6-2 回目の直す前の写し(LATER_FIX6_UI の版)
+            if rel in LATER_FIX6_UI and cur == LATER_FIX6_UI[rel]:
+                cur = _sha(FIX6_UI_BEFORE / Path(rel).name)       # fix6 画面の係の直す前の写し(LATER_FIX5_UI の版)
+            if rel in LATER_FIX5_UI and cur == LATER_FIX5_UI[rel]:
+                cur = _sha(FIX5_UI_BEFORE / Path(rel).name)       # fix5 画面の係の直す前の写し(UNTOUCHED の版)
+            if rel in LATER_FIX5 and cur == LATER_FIX5[rel]:
+                cur = _sha(FIX5_BEFORE / Path(rel).name)          # fix5 の直す前の写し(fix4 の版かこの組の版)
+            if rel in LATER_FIX4 and cur == LATER_FIX4[rel]:
+                assert _sha(FIX4_BEFORE / Path(rel).name) == h, rel
+                continue
+>           assert cur == h, rel
+E           AssertionError: jetformer/drive.py
+E           assert 'ae0afab54dd8...2630f955d4da1' == 'b8c3ddba3968...ee88afbc85db6'
+E             
+E             - b8c3ddba39681d81f14249981c770a9349e6dba3bcf5b4a8d88ee88afbc85db6
+E             + ae0afab54dd800cb63bf5eef5741ef1644378bdd47fed6cae4f2630f955d4da1
+
+tests/test_fix3_r3_2_tools.py:146: AssertionError
+______________________ test_drive_only_docstring_changed _______________________
+
+    def test_drive_only_docstring_changed():
+        """drive.py はモジュールの説明の文だけが違う(コードは AST で直す前と同じ = 走行の動き・既定値は同じ)"""
+        code0, doc0 = _no_doc(BEFORE / 'drive.py')
+        code1, doc1 = _no_doc(_drive_fix4())
+>       assert code0 == code1 and doc0 != doc1
+E       AssertionError: assert ('Module(body=...oad()))])])])' == 'Module(body=...oad()))])])])'
+E         
+E         Skipping 4944 identical leading characters in diff, use -v to show
+E         - 'HOLD_VEH_FAST_ERPM', ctx=Store())], value=Constant(value=1000.0)), Assign(targets=[Name(id='HOLD_VEH_GAP_S', ctx=Store())], value=Constant(value=0.06)), Assign(targets=[Name(id='RESET_ON_BOOT', ctx=Store())], value=Tuple(elts=[Constant(value='tcp_mode'), Constant(value='speed_scale'), Constant(value='zone_caps'), Constant(value='speed_ceiling'), Constant(value='ceil_all_mps'), Constant(value='ceil_left_mps'), Constant(value='speed_auto'), Constant(value='auto_target_mps'), Constant(value='launch_boost'...
+E         
+E         ...Full output truncated (4 lines hidden), use '-vv' to show)
+
+tests/test_fix4_small.py:233: AssertionError
+__________________ test_loop_off_bit_identical[rec_back_hold] __________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe753cf070>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix7/tmp_ui/all/test_loop_off_bit_identical_re0')
+scene = 'rec_back_hold'
+
+    @pytest.mark.parametrize('scene', ['caps'] + LOOP_SCENES[1:])
+    def test_loop_off_bit_identical(monkeypatch, tmp_path, scene):
+        """rec_hold_keep = 0・launch_no_kick = 0(既定)の走行ループは、直す前の写しと PCA9685 に書く値・記録・出来事が同じ"""
+        _, before = load_before()
+        if scene == 'caps':
+            frames, imu = scenario()
+            r0 = run_det(before, monkeypatch, tmp_path, only_before(before, PARAMS), frames, imu)
+            r1 = run_det(drive, monkeypatch, tmp_path, dict(PARAMS, rec_hold_keep=0, launch_no_kick=0), frames, imu)
+            assert len(r0[1].pairs) > 300
+            same_loop(r0, r1)
+            return
+        frames, imu, p, kw = _loop_scene(scene)
+        r0 = run(before, monkeypatch, tmp_path, only_before(before, p), frames, imu, **kw)
+        r1 = run(drive, monkeypatch, tmp_path, dict(p, rec_hold_keep=0, launch_no_kick=0), frames, imu, **kw)
+        assert len(r0[1].pairs) > 100
+>       same_loop(r0, r1)
+
+tests/test_rec_hold_keep.py:317: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = (<jetformer._drive_before_fix3.Driver object at 0xfffe75512510>, <test_drive_caps.FakePCA object at 0xfffe72f89bb0>, <test_drive_caps.FakeRecorder object at 0xfffe72f89f70>)
+b = (<jetformer.drive.Driver object at 0xfffe758133e0>, <test_drive_caps.FakePCA object at 0xfffe72f8a330>, <test_drive_caps.FakeRecorder object at 0xfffe72f8abd0>)
+
+    def same_loop(a, b):
+        """2 つの走行ループの結果 (driver, pca, rec) が、PCA9685 に書く値・記録の行・出来事で同じ"""
+        (_, pca0, rec0), (_, pca1, rec1) = a, b
+>       assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+E       assert ([(1441.0, 134... 1346.0), ...] == [(1441.0, 134... 1346.0), ...]
+E         
+E         At index 89 diff: (1441.0, 1796.0) != (1441.0, 1506.0)
+E         Use -v to get more diff)
+
+tests/test_rec_hold_keep.py:73: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix3_r1_2.py: 50 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:744: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r1_2.py: 23 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r1_2_before/collect.py.orig:374: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_off_bit_identical[0.0-None-0-1] - ...
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_off_bit_identical[0.134-None-0-1]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_off_bit_identical[0.25-None-0-1]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_off_bit_identical[0.5-None-0-1] - ...
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_off_bit_identical[0.0-veh_hold4-0-1]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_short_or_no_gap_unchanged_with_keep[0.0]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_short_or_no_gap_unchanged_with_keep[0.08]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_short_or_no_gap_unchanged_with_keep[0.1]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-2]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-4]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-5]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-7]
+FAILED tests/test_fix3_r1_1.py::test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold[rec-9]
+FAILED tests/test_fix3_r3_1.py::test_before_copies_and_defaults_unchanged - A...
+FAILED tests/test_fix3_r3_2_tools.py::test_untouched_files - AssertionError: ...
+FAILED tests/test_fix4_small.py::test_drive_only_docstring_changed - Assertio...
+FAILED tests/test_rec_hold_keep.py::test_loop_off_bit_identical[rec_back_hold]
+SKIPPED [1] tests/test_vbat_ui.py:335: JF_UI_FIREFOX=1 と geckodriver のときだけ(--lock big)
+17 failed, 614 passed, 1 skipped, 498 warnings in 404.49s (0:06:44)
+EXIT 1

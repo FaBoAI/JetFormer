@@ -1,0 +1,80 @@
+⑤ launches.json                            JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261010_first-only.json        JSON 違う・標準出力 違う
+   印の付いた発進: [('20261010-181504', 37.704, {'abort_s': 33.274, 'ai_end_s': 35.14, 'human_s': 2.56})]
+   launches(after_abort を除く)同じ
+   組 10/10 ? first_trial_20261010-s3-: 違う欄 ['not_reached']
+     abort_resume_excluded None
+   標準出力の前だけの行 2・今だけの行 2
+     + 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None 中止のあとの走り直し(中止 33.274 秒・人側 2.56 秒。R1 に届かなかった発進に数える)
+     +   R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261010-181504@37.70。理由 15 秒以内に起点なし。その衝突 1(181504 41.91 秒 4.2G LH)。うちリカバリー中止のあとの走り直し 1(20261010-181504@37.70)
+     - 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None
+     -   R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261010-181504@37.70。理由 15 秒以内に起点なし。その衝突 1(181504 41.91 秒 4.2G LH)
+⑤ launches_20261010_ignore-gain.json       JSON 違う・標準出力 違う
+   印の付いた発進: [('20261010-181504', 37.704, {'abort_s': 33.274, 'ai_end_s': 35.14, 'human_s': 2.56})]
+   launches(after_abort を除く)同じ
+   組 10/10 ? first_trial_20261010-s3-: 違う欄 ['not_reached']
+     off n 3→3 restarts 3→3 起点まで 2.664→2.664 失う None→None
+     abort_resume_excluded None
+   標準出力の前だけの行 2・今だけの行 2
+     + 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None 中止のあとの走り直し(中止 33.274 秒・人側 2.56 秒。R1 に届かなかった発進に数える)
+     +   R1 に届かなかった発進(off)11 本(比べの数に入れない): 20261010-160306@23.38・20261010-160306@41.17・20261010-163247@0.00・20261010-163247@37.91・20261010-163247@116.58・20261010-163247@130.67・20261010-181504@37.70・20261010-203924@8.36・20261010-203924@41.15・20261010-204605@9.53・20261
+     - 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None
+     -   R1 に届かなかった発進(off)11 本(比べの数に入れない): 20261010-160306@23.38・20261010-160306@41.17・20261010-163247@0.00・20261010-163247@37.91・20261010-163247@116.58・20261010-163247@130.67・20261010-181504@37.70・20261010-203924@8.36・20261010-203924@41.15・20261010-204605@9.53・20261
+⑤ launches_20261010_plain.json             JSON 違う・標準出力 違う
+   印の付いた発進: [('20261010-181504', 37.704, {'abort_s': 33.274, 'ai_end_s': 35.14, 'human_s': 2.56})]
+   launches(after_abort を除く)同じ
+   組 10/10 ? first_trial_20261010-s3-: 違う欄 ['not_reached']
+     abort_resume_excluded None
+   標準出力の前だけの行 2・今だけの行 2
+     + 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None 中止のあとの走り直し(中止 33.274 秒・人側 2.56 秒。R1 に届かなかった発進に数える)
+     +   R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261010-181504@37.70。理由 15 秒以内に起点なし。その衝突 1(181504 41.91 秒 4.2G LH)。うちリカバリー中止のあとの走り直し 1(20261010-181504@37.70)
+     - 20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None
+     -   R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261010-181504@37.70。理由 15 秒以内に起点なし。その衝突 1(181504 41.91 秒 4.2G LH)
+⑤ launches_20261023_first-only.json        JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261023_ignore-gain.json       JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261023_plain.json             JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261024_first-only.json        JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261024_ignore-gain.json       JSON バイト単位で同じ・標準出力 同じ
+⑤ launches_20261024_plain.json             JSON バイト単位で同じ・標準出力 同じ
+③④ qp_20261010/by_params.json         違う
+     +      "move_0p4_after_s": 0.479,
+     +      "after_abort": {
+     +       "abort_s": 33.274,
+     +       "ai_end_s": 35.14,
+     +       "human_s": 2.56
+     -      "move_0p4_after_s": 0.479
+③④ qp_20261010/by_params.md           バイト単位で同じ
+③④ qp_20261010_ig/by_params.json      違う
+     +      "move_0p4_after_s": 0.479,
+     +      "after_abort": {
+     +       "abort_s": 33.274,
+     +       "ai_end_s": 35.14,
+     +       "human_s": 2.56
+     -      "move_0p4_after_s": 0.479
+③④ qp_20261010_ig/by_params.md        バイト単位で同じ
+③④ qp_20261023/by_params.json         バイト単位で同じ
+③④ qp_20261023/by_params.md           バイト単位で同じ
+③④ qp_20261023_ig/by_params.json      バイト単位で同じ
+③④ qp_20261023_ig/by_params.md        バイト単位で同じ
+③④ qp_20261024/by_params.json         バイト単位で同じ
+③④ qp_20261024/by_params.md           バイト単位で同じ
+③④ qp_20261024_ig/by_params.json      バイト単位で同じ
+③④ qp_20261024_ig/by_params.md        バイト単位で同じ
+③④ s3_20261010.json                   違う
+     +      "move_0p4_after_s": 0.479,
+     +      "after_abort": {
+     +       "abort_s": 33.274,
+     +       "ai_end_s": 35.14,
+     +       "human_s": 2.56
+     -      "move_0p4_after_s": 0.479
+③④ s3_20261010.md                     違う
+     + - リカバリー中止のあとの走り直し = 同じ本の中で、一つ前の AI の区間がリカバリー中止(中立で人を待つ)で終わり、CH3 を人側 → AI 側にした発進。中止で止まった所(コースの途中)から出たかもしれない(手で HS に置き直しても車輪の距離は 0 なので、記録からは分からない)ので、止まってから 3 周を数えない(最速・quick_eval_by_params の 1 章・2 章に入れない。⑤ collect.py の ON/OFF の比べにも入れない)。その 3 周の衝突は 1 章・2 章の衝突に入る。
+     + | — | 20261010-181504 | first_trial_20261010-s3-20261010-153629・2.00 | 37.70 | 0.06 | — | **—** | — | — | — | — | — | 15 秒以内(AI の区間の中)に R1 の起点が無い・数えない(リカバリー中止のあとの走り直し。中止 33.27 秒・人側 2.6 秒) |
+     - | — | 20261010-181504 | first_trial_20261010-s3-20261010-153629・2.00 | 37.70 | 0.06 | — | **—** | — | — | — | — | — | 15 秒以内(AI の区間の中)に R1 の起点が無い |
+③④ s3_20261023.json                   バイト単位で同じ
+③④ s3_20261023.md                     バイト単位で同じ
+③④ s3_20261024.json                   バイト単位で同じ
+③④ s3_20261024.md                     バイト単位で同じ
+③④ stdout_20261010.txt                バイト単位で同じ
+③④ stdout_20261023.txt                バイト単位で同じ
+③④ stdout_20261024.txt                バイト単位で同じ

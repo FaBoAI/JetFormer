@@ -1,0 +1,67 @@
+{
+ "logs_with_ai": 53,
+ "ai_sections": 140,
+ "rows": [
+  {
+   "log": "20261010-160306",
+   "t_ai": 41.169,
+   "stopped_at_ai": true,
+   "old": null,
+   "new": {
+    "kind": "hold",
+    "abort_s": 38.504,
+    "hold_s": 0.73,
+    "ai_end_s": 39.237,
+    "human_s": 1.93
+   }
+  },
+  {
+   "log": "20261010-181504",
+   "t_ai": 37.704,
+   "stopped_at_ai": true,
+   "old": {
+    "abort_s": 33.274,
+    "ai_end_s": 35.14,
+    "human_s": 2.56
+   },
+   "new": {
+    "kind": "abort",
+    "abort_s": 33.274,
+    "ai_end_s": 35.14,
+    "human_s": 2.56
+   }
+  }
+ ],
+ "changed": [
+  {
+   "log": "20261010-160306",
+   "t_ai": 41.169,
+   "stopped_at_ai": true,
+   "old": null,
+   "new": {
+    "kind": "hold",
+    "abort_s": 38.504,
+    "hold_s": 0.73,
+    "ai_end_s": 39.237,
+    "human_s": 1.93
+   }
+  },
+  {
+   "log": "20261010-181504",
+   "t_ai": 37.704,
+   "stopped_at_ai": true,
+   "old": {
+    "abort_s": 33.274,
+    "ai_end_s": 35.14,
+    "human_s": 2.56
+   },
+   "new": {
+    "kind": "abort",
+    "abort_s": 33.274,
+    "ai_end_s": 35.14,
+    "human_s": 2.56
+   }
+  }
+ ],
+ "abort_marks_same_except_kind": true
+}

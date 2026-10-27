@@ -97,15 +97,17 @@ def near_scene(d_mm, dur=4.0):
 
 
 def recovery_scene(back_from=None, hit_at=None, holds=()):
-    """走る(3 m/s)→ 2.0 秒で止まる(モデルは中立の帯)→ リカバリー。back_from 秒から後ろへ 1 m/s(開いたループ)。
-    hit_at 秒に後ろの衝撃(IMU の横 6G)。holds の間は車両の値が来ない(tests/test_recovery_back_guard.py の場面 + 中立止め)"""
+    """走る(3 m/s)→ 2.0 秒で止まる(モデルは 1.8〜2.0 秒ブレーキ側 中立 + 200、そのあと中立の帯)→ リカバリー。back_from 秒から
+    後ろへ 1 m/s(開いたループ)。hit_at 秒に後ろの衝撃(IMU の横 6G)。holds の間は車両の値が来ない(tests/test_recovery_back_guard.py
+    の場面 + 中立止め)。止まる前のブレーキ側は 2026-10-27 fix7 safety s4-a で足した(ESC が後退を待っていた 10/23 の形。
+    tests/test_recovery_back_guard.recovery_scene の説明)"""
     def v(s):
         if s < 2.0:
             return 3.0
         if back_from is not None and s >= back_from and (hit_at is None or s < hit_at):
             return -1.0
         return 0.0
-    return build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else (C, N + 20.0),
+    return build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else ((C, N + 200.0) if s < 2.0 else (C, N + 20.0)),
                  ax=lambda s: 60.0 if (hit_at is not None and hit_at <= s < hit_at + 0.02) else 0.0,
                  veh_skip=lambda s: any(a <= s < a + n for a, n in holds))
 

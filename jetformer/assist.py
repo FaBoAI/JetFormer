@@ -99,6 +99,44 @@
      やり直しも効かず、1796 µs を 1.2 秒出しても 0 m のまま escape が前の壁を約 0.5 秒押した(反証 w2-safety-r62-safety-1)。
      最初の 'gap' 0.15 秒では下がれない ESC(10/10 のログで 11%)で、後退の入りぎわに車両の値が 1 回止まるだけでも、見積もりで
      やり直しが止まり同じことが起きた(w2-safety-r62-safety-2)
+   反証 7-1 回目の直し(2026-10-27 fix7 係 safety。どれも見張り ON(back_guard = True)の日だけ効く。rec_hold_keep は問わない。
+   見張りが OFF ならビット単位で同じ):
+   ・s4-a 本物の eRPM は止まっている車でも 1 サンプルだけ跳ねる(ホールの縁の行き来。10/10・10/23 の記録で 1053〜1687 eRPM、
+     0.1 秒に 2〜4 回続くこともある)。前進のあとの 'brake'・'wait' の後退側はこのESCではブレーキで、後退では走らない
+     (モジュールの始め)。drive は書けた値の EscMayReverse(EscTrack より多めにみる。ブレーキのあと中立を 1 回でも書いたら下がれる・
+     後退側を書いたときから後退)から「前に処理したフレームからいままでに ESC が後退で走らせていたかもしれないか」を esc_rev で
+     渡す(rec_back_guard = 1 のとき。None = 分からない = 今までと同じ)。この手順の中で esc_rev がずっと
+     False の間(= ESC はまだ一度も後退で走らせていない。esc_ran が False)の 'brake'・'wait'・'gap' では、後ろへ動いたサンプルを
+     見張りに使わない(back_early で 'gap' の中立を飛ばさない・'gap' の惰性に数えない・後ろの当たりの「直前に後ろへ動いていた」に
+     しない・中立止めのあとの数え・back_hold もしない = OFF と同じ。出来事 recovery_guard の back_no_esc を手順ごとに 1 回)。
+     ESC が後退を待っていた 10/23 の形(ブレーキ側 → 止まって中立 → 'brake')は、'brake' を書いたときから後退とみるので今まで通り
+     (10/23 の記録 20261023-205458-0002 を流し直しても back_early のフレーム・出す値は同じ)。やり直しの 'gap' など、この手順で
+     一度後退で走らせたかもしれないあとは今まで通り数える
+   ・s4-b 'reverse' の下がり始めを待つやり直し(CHECK_S)は、'reverse' の中で見た後退(seen_rev_s: 'reverse' に入ったフレームの
+     ほかのフレームで BACKING_ERPM を超えたサンプル・'reverse' の中立止めの間に後ろへ動いていたサンプル)が 0 かで決める。
+     'gap' の惰性の数え・back_early で入ったフレーム・'brake'・'wait'・'gap' の中立止めの間のサンプルは、下がった時間(backed_s)
+     には今まで通り数えるが、やり直しの決めには使わない(どれも後退側を出す前のサンプル)。'gap' を飛ばして入った 'reverse'
+     (back_early・back_hold)で後退を見なければ、やり直し(+50 µs)にはせず、ふつうの 'gap'(GAP_S)からやり直す(出来事
+     early_none。下がった時間・見積もりも捨てる)
+     前は、'brake' の間の 1 サンプルの跳ね(301〜1322 eRPM)だけで back_early が 'gap' を飛ばして 'reverse' へ進み、
+     下がった時間 > 0 なのでやり直しも効かず、偽物の ESC はブレーキのまま 1.23 秒 0 m、escape が前の壁を 0.5 秒押した
+     (OFF は 1.13 m 下がる。反証 w1-safety-rv7-safety-r1-1)
+   反証 7-2 回目の直し(2026-10-27 fix7 係 safety r2。見張り ON(back_guard = True)の日だけ効く。rec_hold_keep は問わない。
+   見張りが OFF ならビット単位で同じ):
+   ・s4-c 'gap' を飛ばして入った 'reverse'(back_early・back_hold = skip_gap)の early_none は、「本当に下がっている」を見たかで
+     決める。本当に下がっている = 'reverse' に入ったフレームのほかのフレームで、続けて SURE_BACK_S(0.2 秒)後ろへ動いていた
+     (BACKING_ERPM を超えたフレームが途切れずに続いた。残した中立止めがあればそこから数え直す)。CHECK_S のあと、まだ本当に
+     下がっているを見ていなくて、このフレームで後ろへ動いていなければ early_none('gap' から。下がった時間・見積もり・見た後退を
+     捨てる)。このフレームで後ろへ動いていれば決めを次のフレームへ延ばす(下がり始めた車をやり直さない)。一度本当に下がっているを
+     見たら、その 'reverse' ではやり直さない。前は 'reverse' の中で後ろへ動いたサンプルが 1 つでもあれば early_none もやり直しも
+     しなかった。止まっている車の eRPM の跳ねがフレームから続けて見えるのは、本物の記録 308 本で最長 0.11 秒(人側。ほかは 0.06 秒
+     以下)。本当に後退で走っている車は、後退側を出している間(下がった時間が rev_s に届くまで)ずっと後ろへ動く。'gap' を飛ばさずに
+     入った 'reverse' のやり直しは今まで通り(s4-b)
+     前は、ESC がまだ下がれないのに 'brake' の中の約 0.03 秒の中立止め(rec_hold_keep で手順を残す)で EscMayReverse が「下がれる」
+     とみて(中立を 1 回でも書いたら下がれる)この手順の s4-a が外れ、跳ね 1 つ目で back_early、'reverse' の中の跳ね 2 つ目で s4-b の
+     early_none もやり直しも止まり、0 m のまま後退側を約 1.3 秒書いて escape が前の壁を 0.5 秒押した(OFF は 1.27 m 下がる。反証
+     w2-safety-rv7-safety-r2-1)。EscMayReverse は変えない(本物の ESC は人の操作で中立 0.05〜0.07 秒でも後退に入った。10/10 の
+     表の 23 回のうち 4 回。下がれないとみると、本当に下がっている 'brake' の後ろへの動きを見張りが数えない = OFF の形になる)
 
 2. 後退の受け付け(EscReverse) — リカバリーをOFFにしたときだけ使う
    モデル自身の後退の指令を、止まってから ブレーキ → 中立 → 後退 の順に出す(強さ・長さに上限)。
@@ -138,6 +176,8 @@ CHECK_S = 0.35               # 後退を出してから、この時間で下が�
 HOLD_EST_MIN_LEFT_S = 0.2    # 見ていない間の後退の見積もり(hold_rev_s)で後退を短くするのは、これだけ残すところまで(rev_s の下限。
                              # 2026-10-27 fix6 safety r1。見積もりの後退は中立止めで切られて遅く、そのまま差し引くと短い rev_s で
                              # 下がる距離が足りず escape が前の壁に当たる)
+SURE_BACK_S = 0.2            # 'gap' を飛ばして入った 'reverse' で「本当に下がっている」とみる、フレームで続けて後ろへ動いていた秒
+                             # (2026-10-27 fix7 r2 s4-c。止まっている車の eRPM の跳ねは本物の記録で続けて最長 0.11 秒)
 
 
 class Recovery(object):
@@ -189,6 +229,12 @@ class Recovery(object):
         self.retries = 0
         self.backed_s = 0.0
         self.est_s = 0.0             # backed_s のうち、見ていない間の後退の見積もり(hold_rev_s)で足した秒(2026-10-27 fix6 r2 s3-c)
+        self.seen_rev_s = 0.0        # 'reverse' の中で見た後退の秒(入ったフレームは除く。見張り ON のやり直しの決め。fix7 s4-b)
+        self.skip_gap = False        # この 'reverse' は 'gap' を飛ばして入った(back_early・back_hold。fix7 s4-b)
+        self.noesc_noted = False     # この手順で back_no_esc を記録した(fix7 s4-a)
+        self.esc_ran = False         # この手順で ESC が後退で走らせていたかもしれない(esc_rev が False でなかった)フレームがあった(fix7 s4-a)
+        self.run_t0 = None           # 'gap' を飛ばして入った 'reverse' で、続けて後ろへ動いているフレームの始めの時刻(fix7 r2 s4-c)
+        self.back_sure = False       # その 'reverse' で SURE_BACK_S 続けて後ろへ動いた(本当に下がっている。fix7 r2 s4-c)
         self.t_last = None
         self.turn = 0.0              # 止まる前に曲がっていた向き(+1 左 / -1 右 / 0 まっすぐ)
         self.starts.clear()          # 人が交代して直したら、あきらめの数え直し
@@ -215,6 +261,11 @@ class Recovery(object):
         self.retries = 0
         self.backed_s = 0.0
         self.est_s = 0.0
+        self.seen_rev_s = 0.0
+        self.skip_gap = False
+        self.noesc_noted = False
+        self.esc_ran = False
+        self.run_t0, self.back_sure = None, False
         self.back_t = None
         self._go('brake', now)
 
@@ -237,10 +288,20 @@ class Recovery(object):
         self.slow_since = None
         return False
 
-    def _guard(self, erpm, now, dt, impact_g, rev_s):
+    def _guard(self, erpm, now, dt, impact_g, rev_s, esc_rev=None):
         """後ろの見張り(back_guard = True のときだけ呼ぶ)。手順を変えたら戻り値 (出す値, 種類)、変えなければ None
-        (段を進めただけのときも None。あとの段の処理がそのまま続ける)"""
+        (段を進めただけのときも None。あとの段の処理がそのまま続ける)。esc_rev = drive の EscMayReverse が、前に処理したフレームから
+        いままでに ESC が後退で走らせていたかもしれないと見たか(None = 分からない = 今までと同じ。False で、この手順でまだ一度も
+        後退で走らせていない(esc_ran が False)の 'brake'・'wait'・'gap' は後ろへ動いたサンプルを使わない。fix7 s4-a)"""
         backing = erpm > BACKING_ERPM
+        if backing and esc_rev is False and not self.esc_ran and self.phase in ('brake', 'wait', 'gap'):
+            # fix7 s4-a: この手順でまだ ESC が後退で走らせていない(前進のあとのブレーキ・そのあとの中立)間に後ろへ動いたサンプル
+            # = eRPM の跳ね・たわみの戻り。見張りに使わない(前は 1 サンプルの跳ねで 'gap' の中立を飛ばし、ESC はブレーキのまま 0 m で
+            # escape が前の壁を押した。'gap' の跳ねは後退を短くし、やり直しも止めた)
+            backing = False
+            if not self.noesc_noted:
+                self.noesc_noted = True
+                self.guard_event = ('back_no_esc', self.phase, round(self.backed_s, 3))
         if backing:
             self.back_t = now
         if impact_g >= self.IMPACT_G and self.back_t is not None and now - self.back_t <= self.BACK_RECENT_S:
@@ -252,7 +313,8 @@ class Recovery(object):
         if self.phase in ('brake', 'wait'):            # 前のブレーキ側で ESC が後退を待っていた: もう下がっている
             self.guard_event = ('back_early', self.phase, round(self.backed_s, 3))
             self._go('reverse', now)                   # 下がった時間は 'reverse' が数える(このフレームから)
-        elif self.phase == 'gap':                      # 中立の惰性で下がっている分も数える
+            self.skip_gap = True                       # fix7 s4-b: 'gap' を飛ばした(後退を見なければ 'gap' からやり直す)
+        elif self.phase == 'gap':                      # 中立の惰性で下がっている分も数える(やり直しの決めには使わない。fix7 s4-b)
             self.backed_s += dt
             if self.backed_s >= rev_s:
                 self.guard_event = ('back_enough', self.phase, round(self.backed_s, 3))
@@ -273,13 +335,15 @@ class Recovery(object):
         self._go('giveup', now)
         return (self.center, self.n), ASSIST_GIVEUP
 
-    def _after_hold(self, gap, hold_s, hold_g, hold_back_s, rev_s, now, erpm=0.0, hold_unseen_s=0.0, hold_rev_s=0.0):
+    def _after_hold(self, gap, hold_s, hold_g, hold_back_s, rev_s, now, erpm=0.0, hold_unseen_s=0.0, hold_rev_s=0.0,
+                    esc_rev=None):
         """手順を残した中立止めのあとの最初のフレーム(2026-10-27 fix3 r2-r2-rs-1・rs-2。モジュールの説明 1 の終わり)。
         gap = 前に処理したフレームからの秒(見ていない時間)。hold_s = 中立を出していた秒(hold_since から)。erpm = 明けたフレームの
         車両の値。hold_unseen_s = hold_back_s のうち、車両の値が来なかっただけの間(前後のサンプルはどちらも後ろへ動いていない)の秒
         (2026-10-27 fix5 s3。既定 0 = 全部を後ろへ動いていたサンプルの秒として今までと同じ)。hold_rev_s = 車両の値が来なかった間に
         ESC が後退で走らせていたかもしれない秒(drive が書いた値から見積もる。hold_back_s とは別。2026-10-27 fix6 s3-a。既定 0)。
         見積もりは下がった時間に足すが、足した分は est_s に別に持ち、見積もりだけでは段を進めない(fix6 r2 s3-c)。
+        esc_rev = step の同じ名前(False で esc_ran も False の 'brake'・'wait'・'gap' は後ろへ動いていたサンプルを使わない。fix7 s4-a)。
         手順を変えて出す値があれば (出す値, 種類)、なければ None(段を進めただけのときも None。あとの段の処理がそのまま続ける)"""
         long_hold = gap > self.HOLD_KEEP_MAX_S
         p = self.phase
@@ -310,9 +374,19 @@ class Recovery(object):
         unseen = min(max(float(hold_unseen_s), 0.0), hb)
         seen = hb - unseen
         est = max(float(hold_rev_s), 0.0)
+        if esc_rev is False and not self.esc_ran and p in ('brake', 'wait', 'gap') and hb > 0.0:
+            # fix7 s4-a: この手順でまだ ESC が後退で走らせていない(前進のあとのブレーキ・中立・中立止めの中立)。後ろへ動いていた
+            # サンプルは eRPM の跳ね・たわみの戻りとして使わない(下がった時間に数えない・back_hold で 'gap' を飛ばさない)
+            hb = unseen = seen = 0.0
+            if not self.noesc_noted:
+                self.noesc_noted = True
+                self.guard_event = ('back_no_esc', p, round(self.backed_s, 3))
         if p in self.HOLD_HIT_PHASES:
             count_unseen = p in ('reverse', 'coast') and (self.backed_s > 0.0 or seen > 0.0)     # 下がり始めたあと
-            self.backed_s += hb if count_unseen else seen       # hold_unseen_s = 0 なら どちらも hold_back_s(今までと同じ)
+            obs = hb if count_unseen else seen      # hold_unseen_s = 0 なら どちらも hold_back_s(今までと同じ)
+            self.backed_s += obs
+            if p == 'reverse':
+                self.seen_rev_s += obs      # fix7 s4-b: 'reverse' の中で見た後退(やり直しの決め)
             if est > 0.0:       # fix6 s3-a: 見ていない間の後退の見積もり。後退を HOLD_EST_MIN_LEFT_S 残すところまで足す
                 add = min(est, max(0.0, rev_s - HOLD_EST_MIN_LEFT_S - self.backed_s))
                 self.backed_s += add
@@ -336,6 +410,8 @@ class Recovery(object):
                 self._go('coast' if self.backed_s >= rev_s else 'reverse', now)
                 if self.phase == 'coast':
                     self.t_phase = now - hold_s         # fix6 s3-b: 惰性は中立止めの始めから
+                else:
+                    self.skip_gap = True                # fix7 s4-b: 'gap' を飛ばした(後退を見なければ 'gap' からやり直す)
             elif p == 'gap' and self.backed_s >= rev_s:
                 self.guard_event = ('back_hold', p, round(self.backed_s, 3))
                 self._go('coast', now)
@@ -343,7 +419,7 @@ class Recovery(object):
         return None
 
     def step(self, model_us, erpm, now, impact_g=0.0, rev_us=DEFAULT_REV_US, rev_s=DEFAULT_REV_S, back_guard=False,
-             hold_g=0.0, hold_since=None, hold_back_s=0.0, hold_unseen_s=0.0, hold_rev_s=0.0):
+             hold_g=0.0, hold_since=None, hold_back_s=0.0, hold_unseen_s=0.0, hold_rev_s=0.0, esc_rev=None):
         """戻り値 (出す値 (steer, throttle) または None(モデルのまま), 補助の種類)。
         back_guard = 後ろの見張り(既定 False = 今までと同じ。モジュールの説明 1 の終わり)。
         hold_g = 残した手順の中立止めの間(前に処理したフレームのあと)に来た IMU の水平 G の最大(drive が rec_hold_keep で
@@ -352,7 +428,11 @@ class Recovery(object):
         中立止めのあとの最初のフレームだけ渡す。既定 None = 今までと同じ)。hold_back_s = その間(前に処理したフレームから
         このフレームまで)に後ろへ動いていた秒(2026-10-27 fix3 r2-r2-rs-1・rs-2)。hold_unseen_s = hold_back_s のうち、
         車両の値が来なかっただけの間の秒(2026-10-27 fix5 s3。既定 0 = 今までと同じ。_after_hold)。hold_rev_s = 車両の値が来なかった
-        間に ESC が後退で走らせていたかもしれない秒(drive の見積もり。2026-10-27 fix6 s3-a。既定 0 = 今までと同じ。_after_hold)"""
+        間に ESC が後退で走らせていたかもしれない秒(drive の見積もり。2026-10-27 fix6 s3-a。既定 0 = 今までと同じ。_after_hold)。
+        esc_rev = 前に処理したフレームからいままでに、ESC が後退で走らせていたかもしれないか(drive が書けた値の EscMayReverse から。
+        rec_back_guard = 1 のとき。既定 None = 分からない = 今までと同じ)。見張り ON で、この手順でまだ一度も True・None に
+        なっていない間の 'brake'・'wait'・'gap' は、後ろへ動いたサンプルを見張りに使わない(2026-10-27 fix7 s4-a。モジュールの説明 1 の
+        終わり)"""
         gap = None if self.t_last is None else max(now - self.t_last, 0.0)
         dt = 0.0 if self.t_last is None else min(max(now - self.t_last, 0.0), 0.2)
         self.t_last = now
@@ -364,10 +444,13 @@ class Recovery(object):
             self._go('giveup', now)     # 後ろへ動かなくなった・上限の時間: 中立で人を待つ(CH3 を人側にすると解ける)
             return (self.center, self.n), ASSIST_GIVEUP
         phase0 = self.phase             # 中立止めの前(このフレームの前)の段
+        if esc_rev is not False:
+            self.esc_ran = True         # fix7 s4-a: この手順で ESC が後退で走らせていたかもしれない(None = 分からない も)
         if hold_since is not None and gap is not None:
             dt = 0.0                    # 中立止めの間の後退は hold_back_s で数えた(このフレームの dt は足さない)
+            self.run_t0 = None          # fix7 r2 s4-c: 続けて後ろへ動いていたかは、中立止めのあとのフレームから数え直す
             hold_s = min(max(now - float(hold_since), 0.0), gap)
-            r = self._after_hold(gap, hold_s, hold_g, hold_back_s, rev_s, now, erpm, hold_unseen_s, hold_rev_s)
+            r = self._after_hold(gap, hold_s, hold_g, hold_back_s, rev_s, now, erpm, hold_unseen_s, hold_rev_s, esc_rev)
             if r is not None:
                 return r
         if self.phase is None:
@@ -379,7 +462,7 @@ class Recovery(object):
         rev = min(rev_us + self.RETRY_EXTRA_US * self.retries, self.MAX_REV_US)
         rev_steer = self.center - self.turn * self.REV_STEER_US
         if back_guard and self.phase in ('brake', 'wait', 'gap', 'reverse', 'coast'):
-            g = self._guard(erpm, now, dt, impact_g, rev_s)
+            g = self._guard(erpm, now, dt, impact_g, rev_s, esc_rev)
             if g is not None:
                 return g
         if hold_g >= self.IMPACT_G and phase0 in self.HOLD_HIT_PHASES and self.phase in self.HOLD_HIT_PHASES:
@@ -417,12 +500,42 @@ class Recovery(object):
                 return self._escape(now)
             if erpm > BACKING_ERPM:
                 self.backed_s += dt
-            # 下がり始めない: ESCが後退に入っていない(t_check は段を変えたとき t_phase と同じ。残した中立止めのあとは明けたフレーム)。
-            # 見るのは見た後退だけ(fix6 r2 s3-c: 見ていない間の後退の見積もり est_s は除く。est_s = 0 なら今までと同じ)
-            if self.backed_s - self.est_s == 0.0 and now - self.t_check > CHECK_S:
+                if phase0 == 'reverse':         # fix7 s4-b: 'reverse' に入ったフレームのサンプルは後退側を出す前(やり直しの決めに使わない)
+                    self.seen_rev_s += dt
+            if back_guard and self.skip_gap:
+                # fix7 r2 s4-c: 'gap' を飛ばして入った 'reverse' は、続けて SURE_BACK_S 後ろへ動いたら「本当に下がっている」
+                # ('reverse' に入ったフレームは除く。途切れたら・中立止めのあとは数え直す)
+                if phase0 == 'reverse' and erpm > BACKING_ERPM:
+                    if self.run_t0 is None:
+                        self.run_t0 = now
+                    elif now - self.run_t0 >= SURE_BACK_S:
+                        self.back_sure = True
+                else:
+                    self.run_t0 = None
+                # まだ本当に下がっているを見ていなくて、このフレームで後ろへ動いていなければ下がっていない(跳ね・たわみの戻りだけ。
+                # 前は 'reverse' の中の跳ね 1 つで early_none もやり直しも止まった。このフレームで後ろへ動いていれば次のフレームで決める)
+                none_yet = not self.back_sure and erpm <= BACKING_ERPM
+            else:
+                # 下がり始めない: ESCが後退に入っていない(t_check は段を変えたとき t_phase と同じ。残した中立止めのあとは明けたフレーム)。
+                # 見るのは見た後退だけ(fix6 r2 s3-c: 見ていない間の後退の見積もり est_s は除く。est_s = 0 なら今までと同じ)。
+                # 見張り ON は 'reverse' の中で見た後退だけ(fix7 s4-b: 'gap' の惰性の数え・back_early で入ったフレーム・'reverse' の前の
+                # 中立止めのサンプルは除く。前は 1 サンプルの跳ねで backed_s > 0 になり、ESC がブレーキのままでもやり直さなかった)
+                none_yet = (self.seen_rev_s == 0.0) if back_guard else (self.backed_s - self.est_s == 0.0)
+            if none_yet and now - self.t_check > CHECK_S:
+                if back_guard and self.skip_gap:
+                    # fix7 s4-b: 'gap' を飛ばして入った 'reverse'(back_early・back_hold)で下がらない: 見た後ろへの動きは跳ね・たわみの
+                    # 戻りだった(ESC はブレーキのまま)。やり直し(+50 µs)にはせず、ふつうの 'gap' から(下がった時間・見積もりも捨てる)
+                    self.guard_event = ('early_none', 'reverse', round(self.backed_s, 3))
+                    self.skip_gap = False
+                    self.run_t0, self.back_sure = None, False
+                    self.backed_s = self.est_s = self.seen_rev_s = 0.0
+                    self._go('gap', now)
+                    return (rev_steer, self.n + GAP_OFFSET_US), ASSIST_RECOVERY
                 if self.retries < self.MAX_RETRIES:
                     self.retries += 1
                     self.backed_s = self.est_s = 0.0       # 後退側を出しても下がらない: 見積もりの後退も無かった(fix6 r2)
+                    self.seen_rev_s = 0.0
+                    self.skip_gap = False
                     self._go('gap', now)
                     return (rev_steer, self.n + GAP_OFFSET_US), ASSIST_RECOVERY
                 self._go('escape', now)                    # やり直しても下がらない: 前進で抜けてみる
@@ -582,6 +695,17 @@ class EscTrack(object):
             if hi > lo:
                 s += hi - lo
         return s / 1e9
+
+
+class EscMayReverse(EscTrack):
+    """EscTrack と同じ決まりで、もっと多めに「ESC が後退で走らせていたかもしれない」とみる(2026-10-27 fix7 safety s4-a。drive が
+    rec_back_guard = 1 の日に、書けた値を入れて Recovery の esc_rev に使う。EscTrack(中立止めの見積もり)とは別に持つ)。
+    ・ブレーキのあと中立を 1 回でも書いたら下がれる(人は中立 0.02 秒で後退に入れたこともある。10/10 のログ)
+    ・下がれるときの後退側は、書いたときから後退とみる(遅れ 0)
+    下がれないとみるのは、前進のあとブレーキ側だけを書いている間(このESCではブレーキ。前進の直後の後退側は人の 29 回すべて・
+    AI の 26 回のうち跳ね返りの 2 回のほか、後退しなかった)と、そのあとの中立の間(まだ後退側を書いていない)だけ"""
+    READY_NEUTRAL_S = 0.0
+    DELAY_S = 0.0
 
 
 class StartKick(object):
@@ -848,7 +972,7 @@ class Assist(object):
     def step(self, model_us, erpm, select, now, esc_on=True, rec_on=True, impact_g=0.0,
              rev_us=DEFAULT_REV_US, rev_s=DEFAULT_REV_S, kick_on=False, blocked=False, launch=None, rec_guard=False,
              launch_no_kick=False, hold_g=0.0, hold_since=None, hold_back_s=0.0, hold_unseen_s=0.0, rec_keep=False,
-             hold_rev_s=0.0):
+             hold_rev_s=0.0, esc_rev=None):
         """戻り値 (出す値 (steer, throttle), 補助の種類)。blocked = 前が近い(発進の補助を出さない)。
         launch = 発進の前進の入力 LaunchIn(launch_boost = 1 のとき。None = OFF で今までと同じ)。
         rec_guard = リカバリーの後ろの見張り(drive の rec_back_guard。False = 今までと同じ)。
@@ -860,6 +984,7 @@ class Assist(object):
         hold_since・hold_back_s = Recovery.step の同じ名前(rec_hold_keep の中立止めのあと。既定 None・0 = 今までと同じ。
         2026-10-27 fix3 r2-r2-rs-1・rs-2)。hold_unseen_s = Recovery.step の同じ名前(2026-10-27 fix5 s3。既定 0 = 今までと同じ)。
         hold_rev_s = Recovery.step の同じ名前(2026-10-27 fix6 s3-a。既定 0 = 今までと同じ)。
+        esc_rev = Recovery.step の同じ名前(drive の EscMayReverse。2026-10-27 fix7 s4-a。既定 None = 今までと同じ)。
         発進の補助・発進の前進がこのフレームを出したときは Recovery を呼ばない(今までと同じ。
         補助は AI の区間の始めで、前へ動けば終わる。Recovery はその区間の始めに戻してあり、動くまで手順を始めない)。
         rec_keep = drive の rec_hold_keep と rec_back_guard がどちらも 1(中立止めでリカバリーを残す日。既定 False = 今までと同じ)。
@@ -902,7 +1027,7 @@ class Assist(object):
         if rec_on:
             o, k = self.rec.step(model_us, erpm, now, impact_g, rev_us, rev_s, back_guard=rec_guard, hold_g=hold_g,
                                  hold_since=hold_since, hold_back_s=hold_back_s, hold_unseen_s=hold_unseen_s,
-                                 hold_rev_s=hold_rev_s)
+                                 hold_rev_s=hold_rev_s, esc_rev=esc_rev)
             if o is not None:
                 self.esc.reset()
                 return (float(o[0]), float(o[1])), k

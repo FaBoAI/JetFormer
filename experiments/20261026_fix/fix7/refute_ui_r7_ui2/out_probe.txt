@@ -1,0 +1,32 @@
+== 1. 同じ操作を、もとの台本と sim_keep.js で(今の app.js)
+S1 click(#btn-dr-tg-up)
+   [もと] click/slide の後のタイマー=[]  driveTimer!==null=True  tick 2 回の後のタイマー=[]  その間の status GET=0  画面の左=4.1  天井の横の文=(全体 4.5・左旋回中 4.1 m/s)
+   [keep] click/slide の後のタイマー=[300, 1000, 1000]  driveTimer!==null=True  tick 2 回の後のタイマー=[300, 1000, 1000]  その間の status GET=2  画面の左=4.2  天井の横の文=(全体 4.5・左旋回中 4.2 m/s)
+S2 slide(#dr-trim 10)
+   [もと] click/slide の後のタイマー=[]  driveTimer!==null=True  tick 2 回の後のタイマー=[]  その間の status GET=0  画面の左=4.1  天井の横の文=(全体 4.5・左旋回中 4.1 m/s)
+   [keep] click/slide の後のタイマー=[300, 1000, 1000]  driveTimer!==null=True  tick 2 回の後のタイマー=[300, 1000, 1000]  その間の status GET=2  画面の左=4.2  天井の横の文=(全体 4.5・左旋回中 4.2 m/s)
+S3 tap + timers(台本の中の、長いタイマーを戻す道)
+   [もと] click/slide の後のタイマー=[1000]  driveTimer!==null=True  tick 2 回の後のタイマー=[1000]  その間の status GET=2  画面の左=4.2  天井の横の文=(全体 4.5・左旋回中 4.2 m/s)
+   [keep] click/slide の後のタイマー=[300, 1000, 1000]  driveTimer!==null=True  tick 2 回の後のタイマー=[300, 1000, 1000]  その間の status GET=2  画面の左=4.2  天井の横の文=(全体 4.5・左旋回中 4.2 m/s)
+
+== 2. test_ui_fix6_r2 の NORMAL(停止ボタンの click のある流れ)を、今の app.js で、2 つの台本で
+ライブ ⇄ 走行タブ・curl・ブロック・天井・▶
+   ntimers もと=[[1000], [250], []]
+   ntimers keep=[[300, 1000, 1000], [300, 1000, 250], [300, 1000, 250]]
+   status GET の数 もと=[1, 4, 3, 3] keep=[1, 4, 3, 5]
+   calls が同じ=False ntimers が同じ=False
+起き直し(1 秒の問い合わせで知らせ)
+   ntimers もと=[[1000]]
+   ntimers keep=[[300, 1000, 1000]]
+   status GET の数 もと=[1, 6] keep=[1, 6]
+   calls が同じ=False ntimers が同じ=False
+問い合わせの失敗(fix5 t1)
+   ntimers もと=[[1000], [1000]]
+   ntimers keep=[[300, 1000, 1000], [300, 1000, 1000]]
+   status GET の数 もと=[1, 5] keep=[1, 5]
+   calls が同じ=False ntimers が同じ=False
+
+== 3. sim_keep.js で、test_normal_paths_exactly_as_before と同じ比べ(今の app.js と直す前の写し)
+   ライブ ⇄ 走行タブ・curl・ブロック・天井・▶: 今の版と直す前が同じ=True
+   起き直し(1 秒の問い合わせで知らせ): 今の版と直す前が同じ=True
+   問い合わせの失敗(fix5 t1): 今の版と直す前が同じ=True

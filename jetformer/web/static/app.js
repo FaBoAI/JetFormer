@@ -1192,11 +1192,24 @@ async function loadDrive() {
   // 天井の横の文・スイッチと ▶ の確認の文が前の表示のまま(curl で入れた左 4.2 を読まず 4.1・起き直したあとも起き直す前の 4.2・
   // 200 µs)だった(2026-10-27 fix6 反証 w2-ui-w1-ui-r62-1)。一覧の GET は打ち切らない(遅いだけなら、返事が来たところで前と同じに
   // 続ける)。一覧が通るときは前とまったく同じ(期限のタイマーは返事で消す)
-  const lost = () => { if (drIdle()) { drLost(); pollDrive(); } };
+  // 一覧を読めなかった・遅れた印(modelsMiss)と、輪の 2 回目の同期で 1 回だけ読み直す数(modelsRetry)も付ける(2026-10-27 fix7 反証
+  // w2-ui-w2-ui-r72-ui-2。下の retryDriveModels)。印は一覧が通ったら消す。一覧が通るときは前とまったく同じ
+  const lost = () => { state.drive.modelsMiss = true; state.drive.modelsRetry = 2; if (drIdle()) { drLost(); pollDrive(); } };
   const late = setTimeout(lost, DR_IDLE_WAIT_MS);
-  try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { clearTimeout(late); toast(e.message, true); lost(); return; }
+  state.drive.modelsBusy = (state.drive.modelsBusy || 0) + 1;       // 一覧の GET を待っている数(待っている間は読み直さない)
+  try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) {
+    state.drive.modelsBusy--; clearTimeout(late); toast(e.message, true); missDriveModels(); lost(); return;
+  }
+  state.drive.modelsBusy--; state.drive.modelsMiss = false;
   clearTimeout(late);
   if (!state.drive.st) { try { state.drive.st = await api('GET', '/api/drive/status'); } catch (e) { /* 後で */ } }
+  fillDriveModels();
+  pollDrive();
+  loadBench();
+}
+// モデルの一覧(state.drive.models)を選ぶ欄に入れ、選ぶモデルを決める(loadDrive の中にあったものをそのまま関数にした。fix7。
+// 走行タブを開いたとき(loadDrive)と、一覧を読めなかったあとの読み直し(reloadDriveModels)が使う)
+function fillDriveModels() {
   const sel = $('#dr-model'), cur = sel.value;
   sel.innerHTML = state.drive.models.map((m) =>
     `<option value="${esc(m.name)}" ${m.drivable === false ? 'disabled' : ''}>${m.recommended ? '★推奨 ' : ''}「${esc(m.policy_title || 'JetFormer v0')}」${esc(m.name)}`
@@ -1211,7 +1224,36 @@ async function loadDrive() {
   if (first && rec && want === rec.name && last && last !== rec.name) state.drive.restoreNote = `前回のモデル(${last})ではなく、推奨のモデルを選びました`;
   renderDriveModel();
   state.drive.restored = true;
-  pollDrive();
+}
+// 走行タブを開いたときにモデルの一覧の GET が失敗した・5 秒返らなかったあと(2026-10-27 fix7 反証 w2-ui-w2-ui-r72-ui-2)。前は一覧を
+// タブを替えるまで読み直さず、表示の問い合わせの輪は回って「同期済み」になるので、初めて開いたときは選ぶ欄が空・ベンチマークも
+// 読まないまま、「基準の設定」が「モデル … が走行の一覧にありません(TensorRT エンジンが必要)」とまちがった理由を出した(エンジンは
+// ある。学習タブでエンジンを作り直すなどのまちがった手当てに進ませる)。今は:
+//  - 止まっていて(drIdle)走行タブにいるとき、一覧の GET を待っていなければ、輪の 2 回目の同期(失敗のすぐあとの同期の次 = 約 1 秒後)
+//    で一覧を 1 回だけ読み直す(retryDriveModels → reloadDriveModels。表示の問い合わせの輪は増やさない = pollDrive は呼ばない)。
+//    通れば loadDrive と同じに選ぶ欄とベンチマークを入れる。通らなければそのまま(もう読み直さない。タブを開き直すと loadDrive がまた読む)
+//  - 読めていない間、止まっていれば「基準の設定」・ブロック・▶ の「一覧にありません(TensorRT エンジンが必要)」「モデルを選んでください」
+//    のかわりに DR_MODELS_MISS(読めていない・開き直すか読み直す)。選ぶ欄が空なら、その欄にも短い文を出す
+//  走行中・token のある画面・一覧が通るときは前とまったく同じ(問い合わせ・文・送る物)
+const DR_MODELS_MISS = 'モデルの一覧を読めていません(一覧の問い合わせが通らないか遅れています。TensorRT エンジンが無いという意味ではありません)。'
+  + '少し待っても「モデル」の欄が空なら、ほかのタブ → 走行タブで開き直すか、画面を読み直してください';
+const drModelsMissing = () => !!state.drive.modelsMiss && drIdle();
+function missDriveModels() {                          // 選ぶ欄が空のとき(初めて開いた)だけ、欄に短い文を出す
+  const sel = $('#dr-model');
+  if (!sel.options.length) sel.innerHTML = '<option value="">— モデルの一覧を読めていません(通信の途切れ)。少し待つか、ほかのタブ → 走行タブ —</option>';
+}
+function retryDriveModels() {                         // pollDrive が同期できたあとに呼ぶ
+  const d = state.drive;
+  if (!d.modelsMiss || d.modelsBusy > 0 || !drIdle() || state.tab !== 'drive' || !(d.modelsRetry > 0)) return;
+  if (--d.modelsRetry === 0) reloadDriveModels();
+}
+async function reloadDriveModels() {
+  let models;
+  state.drive.modelsBusy = (state.drive.modelsBusy || 0) + 1;
+  try { models = await api('GET', '/api/drive/models'); } catch (e) { return; } finally { state.drive.modelsBusy--; }
+  if (!Array.isArray(models)) return;                 // 本文の無い返事は読めなかったのと同じ
+  state.drive.models = models; state.drive.modelsMiss = false;
+  fillDriveModels();
   loadBench();
 }
 function renderDriveModel() {
@@ -1443,9 +1485,15 @@ const PAGE_BUILD = (() => {
   const d = new Date(PAGE_BUILD * 1000), p2 = (x) => String(x).padStart(2, '0');
   el.textContent = `画面の版 ${DRIVE_CLIENT}` + (PAGE_BUILD ? `(app.js ${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())})` : '');
 })();
+// 走行開始を断られた・届かなかった文の出し直し(2026-10-27 fix6 w1-ui-ui61-2 の文の形のまま関数にした。fix7 で noteServerBoot も使う)。
+// st: 同期した status(止まっていれば頭に「走行は始まっていません(停止中)。」)。m: 断った文。bootRefusal: 起き直しの 409 の文なら
+// それだけ、ほかの断りなら後ろに起き直しの知らせ(state.drive.bootToast)を付ける
+function startRefusalText(st, m, bootRefusal) {
+  return (st && !st.running ? '走行は始まっていません(停止中)。' : '') + (bootRefusal ? m : `${m.replace(/。$/, '')}。${state.drive.bootToast}`);
+}
 $('#btn-dr-start').addEventListener('click', async () => {
   const m = drModel();
-  if (!m) { toast('モデルを選んでください', true); return; }
+  if (!m) { toast(drModelsMissing() ? DR_MODELS_MISS : 'モデルを選んでください', true); return; }     // 一覧を読めていない(fix7)
   // 画面を開いた直後、サーバーの設定(トリム・ゲイン・スイッチ)を一度も読んでいないうちは始めない(読む前の欄は index.html の
   // 初めの値 = トリム 0・速度 1.00 で、それを送ってしまう。2026-10-26 fix3)。表示の問い合わせが失敗したあと(サーバーが落ちた・
   // 起き直している)も、次に同期するまで始めない(drNotSynced。2026-10-27 fix5 t1)
@@ -1493,14 +1541,19 @@ $('#btn-dr-start').addEventListener('click', async () => {
     // 頭に、同期した status で止まっていれば「走行は始まっていません(停止中)。」。断った文に起動し直しが無ければ知らせを後ろに付ける。
     // ほかの断り(古い画面・学習中など)で知らせが出ないときは前と同じ。同期を待つあいだに次の ▶ を押したときは出し直さない(前の ▶ の
     // 文で、次の ▶ の知らせ = 走り出した知らせを消さない。遅れて届いた古い返事は止まっている)。表示だけ(送った body・断る決まり・同期は前と同じ)
+    // 同期も通らなかった(サーバーが落ちたまま・起き直している途中・通信の途切れ)ときは、知らせはまだ出ていないので、断った文を覚えて
+    // おき、次に同期が通って起き直しの知らせ(noteServerBoot)が出たところで、まだ次の ▶ を押していなければ 1 回だけ同じ形で出し直す
+    // (2026-10-27 fix7 反証 w2-ui-w2-ui-r72-ui-1: 前は同期が通る場合だけで、落ちている間に OK を押すと、あとの知らせ「…既定に戻って
+    // います」だけが最後に残った。起き直しの 409 のあと同期だけ途切れたときも、知らせが出し直した文を消した)。次に同期が通っても知らせが
+    // 出なければ(起き直していない。Wi-Fi の途切れだけ)覚えた文は捨てる(前と同じ: 断った文がそのまま残る)
     const nBoot = state.drive.bootToasts || 0;
-    try { await pollDrive(); } finally {
+    let synced = false;
+    try { synced = await pollDrive(); } finally {
       const m = String(e.message), bootRefusal = /^管理画面のサーバーが .*に起動し直しました\(/.test(m);
       if (seq === state.drive.startSeq && (bootRefusal || (state.drive.bootToasts || 0) !== nBoot)) {
-        const st = state.drive.st;
-        toast((st && !st.running ? '走行は始まっていません(停止中)。' : '')
-          + (bootRefusal ? m : `${m.replace(/。$/, '')}。${state.drive.bootToast}`), true);
+        toast(startRefusalText(state.drive.st, m, bootRefusal), true);
       }
+      if (!synced && seq === state.drive.startSeq && (state.drive.bootToasts || 0) === nBoot) state.drive.startRefused = { seq, m, bootRefusal };
     }
   }
 });
@@ -1554,8 +1607,10 @@ async function pollDrive() {
   if (ac) clearTimeout(cut);
   if (st && !st.running && state.drive.token) setDriveToken(null);
   if (st) renderDrive(st, since);
+  if (st) retryDriveModels();         // 走行タブを開いたときにモデルの一覧を読めなかったら、2 回目の同期で 1 回読み直す(fix7)
   const running = st ? st.running : (state.drive.st && state.drive.st.running);
   if (running || state.tab === 'drive') driveTimer = setTimeout(pollDrive, running ? 250 : 1000);
+  return !!st;                        // 同期できたか(▶ の catch が使う。fix7)
 }
 // 表示の問い合わせが失敗した(サーバーが落ちた・起き直している・通信の途切れ。2026-10-27 fix5 反証 4 回目 t1): 次に同期する
 // (renderDrive が params を読む)まで、サーバーの設定を読んでいない扱いにする(▶・基準の設定・ブロックは drNotSynced で断る)。
@@ -1578,7 +1633,52 @@ function gaugePos(us) { return `${Math.max(0, Math.min(100, (us - 1000) / 10))}%
 // 前に見た値から変わったら知らせる。起動のたびに既定へ戻る項目(drive.RESET_ON_BOOT: 試験の選択肢は OFF・天井の値・発進の前進の値
 // など)が、朝に入れた値のつもりのまま走らないように(前はスイッチが黙って OFF に戻り、確認の文から行が消えるだけだった)。
 // 表示だけ(送る値・スイッチは変えない)。boot_at の無いサーバー(再起動の前の古い版)では何もしない。画面を読み直すと消える
+// 文はそのときのサーバーの値(st.params)から作る(2026-10-27 fix7 反証 w1-ui-r7-ui-1): 前は値を見ずに、トーストは「…既定に戻って
+// います」、走行タブの文は試験の選択肢を全部「…は OFF」と書き、天井の左・発進の前進の強さは今の値を既定の値のように出した。ライブの
+// タブにいる間に起き直し、走行タブを開く前に curl・別の画面で朝の設定を入れ直すと、ON を OFF と書き、4.2・200 を既定と読ませた
+// (知らせのとおり見張りを「入れ直す」つもりで押すと OFF になる)。今は、起動のたびに既定に戻る項目(drive.RESET_ON_BOOT)が全部既定
+// なら前とまったく同じ文。既定と違う項目があれば、トーストは今の値を挙げて「スイッチと確認の文で読む」、走行タブの文は ON の選択肢を
+// 「ON(起動のあとに入れ直し済み)」、天井の左・発進の前進の強さを「今 X(既定 Y)」と書く。走行タブの文は表示のたびに今の値から作り直す
+// (知らせのあとに入れ直したときも、文がスイッチと同じ)。送る物・断る決まり・スイッチ・確認の文は変えない
+// 既定の値は drive.DEFAULT_PARAMS の RESET_ON_BOOT の分と同じ(tests/test_ui_fix7.py が照らす)。並びは文に出す順
+const BOOT_DEFAULTS = { rec_back_guard: 0, rec_hold_keep: 0, launch_no_kick: 0, ceil_left_mps: 4.1, launch_us: 250.0,
+  speed_ceiling: 0, ceil_all_mps: 4.5, speed_auto: 0, auto_target_mps: 4.27, launch_boost: 0, launch_mps: 2.5, launch_max_s: 1.2,
+  zone_caps: 0, tcp_mode: 0, speed_scale: 1.0 };
+const BOOT_FLAGS = ['rec_back_guard', 'rec_hold_keep', 'launch_no_kick', 'speed_ceiling', 'speed_auto', 'launch_boost', 'zone_caps'];
+const BOOT_UNITS = { ceil_left_mps: ' m/s', launch_us: ' µs', ceil_all_mps: ' m/s', auto_target_mps: ' m/s', launch_mps: ' m/s', launch_max_s: ' 秒' };
+const bootDiffers = (p, k) => p[k] !== undefined && p[k] !== null && !(Math.abs(+p[k] - BOOT_DEFAULTS[k]) < 1e-9);
+const BOOT_NAMES = { ceil_left_mps: '天井の左旋回中', ceil_all_mps: '天井の全体' };     // ほかは試験の選択肢の名前か BENCH_LABEL
+function bootItemText(k, v) {                         // 既定と違う項目の 1 つ(「リカバリーの後ろの見張り ON」「天井の左旋回中 4.2 m/s」)
+  const name = BOOT_NAMES[k] || (OPT_SWITCHES.some((o) => o.key === k) ? optName(k) : (BENCH_LABEL[k] || k));
+  if (BOOT_FLAGS.includes(k) && (+v === 0 || +v === 1)) return `${name} ${+v === 1 ? 'ON' : 'OFF'}`;
+  if (k === 'tcp_mode') return `${name}「${TCP_MODES[v] || v}」`;
+  return `${name} ${v}${BOOT_UNITS[k] || ''}`;
+}
+function bootToastText(hm, p) {
+  const diff = Object.keys(BOOT_DEFAULTS).filter((k) => bootDiffers(p, k)).map((k) => bootItemText(k, p[k]));
+  if (!diff.length) return `管理画面のサーバーが ${hm} に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています`;
+  return `管理画面のサーバーが ${hm} に起動し直しました。起動のあとに入れ直した設定があります(今は ${diff.join('・')})。`
+    + '朝の設定はスイッチと走行開始の確認の文で読む';
+}
+function bootNoteText(hm, p) {
+  const has = OPT_SWITCHES.filter((o) => p[o.key] !== undefined && p[o.key] !== null);
+  const on = has.filter((o) => +p[o.key] === 1).map((o) => o.name), off = has.filter((o) => +p[o.key] === 0).map((o) => o.name);
+  const odd = has.filter((o) => +p[o.key] !== 0 && +p[o.key] !== 1).map((o) => `${o.name}は ${p[o.key]}`);
+  const opts = (on.length ? [`${on.join('・')}は ON(起動のあとに入れ直し済み)`] : []).concat(off.length ? [`${off.join('・')}は OFF`] : [], odd);
+  const val = (k, name, unit) => (bootDiffers(p, k) ? `${name} 今 ${p[k]} ${unit}(既定 ${BOOT_DEFAULTS[k]})` : `${name} ${p[k] ?? '-'} ${unit}`);
+  const shown = new Set(OPT_SWITCHES.map((o) => o.key).concat(['ceil_left_mps', 'launch_us']));
+  const other = Object.keys(BOOT_DEFAULTS).filter((k) => !shown.has(k) && bootDiffers(p, k)).map((k) => bootItemText(k, p[k]));
+  return `管理画面のサーバーが ${hm} に起動し直しました。起動のたびに既定に戻るもの: `
+    + (opts.length ? `${opts.join('、')}、` : '')
+    + `${val('ceil_left_mps', '天井の左旋回中', 'm/s')}、${val('launch_us', '発進の前進の強さ', 'µs')} など`
+    + (other.length ? `(ほかに今は既定と違うもの: ${other.join('・')})` : '') + '。'
+    + '朝に入れた値は、止まっているときに入れ直し、スイッチと走行開始の確認の文で読む(手順書 7 章)。画面を読み直すとこの文は消えます';
+}
 function noteServerBoot(st) {
+  // ▶ の catch の同期が通らなかったときに覚えた断りの文(2026-10-27 fix7 反証 w2-ui-w2-ui-r72-ui-1)。同期が通ったらここで捨て、
+  // 起き直しの知らせを出したときだけ、まだ次の ▶ を押していなければ知らせのあとに出し直す(同期が通る場合の ▶ の catch と同じ文)
+  const rs = state.drive.startRefused;
+  state.drive.startRefused = null;
   const b = st && st.boot_at;
   if (b === undefined || b === null) return;
   const prev = state.drive.bootAt;
@@ -1586,15 +1686,12 @@ function noteServerBoot(st) {
   if (prev === undefined || prev === null || prev === b) return;
   const d = new Date(+b * 1000), p = st.params || {};
   const hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  const opts = OPT_SWITCHES.filter((o) => p[o.key] !== undefined).map((o) => o.name);
-  state.drive.bootNote = `管理画面のサーバーが ${hm} に起動し直しました。起動のたびに既定に戻るもの: `
-    + (opts.length ? `${opts.join('・')}は OFF、` : '')
-    + `天井の左旋回中 ${p.ceil_left_mps ?? '-'} m/s、発進の前進の強さ ${p.launch_us ?? '-'} µs など。`
-    + '朝に入れた値は、止まっているときに入れ直し、スイッチと走行開始の確認の文で読む(手順書 7 章)。画面を読み直すとこの文は消えます';
-  const msg = `管理画面のサーバーが ${hm} に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています`;
-  state.drive.bootToast = msg;                        // 走行開始の断りの文を出し直すときに使う(▶ の catch。2026-10-27 fix6)
+  state.drive.bootHm = hm;                            // 走行タブの文(bootNoteText)は renderDrive が表示のたびに今の st.params で作る
+  const msg = bootToastText(hm, p);
+  state.drive.bootToast = msg;                        // 走行開始の断りの文を出し直すときに使う(▶ の catch。2026-10-27 fix6)。トーストと同じ文
   state.drive.bootToasts = (state.drive.bootToasts || 0) + 1;
   toast(msg, true);
+  if (rs && rs.seq === state.drive.startSeq) toast(startRefusalText(st, rs.m, rs.bootRefusal), true);
 }
 function renderDrive(st, since) {
   const prev = state.drive.st;
@@ -1619,7 +1716,7 @@ function renderDrive(st, since) {
     + (st.recording_note ? `<div class="muted">${esc(st.recording_note)}</div>` : '')
     + (st.running && st.recording ? '<div><span class="badge warn">● 収集中</span></div>' : '')
     + (st.running && !st.controller ? '<div class="warn-text">別の画面(またはこの画面の以前の表示)が走行を操作しています。この画面を閉じても走行は止まりません。止めるときは停止ボタンを押してください。</div>' : '')
-    + (state.drive.bootNote ? `<div class="warn-text">${esc(state.drive.bootNote)}</div>` : '');
+    + (state.drive.bootHm ? `<div class="warn-text">${esc(bootNoteText(state.drive.bootHm, st.params || {}))}</div>` : '');
   const now = st.running ? st.now : null;
   const who = $('#dr-who');
   if (now) {
@@ -2020,7 +2117,8 @@ function benchApply(block, where) {
   if (block && block.mode_id != null) f.mode_id = +block.mode_id;
   const run = block ? block.run : f.run;
   const m = state.drive.models.find((x) => x.name === run);
-  if (!m) { toast(`モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return false; }
+  // 一覧を読めていない(走行タブを開いたときの一覧の GET が失敗・遅れた)ときは「エンジンが必要」と言わない(fix7 w2-ui-w2-ui-r72-ui-2)
+  if (!m) { toast(drModelsMissing() ? DR_MODELS_MISS : `モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return false; }
   if (m.drivable === false) { toast(`このモデルでは走行できません: ${m.why_not || ''}`, true); return false; }
   // ほかの日のブロック(カードのボタン。今日 = サーバーの日付のブロックではない)は確かめてから入れる(r3-r3-state-1。選ぶ欄は今日だけ)
   const bday = block && where && state.bench.data ? ((state.bench.data.days || [])[where.day] || {}).date : null;

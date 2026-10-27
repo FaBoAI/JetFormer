@@ -19,6 +19,10 @@ node の vm で(tests/fixtures/app_sim_fix6_r2.js = app_sim_fix6.js + 一覧だ�
         -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_ui_fix6_r2.py
 
 JF_UI6R2_APP=<app.js の写し> を付けると、その写しを「今の版」として流す(わざと壊す台本 experiments/20261026_fix/fix6/ui_r2/mut/ が使う)。
+そのあと直す 7-1 回目(w1-ui-r7-ui-1。tests/test_ui_fix7.py)が app.js を直した。動きの試験は今の app.js で流す(7-1 回目の直しは起き直しの
+知らせの文だけで、既定に戻ったときの文は前と同じ)。「違いは 5 か所だけ」は 6-2 回目のあとの版の写し(tests/fixtures/fix7_ui_before/)で見る。
+さらに直す 7-2 回目(w2-ui-w2-ui-r72-ui-1・-2。tests/test_ui_fix7_r2.py)が app.js を直した。一覧を読めなかったあとは輪の 2 回目の同期で
+一覧を 1 回読み直し、読めていない間の ▶ の文が変わる(test_first_open_with_models_fail の 1 行だけ合わせた。ほかは今の app.js で前と同じに通る)。
 """
 import difflib
 import hashlib
@@ -41,6 +45,9 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / 'jetformer' / 'web' / 'static'
 APP = Path(os.environ.get('JF_UI6R2_APP') or STATIC / 'app.js')
 BEFORE = ROOT / 'tests' / 'fixtures' / 'fix6_ui_r2_before'
+# この組(6-2 回目)のあとの版の写し(908934c6…)。そのあと 7-1 回目(w1-ui-r7-ui-1。tests/test_ui_fix7.py)が app.js を直したので、
+# 「違いは 5 か所だけ」はこの写しで見る(今の app.js との違いは test_ui_fix7.py が見る)。JF_UI6R2_APP を付けたときはその写し
+R2_AFTER = ROOT / 'tests' / 'fixtures' / 'fix7_ui_before'
 SIM = ROOT / 'tests' / 'fixtures' / 'app_sim_fix6_r2.js'
 NODE = shutil.which('node')
 needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
@@ -60,14 +67,18 @@ def _sha(p):
 
 
 def test_before_copy_and_only_the_loop_places_changed():
-    """直す前の写しは 6-1 回目のあとの版(e41c2f3e…)。今の app.js との違いは api の打ち切りの印・DR_IDLE_WAIT_MS と drIdle・
-    loadDrive の一覧の GET の失敗と期限・pollDrive の打ち切りの 4 か所だけ。走行開始の body・版(9)・ほかの送信は変えていない。
-    server.py・index.html・runs_1103.py は変えていない"""
+    """直す前の写しは 6-1 回目のあとの版(e41c2f3e…)。この組のあとの版(908934c6…。写し tests/fixtures/fix7_ui_before/。7-1 回目の
+    直す前)との違いは api の打ち切りの印・DR_IDLE_WAIT_MS と drIdle・loadDrive の一覧の GET の失敗と期限・pollDrive の打ち切りの
+    4 か所だけ。走行開始の body・版(9)・ほかの送信は変えていない。server.py・index.html・runs_1103.py は変えていない"""
     sums = dict(reversed(x.split()) for x in (BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
     assert set(sums) == {'app.js'} and _sha(BEFORE / 'app.js') == sums['app.js']
     assert sums['app.js'].startswith('e41c2f3ea796')
+    after = APP if os.environ.get('JF_UI6R2_APP') else R2_AFTER / 'app.js'     # 7-1 回目の直す前の写し(fix7)
+    if not os.environ.get('JF_UI6R2_APP'):
+        r2 = dict(reversed(x.split()) for x in (R2_AFTER / 'SHA256SUMS').read_text().splitlines() if x.strip())
+        assert r2 == {'app.js': _sha(after)} and r2['app.js'].startswith('908934c6297b')
     a = (BEFORE / 'app.js').read_text(encoding='utf-8').splitlines()
-    b = APP.read_text(encoding='utf-8').splitlines()
+    b = after.read_text(encoding='utf-8').splitlines()
     ops = [o for o in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes() if o[0] != 'equal']
     removed = [a[i] for o in ops for i in range(o[1], o[2])]
     added = [b[j] for o in ops for j in range(o[3], o[4])]
@@ -80,7 +91,7 @@ def test_before_copy_and_only_the_loop_places_changed():
     assert [x.strip() for x in code if 'await api(' in x] == [
         "try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { clearTimeout(late); toast(e.message, true); lost(); return; }",
         "st = await api('GET', '/api/drive/status' + tok, undefined, ac ? ac.signal : undefined);"]
-    js = APP.read_text(encoding='utf-8')
+    js = after.read_text(encoding='utf-8')
     assert re.findall(r'^const DR_IDLE_WAIT_MS = (\d+);', js, re.M) == [str(WAIT)]
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
@@ -332,7 +343,9 @@ def test_running_page_polls_exactly_as_before(tmp_path, cands, name):
 @needs_node
 def test_first_open_with_models_fail(tmp_path, cands):
     """走行タブを初めて開いたときに一覧の GET が失敗: 直す前は輪が始まらず「読み込んでいます」のまま(タブを替えるまで)。今の版は
-    status を読み(1 秒ごと)、モデルが無いので ▶ は押せない(タブを替えると一覧を読み直す。前と同じ)"""
+    status を読み(1 秒ごと)、モデルが無いので ▶ は押せない(タブを替えると一覧を読み直す。前と同じ)。
+    そのあと直す 7-2 回目(w2-ui-w2-ui-r72-ui-2。tests/test_ui_fix7_r2.py)からは、一覧を読めていない間に ▶ を押したときの文が
+    「モデルを選んでください」ではなく「モデルの一覧を読めていません…」(JF_UI6R2_APP で 6-2 回目のあとの版の写しを流すときは前の文)"""
     c, di = cands
     steps = [['models_fail', True], ['tab', 'drive'], ['models_fail', False], ['eval', 'driveTimer !== null'],
              ['eval', 'state.drive.paramsLoaded'], ['el', '#btn-dr-start', 'disabled'], ['start'], ['el', '#toast', 'text'],
@@ -341,7 +354,8 @@ def test_first_open_with_models_fail(tmp_path, cands):
     (new, tn), (old, to) = both(tmp_path, c, steps, no_init=True)
     n, o = tagged(new), tagged(old)
     assert n[:3] == [True, True, True] and o[:2] == [False, False]
-    assert n[3] == o[3] == 'モデルを選んでください'
+    from test_ui_fix7_r2 import MISS                    # 7-2 回目の文(読み込みの順の都合でここで)
+    assert o[3] == 'モデルを選んでください' and n[3] == ('モデルを選んでください' if os.environ.get('JF_UI6R2_APP') else MISS)
     assert n[4:6] == o[4:6] == [True, True] and n[6] == o[6] and n[6]
     assert all(x['sent'] is None for x in starts(new) + starts(old))
 

@@ -169,8 +169,9 @@ def test_no_records_and_usage_unchanged(tmp_path):
 
 # ------------------------------------------------------------------ 2026-10-26 fix3(係 tools)
 def _head_script(tmp_path):
-    """直す前(commit 81a4d34 = HEAD)の台本。JF_REPORTS を読まず、出力先が本物の ~/jetformer_reports に決め打ち"""
-    r = subprocess.run(['git', '-C', str(ROOT), 'show', 'HEAD:tools/bench_nightly.sh'], capture_output=True, text=True)
+    """直す前(commit 81a4d34。書いたときの HEAD)の台本。JF_REPORTS を読まず、出力先が本物の ~/jetformer_reports に決め打ち
+    (10/28 main session: HEAD のままだと commit fce5d47 で直したあとの台本を読んで落ちたので、81a4d34 に固定した)"""
+    r = subprocess.run(['git', '-C', str(ROOT), 'show', '81a4d34:tools/bench_nightly.sh'], capture_output=True, text=True)
     if r.returncode != 0 or REAL_REPORTS not in r.stdout:
         pytest.skip('HEAD の台本が読めない')
     p = tmp_path / 'head_bench_nightly.sh'

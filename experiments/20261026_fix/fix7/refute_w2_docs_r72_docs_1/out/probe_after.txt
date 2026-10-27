@@ -1,0 +1,23 @@
+== B_resume_3.5m {'t_stall': 10.71, 't_stop': 11.71, 't_flip': 13.71, 't_resume': 14.71, 'stop_before_r1_m': 3.5}
+  ⑤ ig       on n=4 restarts=0 on median 2.903 off median 3.028 → all_ok False {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+     3-8 row {'t_ai': 1.0, 'start_no': 1, 'to_r1_s': 2.973, 'dist_m': 5.03, 'launch_state': 'on', 'start_loc': 'HS', 'collisions_first_lap': [], 'hits_before': 0, 'after_abort': None}
+     3-8 row {'t_ai': 14.733, 'start_no': 2, 'to_r1_s': 2.04, 'dist_m': 3.53, 'launch_state': 'on', 'start_loc': 'HS', 'collisions_first_lap': [], 'hits_before': 0, 'after_abort': {'abort_s': 11.533, 'ai_end_s': 13.7, 'human_s': 1.03}}
+  ⑤ ig_first on n=4 restarts=0 on median 2.903 off median 3.028 → all_ok False {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+     3-8 row {'t_ai': 1.0, 'start_no': 1, 'to_r1_s': 2.973, 'dist_m': 5.03, 'launch_state': 'on', 'start_loc': 'HS', 'collisions_first_lap': [], 'hits_before': 0, 'after_abort': None}
+     3-8 row {'t_ai': 14.733, 'start_no': 2, 'to_r1_s': 2.04, 'dist_m': 3.53, 'launch_state': 'on', 'start_loc': 'HS', 'collisions_first_lap': [], 'hits_before': 0, 'after_abort': {'abort_s': 11.533, 'ai_end_s': 13.7, 'human_s': 1.03}}
+  ③ 3-8 {'start_no': 1, 't_ai': 1.0, 'valid': False, 'why': '3 周目の終わりの前に人側・フレームの途切れ 0.83 秒', 'counted': False, 'coll_before': 0, 'from_move_s': 30.922, 'd_pre_m': 5.02, 'start_frac_of_lap': 0.721, 'note': None, 'after_abort': None}
+  ③ 3-8 {'start_no': 2, 't_ai': 14.733, 'valid': True, 'why': None, 'counted': False, 'coll_before': 0, 'from_move_s': 27.122, 'd_pre_m': 3.52, 'start_frac_of_lap': 0.804, 'note': None, 'after_abort': {'abort_s': 11.533, 'ai_end_s': 13.7, 'human_s': 1.03}}
+  ⑤ 標準出力: 20261103-133500 No.8   B          g0.90 kick=0(  0fr) mv0.187  m80=0.0    toR1=2.04   d=3.53  loss=0.29   parts={'dead_s': 0.167, 'straight_s': 0.123, 'lh_to_r1_s': -0.0} fly=3/same_log HS 中止のあとの走り直し(中止 11.533 秒・人側 1.03 秒。比べに入れない)
+  ⑤ 標準出力:   off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — 
+  ⑤ 標準出力:   on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた
+  ⑤ 標準出力:   ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  ⑤ 標準出力:   リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中止で止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べに入れない。ON の組にも OFF の組にも入れない。手順書 7 章): 20261103-133500@14.73(on・中止 11.533 秒・人側 1.03 秒・起点まで 2.040 秒)
+  ③ md: | 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **30.92** | 31.26 | 9.12・12.80・9.00 | — | 0(0) | 0.50 秒・速さに届いた | 3 周目の終わりの前に人側・フレームの途切れ 0.83 秒 |
+  ③ md: | 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 14.73 | 0.16 | 1.88 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・数えない(リカバリー中止のあとの走り直し。中止 11.53 秒・人側 1.0 秒)・2 回目の発進 |
+  ③ md: | 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1 | 27.00 | 9.00・9.00・9.00 | きれい | 27.00 | 27.00 | 0 | 1 | 3 | 9.00 | 9.00 | 0(0) |
+  ③ md: - リカバリー中止のあとの走り直し = 同じ本の中で、一つ前の AI の区間がリカバリー中止(中立で人を待つ)で終わり、CH3 を人側 → AI 側にした発進。中止で止まった所(コースの途中)から出たかもしれない(手で HS に置き直しても車輪の距離は 0 なので、記録からは分からない)ので、止まってから 3 周を数えない(最速・quick_eval_by_params の 1 章・2 章に入れない。⑤ collect.py の ON/OFF の比べにも入れない)。その 3 周の衝突は 1 章・2 章の衝突に入る。
+  ④ md: | 8 | 20261103-133500 | EXP | — | runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す | 43 | 5 | 3 | 9.00 | 9.00 | 0(0) | — | 4000 | 2 | 27.00(27.00) | — | — | 数えない発進 1(リカバリー中止のあとの走り直し) |
+  ④ md: - リカバリー中止のあとの走り直し(一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中止で止まった所から出たかもしれない)は、止まってから 3 周(2 章の「数えない」に入る)と「動く → A1 中央値」に入れていない: runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す(20261103-133500@14.73)。
+  ④ md: | 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 14.73 | 0.16 | 1.88 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・数えない(リカバリー中止のあとの走り直し。中止 11.53 秒・人側 1.0 秒)・2 回目の発進 |
+  ④ {'text': 'runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す', 'runs': 4, 'standing_n': 0, 'standing_best_s': None, 'standing_le25': 0, 'standing_clean_le25': 0, 'standing_clean_best_s': None, 'standing_list_s': [], 'standing_excluded_n': 0, 'launch_to_r1_median_s': 2.753, 'launch_to_r1_abort_excluded': None}
+  ④ {'text': 'runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す', 'runs': 4, 'standing_n': 0, 'standing_best_s': None, 'standing_le25': 0, 'standing_clean_le25': 0, 'standing_clean_best_s': None, 'standing_list_s': [], 'standing_excluded_n': 1, 'launch_to_r1_median_s': 2.633, 'launch_to_r1_abort_excluded': ['20261103-133500@14.73']}

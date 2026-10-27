@@ -1,0 +1,1094 @@
+{
+ "A_no_resume": {
+  "times_3_8": {
+   "t_stall": 12.21,
+   "t_stop": 13.21,
+   "t_flip": 15.21,
+   "t_resume": 16.21,
+   "stop_before_r1_m": 0.5
+  },
+  "collect_ig": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周に届かない(続いた起点 1・線 0 回)",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": null,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": null,
+    "note": null,
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **—** | — | — | — | — | 0.50 秒・速さに届いた | 3 周に届かない(続いた起点 1・線 0 回) |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 0 | — | — | — | — | — | 0 | 0 | 0 | — | — | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   []
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ },
+ "B_resume_0.5m": {
+  "times_3_8": {
+   "t_stall": 12.21,
+   "t_stop": 13.21,
+   "t_flip": 15.21,
+   "t_resume": 16.21,
+   "stop_before_r1_m": 0.5
+  },
+  "collect_ig": {
+   "on_n": 5,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00",
+    "20261103-133500@16.23"
+   ],
+   "on_to_r1_median": 2.943,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 1,
+   "compare": {
+    "d_to_r1_s": -0.085,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false,
+    "lh_src": "launch_loc"
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 16.233,
+     "start_no": 2,
+     "to_r1_s": 9.54,
+     "dist_m": 18.53,
+     "launch_state": "on",
+     "start_loc": null,
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000(発進の場所で 2.000) m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=5(2 回目以降の発進 1) 起点まで 2.943 失う 0.403 動く 0.230 空転max 1.019 LH 2.000(発進の場所で 2.000) m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.085 秒(≤ −0.15)・失う -0.125 秒・LH 0.000(発進のフレームの場所で) m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 16.233,
+     "start_no": 2,
+     "to_r1_s": 9.54,
+     "dist_m": 18.53,
+     "launch_state": "on",
+     "start_loc": null,
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周に届かない(続いた起点 1・線 0 回)",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": null,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": 0.721,
+    "note": null,
+    "after_abort": null
+   },
+   {
+    "start_no": 2,
+    "t_ai": 16.233,
+    "valid": true,
+    "why": null,
+    "counted": true,
+    "coll_before": 0,
+    "from_move_s": 27.39,
+    "d_pre_m": 18.52,
+    "start_frac_of_lap": -0.029,
+    "note": "確かめる: A4 が無い(線のあと R1 の前で人側)。3 周目の終わりは距離の見積もりで −0.5〜+0.1 秒ずれうる(速く出がち)→ ストップウォッチ・動画で読む",
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **—** | — | — | — | — | 0.50 秒・速さに届いた | 3 周に届かない(続いた起点 1・線 0 回) |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 16.23 | 0.16 | 9.38 | **27.39** | 27.55 | 9.12・9.00・9.27 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok(A3+dist)・2 回目の発進・確かめる: A4 が無い(線のあと R1 の前で人側)。3 周目の終わりは距離の見積もりで −0.5〜+0.1 秒ずれうる(速く出がち)→ ストップウォッチ・動画で読む |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 0 | — | — | — | — | — | 0 | 0 | 2 | 9.00 | 9.00 | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   [
+    "確かめる(止まってから 3 周 27.39)"
+   ]
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ },
+ "B_resume_1.5m": {
+  "times_3_8": {
+   "t_stall": 11.71,
+   "t_stop": 12.71,
+   "t_flip": 14.71,
+   "t_resume": 15.71,
+   "stop_before_r1_m": 1.5
+  },
+  "collect_ig": {
+   "on_n": 5,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00",
+    "20261103-133500@15.73"
+   ],
+   "on_to_r1_median": 2.863,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 1,
+   "compare": {
+    "d_to_r1_s": -0.165,
+    "d_loss_s": -0.165,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true,
+     "slip_all_measured": false
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 15.733,
+     "start_no": 2,
+     "to_r1_s": 1.04,
+     "dist_m": 1.53,
+     "launch_state": "on",
+     "start_loc": "LH",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=5(2 回目以降の発進 1) 起点まで 2.863 失う 0.363 動く 0.230 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 15.733,
+     "start_no": 2,
+     "to_r1_s": 1.04,
+     "dist_m": 1.53,
+     "launch_state": "on",
+     "start_loc": "LH",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周目の終わりの前に人側・フレームの途切れ 0.83 秒",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": 30.921,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": 0.721,
+    "note": null,
+    "after_abort": null
+   },
+   {
+    "start_no": 2,
+    "t_ai": 15.733,
+    "valid": true,
+    "why": null,
+    "counted": true,
+    "coll_before": 0,
+    "from_move_s": 27.121,
+    "d_pre_m": 1.52,
+    "start_frac_of_lap": 0.915,
+    "note": null,
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **30.92** | 31.26 | 9.12・12.80・9.00 | — | 0(0) | 0.50 秒・速さに届いた | 3 周目の終わりの前に人側・フレームの途切れ 0.83 秒 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 15.73 | 0.16 | 0.88 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・2 回目の発進 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1 | 27.00 | 9.00・9.00・9.00 | きれい | 27.00 | 27.00 | 0 | 1 | 3 | 9.00 | 9.00 | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 1,
+    "standing_best_s": 27.121,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": 27.121,
+    "standing_list_s": [
+     27.121
+    ],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   []
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ },
+ "B_resume_2.5m": {
+  "times_3_8": {
+   "t_stall": 11.21,
+   "t_stop": 12.21,
+   "t_flip": 14.21,
+   "t_resume": 15.21,
+   "stop_before_r1_m": 2.5
+  },
+  "collect_ig": {
+   "on_n": 5,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00",
+    "20261103-133500@15.23"
+   ],
+   "on_to_r1_median": 2.863,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 1,
+   "compare": {
+    "d_to_r1_s": -0.165,
+    "d_loss_s": -0.165,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true,
+     "slip_all_measured": false
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 15.233,
+     "start_no": 2,
+     "to_r1_s": 1.54,
+     "dist_m": 2.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=5(2 回目以降の発進 1) 起点まで 2.863 失う 0.363 動く 0.230 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 15.233,
+     "start_no": 2,
+     "to_r1_s": 1.54,
+     "dist_m": 2.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周目の終わりの前に人側・フレームの途切れ 0.83 秒",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": 30.922,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": 0.721,
+    "note": null,
+    "after_abort": null
+   },
+   {
+    "start_no": 2,
+    "t_ai": 15.233,
+    "valid": true,
+    "why": null,
+    "counted": true,
+    "coll_before": 0,
+    "from_move_s": 27.122,
+    "d_pre_m": 2.52,
+    "start_frac_of_lap": 0.86,
+    "note": null,
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **30.92** | 31.26 | 9.12・12.80・9.00 | — | 0(0) | 0.50 秒・速さに届いた | 3 周目の終わりの前に人側・フレームの途切れ 0.83 秒 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 15.23 | 0.16 | 1.38 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・2 回目の発進 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1 | 27.00 | 9.00・9.00・9.00 | きれい | 27.00 | 27.00 | 0 | 1 | 3 | 9.00 | 9.00 | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 1,
+    "standing_best_s": 27.122,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": 27.122,
+    "standing_list_s": [
+     27.122
+    ],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   []
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ },
+ "B_resume_3.5m": {
+  "times_3_8": {
+   "t_stall": 10.71,
+   "t_stop": 11.71,
+   "t_flip": 13.71,
+   "t_resume": 14.71,
+   "stop_before_r1_m": 3.5
+  },
+  "collect_ig": {
+   "on_n": 5,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00",
+    "20261103-133500@14.73"
+   ],
+   "on_to_r1_median": 2.863,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 1,
+   "compare": {
+    "d_to_r1_s": -0.165,
+    "d_loss_s": -0.165,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": true
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 14.733,
+     "start_no": 2,
+     "to_r1_s": 2.04,
+     "dist_m": 3.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=5(2 回目以降の発進 1) 起点まで 2.863 失う 0.363 動く 0.230 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 14.733,
+     "start_no": 2,
+     "to_r1_s": 2.04,
+     "dist_m": 3.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周目の終わりの前に人側・フレームの途切れ 0.83 秒",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": 30.922,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": 0.721,
+    "note": null,
+    "after_abort": null
+   },
+   {
+    "start_no": 2,
+    "t_ai": 14.733,
+    "valid": true,
+    "why": null,
+    "counted": true,
+    "coll_before": 0,
+    "from_move_s": 27.122,
+    "d_pre_m": 3.52,
+    "start_frac_of_lap": 0.804,
+    "note": null,
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **30.92** | 31.26 | 9.12・12.80・9.00 | — | 0(0) | 0.50 秒・速さに届いた | 3 周目の終わりの前に人側・フレームの途切れ 0.83 秒 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 14.73 | 0.16 | 1.88 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・2 回目の発進 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1 | 27.00 | 9.00・9.00・9.00 | きれい | 27.00 | 27.00 | 0 | 1 | 3 | 9.00 | 9.00 | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 1,
+    "standing_best_s": 27.122,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": 27.122,
+    "standing_list_s": [
+     27.122
+    ],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   []
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ },
+ "B_resume_4.5m": {
+  "times_3_8": {
+   "t_stall": 10.21,
+   "t_stop": 11.21,
+   "t_flip": 13.21,
+   "t_resume": 14.21,
+   "stop_before_r1_m": 4.5
+  },
+  "collect_ig": {
+   "on_n": 5,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00",
+    "20261103-133500@14.23"
+   ],
+   "on_to_r1_median": 2.863,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 1,
+   "compare": {
+    "d_to_r1_s": -0.165,
+    "d_loss_s": -0.165,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": true
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 14.233,
+     "start_no": 2,
+     "to_r1_s": 2.54,
+     "dist_m": 4.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=5(2 回目以降の発進 1) 起点まで 2.863 失う 0.363 動く 0.230 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "collect_ig_first": {
+   "on_n": 4,
+   "on_logs": [
+    "20261103-130500@1.00",
+    "20261103-131500@1.00",
+    "20261103-132500@1.00",
+    "20261103-133500@1.00"
+   ],
+   "on_to_r1_median": 2.903,
+   "off_to_r1_median": 3.028,
+   "restarts_on": 0,
+   "compare": {
+    "d_to_r1_s": -0.125,
+    "d_loss_s": -0.125,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": false,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true
+    },
+    "all_ok": false
+   },
+   "abort_resume_excluded": null,
+   "abort_resume_on_collisions": null,
+   "rows_3_8": [
+    {
+     "t_ai": 1.0,
+     "start_no": 1,
+     "to_r1_s": 2.973,
+     "dist_m": 5.03,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    },
+    {
+     "t_ai": 14.233,
+     "start_no": 2,
+     "to_r1_s": 2.54,
+     "dist_m": 4.53,
+     "launch_state": "on",
+     "start_loc": "HS",
+     "collisions_first_lap": [],
+     "hits_before": 0,
+     "after_abort": null
+    }
+   ],
+   "lines": [
+    "  off             n=4(2 回目以降の発進 0) 起点まで 3.028 失う 0.528 動く 0.275 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — ",
+    "  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた",
+    "  ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "standing_3_8": [
+   {
+    "start_no": 1,
+    "t_ai": 1.0,
+    "valid": false,
+    "why": "3 周目の終わりの前に人側・フレームの途切れ 0.83 秒",
+    "counted": false,
+    "coll_before": 0,
+    "from_move_s": 30.922,
+    "d_pre_m": 5.02,
+    "start_frac_of_lap": 0.721,
+    "note": null,
+    "after_abort": null
+   },
+   {
+    "start_no": 2,
+    "t_ai": 14.233,
+    "valid": true,
+    "why": null,
+    "counted": true,
+    "coll_before": 0,
+    "from_move_s": 27.122,
+    "d_pre_m": 4.52,
+    "start_frac_of_lap": 0.749,
+    "note": null,
+    "after_abort": null
+   }
+  ],
+  "standing_md_3_8": [
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1.00 | 0.34 | 2.63 | **30.92** | 31.26 | 9.16・12.76・9.00 | — | 0(0) | 0.50 秒・速さに届いた | 3 周目の終わりの前に人側・フレームの途切れ 0.83 秒 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 14.23 | 0.16 | 2.38 | **27.12** | 27.28 | 9.12・9.00・9.00 | 27.28 | 0(0) | 0.50 秒・速さに届いた | ok・2 回目の発進 |",
+   "| 8 | 20261103-133500 | runB・0.90・発進 250・後ろの見張り・リカバリーを残す | 1 | 27.00 | 9.00・9.00・9.00 | きれい | 27.00 | 27.00 | 0 | 1 | 3 | 9.00 | 9.00 | 0(0) |"
+  ],
+  "by_params_groups": [
+   {
+    "text": "runB・天井 OFF・発進 OFF・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 0,
+    "standing_best_s": null,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": null,
+    "standing_list_s": [],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.753,
+    "launch_to_r1_abort_excluded": null
+   },
+   {
+    "text": "runB・天井 OFF・発進 250・後ろの見張り・リカバリーを残す",
+    "runs": 4,
+    "standing_n": 1,
+    "standing_best_s": 27.122,
+    "standing_le25": 0,
+    "standing_clean_le25": 0,
+    "standing_clean_best_s": 27.122,
+    "standing_list_s": [
+     27.122
+    ],
+    "standing_excluded_n": 0,
+    "launch_to_r1_median_s": 2.633,
+    "launch_to_r1_abort_excluded": null
+   }
+  ],
+  "by_params_flags_3_8": [
+   []
+  ],
+  "by_params_md_abort": [],
+  "standing_md_note": []
+ }
+}

@@ -1,0 +1,210 @@
+{
+ "r61 rev d0=0 L=0.55": {
+  "now_on": {
+   "back": 0.891,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.6,
+   "dead": 0.34,
+   "retry": false,
+   "guards": []
+  },
+  "now_off": {
+   "back": 1.272,
+   "push": 0,
+   "front": [
+    [
+     3.54,
+     "front",
+     1.21,
+     5.03
+    ]
+   ],
+   "rear": [],
+   "t_on": 2.6,
+   "dead": 0.68,
+   "retry": false,
+   "guards": []
+  },
+  "before_on": {
+   "back": 1.606,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.6,
+   "dead": 0.34,
+   "retry": false,
+   "guards": []
+  },
+  "r1_on": {
+   "back": 0.891,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.6,
+   "dead": 0.34,
+   "retry": false,
+   "guards": []
+  },
+  "nostall_on": 1.272
+ },
+ "r61 brake d0=0 L=0.60": {
+  "now_on": {
+   "back": 0.79,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.73,
+   "dead": 0.16,
+   "retry": false,
+   "guards": [
+    [
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ]
+  },
+  "now_off": {
+   "back": 0.277,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.73,
+   "dead": 0.08,
+   "retry": false,
+   "guards": []
+  },
+  "before_on": {
+   "back": 1.586,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.73,
+   "dead": 0.16,
+   "retry": false,
+   "guards": [
+    [
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ]
+  },
+  "r1_on": {
+   "back": 0.74,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.73,
+   "dead": 0.08,
+   "retry": false,
+   "guards": [
+    [
+     "back_hold",
+     "brake",
+     0.17
+    ],
+    [
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ]
+  },
+  "nostall_on": 1.133
+ },
+ "r62-1 rev A=(2.11,2.26) B=(2.26,2.45)": {
+  "now_on": {
+   "back": 0.959,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.77,
+   "dead": 0.34,
+   "retry": false,
+   "guards": []
+  },
+  "now_off": {
+   "back": 0.0,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": null,
+   "dead": 0.1,
+   "retry": false,
+   "guards": []
+  },
+  "before_on": {
+   "back": 1.272,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 2.77,
+   "dead": 0.34,
+   "retry": false,
+   "guards": []
+  },
+  "r1_on": {
+   "back": 0.0,
+   "push": 0.5,
+   "front": [],
+   "rear": [],
+   "t_on": 6.53,
+   "dead": 1.42,
+   "retry": false,
+   "guards": [
+    [
+     "back_hold",
+     "brake",
+     0.07
+    ]
+   ]
+  },
+  "nostall_on": 1.272
+ },
+ "r62-2 rev neu0.2 B=(2.52,2.72)": {
+  "now_on": {
+   "back": 1.383,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 3.53,
+   "dead": 0.88,
+   "retry": true,
+   "guards": []
+  },
+  "now_off": {
+   "back": 0.0,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": null,
+   "dead": 0.43,
+   "retry": false,
+   "guards": []
+  },
+  "before_on": {
+   "back": 1.383,
+   "push": 0,
+   "front": [],
+   "rear": [],
+   "t_on": 3.53,
+   "dead": 0.88,
+   "retry": true,
+   "guards": []
+  },
+  "r1_on": {
+   "back": 0.0,
+   "push": 0.5,
+   "front": [],
+   "rear": [],
+   "t_on": null,
+   "dead": 1.46,
+   "retry": false,
+   "guards": []
+  },
+  "nostall_on": 1.383
+ }
+}

@@ -1,0 +1,1281 @@
+{
+ "sha_now": {
+  "drive.py": "6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f",
+  "assist.py": "6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f"
+ },
+ "on": {
+  "back_m": 0.0,
+  "escape_push_s": 0.5,
+  "rev_side_written_s": 1.34,
+  "t_brake": 2.52,
+  "t_escape": 3.89,
+  "guard_events": [
+   [
+    "back_early",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 6.73,
+  "front_push_s": 3.63
+ },
+ "off": {
+  "back_m": 1.272,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.9,
+  "t_brake": 2.52,
+  "t_escape": 4.99,
+  "guard_events": [],
+  "fake_esc_first_reverse_t": 4.27,
+  "front_push_s": 2.7
+ },
+ "f7b_on": {
+  "back_m": 0.0,
+  "escape_push_s": 0.5,
+  "rev_side_written_s": 1.34,
+  "t_brake": 2.52,
+  "t_escape": 3.89,
+  "guard_events": [
+   [
+    "back_early",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 6.73,
+  "front_push_s": 3.63
+ },
+ "on_nohold": {
+  "back_m": 1.133,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.77,
+  "t_brake": 2.52,
+  "t_escape": 3.72,
+  "guard_events": [
+   [
+    "back_no_esc",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 3.03,
+  "front_push_s": 2.37
+ },
+ "on_one": {
+  "back_m": 1.133,
+  "escape_push_s": 0,
+  "rev_side_written_s": 1.0,
+  "t_brake": 2.52,
+  "t_escape": 3.99,
+  "guard_events": [
+   [
+    "back_early",
+    "brake"
+   ],
+   [
+    "early_none",
+    "reverse"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 3.3,
+  "front_push_s": 2.39
+ },
+ "on_noglitch": {
+  "back_m": 1.418,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.83,
+  "t_brake": 2.52,
+  "t_escape": 3.82,
+  "guard_events": [],
+  "fake_esc_first_reverse_t": 3.07,
+  "front_push_s": 2.34
+ },
+ "off_noglitch": {
+  "back_m": 0.0,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.1,
+  "t_brake": 2.52,
+  "t_escape": null,
+  "guard_events": [],
+  "fake_esc_first_reverse_t": null,
+  "front_push_s": 7.21
+ },
+ "on_longdrop": {
+  "back_m": 1.133,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.6,
+  "t_brake": 2.52,
+  "t_escape": 3.52,
+  "guard_events": [
+   [
+    "back_no_esc",
+    "brake"
+   ],
+   [
+    "back_early",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 2.83,
+  "front_push_s": 2.57
+ },
+ "on_ready008": {
+  "back_m": 1.418,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.83,
+  "t_brake": 2.52,
+  "t_escape": 3.82,
+  "guard_events": [
+   [
+    "back_no_esc",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 3.07,
+  "front_push_s": 2.34
+ },
+ "on_esc002": {
+  "back_m": 1.001,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.57,
+  "t_brake": 2.52,
+  "t_escape": 3.39,
+  "guard_events": [
+   [
+    "back_early",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 2.73,
+  "front_push_s": 3.1
+ },
+ "on_esc002_ready008": {
+  "back_m": 0.949,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.67,
+  "t_brake": 2.52,
+  "t_escape": 3.65,
+  "guard_events": [
+   [
+    "back_no_esc",
+    "brake"
+   ]
+  ],
+  "fake_esc_first_reverse_t": 2.73,
+  "front_push_s": 2.89
+ },
+ "off_esc002": {
+  "back_m": 1.272,
+  "escape_push_s": 0,
+  "rev_side_written_s": 0.9,
+  "t_brake": 2.52,
+  "t_escape": 4.99,
+  "guard_events": [],
+  "fake_esc_first_reverse_t": 4.27,
+  "front_push_s": 2.7
+ },
+ "traces": {
+  "on": {
+   "steps": [
+    "2.450 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.490 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.520 None   ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.650 brake  ->brake   hold=1 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.690 brake  ->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm= 1322.0 skip=True",
+    "2.720 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.750 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.790 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.820 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.850 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.890 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm= 1322.0 skip=True",
+    "2.920 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "2.950 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "2.990 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.020 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.050 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.090 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.120 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.150 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.190 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.220 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.250 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.290 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.320 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.350 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.390 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.420 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.450 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.490 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.520 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.550 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.590 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.620 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.650 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.690 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.720 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.750 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.790 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.820 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.850 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.890 reverse->escape  hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.920 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.950 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "3.990 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.020 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.050 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.090 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.120 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.150 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.190 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.220 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.250 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.290 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.320 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.350 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.390 escape ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.420 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.450 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.490 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.520 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.550 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True",
+    "4.590 None   ->None    hold=0 esc_rev=False ran=True  seen=0.040 backed=0.080 erpm=    0.0 skip=True"
+   ],
+   "pca_thr_minus_n": [
+    "2.450 -108.0",
+    "2.490 -108.0",
+    "2.520 +300.0",
+    "2.620 +0.0",
+    "2.650 +300.0",
+    "2.690 +300.0",
+    "2.720 +300.0",
+    "2.750 +300.0",
+    "2.790 +300.0",
+    "2.820 +300.0",
+    "2.850 +300.0",
+    "2.890 +300.0",
+    "2.920 +300.0",
+    "2.950 +300.0",
+    "2.990 +300.0",
+    "3.020 +300.0",
+    "3.050 +300.0",
+    "3.090 +300.0",
+    "3.120 +300.0",
+    "3.150 +300.0",
+    "3.190 +300.0",
+    "3.220 +300.0",
+    "3.250 +300.0",
+    "3.290 +300.0",
+    "3.320 +300.0",
+    "3.350 +300.0",
+    "3.390 +300.0",
+    "3.420 +300.0",
+    "3.450 +300.0",
+    "3.490 +300.0",
+    "3.520 +300.0",
+    "3.550 +300.0",
+    "3.590 +300.0",
+    "3.620 +300.0",
+    "3.650 +300.0",
+    "3.690 +300.0",
+    "3.720 +300.0",
+    "3.750 +300.0",
+    "3.790 +300.0",
+    "3.820 +300.0",
+    "3.850 +300.0",
+    "3.890 -130.0",
+    "3.920 -130.0",
+    "3.950 -130.0",
+    "3.990 -130.0",
+    "4.020 -130.0",
+    "4.050 -130.0",
+    "4.090 -130.0",
+    "4.120 -130.0",
+    "4.150 -130.0",
+    "4.190 -130.0",
+    "4.220 -130.0",
+    "4.250 -130.0",
+    "4.290 -130.0",
+    "4.320 -130.0",
+    "4.350 -130.0",
+    "4.390 -108.0",
+    "4.420 -108.0",
+    "4.450 -108.0",
+    "4.490 -108.0",
+    "4.520 -108.0",
+    "4.550 -108.0",
+    "4.590 -108.0"
+   ],
+   "x": [
+    [
+     2.5,
+     2.0
+    ],
+    [
+     2.6,
+     2.0
+    ],
+    [
+     2.7,
+     2.0
+    ],
+    [
+     2.8,
+     2.0
+    ],
+    [
+     2.9,
+     2.0
+    ],
+    [
+     3.0,
+     2.0
+    ],
+    [
+     3.1,
+     2.0
+    ],
+    [
+     3.2,
+     2.0
+    ],
+    [
+     3.3,
+     2.0
+    ],
+    [
+     3.4,
+     2.0
+    ],
+    [
+     3.5,
+     2.0
+    ],
+    [
+     3.6,
+     2.0
+    ],
+    [
+     3.7,
+     2.0
+    ],
+    [
+     3.8,
+     2.0
+    ],
+    [
+     3.9,
+     2.0
+    ],
+    [
+     4.0,
+     2.0
+    ],
+    [
+     4.1,
+     2.0
+    ],
+    [
+     4.2,
+     2.0
+    ],
+    [
+     4.3,
+     2.0
+    ],
+    [
+     4.4,
+     2.0
+    ],
+    [
+     4.5,
+     2.0
+    ],
+    [
+     4.6,
+     2.0
+    ]
+   ]
+  },
+  "off": {
+   "steps": [
+    "2.450 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.490 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.520 None   ->brake   hold=0 esc_rev=None  ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.650 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.690 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm= 1322.0 skip=False",
+    "2.720 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.750 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.790 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.820 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.850 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.890 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm= 1322.0 skip=False",
+    "2.920 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.950 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.990 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.020 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.050 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.090 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.120 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.150 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.190 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.220 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.250 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.290 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.320 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.350 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.390 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.420 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.450 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.490 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.520 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.550 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.590 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.620 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.650 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.690 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.720 None   ->None    hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.750 None   ->brake   hold=0 esc_rev=None  ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.790 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.820 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.850 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.890 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.920 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.950 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.990 brake  ->brake   hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.020 brake  ->gap     hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.050 gap    ->gap     hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.090 gap    ->gap     hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.120 gap    ->gap     hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.150 gap    ->gap     hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.190 gap    ->reverse hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.220 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.250 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "4.290 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=  100.0 skip=False",
+    "4.320 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.000 backed=0.000 erpm=  300.0 skip=False",
+    "4.350 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.030 backed=0.030 erpm=  700.0 skip=False",
+    "4.390 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.070 backed=0.070 erpm= 1100.0 skip=False",
+    "4.420 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.100 backed=0.100 erpm= 1300.0 skip=False",
+    "4.450 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.130 backed=0.130 erpm= 1700.0 skip=False",
+    "4.490 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.170 backed=0.170 erpm= 2100.0 skip=False",
+    "4.520 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.200 backed=0.200 erpm= 2300.0 skip=False",
+    "4.550 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.230 backed=0.230 erpm= 2700.0 skip=False",
+    "4.590 reverse->reverse hold=0 esc_rev=None  ran=True  seen=0.270 backed=0.270 erpm= 3100.0 skip=False"
+   ],
+   "pca_thr_minus_n": [
+    "2.450 -108.0",
+    "2.490 -108.0",
+    "2.520 +300.0",
+    "2.620 +0.0",
+    "2.650 -108.0",
+    "2.690 -108.0",
+    "2.720 -108.0",
+    "2.750 -108.0",
+    "2.790 -108.0",
+    "2.820 -108.0",
+    "2.850 -108.0",
+    "2.890 -108.0",
+    "2.920 -108.0",
+    "2.950 -108.0",
+    "2.990 -108.0",
+    "3.020 -108.0",
+    "3.050 -108.0",
+    "3.090 -108.0",
+    "3.120 -108.0",
+    "3.150 -108.0",
+    "3.190 -108.0",
+    "3.220 -108.0",
+    "3.250 -108.0",
+    "3.290 -108.0",
+    "3.320 -108.0",
+    "3.350 -108.0",
+    "3.390 -108.0",
+    "3.420 -108.0",
+    "3.450 -108.0",
+    "3.490 -108.0",
+    "3.520 -108.0",
+    "3.550 -108.0",
+    "3.590 -108.0",
+    "3.620 -108.0",
+    "3.650 -108.0",
+    "3.690 -108.0",
+    "3.720 -108.0",
+    "3.750 +300.0",
+    "3.790 +300.0",
+    "3.820 +300.0",
+    "3.850 +300.0",
+    "3.890 +300.0",
+    "3.920 +300.0",
+    "3.950 +300.0",
+    "3.990 +300.0",
+    "4.020 +10.0",
+    "4.050 +10.0",
+    "4.090 +10.0",
+    "4.120 +10.0",
+    "4.150 +10.0",
+    "4.190 +300.0",
+    "4.220 +300.0",
+    "4.250 +300.0",
+    "4.290 +300.0",
+    "4.320 +300.0",
+    "4.350 +300.0",
+    "4.390 +300.0",
+    "4.420 +300.0",
+    "4.450 +300.0",
+    "4.490 +300.0",
+    "4.520 +300.0",
+    "4.550 +300.0",
+    "4.590 +300.0"
+   ],
+   "x": [
+    [
+     2.5,
+     2.0
+    ],
+    [
+     2.6,
+     2.0
+    ],
+    [
+     2.7,
+     2.0
+    ],
+    [
+     2.8,
+     2.0
+    ],
+    [
+     2.9,
+     2.0
+    ],
+    [
+     3.0,
+     2.0
+    ],
+    [
+     3.1,
+     2.0
+    ],
+    [
+     3.2,
+     2.0
+    ],
+    [
+     3.3,
+     2.0
+    ],
+    [
+     3.4,
+     2.0
+    ],
+    [
+     3.5,
+     2.0
+    ],
+    [
+     3.6,
+     2.0
+    ],
+    [
+     3.7,
+     2.0
+    ],
+    [
+     3.8,
+     2.0
+    ],
+    [
+     3.9,
+     2.0
+    ],
+    [
+     4.0,
+     2.0
+    ],
+    [
+     4.1,
+     2.0
+    ],
+    [
+     4.2,
+     2.0
+    ],
+    [
+     4.3,
+     1.997
+    ],
+    [
+     4.4,
+     1.955
+    ],
+    [
+     4.5,
+     1.862
+    ],
+    [
+     4.6,
+     1.72
+    ]
+   ]
+  },
+  "on_one": {
+   "steps": [
+    "2.450 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.490 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.520 None   ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.650 brake  ->brake   hold=1 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.690 brake  ->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm= 1322.0 skip=True",
+    "2.720 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.750 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.790 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.820 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.850 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.890 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.920 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.950 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.990 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "3.020 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "3.050 reverse->gap     hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.090 gap    ->gap     hold=0 esc_rev=False ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.120 gap    ->gap     hold=0 esc_rev=False ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.150 gap    ->gap     hold=0 esc_rev=False ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.190 gap    ->gap     hold=0 esc_rev=False ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.220 gap    ->reverse hold=0 esc_rev=False ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.250 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.290 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.320 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.350 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.030 backed=0.030 erpm=  400.0 skip=False",
+    "3.390 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.070 backed=0.070 erpm=  800.0 skip=False",
+    "3.420 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.100 backed=0.100 erpm= 1000.0 skip=False",
+    "3.450 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.130 backed=0.130 erpm= 1400.0 skip=False",
+    "3.490 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.170 backed=0.170 erpm= 1800.0 skip=False",
+    "3.520 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.200 backed=0.200 erpm= 2000.0 skip=False",
+    "3.550 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.230 backed=0.230 erpm= 2400.0 skip=False",
+    "3.590 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.270 backed=0.270 erpm= 2800.0 skip=False",
+    "3.620 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.300 backed=0.300 erpm= 3000.0 skip=False",
+    "3.650 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.330 backed=0.330 erpm= 3400.0 skip=False",
+    "3.690 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.370 backed=0.370 erpm= 3800.0 skip=False",
+    "3.720 reverse->coast   hold=0 esc_rev=True  ran=True  seen=0.400 backed=0.400 erpm= 4000.0 skip=False",
+    "3.750 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 4140.0 skip=False",
+    "3.790 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 4020.0 skip=False",
+    "3.820 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3960.0 skip=False",
+    "3.850 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3840.0 skip=False",
+    "3.890 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3720.0 skip=False",
+    "3.920 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3660.0 skip=False",
+    "3.950 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3540.0 skip=False",
+    "3.990 coast  ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3420.0 skip=False",
+    "4.020 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 3230.0 skip=False",
+    "4.050 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 2590.0 skip=False",
+    "4.090 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 1950.0 skip=False",
+    "4.120 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= 1630.0 skip=False",
+    "4.150 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=  990.0 skip=False",
+    "4.190 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=  350.0 skip=False",
+    "4.220 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=   30.0 skip=False",
+    "4.250 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= -360.0 skip=False",
+    "4.290 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm= -809.0 skip=False",
+    "4.320 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-1012.0 skip=False",
+    "4.350 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-1378.0 skip=False",
+    "4.390 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-1698.0 skip=False",
+    "4.420 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-1842.0 skip=False",
+    "4.450 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-2103.0 skip=False",
+    "4.490 escape ->None    hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-2331.0 skip=False",
+    "4.520 None   ->None    hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-2412.0 skip=False",
+    "4.550 None   ->None    hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-2517.0 skip=False",
+    "4.590 None   ->None    hold=0 esc_rev=False ran=True  seen=0.400 backed=0.400 erpm=-2609.0 skip=False"
+   ],
+   "pca_thr_minus_n": [
+    "2.450 -108.0",
+    "2.490 -108.0",
+    "2.520 +300.0",
+    "2.620 +0.0",
+    "2.650 +300.0",
+    "2.690 +300.0",
+    "2.720 +300.0",
+    "2.750 +300.0",
+    "2.790 +300.0",
+    "2.820 +300.0",
+    "2.850 +300.0",
+    "2.890 +300.0",
+    "2.920 +300.0",
+    "2.950 +300.0",
+    "2.990 +300.0",
+    "3.020 +300.0",
+    "3.050 +10.0",
+    "3.090 +10.0",
+    "3.120 +10.0",
+    "3.150 +10.0",
+    "3.190 +10.0",
+    "3.220 +300.0",
+    "3.250 +300.0",
+    "3.290 +300.0",
+    "3.320 +300.0",
+    "3.350 +300.0",
+    "3.390 +300.0",
+    "3.420 +300.0",
+    "3.450 +300.0",
+    "3.490 +300.0",
+    "3.520 +300.0",
+    "3.550 +300.0",
+    "3.590 +300.0",
+    "3.620 +300.0",
+    "3.650 +300.0",
+    "3.690 +300.0",
+    "3.720 +0.0",
+    "3.750 +0.0",
+    "3.790 +0.0",
+    "3.820 +0.0",
+    "3.850 +0.0",
+    "3.890 +0.0",
+    "3.920 +0.0",
+    "3.950 +0.0",
+    "3.990 -130.0",
+    "4.020 -130.0",
+    "4.050 -130.0",
+    "4.090 -130.0",
+    "4.120 -130.0",
+    "4.150 -130.0",
+    "4.190 -130.0",
+    "4.220 -130.0",
+    "4.250 -130.0",
+    "4.290 -130.0",
+    "4.320 -130.0",
+    "4.350 -130.0",
+    "4.390 -130.0",
+    "4.420 -130.0",
+    "4.450 -130.0",
+    "4.490 -108.0",
+    "4.520 -108.0",
+    "4.550 -108.0",
+    "4.590 -108.0"
+   ],
+   "x": [
+    [
+     2.5,
+     2.0
+    ],
+    [
+     2.6,
+     2.0
+    ],
+    [
+     2.7,
+     2.0
+    ],
+    [
+     2.8,
+     2.0
+    ],
+    [
+     2.9,
+     2.0
+    ],
+    [
+     3.0,
+     2.0
+    ],
+    [
+     3.1,
+     2.0
+    ],
+    [
+     3.2,
+     2.0
+    ],
+    [
+     3.3,
+     2.0
+    ],
+    [
+     3.4,
+     1.973
+    ],
+    [
+     3.5,
+     1.895
+    ],
+    [
+     3.6,
+     1.768
+    ],
+    [
+     3.7,
+     1.59
+    ],
+    [
+     3.8,
+     1.386
+    ],
+    [
+     3.9,
+     1.196
+    ],
+    [
+     4.0,
+     1.022
+    ],
+    [
+     4.1,
+     0.905
+    ],
+    [
+     4.2,
+     0.867
+    ],
+    [
+     4.3,
+     0.893
+    ],
+    [
+     4.4,
+     0.968
+    ],
+    [
+     4.5,
+     1.077
+    ],
+    [
+     4.6,
+     1.204
+    ]
+   ]
+  },
+  "on_ready008": {
+   "steps": [
+    "2.450 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.490 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.520 None   ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.650 brake  ->brake   hold=1 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.690 brake  ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm= 1322.0 skip=False",
+    "2.720 brake  ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.750 brake  ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.790 brake  ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.820 brake  ->gap     hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.850 gap    ->gap     hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.890 gap    ->gap     hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm= 1322.0 skip=False",
+    "2.920 gap    ->gap     hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.950 gap    ->gap     hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.990 gap    ->reverse hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.020 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.050 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "3.090 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=  100.0 skip=False",
+    "3.120 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.000 erpm=  300.0 skip=False",
+    "3.150 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.030 backed=0.030 erpm=  700.0 skip=False",
+    "3.190 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.070 backed=0.070 erpm= 1100.0 skip=False",
+    "3.220 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.100 backed=0.100 erpm= 1300.0 skip=False",
+    "3.250 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.130 backed=0.130 erpm= 1700.0 skip=False",
+    "3.290 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.170 backed=0.170 erpm= 2100.0 skip=False",
+    "3.320 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.200 backed=0.200 erpm= 2300.0 skip=False",
+    "3.350 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.230 backed=0.230 erpm= 2700.0 skip=False",
+    "3.390 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.270 backed=0.270 erpm= 3100.0 skip=False",
+    "3.420 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.300 backed=0.300 erpm= 3300.0 skip=False",
+    "3.450 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.330 backed=0.330 erpm= 3700.0 skip=False",
+    "3.490 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.370 backed=0.370 erpm= 4100.0 skip=False",
+    "3.520 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.400 backed=0.400 erpm= 4300.0 skip=False",
+    "3.550 reverse->coast   hold=0 esc_rev=True  ran=True  seen=0.430 backed=0.430 erpm= 4700.0 skip=False",
+    "3.590 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4710.0 skip=False",
+    "3.620 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4650.0 skip=False",
+    "3.650 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4530.0 skip=False",
+    "3.690 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4410.0 skip=False",
+    "3.720 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4350.0 skip=False",
+    "3.750 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4230.0 skip=False",
+    "3.790 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4110.0 skip=False",
+    "3.820 coast  ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 4050.0 skip=False",
+    "3.850 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 3670.0 skip=False",
+    "3.890 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 3030.0 skip=False",
+    "3.920 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 2710.0 skip=False",
+    "3.950 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 2070.0 skip=False",
+    "3.990 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 1430.0 skip=False",
+    "4.020 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= 1110.0 skip=False",
+    "4.050 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=  470.0 skip=False",
+    "4.090 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= -120.0 skip=False",
+    "4.120 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= -360.0 skip=False",
+    "4.150 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm= -809.0 skip=False",
+    "4.190 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-1201.0 skip=False",
+    "4.220 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-1378.0 skip=False",
+    "4.250 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-1698.0 skip=False",
+    "4.290 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-1977.0 skip=False",
+    "4.320 escape ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2103.0 skip=False",
+    "4.350 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2288.0 skip=False",
+    "4.390 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2408.0 skip=False",
+    "4.420 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2463.0 skip=False",
+    "4.450 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2561.0 skip=False",
+    "4.490 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2648.0 skip=False",
+    "4.520 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2686.0 skip=False",
+    "4.550 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2757.0 skip=False",
+    "4.590 None   ->None    hold=0 esc_rev=False ran=True  seen=0.430 backed=0.430 erpm=-2818.0 skip=False"
+   ],
+   "pca_thr_minus_n": [
+    "2.450 -108.0",
+    "2.490 -108.0",
+    "2.520 +300.0",
+    "2.620 +0.0",
+    "2.650 +300.0",
+    "2.690 +300.0",
+    "2.720 +300.0",
+    "2.750 +300.0",
+    "2.790 +300.0",
+    "2.820 +10.0",
+    "2.850 +10.0",
+    "2.890 +10.0",
+    "2.920 +10.0",
+    "2.950 +10.0",
+    "2.990 +300.0",
+    "3.020 +300.0",
+    "3.050 +300.0",
+    "3.090 +300.0",
+    "3.120 +300.0",
+    "3.150 +300.0",
+    "3.190 +300.0",
+    "3.220 +300.0",
+    "3.250 +300.0",
+    "3.290 +300.0",
+    "3.320 +300.0",
+    "3.350 +300.0",
+    "3.390 +300.0",
+    "3.420 +300.0",
+    "3.450 +300.0",
+    "3.490 +300.0",
+    "3.520 +300.0",
+    "3.550 +0.0",
+    "3.590 +0.0",
+    "3.620 +0.0",
+    "3.650 +0.0",
+    "3.690 +0.0",
+    "3.720 +0.0",
+    "3.750 +0.0",
+    "3.790 +0.0",
+    "3.820 -130.0",
+    "3.850 -130.0",
+    "3.890 -130.0",
+    "3.920 -130.0",
+    "3.950 -130.0",
+    "3.990 -130.0",
+    "4.020 -130.0",
+    "4.050 -130.0",
+    "4.090 -130.0",
+    "4.120 -130.0",
+    "4.150 -130.0",
+    "4.190 -130.0",
+    "4.220 -130.0",
+    "4.250 -130.0",
+    "4.290 -130.0",
+    "4.320 -108.0",
+    "4.350 -108.0",
+    "4.390 -108.0",
+    "4.420 -108.0",
+    "4.450 -108.0",
+    "4.490 -108.0",
+    "4.520 -108.0",
+    "4.550 -108.0",
+    "4.590 -108.0"
+   ],
+   "x": [
+    [
+     2.5,
+     2.0
+    ],
+    [
+     2.6,
+     2.0
+    ],
+    [
+     2.7,
+     2.0
+    ],
+    [
+     2.8,
+     2.0
+    ],
+    [
+     2.9,
+     2.0
+    ],
+    [
+     3.0,
+     2.0
+    ],
+    [
+     3.1,
+     1.997
+    ],
+    [
+     3.2,
+     1.955
+    ],
+    [
+     3.3,
+     1.862
+    ],
+    [
+     3.4,
+     1.72
+    ],
+    [
+     3.5,
+     1.527
+    ],
+    [
+     3.6,
+     1.294
+    ],
+    [
+     3.7,
+     1.07
+    ],
+    [
+     3.8,
+     0.861
+    ],
+    [
+     3.9,
+     0.69
+    ],
+    [
+     4.0,
+     0.598
+    ],
+    [
+     4.1,
+     0.586
+    ],
+    [
+     4.2,
+     0.633
+    ],
+    [
+     4.3,
+     0.723
+    ],
+    [
+     4.4,
+     0.839
+    ],
+    [
+     4.5,
+     0.969
+    ],
+    [
+     4.6,
+     1.108
+    ]
+   ]
+  },
+  "on_esc002": {
+   "steps": [
+    "2.450 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.490 None   ->None    hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.520 None   ->brake   hold=0 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.650 brake  ->brake   hold=1 esc_rev=False ran=False seen=0.000 backed=0.000 erpm=    0.0 skip=False",
+    "2.690 brake  ->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm= 1322.0 skip=True",
+    "2.720 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=    0.0 skip=True",
+    "2.750 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.000 backed=0.040 erpm=  100.0 skip=True",
+    "2.790 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.040 backed=0.080 erpm=  500.0 skip=True",
+    "2.820 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.070 backed=0.110 erpm=  700.0 skip=True",
+    "2.850 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.100 backed=0.140 erpm= 1100.0 skip=True",
+    "2.890 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.140 backed=0.180 erpm= 1322.0 skip=True",
+    "2.920 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.170 backed=0.210 erpm= 1700.0 skip=True",
+    "2.950 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.200 backed=0.240 erpm= 2100.0 skip=True",
+    "2.990 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.240 backed=0.280 erpm= 2500.0 skip=True",
+    "3.020 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.270 backed=0.310 erpm= 2700.0 skip=True",
+    "3.050 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.300 backed=0.340 erpm= 3100.0 skip=True",
+    "3.090 reverse->reverse hold=0 esc_rev=True  ran=True  seen=0.340 backed=0.380 erpm= 3500.0 skip=True",
+    "3.120 reverse->coast   hold=0 esc_rev=True  ran=True  seen=0.370 backed=0.410 erpm= 3700.0 skip=True",
+    "3.150 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3840.0 skip=True",
+    "3.190 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3720.0 skip=True",
+    "3.220 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3660.0 skip=True",
+    "3.250 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3540.0 skip=True",
+    "3.290 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3420.0 skip=True",
+    "3.320 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3360.0 skip=True",
+    "3.350 coast  ->coast   hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3240.0 skip=True",
+    "3.390 coast  ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 3120.0 skip=True",
+    "3.420 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 2930.0 skip=True",
+    "3.450 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 2290.0 skip=True",
+    "3.490 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 1650.0 skip=True",
+    "3.520 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= 1330.0 skip=True",
+    "3.550 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=  690.0 skip=True",
+    "3.590 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=   50.0 skip=True",
+    "3.620 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= -120.0 skip=True",
+    "3.650 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm= -592.0 skip=True",
+    "3.690 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-1012.0 skip=True",
+    "3.720 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-1201.0 skip=True",
+    "3.750 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-1543.0 skip=True",
+    "3.790 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-1842.0 skip=True",
+    "3.820 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-1977.0 skip=True",
+    "3.850 escape ->escape  hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2221.0 skip=True",
+    "3.890 escape ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2434.0 skip=True",
+    "3.920 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2508.0 skip=True",
+    "3.950 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2601.0 skip=True",
+    "3.990 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2682.0 skip=True",
+    "4.020 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2718.0 skip=True",
+    "4.050 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2785.0 skip=True",
+    "4.090 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2842.0 skip=True",
+    "4.120 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2868.0 skip=True",
+    "4.150 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2916.0 skip=True",
+    "4.190 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2957.0 skip=True",
+    "4.220 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-2975.0 skip=True",
+    "4.250 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3009.0 skip=True",
+    "4.290 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3038.0 skip=True",
+    "4.320 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3051.0 skip=True",
+    "4.350 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3075.0 skip=True",
+    "4.390 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3096.0 skip=True",
+    "4.420 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=-3106.0 skip=True",
+    "4.450 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=    0.0 skip=True",
+    "4.490 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=    0.0 skip=True",
+    "4.520 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=    0.0 skip=True",
+    "4.550 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=    0.0 skip=True",
+    "4.590 None   ->None    hold=0 esc_rev=False ran=True  seen=0.370 backed=0.410 erpm=    0.0 skip=True"
+   ],
+   "pca_thr_minus_n": [
+    "2.450 -108.0",
+    "2.490 -108.0",
+    "2.520 +300.0",
+    "2.620 +0.0",
+    "2.650 +300.0",
+    "2.690 +300.0",
+    "2.720 +300.0",
+    "2.750 +300.0",
+    "2.790 +300.0",
+    "2.820 +300.0",
+    "2.850 +300.0",
+    "2.890 +300.0",
+    "2.920 +300.0",
+    "2.950 +300.0",
+    "2.990 +300.0",
+    "3.020 +300.0",
+    "3.050 +300.0",
+    "3.090 +300.0",
+    "3.120 +0.0",
+    "3.150 +0.0",
+    "3.190 +0.0",
+    "3.220 +0.0",
+    "3.250 +0.0",
+    "3.290 +0.0",
+    "3.320 +0.0",
+    "3.350 +0.0",
+    "3.390 -130.0",
+    "3.420 -130.0",
+    "3.450 -130.0",
+    "3.490 -130.0",
+    "3.520 -130.0",
+    "3.550 -130.0",
+    "3.590 -130.0",
+    "3.620 -130.0",
+    "3.650 -130.0",
+    "3.690 -130.0",
+    "3.720 -130.0",
+    "3.750 -130.0",
+    "3.790 -130.0",
+    "3.820 -130.0",
+    "3.850 -130.0",
+    "3.890 -108.0",
+    "3.920 -108.0",
+    "3.950 -108.0",
+    "3.990 -108.0",
+    "4.020 -108.0",
+    "4.050 -108.0",
+    "4.090 -108.0",
+    "4.120 -108.0",
+    "4.150 -108.0",
+    "4.190 -108.0",
+    "4.220 -108.0",
+    "4.250 -108.0",
+    "4.290 -108.0",
+    "4.320 -108.0",
+    "4.350 -108.0",
+    "4.390 -108.0",
+    "4.420 -108.0",
+    "4.450 -108.0",
+    "4.490 -108.0",
+    "4.520 -108.0",
+    "4.550 -108.0",
+    "4.590 -108.0"
+   ],
+   "x": [
+    [
+     2.5,
+     2.0
+    ],
+    [
+     2.6,
+     2.0
+    ],
+    [
+     2.7,
+     2.0
+    ],
+    [
+     2.8,
+     1.986
+    ],
+    [
+     2.9,
+     1.924
+    ],
+    [
+     3.0,
+     1.811
+    ],
+    [
+     3.1,
+     1.649
+    ],
+    [
+     3.2,
+     1.459
+    ],
+    [
+     3.3,
+     1.285
+    ],
+    [
+     3.4,
+     1.126
+    ],
+    [
+     3.5,
+     1.023
+    ],
+    [
+     3.6,
+     0.999
+    ],
+    [
+     3.7,
+     1.036
+    ],
+    [
+     3.8,
+     1.119
+    ],
+    [
+     3.9,
+     1.234
+    ],
+    [
+     4.0,
+     1.365
+    ],
+    [
+     4.1,
+     1.505
+    ],
+    [
+     4.2,
+     1.652
+    ],
+    [
+     4.3,
+     1.803
+    ],
+    [
+     4.4,
+     1.957
+    ],
+    [
+     4.5,
+     2.0
+    ],
+    [
+     4.6,
+     2.0
+    ]
+   ]
+  }
+ }
+}

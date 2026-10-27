@@ -1,0 +1,24 @@
+s4a_guard_revert 66 failed 123 passed ['66 failed, 123 passed in 128.79s (0:02:08)']
+s4a_guard_gap_only_brake 7 failed 182 passed ['7 failed, 182 passed in 128.57s (0:02:08)']
+s4a_hold_revert 2 failed 187 passed ['2 failed, 187 passed in 120.82s (0:02:00)']
+s4a_no_latch 1 failed 188 passed ['1 failed, 188 passed in 120.16s (0:02:00)']
+s4a_none_as_false 29 failed 159 passed ['29 failed, 159 passed, 1 skipped in 122.03s (0:02:02)']
+Traceback (most recent call last):
+  File "/home/jetson/jetformer/experiments/20261026_fix/fix7/safety/mutate7.py", line 116, in <module>
+    main(sys.argv[1:])
+    ~~~~^^^^^^^^^^^^^^
+  File "/home/jetson/jetformer/experiments/20261026_fix/fix7/safety/mutate7.py", line 104, in main
+    r = run_one(name, edits)
+  File "/home/jetson/jetformer/experiments/20261026_fix/fix7/safety/mutate7.py", line 80, in run_one
+    assert s.count(old) == 1, (name, rel, s.count(old))
+           ^^^^^^^^^^^^^^^^^
+AssertionError: ('s4a_drive_none', 'jetformer/drive.py', 0)
+s4a_drive_none 36 failed 153 passed ['36 failed, 153 passed in 125.61s (0:02:05)']
+s4a_drive_feed_keep_only 10 failed 179 passed ['10 failed, 179 passed in 126.16s (0:02:06)']
+s4a_gate_is_esctrack 2 failed 187 passed ['2 failed, 187 passed in 123.69s (0:02:03)']
+s4b_check_revert 11 failed 178 passed ['11 failed, 178 passed in 125.74s (0:02:05)']
+s4b_entry_counts 9 failed 180 passed ['9 failed, 180 passed in 123.36s (0:02:03)']
+s4b_undo_as_retry 6 failed 183 passed ['6 failed, 183 passed in 120.94s (0:02:00)']
+s4b_no_skip_flag_early 6 failed 183 passed ['6 failed, 183 passed in 128.76s (0:02:08)']
+off_break_check 6 failed 183 passed ['6 failed, 183 passed in 124.62s (0:02:04)']
+off_break_drive 1 failed 188 passed ['1 failed, 188 passed in 126.35s (0:02:06)']

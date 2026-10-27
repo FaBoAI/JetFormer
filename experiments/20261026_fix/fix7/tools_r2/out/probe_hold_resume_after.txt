@@ -1,0 +1,53 @@
+A_no_resume      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=None from_move=None after_abort=False | ④ ON 止まってから3周 [] 数えない 0 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+B_abort_0.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.39 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+B_abort_1.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.121 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.73(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+B_abort_2.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.23(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+B_abort_3.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+B_abort_4.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+H_hold_0.5m      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.39 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+H_hold_1.5m      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.121 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.73(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+H_hold_2.5m      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.23(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+H_hold_3.5m      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+H_hold_4.5m      ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+S_stall_0.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.39 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+S_stall_1.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.121 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.73(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+S_stall_2.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'slip_all_measured': False}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+         → リカバリー中止のあとの走り直しの ON の発進で空転の比が出ない 1 本: 20261103-133500@15.23(空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた)) → 空転を確かめられない = 満たさない(checks の slip_all_measured)。動画で空転を見る
+S_stall_3.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進
+S_stall_4.5m     ⑤ig on n=4 on med 2.903 d=-0.125 all_ok=False | ⑤ig_first all_ok=False | ③ 2nd counted=False from_move=27.122 after_abort=True | ④ ON 止まってから3周 [] 数えない 1 動く→A1 2.633
+         ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+         リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進

@@ -1,0 +1,72 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+..................F..................................................... [ 59%]
+........................................................................ [ 70%]
+..............................................F......................... [ 82%]
+........................................................................ [ 94%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+_____________________________ test_untouched_files _____________________________
+
+    def test_untouched_files():
+        """走行の動き・既定値(DEFAULT_PARAMS・RESET_ON_BOOT は drive.py)・画面・計画のファイルは直す前と同じ。
+        drive.py・bench.py は 10/27 fix4 の版でもよい(そのときは、この組のときの版の写しが上の sha256 と同じか見る)。
+        drive.py・assist.py は 10/27 fix5 safety の版でもよい(そのときは fix5 の直す前の写しから同じようにたどる)。
+        server.py・app.js は 10/27 fix5 画面の係の版でもよい(同じ)。app.js は 10/27 fix6 画面の係の版でもよい(fix5 の版へたどる)。
+        drive.py・assist.py は 10/27 fix6 安全の係の版でもよい(fix6 の直す前の写し = fix5 の版へたどる)。assist.py は 10/27 fix6
+        安全の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix6 画面の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix7 画面の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = 6-2 回目の版へたどる)"""
+        for rel, h in UNTOUCHED.items():
+            cur = _sha(JF / rel)
+            if rel in LATER_FIX6_SAFETY_R2 and cur == LATER_FIX6_SAFETY_R2[rel]:
+                cur = _sha(FIX6_SAFETY_R2_BEFORE / Path(rel).name)   # fix6 安全の係 6-2 回目の直す前の写し(LATER_FIX6 の版)
+            if rel in LATER_FIX6 and cur == LATER_FIX6[rel]:
+                cur = _sha(FIX6_BEFORE / Path(rel).name)          # fix6 安全の係の直す前の写し(LATER_FIX5 の版)
+            if rel in LATER_FIX7_UI and cur == LATER_FIX7_UI[rel]:
+                cur = _sha(FIX7_UI_BEFORE / Path(rel).name)       # fix7 画面の係 7-1 回目の直す前の写し(LATER_FIX6_UI_R2 の版)
+            if rel in LATER_FIX6_UI_R2 and cur == LATER_FIX6_UI_R2[rel]:
+                cur = _sha(FIX6_UI_R2_BEFORE / Path(rel).name)    # fix6 画面の係 6-2 回目の直す前の写し(LATER_FIX6_UI の版)
+            if rel in LATER_FIX6_UI and cur == LATER_FIX6_UI[rel]:
+                cur = _sha(FIX6_UI_BEFORE / Path(rel).name)       # fix6 画面の係の直す前の写し(LATER_FIX5_UI の版)
+            if rel in LATER_FIX5_UI and cur == LATER_FIX5_UI[rel]:
+                cur = _sha(FIX5_UI_BEFORE / Path(rel).name)       # fix5 画面の係の直す前の写し(UNTOUCHED の版)
+            if rel in LATER_FIX5 and cur == LATER_FIX5[rel]:
+                cur = _sha(FIX5_BEFORE / Path(rel).name)          # fix5 の直す前の写し(fix4 の版かこの組の版)
+            if rel in LATER_FIX4 and cur == LATER_FIX4[rel]:
+                assert _sha(FIX4_BEFORE / Path(rel).name) == h, rel
+                continue
+>           assert cur == h, rel
+E           AssertionError: jetformer/drive.py
+E           assert 'd308e84b7671...fdb391cc0554c' == 'b8c3ddba3968...ee88afbc85db6'
+E             
+E             - b8c3ddba39681d81f14249981c770a9349e6dba3bcf5b4a8d88ee88afbc85db6
+E             + d308e84b7671ee002b45b9b6b4190c44d33a6cbe8065da82afbfdb391cc0554c
+
+tests/test_fix3_r3_2_tools.py:146: AssertionError
+__________________ test_before_copies_and_defaults_unchanged ___________________
+
+    def test_before_copies_and_defaults_unchanged():
+        s = sums()
+        for name in ('assist.py', 'drive.py', 'app.js', 'index.html', 'collect.py', 'car_check.py'):
+            assert sha(FIX / name) == s[name], name
+        # この組は drive.py を変えていない。あとの組の版でもよい(10/27 fix4 small = 説明の文だけ・10/27 fix5 safety = 反証 4 回目の
+        # s2・s3・10/27 fix6 safety = 反証 6-1 回目の s3-a)。そのときは、その組の直す前の写しの sha256 をたどってこの組の版
+        # (SHA256SUMS)につながるか見る
+        cur = sha(ROOT / 'jetformer' / 'drive.py')
+        chain = {LATER_DRIVE['fix6_safety']: ROOT / 'tests' / 'fixtures' / 'fix6_safety_before' / 'drive.py',
+                 LATER_DRIVE['fix5_safety']: ROOT / 'tests' / 'fixtures' / 'fix5_safety_before' / 'drive.py',
+                 LATER_DRIVE['fix4_small']: ROOT / 'tests' / 'fixtures' / 'fix4_small_before' / 'drive.py'}
+        while cur != s['drive.py']:
+>           assert cur in chain, cur
+E           AssertionError: d308e84b7671ee002b45b9b6b4190c44d33a6cbe8065da82afbfdb391cc0554c
+E           assert 'd308e84b7671ee002b45b9b6b4190c44d33a6cbe8065da82afbfdb391cc0554c' in {'696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec': PosixPath('/home/jetson/jetformer/tests/fixtures/...e34293117a2144b3e568acb326ada57d59a471': PosixPath('/home/jetson/jetformer/tests/fixtures/fix4_small_before/drive.py')}
+
+tests/test_fix3_r3_1.py:97: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r3_2_tools.py::test_untouched_files - AssertionError: ...
+FAILED tests/test_fix3_r3_1.py::test_before_copies_and_defaults_unchanged - A...
+2 failed, 608 passed in 481.64s (0:08:01)
+rc=1

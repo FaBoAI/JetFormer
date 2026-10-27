@@ -153,14 +153,16 @@ def run_wait(mod, monkeypatch, tmp_path, params, frames, imu, hook=None):
 def rear_scene(hit_at=HIT, drop=None, veh_hold=None, after_v=0.0):
     """反証の場面(tests/test_rec_hold_keep.py の recovery_scene と同じ形): 3 m/s → 2.0 秒で止まる → リカバリー。2.95 秒から後ろへ
     1 m/s(見張りの back_early)。hit_at に後ろの衝撃(IMU 横 6G・0.02 秒)。そのあとは after_v。drop = (始まり, 終わり) はカメラが
-    来ない。veh_hold = (始まり, 終わり) は車両の値が来ない"""
+    来ない。veh_hold = (始まり, 終わり) は車両の値が来ない。
+    モデルは 1.8〜2.0 秒ブレーキ側(中立 + 200)、そのあと中立の帯。止まる前のブレーキ側は 2026-10-27 fix7 safety s4-a で足した
+    (ESC が後退を待っていた 10/23 の形。'brake' の段で後ろへ動くのはこの形だけ。tests/test_recovery_back_guard.recovery_scene の説明)"""
     def v(s):
         if s < 2.0:
             return 3.0
         if 2.95 <= s < hit_at:
             return -1.0
         return after_v if s >= hit_at else 0.0
-    frames, imu = build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else (C, N + 20.0),
+    frames, imu = build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else ((C, N + 200.0) if s < 2.0 else (C, N + 20.0)),
                         ax=lambda s: 60.0 if hit_at <= s < hit_at + 0.02 else 0.0,
                         veh_skip=(lambda s: veh_hold[0] <= s < veh_hold[1]) if veh_hold else False)
     for f in frames:
@@ -331,23 +333,38 @@ def _scene(kind, seed):
     return _fuzz(seed) if kind == 'loop' else _rec_fuzz(seed)
 
 
+def _without_esc_rev(step):
+    """Recovery.step から esc_rev を外す(2026-10-27 fix7 safety s4-a の前の形。drive の EscMayReverse が見る「ESC が後退で
+    走らせていたかもしれないか」を渡さない = 分からない)。でたらめな開いたループの場面は、書いた値と関係なく車を後ろへ動かす
+    (前進のあとの 'brake' でも後ろへ動く。このESCでは起きない)ので、r1-rs1-1 の直しだけを前と同じに確かめるときに使う。
+    s4-a は tests/test_rec_fix7_safety.py が見る"""
+    def wrapped(self, *a, **kw):
+        kw.pop('esc_rev', None)
+        return step(self, *a, **kw)
+    return wrapped
+
+
 @pytest.mark.parametrize('kind,seed', FUZZ)
 def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkeypatch, tmp_path, kind, seed):
     """でたらめな場面 16 本(反証 2 回目の fuzz_loop の場面 6・リカバリーの途中を狙った場面 10): keep = 0・見張り OFF は直す前と
     全く同じ。keep = 1・guard = 1 は、rear_impact_hold が出るまでは直す前と同じで、出なければ最後まで同じ(直しが効くのは、残した
-    中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進"""
+    中立止めの間に 2.5G 以上が来たときだけ)。出たら、そのフレームは前進。
+    今の版は fix7 safety s4-a の esc_rev を外して流す(_without_esc_rev。開いたループの場面は書いた値と関係なく後ろへ動かすため)"""
     _, before = load_before()
     rng = random.Random(seed)
     frames, imu = _scene(kind, seed)
     for keep, guard in ((0, 1), (1, 0), (0, 0)):
         p = _fuzz_params(rng, keep, guard)
-        same_out(run_wait(drive, monkeypatch, tmp_path, p, frames, imu), run_wait(before, monkeypatch, tmp_path, p, frames, imu))
+        with monkeypatch.context() as m:       # fix7 s4-a の esc_rev は外して照らす(_without_esc_rev)
+            m.setattr(A.Recovery, 'step', _without_esc_rev(A.Recovery.step))
+            now = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+        same_out(now, run_wait(before, monkeypatch, tmp_path, p, frames, imu))
     p = _fuzz_params(rng, 1, 1)
     # 2026-10-27 fix3 直す 2 回目 r2-r2-rs-1・rs-2: 残した中立止めのあとの hold_since・hold_back_s の直し(段の時間を止める・下がった
     # 時間・長い中立止めは中止)は tests/test_fix3_r2_1.py で確かめる。ここでは hold_since を渡さない形にして、r1-rs1-1 の直し
     # (rear_impact_hold)だけが前と違うことを、前と同じに確かめる
     with monkeypatch.context() as m:
-        m.setattr(A.Recovery, 'step', _without_hold_since(A.Recovery.step))
+        m.setattr(A.Recovery, 'step', _without_hold_since(_without_esc_rev(A.Recovery.step)))
         pn_rn = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
     (_, pn, rn), (_, po, ro) = pn_rn, run_wait(before, monkeypatch, tmp_path, p, frames, imu)
     hits = [i for i, e in enumerate(rn.events) if e[0] == 'recovery_guard' and e[1]['what'] == 'rear_impact_hold']
@@ -362,7 +379,8 @@ def test_rs1_1_fuzz_off_identical_and_on_changes_only_at_rear_impact_hold(monkey
 
 
 def test_rs1_1_fuzz_covers_rear_impact_hold(monkeypatch, tmp_path):
-    """上のでたらめな場面のどれかで、直しの道(rear_impact_hold)を通っている(試験が空振りしていない)"""
+    """上のでたらめな場面のどれかで、直しの道(rear_impact_hold)を通っている(試験が空振りしていない)。今の版は上と同じく
+    fix7 safety s4-a の esc_rev を外して流す"""
     _, before = load_before()
     n_scenes, pushes, old_pushes = 0, [], []
     for kind, seed in FUZZ:
@@ -373,7 +391,9 @@ def test_rs1_1_fuzz_covers_rear_impact_hold(monkeypatch, tmp_path):
         for keep, guard in ((0, 1), (1, 0), (0, 0)):
             _fuzz_params(rng, keep, guard)
         p = _fuzz_params(rng, 1, 1)
-        _, pca, rec = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+        with monkeypatch.context() as m:       # fix7 s4-a の esc_rev は外す(_without_esc_rev。開いたループの場面のため)
+            m.setattr(A.Recovery, 'step', _without_esc_rev(A.Recovery.step))
+            _, pca, rec = run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
         ev = [e[1]['what'] for e in rec.events if e[0] == 'recovery_guard']
         if 'rear_impact_hold' in ev:
             n_scenes += 1
