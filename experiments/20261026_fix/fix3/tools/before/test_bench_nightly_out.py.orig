@@ -1,0 +1,137 @@
+"""tools/bench_nightly.sh の出力先の試験(2026-10-26 fix2)。
+前は既定の --report が ~/jetformer_reports/<bench> そのもので、11/3 の夜に既定のまま回すと 10/23 の README.md・report.json を
+上書きした。今は既定を日付つきの新しい場所(<bench>/report_<日>)にし、既定の場所に前の結果があれば何も書かずに終了コード 3 で止まる。
+--out・--report・-- のあとの bench_report の選択肢(--logs など)の使い方は今まで通り(渡した場所は上書きする: quick_eval が回し直す)。
+
+台本の写しを tmp に置き、tmp の data/raw(空のログの dir 1 本)と偽物の jf-heavy(渡されたコマンドを書くだけ)で回す。
+本物の data/raw・data/labels・~/jetformer_reports には触れない。GPU・torch は使わない。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \\
+        /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q tests/test_bench_nightly_out.py
+"""
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+LOG1 = '20001024-120000'
+
+
+def sandbox(tmp_path):
+    """tmp/jf/tools/bench_nightly.sh(写し)・tmp/jf/data/raw/20001024-120000/・偽物の jf-heavy・候補の表 bench x(2 日)"""
+    jf = tmp_path / 'jf'
+    (jf / 'tools').mkdir(parents=True)
+    shutil.copy2(ROOT / 'tools' / 'bench_nightly.sh', jf / 'tools' / 'bench_nightly.sh')
+    (jf / 'data' / 'raw' / LOG1).mkdir(parents=True)
+    heavy = tmp_path / 'fake_heavy.sh'
+    heavy.write_text('#!/bin/bash\nprintf "%s\\n" "$*" >> "$FAKE_HEAVY_LOG"\nexit 0\n')
+    heavy.chmod(0o755)
+    bench = tmp_path / 'bench.json'
+    bench.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2000-10-23', 'blocks': []}, {'date': '2000-10-24', 'blocks': []}]}))
+    env = dict(os.environ, HEAVY=str(heavy), PY=sys.executable, JF_REPORTS=str(tmp_path / 'reports'),
+               FAKE_HEAVY_LOG=str(tmp_path / 'heavy.log'))
+    return jf, bench, env
+
+
+def nightly(jf, env, *args):
+    return subprocess.run(['bash', str(jf / 'tools' / 'bench_nightly.sh')] + [str(a) for a in args],
+                          capture_output=True, text=True, timeout=120, env=env)
+
+
+def heavy_cmds(tmp_path):
+    p = tmp_path / 'heavy.log'
+    return p.read_text(encoding='utf-8').splitlines() if p.exists() else []
+
+
+def report_cmd(tmp_path):
+    cs = [c for c in heavy_cmds(tmp_path) if 'tools/bench_report.py' in c]
+    assert len(cs) == 1, heavy_cmds(tmp_path)
+    return cs[0]
+
+
+def test_default_report_is_dated_and_old_root_report_untouched(tmp_path):
+    jf, bench, env = sandbox(tmp_path)
+    root = tmp_path / 'reports' / 'x'
+    root.mkdir(parents=True)
+    (root / 'README.md').write_text('10/23 の報告')                       # 前の既定の場所(10/23 の報告)
+    (root / 'report.json').write_text('{"old": 1}')
+    r = nightly(jf, env, '20001024', '--bench', bench)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert (root / 'README.md').read_text() == '10/23 の報告' and (root / 'report.json').read_text() == '{"old": 1}'
+    cmd = report_cmd(tmp_path)
+    assert cmd.endswith('--out %s' % (root / 'report_20001024'))           # 日付つきの新しい場所
+    assert '--day 20001023 --day 20001024' in cmd                           # 1 日目は days から(今まで通り)
+    log = (root / 'nightly_20001024' / 'nightly.log').read_text(encoding='utf-8').splitlines()
+    assert '1 日目 20001023、bench_candidates.json の days から' in log[0]
+    assert log[1] == '出力 %s(既定)・レポート %s(既定)' % (root / 'nightly_20001024', root / 'report_20001024')
+
+
+def test_stops_before_overwriting_default_report(tmp_path):
+    jf, bench, env = sandbox(tmp_path)
+    rep = tmp_path / 'reports' / 'x' / 'report_20001024'
+    rep.mkdir(parents=True)
+    (rep / 'README.md').write_text('前の結果')
+    r = nightly(jf, env, '20001024', '--bench', bench)
+    assert r.returncode == 3 and '止めます' in r.stderr and str(rep) in r.stderr
+    assert (rep / 'README.md').read_text() == '前の結果'
+    assert not (tmp_path / 'reports' / 'x' / 'nightly_20001024').exists()     # 何も書かない
+    assert heavy_cmds(tmp_path) == []                                          # 何も回さない
+
+
+def test_stops_before_overwriting_default_nightly(tmp_path):
+    jf, bench, env = sandbox(tmp_path)
+    out = tmp_path / 'reports' / 'x' / 'nightly_20001024'
+    out.mkdir(parents=True)
+    (out / 'nightly.log').write_text('前の夜')
+    r = nightly(jf, env, '20001024', '--bench', bench)
+    assert r.returncode == 3 and str(out) in r.stderr
+    assert (out / 'nightly.log').read_text() == '前の夜' and heavy_cmds(tmp_path) == []
+    # --report だけ渡しても、既定の --out に前の結果があれば止まる
+    r = nightly(jf, env, '20001024', '--bench', bench, '--report', tmp_path / 'r')
+    assert r.returncode == 3 and (out / 'nightly.log').read_text() == '前の夜' and not (tmp_path / 'r').exists()
+
+
+def test_overwrite_flag_allows_default(tmp_path):
+    jf, bench, env = sandbox(tmp_path)
+    root = tmp_path / 'reports' / 'x'
+    for d, f in (('nightly_20001024', 'nightly.log'), ('report_20001024', 'README.md')):
+        (root / d).mkdir(parents=True)
+        (root / d / f).write_text('前')
+    r = nightly(jf, env, '20001024', '--bench', bench, '--overwrite')
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert (root / 'nightly_20001024' / 'nightly.log').read_text(encoding='utf-8').startswith('# bench_nightly 20001024')
+    assert report_cmd(tmp_path).endswith('--out %s' % (root / 'report_20001024'))
+
+
+def test_explicit_out_report_and_extra_args_unchanged(tmp_path):
+    """--out・--report を渡したら、前の結果があっても今まで通り上書きする(quick_eval が同じ場所で回し直す)。
+    -- のあとの選択肢は bench_report の最後にそのまま付く"""
+    jf, bench, env = sandbox(tmp_path)
+    out, rep = tmp_path / 'n', tmp_path / 'r'
+    out.mkdir()
+    rep.mkdir()
+    (out / 'nightly.log').write_text('前の夜')
+    (rep / 'README.md').write_text('前の結果')
+    r = nightly(jf, env, '20001024', '--bench', bench, '--out', out, '--report', rep, '--',
+                '--desk', 'D.json', '--logs', LOG1, '--k-first', '0', '--min-laps', '1')
+    assert r.returncode == 0, r.stdout + r.stderr
+    log = (out / 'nightly.log').read_text(encoding='utf-8').splitlines()
+    assert log[0].startswith('# bench_nightly 20001024') and log[1] == '出力 %s・レポート %s' % (out, rep)
+    cmd = report_cmd(tmp_path)
+    assert cmd.endswith('--out %s --desk D.json --logs %s --k-first 0 --min-laps 1' % (rep, LOG1))
+    cs = heavy_cmds(tmp_path)
+    assert any('tools/section_scorecard.py --day 20001024' in c and c.endswith('--out %s/scorecard' % out) for c in cs)
+    assert not (tmp_path / 'reports').exists()                               # 既定の場所には何も作らない
+
+
+def test_no_records_and_usage_unchanged(tmp_path):
+    jf, bench, env = sandbox(tmp_path)
+    r = nightly(jf, env, '20001023', '--bench', bench, '--out', tmp_path / 'n', '--report', tmp_path / 'r')
+    assert r.returncode == 1 and 'data/raw/20001023-* がありません' in r.stdout
+    r = nightly(jf, env)
+    assert r.returncode == 2 and '--overwrite' in r.stdout and '環境変数' in r.stdout     # 使い方(頭の説明)を全部出す
+    r = nightly(jf, env, '20001024', '--nope')
+    assert r.returncode == 2 and '知らない選択肢' in r.stderr

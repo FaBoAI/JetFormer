@@ -1,0 +1,175 @@
+{
+ "sweep_a": {
+  "drop=0.067 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.067 keep=1": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early",
+    "rear_impact"
+   ],
+   "first_last": null
+  },
+  "drop=0.100 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.100 keep=1": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early",
+    "rear_impact"
+   ],
+   "first_last": null
+  },
+  "drop=0.134 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.134 keep=1": {
+   "reverse_s_after_rear_hit": 0.77,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": [
+    3.383,
+    4.117
+   ]
+  },
+  "drop=0.167 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.167 keep=1": {
+   "reverse_s_after_rear_hit": 0.73,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": [
+    3.417,
+    4.117
+   ]
+  },
+  "drop=0.200 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.200 keep=1": {
+   "reverse_s_after_rear_hit": 0.7,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": [
+    3.45,
+    4.117
+   ]
+  },
+  "drop=0.250 keep=0": {
+   "reverse_s_after_rear_hit": 0.0,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": null
+  },
+  "drop=0.250 keep=1": {
+   "reverse_s_after_rear_hit": 0.67,
+   "guard_events": [
+    "back_early"
+   ],
+   "first_last": [
+    3.483,
+    4.117
+   ]
+  }
+ },
+ "giveup_paths": {
+  "giveup_s": 11.85,
+  "cam_drop_0.3s keep=0": {
+   "push_s_after": 9.9,
+   "giveup_rows_after": 0,
+   "rows_after": 297
+  },
+  "cam_drop_0.3s keep=1": {
+   "push_s_after": 0.0,
+   "giveup_rows_after": 297,
+   "rows_after": 297
+  },
+  "rc_lost_0.3s keep=0": {
+   "push_s_after": 9.9,
+   "giveup_rows_after": 0,
+   "rows_after": 297
+  },
+  "rc_lost_0.3s keep=1": {
+   "push_s_after": 0.0,
+   "giveup_rows_after": 297,
+   "rows_after": 297
+  }
+ },
+ "kick_mid_reverse": {
+  "first_recovery_brake_s": 2.85,
+  "changed_at_s": 3.35,
+  "kinds_next_20": [
+   2,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4
+  ],
+  "outs_next_20": [
+   1796.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0,
+   1416.0
+  ],
+  "kick_s": 2.03,
+  "reverse_rows_without_change": 82
+ }
+}

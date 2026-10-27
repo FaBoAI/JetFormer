@@ -250,3 +250,8 @@ input.snd-text { flex: 1; margin: 0 !important; }
 .speed-panel.on { border-color: #2563eb; background: #dbeafe; }
 .launch-panel { border-color: #fde68a; background: #fffbeb; }      /* 発進の前進(2026-10-26) */
 .launch-panel.on { border-color: #d97706; background: #fef3c7; }
+/* 速度ゲインの ±0.01 のボタン(2026-10-26 fix3 state-2)・試験の選択肢のスイッチ(後ろの見張りなど。fix3) */
+.gain-fine { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+.gain-fine button.small { min-width: 64px; padding: 6px 10px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.opt-panel { border-color: #ddd6fe; background: #f5f3ff; }
+.opt-panel.on { border-color: #7c3aed; background: #ede9fe; }

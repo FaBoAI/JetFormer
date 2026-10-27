@@ -98,5 +98,7 @@ def test_smoke_one_row_separate_output():
 def test_estimate_and_preflight_run():
     rc, out = h('estimate')
     assert rc == 0 and '段 1' in out
-    rc, out = h('preflight')
+    rc, out = h('preflight', env={'GPU_QUEUE_DISK_MIN_GB': '0'})   # 空きは本物のディスク(一式の作業場所で減る)。下で別に見る
     assert 'OK  gpu_queue_v3.tsv の 22 行が protocol と同じ' in out and 'NG' not in out
+    rc, out = h('preflight', env={'GPU_QUEUE_DISK_MIN_GB': '1e9'})
+    assert 'NG  空きディスク' in out

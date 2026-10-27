@@ -236,11 +236,12 @@ def test_defaults_and_reset_on_boot(monkeypatch, tmp_path):
                                                           'ceil_left_mps': (3.5, 4.5), 'speed_auto': (0, 1),
                                                           'auto_target_mps': (3.8, 4.4), 'auto_vref_v': (7.0, 9.0)}
     # 今の項目の既定値・範囲は変わらない(発進の前進の 4 つは 2026-10-26 に足した。tests/test_launch_drive.py)
-    added = SC_KEYS + drive.LAUNCH_KEYS
+    added = SC_KEYS + drive.LAUNCH_KEYS + ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick')     # 後ろの見張りは 2026-10-26 fix2、あとの 2 つは fix3
     assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in added} == before.DEFAULT_PARAMS
     assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in added} == before.PARAM_LIMITS
     assert set(before.RESET_ON_BOOT) <= set(drive.RESET_ON_BOOT)
-    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) - set(drive.LAUNCH_KEYS) == set(SC_KEYS) - {'auto_vref_v'}
+    assert (set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) - set(drive.LAUNCH_KEYS)
+            - {'rec_back_guard', 'rec_hold_keep', 'launch_no_kick'}) == set(SC_KEYS) - {'auto_vref_v'}
     path = tmp_path / 'drive_settings.json'
     path.write_text(json.dumps({'params': {'speed_ceiling': 1, 'speed_auto': 1, 'ceil_all_mps': 4.9, 'ceil_left_mps': 3.6,
                                            'auto_target_mps': 4.4, 'auto_vref_v': 8.1, 'steer_gain': 1.5}}))

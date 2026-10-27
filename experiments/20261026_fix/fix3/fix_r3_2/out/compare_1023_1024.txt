@@ -1,0 +1,41 @@
+DIFF cc_20261023-204755.rc
+DIFF cc_20261024-160847.rc
+DIFF cc_20261024-162033.rc
+DIFF cc_20261024-183656.rc
+DIFF cc_latest_20261023.rc
+DIFF cc_latest_20261024.rc
+DIFF launches.stderr
+DIFF launches_20261023_first-only.stderr
+DIFF launches_20261023_ignore-gain.stderr
+DIFF launches_20261023_plain.stderr
+DIFF launches_20261024_first-only.stderr
+DIFF launches_20261024_ignore-gain.stderr
+DIFF launches_20261024_plain.stderr
+同じ 48 違う 13 (比べた 61 ファイル。出力の場所の行・car_check のかかった秒・created_at を除く)
+cc_20261023-204755.rc old car_check 20261023-204755 rc=3 | new car_check 20261023-204755 rc=3
+cc_20261024-160847.rc old car_check 20261024-160847 rc=2 | new car_check 20261024-160847 rc=2
+cc_20261024-162033.rc old car_check 20261024-162033 rc=1 | new car_check 20261024-162033 rc=1
+cc_20261024-183656.rc old car_check 20261024-183656 rc=2 | new car_check 20261024-183656 rc=2
+cc_latest_20261023.rc old car_check --latest 20261023 rc=3 | new car_check --latest 20261023 rc=3
+cc_latest_20261024.rc old car_check --latest 20261024 rc=3 | new car_check --latest 20261024 rc=3
+
+違う 13 の中身(全部、中身の違いではない):
+- *.rc 6 本: 中身は「old …rc=N」と「new …rc=N」で、頭の old/new の字だけ違う。終わりの番号は全部同じ(上の行)
+- launches*.stderr 7 本: numpy の trapz の DeprecationWarning の行の台本の場所と行番号だけ違う:
+    1c1
+    < /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr32/real/old_root/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    ---
+    > /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:597: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    cc_20261023-204755.stderr: 警告の行のほかは同じ
+    cc_20261024-160847.stderr: 警告の行のほかは同じ
+    cc_20261024-162033.stderr: 警告の行のほかは同じ
+    cc_20261024-183656.stderr: 警告の行のほかは同じ
+    cc_latest_20261023.stderr: 警告の行のほかは同じ
+    cc_latest_20261024.stderr: 警告の行のほかは同じ
+    launches_20261023_first-only.stderr: 警告の行のほかは同じ
+    launches_20261023_ignore-gain.stderr: 警告の行のほかは同じ
+    launches_20261023_plain.stderr: 警告の行のほかは同じ
+    launches_20261024_first-only.stderr: 警告の行のほかは同じ
+    launches_20261024_ignore-gain.stderr: 警告の行のほかは同じ
+    launches_20261024_plain.stderr: 警告の行のほかは同じ
+    launches.stderr: 警告の行のほかは同じ

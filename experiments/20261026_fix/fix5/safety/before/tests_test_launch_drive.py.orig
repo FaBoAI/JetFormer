@@ -1,0 +1,512 @@
+"""発進の前進(launch_boost)を走行ループ(drive.py)につないだ部分の試験。2026-10-26
+仕様: jetformer_reports/fix_20261026/protocol_v3.md 14 章の T1〜T4・T10・T11(と T5〜T8 の走行ループでの形)。
+実機・GPU・torch は使わない(センサー・PCA9685・TensorRT・入力の正規化は偽物。時刻も決まった値で、スレッドを使わずに回す。
+偽物は tests/test_drive_caps.py と同じ)。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \
+        /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q tests/test_launch_drive.py
+
+「変更の前」は手を入れる前の写し tests/fixtures/launch_before/(drive.py・assist.py。作業ツリーに未 commit の変更が
+あるため git ではなく写し。sha256 は BEFORE_SHA)。写しの drive.py は写しの assist.py で動かす。
+"""
+import collections
+import hashlib
+import importlib.util
+import inspect
+import json
+import time as _time
+import types
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from jetformer import assist as A
+from jetformer import clock, config, drive
+from jetformer import safety_caps as sc
+from jetformer.sensors.base import Sample
+
+from test_drive_caps import (FakePCA, FakeRecorder, SeqRunner, assert_rows_equal_before, fake_normalize,
+                             run_det, scenario)
+
+ROOT = Path(__file__).resolve().parents[1]
+FIX = ROOT / 'tests' / 'fixtures' / 'launch_before'
+BEFORE_SHA = {'drive.py': 'bbe7d592ab91cde9dd150f60f149c69fe72df8b5ff6c36f925fd01d4a7f98f8a',
+              'assist.py': '8e73208762f9d8b5068aaf37919899d5f454476dea456eea47b566b0b6aff81c'}
+REF = (1441.0, 1496.0)
+C, N = REF
+NS = 1_000_000_000
+T0 = 1_800_000_000 * NS
+PARAMS = dict(drive.DEFAULT_PARAMS, steer_gain=1.0, throttle_gain=1.0, lookahead=1, tof_guard=1, start_kick=1,
+              rev_us=300.0, rev_s=0.4)
+FLOOR_MM = 2500
+TOF_FREE = np.full((42, 54), (4 << 13) | FLOOR_MM, np.uint16)          # 床だけ(前に何も無い: x_free 9 m)
+
+
+def tof_near(d_mm):
+    """前の真ん中に立った物(d_mm の距離・24 行)"""
+    x = TOF_FREE.copy()
+    x[4:28, 20:34] = (4 << 13) | int(d_mm)
+    return x
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def load_before():
+    """手を入れる前の drive.py・assist.py(写し)をモジュールにする"""
+    for name, h in BEFORE_SHA.items():
+        assert sha(FIX / name) == h, name
+    aspec = importlib.util.spec_from_loader('jetformer._assist_before_launch', loader=None)
+    amod = importlib.util.module_from_spec(aspec)
+    exec(compile((FIX / 'assist.py').read_text(encoding='utf-8'), str(FIX / 'assist.py'), 'exec'), amod.__dict__)
+    spec = importlib.util.spec_from_loader('jetformer._drive_before_launch', loader=None)
+    mod = importlib.util.module_from_spec(spec)
+    mod.__package__ = 'jetformer'
+    exec(compile((FIX / 'drive.py').read_text(encoding='utf-8'), str(FIX / 'drive.py'), 'exec'), mod.__dict__)
+    mod.assist_mod = amod
+    assert 'launch_boost' not in mod.PARAM_LIMITS and not hasattr(amod, 'LaunchBoost')
+    return mod
+
+
+# ---------------------------------------------------------------- 発進の場面(30 fps のフレーム・100 Hz の IMU)
+def _f(x, s):
+    return x(s) if callable(x) else x
+
+
+def build(dur, sel=True, v=0.0, gz=0.0, ax=0.0, tof=None, pred=(C, 1450.0), valid3=True, veh_skip=False):
+    """dur 秒の場面。sel・v・gz・ax・tof・pred・valid3・veh_skip は値か「始まりからの秒 → 値」の関数。
+    戻り値 (frames, imu)。imu = [(t_ns, gz deg/s, ax m/s²)]"""
+    imu = []
+    for k in range(int(round(dur * 100))):
+        s = k / 100.0
+        imu.append((T0 + int(round(k * NS / 100)), float(_f(gz, s)), float(_f(ax, s))))
+    frames = []
+    i = 0
+    while True:
+        cam_t = T0 + 150_000_000 + int(round(i * NS / 30))
+        s = (cam_t - T0) / 1e9
+        if cam_t > imu[-1][0] - 50_000_000:
+            break
+        sl = bool(_f(sel, s))
+        vv = float(_f(v, s))
+        st, th = _f(pred, s)
+        veh = {'pwm': [1441, 1496, 2000 if sl else 1000], 'valid': [True, True, bool(_f(valid3, s))], 'select': sl,
+               'moving': vv > 0, 'erpm': int(round(-vv / sc.KV))}
+        t_raw = _f(tof, s)
+        frames.append({'cam_t': cam_t, 's': s, 'pred': np.tile([[st, th]], (10, 1)), 'veh': veh,
+                       'veh_skip': bool(_f(veh_skip, s)), 'tof': TOF_FREE if t_raw is None else t_raw})
+        i += 1
+    return frames, imu
+
+
+class Feeder(object):
+    """cam_evt の代わり。wait() のたびに次のフレームのセンサー値をバッファへ入れ、時計を進める(スレッドなし)。
+    hook(i, driver) をフレームの前に呼ぶ(走行中のパラメータの変更など)"""
+
+    def __init__(self, d, frames, imu, bufs, cam_slot, box, hook=None):
+        self.d, self.frames, self.imu = d, frames, imu
+        self.tof_buf, self.imu_buf, self.veh_buf = bufs
+        self.cam_slot, self.box, self.hook = cam_slot, box, hook
+        self.i, self.k = 0, 0
+
+    def wait(self, timeout):
+        if self.i >= len(self.frames):
+            self.d._stop.set()
+            return False
+        f = self.frames[self.i]
+        if self.hook is not None:
+            self.hook(self.i, self.d)
+        cam_t = f['cam_t']
+        while self.k < len(self.imu) and self.imu[self.k][0] <= cam_t + 2_000_000:
+            t, g, ax = self.imu[self.k]
+            self.imu_buf.append((t, np.array([ax, 0.0, 9.8, 0.0, 0.0, np.deg2rad(g)], np.float32)))
+            self.k += 1
+        if not f['veh_skip']:
+            self.veh_buf.append((cam_t - 3_000_000, dict(f['veh'])))
+        self.tof_buf.append((cam_t - 5_000_000, f['tof']))
+        self.cam_slot[0] = Sample(cam_t, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': self.i})
+        self.box['ns'] = cam_t + 8_000_000
+        self.box['m'] = (cam_t - T0) / 1e9 + 100.0
+        self.d.heartbeat_t = self.box['m']
+        self.i += 1
+        return True
+
+    def clear(self):
+        pass
+
+    def set(self):
+        pass
+
+
+def run(mod, monkeypatch, tmp_path, params, frames, imu, dry_run=False, floor=True, hook=None):
+    """mod(drive か変更前の drive)の _loop を回す → (driver, pca, recorder)。floor = ToF ガードの床の基準を置く"""
+    box = {'ns': T0, 'm': 100.0}
+    monkeypatch.setattr(clock, 'now_ns', lambda: box['ns'])
+    monkeypatch.setattr(mod, 'time', types.SimpleNamespace(monotonic=lambda: box['m'], perf_counter=_time.perf_counter,
+                                                           time=lambda: 1.0, sleep=lambda s: None, strftime=_time.strftime))
+    monkeypatch.setattr(mod, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    fp = tmp_path / 'floor_ref.npy'
+    if floor:
+        np.save(fp, np.full((42, 54), float(FLOOR_MM), np.float32))
+    monkeypatch.setattr(mod, 'FLOOR_REF_PATH', fp if floor else tmp_path / 'no_floor_ref.npy')
+    rec = FakeRecorder()
+    d = mod.Driver(hub=None, recorder=rec)
+    d.params = dict(params)
+    d.hb_token = 'tok'
+    d.hb_count = 1
+    d.st = {'phase': 'driving', 'mode_id': 4}
+    pca = FakePCA()
+    out = mod._Output(pca, config.PCA9685, REF, lambda: d.params)
+    bufs = (collections.deque(maxlen=10), collections.deque(maxlen=60), collections.deque(maxlen=50))
+    cam_slot = [None]
+    feeder = Feeder(d, frames, imu, bufs, cam_slot, box, hook)
+    runner = SeqRunner([f['pred'] for f in frames])
+    d._loop(d.st, runner, fake_normalize, pca, out, REF, 6, 0.0, cam_slot, feeder, *bufs, dry_run)
+    d._stop.clear()
+    return d, pca, rec
+
+
+def launch_scene(**kw):
+    """人側 1.0 秒(止まっている)→ AI 側。AI 側にしてから 0.2 秒は止まったまま、そのあと 5 m/s² で 3.5 m/s まで。
+    モデルは止まっている間ブレーキ(中立 + 100)、そのあと弱い前進(中立 − 120)。3.0〜3.5 秒は人側で止まり、また AI 側"""
+    def v(s):
+        if s < 1.2:
+            return 0.0
+        if s < 3.0:
+            return min(5.0 * (s - 1.2), 3.5)
+        if s < 3.7:
+            return 0.0
+        return min(5.0 * (s - 3.7), 3.5)
+    args = dict(sel=lambda s: 1.0 <= s < 3.0 or s >= 3.5, v=v,
+                pred=lambda s: (C, N + 100.0) if (s < 1.5 or 3.5 <= s < 3.9) else (C, N - 120.0))
+    args.update(kw)
+    return build(kw.pop('dur', 6.0), **args)
+
+
+def ai_rows(rec):
+    return [(t, r) for t, r in rec.rows if not r['hold']]
+
+
+# ================================================================ T1 OFF はビット単位で同じ
+def test_t1_before_copies():
+    assert {k: v[:12] for k, v in BEFORE_SHA.items()} == {'drive.py': 'bbe7d592ab91', 'assist.py': '8e73208762f9'}
+    load_before()
+
+
+@pytest.mark.parametrize('start_kick', [0, 1])
+def test_t1_off_bit_identical_caps_scenario(monkeypatch, tmp_path, start_kick):
+    """区間の速度上限の試験の場面(後退・人側・CH3 が届かない・車両の値が古い)。ToF ガードの床の基準なし"""
+    before = load_before()
+    frames, imu = scenario()
+    p = dict(PARAMS, start_kick=start_kick)
+    pb = {k: v for k, v in p.items() if k in before.DEFAULT_PARAMS}
+    _, pca0, rec0 = run_det(before, monkeypatch, tmp_path, pb, frames, imu)
+    d1, pca1, rec1 = run_det(drive, monkeypatch, tmp_path, dict(p, launch_boost=0), frames, imu)
+    assert len(pca0.pairs) > 300
+    assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+    assert_rows_equal_before(rec0.rows, rec1.rows)
+    assert all(r['launch_on'] is False and r['launch_end'] == 0 for _, r in rec1.rows)
+    assert rec0.events == rec1.events and d1.st['stats']['launch_boosts'] == 0
+
+
+@pytest.mark.parametrize('tof_guard,start_kick,model', [(1, 1, 'brake'), (1, 0, 'brake'), (2, 1, 'brake'), (3, 1, 'brake'),
+                                                         (0, 1, 'brake'), (1, 1, 'neutral'), (2, 0, 'neutral')])
+def test_t1_off_bit_identical_launch_scene(monkeypatch, tmp_path, tof_guard, start_kick, model):
+    """発進の場面(ToF ガードの床の基準あり。止まっている間のブレーキか中立・人側・前が近い・衝撃)"""
+    before = load_before()
+    kw = {} if model == 'brake' else dict(pred=lambda s: (C, N) if (s < 1.5 or 3.5 <= s < 3.9) else (C, N - 120.0))
+    frames, imu = launch_scene(tof=lambda s: tof_near(400) if 1.6 <= s < 1.7 else None,
+                               ax=lambda s: 30.0 if 2.2 <= s < 2.21 else 0.0, **kw)
+    p = dict(PARAMS, tof_guard=tof_guard, start_kick=start_kick)
+    pb = {k: v for k, v in p.items() if k in before.DEFAULT_PARAMS}
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, pb, frames, imu)
+    _, pca1, rec1 = run(drive, monkeypatch, tmp_path, dict(p, launch_boost=0), frames, imu)
+    assert len(pca0.pairs) > 150
+    assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+    assert_rows_equal_before(rec0.rows, rec1.rows)
+    assert rec0.events == rec1.events
+    kinds = collections.Counter(r['assist'] for _, r in rec1.rows)
+    if model == 'brake':
+        assert kinds[A.ASSIST_ESC] > 0 and kinds[A.ASSIST_START] == 0     # 止まっている間のブレーキ → 中立(補助は出ない)
+    elif start_kick:
+        assert kinds[A.ASSIST_START] > 0                                     # 今の発進の補助が出る場面
+
+
+@pytest.mark.parametrize('case', ['dry_run', 'no_switch', 'near'])
+def test_t1_on_but_not_started_is_identical(monkeypatch, tmp_path, case):
+    """ON でも始めない場面(dry run・走行の始めから AI 側・前が近い)は、出力と今の欄が変える前と同じ"""
+    before = load_before()
+    kw = {}
+    if case == 'no_switch':
+        kw = dict(sel=True)
+    if case == 'near':
+        kw = dict(tof=lambda s: tof_near(900) if s < 1.3 else None)          # 止まっていて前 0.9 m(TTC 3 秒)
+    frames, imu = launch_scene(**kw)
+    if case == 'near':                                                        # 2 回目の発進も前が近い
+        frames = [dict(f, tof=tof_near(900)) if 3.4 <= f['s'] < 3.6 else f for f in frames]
+    pb = {k: v for k, v in PARAMS.items() if k in before.DEFAULT_PARAMS}
+    dry = case == 'dry_run'
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, pb, frames, imu, dry_run=dry)
+    d1, pca1, rec1 = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu, dry_run=dry)
+    assert pca0.pairs == pca1.pairs
+    assert_rows_equal_before(rec0.rows, rec1.rows)
+    assert d1.st['stats']['launch_boosts'] == 0
+    if case != 'dry_run':
+        skips = [e[1]['why'] for e in rec1.events if e[0] == 'launch_boost']
+        assert skips and set(skips) == {'no_switch' if case == 'no_switch' else 'near'}
+
+
+# ================================================================ T2〜T4 パラメータ
+def test_t2_limits_defaults_and_clipping(monkeypatch, tmp_path):
+    assert {k: drive.PARAM_LIMITS[k] for k in drive.LAUNCH_KEYS} == {
+        'launch_boost': (0, 1), 'launch_us': (150.0, 300.0), 'launch_mps': (2.0, 3.0), 'launch_max_s': (0.5, 2.0)}
+    assert {k: drive.DEFAULT_PARAMS[k] for k in drive.LAUNCH_KEYS} == {
+        'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2}
+    before = load_before()
+    later = drive.LAUNCH_KEYS + ('rec_back_guard',)      # 後ろの見張りは 2026-10-26 fix2(tests/test_recovery_back_guard.py)
+    later += ('rec_hold_keep', 'launch_no_kick')          # 2026-10-26 fix3(tests/test_rec_hold_keep.py)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in later} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in later} == before.PARAM_LIMITS
+    assert drive.DEFAULT_PARAMS['start_kick'] == 0 and drive.DEFAULT_PARAMS['throttle_gain'] == 0.5   # 既定値は変えていない
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    p = d.set_params({'launch_us': 999, 'launch_mps': 3.5, 'launch_max_s': 0.1})
+    assert (p['launch_us'], p['launch_mps'], p['launch_max_s']) == (300.0, 3.0, 0.5)
+    p = d.set_params({'launch_us': 100, 'launch_mps': 1.0, 'launch_max_s': 5})
+    assert (p['launch_us'], p['launch_mps'], p['launch_max_s']) == (150.0, 2.0, 2.0)
+    assert d.set_params({'launch_boost': 0.7})['launch_boost'] == 1 and d.set_params({'launch_boost': 0.2})['launch_boost'] == 0
+    assert isinstance(d.set_params({'launch_boost': 5})['launch_boost'], int)
+    with pytest.raises(ValueError):
+        d.set_params({'launch_us': float('nan')})
+    spec = d.status()['launch_spec']
+    assert spec['us'] == 250.0 or spec['us'] == d.params['launch_us']
+    assert spec['ttc_start_s'] == A.LaunchBoost.TTC_START_S and spec['end_names']['7'] == 'CH3 を人側'
+    assert d.status()['limits']['launch_us'] == [150.0, 300.0]
+
+
+def test_t3_reset_on_boot(monkeypatch, tmp_path):
+    path = tmp_path / 'drive_settings.json'
+    path.write_text(json.dumps({'params': {'launch_boost': 1, 'launch_us': 160.0, 'launch_mps': 2.9, 'launch_max_s': 1.9,
+                                           'steer_gain': 1.4}}))
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', path)
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    assert {k: d.params[k] for k in drive.LAUNCH_KEYS} == {k: drive.DEFAULT_PARAMS[k] for k in drive.LAUNCH_KEYS}
+    assert d.params['steer_gain'] == 1.4
+    assert set(drive.LAUNCH_KEYS) <= set(drive.RESET_ON_BOOT)
+    d.set_params({'launch_boost': 1, 'launch_us': 200})                      # 保存はするが、次の起動では戻す
+    assert json.loads(path.read_text())['params']['launch_boost'] == 1
+    d2 = drive.Driver(hub=None, recorder=FakeRecorder())
+    assert d2.params['launch_boost'] == 0 and d2.params['launch_us'] == 250.0
+
+
+def test_t4_cannot_turn_on_while_running(monkeypatch, tmp_path):
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    monkeypatch.setattr(drive.Driver, 'running', property(lambda self: True))
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    with pytest.raises(ValueError, match='ON にできません'):
+        d.set_params({'launch_boost': 1})
+    assert d.params['launch_boost'] == 0
+    for k, v in (('launch_us', 200.0), ('launch_mps', 2.2), ('launch_max_s', 1.0)):
+        with pytest.raises(ValueError, match='変えられません'):
+            d.set_params({k: v})
+    assert d.set_params({'launch_us': 250.0, 'steer_gain': 1.1})['steer_gain'] == 1.1     # 同じ値・ほかの項目は通る
+    d.params = dict(d.params, launch_boost=1)
+    assert d.set_params({'launch_boost': 0})['launch_boost'] == 0                          # 1 → 0 はできる
+    monkeypatch.setattr(drive.Driver, 'running', property(lambda self: False))
+    assert d.set_params({'launch_boost': 1, 'launch_us': 200})['launch_us'] == 200.0       # 止まっていればできる
+    assert 'launch_boost' in inspect.getsource(drive.Driver.start) or '_launch_rules' in inspect.getsource(drive.Driver.start)
+
+
+# ================================================================ T5〜T8 走行ループで
+def _launch_frames(rec):
+    return [(t, r) for t, r in ai_rows(rec) if r['assist'] == A.ASSIST_LAUNCH]
+
+
+def test_t5_t7_starts_on_switch_and_outputs_min(monkeypatch, tmp_path):
+    frames, imu = launch_scene()
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    rows = ai_rows(rec)
+    first_ai = next(i for i, (_, r) in enumerate(rows) if r['select'])
+    assert rows[first_ai][1]['assist'] == A.ASSIST_LAUNCH                    # AI 側にした最初のフレームから
+    lf = _launch_frames(rec)
+    assert d.st['stats']['launch_boosts'] == 2 and d.st['launch']['count'] == 2
+    for t, r in lf:
+        assert r['launch_on'] is True
+        assert r['out'][1] == min(r['model_out'][1], N - 250.0)               # モデルのブレーキでも中立 − 250
+        assert r['out'][0] == r['model_out'][0]                               # 舵はモデルのまま
+        assert r['out'][1] < N
+    assert any(r['model_out'][1] > N for _, r in lf)                          # 止まっている間のブレーキを上書きした
+    # 速さで終わる(① 0.1 秒先の見込み ≥ 2.5)。終わったフレームからモデルのまま・StartKick も出さない
+    ends = [(t, r) for t, r in rec.rows if r['launch_end']]
+    assert [r['launch_end'] for _, r in ends] == [1, 1]
+    t_end = ends[0][0]
+    after = [r for t, r in ai_rows(rec) if t >= t_end and t < T0 + int(3.0 * NS)]
+    assert after and all(r['assist'] not in (A.ASSIST_LAUNCH, A.ASSIST_START) for r in after)
+    s_end = (t_end - T0) / 1e9
+    assert 1.55 <= s_end <= 1.75                                               # 2.2 m/s(5 m/s² で 0.44 秒)の頃
+    ev = [e[1]['event'] for e in rec.events if e[0] == 'launch_boost']
+    assert ev == ['start', 'end', 'start', 'end']
+    # applied(次のフレームの今の操作値)は StartKick と同じく「出していない」扱い
+    assert all(not r['hold'] for _, r in lf)
+
+
+@pytest.mark.parametrize('name,kw,code', [
+    ('ch3', dict(sel=lambda s: 1.0 <= s < 1.4 or s >= 3.5), 7),                            # ⑦ CH3 を人側
+    ('hold', dict(valid3=lambda s: not (1.35 <= s < 1.4)), 8),                             # ⑧ CH3 が届かない = 中立で止めた
+    ('impact', dict(ax=lambda s: 30.0 if 1.4 <= s < 1.41 else 0.0), 5),                   # ⑤ 3G
+    ('yaw', dict(gz=lambda s: 80.0 if 1.4 <= s < 1.6 else 0.0), 3),                        # ③
+    ('steer', dict(pred=lambda s: (C + 250.0, N - 120.0) if s >= 1.0 else (C, N)), 4),    # ④ 1 m/s を超えたところで
+    ('stuck', dict(v=0.0), 2),                                                              # ② 動かない → 1.2 秒
+    ('back', dict(v=lambda s: -0.2 if 1.3 <= s < 1.5 else 0.0), 9),                       # ⑨ 後ろへ動いた
+    ('stale', dict(veh_skip=lambda s: 1.4 <= s < 1.53), 9),                                # ⑨ 車両の値が 0.1 秒より古い
+    ('near1', dict(tof=lambda s: tof_near(600) if 1.45 <= s < 1.6 else None), 6),          # ⑥ TTC < 0.8 が 2 フレーム
+])
+def test_t8_end_conditions_in_loop(monkeypatch, tmp_path, name, kw, code):
+    frames, imu = launch_scene(**kw)
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    ends = [(t, r) for t, r in rec.rows if r['launch_end']]
+    assert ends and ends[0][1]['launch_end'] == code, [(round((t - T0) / 1e9, 3), r['launch_end']) for t, r in ends]
+    t_end = ends[0][0]
+    sec = [r for t, r in ai_rows(rec) if t_end <= t < T0 + int(3.0 * NS)]
+    assert all(r['assist'] not in (A.ASSIST_LAUNCH, A.ASSIST_START) for r in sec)   # 同じ区間ではもう出さない
+    if code == 2:
+        lf = _launch_frames(rec)
+        s0, s1 = (lf[0][0] - T0) / 1e9, (t_end - T0) / 1e9
+        assert 1.15 <= s1 - s0 <= 1.25
+    if name == 'stale':
+        assert not any(r['hold'] for t, r in rec.rows if T0 + int(1.4 * NS) <= t < T0 + int(1.53 * NS))   # 止めずに終わる
+
+
+def test_t8_guard_acts_first_and_off_midway(monkeypatch, tmp_path):
+    # ⑥ ToF ガード 2(減速)が出力を変えた → その場で終わる(ガードが先)
+    frames, imu = launch_scene(tof=lambda s: tof_near(400) if 1.45 <= s < 1.6 else None)
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1, tof_guard=2), frames, imu)
+    end = next((t, r) for t, r in rec.rows if r['launch_end'])
+    assert end[1]['launch_end'] == 6 and end[1]['guard_applied'] is True
+    assert end[1]['out'][1] == end[1]['model_out'][1] or end[1]['out'][1] >= N - 120.0     # ガードの出力のまま
+    # 走行中に 1 → 0(理由 10)
+    frames, imu = launch_scene()
+
+    def hook(i, dd):
+        if frames[i]['s'] >= 1.3:
+            dd.params = dict(dd.params, launch_boost=0)
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu, hook=hook)
+    assert [r['launch_end'] for _, r in rec.rows if r['launch_end']] == [10]
+    assert d.st['stats']['launch_boosts'] == 1
+
+
+def test_t8_drive_stop_mid_launch(monkeypatch, tmp_path):
+    frames, imu = launch_scene()
+    frames = [f for f in frames if f['s'] < 1.3]                              # 出している間に走行が止まった
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    ev = [e[1] for e in rec.events if e[0] == 'launch_boost']
+    assert [e['event'] for e in ev] == ['start', 'end'] and ev[-1]['code'] == 8
+    assert d.st['launch']['last_end'] == A.LAUNCH_END_NAMES[8] and d.st['launch']['active'] is False
+
+
+def test_t6_once_per_section_rearm(monkeypatch, tmp_path):
+    """止まり直しても同じ AI の区間では 1 回だけ。CH3 を人側へ戻すと次の 1 回"""
+    def v(s):
+        return min(5.0 * (s - 1.2), 3.0) if 1.2 <= s < 2.2 else 0.0          # 2.2 秒で止まる(同じ区間)
+    frames, imu = launch_scene(v=v, sel=lambda s: s >= 1.0)
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    assert d.st['stats']['launch_boosts'] == 1
+    assert all(r['assist'] != A.ASSIST_START for t, r in ai_rows(rec) if t > T0 + int(2.2 * NS))
+
+
+# ================================================================ T10 順番(ガード → 発進の前進 → 上限 → 天井)
+def test_t10_zone_caps_apply_after(monkeypatch, tmp_path):
+    """区間の速度上限(zone_caps = 1)は発進の前進のあと。最初の R1 の前(unknown 3.0 m/s)は、上限の層が前進を
+    3.0 m/s を保つ量(約 184 µs)まで弱める(build_launch.md: zone_caps と一緒に使うと 250 µs は出ない)"""
+    frames, imu = launch_scene()
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1, zone_caps=1), frames, imu)
+    lf = _launch_frames(rec)
+    assert lf
+    for t, r in lf:
+        assert r['cap_in_us'] == min(r['model_out'][1], N - 250.0)        # 区間の上限の入力 = 発進の前進の出力
+        assert r['out'][1] >= r['cap_in_us']                                # 上限は前進を弱めるだけ
+        if r['cap_applied']:
+            assert r['out'][1] == pytest.approx(r['cap_thr_us'])
+    assert any(r['cap_applied'] for _, r in lf)
+    assert max(N - r['out'][1] for _, r in lf) < 200.0
+
+
+def test_t10_ceiling_applies_after(monkeypatch, tmp_path):
+    real = sc.ceil_step
+
+    def weak(state, t, v, a, steer, gz, thr_in, neutral, active, p):
+        st2, c = real(state, t, v, a, steer, gz, thr_in, neutral, active, p)
+        if active and thr_in < neutral - 200:                    # 試験のため: 前進を中立 − 100 まで弱める
+            c = c._replace(thr_us=neutral - 100.0, mode=sc.CEIL_LIMIT)
+        return st2, c
+    monkeypatch.setattr(sc, 'ceil_step', weak)
+    frames, imu = launch_scene()
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1, speed_ceiling=1), frames, imu)
+    lf = _launch_frames(rec)
+    assert lf
+    for t, r in lf:
+        assert r['ceil_in_us'] == min(r['model_out'][1], N - 250.0)       # 天井の入力 = 発進の前進の出力
+        assert r['ceil_applied'] is True and r['out'][1] == N - 100.0      # 天井はあとで前進を弱める
+    assert d.st['stats']['ceil_applied'] >= len(lf)
+
+
+# ================================================================ T11 記録の欄
+def test_t11_record_fields_and_npz(monkeypatch, tmp_path):
+    frames, imu = launch_scene()
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    for _, r in rec.rows:
+        assert isinstance(r['launch_on'], bool) and isinstance(r['launch_end'], int)
+        assert r['launch_on'] == (r['assist'] == A.ASSIST_LAUNCH)
+    assert d.st['stats']['launch_boosts'] == 2
+    # 記録の AI_CMD.npz まで(本物の Recorder。古い行(欄なし)は False・0)
+    from jetformer.recorder import Recorder
+
+    class Hub(object):
+        def __getitem__(self, name):
+            return self
+
+        def subscribe(self, cb):
+            pass
+
+        def unsubscribe(self, cb):
+            pass
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path / 'raw')
+    monkeypatch.setattr(config, 'SCENE_SECONDS', 60.0)
+    monkeypatch.undo()          # clock.now_ns を本物に戻す(Recorder の時刻)
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path / 'raw')
+    monkeypatch.setattr(config, 'SCENE_SECONDS', 1.0)
+    r = Recorder(Hub())
+    r._warm_up = lambda: None
+    log = r.start(description='t', drive={'params': dict(d.params)})
+    t0 = r.log['start_ns']
+    for i in range(20):
+        r._on_sample('CAM_FRONT', Sample(t0 + i * 33_000_000, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': i}))
+    rows = [x for _, x in rec.rows if not x['hold']]
+    lrow = next(x for x in rows if x['launch_on'])
+    erow = next(x for _, x in rec.rows if x['launch_end'])
+    old = {k: v for k, v in lrow.items() if not k.startswith('launch_')}
+    for k, row in enumerate((lrow, erow, old)):
+        r.add_ai(t0 + (2 + k) * 33_000_000, row)
+    r._io.join()
+    r._finalize(0, partial=False)
+    r.stop(only_log=log)
+    z = np.load(tmp_path / 'raw' / log / ('%s-0001' % log) / 'AI_CMD.npz')
+    assert z['launch_on'].tolist() == [True, False, False] and z['launch_on'].dtype == bool
+    assert z['launch_end'].tolist() == [0, 1, 0] and z['launch_end'].dtype == np.int8
+    assert z['assist'].tolist()[0] == A.ASSIST_LAUNCH
+    lj = json.loads((tmp_path / 'raw' / log / 'log.json').read_text())
+    assert {k: lj['drive']['params'][k] for k in drive.LAUNCH_KEYS} == {
+        'launch_boost': 1, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2}
+    # 走行ループが log.json に書く drive.params は self.params の写し(4 つの値が入る)
+    assert "'params': dict(self.params)" in inspect.getsource(drive.Driver._run)
+
+
+def test_t11_status_view(monkeypatch, tmp_path):
+    frames, imu = launch_scene()
+    frames = [f for f in frames if f['s'] < 1.25]
+    d, pca, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, launch_boost=1), frames, imu)
+    lv = d.st['launch']
+    assert lv['on'] is True and lv['count'] == 1 and set(lv) == {'on', 'active', 'count', 'last_end', 'last_skip'}
+    assert d.st['now']['assist'] == '発進の前進'

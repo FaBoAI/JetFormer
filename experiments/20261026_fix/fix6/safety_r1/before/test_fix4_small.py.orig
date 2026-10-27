@@ -1,0 +1,301 @@
+"""10/27 fix4(10/26 の直しの「小さな残り」)の試験。
+
+  1. web/bench.py の SWITCH_KEYS に試験の選択肢 3 つ(rec_back_guard・rec_hold_keep・launch_no_kick。10/26 fix3 で drive.py に
+     足したもの)を入れた。ブロックの params に書くと、ほかのスイッチと同じく捨てて警告(前は一覧に残し、説明欄の札に
+     「rec_back_guard=1.0」と書いた。画面 app.js は前から入れない・送らないので、入っていない値が記録の説明に残り、警告も無かった)。
+     基準(baseline)に 1 と書くと警告(値はそのまま返す。画面が入れない・plan_check も見ない)。
+     「基準の設定・ブロックで ON にならない」決まりは同じ(画面は変えていない。本物の app.js でも流す)。
+  2. jetformer/drive.py の説明の文(モジュールの docstring)だけを今のコードに合わせた(コードは AST で同じ)。
+
+直す前の写し: tests/fixtures/fix4_small_before/(drive.py・bench.py。sha256 は SHA256SUMS = 10/27 05:02 の版。
+tests/test_fix3_r3_2_tools.py の UNTOUCHED と同じ値)。作り物の bench_candidates.json は tmp。本物の data/bench_candidates.json・
+data/runs は読むだけ。装置・GPU・jetformer-web は使わない。node が無ければ本物の app.js で流す試験は飛ばす。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \\
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_fix4_small.py
+"""
+import ast
+import copy
+import hashlib
+import importlib.util
+import json
+import re
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / 'tests'))
+import jetformer.web  # noqa: E402,F401
+from jetformer import assist, drive  # noqa: E402
+from jetformer.web import bench  # noqa: E402
+
+BEFORE = ROOT / 'tests' / 'fixtures' / 'fix4_small_before'
+DRIVE_PY = ROOT / 'jetformer' / 'drive.py'
+BENCH_PY = ROOT / 'jetformer' / 'web' / 'bench.py'
+APP_JS = ROOT / 'jetformer' / 'web' / 'static' / 'app.js'
+REAL_BENCH = ROOT / 'data' / 'bench_candidates.json'
+OPT = ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick')
+OLD_SWITCH = ('zone_caps', 'speed_ceiling', 'speed_auto', 'launch_boost')
+SHA_0502 = {'drive.py': 'b8c3ddba39681d81f14249981c770a9349e6dba3bcf5b4a8d88ee88afbc85db6',     # test_fix3_r3_2_tools の UNTOUCHED
+            'bench.py': 'c2fdcff9a20128c9bf677fedb63f7a764065bb9eb1daa96820ac72b03fca810b'}
+DAY = '2026-11-03'
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+@pytest.fixture(scope='module')
+def old_bench():
+    """直す前の web/bench.py(写し。sha256 を照らしてから jetformer.web の下の別の名前で読む。相対の import はそのまま効く)"""
+    sums = dict(reversed(x.split()) for x in (BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    assert sums == SHA_0502
+    for name, h in sums.items():
+        assert _sha(BEFORE / name) == h, name
+    name = 'jetformer.web._bench_fix4_before'
+    spec = importlib.util.spec_from_file_location(name, str(BEFORE / 'bench.py'))
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def write_doc(tmp_path, blocks, baseline=None, name='bench_candidates.json'):
+    doc = {'version': 1, 'bench': 'b', 'candidates': [{'id': 'B', 'label': 'B', 'run': bench.B_RUN, 'hypothesis': '-'}],
+           'days': [{'date': DAY, 'blocks': blocks}],
+           'description_template': 'bench=b day={date} block={block} cand={id} model={run} memo='}
+    if baseline is not None:
+        doc['baseline'] = baseline
+    p = tmp_path / name
+    p.write_text(json.dumps(doc, ensure_ascii=False), encoding='utf-8')
+    return p
+
+
+# ================================================================ 1. SWITCH_KEYS
+def test_switch_keys_have_the_three_options(old_bench):
+    """SWITCH_KEYS = 前の 4 つ + 試験の選択肢 3 つ。名前は drive.Driver.OPT_NAMES・app.js の OPT_SWITCHES と同じ。
+    PLAN_KEYS(計画の照らし合わせ)は変えない。スイッチは全部、既定 0・起動のたびに 0"""
+    assert old_bench.SWITCH_KEYS == OLD_SWITCH                                 # 直す前(3 つが無い)
+    assert bench.SWITCH_KEYS == OLD_SWITCH + OPT and bench.OPT_KEYS == OPT
+    assert set(OPT) == set(drive.Driver.OPT_NAMES)
+    assert {k: bench.SWITCH_NAMES[k] for k in OLD_SWITCH} == old_bench.SWITCH_NAMES
+    assert {k: bench.SWITCH_NAMES[k] for k in OPT} == drive.Driver.OPT_NAMES
+    js = APP_JS.read_text(encoding='utf-8')
+    names = dict(re.findall(r"\{ key: '(\w+)', sel: '[^']*', group: '\w+', name: '([^']*)'", js))
+    assert names == drive.Driver.OPT_NAMES
+    assert bench.PLAN_KEYS == old_bench.PLAN_KEYS and not set(OPT) & set(bench.PLAN_KEYS)
+    for k in bench.SWITCH_KEYS:
+        assert k in drive.PARAM_LIMITS and drive.PARAM_LIMITS[k] == (0, 1) and drive.DEFAULT_PARAMS[k] == 0, k
+        assert k in drive.RESET_ON_BOOT, k
+
+
+def test_block_params_drop_options_with_warning(tmp_path, old_bench):
+    """ブロックの params の試験の選択肢は捨てて警告(1 でも 0 でも。launch_boost と同じ)。説明欄の札にも出ない。
+    直す前は一覧に残し(画面は入れない)、札に「rec_back_guard=1.0」と書き、警告も無かった(指摘の再現)"""
+    blocks = [{'block': 1, 'id': 'B', 'params': {'throttle_gain': 0.9, 'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 1},
+               'tune': 't'},
+              {'block': 2, 'id': 'B', 'params': {'rec_back_guard': 0, 'launch_no_kick': 0}},
+              {'block': 3, 'id': 'B', 'params': {'throttle_gain': 0.9}, 'tune': 't'}]
+    p = write_doc(tmp_path, blocks)
+    old, new = old_bench.load_candidates(p), bench.load_candidates(p)
+    assert old['ok'] and new['ok']
+    ob, nb = old['days'][0]['blocks'], new['days'][0]['blocks']
+    # 直す前
+    assert ob[0]['params'] == {'throttle_gain': 0.9, 'rec_back_guard': 1.0, 'rec_hold_keep': 1.0, 'launch_no_kick': 1.0}
+    assert all('%s=1.0' % k in ob[0]['description'] for k in OPT)
+    assert ob[1]['params'] == {'rec_back_guard': 0.0, 'launch_no_kick': 0.0} and 'rec_back_guard=0.0' in ob[1]['description']
+    assert not any(k in w for w in old['warnings'] for k in OPT)
+    # 今
+    assert nb[0]['params'] == {'throttle_gain': 0.9}
+    assert not any('%s=' % k in b['description'] for b in nb for k in OPT)
+    assert nb[0]['description'] == nb[2]['description'].replace('block=3', 'block=1')     # 札は選択肢の無いブロックと同じ
+    assert 'params' not in nb[1]
+    want = ['%s のブロック %d: 上書きできない項目 %s を捨てました(%sはスイッチで入れてください)'
+            % (DAY, no, k, drive.Driver.OPT_NAMES[k]) for no, ks in ((1, OPT), (2, ('rec_back_guard', 'launch_no_kick'))) for k in ks]
+    assert [w for w in new['warnings'] if w not in old['warnings']] == want
+    assert [w for w in new['warnings'] if w in old['warnings']] == old['warnings']
+    assert nb[2] == ob[2]                                                       # 選択肢の無いブロックは同じ
+    assert {k: v for k, v in new.items() if k not in ('days', 'warnings')} == {k: v for k, v in old.items()
+                                                                                if k not in ('days', 'warnings')}
+
+
+def test_baseline_options_warn_and_keep_value(tmp_path, old_bench):
+    """基準(baseline)に 1 と書くと警告(画面の「基準の設定」は入れない)。返す値は直す前と同じ(画面が消す・plan_check は見ない)。
+    0 や書かないときは、警告も出力も直す前と同じ"""
+    base1 = {'mode_id': 5, 'params': {'throttle_gain': 1.0, 'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 1}}
+    p = write_doc(tmp_path, [{'block': 1, 'id': 'B'}], baseline=base1)
+    old, new = old_bench.load_candidates(p), bench.load_candidates(p)
+    assert new['baseline'] == old['baseline'] and all(new['baseline']['params'][k] == 1 for k in OPT)
+    added = [w for w in new['warnings'] if w not in old['warnings']]
+    assert added == ['baseline.params の %s が 1 です。画面の「基準の設定」は「%s」を ON にしません'
+                     '(試験の選択肢。了承した日に、止まっているときにスイッチで入れてください)' % (k, drive.Driver.OPT_NAMES[k])
+                     for k in OPT]
+    assert not any(k in w for w in old['warnings'] for k in OPT)
+    for params in ({'throttle_gain': 1.0, 'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0}, {'throttle_gain': 1.0}):
+        p = write_doc(tmp_path, [{'block': 1, 'id': 'B'}], baseline={'mode_id': 5, 'params': params}, name='b0.json')
+        assert bench.load_candidates(p) == old_bench.load_candidates(p)
+    assert bench.fallback_baseline() == old_bench.fallback_baseline()
+
+
+def test_real_bench_candidates_read_the_same(old_bench):
+    """本物の data/bench_candidates.json(試験の選択肢は書いていない)は、画面に出す形が直す前とまるごと同じ。警告 0 も同じ"""
+    text = REAL_BENCH.read_text(encoding='utf-8')
+    assert not any(k in text for k in OPT)
+    old, new = old_bench.load_candidates(), bench.load_candidates()
+    assert new == old and new['ok']
+    assert new['warnings'] == old['warnings']
+
+
+def test_plan_check_is_the_same(old_bench):
+    """走行開始の計画の照らし合わせ(plan_check)は直す前と同じ(試験の選択肢は計画の違いにしない)"""
+    data = bench.load_candidates()
+    day = next(d for d in data['days'] if d['date'] == DAY)
+    base = data['baseline']['params']
+    cases = []
+    for b in day['blocks'][:3] + day['blocks'][-2:]:
+        for over in ({}, {'throttle_gain': 0.9}, {'throttle_gain': 0.9, 'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 1},
+                     {'rec_back_guard': 1}, {'speed_ceiling': 1, 'launch_boost': 1}):
+            cases.append((b['description'], b['run'], 5, dict(base, **over)))
+    cases.append(('ai_no=1 AI走行 x', bench.B_RUN, 5, dict(base, rec_back_guard=1)))
+    for desc, run, mode, params in cases:
+        assert bench.plan_check(desc, run, mode, params, data) == old_bench.plan_check(desc, run, mode, params, data)
+    d1, diffs1 = bench.plan_check(day['blocks'][0]['description'], day['blocks'][0]['run'], 5,
+                                  dict(base, throttle_gain=1.0, rec_back_guard=1, launch_no_kick=1), data)
+    assert diffs1 == [] and 'cand=B' in d1                                      # 選択肢だけ ON は計画どおり
+
+
+def _top(path):
+    tree = ast.parse(path.read_text(encoding='utf-8'))
+    funcs = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
+    assigns = {}
+    for n in tree.body:
+        if isinstance(n, ast.Assign):
+            for t in n.targets:
+                for x in (t.elts if isinstance(t, ast.Tuple) else [t]):
+                    assigns[ast.unparse(x)] = ast.dump(n)
+    return tree, funcs, assigns
+
+
+def test_bench_changed_only_switch_parts():
+    """web/bench.py の違いは SWITCH_KEYS・SWITCH_NAMES・OPT_KEYS(新)と _baseline の最後の警告だけ(ほかの関数・値は AST で同じ)"""
+    t0, f0, a0 = _top(BEFORE / 'bench.py')
+    t1, f1, a1 = _top(BENCH_PY)
+    assert set(f0) == set(f1)
+    assert [k for k in f0 if ast.dump(f0[k]) != ast.dump(f1[k])] == ['_baseline']
+    b0, b1 = f0['_baseline'].body, f1['_baseline'].body
+    assert len(b1) == len(b0) + 1
+    assert [ast.dump(x) for x in b1[:-2]] == [ast.dump(x) for x in b0[:-1]] and ast.dump(b1[-1]) == ast.dump(b0[-1])
+    assert isinstance(b1[-2], ast.For) and ast.unparse(b1[-2].iter) == 'OPT_KEYS'
+    assert set(a1) - set(a0) == {'OPT_KEYS'} and set(a0) <= set(a1)
+    assert sorted(k for k in a0 if a0[k] != a1[k]) == ['SWITCH_KEYS', 'SWITCH_NAMES']
+    other0 = [ast.dump(n) for n in t0.body[1:] if not isinstance(n, (ast.FunctionDef, ast.Assign))]
+    other1 = [ast.dump(n) for n in t1.body[1:] if not isinstance(n, (ast.FunctionDef, ast.Assign))]
+    assert other0 == other1                                                     # import・デコレータ付きの関数以外の文
+
+
+# ================================================================ 2. drive.py の説明の文
+def _no_doc(path):
+    tree = ast.parse(Path(path).read_text(encoding='utf-8'))
+    doc = ast.get_docstring(tree, clean=False)
+    assert isinstance(tree.body[0], ast.Expr) and tree.body[0].value.value == doc
+    tree.body = tree.body[1:]
+    return ast.dump(tree), doc
+
+
+def _drive_fix4():
+    """fix4 のあとの drive.py。10/27 fix5 safety(反証 4 回目 s1〜s3)がコードを変えたあとは、その直す前の写し
+    tests/fixtures/fix5_safety_before/drive.py(= fix4 の版。sha256 を照らす。fix5 の違いは tests/test_rec_fix5_safety.py が見る)"""
+    if _sha(DRIVE_PY) == FIX5_DRIVE:
+        p = ROOT / 'tests' / 'fixtures' / 'fix5_safety_before' / 'drive.py'
+        assert _sha(p) == FIX4_DRIVE
+        return p
+    return DRIVE_PY
+
+
+FIX4_DRIVE = 'c575af1262836c3e10bfe32b2ee34293117a2144b3e568acb326ada57d59a471'     # tests/test_fix3_r3_2_tools.py の LATER_FIX4
+FIX5_DRIVE = '041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c'                                                         # 同じ LATER_FIX5
+
+
+def test_drive_only_docstring_changed():
+    """drive.py はモジュールの説明の文だけが違う(コードは AST で直す前と同じ = 走行の動き・既定値は同じ)"""
+    code0, doc0 = _no_doc(BEFORE / 'drive.py')
+    code1, doc1 = _no_doc(_drive_fix4())
+    assert code0 == code1 and doc0 != doc1
+    assert '画面に欄は無く' in doc0 and '画面に欄は無く' not in doc1                # 古い文(41 行)
+    assert 'この 2 つと rec_back_guard' in doc0 and 'この 2 つと rec_back_guard' not in doc1
+    para = doc1[doc1.index('リカバリーの後ろの見張り(2026-10-26 fix2'):doc1.index('中立止めでリカバリーを残す(')]
+    for s in ('OPT_SWITCHES', 'POST /api/drive/params', '走行開始では送らない', 'benchApply', 'SWITCH_KEYS', '_opt_rules',
+              '走行開始の確認の文に ON の行', 'hold_s'):
+        assert s in para, s
+
+
+def test_drive_docstring_claims_match_code():
+    """新しい説明の文に書いたことが今のコードのとおりか(画面・サーバー・記録)"""
+    js = APP_JS.read_text(encoding='utf-8')
+    read_params = js[js.index('function readDriveParams()'):js.index('function readDriveParams()') + 900]
+    read_params = read_params[:read_params.index('\n}\n')]
+    assert not any(k in read_params for k in OPT)                               # 走行開始では送らない
+    apply = js[js.index('function benchApply('):]
+    apply = apply[:apply.index('\n}\n')]
+    assert re.search(r'for \(const o of OPT_SWITCHES\) \{\n[^\n]*\n    delete f\.params\[o\.key\];', apply)   # 基準の設定・ブロックで入れない
+    assert re.findall(r"\{ key: '(\w+)', sel: '#dr-", js) == list(OPT)        # 画面のスイッチ
+    start_lines = js[js.index('function trimGuardStartLines('):]
+    start_lines = start_lines[:start_lines.index('\n}\n')]
+    assert all('p.%s === 1' % k in start_lines for k in OPT)                   # 走行開始の確認の文に ON の行
+    assert all(k in bench.SWITCH_KEYS for k in OPT)                             # ブロックの params は捨てる
+    src = DRIVE_PY.read_text(encoding='utf-8')
+    assert "info = {'what': rg[0], 'phase': rg[1], 'backed_s': rg[2], 'run': st.get('run'),\n" in src
+    assert "'cam_epoch_us': int(clock.to_epoch_us(cam.t_ns))}" in src and "info['hold_s'] = rg[3]" in src
+    assert assist.Recovery.HOLD_HALT_MAX_S == 0.3 and "'halt'" in Path(assist.__file__).read_text(encoding='utf-8')
+    assert 'IMPACT_G' in Path(assist.__file__).read_text(encoding='utf-8')
+    assert set(drive.Driver.OPT_NAMES) == set(OPT)
+
+
+# ================================================================ 3. 本物の app.js で(サーバーの一覧 → 画面)
+try:
+    from test_ui_fix3 import NODE, blk, els, needs_node, reads, run_sim, server_params, starts  # noqa: E402
+except Exception:                                   # noqa: BLE001  test_ui_fix3 が読めなければ飛ばす
+    NODE, needs_node = None, pytest.mark.skipif(True, reason='test_ui_fix3 を読めません')
+
+OPT_LINE = {'rec_back_guard': 'リカバリーの後ろの見張り: ON', 'rec_hold_keep': '中立止めのあともリカバリーを残す: ON',
+            'launch_no_kick': '発進の前進を出さない区間は発進の補助も出さない: ON'}
+
+
+@needs_node
+def test_ui_block_with_options_never_turns_on(tmp_path, old_bench):
+    """本物の 11/3 のブロック 13 の params に 3 つを 1 で書いた写しを、サーバーの読み方(load_candidates)→ 本物の app.js に流す。
+    直す前も今も、画面はスイッチを ON にせず走行開始でも送らない(決まりは同じ)。違うのは、直す前は説明欄に
+    「rec_back_guard=1.0」などが入り(入っていない値)警告が無い、今は説明欄に入らずベンチマークの欄に警告が出る"""
+    doc = json.loads(REAL_BENCH.read_text(encoding='utf-8'))
+    day = next(d for d in doc['days'] if d['date'] == DAY)
+    b13 = next(b for b in day['blocks'] if int(b['block']) == 13)
+    b13['params'] = dict(b13.get('params') or {}, rec_back_guard=1, rec_hold_keep=1, launch_no_kick=1)
+    p = tmp_path / 'bench_candidates.json'
+    p.write_text(json.dumps(doc, ensure_ascii=False), encoding='utf-8')
+    out = {}
+    for tag, mod in (('old', old_bench), ('new', bench)):
+        c = dict(mod.load_candidates(p), today=DAY)
+        di = next(i for i, d in enumerate(c['days']) if d['date'] == DAY)
+        steps = [['pick', di, blk(c, di, 13)], ['read', 'note'], ['el', '#dr-desc', 'value'], ['el', '#bench-error', 'html'],
+                 ['poll'], ['el', '#dr-rec-back-guard', 'checked'], ['el', '#dr-launch-no-kick', 'checked'], ['start'],
+                 ['read', 'server']]
+        res, _ = run_sim(tmp_path, c, steps, server=server_params(), name='%s.json' % tag)
+        out[tag] = res
+    for tag, res in out.items():
+        e = els(res)
+        assert e[2:4] == [False, False], tag                                    # スイッチは OFF のまま
+        st = starts(res)[0]
+        assert st['sent'] and not any(k in st['sent'] for k in OPT), tag       # 走行開始で送らない
+        assert not any(OPT_LINE[k] in st['confirm'] for k in OPT), tag
+        assert all(reads(res, 'server')[0][k] == 0 for k in OPT), tag
+    eo, en = els(out['old']), els(out['new'])
+    assert all('%s=1.0' % k in eo[0] for k in OPT) and not any('%s=' % k in en[0] for k in OPT)    # 説明欄
+    assert eo[0].replace(' launch_no_kick=1.0 rec_back_guard=1.0 rec_hold_keep=1.0', '') == en[0]
+    assert not any(k in eo[1] for k in OPT)
+    assert all('上書きできない項目 %s を捨てました' % k in en[1] for k in OPT)   # ベンチマークの欄の警告
+    no, nn = reads(out['old'], 'note')[0], reads(out['new'], 'note')[0]
+    assert all('%sはブロックでは ON にしません' % drive.Driver.OPT_NAMES[k] in no for k in OPT)   # 直す前は画面の注
+    assert not any('%sはブロックでは ON にしません' % drive.Driver.OPT_NAMES[k] in nn for k in OPT)
+    assert starts(out['old'])[0]['sent'] == starts(out['new'])[0]['sent']      # 送る値は同じ

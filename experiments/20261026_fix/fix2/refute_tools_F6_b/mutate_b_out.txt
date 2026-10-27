@@ -1,0 +1,25 @@
+base 0 24 passed in 3.66s
+frame_gap       SURVIVED(試験が通った) | 24 passed in 3.68s | 
+vehicle_gap     SURVIVED(試験が通った) | 24 passed in 3.78s | 
+line_lap_5_16   SURVIVED(試験が通った) | 24 passed in 3.68s | 
+anchor_cont     SURVIVED(試験が通った) | 24 passed in 3.87s | 
+to_r1_15s       SURVIVED(試験が通った) | 24 passed in 3.73s | 
+cont_s          SURVIVED(試験が通った) | 24 passed in 3.92s | 
+dry_run_frames  SURVIVED(試験が通った) | 24 passed in 3.96s | 
+dist_dpsi       SURVIVED(試験が通った) | 24 passed in 3.55s | 
+best_min        SURVIVED(試験が通った) | 24 passed in 3.82s | 
+qp_gain         SURVIVED(試験が通った) | 24 passed in 3.97s | 
+qp_steer        SURVIVED(試験が通った) | 24 passed in 3.74s | 
+qp_zone         SURVIVED(試験が通った) | 24 passed in 3.61s | 
+qp_mode         SURVIVED(試験が通った) | 24 passed in 3.81s | 
+qp_auto_target  SURVIVED(試験が通った) | 24 passed in 3.76s | 
+qp_launch_us    SURVIVED(試験が通った) | 24 passed in 4.66s | 
+qp_valid        SURVIVED(試験が通った) | 24 passed in 3.82s | 
+qp_fast9        SURVIVED(試験が通った) | 24 passed in 3.69s | 
+col_on_none     SURVIVED(試験が通った) | 24 passed in 3.69s | 
+col_on_s        SURVIVED(試験が通った) | 24 passed in 3.68s | 
+col_ceil_key    SURVIVED(試験が通った) | 24 passed in 3.82s | 
+base 0 24 passed in 3.50s
+control_s3      killed | 3 failed, 21 passed in 3.60s | FAILED tests/test_standing_3lap.py::test_ramp_launch_loses_time_against_flying / FAILED tests/test_standing_3lap.py::test_line_ahead_measures_from_crossing_the_line / FAILED tests/test_standing_3lap.py::test_slip_note
+control_qp      killed | 3 failed, 21 passed in 3.09s | FAILED tests/test_quick_eval_by_params.py::test_groups_by_actual_settings_not_by_cand / FAILED tests/test_quick_eval_by_params.py::test_old_records_count_as_off / FAILED tests/test_quick_eval_by_params.py::test_markdown_and_main
+control_col     killed | 1 failed, 23 passed in 3.58s | FAILED experiments/20261026_fix/fix2/test_tools_collect.py::test_collect_reads_launch_fields_and_compares

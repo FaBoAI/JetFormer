@@ -1,0 +1,31 @@
+.................................................F...................... [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_rec_hold_keep_with_back_guard_no_reverse_into_rear_wall _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff0dbd9e10>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fix_r1_1/py1/test_rec_hold_keep_with_back_g0')
+
+    def test_rec_hold_keep_with_back_guard_no_reverse_into_rear_wall(monkeypatch, tmp_path):
+        """後ろの見張り(rec_back_guard)と組み合わせ: 後退の途中の中立止めのあとに後ろへ当たっても、ON はすぐ前へ(後ろへ押さない)。
+        見張りの手順(下がった時間・後ろの衝撃)と矛盾しない"""
+        frames, imu = recovery_scene(back_from=2.95, hit_at=3.25, holds=[(3.05, 0.2)])
+        res = {}
+        for keep in (0, 1):
+            for guard in (0, 1):
+                _, _, rec = run(drive, monkeypatch, tmp_path, dict(PARAMS, rec_back_guard=guard, rec_hold_keep=keep), frames, imu)
+                s_of = {f['cam_t']: f['s'] for f in frames}
+                res[(keep, guard)] = {
+                    'rev_after_hit': sum(1 for t, r in rec.rows if not r['hold'] and r['out'][1] > N + 40.0 and s_of[t] >= 3.3),
+                    'events': [e[1]['what'] for e in rec.events if e[0] == 'recovery_guard'],
+                    'holds': sum(1 for _, r in rec.rows if r['hold'])}
+        assert all(v['holds'] > 0 for v in res.values())
+>       assert res[(1, 1)]['rev_after_hit'] == 0 and 'rear_impact' in res[(1, 1)]['events']
+E       AssertionError: assert (0 == 0 and 'rear_impact' in ['back_early', 'rear_impact_hold'])
+
+tests/test_rec_hold_keep.py:449: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_rec_hold_keep.py::test_rec_hold_keep_with_back_guard_no_reverse_into_rear_wall
+1 failed, 237 passed in 68.31s (0:01:08)

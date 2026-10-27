@@ -1,0 +1,1702 @@
+{
+ "seed": 6202,
+ "esc": "slow",
+ "runs": 200,
+ "skipped": 0,
+ "flags": {
+  "rear_worse": 5,
+  "more_back": 13,
+  "esc_push": 2
+ },
+ "examples": [
+  {
+   "run": 10,
+   "flags": [
+    [
+     "rear_worse",
+     2.76,
+     2.7
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.54,
+   "rear": 1.56,
+   "mthr": 100.0,
+   "bd": 0.47,
+   "params": {
+    "rev_s": 0.6,
+    "rev_us": 300.0,
+    "tof_guard": 1,
+    "launch_boost": 0,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     2.973,
+     3.272
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.99,
+     "t_escape": 4.52,
+     "back_m": 1.56,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.51,
+       "rear",
+       -2.76,
+       8.9
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact",
+       "coast",
+       0.63
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.99,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.99,
+     "t_escape": 4.52,
+     "back_m": 1.56,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.51,
+       "rear",
+       -2.76,
+       8.9
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact",
+       "coast",
+       0.63
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.99,
+     "t_escape": 4.35,
+     "back_m": 1.56,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.35,
+       "rear",
+       -2.7,
+       8.75
+      ]
+     ]
+    },
+    "ng0": {
+     "t_brake": 2.99,
+     "t_escape": 4.35,
+     "back_m": 1.56,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.35,
+       "rear",
+       -2.7,
+       8.75
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "run": 21,
+   "flags": [
+    [
+     "more_back",
+     1.32,
+     1.21
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.49,
+   "rear": null,
+   "mthr": 120.0,
+   "bd": 0.42,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 0,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.069,
+     3.469
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 3.12,
+     "t_escape": 4.32,
+     "back_m": 1.32,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 3.12,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 3.12,
+     "t_escape": 4.32,
+     "back_m": 1.32,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 3.12,
+     "t_escape": 4.35,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.12,
+     "t_escape": 4.35,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 25,
+   "flags": [
+    [
+     "rear_worse",
+     1.57,
+     1.28
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.51,
+   "rear": 1.26,
+   "mthr": 100.0,
+   "bd": 0.52,
+   "params": {
+    "rev_s": 0.6,
+    "rev_us": 200.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     2.565,
+     2.735
+    ],
+    [
+     3.76,
+     4.218
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.65,
+     "t_escape": 4.25,
+     "back_m": 1.26,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.18,
+       "rear",
+       -1.57,
+       5.91
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact_hold",
+       "coast",
+       0.977
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.65,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.65,
+     "t_escape": 4.25,
+     "back_m": 1.26,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.18,
+       "rear",
+       -1.57,
+       5.91
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact_hold",
+       "coast",
+       1.12
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.65,
+     "t_escape": 4.12,
+     "back_m": 1.26,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.16,
+       "rear",
+       -1.28,
+       5.19
+      ]
+     ]
+    },
+    "ng0": {
+     "t_brake": 2.65,
+     "t_escape": 4.12,
+     "back_m": 1.26,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.16,
+       "rear",
+       -1.28,
+       5.19
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "run": 31,
+   "flags": [
+    [
+     "rear_worse",
+     2.71,
+     1.38
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.78,
+   "rear": 1.4,
+   "mthr": 150.0,
+   "bd": 0.59,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 400.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     2.379,
+     2.62
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.22,
+     "t_escape": 3.59,
+     "back_m": 1.4,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.59,
+       "rear",
+       -2.71,
+       8.77
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact",
+       "coast",
+       0.43
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.22,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.22,
+     "t_escape": 3.59,
+     "back_m": 1.4,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.59,
+       "rear",
+       -2.71,
+       8.77
+      ]
+     ],
+     "guards": [
+      [
+       "rear_impact",
+       "coast",
+       0.43
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.22,
+     "t_escape": 3.42,
+     "back_m": 1.4,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.53,
+       "rear",
+       -1.38,
+       5.45
+      ]
+     ]
+    },
+    "ng0": {
+     "t_brake": 2.22,
+     "t_escape": 3.42,
+     "back_m": 1.4,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.53,
+       "rear",
+       -1.38,
+       5.45
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "run": 33,
+   "flags": [
+    [
+     "rear_worse",
+     1.11,
+     0.0
+    ]
+   ],
+   "kind": "brake",
+   "xf": 1.88,
+   "rear": 1.6,
+   "mthr": 120.0,
+   "bd": 0.6,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 0,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     2.115,
+     2.529
+    ],
+    [
+     3.051,
+     3.354
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.22,
+     "t_escape": 3.39,
+     "back_m": 1.189,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.47,
+       "rear",
+       -1.11,
+       4.77
+      ]
+     ],
+     "guards": [
+      [
+       "back_hold",
+       "brake",
+       0.01
+      ],
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.22,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.22,
+     "t_escape": 3.49,
+     "back_m": 1.189,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       3.46,
+       "rear",
+       -1.65,
+       6.11
+      ]
+     ],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ],
+      [
+       "rear_impact",
+       "coast",
+       0.74
+      ],
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.22,
+     "t_escape": 3.02,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.22,
+     "t_escape": 3.02,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 37,
+   "flags": [
+    [
+     "more_back",
+     0.674,
+     0.56
+    ]
+   ],
+   "kind": "brake",
+   "xf": 2.39,
+   "rear": 1.59,
+   "mthr": 120.0,
+   "bd": 0.57,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 200.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     2.046,
+     2.245
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 1.52,
+     "t_escape": 3.49,
+     "back_m": 0.674,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ],
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 1.52,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 1.52,
+     "t_escape": 3.49,
+     "back_m": 0.674,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ],
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 1.52,
+     "t_escape": 3.39,
+     "back_m": 0.56,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 1.52,
+     "t_escape": 3.39,
+     "back_m": 0.56,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 42,
+   "flags": [
+    [
+     "more_back",
+     1.32,
+     1.178
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.19,
+   "rear": null,
+   "mthr": 150.0,
+   "bd": 0.43,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     2.017,
+     2.263
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 1.95,
+     "t_escape": 3.32,
+     "back_m": 1.32,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 1.95,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 1.95,
+     "t_escape": 3.32,
+     "back_m": 1.32,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 1.95,
+     "t_escape": 3.19,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 1.95,
+     "t_escape": 3.19,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 56,
+   "flags": [
+    [
+     "more_back",
+     1.353,
+     1.21
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.78,
+   "rear": null,
+   "mthr": 100.0,
+   "bd": 0.5,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.218,
+     3.614
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 3.12,
+     "t_escape": 4.65,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 3.12,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 3.12,
+     "t_escape": 4.65,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 3.12,
+     "t_escape": 4.35,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.12,
+     "t_escape": 4.35,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 78,
+   "flags": [
+    [
+     "more_back",
+     1.09,
+     0.76
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.66,
+   "rear": 1.89,
+   "mthr": 100.0,
+   "bd": 0.35,
+   "params": {
+    "rev_s": 0.3,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 0,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.95,
+     4.292
+    ],
+    [
+     2.728,
+     3.023
+    ]
+   ],
+   "drops": [
+    [
+     3.743,
+     3.943
+    ]
+   ],
+   "res": {
+    "now1": {
+     "t_brake": 2.79,
+     "t_escape": 3.95,
+     "back_m": 1.09,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.79,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.79,
+     "t_escape": 3.95,
+     "back_m": 1.09,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.79,
+     "t_escape": 3.92,
+     "back_m": 0.76,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.79,
+     "t_escape": 3.92,
+     "back_m": 0.76,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 106,
+   "flags": [
+    [
+     "more_back",
+     1.714,
+     1.518
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.71,
+   "rear": 1.72,
+   "mthr": 100.0,
+   "bd": 0.55,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 400.0,
+    "tof_guard": 2,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     3.339,
+     3.618
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 3.69,
+     "t_escape": 4.92,
+     "back_m": 1.714,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": null,
+    "bef1": {
+     "t_brake": 3.69,
+     "t_escape": 4.92,
+     "back_m": 1.714,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 3.52,
+     "t_escape": 4.72,
+     "back_m": 1.518,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.52,
+     "t_escape": 4.72,
+     "back_m": 1.518,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 107,
+   "flags": [
+    [
+     "more_back",
+     0.966,
+     0.821
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.93,
+   "rear": 1.93,
+   "mthr": 100.0,
+   "bd": 0.43,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 200.0,
+    "tof_guard": 2,
+    "launch_boost": 1,
+    "start_kick": 0,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     3.023,
+     3.25
+    ]
+   ],
+   "drops": [
+    [
+     4.235,
+     4.685
+    ]
+   ],
+   "res": {
+    "now1": {
+     "t_brake": 3.02,
+     "t_escape": 4.72,
+     "back_m": 0.966,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 3.02,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 3.02,
+     "t_escape": 4.75,
+     "back_m": 0.978,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 3.02,
+     "t_escape": 4.29,
+     "back_m": 0.821,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.02,
+     "t_escape": 4.29,
+     "back_m": 0.821,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 119,
+   "flags": [
+    [
+     "more_back",
+     1.767,
+     1.302
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.68,
+   "rear": 1.95,
+   "mthr": 100.0,
+   "bd": 0.54,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 1,
+    "launch_boost": 0,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.382,
+     3.562
+    ],
+    [
+     3.746,
+     4.062
+    ]
+   ],
+   "drops": [
+    [
+     3.64,
+     4.09
+    ]
+   ],
+   "res": {
+    "now1": {
+     "t_brake": 2.42,
+     "t_escape": 4.12,
+     "back_m": 1.767,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 2.42,
+     "t_escape": null,
+     "back_m": 1.302,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.42,
+     "t_escape": 4.12,
+     "back_m": 1.767,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 2.42,
+     "t_escape": 3.65,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.42,
+     "t_escape": 3.65,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 125,
+   "flags": [
+    [
+     "more_back",
+     1.353,
+     1.178
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.65,
+   "rear": 1.41,
+   "mthr": 150.0,
+   "bd": 0.52,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 0,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     1.955,
+     2.185
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 1.79,
+     "t_escape": 3.15,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 1.79,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 1.79,
+     "t_escape": 3.15,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 1.79,
+     "t_escape": 3.02,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 1.79,
+     "t_escape": 3.02,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 148,
+   "flags": [
+    [
+     "more_back",
+     1.419,
+     1.178
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.85,
+   "rear": 1.59,
+   "mthr": 100.0,
+   "bd": 0.49,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 3,
+    "launch_boost": 0,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     4.49,
+     4.964
+    ]
+   ],
+   "drops": [
+    [
+     3.628,
+     3.748
+    ]
+   ],
+   "res": {
+    "now1": {
+     "t_brake": 3.25,
+     "t_escape": 4.55,
+     "back_m": 1.419,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 3.25,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 3.25,
+     "t_escape": 4.55,
+     "back_m": 1.419,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 3.25,
+     "t_escape": 4.49,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.25,
+     "t_escape": 4.49,
+     "back_m": 1.178,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 153,
+   "flags": [
+    [
+     "more_back",
+     0.906,
+     0.76
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.86,
+   "rear": 1.51,
+   "mthr": 120.0,
+   "bd": 0.53,
+   "params": {
+    "rev_s": 0.3,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 0,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     2.609,
+     3.088
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.75,
+     "t_escape": 3.85,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "now0": {
+     "t_brake": 2.75,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.75,
+     "t_escape": 3.85,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": [
+      [
+       "back_early",
+       "brake",
+       0.0
+      ]
+     ]
+    },
+    "ng1": {
+     "t_brake": 2.75,
+     "t_escape": 3.89,
+     "back_m": 0.76,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.75,
+     "t_escape": 3.89,
+     "back_m": 0.76,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 156,
+   "flags": [
+    [
+     "more_back",
+     1.21,
+     0.906
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.18,
+   "rear": 1.31,
+   "mthr": 120.0,
+   "bd": 0.57,
+   "params": {
+    "rev_s": 0.3,
+    "rev_us": 300.0,
+    "tof_guard": 1,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     2.249,
+     2.513
+    ]
+   ],
+   "drops": [
+    [
+     3.209,
+     3.329
+    ]
+   ],
+   "res": {
+    "now1": {
+     "t_brake": 2.19,
+     "t_escape": 3.55,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 2.19,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.19,
+     "t_escape": 3.62,
+     "back_m": 1.31,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 2.19,
+     "t_escape": 3.35,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.19,
+     "t_escape": 3.35,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 166,
+   "flags": [
+    [
+     "esc_push",
+     0.11,
+     0
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.7,
+   "rear": 1.34,
+   "mthr": 150.0,
+   "bd": 0.57,
+   "params": {
+    "rev_s": 0.3,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 1,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.143,
+     3.467
+    ],
+    [
+     3.939,
+     4.111
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.69,
+     "t_escape": 3.89,
+     "back_m": 0.294,
+     "esc_push_s": 0.11,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 2.69,
+     "t_escape": null,
+     "back_m": 0.092,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.69,
+     "t_escape": 3.49,
+     "back_m": 0.092,
+     "esc_push_s": 0.28,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 2.69,
+     "t_escape": 3.85,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.69,
+     "t_escape": 3.85,
+     "back_m": 0.906,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 168,
+   "flags": [
+    [
+     "rear_worse",
+     2.02,
+     0.94
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.96,
+   "rear": 1.66,
+   "mthr": 120.0,
+   "bd": 0.46,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 400.0,
+    "tof_guard": 3,
+    "launch_boost": 0,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.031,
+     3.213
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.79,
+     "t_escape": 4.12,
+     "back_m": 1.66,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.2,
+       "rear",
+       -2.02,
+       7.05
+      ]
+     ],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 2.79,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.79,
+     "t_escape": 4.12,
+     "back_m": 1.66,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.2,
+       "rear",
+       -2.02,
+       7.05
+      ]
+     ],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 2.79,
+     "t_escape": 4.02,
+     "back_m": 1.66,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.21,
+       "rear",
+       -0.94,
+       4.35
+      ]
+     ]
+    },
+    "ng0": {
+     "t_brake": 2.79,
+     "t_escape": 4.02,
+     "back_m": 1.66,
+     "esc_push_s": 0,
+     "rear_win": [
+      [
+       4.21,
+       "rear",
+       -0.94,
+       4.35
+      ]
+     ]
+    }
+   }
+  },
+  {
+   "run": 173,
+   "flags": [
+    [
+     "esc_push",
+     0.13,
+     0
+    ]
+   ],
+   "kind": "rev",
+   "xf": 2.96,
+   "rear": 1.39,
+   "mthr": 120.0,
+   "bd": 0.45,
+   "params": {
+    "rev_s": 0.3,
+    "rev_us": 200.0,
+    "tof_guard": 2,
+    "launch_boost": 1,
+    "start_kick": 0,
+    "launch_no_kick": 0
+   },
+   "veh_skip": [
+    [
+     3.571,
+     3.937
+    ],
+    [
+     4.153,
+     4.366
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 3.05,
+     "t_escape": 4.25,
+     "back_m": 0.225,
+     "esc_push_s": 0.13,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 3.05,
+     "t_escape": null,
+     "back_m": 0.089,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 3.05,
+     "t_escape": 4.65,
+     "back_m": 0.502,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 3.05,
+     "t_escape": 4.22,
+     "back_m": 0.525,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 3.05,
+     "t_escape": 4.22,
+     "back_m": 0.525,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  },
+  {
+   "run": 189,
+   "flags": [
+    [
+     "more_back",
+     1.353,
+     1.21
+    ]
+   ],
+   "kind": "rev",
+   "xf": 1.84,
+   "rear": 1.98,
+   "mthr": 100.0,
+   "bd": 0.58,
+   "params": {
+    "rev_s": 0.4,
+    "rev_us": 300.0,
+    "tof_guard": 2,
+    "launch_boost": 1,
+    "start_kick": 1,
+    "launch_no_kick": 1
+   },
+   "veh_skip": [
+    [
+     2.983,
+     3.284
+    ]
+   ],
+   "drops": [],
+   "res": {
+    "now1": {
+     "t_brake": 2.92,
+     "t_escape": 4.35,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "now0": {
+     "t_brake": 2.92,
+     "t_escape": null,
+     "back_m": 0.0,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "bef1": {
+     "t_brake": 2.92,
+     "t_escape": 4.35,
+     "back_m": 1.353,
+     "esc_push_s": 0,
+     "rear_win": [],
+     "guards": []
+    },
+    "ng1": {
+     "t_brake": 2.92,
+     "t_escape": 4.15,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    },
+    "ng0": {
+     "t_brake": 2.92,
+     "t_escape": 4.15,
+     "back_m": 1.21,
+     "esc_push_s": 0,
+     "rear_win": []
+    }
+   }
+  }
+ ]
+}

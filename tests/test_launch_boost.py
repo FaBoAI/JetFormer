@@ -322,3 +322,67 @@ def test_names_and_codes():
     cp = safety_caps.CeilParams()
     assert (cp.pred_s, cp.accel_max) == (A.LaunchBoost.PRED_S, A.LaunchBoost.ACCEL_MAX)   # 速さの天井と同じ見込み
     assert np.isnan(A.LaunchIn().v)
+
+
+# ---------------------------------------------------------------- 念のための切り詰め(2026-10-26 fix2: 数でない値は既定値)
+BAD = [float('nan'), float('inf'), float('-inf'), None, 'x']
+
+
+def test_clip_defaults_match_drive_and_launchin():
+    from jetformer import drive
+    B = A.LaunchBoost
+    assert (B.US_DEFAULT, B.MPS_DEFAULT, B.MAX_S_DEFAULT) == tuple(
+        drive.DEFAULT_PARAMS[k] for k in ('launch_us', 'launch_mps', 'launch_max_s'))
+    assert (B.US_DEFAULT, B.MPS_DEFAULT, B.MAX_S_DEFAULT) == (A.LaunchIn().us, A.LaunchIn().mps, A.LaunchIn().max_s)
+    for k, rng in (('launch_us', B.US_RANGE), ('launch_mps', B.MPS_RANGE), ('launch_max_s', B.MAX_S_RANGE)):
+        assert tuple(drive.PARAM_LIMITS[k]) == rng
+
+
+def test_clip_finite_values_same_as_before():
+    """数なら今まで(min(max(float(x), lo), hi))とビット単位で同じ"""
+    rng = random.Random(26)
+    B = A.LaunchBoost
+    xs = [150.0, 300.0, 149.999, 300.001, 0.0, -0.0, -1e300, 1e300, 250, True, '275.5', np.float32(222.2), np.float64(2.0)]
+    xs += [rng.uniform(-1000.0, 1000.0) for _ in range(2000)]
+    for r, d in ((B.US_RANGE, B.US_DEFAULT), (B.MPS_RANGE, B.MPS_DEFAULT), (B.MAX_S_RANGE, B.MAX_S_DEFAULT)):
+        for x in xs:
+            old = min(max(float(x), r[0]), r[1])
+            new = B._clip(x, r, d)
+            assert type(new) is float and new == old and math.copysign(1.0, new) == math.copysign(1.0, old), (x, r)
+
+
+@pytest.mark.parametrize('bad', BAD, ids=['nan', 'inf', '-inf', 'none', 'str'])
+@pytest.mark.parametrize('field', ['us', 'mps', 'max_s'])
+def test_clip_non_number_uses_default(field, bad):
+    """us・mps・max_s が数でない(NaN・±inf・None・文字)なら既定値で出す(前は NaN が出力に出た・② で終わらなかった)"""
+    B = A.LaunchBoost
+    default = {'us': B.US_DEFAULT, 'mps': B.MPS_DEFAULT, 'max_s': B.MAX_S_DEFAULT}[field]
+    a = armed()
+    out, k = ai(a, model=(C, N + 100.0), launch=inp(**{field: bad}))
+    assert k == A.ASSIST_LAUNCH and a.boost.count == 1
+    want_cfg = {'us': 250.0, 'mps': 2.5, 'max_s': 1.2}
+    want_cfg[field] = default
+    assert a.boost.cfg == (want_cfg['us'], want_cfg['mps'], want_cfg['max_s'])
+    assert all(type(x) is float and math.isfinite(x) for x in a.boost.cfg)
+    assert out == (C, N - want_cfg['us']) and math.isfinite(out[1])
+    ev = a.boost.event
+    assert ev[0] == 'start' and (ev[1]['us'], ev[1]['mps'], ev[1]['max_s']) == a.boost.cfg
+    # 止まったまま出し続けると ② 最大の時間(既定 1.2 秒)で終わる(前は max_s が NaN だと終わらなかった)
+    n, t = 0, 0.0
+    for i in range(1, 300):
+        t = i * DT
+        out, k = ai(a, model=(C, N + 100.0), t=t, launch=inp(**{field: bad}))
+        if k != A.ASSIST_LAUNCH:
+            break
+        assert math.isfinite(out[1]) and out[1] == N - want_cfg['us']
+        n += 1
+    assert a.launch_end == 2 and abs(t - want_cfg['max_s']) <= DT + 1e-9, (n, t)
+
+
+def test_clip_non_number_speed_end_uses_default_mps():
+    """mps が NaN でも ① 速さに届いた(既定 2.5 m/s)で終わる"""
+    a = armed()
+    assert ai(a, launch=inp(mps=float('nan')))[1] == A.ASSIST_LAUNCH
+    assert ai(a, t=DT, launch=inp(mps=float('nan'), v=2.3, a=1.0))[1] == A.ASSIST_LAUNCH     # 2.4 < 2.5
+    out, k = ai(a, t=2 * DT, launch=inp(mps=float('nan'), v=2.45, a=1.0))                    # 2.55 ≥ 2.5
+    assert k != A.ASSIST_LAUNCH and a.launch_end == 1

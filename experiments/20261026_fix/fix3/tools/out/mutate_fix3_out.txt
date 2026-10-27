@@ -1,0 +1,56 @@
+base 0 | 99 passed, 2 skipped in 24.15s | 
+control_s3                 -              killed | 3 failed, 41 passed in 3.97s | test_ramp_launch_loses_time_against_flying / test_line_ahead_measures_from_crossing_the_line / test_slip_note
+control_col                -              killed | 6 failed, 18 passed in 3.47s | test_f4_mixed_launch_us_compares_the_last_strength / test_f4_not_mixed_output_is_the_same_as_before / test_collect_reads_launch_fields_and_compares / test_auto_on_round3_groups_off_and_on_by_slider_gain / test_compare_fails_in_each_direction[\u7a7a\u8ee2\u306e\u6bd4 1.5-change1-slip] / test_compare_fails_in_each_direction[LH \u306e\u5165\u53e3 +0.5 m/s-change2-lh_speed]
+cf_orig                    code:F1        killed | 9 failed, 9 passed in 35.77s | test_unused_field_broken_reads_the_same[AI_CMD-pred] / test_unused_field_broken_reads_the_same[AI_CMD-gains] / test_unused_field_broken_reads_the_same[IMU-mag] / test_unused_field_broken_reads_the_same[IMU-temp] / test_unused_field_broken_reads_the_same[VEHICLE-seq] / test_unused_field_broken_reads_the_same[VEHICLE-hall_state] …
+cf_all_fields              code:F1        killed | 7 failed, 11 passed in 10.42s | test_unused_field_broken_reads_the_same[AI_CMD-pred] / test_unused_field_broken_reads_the_same[AI_CMD-gains] / test_unused_field_broken_reads_the_same[IMU-mag] / test_unused_field_broken_reads_the_same[IMU-temp] / test_unused_field_broken_reads_the_same[VEHICLE-seq] / test_unused_field_broken_reads_the_same[VEHICLE-hall_state] …
+cf_no_vehicle_select       code:F1        killed | 1 failed, 17 passed in 13.09s | test_ai_cmd_used_field_broken_skips_and_uses_vehicle_select
+bn_no_jf_reports           code:F2        killed | 13 failed, 2 skipped in 0.60s | test_default_report_is_dated_and_old_root_report_untouched / test_stops_before_overwriting_default_report / test_stops_before_overwriting_default_nightly / test_overwrite_flag_allows_default / test_explicit_out_report_and_extra_args_unchanged / test_no_records_and_usage_unchanged …
+bn_orig                    code:F3-F5     killed | 6 failed, 7 passed, 2 skipped in 3.98s | test_f4_no_records_default_creates_nothing_and_next_run_goes / test_f5_failed_stage3_4_do_not_pass_old_json / test_f5_ok_stages_pass_json_as_before / test_f3_default_report_carries_human_notes / test_f3_explicit_report_and_no_notes_unchanged / test_f3_seed_only_report_dir_is_not_previous_result
+bn_no_seed                 code:F3        killed | 3 failed, 10 passed, 2 skipped in 4.63s | test_f3_default_report_carries_human_notes / test_f3_explicit_report_and_no_notes_unchanged / test_f3_seed_only_report_dir_is_not_previous_result
+bn_seed_is_busy            code:F3        killed | 1 failed, 12 passed, 2 skipped in 7.99s | test_f3_seed_only_report_dir_is_not_previous_result
+bn_no_early_check          code:F4        killed | 1 failed, 12 passed, 2 skipped in 5.92s | test_f4_no_records_default_creates_nothing_and_next_run_goes
+bn_dir_is_busy             code:F4        killed | 1 failed, 12 passed, 2 skipped in 6.21s | test_f4_empty_default_dirs_are_not_previous_results
+bn_rc3_ignored             code:F5        killed | 2 failed, 11 passed, 2 skipped in 6.02s | test_f5_failed_stage3_4_do_not_pass_old_json / test_f5_ok_stages_pass_json_as_before
+bn_rc4_ignored             code:F5        killed | 1 failed, 12 passed, 2 skipped in 6.08s | test_f5_failed_stage3_4_do_not_pass_old_json
+col_orig                   tools:F4・F6・F9 killed | 8 failed, 16 passed in 3.45s | test_f4_mixed_launch_us_compares_the_last_strength / test_f4_first_lap_collision_of_any_strength_fails / test_f4_last_strength_is_by_time_not_by_value / test_f9_first_lap_ends_at_the_line_like_standing_3lap / test_f9_no_a2_ends_at_ai_end_as_before / test_f9_human_after_the_line_and_before_a2 …
+col_mixed_all_on           tools:F4       killed | 3 failed, 21 passed in 3.60s | test_f4_mixed_launch_us_compares_the_last_strength / test_f4_first_lap_collision_of_any_strength_fails / test_f4_last_strength_is_by_time_not_by_value
+col_last_max_value         tools:F4       killed | 2 failed, 22 passed in 3.16s | test_f4_mixed_launch_us_compares_the_last_strength / test_f4_first_lap_collision_of_any_strength_fails
+col_last_min_value         tools:F4       killed | 1 failed, 23 passed in 3.18s | test_f4_last_strength_is_by_time_not_by_value
+col_coll_used_only         tools:F4       killed | 1 failed, 23 passed in 2.99s | test_f4_first_lap_collision_of_any_strength_fails
+qp_orig                    tools:F5・F6・F7 killed | 5 failed, 39 passed in 3.57s | test_f5_marks_reach_flags_and_stay_out_of_best_and_le25 / test_f5_slip_note_also_counts_as_check_and_no_marks_unchanged / test_f5_end_to_end_a3dist_start_is_checked / test_f7_not_started_start_in_an_on_record_goes_to_the_not_started_group / test_f7_moved_start_makes_its_own_group_and_ignore_launch_merges
+qp_doubt_standing_counted  tools:F5       killed | 2 failed, 42 passed in 3.64s | test_f5_marks_reach_flags_and_stay_out_of_best_and_le25 / test_f5_end_to_end_a3dist_start_is_checked
+qp_doubt_window_counted    tools:F5       killed | 1 failed, 43 passed in 3.37s | test_f5_marks_reach_flags_and_stay_out_of_best_and_le25
+qp_no_standing_flag        tools:F5       killed | 2 failed, 42 passed in 13.19s | test_f5_marks_reach_flags_and_stay_out_of_best_and_le25 / test_f5_end_to_end_a3dist_start_is_checked
+qp_no_window_flag          tools:F5       killed | 1 failed, 43 passed in 4.00s | test_f5_marks_reach_flags_and_stay_out_of_best_and_le25
+qp_per_record_launch       tools:F7       killed | 2 failed, 42 passed in 3.70s | test_f7_not_started_start_in_an_on_record_goes_to_the_not_started_group / test_f7_moved_start_makes_its_own_group_and_ignore_launch_merges
+qp_no_mixed_flag           tools:F7       killed | 1 failed, 43 passed in 3.79s | test_f7_not_started_start_in_an_on_record_goes_to_the_not_started_group
+s3_frame_gap               tools:F6       killed | 1 failed, 43 passed in 4.00s | test_f6_frame_gap_is_not_valid
+s3_vehicle_gap             tools:F6       killed | 1 failed, 43 passed in 3.96s | test_f6_vehicle_gap_is_not_valid
+s3_line_lap_5_16           tools:F6       killed | 1 failed, 43 passed in 3.85s | test_f6_line_lap_outside_5_16_is_not_valid
+s3_anchor_chain            tools:F6       killed | 1 failed, 43 passed in 3.70s | test_f6_anchor_chain_stops_at_a_long_gap
+s3_to_r1_15s               tools:F6       killed | 1 failed, 43 passed in 3.54s | test_f6_first_anchor_after_15_s_is_not_used
+s3_cont_s                  tools:F6       killed | 1 failed, 43 passed in 3.74s | test_f6_flying_windows_need_continuous_laps
+s3_dry_run                 tools:F6       killed | 1 failed, 43 passed in 3.85s | test_f6_dry_run_frames_are_not_ai
+s3_dist_dpsi               tools:F6       killed | 1 failed, 43 passed in 3.80s | test_f6_lap_distance_median_uses_only_full_turns
+s3_best_max                tools:F6       killed | 1 failed, 43 passed in 4.37s | test_f6_best_standing_is_the_fastest_counted
+qp_gain                    tools:F6       killed | 1 failed, 43 passed in 3.97s | test_f6_key_separates_each_part[gain-a0-b0]
+qp_steer                   tools:F6       killed | 1 failed, 43 passed in 4.07s | test_f6_key_separates_each_part[steer-a1-b1]
+qp_zone                    tools:F6       killed | 1 failed, 43 passed in 4.05s | test_f6_key_separates_each_part[zone-a2-b2]
+qp_mode                    tools:F6       killed | 1 failed, 43 passed in 4.12s | test_f6_key_separates_each_part[mode-a3-b3]
+qp_auto_target             tools:F6       killed | 1 failed, 43 passed in 3.24s | test_f6_key_separates_each_part[auto-a4-b4]
+qp_launch_us               tools:F6       killed | 1 failed, 43 passed in 3.93s | test_f6_key_separates_each_part[launch-a5-b5]
+qp_counted                 tools:F6       killed | 1 failed, 43 passed in 4.01s | test_f6_only_counted_starts_and_fast_lap_threshold
+qp_fast9                   tools:F6       killed | 1 failed, 43 passed in 4.06s | test_f6_only_counted_starts_and_fast_lap_threshold
+col_on_none                tools:F6       killed | 1 failed, 23 passed in 3.45s | test_f6_on_helper
+col_on_s                   tools:F6       killed | 1 failed, 23 passed in 3.66s | test_f6_launch_on_s_counts_the_last_frame
+col_ceil_key               tools:F6       SURVIVED(試験が通った) | 24 passed in 3.78s | 
+col_left_key_when_off      tools:F6       killed | 1 failed, 23 passed in 2.94s | test_f6_same_setting_laps_follow_ceiling_and_auto
+col_end_at_a2              tools:F9       killed | 3 failed, 21 passed in 3.29s | test_f9_first_lap_ends_at_the_line_like_standing_3lap / test_f9_human_after_the_line_and_before_a2 / test_collect_reads_launch_fields_and_compares
+col_a2_in_ai_only          tools:F9       killed | 1 failed, 23 passed in 3.43s | test_f9_human_after_the_line_and_before_a2
+# 20:2x: col_ceil_key が残った(天井 ON の本は左の値が鍵に入るので、天井の ON/OFF の欄が無くても組が分かれた)。
+# 試験 test_f6_same_setting_laps_follow_ceiling_and_auto に「天井 ON で左の欄が無い記録」を足して、この 4 つだけ流し直した:
+base 0 | 99 passed, 2 skipped in 41.00s |
+control_col                -              killed | 6 failed, 18 passed in 4.13s
+col_orig                   tools:F4・F6・F9 killed | 8 failed, 16 passed in 2.90s
+col_ceil_key               tools:F6       killed | 1 failed, 23 passed in 3.42s | test_f6_same_setting_laps_follow_ceiling_and_auto
+col_left_key_when_off      tools:F6       killed | 1 failed, 23 passed in 3.10s | test_f6_same_setting_laps_follow_ceiling_and_auto

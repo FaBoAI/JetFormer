@@ -1,0 +1,146 @@
+{
+ "full": {
+  "by_params_flags": [
+   "フレームのゲイン 0.900"
+  ],
+  "by_params_coll": "1 回・最大 9.00G・8G 以上 1・場所 GM 1",
+  "standing_valid": [
+   true
+  ],
+  "standing_why": [
+   null
+  ],
+  "zero_byte": [],
+  "problems": [],
+  "standing_md_has_zero_line": false,
+  "judge": "合格",
+  "code": 0,
+  "collisions": {
+   "n": 1,
+   "max_g": 9.0,
+   "n_ge8": 1
+  },
+  "latest": "20261103-140000",
+  "newer_unreadable": [],
+  "mentions_missing": false
+ },
+ "zero": {
+  "by_params_flags": [
+   "フレームのゲイン 0.900",
+   "0 バイトの npz 4"
+  ],
+  "by_params_coll": "0 回",
+  "standing_valid": [
+   false
+  ],
+  "standing_why": [
+   "3 周に届かない(続いた起点 2・線 1 回)"
+  ],
+  "zero_byte": [
+   "20261103-140000-0002/AI_CMD.npz",
+   "20261103-140000-0002/CAM_FRONT.npz",
+   "20261103-140000-0002/IMU.npz",
+   "20261103-140000-0002/VEHICLE.npz"
+  ],
+  "problems": [
+   "20261103-140000-0002/AI_CMD: 読めません(EOFError)",
+   "20261103-140000-0002/VEHICLE: 読めません(EOFError)",
+   "20261103-140000-0002/IMU: 読めません(EOFError)",
+   "20261103-140000-0002/CAM_FRONT: 読めません(EOFError)"
+  ],
+  "standing_md_has_zero_line": true,
+  "judge": "足りない",
+  "code": 3,
+  "collisions": {
+   "n": 0,
+   "max_g": null,
+   "n_ge8": 0
+  },
+  "latest": "20261103-140000",
+  "newer_unreadable": [],
+  "mentions_missing": false
+ },
+ "none": {
+  "by_params_flags": [
+   "フレームのゲイン 0.900"
+  ],
+  "by_params_coll": "0 回",
+  "standing_valid": [
+   false
+  ],
+  "standing_why": [
+   "3 周に届かない(続いた起点 2・線 1 回)"
+  ],
+  "zero_byte": [],
+  "problems": [
+   "20261103-140000-0002/VEHICLE: ありません",
+   "20261103-140000-0002/IMU: ありません",
+   "20261103-140000-0002/CAM_FRONT: ありません"
+  ],
+  "standing_md_has_zero_line": false,
+  "judge": "足りない",
+  "code": 3,
+  "collisions": {
+   "n": 0,
+   "max_g": null,
+   "n_ge8": 0
+  },
+  "latest": "20261103-140000",
+  "newer_unreadable": [],
+  "mentions_missing": false
+ },
+ "long_full": {
+  "by_params_flags": [
+   "フレームのゲイン 0.900"
+  ],
+  "by_params_coll": "1 回・最大 9.00G・8G 以上 1・場所 SW 1",
+  "standing_valid": [
+   true
+  ],
+  "standing_why": [
+   null
+  ],
+  "zero_byte": [],
+  "problems": [],
+  "standing_md_has_zero_line": false,
+  "judge": "合格",
+  "code": 0,
+  "collisions": {
+   "n": 1,
+   "max_g": 9.0,
+   "n_ge8": 1
+  },
+  "latest": "20261103-140000",
+  "newer_unreadable": [],
+  "mentions_missing": false
+ },
+ "long_none": {
+  "by_params_flags": [
+   "フレームのゲイン 0.900"
+  ],
+  "by_params_coll": "0 回",
+  "standing_valid": [
+   true
+  ],
+  "standing_why": [
+   null
+  ],
+  "zero_byte": [],
+  "problems": [
+   "20261103-140000-0003/VEHICLE: ありません",
+   "20261103-140000-0003/IMU: ありません",
+   "20261103-140000-0003/CAM_FRONT: ありません"
+  ],
+  "standing_md_has_zero_line": false,
+  "judge": "合格",
+  "code": 0,
+  "collisions": {
+   "n": 0,
+   "max_g": null,
+   "n_ge8": 0
+  },
+  "latest": "20261103-140000",
+  "newer_unreadable": [],
+  "mentions_missing": false
+ }
+}

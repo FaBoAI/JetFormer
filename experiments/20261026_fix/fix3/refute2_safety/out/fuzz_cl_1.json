@@ -1,0 +1,2364 @@
+{
+ "n": 60,
+ "flags": {
+  "on_more_rear_hits": 28,
+  "on_faster_rear_hit": 22,
+  "on_rear_push_worse_than_guard_only": 4,
+  "on_front_push_after_giveup": 1
+ },
+ "examples": {
+  "on_more_rear_hits": [
+   {
+    "i": 1,
+    "scene": {
+     "dur": 16.0,
+     "xf": 4.76876681855834,
+     "ai_from": 1.0,
+     "xr": 4.248017572145073,
+     "human": [
+      [
+       5.77353333018428,
+       6.598998442564967
+      ]
+     ],
+     "model_desc": "fwd 120",
+     "drops": [
+      [
+       4.23213158157378,
+       4.500902686963409
+      ],
+      [
+       7.43444852032827,
+       7.7515000182498
+      ]
+     ],
+     "hit_drop": [
+      0.05025467853975437,
+      0.38709807487316805
+     ],
+     "veh_skip": []
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 1,
+     "throttle_gain": 0.9,
+     "rev_us": 378,
+     "rev_s": 0.31
+    },
+    "extra": [
+     [
+      [
+       5.01,
+       "rear",
+       -2.11,
+       7.29
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 9.79,
+     "rev_while_backing_s": 0.35,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ],
+      [
+       5.01,
+       "rear",
+       -2.11,
+       7.29
+      ],
+      [
+       5.83,
+       "front",
+       1.26,
+       5.16
+      ]
+     ],
+     "guard_events": [
+      "rear_impact"
+     ],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 11.83,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 11.83,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 5,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.2634243944391264,
+     "ai_from": 1.0,
+     "xr": 0.06894092537387864,
+     "human": [
+      [
+       8.998416673219811,
+       9.711724110135606
+      ]
+     ],
+     "model_desc": "fwd 60, brake +60 near",
+     "drops": [
+      [
+       14.327407124296048,
+       14.893933548179351
+      ],
+      [
+       10.07483926387324,
+       10.395094352300882
+      ],
+      [
+       10.836757738202994,
+       11.294373424278117
+      ],
+      [
+       2.59866903968814,
+       2.930832389844528
+      ]
+     ],
+     "hit_drop": [
+      0.04777218067111342,
+      0.24404199996743803
+     ],
+     "veh_skip": [
+      [
+       13.597459004984282,
+       13.935797278690746
+      ],
+      [
+       3.9272738957247815,
+       4.297137946936007
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.62,
+     "rev_us": 390,
+     "rev_s": 0.47
+    },
+    "extra": [
+     [
+      [
+       3.5,
+       "rear",
+       -3.05,
+       9.0
+      ],
+      [
+       6.4,
+       "rear",
+       -3.05,
+       9.0
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "rev_while_backing_s": 0.92,
+     "rear_push_s": 0.06,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.5,
+       "rear",
+       -3.05,
+       9.0
+      ],
+      [
+       6.4,
+       "rear",
+       -3.05,
+       9.0
+      ]
+     ],
+     "guard_events": [
+      "back_early",
+      "rear_impact",
+      "back_early",
+      "rear_impact"
+     ],
+     "giveup_rows": 8,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 7,
+    "scene": {
+     "dur": 16.0,
+     "xf": 2.781454598507097,
+     "ai_from": 1.0,
+     "xr": 2.520854270427511,
+     "human": [
+      [
+       10.555312884902378,
+       12.009954235119359
+      ]
+     ],
+     "model_desc": "fwd 180",
+     "drops": [
+      [
+       9.721479394467417,
+       9.866927289525057
+      ],
+      [
+       3.8057043765264176,
+       3.9930416232120267
+      ],
+      [
+       9.027357842312322,
+       9.757022549603493
+      ],
+      [
+       9.27973037002728,
+       9.734528880332928
+      ],
+      [
+       14.131354624952415,
+       14.516595791315545
+      ]
+     ],
+     "veh_skip": []
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 1,
+     "launch_no_kick": 1,
+     "tof_guard": 1,
+     "speed_ceiling": 0,
+     "zone_caps": 0,
+     "throttle_gain": 1.11,
+     "rev_us": 353,
+     "rev_s": 0.54
+    },
+    "extra": [
+     [
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       5.93,
+       "rear",
+       -1.76,
+       6.41
+      ]
+     ],
+     [
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ]
+     ]
+    ],
+    "on": {
+     "front_push_s": 9.57,
+     "rev_while_backing_s": 0.58,
+     "rear_push_s": 0.06,
+     "front_push_after_giveup_s": 3.72,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ],
+      [
+       5.93,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       6.28,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 44,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.25,
+     "rev_while_backing_s": 0.29,
+     "rear_push_s": 0.03,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [
+      "rear_impact"
+     ],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.25,
+     "rev_while_backing_s": 0.29,
+     "rear_push_s": 0.03,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 8,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.7135439357799545,
+     "ai_from": 1.0,
+     "xr": 1.1303746219388735,
+     "rear_soft": 0.5275402259775437,
+     "model_desc": "fwd 180",
+     "drops": [
+      [
+       4.284966088194539,
+       4.898282414838604
+      ],
+      [
+       2.185523225830779,
+       2.4209152422509623
+      ],
+      [
+       13.75382896911295,
+       14.01864734170712
+      ],
+      [
+       11.627626558030164,
+       12.155768562520093
+      ]
+     ],
+     "veh_skip": [
+      [
+       5.743922134965607,
+       5.9515133960552085
+      ],
+      [
+       4.292653159379045,
+       4.774171476089891
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 1,
+     "launch_no_kick": 0,
+     "tof_guard": 2,
+     "speed_ceiling": 0,
+     "zone_caps": 1,
+     "throttle_gain": 0.64,
+     "rev_us": 367,
+     "rev_s": 0.67
+    },
+    "extra": [
+     [
+      [
+       3.41,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       6.71,
+       "rear",
+       -2.69,
+       4.6
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 3.5,
+     "rev_while_backing_s": 0.86,
+     "rear_push_s": 0.04,
+     "front_push_after_giveup_s": 0.01,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ],
+      [
+       3.41,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       3.97,
+       "front",
+       1.43,
+       5.58
+      ],
+      [
+       6.71,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       7.27,
+       "front",
+       1.43,
+       5.58
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 186,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.74,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.74,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 10,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.8156753721767744,
+     "ai_from": 1.0,
+     "xr": 0.7145628216664921,
+     "rear_soft": 0.8070113410182334,
+     "model_desc": "fwd 120",
+     "drops": [
+      [
+       13.729118194109958,
+       14.04905423187497
+      ],
+      [
+       4.5477419045757745,
+       4.992108769836917
+      ],
+      [
+       2.4018080153063286,
+       2.9652021509591324
+      ],
+      [
+       1.5546829877918626,
+       1.6818271708245598
+      ]
+     ],
+     "veh_skip": [
+      [
+       11.17077221238605,
+       11.446455132964534
+      ],
+      [
+       6.477766740217298,
+       6.779289943029808
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 3,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.75,
+     "rev_us": 346,
+     "rev_s": 0.67
+    },
+    "extra": [
+     [
+      [
+       4.15,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       7.99,
+       "rear",
+       -3.46,
+       7.26
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 2.45,
+     "rev_while_backing_s": 1.22,
+     "rear_push_s": 0.02,
+     "front_push_after_giveup_s": 0.01,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ],
+      [
+       4.15,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       5.29,
+       "front",
+       0.59,
+       3.47
+      ],
+      [
+       7.99,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       9.32,
+       "front",
+       0.67,
+       3.68
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 168,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.39,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.39,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 14,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.6754902580848632,
+     "ai_from": 1.0,
+     "xr": 0.38932228185341544,
+     "model_desc": "fwd 180, brake +60 near",
+     "drops": [],
+     "hit_drop": [
+      0.019034498110815708,
+      0.5486569606620296
+     ],
+     "veh_skip": [
+      [
+       14.021510344827053,
+       14.402416924108215
+      ],
+      [
+       4.160228083560209,
+       4.433513093967878
+      ],
+      [
+       10.617291053411188,
+       11.102949164121203
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 1,
+     "launch_no_kick": 1,
+     "tof_guard": 3,
+     "speed_ceiling": 0,
+     "zone_caps": 0,
+     "throttle_gain": 1.15,
+     "rev_us": 341,
+     "rev_s": 0.59
+    },
+    "extra": [
+     [
+      [
+       2.68,
+       "rear",
+       -3.32,
+       9.0
+      ],
+      [
+       5.76,
+       "rear",
+       -3.35,
+       9.0
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "rev_while_backing_s": 1.2,
+     "rear_push_s": 0.04,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ],
+      [
+       2.68,
+       "rear",
+       -3.32,
+       9.0
+      ],
+      [
+       5.76,
+       "rear",
+       -3.35,
+       9.0
+      ]
+     ],
+     "guard_events": [
+      "back_early",
+      "rear_impact",
+      "back_early",
+      "rear_impact"
+     ],
+     "giveup_rows": 218,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   }
+  ],
+  "on_faster_rear_hit": [
+   {
+    "i": 1,
+    "scene": {
+     "dur": 16.0,
+     "xf": 4.76876681855834,
+     "ai_from": 1.0,
+     "xr": 4.248017572145073,
+     "human": [
+      [
+       5.77353333018428,
+       6.598998442564967
+      ]
+     ],
+     "model_desc": "fwd 120",
+     "drops": [
+      [
+       4.23213158157378,
+       4.500902686963409
+      ],
+      [
+       7.43444852032827,
+       7.7515000182498
+      ]
+     ],
+     "hit_drop": [
+      0.05025467853975437,
+      0.38709807487316805
+     ],
+     "veh_skip": []
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 1,
+     "throttle_gain": 0.9,
+     "rev_us": 378,
+     "rev_s": 0.31
+    },
+    "extra": [
+     [
+      [
+       5.01,
+       "rear",
+       -2.11,
+       7.29
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 9.79,
+     "rev_while_backing_s": 0.35,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ],
+      [
+       5.01,
+       "rear",
+       -2.11,
+       7.29
+      ],
+      [
+       5.83,
+       "front",
+       1.26,
+       5.16
+      ]
+     ],
+     "guard_events": [
+      "rear_impact"
+     ],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 11.83,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 11.83,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.39,
+       "front",
+       1.62,
+       6.05
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 5,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.2634243944391264,
+     "ai_from": 1.0,
+     "xr": 0.06894092537387864,
+     "human": [
+      [
+       8.998416673219811,
+       9.711724110135606
+      ]
+     ],
+     "model_desc": "fwd 60, brake +60 near",
+     "drops": [
+      [
+       14.327407124296048,
+       14.893933548179351
+      ],
+      [
+       10.07483926387324,
+       10.395094352300882
+      ],
+      [
+       10.836757738202994,
+       11.294373424278117
+      ],
+      [
+       2.59866903968814,
+       2.930832389844528
+      ]
+     ],
+     "hit_drop": [
+      0.04777218067111342,
+      0.24404199996743803
+     ],
+     "veh_skip": [
+      [
+       13.597459004984282,
+       13.935797278690746
+      ],
+      [
+       3.9272738957247815,
+       4.297137946936007
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.62,
+     "rev_us": 390,
+     "rev_s": 0.47
+    },
+    "extra": [
+     [
+      [
+       3.5,
+       "rear",
+       -3.05,
+       9.0
+      ],
+      [
+       6.4,
+       "rear",
+       -3.05,
+       9.0
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "rev_while_backing_s": 0.92,
+     "rear_push_s": 0.06,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.5,
+       "rear",
+       -3.05,
+       9.0
+      ],
+      [
+       6.4,
+       "rear",
+       -3.05,
+       9.0
+      ]
+     ],
+     "guard_events": [
+      "back_early",
+      "rear_impact",
+      "back_early",
+      "rear_impact"
+     ],
+     "giveup_rows": 8,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 8,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.7135439357799545,
+     "ai_from": 1.0,
+     "xr": 1.1303746219388735,
+     "rear_soft": 0.5275402259775437,
+     "model_desc": "fwd 180",
+     "drops": [
+      [
+       4.284966088194539,
+       4.898282414838604
+      ],
+      [
+       2.185523225830779,
+       2.4209152422509623
+      ],
+      [
+       13.75382896911295,
+       14.01864734170712
+      ],
+      [
+       11.627626558030164,
+       12.155768562520093
+      ]
+     ],
+     "veh_skip": [
+      [
+       5.743922134965607,
+       5.9515133960552085
+      ],
+      [
+       4.292653159379045,
+       4.774171476089891
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 1,
+     "launch_no_kick": 0,
+     "tof_guard": 2,
+     "speed_ceiling": 0,
+     "zone_caps": 1,
+     "throttle_gain": 0.64,
+     "rev_us": 367,
+     "rev_s": 0.67
+    },
+    "extra": [
+     [
+      [
+       3.41,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       6.71,
+       "rear",
+       -2.69,
+       4.6
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 3.5,
+     "rev_while_backing_s": 0.86,
+     "rear_push_s": 0.04,
+     "front_push_after_giveup_s": 0.01,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ],
+      [
+       3.41,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       3.97,
+       "front",
+       1.43,
+       5.58
+      ],
+      [
+       6.71,
+       "rear",
+       -2.69,
+       4.6
+      ],
+      [
+       7.27,
+       "front",
+       1.43,
+       5.58
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 186,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.74,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.74,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.85,
+       "front",
+       0.68,
+       3.69
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 2,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 10,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.8156753721767744,
+     "ai_from": 1.0,
+     "xr": 0.7145628216664921,
+     "rear_soft": 0.8070113410182334,
+     "model_desc": "fwd 120",
+     "drops": [
+      [
+       13.729118194109958,
+       14.04905423187497
+      ],
+      [
+       4.5477419045757745,
+       4.992108769836917
+      ],
+      [
+       2.4018080153063286,
+       2.9652021509591324
+      ],
+      [
+       1.5546829877918626,
+       1.6818271708245598
+      ]
+     ],
+     "veh_skip": [
+      [
+       11.17077221238605,
+       11.446455132964534
+      ],
+      [
+       6.477766740217298,
+       6.779289943029808
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 3,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.75,
+     "rev_us": 346,
+     "rev_s": 0.67
+    },
+    "extra": [
+     [
+      [
+       4.15,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       7.99,
+       "rear",
+       -3.46,
+       7.26
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 2.45,
+     "rev_while_backing_s": 1.22,
+     "rear_push_s": 0.02,
+     "front_push_after_giveup_s": 0.01,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ],
+      [
+       4.15,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       5.29,
+       "front",
+       0.59,
+       3.47
+      ],
+      [
+       7.99,
+       "rear",
+       -3.46,
+       7.26
+      ],
+      [
+       9.32,
+       "front",
+       0.67,
+       3.68
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 168,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.39,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.39,
+     "min_x": 0.0,
+     "hits": [
+      [
+       2.16,
+       "front",
+       0.6,
+       3.51
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 10,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 14,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.6754902580848632,
+     "ai_from": 1.0,
+     "xr": 0.38932228185341544,
+     "model_desc": "fwd 180, brake +60 near",
+     "drops": [],
+     "hit_drop": [
+      0.019034498110815708,
+      0.5486569606620296
+     ],
+     "veh_skip": [
+      [
+       14.021510344827053,
+       14.402416924108215
+      ],
+      [
+       4.160228083560209,
+       4.433513093967878
+      ],
+      [
+       10.617291053411188,
+       11.102949164121203
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 1,
+     "launch_no_kick": 1,
+     "tof_guard": 3,
+     "speed_ceiling": 0,
+     "zone_caps": 0,
+     "throttle_gain": 1.15,
+     "rev_us": 341,
+     "rev_s": 0.59
+    },
+    "extra": [
+     [
+      [
+       2.68,
+       "rear",
+       -3.32,
+       9.0
+      ],
+      [
+       5.76,
+       "rear",
+       -3.35,
+       9.0
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "rev_while_backing_s": 1.2,
+     "rear_push_s": 0.04,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ],
+      [
+       2.68,
+       "rear",
+       -3.32,
+       9.0
+      ],
+      [
+       5.76,
+       "rear",
+       -3.35,
+       9.0
+      ]
+     ],
+     "guard_events": [
+      "back_early",
+      "rear_impact",
+      "back_early",
+      "rear_impact"
+     ],
+     "giveup_rows": 218,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.07,
+       "front",
+       1.43,
+       5.59
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 23,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 15,
+    "scene": {
+     "dur": 16.0,
+     "xf": 2.601022453650663,
+     "ai_from": 1.0,
+     "xr": 1.3604223810301375,
+     "human": [
+      [
+       6.396529605924553,
+       7.359311011715725
+      ]
+     ],
+     "model_desc": "fwd 60",
+     "drops": [
+      [
+       7.506897049576709,
+       7.684678830700798
+      ],
+      [
+       2.725414563361265,
+       3.257566079536934
+      ],
+      [
+       8.195317447165085,
+       8.571811887600461
+      ],
+      [
+       3.1809091084326484,
+       3.591101068081829
+      ],
+      [
+       14.183706134358367,
+       14.793032552067286
+      ]
+     ],
+     "veh_skip": [
+      [
+       10.542910378504555,
+       10.949570955415833
+      ],
+      [
+       5.871741111395308,
+       6.211709526812111
+      ],
+      [
+       3.307174128436448,
+       3.7180398580971574
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 2,
+     "speed_ceiling": 0,
+     "zone_caps": 1,
+     "throttle_gain": 1.04,
+     "rev_us": 171,
+     "rev_s": 0.78
+    },
+    "extra": [
+     [
+      [
+       15.94,
+       "rear",
+       -1.43,
+       5.56
+      ]
+     ],
+     []
+    ],
+    "on": {
+     "front_push_s": 2.62,
+     "rev_while_backing_s": 2.19,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.02,
+       "front",
+       0.56,
+       3.4
+      ],
+      [
+       8.89,
+       "front",
+       0.6,
+       3.49
+      ],
+      [
+       13.06,
+       "front",
+       0.54,
+       3.34
+      ],
+      [
+       15.94,
+       "rear",
+       -1.43,
+       5.56
+      ]
+     ],
+     "guard_events": [
+      "rear_impact"
+     ],
+     "giveup_rows": 0,
+     "holds": 19,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 7.73,
+     "rev_while_backing_s": 0.61,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.02,
+       "front",
+       0.56,
+       3.4
+      ],
+      [
+       8.07,
+       "front",
+       0.59,
+       3.47
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 19,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 7.73,
+     "rev_while_backing_s": 0.61,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.02,
+       "front",
+       0.56,
+       3.4
+      ],
+      [
+       8.07,
+       "front",
+       0.59,
+       3.47
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 19,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   }
+  ],
+  "on_rear_push_worse_than_guard_only": [
+   {
+    "i": 5,
+    "scene": {
+     "dur": 16.0,
+     "xf": 1.2634243944391264,
+     "ai_from": 1.0,
+     "xr": 0.06894092537387864,
+     "human": [
+      [
+       8.998416673219811,
+       9.711724110135606
+      ]
+     ],
+     "model_desc": "fwd 60, brake +60 near",
+     "drops": [
+      [
+       14.327407124296048,
+       14.893933548179351
+      ],
+      [
+       10.07483926387324,
+       10.395094352300882
+      ],
+      [
+       10.836757738202994,
+       11.294373424278117
+      ],
+      [
+       2.59866903968814,
+       2.930832389844528
+      ]
+     ],
+     "hit_drop": [
+      0.04777218067111342,
+      0.24404199996743803
+     ],
+     "veh_skip": [
+      [
+       13.597459004984282,
+       13.935797278690746
+      ],
+      [
+       3.9272738957247815,
+       4.297137946936007
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.62,
+     "rev_us": 390,
+     "rev_s": 0.47
+    },
+    "extra": [
+     0.06,
+     null
+    ],
+    "on": {
+     "rev_while_backing_s": 0.92,
+     "rear_push_s": 0.06,
+     "min_x": 0.0,
+     "hits": [
+      [
+       3.5,
+       "rear",
+       -3.05,
+       9.0
+      ],
+      [
+       6.4,
+       "rear",
+       -3.05,
+       9.0
+      ]
+     ],
+     "guard_events": [
+      "back_early",
+      "rear_impact",
+      "back_early",
+      "rear_impact"
+     ],
+     "giveup_rows": 8,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "min_x": 0.0,
+     "hits": [],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 13,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 24,
+    "scene": {
+     "dur": 16.0,
+     "xf": 2.6420615655618973,
+     "ai_from": 1.0,
+     "xr": 1.813449973245327,
+     "model_desc": "fwd 60",
+     "drops": [
+      [
+       12.768736495114517,
+       12.917850547728333
+      ],
+      [
+       4.83026371099883,
+       5.030120679029959
+      ],
+      [
+       2.274527897399313,
+       2.4133114624122016
+      ],
+      [
+       9.925182177307935,
+       10.551519879507037
+      ]
+     ],
+     "veh_skip": [
+      [
+       10.282226638981708,
+       10.580828275114571
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 1,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 0,
+     "zone_caps": 0,
+     "throttle_gain": 0.81,
+     "rev_us": 301,
+     "rev_s": 0.54
+    },
+    "extra": [
+     0.06,
+     null
+    ],
+    "on": {
+     "front_push_s": 3.13,
+     "rev_while_backing_s": 1.12,
+     "rear_push_s": 0.06,
+     "front_push_after_giveup_s": 0.01,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.12,
+       "front",
+       0.73,
+       3.82
+      ],
+      [
+       5.87,
+       "rear",
+       -2.86,
+       9.0
+      ],
+      [
+       6.64,
+       "front",
+       1.1,
+       4.75
+      ],
+      [
+       9.3,
+       "rear",
+       -2.86,
+       9.0
+      ],
+      [
+       10.07,
+       "front",
+       1.09,
+       4.73
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 128,
+     "holds": 1,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 10.8,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.12,
+       "front",
+       0.73,
+       3.82
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 1,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 10.8,
+     "min_x": 0.0,
+     "hits": [
+      [
+       4.12,
+       "front",
+       0.73,
+       3.82
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 1,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 29,
+    "scene": {
+     "dur": 16.0,
+     "xf": 2.7622134921621058,
+     "ai_from": 1.0,
+     "xr": 2.449582199784246,
+     "rear_soft": 0.6274247408568123,
+     "human": [
+      [
+       4.85550076987414,
+       5.469537852070374
+      ]
+     ],
+     "model_desc": "fwd 180",
+     "drops": [
+      [
+       2.0989546475716323,
+       2.268466430546116
+      ],
+      [
+       12.908777885461822,
+       13.466180378596107
+      ],
+      [
+       3.427141615455354,
+       4.1331887812501815
+      ],
+      [
+       1.3058913667874628,
+       1.6762026256102092
+      ],
+      [
+       12.866816318135122,
+       13.469805638808673
+      ]
+     ],
+     "hit_drop": [
+      0.053476889670067494,
+      0.4070774405966353
+     ],
+     "veh_skip": [
+      [
+       6.956217082818681,
+       7.349165194272057
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 0,
+     "launch_no_kick": 0,
+     "tof_guard": 3,
+     "speed_ceiling": 0,
+     "zone_caps": 1,
+     "throttle_gain": 0.84,
+     "rev_us": 152,
+     "rev_s": 0.52
+    },
+    "extra": [
+     0.06,
+     null
+    ],
+    "on": {
+     "front_push_s": 10.56,
+     "rev_while_backing_s": 0.48,
+     "rear_push_s": 0.06,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.91,
+       "front",
+       0.76,
+       3.91
+      ],
+      [
+       3.47,
+       "rear",
+       -1.27,
+       3.24
+      ],
+      [
+       4.52,
+       "front",
+       1.39,
+       5.48
+      ]
+     ],
+     "guard_events": [
+      "rear_impact_hold"
+     ],
+     "giveup_rows": 0,
+     "holds": 8,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.33,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.91,
+       "front",
+       0.76,
+       3.91
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 8,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.33,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.91,
+       "front",
+       0.76,
+       3.91
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 8,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   },
+   {
+    "i": 36,
+    "scene": {
+     "dur": 16.0,
+     "xf": 3.2245638219333754,
+     "ai_from": 1.0,
+     "xr": 2.7884953788560933,
+     "human": [
+      [
+       9.563382703411403,
+       10.18385140475607
+      ]
+     ],
+     "model_desc": "fwd 60",
+     "drops": [
+      [
+       7.587686787421072,
+       7.9377953677107635
+      ],
+      [
+       9.48025018442299,
+       9.723468679245528
+      ],
+      [
+       13.318744123933152,
+       13.910780652123805
+      ],
+      [
+       8.486685053199631,
+       8.646235400696822
+      ]
+     ],
+     "hit_drop": [
+      0.041406442136347595,
+      0.4296308532765204
+     ],
+     "veh_skip": [
+      [
+       5.415129175153876,
+       5.7480603004559985
+      ]
+     ]
+    },
+    "params": {
+     "start_kick": 0,
+     "launch_boost": 1,
+     "launch_no_kick": 0,
+     "tof_guard": 1,
+     "speed_ceiling": 1,
+     "zone_caps": 0,
+     "throttle_gain": 0.65,
+     "rev_us": 285,
+     "rev_s": 0.62
+    },
+    "extra": [
+     0.1,
+     null
+    ],
+    "on": {
+     "front_push_s": 6.52,
+     "rev_while_backing_s": 0.41,
+     "rear_push_s": 0.1,
+     "min_x": 0.0,
+     "hits": [
+      [
+       6.11,
+       "front",
+       0.48,
+       3.21
+      ],
+      [
+       7.6,
+       "rear",
+       -2.04,
+       7.11
+      ],
+      [
+       8.55,
+       "front",
+       1.54,
+       5.85
+      ]
+     ],
+     "guard_events": [
+      "rear_impact_hold"
+     ],
+     "giveup_rows": 0,
+     "holds": 6,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 8.55,
+     "min_x": 0.0,
+     "hits": [
+      [
+       6.11,
+       "front",
+       0.48,
+       3.21
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 6,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 8.55,
+     "min_x": 0.0,
+     "hits": [
+      [
+       6.11,
+       "front",
+       0.48,
+       3.21
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 6,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   }
+  ],
+  "on_front_push_after_giveup": [
+   {
+    "i": 7,
+    "scene": {
+     "dur": 16.0,
+     "xf": 2.781454598507097,
+     "ai_from": 1.0,
+     "xr": 2.520854270427511,
+     "human": [
+      [
+       10.555312884902378,
+       12.009954235119359
+      ]
+     ],
+     "model_desc": "fwd 180",
+     "drops": [
+      [
+       9.721479394467417,
+       9.866927289525057
+      ],
+      [
+       3.8057043765264176,
+       3.9930416232120267
+      ],
+      [
+       9.027357842312322,
+       9.757022549603493
+      ],
+      [
+       9.27973037002728,
+       9.734528880332928
+      ],
+      [
+       14.131354624952415,
+       14.516595791315545
+      ]
+     ],
+     "veh_skip": []
+    },
+    "params": {
+     "start_kick": 1,
+     "launch_boost": 1,
+     "launch_no_kick": 1,
+     "tof_guard": 1,
+     "speed_ceiling": 0,
+     "zone_caps": 0,
+     "throttle_gain": 1.11,
+     "rev_us": 353,
+     "rev_s": 0.54
+    },
+    "extra": 3.72,
+    "on": {
+     "front_push_s": 9.57,
+     "rev_while_backing_s": 0.58,
+     "rear_push_s": 0.06,
+     "front_push_after_giveup_s": 3.72,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ],
+      [
+       5.93,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       6.28,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [
+      "rear_impact",
+      "rear_impact"
+     ],
+     "giveup_rows": 44,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "guard_only": {
+     "front_push_s": 12.25,
+     "rev_while_backing_s": 0.29,
+     "rear_push_s": 0.03,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [
+      "rear_impact"
+     ],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    },
+    "off": {
+     "front_push_s": 12.25,
+     "rev_while_backing_s": 0.29,
+     "rear_push_s": 0.03,
+     "min_x": 0.0,
+     "hits": [
+      [
+       1.41,
+       "front",
+       2.95,
+       9.0
+      ],
+      [
+       2.77,
+       "rear",
+       -1.76,
+       6.41
+      ],
+      [
+       3.12,
+       "front",
+       1.31,
+       5.27
+      ]
+     ],
+     "guard_events": [],
+     "giveup_rows": 0,
+     "holds": 0,
+     "giveup_cleared": [],
+     "kick_rows": 0
+    }
+   }
+  ]
+ },
+ "sum": {
+  "front_push_after_giveup_s|00": 0.01,
+  "front_push_after_giveup_s|01": 0.01,
+  "front_push_after_giveup_s|11": 3.93,
+  "front_push_s|00": 362.74,
+  "front_push_s|01": 362.7,
+  "front_push_s|11": 179.22,
+  "min_x|00": -4.757,
+  "min_x|01": -4.631,
+  "min_x|11": -3.263,
+  "rear_push_s|00": 0.98,
+  "rear_push_s|01": 0.32,
+  "rear_push_s|11": 1.11,
+  "rev_while_backing_s|00": 28.61,
+  "rev_while_backing_s|01": 26.2,
+  "rev_while_backing_s|11": 55.09
+ }
+}

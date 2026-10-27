@@ -107,7 +107,11 @@ def load_raw(log, raw_dir=None):
         parts['veh'].append({'timestamps_us': veh['timestamps_us'].astype(np.int64), 'pwm': veh['pwm'],
                              'valid': veh['valid'], 'select': veh['select'] if 'select' in veh else np.zeros(nv, bool),
                              'erpm': veh['erpm'] if 'erpm' in veh else np.zeros(nv, np.int32)})
-        ai = dataset._load(p, 'AI_CMD')
+        try:
+            ai = dataset._load(p, 'AI_CMD')
+        except Exception as e:      # 0 バイト・壊れた AI_CMD.npz(電源断)。2026-10-26 fix2
+            print('注意: %s/AI_CMD.npz が読めません(%s)。AI のジャンルの印を使わずに続けます' % (p, type(e).__name__), file=sys.stderr)
+            ai = None
         if ai is not None and len(ai['timestamps_us']) and 'mode_id' in ai:
             parts['ai'].append({'timestamps_us': ai['timestamps_us'].astype(np.int64), 'mode_id': ai['mode_id']})
     if not parts['cam_t']:

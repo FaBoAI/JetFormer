@@ -1,0 +1,24 @@
+{
+ "giveup_s": 11.85,
+ "A nk 1->0 after giveup": {
+  "accepted": true,
+  "err": null,
+  "start_frames": 0,
+  "same_as_no_change": true
+ },
+ "B start_kick 0->1 after giveup": {
+  "accepted": false,
+  "err": "走行中は発進の補助(AI側にしたら走り出す)を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)",
+  "start_frames": 0
+ },
+ "B2 start_kick 1->0 (allowed)": {
+  "accepted": true,
+  "err": null
+ },
+ "C nk 1->0 mid reverse": {
+  "at": 2.917,
+  "accepted": true,
+  "start_frames": 0,
+  "same_as_no_change": true
+ }
+}

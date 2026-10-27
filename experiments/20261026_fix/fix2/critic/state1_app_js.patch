@@ -1,0 +1,11 @@
+--- a/jetformer/web/static/app.js
++++ b/jetformer/web/static/app.js
+@@ -2062,7 +2062,7 @@
+   } else $('#dr-speed-auto').checked = false;
+   delete state.drive.pending.speed_ceiling; delete state.drive.pending.speed_auto;
+   try {
+-    const p = await api('POST', '/api/drive/params', on ? { speed_ceiling: 1 } : { speed_ceiling: 0, speed_auto: 0 });
++    const p = await api('POST', '/api/drive/params', on ? { speed_ceiling: 1, speed_auto: 0 } : { speed_ceiling: 0, speed_auto: 0 });   // 天井を ON にしたら自動合わせは OFF から(サーバーに残った ON を消す)
+     if (p && p.speed_ceiling === undefined) { el.checked = false; toast('今のサーバーは速さの天井に対応していません(再起動が必要)', true); }
+     else {
+       if (state.drive.st) state.drive.st.params = p;

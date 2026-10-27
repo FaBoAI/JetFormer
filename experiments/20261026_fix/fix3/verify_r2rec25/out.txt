@@ -1,0 +1,103 @@
+{
+ "A_kept": {
+  "bad": "20261103-131500",
+  "files_after_cut": [
+   "20261103-131500-0001/AI_CMD.npz:34414",
+   "20261103-131500-0001/CAM_FRONT.npz:17322",
+   "20261103-131500-0001/IMU.npz:64762",
+   "20261103-131500-0001/VEHICLE.npz:73496",
+   "20261103-131500-0002/AI_CMD.npz:18814",
+   "20261103-131500-0002/CAM_FRONT.npz:8922",
+   "20261103-131500-0002/IMU.npz:32762",
+   "20261103-131500-0002/VEHICLE.npz:37496",
+   "events.jsonl:112",
+   "log.json:495"
+  ],
+  "collect_by_launch_n": {
+   "off": 4,
+   "on": 3
+  },
+  "collect_all_ok": false,
+  "collect_bad_in_json": true,
+  "collect_stdout_lines_total": 18,
+  "collect_skip_line_no": [],
+  "collect_stdout_skip": [],
+  "collect_verdict": [
+   "ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_"
+  ],
+  "runs1103_bad_rows": [
+   "| 15 | 20261103-131500 | 3-4 | — | EXP | 0.9 | 0 | 4.1 | 0 | 1 | 始め 1 | — | なし |"
+  ],
+  "runs1103_tail": [
+   "| 19 | 20261103-133500 | 3-8 | — | EXP | 0.9 | 0 | 4.1 | 0 | 1 | 始め 1 | — | なし |",
+   "",
+   "8 本・計画と違う 0 本"
+  ]
+ },
+ "D_power_loss": {
+  "bad": "20261103-131500",
+  "files_after_cut": [
+   "20261103-131500-0001/AI_CMD.npz:0",
+   "20261103-131500-0001/CAM_FRONT.npz:0",
+   "20261103-131500-0001/IMU.npz:0",
+   "20261103-131500-0001/VEHICLE.npz:0",
+   "20261103-131500-0002/AI_CMD.npz:0",
+   "20261103-131500-0002/CAM_FRONT.npz:0",
+   "20261103-131500-0002/IMU.npz:0",
+   "20261103-131500-0002/VEHICLE.npz:0",
+   "events.jsonl:0",
+   "log.json:0"
+  ],
+  "collect_by_launch_n": {
+   "off": 4,
+   "on": 3
+  },
+  "collect_all_ok": true,
+  "collect_bad_in_json": false,
+  "collect_stdout_lines_total": 15,
+  "collect_skip_line_no": [],
+  "collect_stdout_skip": [],
+  "collect_verdict": [
+   "ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_s"
+  ],
+  "runs1103_bad_rows": [
+   "読めない記録 1 本(表に入れていない。AI 走行かどうかも分からない。紙のメモ・動画と照らす): 20261103-131500(log.json が 0 バイト)"
+  ],
+  "runs1103_tail": [
+   "",
+   "7 本・計画と違う 0 本",
+   "読めない記録 1 本(表に入れていない。AI 走行かどうかも分からない。紙のメモ・動画と照らす): 20261103-131500(log.json が 0 バイト)"
+  ]
+ },
+ "B_server_crash": {
+  "bad": "20261103-131500",
+  "files_after_cut": [
+   "events.jsonl:112",
+   "log.json:495"
+  ],
+  "collect_by_launch_n": {
+   "off": 4,
+   "on": 3
+  },
+  "collect_all_ok": true,
+  "collect_bad_in_json": false,
+  "collect_stdout_lines_total": 16,
+  "collect_skip_line_no": [
+   0
+  ],
+  "collect_stdout_skip": [
+   "skip 20261103-131500 フレーム(AI_CMD・カメラ)がありません"
+  ],
+  "collect_verdict": [
+   "ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_s"
+  ],
+  "runs1103_bad_rows": [
+   "| 15 | 20261103-131500 | 3-4 | — | EXP | 0.9 | 0 | 4.1 | 0 | 1 | 始め 1 | — | なし |"
+  ],
+  "runs1103_tail": [
+   "| 19 | 20261103-133500 | 3-8 | — | EXP | 0.9 | 0 | 4.1 | 0 | 1 | 始め 1 | — | なし |",
+   "",
+   "8 本・計画と違う 0 本"
+  ]
+ }
+}

@@ -316,8 +316,10 @@ def test_v5_start_with_params_and_block_override():
     assert 'launch_boost' in bench.SWITCH_KEYS
 
 
-def test_v3_nan_config_defect_documented():
-    """LaunchBoost._clip は NaN を通す(念のための切り詰めが NaN に効かない)。drive.py の入口は NaN を断るので、今の道からは届かない"""
+def test_v3_nan_config_fixed():
+    """LaunchBoost._clip は NaN を通していた(out/v3_nan_cfg.json が直す前の記録: 出力 NaN・max_s が NaN なら 300 フレーム
+    (10 秒)出し続けた)。2026-10-26 fix2 で「数でない値は既定値」に直した。ここでは直ったことを確かめる
+    (drive.py の入口は NaN を断るので、今の道からは届かない。念のための切り詰め)"""
     b = A.LaunchBoost(N)
     b.human()
     inp = A.LaunchIn(us=float('nan'), v=0.0, a=0.0, gz=0.0, steer_rel=0.0, ttc=30.0, ttc5=(30.0,) * 5, tof_ok=True, veh_ok=True)
@@ -333,9 +335,11 @@ def test_v3_nan_config_defect_documented():
             break
         n += 1
     res['frames_with_max_s_nan'] = n
-    note('v3_nan_cfg', res)
-    assert out is not None and math.isnan(out)
-    assert n == 300            # ② で終わらない(止まったまま 10 秒出し続ける)
+    res['end_code_with_max_s_nan'] = b2.last_end
+    note('v3_nan_cfg_fixed', res)
+    assert out is not None and math.isfinite(out) and out == N - A.LaunchBoost.US_DEFAULT      # 既定の 250 µs
+    assert list(b.cfg) == [A.LaunchBoost.US_DEFAULT, 2.5, 1.2]
+    assert b2.last_end == 2 and n == 36         # ② 最大の時間(既定 1.2 秒 = 30 fps で 36 フレーム)で終わる
 
 
 @pytest.mark.parametrize('kind', ['invalid', 'lowconf', 'bumper_rows'])

@@ -3,6 +3,9 @@
 
     python -I quick_eval.py 1600            # 16:00 以後
     python -I quick_eval.py 1600 --no-run   # 集計(bench_nightly)を回し直さず、前の scorecard.json だけ読む
+
+読めなかった本(scorecard の per_log が error だけ。電源断で npz が全部 0 バイトなど)は「(読めない: …)」の行にして飛ばす
+(2026-10-26 fix2)。
 """
 import glob
 import json
@@ -58,6 +61,12 @@ def main():
         p = (j.get('drive') or {}).get('params') or {}
         if not L:
             print('| %s | (集計なし) | | | | | | | | | | | | | |' % kv(desc, 'ai_no'))
+            continue
+        if 'error' in L or not all(k in L for k in ('passes', 'laps', 'ai_s', 'takeovers', 'cand')):
+            # 読めなかった本(電源断で npz が全部 0 バイトなど。scorecard の per_log は error だけ)。止まらずに次の本へ
+            # (2026-10-26 fix2 R2-rec-4: 前は KeyError で止まり、そのあとの本と「段ごと」が出なかった)
+            print('| %s | (読めない: %s) %s | | | | | | | | | | | | | |' % (
+                kv(desc, 'ai_no'), str(L.get('error') or '欄が足りない')[:80].replace('|', '/'), name))
             continue
         ps = [x for x in L['passes'] if x.get('ai')]
         clean = [x['lap_s'] for x in L['laps'] if x.get('clean')]

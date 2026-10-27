@@ -1,0 +1,268 @@
+"""write_lock2_v3.py の試験(作り物の段 0・decisions・机上の台本。本物の protocol_v3_lock2.json は書かない)。
+固定の確かめ(sha256sum -c・check_seal_v2.py)と表・コードの sha256 は本物のファイルを読むだけ。
+
+    cd /home/jetson/jetformer/experiments/20261026_fix/fix2 && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \
+      /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q -p no:cacheprovider \
+      --basetemp=/home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_d0 --rootdir=. test_write_lock2_v3.py
+"""
+import json
+import shutil
+import os
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import d0_decide as D  # noqa: E402
+import test_d0_decide as T  # noqa: E402
+import write_lock2_v3 as W  # noqa: E402
+
+QUEUE = HERE.parent / 'gpu_queue_v3.py'
+REAL_LOCK2 = Path('/home/jetson/jetformer_reports/fix_20261026/protocol_v3_lock2.json')
+
+
+@pytest.fixture
+def world(tmp_path, capsys, monkeypatch):
+    """作り物の段 0 → d0_decide で decisions を書く → 机上の台本と段 0 の 8 の json を置く。
+    本物の状態(data/runs の段 1・キューが見る desk_v3/eval_v3.py・空きディスク)からは切り離す
+    (10/27: 段 1 が始まり、desk_v3/eval_v3.py の symlink を置いたあと、本物を読んで落ちていた。止まり方は下の試験で見る)"""
+    monkeypatch.setattr(W, 'RUNS', tmp_path / 'runs')              # 段 1 はまだ(v3_20261026-* が無い)
+    monkeypatch.setattr(W, 'QUEUE_EVAL', tmp_path / 'queue_eval_v3.py')   # キューの見る場所に台本が無い(警告だけ)
+    monkeypatch.setattr(W, 'DISK_MIN_GB', 0.0)                    # 一式の作業場所で空きが減っても落ちない
+    dargs = T.make(tmp_path, T.FOUR)
+    rc = D.main(dargs + ['--write'])
+    capsys.readouterr()
+    assert rc == 0
+    a = dict(zip(dargs[::2], dargs[1::2]))
+    c3 = tmp_path / 'c3'
+    c3.mkdir()
+    (c3 / 'desk_v3.py').write_text('# desk\n')
+    (c3 / 'eval_v3.py').write_text('# eval\n')
+    chk = tmp_path / 'desk_check.json'
+    chk.write_text(json.dumps({'made_at': '2026-10-26 15:00:00', 'all_ok': True,        # 台本の sha256(2026-10-26 critic rd0-2)
+                               'desk_v3_sha256': D.sha256(c3 / 'desk_v3.py'), 'eval_v3_sha256': D.sha256(c3 / 'eval_v3.py')}))
+    args = ['--decisions', a['--out'], '--abl-runs-dir', a['--runs-dir'], '--abl-probe-dir', a['--probe-dir'],
+            '--abl-probe', a['--abl-probe'], '--probe-check', a['--probe-check'], '--bf2', a['--bf2'],
+            '--desk', str(c3 / 'desk_v3.py'), '--eval', str(c3 / 'eval_v3.py'), '--desk-check', str(chk),
+            '--out', str(tmp_path / 'protocol_v3_lock2.json'), '--power', '試験(作り物)']   # 電源が無いと止まる(critic rd0-5)
+    return tmp_path, args
+
+
+def run(args, capsys):
+    rc = W.main(args)
+    out, err = capsys.readouterr()
+    return rc, out, err
+
+
+def opt(args, key, value):
+    a = list(args)
+    a[a.index(key) + 1] = value
+    return a
+
+
+def test_writes_once_readonly_with_sha(world, capsys):
+    tmp, args = world
+    rc, out, err = run(args + ['--power', '試験'], capsys)
+    assert rc == 0, err
+    lock, shaf = tmp / 'protocol_v3_lock2.json', tmp / 'protocol_v3_lock2.sha256'
+    for p in (lock, shaf):
+        assert stat.S_IMODE(p.stat().st_mode) == 0o444                # chmod a-w
+    r = subprocess.run(['sha256sum', '-c', shaf.name], cwd=str(tmp), capture_output=True, text=True)
+    assert r.returncode == 0 and 'protocol_v3_lock2.json: OK' in r.stdout
+    j = json.loads(lock.read_text())
+    assert j['schema'] == 'jf-train-v3-lock2/v1' and j['protocol_v3_sha256'].startswith('97c677d6')
+    assert list(j['stage0']) == [str(i) for i in range(1, 10)]
+    assert all(j['stage0'][k]['status'].startswith('済') for k in j['stage0'])
+    assert j['answers']['D0']['order'] == ['v3d', 'v3n', 'v3b'] and j['answers']['BF2-0']['train'] is False
+    f = j['files']
+    assert f['code']['tools/train.py']['sha256'] == W.EXPECT_CODE['tools/train.py']
+    assert f['code']['jetformer/dataset.py']['sha256'] == W.EXPECT_CODE['jetformer/dataset.py']
+    assert f['v3_tables']['drop_v3n.npz']['sha256'] == W.EXPECT_TABLES['drop_v3n.npz']
+    assert f['train_samples']['v3d']['train_samples'] == 6469
+    assert f['probe']['probe_gates.py']['sha256'].startswith('abcfc533')
+    assert f['queue_v3']['gpu_queue_v3.py']['sha256'].startswith('baf9050c')
+    assert f['desk(机上の台本)']['eval_v3.py']['bytes'] == len('# eval\n')
+    assert any('机上の予測を飛ばす' in w for w in j['warnings'])         # キューは desk_v3/eval_v3.py を見る
+    assert j['stage0']['9']['answer']['power'] == '試験'
+    # 2 回目は止まる・中身は変わらない
+    before = lock.read_bytes()
+    rc, out, err = run(args, capsys)
+    assert rc == 2 and 'もうあります' in err and lock.read_bytes() == before
+
+
+def test_queue_runs_stage1_with_this_lock2(world, capsys):
+    """gpu_queue_v3.py(読むだけの resolve)が、この lock2 と decisions で段 1 の行を RUN にする"""
+    tmp, args = world
+    assert run(args, capsys)[0] == 0
+    env = {k: v for k, v in os.environ.items() if not k.startswith('GPU_QUEUE_')}
+    env.update({'GPU_QUEUE_DECISIONS': str(tmp / 'decisions_v3.json'), 'GPU_QUEUE_LOCK2': str(tmp / 'protocol_v3_lock2.json'),
+                'GPU_QUEUE_PROBE_DIR': str(tmp / 'qprobe')})
+    r = subprocess.run([sys.executable, '-I', str(QUEUE), 'resolve', 'v3_20261026-v3d-aug2-e60-s0'], capture_output=True,
+                       text=True, env=env)
+    assert r.stdout.startswith('RUN\tv3_20261026-v3d-aug2-e60-s0\t'), r.stdout + r.stderr
+    r = subprocess.run([sys.executable, '-I', str(QUEUE), 'templates'], capture_output=True, text=True, env=env)
+    st1 = [n for n in r.stdout.split() if n.startswith('v3_')]
+    assert st1[:3] == ['v3_20261026-v3d-aug2-e60-s0', 'v3_20261026-v3n-aug2-e60-s0', 'v3_20261026-v3b-aug2-e60-s0']
+
+
+def test_dry_run_writes_nothing(world, capsys):
+    tmp, args = world
+    rc, out, err = run(args + ['--dry-run'], capsys)
+    assert rc == 0, err
+    assert json.loads(out)['answers']['D0']['order'] == ['v3d', 'v3n', 'v3b']
+    assert not (tmp / 'protocol_v3_lock2.json').exists() and not (tmp / 'protocol_v3_lock2.sha256').exists()
+
+
+def _without(args, key):
+    a = list(args)
+    i = a.index(key)
+    del a[i:i + 2]
+    return a
+
+
+def test_stops_without_power(world, capsys):
+    """2026-10-26 critic(反証 1 回目 rd0-5): 電源の確かめ(protocol_v3 15 章の始める条件)が無ければ書かない。前は警告だけ"""
+    tmp, args = world
+    a = _without(args, '--power')
+    rc, out, err = run(a + ['--dry-run'], capsys)
+    assert rc == 2 and '電源' in err and '止まる理由' in err
+    rc, out, err = run(a, capsys)
+    assert rc == 2 and '電源' in err
+    assert not (tmp / 'protocol_v3_lock2.json').exists()
+
+
+@pytest.mark.parametrize('key', ['desk_v3_sha256', 'eval_v3_sha256'])
+def test_stops_when_desk_check_is_from_other_scripts(world, capsys, key):
+    """2026-10-26 critic(反証 1 回目 rd0-2): 段 0 の 8 の json を出した台本の sha256 が、固定する台本と違う・無い → 止まる"""
+    tmp, args = world
+    chk = Path(args[args.index('--desk-check') + 1])
+    j = json.loads(chk.read_text())
+    bad = tmp / 'check_other.json'
+    bad.write_text(json.dumps(dict(j, **{key: '0' * 64})))
+    rc, _, err = run(opt(args, '--desk-check', str(bad)), capsys)
+    assert rc == 2 and key in err and '違う' in err
+    j.pop(key)
+    bad.write_text(json.dumps(j))
+    rc, _, err = run(opt(args, '--desk-check', str(bad)), capsys)
+    assert rc == 2 and key in err and 'ありません' in err
+    assert not (tmp / 'protocol_v3_lock2.json').exists()
+    ok = json.loads(run(args + ['--dry-run'], capsys)[1])
+    assert ok['stage0']['8']['scripts'][key]['same'] is True
+
+
+def test_stage0_5_fraction_uses_frac_tolerance(world, capsys, monkeypatch):
+    """2026-10-26 critic(反証 1 回目 rd0-7): 割合の欄の差 0.001 は ±0.0001 を超えるので止まる(前は 0.01 で通った)。µs の 0.005 は通る"""
+    tmp, args = world
+    src = W.DATA_OUT
+    dst = tmp / 'data_out'
+    dst.mkdir()
+    for f in ('check_v3_data.json', 'probe_onoff.json', 'probe_equiv.json', 'bf2_0.json'):
+        shutil.copy2(src / f, dst / f)
+    monkeypatch.setattr(W, 'DATA_OUT', dst)
+    assert run(args + ['--dry-run'], capsys)[0] == 0
+    eq = json.loads((dst / 'probe_equiv.json').read_text())
+    first = next(iter(eq['runs']))
+    eq['runs'][first]['abs_diff']['st23_thr_vs_b_us'] = 0.005
+    (dst / 'probe_equiv.json').write_text(json.dumps(eq))
+    assert run(args + ['--dry-run'], capsys)[0] == 0
+    eq['runs'][first]['abs_diff']['stand_brake_side_frac'] = 0.001
+    (dst / 'probe_equiv.json').write_text(json.dumps(eq))
+    rc, _, err = run(args + ['--dry-run'], capsys)
+    assert rc == 2 and 'probe_equiv' in err
+
+
+@pytest.mark.parametrize('which', ['--desk', '--eval'])
+def test_stops_without_desk_scripts(world, capsys, which):
+    tmp, args = world
+    rc, out, err = run(opt(args, which, str(tmp / 'nope.py')), capsys)
+    assert rc == 2 and '机上の台本' in err and 'がありません' in err
+    assert not (tmp / 'protocol_v3_lock2.json').exists()
+
+
+def test_stops_without_or_failing_desk_check(world, capsys):
+    tmp, args = world
+    a = list(args)
+    i = a.index('--desk-check')
+    del a[i:i + 2]
+    rc, _, err = run(a, capsys)
+    assert rc == 2 and '段 0 の 8' in err
+    bad = tmp / 'bad_check.json'
+    bad.write_text(json.dumps({'all_ok': False}))
+    rc, _, err = run(opt(args, '--desk-check', str(bad)), capsys)
+    assert rc == 2 and '合格でありません' in err
+    assert not (tmp / 'protocol_v3_lock2.json').exists()
+
+
+def test_stops_when_decisions_disagree_with_recount(world, capsys):
+    tmp, args = world
+    dec = tmp / 'decisions_v3.json'
+    j = json.loads(dec.read_text())
+    j['D0']['order'] = ['v3b', 'v3d', 'v3n']
+    alt = tmp / 'decisions_tampered.json'
+    alt.write_text(json.dumps(j))
+    rc, _, err = run(opt(args, '--decisions', str(alt)), capsys)
+    assert rc == 2 and '数え直し' in err
+    rc, _, err = run(opt(args, '--decisions', str(tmp / 'none.json')), capsys)
+    assert rc == 2 and 'decisions_v3.json がありません' in err
+
+
+def test_stops_when_stage0_result_changed(world, capsys):
+    tmp, args = world
+    res = tmp / 'runs' / 'abl-same-e15-s0' / 'result.json'
+    j = json.loads(res.read_text())
+    j['best_val_us'] = 49.0                                                # D0 を決めたあとに書き換わった
+    res.write_text(json.dumps(j))
+    os.utime(tmp / 'probe' / 'abl-same-e15-s0_best.json', None)
+    rc, _, err = run(args, capsys)
+    assert rc == 2 and 'D0 を決めたあとに変わりました' in err
+
+
+def test_stops_when_stage0_probe_changed(world, capsys):
+    tmp, args = world
+    pf = tmp / 'probe' / 'abl-noTK-e15-s0_best.json'
+    pf.write_text(pf.read_text().replace('"stand_go_frac": 0.2', '"stand_go_frac": 0.21'))   # 値の 1 つが D0 のあとに変わった
+    rc, _, err = run(args, capsys)
+    assert rc == 2 and '物差し(queue)が、D0 を決めたあとに変わりました' in err
+
+
+def test_stops_when_stage1_started(world, capsys, monkeypatch):
+    """段 1 の学習(data/runs/v3_20261026-*)があれば書かない(lock2_v3 は段 1 の前)"""
+    tmp, args = world
+    (tmp / 'runs' / 'v3_20261026-v3d-aug2-e60-s0').mkdir(parents=True)
+    rc, _, err = run(args, capsys)
+    assert rc == 2 and '段 1 の学習がもう始まっています(v3_20261026-v3d-aug2-e60-s0)' in err
+    assert not (tmp / 'protocol_v3_lock2.json').exists()
+
+
+def test_queue_eval_same_ok_other_stops(world, capsys, monkeypatch):
+    """キューが見る場所の eval_v3.py が lock2 に書く台本と同じなら進み、違えば止まる"""
+    tmp, args = world
+    q = tmp / 'queue_eval_v3.py'
+    q.write_text('# eval\n')
+    assert run(args + ['--dry-run'], capsys)[0] == 0
+    q.write_text('# eval (別の版)\n')
+    rc, _, err = run(args + ['--dry-run'], capsys)
+    assert rc == 2 and 'キューが見る %s と lock2 に書く' % q in err and 'の中身が違います' in err
+
+
+def test_stops_when_disk_low(world, capsys, monkeypatch):
+    tmp, args = world
+    monkeypatch.setattr(W, 'DISK_MIN_GB', 1e9)
+    rc, _, err = run(args + ['--dry-run'], capsys)
+    assert rc == 2 and '空きディスクが' in err and 'GB 以上が要る' in err
+
+
+def test_queue_eval_path_constant_matches_queue():
+    """キューの EVAL_V3(desk_v3/eval_v3.py)と、この台本の QUEUE_EVAL が同じ場所"""
+    src = QUEUE.read_text(encoding='utf-8')
+    assert "EVAL_V3 = HERE / 'desk_v3' / 'eval_v3.py'" in src
+    assert W.QUEUE_EVAL == W.EXP / 'desk_v3' / 'eval_v3.py'
+    assert "LOCK2.exists()" in src and "lock2.json').write_text('{}')" in (HERE.parent / 'test_gpu_queue_v3.py').read_text()
+
+
+def test_real_lock2_untouched():
+    assert not REAL_LOCK2.exists() or stat.S_IMODE(REAL_LOCK2.stat().st_mode) == 0o444

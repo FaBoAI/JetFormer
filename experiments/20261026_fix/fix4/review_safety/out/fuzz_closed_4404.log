@@ -1,0 +1,20 @@
+25 {} {'now1': 15, 'bef1': 13}
+50 {} {'now1': 31, 'bef1': 26, 'now0': 1}
+75 {} {'now1': 49, 'bef1': 41, 'now0': 1}
+100 {} {'now1': 68, 'bef1': 55, 'now0': 1}
+125 {'K1_rear_after_kept_hold_worse_than_keep0': 1} {'now1': 86, 'bef1': 64, 'now0': 1}
+150 {'K1_rear_after_kept_hold_worse_than_keep0': 1} {'now1': 104, 'bef1': 79, 'now0': 1}
+175 {'K1_rear_after_kept_hold_worse_than_keep0': 1, 'K2_giveup_while_moving': 2} {'now1': 121, 'bef1': 93, 'now0': 1}
+200 {'K1_rear_after_kept_hold_worse_than_keep0': 2, 'K2_giveup_while_moving': 2} {'now1': 138, 'bef1': 103, 'now0': 1}
+225 {'K1_rear_after_kept_hold_worse_than_keep0': 3, 'K2_giveup_while_moving': 4} {'now1': 155, 'bef1': 117, 'now0': 1}
+250 {'K1_rear_after_kept_hold_worse_than_keep0': 3, 'K2_giveup_while_moving': 4} {'now1': 173, 'bef1': 130, 'now0': 2}
+275 {'K1_rear_after_kept_hold_worse_than_keep0': 3, 'K2_giveup_while_moving': 4} {'now1': 187, 'bef1': 140, 'now0': 2}
+300 {'K1_rear_after_kept_hold_worse_than_keep0': 3, 'K2_giveup_while_moving': 4} {'now1': 204, 'bef1': 154, 'now0': 2}
+{"seed": 4404, "runs": 300, "bad": {"K1_rear_after_kept_hold_worse_than_keep0": 3, "K2_giveup_while_moving": 4}, "cmp": {"rear_faster_than_keep0_any": 10}, "giveup_runs": {"now1": 204, "bef1": 154, "now0": 2}, "halt_rows": 1082}
+K1_rear_after_kept_hold_worse_than_keep0 107 ((5.04, 'rear', -1.38, 5.45), [], [5.02]) {'launch_boost': 0, 'launch_no_kick': 0, 'start_kick': 1, 'speed_ceiling': 0, 'zone_caps': 1, 'tof_guard': 3, 'rev_s': 0.2, 'rev_us': 400.0, 'throttle_gain': 1.0}
+K2_giveup_while_moving 166 (3.917, 1.12) {'launch_boost': 0, 'launch_no_kick': 1, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 2, 'rev_s': 0.6, 'rev_us': 300.0, 'throttle_gain': 1.0}
+K2_giveup_while_moving 174 (2.05, 1.47) {'launch_boost': 1, 'launch_no_kick': 0, 'start_kick': 0, 'speed_ceiling': 0, 'zone_caps': 1, 'tof_guard': 1, 'rev_s': 0.2, 'rev_us': 300.0, 'throttle_gain': 1.2}
+K1_rear_after_kept_hold_worse_than_keep0 183 ((3.39, 'rear', -1.21, 5.03), [], [2.55]) {'launch_boost': 0, 'launch_no_kick': 1, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 3, 'rev_s': 0.3, 'rev_us': 400.0, 'throttle_gain': 1.0}
+K1_rear_after_kept_hold_worse_than_keep0 204 ((5.27, 'rear', -3.97, 9.0), [], [4.52]) {'launch_boost': 1, 'launch_no_kick': 0, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 2, 'rev_s': 0.6, 'rev_us': 400.0, 'throttle_gain': 0.8}
+K2_giveup_while_moving 211 (2.617, 1.69) {'launch_boost': 0, 'launch_no_kick': 0, 'start_kick': 0, 'speed_ceiling': 0, 'zone_caps': 1, 'tof_guard': 2, 'rev_s': 0.2, 'rev_us': 400.0, 'throttle_gain': 0.8}
+K2_giveup_while_moving 217 (2.983, 1.57) {'launch_boost': 0, 'launch_no_kick': 1, 'start_kick': 0, 'speed_ceiling': 0, 'zone_caps': 0, 'tof_guard': 3, 'rev_s': 0.2, 'rev_us': 300.0, 'throttle_gain': 1.0}

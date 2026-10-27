@@ -39,6 +39,11 @@ G = 9.80665
 KH = 5.0e-3                       # ホールセンサー 1 カウント = 5.0 mm(0.1 × eRPM カウント/秒、0.5e-3 m/s/eRPM)
 GYRO_BIAS_DEFAULT = -0.09         # 止まっている時間が無いログのジャイロ z のずれ [deg/s](他のログの値)
 FS = 50.0                         # 当てはめの時間刻み [Hz](IMU 100 Hz を 2 つずつまとめる)
+# LogData が読む欄(2026-10-26 fix3。これ以外の欄は読まないので、壊れていてもシーンを捨てない)
+USED_FIELDS = {'IMU': ('timestamps_us', 'accel', 'gyro'),
+               'VEHICLE': ('timestamps_us', 'pwm', 'erpm', 'select', 'hall_count', 'board_t_us'),
+               'CAM_FRONT': ('timestamps_us',),
+               'AI_CMD': ('timestamps_us', 'select', 'out')}
 
 HUMAN_LOGS = ['20261010-135449', '20261010-144028', '20261010-150424', '20261010-152405', '20261010-152707',
               '20261010-192141', '20261010-192654', '20261010-193130', '20261010-193638', '20261010-200916',
@@ -59,21 +64,33 @@ class LogData(object):
         scenes = sorted(s for s in os.listdir(root) if s.startswith(log + '-'))
         parts = {'IMU': [], 'VEHICLE': [], 'CAM_FRONT': [], 'AI_CMD': []}
         self.scenes = []
+        ai_bad_us = []         # AI_CMD.npz が読めなかったシーンの時刻の範囲(その VEHICLE の最初と最後、µs)
+
+        def load(p, name):     # 使う欄だけ中身まで読む(壊れた zip は読むときに Bad CRC で落ちるので try の中で読む。2026-10-26 fix2。
+            # fix3: 前は欄を全部読み、使わない欄(AI_CMD の pred・IMU の mag など)が壊れただけでシーンを捨てた。
+            # 無い欄は読まない(今まで通り、あとの cat で KeyError)
+            with np.load(p, allow_pickle=True) as z:
+                return {k: z[k] for k in USED_FIELDS[name] if k in z.files}
         for sc in scenes:
             try:
-                d = {n: np.load(os.path.join(root, sc, n + '.npz'), allow_pickle=True) for n in ('IMU', 'VEHICLE', 'CAM_FRONT')}
+                d = {n: load(os.path.join(root, sc, n + '.npz'), n) for n in ('IMU', 'VEHICLE', 'CAM_FRONT')}
                 for n in d:
                     d[n]['timestamps_us']
-            except Exception:
+            except Exception as e:
+                print('注意: %s/%s が読めません(%s)。このシーンを飛ばします' % (log, sc, type(e).__name__), file=sys.stderr)
                 continue
             for n in d:
                 parts[n].append(d[n])
             p = os.path.join(root, sc, 'AI_CMD.npz')
             if os.path.exists(p):
                 try:
-                    parts['AI_CMD'].append(np.load(p, allow_pickle=True))
-                except Exception:
-                    pass
+                    parts['AI_CMD'].append(load(p, 'AI_CMD'))
+                except Exception as e:
+                    print('注意: %s/%s/AI_CMD.npz が読めません(%s)。飛ばします(このシーンの AI 側かどうかは VEHICLE の select)'
+                          % (log, sc, type(e).__name__), file=sys.stderr)
+                    vts = np.asarray(d['VEHICLE']['timestamps_us'], np.int64)
+                    if len(vts):
+                        ai_bad_us.append((int(vts.min()), int(vts.max())))
             self.scenes.append(sc)
 
         def cat(name, key, dtype=None):
@@ -101,14 +118,26 @@ class LogData(object):
         else:
             self.at = np.zeros(0)
             self.a_select = np.zeros(0, bool)
+        # AI_CMD が読めなかったシーンの範囲 [秒](2026-10-26 fix3。前はその間も前のシーンの最後の select を返した)
+        self.ai_bad = [(sec(a), sec(b)) for a, b in ai_bad_us] if self.has_ai else []
         self.g = np.abs(np.linalg.norm(self.acc, axis=1) - G) / G      # 重力を除いた加速度の大きさ [g]
         self.hg = np.hypot(self.acc[:, 0], self.acc[:, 1]) / G         # 水平の加速度 [g](+x 右、+y 前)
 
     def ai_at(self, t):
-        """時刻 t に AI 側(CH3)だったか。AI_CMD が無ければ VEHICLE の select"""
+        """時刻 t に AI 側(CH3)だったか。AI_CMD が無ければ VEHICLE の select。
+        AI_CMD.npz が読めなかったシーンの間も VEHICLE の select(2026-10-26 fix3)"""
         if self.has_ai and len(self.at):
             i = np.clip(np.searchsorted(self.at, t, side='right') - 1, 0, len(self.at) - 1)
-            return self.a_select[i]
+            out = self.a_select[i]
+            if self.ai_bad:
+                tt = np.asarray(t, float)
+                m = np.zeros(np.shape(tt), bool)
+                for lo, hi in self.ai_bad:
+                    m |= (tt >= lo) & (tt <= hi)
+                if m.any():
+                    j = np.clip(np.searchsorted(self.vt, tt, side='right') - 1, 0, len(self.vt) - 1)
+                    out = np.where(m, self.vsel[j], out)
+            return out
         i = np.clip(np.searchsorted(self.vt, t, side='right') - 1, 0, len(self.vt) - 1)
         return self.vsel[i]
 

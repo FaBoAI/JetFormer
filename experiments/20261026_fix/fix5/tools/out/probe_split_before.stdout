@@ -1,0 +1,43 @@
+{
+ "split": {
+  "groups": [
+   {
+    "left": 4.1,
+    "n_on": 2,
+    "n_off": 2,
+    "d_to_r1_s": -0.25,
+    "all_ok": true
+   },
+   {
+    "left": 4.2,
+    "n_on": 2,
+    "n_off": 2,
+    "d_to_r1_s": 0.05,
+    "all_ok": false
+   }
+  ],
+  "notice_lines": [],
+  "compare_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.1) 自動0",
+   "  ON − OFF: 起点まで -0.250 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.2) 自動0",
+   "  ON − OFF: 起点まで 0.050 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+  ]
+ },
+ "same": {
+  "groups": [
+   {
+    "left": 4.2,
+    "n_on": 4,
+    "n_off": 4,
+    "d_to_r1_s": -0.1,
+    "all_ok": false
+   }
+  ],
+  "notice_lines": [],
+  "compare_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.2) 自動0",
+   "  ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+  ]
+ }
+}

@@ -1,0 +1,765 @@
+{
+ "nohold keep=0 guard=0": {
+  "back_m": 1.417,
+  "v_back_max": -2.16,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.69,
+    "brake",
+    "gap"
+   ],
+   [
+    2.85,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.22,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.49,
+    "coast",
+    "escape"
+   ],
+   [
+    3.99,
+    "escape",
+    null
+   ],
+   [
+    5.79,
+    null,
+    "brake"
+   ],
+   [
+    6.05,
+    "brake",
+    "gap"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "nohold keep=0 guard=1": {
+  "back_m": 1.133,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ],
+   [
+    2.92,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.19,
+    "coast",
+    "escape"
+   ],
+   [
+    3.69,
+    "escape",
+    null
+   ],
+   [
+    5.52,
+    null,
+    "brake"
+   ],
+   [
+    5.65,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.05,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "nohold keep=1 guard=1": {
+  "back_m": 1.133,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ],
+   [
+    2.92,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.19,
+    "coast",
+    "escape"
+   ],
+   [
+    3.69,
+    "escape",
+    null
+   ],
+   [
+    5.52,
+    null,
+    "brake"
+   ],
+   [
+    5.65,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.05,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.3 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.25,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.3 keep=1": {
+  "back_m": 1.16,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.79,
+    "brake",
+    "gap"
+   ],
+   [
+    2.95,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.45,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.72,
+    "coast",
+    "escape"
+   ],
+   [
+    4.22,
+    "escape",
+    null
+   ],
+   [
+    6.05,
+    null,
+    "brake"
+   ],
+   [
+    6.19,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.5 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.25,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.5 keep=1": {
+  "back_m": 1.16,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.99,
+    "brake",
+    "gap"
+   ],
+   [
+    3.15,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.65,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.92,
+    "coast",
+    "escape"
+   ],
+   [
+    4.42,
+    "escape",
+    null
+   ],
+   [
+    6.25,
+    null,
+    "brake"
+   ],
+   [
+    6.39,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.8 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.25,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.05 L=0.8 keep=1": {
+  "back_m": 1.16,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    3.29,
+    "brake",
+    "gap"
+   ],
+   [
+    3.45,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.95,
+    "reverse",
+    "coast"
+   ],
+   [
+    4.22,
+    "coast",
+    "escape"
+   ],
+   [
+    4.72,
+    "escape",
+    null
+   ],
+   [
+    6.55,
+    null,
+    "brake"
+   ],
+   [
+    6.69,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.10 L=0.3 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.6,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.10 L=0.3 keep=1": {
+  "back_m": 0.761,
+  "v_back_max": -0.85,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.85,
+    "brake",
+    "reverse"
+   ],
+   [
+    3.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.32,
+    "coast",
+    "escape"
+   ],
+   [
+    3.82,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.75,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.12,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.798
+ },
+ "brake-hold o=0.10 L=0.5 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.6,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.10 L=0.5 keep=1": {
+  "back_m": 1.289,
+  "v_back_max": -2.1,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    3.05,
+    "brake",
+    "gap"
+   ],
+   [
+    3.22,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.72,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.99,
+    "coast",
+    "escape"
+   ],
+   [
+    4.49,
+    "escape",
+    null
+   ],
+   [
+    6.29,
+    null,
+    "brake"
+   ],
+   [
+    6.45,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.10 L=0.8 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.6,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ]
+  ],
+  "guard_events": [],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.10 L=0.8 keep=1": {
+  "back_m": 1.428,
+  "v_back_max": -2.25,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    3.35,
+    "brake",
+    "gap"
+   ],
+   [
+    3.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    4.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    4.32,
+    "coast",
+    "escape"
+   ],
+   [
+    4.82,
+    "escape",
+    null
+   ],
+   [
+    6.62,
+    null,
+    "brake"
+   ],
+   [
+    6.75,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.3 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.75,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.3 keep=1": {
+  "back_m": 0.754,
+  "v_back_max": -0.99,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ],
+   [
+    3.09,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.35,
+    "coast",
+    "escape"
+   ],
+   [
+    3.85,
+    "escape",
+    null
+   ],
+   [
+    5.65,
+    null,
+    "brake"
+   ],
+   [
+    5.79,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.15,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.5 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.75,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.5 keep=1": {
+  "back_m": 1.448,
+  "v_back_max": -2.19,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ],
+   [
+    3.59,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.85,
+    "coast",
+    "escape"
+   ],
+   [
+    4.35,
+    "escape",
+    null
+   ],
+   [
+    6.15,
+    null,
+    "brake"
+   ],
+   [
+    6.29,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.65,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.8 keep=0": {
+  "back_m": 0.754,
+  "v_back_max": -0.75,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ]
+  ],
+  "guard_events": [
+   "back_early"
+  ],
+  "x_stop": 1.791
+ },
+ "brake-hold o=0.15 L=0.8 keep=1": {
+  "back_m": 0.825,
+  "v_back_max": -1.4,
+  "rear_hits": [],
+  "phases": [
+   [
+    2.42,
+    null,
+    "brake"
+   ],
+   [
+    2.55,
+    "brake",
+    "reverse"
+   ],
+   [
+    3.75,
+    "reverse",
+    "coast"
+   ],
+   [
+    4.02,
+    "coast",
+    "escape"
+   ],
+   [
+    4.52,
+    "escape",
+    null
+   ],
+   [
+    6.35,
+    null,
+    "brake"
+   ],
+   [
+    6.49,
+    "brake",
+    "reverse"
+   ],
+   [
+    6.89,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "guard_events": [
+   "back_early",
+   "back_early"
+  ],
+  "x_stop": 1.791
+ }
+}

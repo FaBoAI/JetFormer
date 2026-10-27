@@ -1,0 +1,65 @@
+{
+ "A_intact": {
+  "crashed_log": "20261103-133500",
+  "rows_of_crashed_log": [
+   {
+    "t_ai": 25.0,
+    "launch_state": "on",
+    "to_r1_s": 3.013,
+    "first_lap_hits": [
+     [
+      31.003,
+      8.999999953943481,
+      "DE"
+     ]
+    ]
+   }
+  ],
+  "n_on": 4,
+  "n_off": 4,
+  "collisions_first_lap_on": 1,
+  "unreadable": null,
+  "first_lap_gap_on": null,
+  "compare": {
+   "d_to_r1_s": -0.25,
+   "d_loss_s": -0.4,
+   "d_v_lh_mps": 0.0,
+   "checks": {
+    "to_r1": true,
+    "first_lap_collisions_0": false,
+    "slip": true,
+    "lh_speed": true
+   },
+   "all_ok": false
+  },
+  "stdout_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井0 自動0",
+   "  ON − OFF: 起点まで -0.250 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_speed': True}"
+  ]
+ },
+ "B_lost": {
+  "crashed_log": "20261103-133500",
+  "rows_of_crashed_log": [],
+  "n_on": 3,
+  "n_off": 4,
+  "collisions_first_lap_on": 0,
+  "unreadable": null,
+  "first_lap_gap_on": null,
+  "compare": {
+   "d_to_r1_s": -0.3,
+   "d_loss_s": -0.4,
+   "d_v_lh_mps": 0.0,
+   "checks": {
+    "to_r1": true,
+    "first_lap_collisions_0": true,
+    "slip": true,
+    "lh_speed": true
+   },
+   "all_ok": true
+  },
+  "stdout_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井0 自動0",
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+  ]
+ }
+}

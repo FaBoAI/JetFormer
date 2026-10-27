@@ -1,0 +1,25 @@
+a_no_drLost                  2 failed, 23 passed in 13.26s
+    test_t1a_poll_failure_refuses_start_bench_and_pick_until_next_sync test_t1_old_server_without_boot_at_still_starts
+b_no_boot_at_in_body         11 failed, 14 passed in 7.17s
+    test_t1a_poll_failure_refuses_start_bench_and_pick_until_next_sync test_t1a_first_open_keeps_the_old_message test_t1b_stale_boot_is_refused_and_page_resyncs[no_sync] test_t1b_stale_boot_is_refused_and_page_resyncs[dialog_only] test_versions_match_and_page_sends_boot_at test_t2_ceiling_switch_while_old_poll_returns[False] test_t2_ceiling_switch_while_old_poll_returns[True] test_t2_launch_switch_while_old_poll_returns test_t3_baseline_route_of_approvals_10b test_other_flows_send_the_same[True] test_day_flow_1103_all_24_starts_as_planned
+b_no_resync_after_refusal    2 failed, 23 passed in 8.77s
+    test_t1b_stale_boot_is_refused_and_page_resyncs[no_sync] test_t1b_stale_boot_is_refused_and_page_resyncs[dialog_only]
+a_old_message_always         1 failed, 24 passed in 8.65s
+    test_t1a_first_open_keeps_the_old_message
+t2_no_drPostN_keep           4 failed, 21 passed in 8.73s
+    test_t2_ceiling_switch_while_old_poll_returns[False] test_t2_ceiling_switch_while_old_poll_returns[True] test_t2_launch_switch_while_old_poll_returns test_t2_flag_switch_while_old_poll_returns
+t2_no_drPostN_count          4 failed, 21 passed in 8.67s
+    test_t2_ceiling_switch_while_old_poll_returns[False] test_t2_ceiling_switch_while_old_poll_returns[True] test_t2_launch_switch_while_old_poll_returns test_t2_flag_switch_while_old_poll_returns
+t3_no_rev_line               2 failed, 23 passed in 8.55s
+    test_t3_confirm_has_rev_line_only_when_not_usual test_t3_baseline_route_of_approvals_10b
+version_8                    5 failed, 20 passed in 4.84s
+    test_t1_old_server_without_boot_at_still_starts test_versions_match_and_page_sends_boot_at test_other_flows_send_the_same[False] test_other_flows_send_the_same[True] test_day_flow_1103_all_24_starts_as_planned
+server_no_check              4 failed, 21 passed in 9.00s
+    test_t1b_stale_boot_is_refused_and_page_resyncs[no_sync] test_t1b_stale_boot_is_refused_and_page_resyncs[dialog_only] test_t1b_boot_refusal_rules test_t1b_api_drive_start_checks_boot_after_version
+runs_no_rev_keys             3 failed, 22 passed in 9.77s
+    test_t3_runs_1103_rev_line_and_round_mark test_t3_runs_1103_same_as_before_when_usual[rev0] test_t3_runs_1103_same_as_before_when_usual[rev1]
+runs_no_round_rev            1 failed, 24 passed in 9.84s
+    test_t3_runs_1103_rev_line_and_round_mark
+runs_no_rev_line             1 failed, 24 passed in 8.86s
+    test_t3_runs_1103_rev_line_and_round_mark
+落ちなかった壊し方: なし

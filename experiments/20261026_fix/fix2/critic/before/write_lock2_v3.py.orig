@@ -1,0 +1,501 @@
+#!/usr/bin/env python3
+"""学習 v3 の第 2 の固定 protocol_v3_lock2.json(lock2_v3)を書く(2026-10-26、係 d0)。
+numpy も torch も使わない・GPU を使わない・車と装置に触れない。data/・protocol は読むだけ。書くのは lock2 と .sha256 の 2 つだけ。
+
+    python3 -I write_lock2_v3.py --dry-run                     # 中身を出すだけ(書かない)。止まる理由も出す
+    python3 -I write_lock2_v3.py --desk-check <段 0 の 8 の json> [--power "<ユーザーが確かめた電源>"]
+                                                               # 書く → chmod a-w → protocol_v3_lock2.sha256(chmod a-w)
+
+protocol_v3.json lock.second_lock(protocol_v3.md 1 章・15 章)と build_data.md 10 章のとおり、
+  表の sha256 と学習サンプルの数・train.py・train_data.py・dataset.py・probe・キュー v3・机上の台本(desk_v3・eval_v3)の sha256・
+  段 0 の答え(stage0 の 1〜9)・D0・BF2-0(decisions_v3.json)・時刻 を集めて書く。数を埋めるだけで、決まりは変えない。
+
+止まる(書かない)とき:
+  - protocol_v3_lock2.json か .sha256 がもうある(1 回だけ)
+  - 机上の台本 c3/desk_v3.py・c3/eval_v3.py が無い(--desk・--eval で場所を変えられる)
+  - protocol_v3・protocol_v2・lock2 の sha256 か check_seal_v2.py が合わない(段 0 の 1)
+  - 表・train.py・train_data.py・dataset.py・probe・キュー v3 の sha256 が、build_data.md 10・11 章(学習の前)と違う
+  - データの確かめ(check_v3_data.json)・作用の基準・物差しの ON/OFF・物差しの照らし合わせ(段 0 の 2〜5)が合格でない
+  - decisions_v3.json が無い・D0.order か "BF2-0".train が無い・d0_decide.py で数え直した答えと違う(段 0 の 6・7)
+  - 段 0 の 8(机上の台本が保存した予測で protocol_numbers_v3.json と同じ値)の json(--desk-check)が無い・合格でない
+  - 空きディスクが 5 GB 未満(段 0 の 9)
+  - 段 1 の学習がもう始まっている(data/runs/v3_20261026-* がある。lock2_v3 は段 1 の前)
+電源(段 0 の 9 の後半)はキューも台本も確かめられない。--power が無ければ「未(ユーザー)」と書いて警告する(書くのは止めない)。
+
+キュー v3 との約束: gpu_queue_v3.py は protocol_v3_lock2.json が「ある」ことだけを見る(LOCK2.exists()。中身のキーは読まない)。
+decisions_v3.json は D0.order(腕 3 つ)と "BF2-0".train を読む。キューの机上の予測は desk_v3/eval_v3.py を見るので、
+eval_v3.py が c3/ にあるとキューは予測を飛ばす(lock2 に書いて警告する。キューは変えない)。
+"""
+import argparse
+import datetime
+import json
+import os
+import shutil
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import d0_decide  # noqa: E402
+
+REPO = Path('/home/jetson/jetformer')
+EXP = REPO / 'experiments' / '20261026_fix'
+REP = Path('/home/jetson/jetformer_reports/fix_20261026')
+REP_V2 = Path('/home/jetson/jetformer_reports/train_v2_20261025')
+PROTOCOL = REP / 'protocol_v3.json'
+LOCK2 = REP / 'protocol_v3_lock2.json'
+DECISIONS = REP / 'decisions_v3.json'
+SEAL_CHECK = REPO / 'experiments' / '20261025_train_v2' / 'check_seal_v2.py'
+TABLES = REPO / 'data' / 'derived' / 'dataset_v3_20261026'
+ABL = EXP / 'diag_data' / 'out' / 'ablation'
+DS = REPO / 'data' / 'datasets' / 'dataset_v2_20261025'
+SETS_V2 = REP_V2 / 'desk' / 'sets_v2.npz'
+DESK = EXP / 'c3' / 'desk_v3.py'
+EVAL = EXP / 'c3' / 'eval_v3.py'
+QUEUE_EVAL = EXP / 'desk_v3' / 'eval_v3.py'        # gpu_queue_v3.py・.sh の EVAL_V3(キューが机上の予測で見る場所)
+DATA_OUT = EXP / 'data' / 'out'
+RUNS = REPO / 'data' / 'runs'
+DISK_MIN_GB = 5.0
+
+# 学習の前(build_data.md 10 章・11 章、2026-10-26 13:10)の sha256。違えば止まる
+EXPECT_TABLES = {
+    'drop_v3n.npz': '3ff5bf9de2710153f11ec5b0c5a8a77fbe49ea1abc939abcd6f8a29b8ed413d1',
+    'drop_v3d.npz': '1b78eb8ba27dfe1a32f11b53194a36329319d0ccd68dfba4d622493404e3de5f',
+    'override_v3d_tk_thr_B.npz': 'ebc6caa977b4bfa334e73ed261ac8b7bccabe0a7c77813d139845f712e29e43f',
+    'drop_v3b.npz': '335e1a3be76847c2b732b4c905a81d71aca7456ac561635c705cfb47bdd7702a',
+    'tables_v3.json': '7b3b724e1fe77062ba690d1a5c2f6ca96d305cf3ef06b818e8a63c05eac5a614',
+}
+EXPECT_CODE = {
+    'tools/train.py': 'e04f7be8d9946af4a511b90002a4542e5b42e61c7cfadec2d079eff8450707f8',
+    'jetformer/train_data.py': 'b01513bfa0ec9c274c2ce5adc7009ae83d527ec7702dc15cd986ea51b49fd0d0',
+    'jetformer/dataset.py': 'e63e9673eaac8d7215924f9ef27c61c432a624a91099976107cdd5efea134306',
+}
+EXPECT_QUEUE_PREFIX = {'gpu_queue_v3.sh': '9befa63d', 'gpu_queue_v3.py': 'baf9050c', 'gpu_queue_v3.tsv': 'ab25aac3'}
+OTHER_CODE = ('tools/build_engine.py', 'jetformer/trt_runtime.py', 'jetformer/policies/jetformer_v0.py')   # gpu_queue_v3.py CODE_FILES の残り
+ARM_TABLE = {'v3n': 'drop_v3n.npz', 'v3d': 'drop_v3d.npz', 'v3b': 'drop_v3b.npz'}
+DATA_SCRIPTS = ('make_v3_tables.py', 'v3_common.py', 'check_v3_data.py', 'bf2_0_check.py', 'probe_equiv.py', 'probe_onoff.sh',
+                'compare_onoff.py', 'test_train_v3.py')
+PASS_KEYS = ('all_ok', 'ok', 'pass', 'passed')
+
+
+def now_iso():
+    return datetime.datetime.now().astimezone().isoformat(timespec='seconds')
+
+
+sha = d0_decide.sha256
+entry = d0_decide.entry
+
+
+def load(path):
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
+
+
+class Collect(object):
+    """止まる理由と警告を集める(--dry-run では全部見せる)"""
+
+    def __init__(self):
+        self.stops, self.warns = [], []
+
+    def stop(self, msg):
+        self.stops.append(msg)
+
+    def warn(self, msg):
+        self.warns.append(msg)
+
+
+def run_cmd(cmd, cwd=None):
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    return r.returncode, (r.stdout + r.stderr).strip().splitlines()
+
+
+def check_sha_file(c, sha_file, base):
+    rc, out = run_cmd(['sha256sum', '-c', str(sha_file)], cwd=str(base))
+    ok_lines = [x for x in out if x.endswith(': OK')]
+    if rc != 0:
+        c.stop('sha256sum -c %s が合いません: %s' % (sha_file, ' / '.join(out[-5:])))
+    return {'cmd': 'cd %s && sha256sum -c %s' % (base, Path(sha_file).name), 'rc': rc, 'ok': len(ok_lines),
+            'out': out[-12:]}
+
+
+def stage0_1(c):
+    a = {
+        'protocol_v3': check_sha_file(c, REP / 'protocol_v3.sha256', REP),
+        'protocol_v2': check_sha_file(c, REP_V2 / 'protocol_v2.sha256', REP_V2),
+        'protocol_v2_lock2': check_sha_file(c, REP_V2 / 'protocol_v2_lock2.sha256', REP_V2),
+    }
+    rc, out = run_cmd([sys.executable, '-I', str(SEAL_CHECK)])
+    if rc != 0 or not any('すべて同じ' in x for x in out):
+        c.stop('check_seal_v2.py が合いません: %s' % ' / '.join(out[-5:]))
+    a['check_seal_v2'] = {'rc': rc, 'out': out[-5:], 'script': entry(SEAL_CHECK)}
+    return {'what': 'sha256sum -c protocol_v2.sha256・protocol_v2_lock2.sha256・protocol_v3.sha256 と check_seal_v2.py',
+            'status': '済・合格' if all(x['rc'] == 0 for x in a.values()) else '外れ', 'answer': a, 'checked_at': now_iso()}
+
+
+def files_tables(c, proto, dc):
+    out = {}
+    tv = load(TABLES / 'tables_v3.json')
+    for n, want in EXPECT_TABLES.items():
+        e = entry(TABLES / n)
+        out[n] = e
+        if e.get('sha256') != want:
+            c.stop('表 %s の sha256 が学習の前(build_data.md 10 章 %s…)と違います(%s)' % (n, want[:8], (e.get('sha256') or '無い')[:8]))
+        if n != 'tables_v3.json' and tv.get('files', {}).get(n, {}).get('sha256') != e.get('sha256'):
+            c.stop('表 %s の sha256 が tables_v3.json の記録と違います' % n)
+        if e.get('sha256') and os.access(TABLES / n, os.W_OK):
+            c.warn('表 %s が書き込みできる(build_data では chmod a-w)' % n)
+    n_train = {}
+    for arm, table in ARM_TABLE.items():
+        want = proto['data']['tables'][table]['n_train']
+        got = (dc.get('arms', {}).get(arm) or {}).get('train_samples')
+        n_train[arm] = {'table': table, 'train_samples': got, 'protocol': want,
+                        'val_samples': (dc.get('arms', {}).get(arm) or {}).get('val_samples')}
+        if got != want:
+            c.stop('%s の学習サンプル %r が protocol の %r と違います' % (arm, got, want))
+    stage0_tables = {}
+    for n, want in proto['stage0_tables_sha256'].items():
+        e = entry(ABL / n)
+        stage0_tables[n] = e
+        if e.get('sha256') != want:
+            c.stop('段 0 の表 %s の sha256 が protocol_v3 と違います' % n)
+    sets = entry(SETS_V2)
+    if sets.get('sha256') != proto['sets']['sets_v2_sha256']:
+        c.stop('C3 の集合 sets_v2.npz の sha256 が protocol_v3 と違います')
+    ds = {'dataset_card.json': entry(DS / 'dataset_card.json'), 'splits.json': entry(DS / 'splits.json'),
+          'data/modes.json': entry(REPO / 'data' / 'modes.json')}
+    if ds['dataset_card.json'].get('sha256') != tv.get('dataset_card_sha256') or \
+            ds['splits.json'].get('sha256') != tv.get('splits_sha256'):
+        c.stop('dataset_v2_20261025 の dataset_card.json か splits.json が、表を作ったときと違います')
+    return {'v3_tables': out, 'train_samples': n_train, 'stage0_tables': stage0_tables, 'sets_v2': sets, 'dataset_v2': ds}
+
+
+def files_code(c, proto):
+    code = {}
+    for rel, want in EXPECT_CODE.items():
+        e = entry(REPO / rel)
+        code[rel] = e
+        if e.get('sha256') != want:
+            c.stop('%s の sha256 が段 data のあと(build_data.md 10 章 %s…)と違います(%s)。学習が使うものは変えない' % (
+                rel, want[:8], (e.get('sha256') or '無い')[:8]))
+    for rel in OTHER_CODE:
+        code[rel] = entry(REPO / rel)
+    probe = {'probe_gates.py': entry(EXP / 'diag_data' / 'probe_gates.py'),
+             'probe_set.npz': entry(EXP / 'diag_data' / 'out' / 'probe_set.npz'),
+             'probe_check.json': entry(EXP / 'diag_data' / 'out' / 'probe_check.json')}
+    if probe['probe_gates.py'].get('sha256') != proto['probe']['script_sha256']:
+        c.stop('probe_gates.py の sha256 が protocol_v3 と違います')
+    if probe['probe_set.npz'].get('sha256') != proto['probe']['set_sha256']:
+        c.stop('probe_set.npz の sha256 が protocol_v3 と違います')
+    queue = {}
+    for n, pre in EXPECT_QUEUE_PREFIX.items():
+        e = entry(EXP / n)
+        queue[n] = e
+        if not str(e.get('sha256', '')).startswith(pre):
+            c.stop('%s の sha256 が学習の前(build_data.md 11 章 %s…)と違います' % (n, pre))
+    queue['test_gpu_queue_v3.py'] = entry(EXP / 'test_gpu_queue_v3.py')
+    snap = entry(EXP / 'logs' / '.gpu_queue_v3.run.py')
+    queue['logs/.gpu_queue_v3.run.py(動いている写し)'] = snap
+    if snap.get('sha256') and snap.get('sha256') != queue['gpu_queue_v3.py'].get('sha256'):
+        c.warn('キューの動いている写し logs/.gpu_queue_v3.run.py が gpu_queue_v3.py と違う(次の起動で写し直される)')
+    data_scripts = {n: entry(EXP / 'data' / n) for n in DATA_SCRIPTS}
+    diag_bfast = entry(EXP / 'diag_bfast' / 'diag_bfast.py')
+    if diag_bfast.get('sha256') != proto['bfast2']['BF2-0']['script_sha256']:
+        c.stop('diag_bfast.py の sha256 が protocol_v3 と違います')
+    return {'code': code, 'probe': probe, 'queue_v3': queue, 'data_scripts': data_scripts, 'diag_bfast.py': diag_bfast}
+
+
+def files_desk(c, desk, evalp):
+    d = {'desk_v3.py': entry(desk), 'eval_v3.py': entry(evalp)}
+    for n, e in d.items():
+        if e.get('missing'):
+            c.stop('机上の台本 %s がありません(%s)。lock2_v3 には机上の台本の sha256 が要る(protocol_v3 lock.second_lock)' % (n, e['path']))
+    q = entry(QUEUE_EVAL)
+    d['キューが見る場所(gpu_queue_v3 の EVAL_V3)'] = q
+    if q.get('missing'):
+        if not d['eval_v3.py'].get('missing'):
+            c.warn('キュー v3 は %s を見るので、eval_v3.py が %s にあるあいだは机上の予測を飛ばす。'
+                   '予測は main session が eval_v3.py predict --runs <名前> で回すか、キューの見る場所に置く(キューは変えない)' % (
+                       QUEUE_EVAL, Path(evalp).parent))
+    elif q.get('sha256') != d['eval_v3.py'].get('sha256'):
+        c.stop('キューが見る %s と lock2 に書く %s の中身が違います' % (QUEUE_EVAL, evalp))
+    return d
+
+
+def ok_flag(obj):
+    if not isinstance(obj, dict):
+        return None
+    for k in PASS_KEYS:
+        if isinstance(obj.get(k), bool):
+            return k, obj[k]
+    return None
+
+
+def stage0_rest(c, proto, dc, args):
+    s = {}
+    # 2. 表の数と封
+    checks = dc.get('checks') or {}
+    bad = sorted(k for k, v in checks.items() if v is not True)
+    if dc.get('all_ok') is not True or bad:
+        c.stop('データの確かめ check_v3_data.json が合格していません: %s' % ' '.join(bad))
+    if dc.get('script_sha256') != sha(EXP / 'data' / 'check_v3_data.py'):
+        c.stop('check_v3_data.py が、check_v3_data.json を出したときと違います')
+    arms = dc.get('arms') or {}
+    seal = {a: (arms.get(a) or {}).get('seal_hits_in_train_samples') for a in ARM_TABLE}
+    if any(v != [] for v in seal.values()):
+        c.stop('学習に使うサンプルに封の記録があります: %r' % seal)
+    used = (arms.get('v3d') or {}).get('label_overridden_used')
+    s['2'] = {'what': proto['stage0']['list'][1]['what'], 'status': '済・合格' if not bad and dc.get('all_ok') else '外れ',
+              'answer': {'all_ok': dc.get('all_ok'), 'checks_failed': bad,
+                         'train_samples': {a: (arms.get(a) or {}).get('train_samples') for a in ARM_TABLE},
+                         'val_samples': {a: (arms.get(a) or {}).get('val_samples') for a in ARM_TABLE},
+                         'seal_hits_in_train_samples': seal, 'v3d_override_used': used, 'checked_at': dc.get('made_at')},
+              'src': entry(DATA_OUT / 'check_v3_data.json')}
+    # 3. 作用の基準
+    ref = {a: {'from_samples': (arms.get(a) or {}).get('action_ref_from_samples'),
+               'scene_all': (arms.get(a) or {}).get('action_ref_scene_all')} for a in ARM_TABLE}
+    ok3 = all(r['from_samples'] and abs(r['from_samples'][0] - 1441) <= 2 and abs(r['from_samples'][1] - 1496) <= 2
+              and r['scene_all'] == [1433.0, 1500.0] for r in ref.values())
+    if not ok3:
+        c.stop('作用の基準が 1441 ± 2・1496 ± 2(引数あり)・1433・1500(引数なし)でありません: %r' % ref)
+    s['3'] = {'what': proto['stage0']['list'][2]['what'], 'status': '済・合格' if ok3 else '外れ', 'answer': ref,
+              'src': entry(DATA_OUT / 'check_v3_data.json')}
+    # 4. 物差しの ON・OFF
+    on = load(DATA_OUT / 'probe_onoff.json')
+    if on.get('ok') is not True:
+        c.stop('物差しの ON・OFF(probe_onoff.json)が合格していません(protocol_v3 stage0 4 の if_off は作り方を変える。lock2 の前に main session が決める)')
+    s['4'] = {'what': proto['stage0']['list'][3]['what'], 'status': '済・合格' if on.get('ok') else '外れ',
+              'answer': {'verdict': on.get('verdict'), 'max_loss_diff_us': on.get('max_loss_diff_us'),
+                         'max_weight_diff': on.get('max_weight_diff'), 'best_epoch': on.get('best_epoch'),
+                         'action_ref': on.get('action_ref')},
+              'src': entry(DATA_OUT / 'probe_onoff.json')}
+    # 5. 物差しの照らし合わせ(保存した 4 本)
+    eq = load(DATA_OUT / 'probe_equiv.json')
+    diffs = {k: max((v.get('abs_diff') or {'x': 9e9}).values()) for k, v in (eq.get('runs') or {}).items()}
+    ok5 = eq.get('ok') is True and len(diffs) == 4 and all(v.get('ok') is True for v in eq['runs'].values()) and all(
+        x <= d0_decide.TOL['us'] for x in diffs.values())
+    if not ok5:
+        c.stop('物差しの照らし合わせ(probe_equiv.json)が合格していません: %r' % diffs)
+    s['5'] = {'what': proto['stage0']['list'][4]['what'], 'status': '済・合格' if ok5 else '外れ',
+              'answer': {'max_abs_diff': diffs, 'frames': eq.get('frames'), 'checked_at': eq.get('made_at'),
+                         'note': '学習中の物差し(train.py --probe-npz)と probe_check.json(probe_gates.py で出した保存の 4 本)を照らした。'
+                                 'キューの試し(10/26 12:5x)でも probe_gates.py run の値が学習中の表示と同じ(build_data.md 7 章)'},
+              'src': entry(DATA_OUT / 'probe_equiv.json')}
+    return s
+
+
+def stage0_decisions(c, proto, args):
+    """6・7: decisions_v3.json の D0・BF2-0 を、d0_decide.py で数え直して同じか"""
+    dec_path = Path(args.decisions)
+    if not dec_path.exists():
+        c.stop('decisions_v3.json がありません(%s)。先に d0_decide.py --write' % dec_path)
+        return {}, None, None, None
+    dec = load(dec_path)
+    order = (dec.get('D0') or {}).get('order')
+    bf2 = (dec.get('BF2-0') or {}).get('train')
+    if not (isinstance(order, list) and sorted(order) == ['v3b', 'v3d', 'v3n']):
+        c.stop('decisions_v3.json の D0.order が腕 3 つの並びでありません: %r' % order)
+    if not isinstance(bf2, bool):
+        c.stop('decisions_v3.json の "BF2-0".train が true/false でありません: %r' % bf2)
+    partial = (dec.get('D0') or {}).get('partial')
+    ns = d0_decide.argparse.Namespace(**{
+        'write': False, 'out': os.devnull, 'same_noTK_only': (partial.get('why') or 'partial') if partial else None,
+        'protocol': str(PROTOCOL), 'runs_dir': args.abl_runs_dir, 'probe_dir': args.abl_probe_dir,
+        'abl_probe': args.abl_probe, 'probe_check': args.probe_check, 'bf2': args.bf2})
+    try:
+        re = d0_decide.build(ns)
+    except d0_decide.Stop as e:
+        c.stop('d0_decide.py で数え直せません: %s' % e)
+        re = None
+    if re is not None:
+        if re['D0']['order'] != order:
+            c.stop('decisions_v3.json の D0.order %r が、数え直し %r と違います' % (order, re['D0']['order']))
+        if re['BF2-0']['train'] is not bf2:
+            c.stop('decisions_v3.json の BF2-0.train %r が、数え直し %r と違います' % (bf2, re['BF2-0']['train']))
+        for arm, r in (dec.get('D0', {}).get('runs') or {}).items():
+            now = re['D0']['runs'].get(arm, {})
+            if r.get('result_json', {}).get('sha256') != now.get('result_json', {}).get('sha256'):
+                c.stop('段 0 の %s の result.json が、D0 を決めたあとに変わりました' % arm)
+            for src, e in (r.get('probe_sources') or {}).items():
+                if 'sha256' in e and e.get('sha256') != (now.get('probe_sources') or {}).get(src, {}).get('sha256'):
+                    c.stop('段 0 の %s の物差し(%s)が、D0 を決めたあとに変わりました' % (arm, src))
+    s6 = {'what': proto['stage0']['list'][5]['what'], 'status': ('済・' + str(dec.get('D0', {}).get('status', ''))) if order else '未',
+          'answer': {'order': order, 'confirmed': (dec.get('D0') or {}).get('confirmed'), 'why': (dec.get('D0') or {}).get('why'),
+                     'st23_minus_b_us': ((dec.get('D0') or {}).get('values') or {}).get('st23_minus_b_us'),
+                     'probe_best': ((dec.get('D0') or {}).get('values') or {}).get('probe_best'),
+                     'recount_same': re is not None and re['D0']['order'] == order},
+          'src': entry(dec_path)}
+    s7 = {'what': proto['stage0']['list'][6]['what'], 'status': '済' if isinstance(bf2, bool) else '未',
+          'answer': {'train': bf2, 'why': (dec.get('BF2-0') or {}).get('why'),
+                     'values': (dec.get('BF2-0') or {}).get('values')},
+          'src': entry(args.bf2)}
+    return {'6': s6, '7': s7}, dec, order, bf2
+
+
+def stage0_8(c, proto, args):
+    w = {'what': proto['stage0']['list'][7]['what']}
+    if not args.desk_check:
+        c.stop('段 0 の 8 の確かめ(--desk-check <json>)がありません。protocol_v3 stage0 8 の if_off は「止める」')
+        w.update(status='未', why='--desk-check が無い')
+        return w
+    p = Path(args.desk_check)
+    if not p.exists():
+        c.stop('段 0 の 8 の json がありません: %s' % p)
+        w.update(status='未', why='json が無い: %s' % p)
+        return w
+    try:
+        obj = load(p)
+    except (OSError, ValueError) as e:
+        c.stop('段 0 の 8 の json が読めません: %s(%s)' % (p, e))
+        w.update(status='未', why='読めない')
+        return w
+    f = ok_flag(obj)
+    if f is None or f[1] is not True:
+        c.stop('段 0 の 8 の json %s が合格でありません(%s のどれかが true のはず: %r)' % (p, '・'.join(PASS_KEYS), f))
+    w.update(status='済・合格' if f and f[1] else '外れ', answer={'flag': f[0] if f else None, 'value': f[1] if f else None,
+                                                                 'checked_at': obj.get('made_at') or obj.get('checked_at')},
+             src=entry(p))
+    return w
+
+
+def stage0_9(c, proto, args):
+    free = shutil.disk_usage(str(REPO)).free / 1e9
+    if free < DISK_MIN_GB:
+        c.stop('空きディスクが %.1f GB(5 GB 以上が要る)' % free)
+    if not args.power:
+        c.warn('電源(AC か満充電)をユーザーが確かめたことが書かれていません(--power)。夜の段 1 の前に main session が確かめる')
+    return {'what': proto['stage0']['list'][8]['what'],
+            'status': ('済' if args.power else '一部(電源は未・ユーザー)') if free >= DISK_MIN_GB else '外れ',
+            'answer': {'disk_free_gb': round(free, 2), 'disk_min_gb': DISK_MIN_GB,
+                       'power': args.power or '未(ユーザーが AC か満充電を確かめる。10/26 07:42 に電源が落ちた)',
+                       'checked_at': now_iso()}}
+
+
+def stage1_not_started(c):
+    started = sorted(p.name for p in RUNS.glob('v3_20261026-*')) if RUNS.exists() else []
+    if started:
+        c.stop('段 1 の学習がもう始まっています(%s)。lock2_v3 は段 1 の前(deviations_v3.md に書いてから main session が決める)' % ' '.join(started))
+    return started
+
+
+def build(args):
+    c = Collect()
+    proto = load(PROTOCOL)
+    proto_sha = sha(PROTOCOL)
+    if Path(args.out).exists() or Path(args.out).with_suffix('.sha256').exists():
+        c.stop('lock2_v3 はもうあります(1 回だけ): %s' % args.out)
+    dc = load(DATA_OUT / 'check_v3_data.json')
+    stage0 = {'1': stage0_1(c)}
+    stage0.update(stage0_rest(c, proto, dc, args))
+    s67, dec, order, bf2 = stage0_decisions(c, proto, args)
+    stage0.update(s67)
+    stage0['8'] = stage0_8(c, proto, args)
+    stage0['9'] = stage0_9(c, proto, args)
+    stage0 = {k: stage0[k] for k in sorted(stage0, key=int)}
+    started = stage1_not_started(c)
+    files = {}
+    files.update(files_tables(c, proto, dc))
+    files.update(files_code(c, proto))
+    files['desk(机上の台本)'] = files_desk(c, args.desk, args.eval)
+    files['protocol_v3'] = {n: entry(REP / n) for n in ('protocol_v3.json', 'protocol_v3.md', 'protocol_numbers_v3.json',
+                                                         'recount_v3.json', 'protocol_v3.sha256')}
+    files['protocol_v2'] = {n: entry(REP_V2 / n) for n in ('protocol_v2.json', 'protocol_v2_lock2.json')}
+    files['decisions_v3.json'] = entry(args.decisions)
+    files['bf2_0.json'] = entry(args.bf2)
+    files['この台本'] = {'write_lock2_v3.py': entry(Path(__file__).resolve()), 'd0_decide.py': entry(Path(d0_decide.__file__).resolve())}
+    out = {
+        'schema': 'jf-train-v3-lock2/v1',
+        'title': '学習 v3 の第 2 の固定(lock2_v3)。表・train.py・train_data.py・dataset.py・probe・キュー v3・机上の台本の sha256 と、'
+                 '段 0 の答え(1〜9)・D0・BF2-0',
+        'written_at': now_iso(),
+        'written_by': 'workflow のサブエージェント(係 d0)。experiments/20261026_fix/fix2/write_lock2_v3.py。車・装置に触れていない。git commit していない',
+        'rule': 'protocol_v3.json lock.second_lock: 数を埋めるだけ。lock2_v3 で決まりを変えない。sha256 を protocol_v3_lock2.sha256 に書き chmod a-w',
+        'protocol_v3_sha256': proto_sha,
+        'when': {
+            'protocol': proto['lock']['second_lock']['when'],
+            'actual': '%s。%s、段 1 の学習の前(data/runs に v3_20261026-* は %d 本)' % (
+                now_iso(), '段 0 の短い学習と D0・BF2-0 のあと' if order else 'D0 はまだ(--dry-run の下書き)', len(started)),
+        },
+        'answers': {'D0': {'order': order, 'confirmed': (dec or {}).get('D0', {}).get('confirmed'),
+                           'status': (dec or {}).get('D0', {}).get('status')},
+                    'BF2-0': {'train': bf2}},
+        'stage0': stage0,
+        'files': files,
+        'queue_contract': {
+            'lock2': 'gpu_queue_v3.py は protocol_v3_lock2.json が「ある」ことだけを見る(LOCK2.exists()。中身のキーは読まない)。'
+                     'あって decisions_v3.json の D0.order があり、check_v3_data.json が all_ok なら、段 1 の行を D0.order の順で回す',
+            'decisions_keys': ['D0.order(腕 3 つ)', '"BF2-0".train(true/false)'],
+            'eval_v3_path_in_queue': str(QUEUE_EVAL),
+        },
+        'warnings': c.warns,
+    }
+    return out, c
+
+
+def write_once(path, text):
+    path = Path(path)
+    tmp = path.with_name(path.name + '.tmp-lock2')
+    with open(tmp, 'x', encoding='utf-8') as f:
+        f.write(text)
+        f.flush()
+        os.fsync(f.fileno())
+    try:
+        os.link(tmp, path)                 # もうあれば失敗する(上書きしない)
+    finally:
+        os.unlink(tmp)
+    os.chmod(path, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description='lock2_v3(protocol_v3_lock2.json)を書く')
+    ap.add_argument('--dry-run', action='store_true', help='中身を出すだけ(書かない)')
+    ap.add_argument('--desk-check', default=None, help='段 0 の 8 の答えの json(all_ok・ok・pass・passed のどれかが true)')
+    ap.add_argument('--power', default=None, help='電源の確かめ(例「10/26 18:30 ユーザーが AC を確かめた」)')
+    ap.add_argument('--desk', default=str(DESK))
+    ap.add_argument('--eval', default=str(EVAL))
+    ap.add_argument('--out', default=str(LOCK2), help='書く場所(試験のときだけ変える)。.sha256 は同じ名前で')
+    ap.add_argument('--decisions', default=str(DECISIONS))
+    ap.add_argument('--abl-runs-dir', default=str(d0_decide.ABL_RUNS))
+    ap.add_argument('--abl-probe-dir', default=str(d0_decide.QUEUE_PROBE))
+    ap.add_argument('--abl-probe', default=str(d0_decide.ABL_PROBE))
+    ap.add_argument('--probe-check', default=str(d0_decide.PROBE_CHECK))
+    ap.add_argument('--bf2', default=str(d0_decide.BF2_0))
+    args = ap.parse_args(argv)
+    out, c = build(args)
+    text = json.dumps(out, ensure_ascii=False, indent=1) + '\n'
+    for w in c.warns:
+        print('警告: %s' % w, file=sys.stderr)
+    if args.dry_run:
+        sys.stdout.write(text)
+        if c.stops:
+            print('書くときに止まる理由(%d):' % len(c.stops), file=sys.stderr)
+            for s in c.stops:
+                print('  - %s' % s, file=sys.stderr)
+            return 2
+        print('--dry-run: 止まる理由はありません(書いていない)', file=sys.stderr)
+        return 0
+    if c.stops:
+        print('止まりました(書いていない):', file=sys.stderr)
+        for s in c.stops:
+            print('  - %s' % s, file=sys.stderr)
+        return 2
+    dest = Path(args.out)
+    sha_path = dest.with_suffix('.sha256')
+    try:
+        write_once(dest, text)
+    except FileExistsError:
+        print('止まりました: 書く間に %s ができました(上書きしない)' % dest, file=sys.stderr)
+        return 3
+    h = sha(dest)
+    head = '# protocol_v3_lock2 の固定(%s)。確かめ方: cd %s && sha256sum -c %s(この行は無視される)\n' % (
+        out['written_at'], dest.parent, sha_path.name)
+    write_once(sha_path, head + '%s  %s\n' % (h, dest.name))
+    rc, chk = run_cmd(['sha256sum', '-c', sha_path.name], cwd=str(dest.parent))
+    print('書きました: %s(sha256 %s…、chmod a-w)・%s。sha256sum -c: %s' % (dest, h[:16], sha_path.name, ' / '.join(chk)),
+          file=sys.stderr)
+    return 0 if rc == 0 else 4
+
+
+if __name__ == '__main__':
+    sys.exit(main())

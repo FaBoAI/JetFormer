@@ -1,0 +1,112 @@
+{
+ "A_intact_before": {
+  "launch_rows": 1,
+  "unreadable": null,
+  "problems": {},
+  "summary_groups": 1,
+  "group_unreadable": [
+   null
+  ],
+  "lines": [
+   "logs 1 launches 1 with R1 0 laps 3 flying accel windows 0",
+   "20261024-134607 No.1   B          g1.00 kick=0(  0fr) mv0.082  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None",
+   "  R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261024-134607@27.88。理由 AI の区間が短い。その衝突 1(134607 28.90 秒 4.7G ?)"
+  ]
+ },
+ "A_intact_after": {
+  "launch_rows": 1,
+  "unreadable": null,
+  "problems": {},
+  "summary_groups": 1,
+  "group_unreadable": [
+   null
+  ],
+  "lines": [
+   "logs 1 launches 1 with R1 0 laps 3 flying accel windows 0",
+   "20261024-134607 No.1   B          g1.00 kick=0(  0fr) mv0.082  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None",
+   "  R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261024-134607@27.88。理由 AI の区間が短い。その衝突 1(134607 28.90 秒 4.7G ?)"
+  ]
+ },
+ "B_lost_before": {
+  "launch_rows": 0,
+  "unreadable": null,
+  "problems": {},
+  "summary_groups": 0,
+  "group_unreadable": [],
+  "lines": [
+   "logs 0 launches 0 with R1 0 laps 0 flying accel windows 0"
+  ]
+ },
+ "B_lost_after": {
+  "launch_rows": 0,
+  "unreadable": [
+   {
+    "log": "20261024-134607",
+    "why": "AI 側のフレームが無い(シーン 0002 にフレームが無い = npz が無い・読めない。AI 側にしたシーンごと書けずに落ちたかもしれない)",
+    "no": 1,
+    "session": "10/24 ?",
+    "model": "B",
+    "gain": 1.0,
+    "settings": {
+     "throttle_gain": 1.0,
+     "steer_gain": 1.0,
+     "speed_ceiling": null,
+     "ceil_all_mps": null,
+     "ceil_left_mps": null,
+     "speed_auto": null,
+     "auto_target_mps": null,
+     "launch_boost": null,
+     "launch_us": null,
+     "launch_mps": null,
+     "launch_max_s": null,
+     "zone_caps": 0,
+     "start_kick": 1
+    },
+    "launch_param": null,
+    "plan_launch": null,
+    "launch_state": "off",
+    "lost_scenes": [
+     "0002"
+    ]
+   }
+  ],
+  "problems": {
+   "20261024-134607": [
+    "20261024-134607-0002/VEHICLE: ありません",
+    "20261024-134607-0002/IMU: ありません",
+    "20261024-134607-0002/CAM_FRONT: ありません"
+   ]
+  },
+  "summary_groups": 1,
+  "group_unreadable": [
+   {
+    "n": 1,
+    "logs": [
+     "20261024-134607"
+    ],
+    "no": [
+     1
+    ],
+    "why": [
+     "AI 側のフレームが無い(シーン 0002 にフレームが無い = npz が無い・読めない。AI 側にしたシーンごと書けずに落ちたかもしれない)"
+    ],
+    "launch_state": [
+     "off"
+    ],
+    "launch_param": [
+     null
+    ],
+    "plan_launch": [
+     null
+    ],
+    "on": 0
+   }
+  ],
+  "lines": [
+   "skip 20261024-134607 AI 側のフレームが無い(シーン 0002 にフレームが無い = npz が無い・読めない。AI 側にしたシーンごと書けずに落ちたかもしれない)",
+   "logs 0 launches 0 with R1 0 laps 0 flying accel windows 0",
+   "  読めない記録 1 本(比べの数に入れない): 20261024-134607(AI 側のフレームが無い(シーン 0002 にフレームが無い = npz が無い・読めない。AI 側にしたシーンごと書けずに落ちたかもしれない)。発進の前進 OFF: log.json ?・計画 ?)",
+   "記録が欠けている本 20261024-134607(10/24 ?・発進の前進 OFF): シーン 0002 の npz が無い・読めない(3 件)。AI 側のフレームが無い(シーン 0002 にフレームが無い = AI 側にしたシーンごと書けずに落ちたかもしれない)。「読めない記録」に入れた(OFF なので比べは変えない)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ]
+ }
+}

@@ -22,8 +22,16 @@ G = 9.80665
 
 
 def _load(scene_dir, name):
+    """シーンの <name>.npz(無い・読めないなら None)。0 バイト・壊れた npz(電源断)は注意を出して飛ばす(2026-10-26 fix2)"""
     p = os.path.join(scene_dir, name + '.npz')
-    return dict(np.load(p, allow_pickle=True)) if os.path.exists(p) else None
+    if not os.path.exists(p):
+        return None
+    try:
+        with np.load(p, allow_pickle=True) as z:
+            return {k: z[k] for k in z.files}
+    except Exception as e:
+        print('注意: %s が読めません(%s)。飛ばします' % (p, type(e).__name__), file=sys.stderr)
+        return None
 
 
 def _cat(parts, key):
@@ -181,15 +189,24 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('logs', nargs='+', help='走行時に収集したログ(data/raw/ の名前)')
     args = ap.parse_args()
+    bad = []
     for log in args.logs:
+        try:
+            r, arrays = analyze(log)
+        except (OSError, ValueError, IndexError, KeyError) as e:     # log.json が 0 バイト・AI_CMD が全部読めない など
+            print('注意: %s を評価できません(%s: %s)。飛ばします' % (log, type(e).__name__, e), file=sys.stderr)
+            bad.append(log)
+            continue
         out_dir = config.DATA_DIR / 'reports' / ('drive_' + log)
         out_dir.mkdir(parents=True, exist_ok=True)
-        r, arrays = analyze(log)
         plot(r, arrays, out_dir / 'drive_timeline.png')
         with open(out_dir / 'report.json', 'w', encoding='utf-8') as f:
             json.dump(r, f, ensure_ascii=False, indent=1)
         print(json.dumps(r, ensure_ascii=False))
         print('レポート: %s' % out_dir)
+    if bad:
+        print('評価できなかった記録 %d 本: %s' % (len(bad), ' '.join(bad)), file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

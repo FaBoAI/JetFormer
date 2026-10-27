@@ -1,0 +1,99 @@
+{
+ "A_npz_removed_logjson_kept": {
+  "bad_log": "20261103-131500",
+  "lines": [
+   "skip 20261103-131500 フレーム(AI_CMD・カメラ)がありません",
+   "logs 5 launches 5 with R1 5 laps 10 flying accel windows 0",
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-131500(フレーム(AI_CMD・カメラ)がありません。発進の前進 ON: log.json ON・計画 ?)",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)"
+  ],
+  "unreadable_json": [
+   {
+    "log": "20261103-131500",
+    "why": "フレーム(AI_CMD・カメラ)がありません",
+    "no": 15,
+    "session": "11/03 回3",
+    "model": "B",
+    "gain": 0.9,
+    "settings": {
+     "throttle_gain": 0.9,
+     "steer_gain": 1.0,
+     "speed_ceiling": 0,
+     "ceil_all_mps": 4.5,
+     "ceil_left_mps": 4.1,
+     "speed_auto": 0,
+     "auto_target_mps": 4.27,
+     "launch_boost": 1,
+     "launch_us": 250.0,
+     "launch_mps": 2.5,
+     "launch_max_s": 1.2,
+     "zone_caps": 0,
+     "start_kick": null
+    },
+    "launch_param": 1,
+    "plan_launch": null,
+    "launch_state": "on"
+   }
+  ],
+  "compare": [
+   {
+    "d_to_r1_s": -0.3,
+    "d_loss_s": -0.4,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true,
+     "on_all_readable": false
+    },
+    "all_ok": false
+   }
+  ]
+ },
+ "B_real_power_loss_shape_all_zero_bytes": {
+  "bad_log": "20261103-131500",
+  "lines": [
+   "skip 20261103-131500 log.json が 0 バイト(読めない記録。回・発進の前進の ON/OFF が分からない)",
+   "logs 5 launches 5 with R1 5 laps 10 flying accel windows 0",
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録(log.json も読めない。回・発進の前進の ON/OFF が分からない)1 本: 20261103-131500(log.json が 0 バイト。前の記録 20261103-131000(3-3)・次の記録 20261103-132000(3-5))",
+   "読めない記録(log.json も読めない)20261103-131500: log.json が 0 バイト。前の記録 20261103-131000(3-3)・次の記録 20261103-132000(3-5)。発進の前進 ON のある組 1 組(11/03 回3 B)を「満たさない」にした"
+  ],
+  "unreadable_json": [
+   {
+    "log": "20261103-131500",
+    "why": "log.json が 0 バイト",
+    "no": null,
+    "session": null,
+    "model": null,
+    "gain": null,
+    "settings": {},
+    "launch_param": null,
+    "plan_launch": null,
+    "launch_state": "unknown",
+    "meta": false,
+    "near": [
+     "20261103-131000(3-3)",
+     "20261103-132000(3-5)"
+    ]
+   }
+  ],
+  "compare": [
+   {
+    "d_to_r1_s": -0.3,
+    "d_loss_s": -0.4,
+    "d_v_lh_mps": 0.0,
+    "checks": {
+     "to_r1": true,
+     "first_lap_collisions_0": true,
+     "slip": true,
+     "lh_speed": true,
+     "on_all_readable": false
+    },
+    "all_ok": false
+   }
+  ]
+ }
+}

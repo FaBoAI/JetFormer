@@ -1,0 +1,279 @@
+"""直す 3 回目・1 組目(2026-10-27 fix3。反証 3 回目の指摘 r3-r3-rec-1)の試験。夜の道具だけ(⑤ experiments/20261026_fix/
+diag_launch/collect.py と tools/car_check.py)。走行の動き(PCA9685 に書く値)は変えていない。
+
+  r3-r3-rec-1: 電源断の本物の形(10/23 の 20261023-204825: log.json・scene.json・npz が全部 0 バイト)の ON の本を、⑤ の logs() が
+    人の収集・dry run と同じく黙って飛ばし、r2-rec2-5 の「読めない記録」にも入らず「使ってよい」と出た(skip の行も出なかった)。
+    car_check --latest も 0 バイトの log.json を飛ばし、1 本前の記録を黙って出した(落ちた本の 9G が出ない)。
+  直し: ⑤ は log.json の読めない記録(0 バイト・壊れた・無い)を読めない記録(回・ON/OFF 不明)として出し、その日の発進の前進 ON の
+    ある組を全部「満たさない」にする(名前と、前と次の読める AI の記録)。--skip で外せる。car_check --latest は、選んだ記録より
+    新しい記録の log.json が読めない(か AI の記録なのに AI_CMD が無い)と「いちばん新しい記録 X は … で読めません」と出して終わりの
+    番号 3。
+
+どの試験も「直す前の写し(tests/fixtures/fix3_r3_1_before/。sha256 を照らす)で指摘が起きる」と「その場面のほかは直す前と出力
+(JSON・標準出力・文・終わりの番号)が同じ」を見る。作り物の記録だけ(tmp)。本物の data/raw・labels・装置・GPU は使わない。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \\
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_fix3_r3_1_tools.py
+"""
+import contextlib
+import hashlib
+import io
+import json
+from pathlib import Path
+
+import pytest
+
+import copy
+
+from test_fix3_r1_2 import Day, ON, OPT_0, PRM, _same_day, load_mod
+import car_check as cc  # noqa: E402
+from test_standing_3lap import write_standing_log  # noqa: E402
+
+JF = Path(__file__).resolve().parents[1]
+FIX = JF / 'tests' / 'fixtures' / 'fix3_r3_1_before'
+COLLECT = JF / 'experiments' / '20261026_fix' / 'diag_launch' / 'collect.py'
+
+
+def test_before_copies():
+    sums = dict(reversed(x.split()) for x in (FIX / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    for name in ('collect.py', 'car_check.py'):
+        assert hashlib.sha256((FIX / name).read_bytes()).hexdigest() == sums[name], name
+
+
+@pytest.fixture(scope='module')
+def old_cc():
+    return load_mod('car_check_r31_before', FIX / 'car_check.py')
+
+
+def no_path(out):
+    return '\n'.join(x for x in out.splitlines() if not x.startswith('出力 '))
+
+
+def both(D, name, args=()):
+    """今の collect.py と直す前の写し"""
+    return D.run(name='n_' + name, args=args), D.run(path=FIX / 'collect.py', name='o_' + name, args=args)
+
+
+def same_output(D, name, args=()):
+    (jn, on, tn, _), (jo, oo, to, _) = both(D, name, args)
+    return tn == to and no_path(on) == no_path(oo), jn
+
+
+def zero_all(d):
+    """電源断の本物の形(10/23 の 20261023-204825): 記録の中のファイルを全部 0 バイトに(log.json・scene.json・npz・jpg)"""
+    for f in Path(d).rglob('*'):
+        if f.is_file():
+            f.write_bytes(b'')
+
+
+def round3(tmp, bad_block=15, shape='zero', hit=(3.0, 9.0)):
+    """反証の probe_zero_logjson と同じ回 3: OFF 3 本・ON 3 本(3-1〜3-6)。3-4(block 15・ON)は発進のあと 3.0 秒に 9G で当たり、
+    そのあと Jetson が落ちた"""
+    D = Day(tmp)
+    bad = None
+    for block, p in ((12, PRM), (13, ON), (14, PRM), (15, ON), (16, PRM), (17, ON)):
+        if block == bad_block:
+            bad, d = D.add(block, p, hits=[hit])
+            if shape == 'zero':
+                zero_all(d)
+            elif shape == 'broken':
+                (d / 'log.json').write_text('{"description": "ai_no=15', encoding='utf-8')
+            elif shape == 'missing':
+                (d / 'log.json').unlink()
+        else:
+            D.add(block, p)
+    return D, bad
+
+
+# ================================================================== ⑤ collect.py
+@pytest.mark.parametrize('shape,why', [('zero', 'log.json が 0 バイト'), ('broken', 'log.json が壊れている'), ('missing', 'log.json が無い')])
+def test_rec1_unreadable_log_json_on_fails(tmp_path, shape, why):
+    """log.json の読めない ON の本: 「skip … 読めない記録」の行・組に「読めない記録(log.json も読めない…)」・満たさない・JSON の
+    unreadable(meta = False)。直す前の写しは何も出さず「使ってよい」(指摘の再現)"""
+    D, bad = round3(tmp_path, shape=shape)
+    for args in ((), ('--ignore-gain',)):
+        (jn, on, _, _), (jo, oo, _, _) = both(D, '%s%d' % (shape, len(args)), args)
+        assert jo['summary'][0]['compare']['all_ok'] is True and '→ 使ってよい' in oo and bad not in oo     # 再現
+        assert 'unreadable' not in jo and 'skip %s' % bad not in oo
+        g = jn['summary'][0]
+        assert g['unreadable_unknown'] == {'n': 1, 'logs': [bad], 'why': [why],
+                                           'near': [['20261103-131000(3-3)', '20261103-132000(3-5)']]}
+        assert g['compare']['checks']['on_all_readable'] is False and g['compare']['all_ok'] is False
+        assert {k: v for k, v in g['compare']['checks'].items() if k != 'on_all_readable'} == jo['summary'][0]['compare']['checks']
+        assert 'skip %s %s(読めない記録。回・発進の前進の ON/OFF が分からない)' % (bad, why) in on
+        assert '読めない記録(log.json も読めない。回・発進の前進の ON/OFF が分からない)1 本: %s(%s。前の記録 20261103-131000(3-3)' \
+               '・次の記録 20261103-132000(3-5))' % (bad, why) in on
+        assert '→ この日の発進の前進 ON のある組は全部「満たさない」' in on and '→ 満たさない' in on and '→ 使ってよい' not in on
+        assert '読めない記録(log.json も読めない)%s: %s。' % (bad, why) in on and '1 組(11/03 回3 B)を「満たさない」にした' in on
+        u = jn['unreadable']
+        assert len(u) == 1 and u[0]['log'] == bad and u[0]['meta'] is False and u[0]['launch_state'] == 'unknown'
+        assert jn['launches'] == jo['launches'] and jn['summary'][0]['by_launch'] == jo['summary'][0]['by_launch']
+
+
+def test_rec1_skip_reads_again_and_logs_list_unchanged(tmp_path):
+    """--skip 記録名 で外せる(外した名前「(読めない記録)」が出て、まとめは直す前と同じ)。logs() の一覧は前と同じ(読めない本は入らない)"""
+    D, bad = round3(tmp_path)
+    (jn, on, _, _), (jo, oo, _, _) = both(D, 'sk', ('--skip', bad))
+    assert jn['summary'] == jo['summary'] and jn['summary'][0]['compare']['all_ok'] is True
+    assert jn['summary_skipped'] == ['%s(読めない記録)' % bad] and '%s(読めない記録)' % bad in on
+    assert jn['unreadable'][0]['log'] == bad                                            # JSON の一覧には残す
+    m = load_mod('collect_r31_logs', COLLECT)
+    m.RAW = D.raw
+    o = load_mod('collect_r31_logs_o', FIX / 'collect.py')
+    o.RAW = D.raw
+    assert m.logs(('20261103',)) == o.logs(('20261103',)) and bad not in m.logs(('20261103',))
+    assert m.unreadable_meta_logs(('20261103',)) == [(bad, 'log.json が 0 バイト')]
+
+
+def test_rec1_no_on_group_is_listed_only(tmp_path):
+    """発進の前進 ON の本が無い日(回 1・回 2 だけ): 読めない記録は名前の行と JSON だけ(どの組にも入れない。組のまとめは前と同じ)"""
+    D = Day(tmp_path)
+    for b in (12, 14, 16):
+        D.add(b, PRM)
+    bad, d = D.add(18, PRM, hits=[(3.0, 9.0)])
+    zero_all(d)
+    (jn, on, _, _), (jo, oo, _, _) = both(D, 'off')
+    assert jn['summary'] == jo['summary'] and 'unreadable_unknown' not in jn['summary'][0]
+    assert '読めない記録(log.json も読めない)%s: log.json が 0 バイト。前の記録 20261103-131000(3-5)・次の記録 なし。' \
+           '発進の前進 ON のある組は無い(どの組にも入れていない)' % bad in on
+    assert jn['unreadable'][0]['log'] == bad and 'unreadable' not in jo
+
+
+def test_rec1_on_not_started_and_other_rounds(tmp_path):
+    """ON のある組が 2 つ(回 3 と回 4)なら両方に入れる。ON の本が無い組(回 1)には入れない"""
+    D = Day(tmp_path)
+    b = json.loads(D.bench.read_text())
+    b['days'][0]['blocks'] += [{'block': 1, 'run_id': '1-1'}, {'block': 20, 'run_id': '4-1'}, {'block': 21, 'run_id': '4-2'}]
+    D.bench.write_text(json.dumps(b), encoding='utf-8')
+    D.add(1, PRM)
+    for blk_, p in ((12, PRM), (13, ON), (20, PRM), (21, ON)):
+        D.add(blk_, p)
+    bad, d = D.add(14, PRM)
+    zero_all(d)
+    j, out, _, _ = D.run(name='multi')
+    by = {g['session']: g for g in j['summary']}
+    assert set(by) == {'11/03 回1', '11/03 回3', '11/03 回4'}
+    assert 'unreadable_unknown' not in by['11/03 回1'] and 'compare' not in by['11/03 回1']
+    for s in ('11/03 回3', '11/03 回4'):
+        assert by[s]['unreadable_unknown']['logs'] == [bad] and by[s]['compare']['all_ok'] is False
+    assert '2 組(11/03 回3 B・11/03 回4 B)を「満たさない」にした' in out
+
+
+@pytest.mark.parametrize('kind', ['plain', 'npz_only', 'gain', 'ig'])
+def test_rec1_days_without_such_records_unchanged(tmp_path, kind):
+    """log.json の読めない記録が無い日は、JSON・標準出力が直す前とまるごと同じ(npz だけ無い本 = r2-rec2-5 の形も同じ)"""
+    D = Day(tmp_path)
+    for i in range(6):
+        p = dict(ON if i % 2 else PRM, throttle_gain=0.90 if (kind != 'gain' or i < 3) else 0.92)
+        lg, d = D.add(12 + i, p)
+        if kind == 'npz_only' and i == 3:
+            for f in d.rglob('*.npz'):
+                f.unlink()
+    same, jn = same_output(D, kind, ('--ignore-gain',) if kind == 'ig' else ())
+    assert same and 'unreadable_unknown' not in json.dumps(jn)
+
+
+def strip_r3(j):
+    """r3-r3-rec-1 で足した所(log.json の読めない記録)を外した JSON(残りが直す前と同じかを見るため)"""
+    j = copy.deepcopy(j)
+    u = j.pop('unreadable', [])
+    assert u and all(x.get('meta') is False for x in u)
+    for g in j['summary']:
+        g.pop('unreadable_unknown', None)
+        c = g.get('compare')
+        if c and c['checks'].pop('on_all_readable', None) is False:
+            c['all_ok'] = all(c['checks'].values())
+    return j
+
+
+R3_LINES = ('skip 20261103-150000 log.json が 0 バイト', '  読めない記録(log.json も読めない', '  → この日の発進の前進 ON のある組は全部',
+            '読めない記録(log.json も読めない)20261103-150000')
+
+
+@pytest.mark.parametrize('args', [(), ('--first-only',), ('--ignore-gain',)])
+@pytest.mark.parametrize('opts', [None, 'opt0'])
+def test_rec1_existing_fixture_day_with_zero_log_json(tmp_path, args, opts):
+    """前からの試験の日(tests/test_fix3_r1_2._same_day: OFF・ON・ON なのに出ない・0 バイトの log.json・dry run)。直す前と違うのは
+    r3-r3-rec-1 で足した所だけ: 0 バイトの本が読めない記録(JSON の unreadable・組の unreadable_unknown)になり、ON の組は満たさない
+    (on_all_readable = False)・標準出力にその行。ほか(発進ごとの行・組のまとめ・ほかの行)は同じ。dry run の本は前と同じく読まない"""
+    D = _same_day(tmp_path, OPT_0 if opts else None)
+    (jn, on, _, _), (jo, oo, _, _) = both(D, 'sd_%s_%d' % (opts, len(args)), args)
+    assert jn['unreadable'] == [dict(jn['unreadable'][0], log='20261103-150000', why='log.json が 0 バイト', meta=False)]
+    g = jn['summary'][0]
+    assert g['unreadable_unknown']['logs'] == ['20261103-150000'] and g['compare']['all_ok'] is False
+    assert jo['summary'][0]['compare']['all_ok'] is True
+    assert strip_r3(jn) == jo
+    keep = lambda t: [x for x in no_path(t).splitlines() if not x.startswith(R3_LINES) and 'ON − OFF' not in x]      # noqa: E731
+    assert keep(on) == keep(oo)
+    assert '20261103-150500' not in on                                                  # dry run は読まない(前と同じ)
+
+
+# ================================================================== car_check --latest
+def two_logs(raw, newest='zero'):
+    """130000 = OFF・衝突なし、130500 = ON・3.0 秒に 9G。newest: 130500 の壊し方"""
+    write_standing_log(raw, '20261103-130000', dur=12.0, run='runB', description='ai_no=1 day=2026-11-03 block=12 memo=x',
+                       params={'throttle_gain': 0.9})
+    d = write_standing_log(raw, '20261103-130500', dur=12.0, hits=[(3.0, 9.0)], run='runB',
+                           description='ai_no=2 day=2026-11-03 block=13 memo=x', params={'throttle_gain': 0.9, 'launch_boost': 1})[0]
+    if newest == 'zero':
+        zero_all(d)
+    elif newest == 'no_ai_cmd':
+        for f in d.rglob('AI_CMD.npz'):
+            f.unlink()
+    elif newest == 'dry':
+        m = json.loads((d / 'log.json').read_text())
+        m['drive']['dry_run'] = True
+        (d / 'log.json').write_text(json.dumps(m), encoding='utf-8')
+    return d
+
+
+def cc_main(mod, raw, *extra):
+    out, err = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+        rc = mod.main(['--latest', '--day', '20261103', '--raw', str(raw), '--labels', str(raw / 'nolab'), '--no-json'] + list(extra))
+    return rc, out.getvalue(), err.getvalue()
+
+
+def strip_secs(t):
+    return '\n'.join(x for x in t.splitlines() if not (x.startswith('  (') and x.endswith(' 秒)')))
+
+
+@pytest.mark.parametrize('newest,why', [('zero', 'log.json が 0 バイト'), ('no_ai_cmd', 'AI の記録なのに AI_CMD が無い')])
+def test_rec1_car_check_latest_does_not_show_the_older_one(tmp_path, old_cc, newest, why):
+    """いちばん新しい記録が読めない: 「いちばん新しい記録 X は読めません(…)」と 1 本前の名前を出して終わりの番号 3(標準出力には
+    何も出さない)。直す前の写しは 1 本前(130000)の車の確認を黙って出した(指摘の再現。終わりの番号はその本の判定)"""
+    two_logs(tmp_path, newest)
+    rc, out, err = cc_main(cc, tmp_path)
+    assert rc == 3 and out == ''
+    assert 'いちばん新しい記録 20261103-130500 は読めません(%s。電源断' % why in err
+    assert '1 本前の読める記録 20261103-130000 を見るときは名前で: python3 tools/car_check.py 20261103-130000' in err
+    rc0, out0, err0 = cc_main(old_cc, tmp_path)
+    assert '車の確認: 20261103-130000' in out0 and '衝突(AI' in out0 and err0 == ''                      # 再現(1 本前を黙って)
+
+
+@pytest.mark.parametrize('newest', ['ok', 'dry'])
+def test_rec1_car_check_latest_unchanged_otherwise(tmp_path, old_cc, newest):
+    """いちばん新しい記録が読める・dry run(前から数えない): 文・終わりの番号が直す前と同じ"""
+    two_logs(tmp_path, newest)
+    a, b = cc_main(cc, tmp_path), cc_main(old_cc, tmp_path)
+    assert a[0] == b[0] and strip_secs(a[1]) == strip_secs(b[1]) and a[2] == b[2]
+    assert ('20261103-130500' if newest == 'ok' else '20261103-130000') in a[1]
+
+
+def test_rec1_car_check_only_unreadable_and_named_log(tmp_path, old_cc):
+    """その日の記録が読めない 1 本だけ: 「その日の読める AI の記録はほかにありません」で 3(直す前は「AI の記録がありません」で 3)。
+    名前で渡す使い方は前と同じ"""
+    d = write_standing_log(tmp_path, '20261103-130500', dur=12.0, run='runB', params={'throttle_gain': 0.9})[0]
+    zero_all(d)
+    rc, out, err = cc_main(cc, tmp_path)
+    assert rc == 3 and 'いちばん新しい記録 20261103-130500 は読めません(log.json が 0 バイト。' in err
+    assert 'その日の読める AI の記録はほかにありません' in err
+    rc0, _, err0 = cc_main(old_cc, tmp_path)
+    assert rc0 == 3 and 'AI の記録(dry run でない)がありません' in err0
+    write_standing_log(tmp_path, '20261103-130000', dur=12.0, run='runB', params={'throttle_gain': 0.9})
+    io1, io2 = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(io1):
+        r1 = cc.main(['20261103-130000', '--raw', str(tmp_path), '--labels', str(tmp_path / 'nolab'), '--no-json'])
+    with contextlib.redirect_stdout(io2):
+        r2 = old_cc.main(['20261103-130000', '--raw', str(tmp_path), '--labels', str(tmp_path / 'nolab'), '--no-json'])
+    assert r1 == r2 and strip_secs(io1.getvalue()) == strip_secs(io2.getvalue())

@@ -1,0 +1,101 @@
+{
+ "A_restart": {
+  "timers_after_back_ms": [],
+  "driveTimer": "null",
+  "paramsLoaded": true,
+  "page_bootAt": 1000,
+  "st_params_shown": {
+   "throttle_gain": 0.9,
+   "speed_ceiling": 0,
+   "ceil_left_mps": 4.2,
+   "speed_auto": 0,
+   "launch_boost": 0,
+   "launch_us": 200,
+   "rec_back_guard": 1,
+   "rec_hold_keep": 1,
+   "launch_no_kick": 0,
+   "start_kick": 1,
+   "zone_caps": 0,
+   "steer_trim_us": 0
+  },
+  "start_button_disabled": false,
+  "dr_message_has_lost_text": false,
+  "block_note_head": "<b>ブロック 15(B モデルB(基準))</b>を画面に入れました。変えた所: 収集 OFF → ON、説明欄に雛形。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-te",
+  "ceiling_switch_confirm": [
+   "速さの天井を ON にします(全体 4.5・左旋回中 4.2 m/s)。"
+  ],
+  "launch_switch_confirm": [
+   "発進の前進を ON にします(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)。"
+  ],
+  "starts": [
+   {
+    "status": 409,
+    "boot_at": 1000,
+    "confirm": [
+     "ジャンル: ID 5 / 速度ゲイン 0.90",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ]
+   },
+   {
+    "status": 200,
+    "boot_at": 2000,
+    "confirm": [
+     "ジャンル: ID 5 / 速度ゲイン 0.90",
+     "速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ]
+   }
+  ],
+  "server_after": null,
+  "toasts_tail": [
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "走行は始まっていません(停止中)。管理画面のサーバーが起動し直しました(sim5: 画面 1000・今 2000)。管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "AI走行 No.1 を開始しました"
+  ]
+ },
+ "B_no_restart_curl_left": {
+  "timers_after_back_ms": [],
+  "driveTimer": "null",
+  "paramsLoaded": true,
+  "st_params_shown_left": 4.1,
+  "start_button_disabled": false,
+  "dr_message_has_lost_text": false,
+  "ceiling_switch_confirm": [
+   "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。"
+  ],
+  "start": [
+   {
+    "status": 200,
+    "confirm": [
+     "速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)"
+    ]
+   }
+  ],
+  "server_left_at_start": 4.2,
+  "real_driver": {
+   "replay": [
+    [
+     "/api/drive/params",
+     200,
+     200,
+     ""
+    ],
+    [
+     "/api/drive/params",
+     200,
+     200,
+     ""
+    ],
+    [
+     "/api/drive/start",
+     200,
+     200,
+     ""
+    ]
+   ],
+   "ceil_left_mps": 4.2,
+   "speed_ceiling": 1
+  }
+ }
+}

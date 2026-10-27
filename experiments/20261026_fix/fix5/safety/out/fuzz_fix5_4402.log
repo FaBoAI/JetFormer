@@ -1,0 +1,17 @@
+25 {} {'keep0_same': 25, 'off4_same': 25}
+50 {} {'keep0_same': 50, 'off4_same': 50}
+75 {} {'keep0_same': 75, 'off4_same': 75}
+100 {} {'keep0_same': 100, 'off4_same': 100}
+125 {} {'keep0_same': 125, 'off4_same': 125}
+150 {} {'keep0_same': 150, 'off4_same': 150}
+175 {} {'keep0_same': 175, 'off4_same': 175}
+200 {'K1_rear_after_kept_hold_worse_than_keep0': 1} {'keep0_same': 200, 'off4_same': 200}
+225 {'K1_rear_after_kept_hold_worse_than_keep0': 1} {'keep0_same': 225, 'off4_same': 225}
+250 {'K1_rear_after_kept_hold_worse_than_keep0': 2, 'K6_front_push_longer_than_keep0': 1} {'keep0_same': 250, 'off4_same': 250}
+275 {'K1_rear_after_kept_hold_worse_than_keep0': 2, 'K6_front_push_longer_than_keep0': 1} {'keep0_same': 275, 'off4_same': 275}
+300 {'K1_rear_after_kept_hold_worse_than_keep0': 2, 'K6_front_push_longer_than_keep0': 2} {'keep0_same': 300, 'off4_same': 300}
+{"seed": 4402, "runs": 300, "bad": {"K1_rear_after_kept_hold_worse_than_keep0": 2, "K6_front_push_longer_than_keep0": 2}, "bad_bef1": {"K2_giveup_while_moving": 2, "K6_front_push_longer_than_keep0": 2}, "identity": {"keep0_same": 300, "off4_same": 300}, "giveup_runs": {"now1": 203, "bef1": 206, "now0": 8}, "rows": 74434, "kinds": {"none": 40919, "リカバリー": 8638, "リカバリー中止": 22540, "発進の前進": 621, "発進の補助": 227}, "holds_ai": 1473, "cmp": {"front_push_s_now1": 579.82, "front_push_s_bef1": 583.8, "front_push_s_now0": 1464.33, "rear_faster_than_keep0_any": 20, "bef1_rear_faster_than_keep0_any": 20}}
+K1_rear_after_kept_hold_worse_than_keep0 194 ((8.5, 'rear', -1.69, 6.21), []) {'launch_boost': 0, 'launch_no_kick': 0, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 1, 'tof_guard': 2, 'rev_s': 0.6, 'rev_us': 200.0, 'throttle_gain': 0.8}
+K6_front_push_longer_than_keep0 229 (4.48, 2.95) {'launch_boost': 1, 'launch_no_kick': 1, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 3, 'rev_s': 0.3, 'rev_us': 300.0, 'throttle_gain': 1.0}
+K1_rear_after_kept_hold_worse_than_keep0 245 ((3.74, 'rear', -2.67, 8.68), []) {'launch_boost': 0, 'launch_no_kick': 1, 'start_kick': 1, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 1, 'rev_s': 0.4, 'rev_us': 400.0, 'throttle_gain': 1.0}
+K6_front_push_longer_than_keep0 282 (2.52, 1.94) {'launch_boost': 0, 'launch_no_kick': 0, 'start_kick': 0, 'speed_ceiling': 1, 'zone_caps': 0, 'tof_guard': 2, 'rev_s': 0.3, 'rev_us': 300.0, 'throttle_gain': 1.0}

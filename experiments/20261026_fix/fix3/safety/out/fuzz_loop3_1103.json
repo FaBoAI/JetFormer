@@ -1,0 +1,47 @@
+{
+ "runs": 400,
+ "rows": 141600,
+ "hold_rows_ai": 6099,
+ "bad": {},
+ "examples": [],
+ "assist_rows": {
+  "なし": 75921,
+  "後退の受け付け": 2427,
+  "発進の補助": 2130,
+  "発進の前進": 882,
+  "リカバリー": 7851,
+  "リカバリー中止": 4674
+ },
+ "launch_runs": 60,
+ "info_off": {
+  "giveup_cleared_in_section": 4
+ },
+ "params_mix": {
+  "rec_hold_keep=1": 212,
+  "launch_no_kick=1": 197,
+  "rec_back_guard=0": 189,
+  "launch_boost=0": 98,
+  "start_kick=1": 245,
+  "recovery=1": 320,
+  "rec_back_guard=1": 211,
+  "launch_boost=1": 302,
+  "start_kick=0": 155,
+  "recovery=0": 80,
+  "rec_hold_keep=0": 188,
+  "launch_no_kick=0": 203
+ },
+ "giveup_runs": 23,
+ "kick_rows_by_nokick": {
+  "launch_no_kick=0": 1469
+ },
+ "scene_kinds": {
+  "random": 300,
+  "stuck": 100
+ },
+ "giveup_then_hold_runs": {
+  "keep=1,guard=1": 10,
+  "keep=1,guard=0": 4,
+  "keep=0,guard=0": 1
+ },
+ "seed": 1103
+}

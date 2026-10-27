@@ -13,7 +13,7 @@ import pytest
 from jetformer import drive
 from jetformer.web import bench
 
-from test_vbat_ui import APP_JS, NODE, _node, _src
+from test_vbat_ui import APP_JS, KEEP, NODE, _node, _src
 
 
 def test_static_switch_default_off_and_warning():
@@ -43,7 +43,7 @@ def test_js_bench_values_never_turn_launch_on():
                         'benchFieldValues({params: {}}, null), BENCH_FALLBACK]));' % (json.dumps(on), json.dumps(base)))
     assert a['params']['launch_boost'] == 0 and a['params']['launch_us'] == 200.0      # 値はそのまま・スイッチは OFF
     assert any('発進の前進' in n for n in a['notes'])
-    assert b['params'] == base['params'] and b['notes'] == []
+    assert b['params'] == {k: v for k, v in base['params'].items() if k not in KEEP} and b['notes'] == []   # トリム・後ろの見張りは入れない(2026-10-26 fix2)
     assert 'launch_boost' not in c['params']                                           # 無い項目は足さない(古いサーバー)
     for k in drive.LAUNCH_KEYS:
         assert fb['params'][k] == drive.DEFAULT_PARAMS[k], k                           # 控えの値 = サーバーの既定

@@ -1,0 +1,478 @@
+{
+ "C_power": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003",
+     "0004"
+    ],
+    "launch_starts": null,
+    "lost_after_s": 19.967,
+    "launch_on_from": [
+     "log.json",
+     "events.jsonl の発進の前進の出来事(start)"
+    ]
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の発進の前進の出来事(start))",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。「読めない記録」に入れた(ON なので満たさない。動画・紙で、その間に発進が無かった・当たっていないと確かめたら --skip 記録名 で外せる。外すと読めた発進も比べから外れる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "91e9b9b0c154c33ae5d9278e83525d15472f6d7311206907aa1d42d0b43a030f",
+  "stdout_sha": "2bad2cc14174ff3ab3ecff6d14587f2b4a58983a0b2cb80d752ee662030f7cb8"
+ },
+ "C_power_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。読めた発進のあとなので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "4bb87cbb8ff3e3f6e7b800c32b0c6f74968f9f41256fc5dc8da5df173ad09afb",
+  "stdout_sha": "67d91ac0ac8ba357eeee0a9ff603f5aa3dfe31456459e146a8a3b480a01a597c"
+ },
+ "C_power_nul": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003",
+     "0004"
+    ],
+    "launch_starts": null,
+    "lost_after_s": 19.967,
+    "launch_on_from": [
+     "log.json",
+     "events.jsonl の発進の前進の出来事(start)"
+    ]
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の発進の前進の出来事(start))",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。「読めない記録」に入れた(ON なので満たさない。動画・紙で、その間に発進が無かった・当たっていないと確かめたら --skip 記録名 で外せる。外すと読めた発進も比べから外れる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "91e9b9b0c154c33ae5d9278e83525d15472f6d7311206907aa1d42d0b43a030f",
+  "stdout_sha": "2bad2cc14174ff3ab3ecff6d14587f2b4a58983a0b2cb80d752ee662030f7cb8"
+ },
+ "C_power_nul_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。読めた発進のあとなので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "4bb87cbb8ff3e3f6e7b800c32b0c6f74968f9f41256fc5dc8da5df173ad09afb",
+  "stdout_sha": "67d91ac0ac8ba357eeee0a9ff603f5aa3dfe31456459e146a8a3b480a01a597c"
+ },
+ "C_power_ev": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003・0004 にフレームが無い(npz が無い・読めない)間の、発進の前進を出した発進の記録が無い(AI 側にしたシーンごと書けずに落ちた)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003",
+     "0004"
+    ],
+    "launch_starts": [
+     60.0
+    ],
+    "lost_after_s": null,
+    "launch_on_from": null
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003・0004 にフレームが無い(npz が無い・読めない)間の、発進の前進を出した発進の記録が無い(AI 側にしたシーンごと書けずに落ちた)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の start 60.00 秒)",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。欠けたシーンの間に発進の前進の start 60.00 秒 = その発進の記録が無い。「読めない記録」に入れた(ON なので満たさない。--skip 記録名 で外せる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "f4a1eb769ee9769682f639f14b9e5bd14b38ee4520dac07957a6749da7642760",
+  "stdout_sha": "b0e0d421bbf705017106c649b463165d4e9b2cf843075b673ce026b0edef2e5f"
+ },
+ "C_power_ev_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。欠けたシーンの間に発進の前進の start 60.00 秒 = その発進の記録が無い。読めた発進のあと(2 回目以降)なので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "4bb87cbb8ff3e3f6e7b800c32b0c6f74968f9f41256fc5dc8da5df173ad09afb",
+  "stdout_sha": "3c1d57e051a1966e5c7f9d3222eb19fed70c186615ec2b705f4e0e8cc94d1fc6"
+ },
+ "C_power_off": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 3,
+  "off_n": 5,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 OFF): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "59978ee688cde99ae3ab776822b395562b77e4e600d379c611dd8813792f8545",
+  "stdout_sha": "70fbbe8a4a7e4332a0f4a08b76f7af7788b93b2f7fda3e6e6884647fdff4a178"
+ },
+ "C_power_off_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 3,
+  "off_n": 5,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 OFF): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "ac9f9474064b81d9111f86a4f706edc26cf7b363a63bb96a3efa64742f330483",
+  "stdout_sha": "70fbbe8a4a7e4332a0f4a08b76f7af7788b93b2f7fda3e6e6884647fdff4a178"
+ },
+ "C_proc": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0003 にフレームが無い(npz が無い・読めない)間の、発進の前進を出した発進の記録が無い(AI 側にしたシーンごと書けずに落ちた)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0003"
+    ],
+    "launch_starts": [
+     45.0
+    ],
+    "lost_after_s": null,
+    "launch_on_from": null
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0003 にフレームが無い(npz が無い・読めない)間の、発進の前進を出した発進の記録が無い(AI 側にしたシーンごと書けずに落ちた)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の start 45.00 秒)",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0003 の npz が無い・読めない(3 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。欠けたシーンの間に発進の前進の start 45.00 秒 = その発進の記録が無い。「読めない記録」に入れた(ON なので満たさない。--skip 記録名 で外せる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "90f30199d5df7ea28aa96fb5ba9801cbff21062c884092e4ad081e7a7647df72",
+  "stdout_sha": "6c8e2f0f58a121b4156e30a44d1003353f7527eb3753cf299f056fd8a2eb3f88"
+ },
+ "C_proc_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0003 の npz が無い・読めない(3 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。欠けたシーンの間に発進の前進の start 45.00 秒 = その発進の記録が無い。読めた発進のあと(2 回目以降)なので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "26f07d152f652a92f1a2c9496a3c0df74bc9c6fd9f65c347edde9111be6abfe3",
+  "stdout_sha": "38b523a0925801907b62798ef290be47674096ed0ec7ffebc71c445cbdf08b63"
+ },
+ "C_run": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003"
+    ],
+    "launch_starts": null,
+    "lost_after_s": 19.967,
+    "launch_on_from": [
+     "log.json",
+     "events.jsonl の発進の前進の出来事(start)"
+    ]
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の発進の前進の出来事(start))",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003 の npz が無い・読めない(7 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。「読めない記録」に入れた(ON なので満たさない。動画・紙で、その間に発進が無かった・当たっていないと確かめたら --skip 記録名 で外せる。外すと読めた発進も比べから外れる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "7d0dbbbdd1084743824023ea67609ed45675c941da920b0980d9fad7e68e5852",
+  "stdout_sha": "d8f77d648fbaf443727e391a27beac953429c3d8dbf7d59080161bac22862992"
+ },
+ "C_run_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003 の npz が無い・読めない(7 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。読めた発進のあとなので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "514ee88f4923f168cc0e3e9254c2d5a219c09437c7173ddf47bb44378460f6c9",
+  "stdout_sha": "e26cbd4a2d54d847f3f3e65dff2207b9ea41f6d43d50cf8c504060540c02f901"
+ },
+ "C_mid": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002 の npz が無い・読めない(3 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "49d2259d4808d789144d9695332ec7973fc3f01a979e00f30c848d29fb35b464",
+  "stdout_sha": "6fb03f089959612b5333f94facf85d0970f42e3b73d16391b354598afa933f6b"
+ },
+ "C_mid_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002 の npz が無い・読めない(3 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "3801a52e46848f2cc659cd649d96054a63cd8077eea8961648118708ad5201a0",
+  "stdout_sha": "6fb03f089959612b5333f94facf85d0970f42e3b73d16391b354598afa933f6b"
+ },
+ "C_skip": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003",
+     "0004"
+    ],
+    "launch_starts": null,
+    "lost_after_s": 19.967,
+    "launch_on_from": [
+     "log.json",
+     "events.jsonl の発進の前進の出来事(start・skip)"
+    ]
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。発進の前進 ON: log.json ON・計画 ?・events.jsonl の発進の前進の出来事(start・skip))",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。「読めない記録」に入れた(ON なので満たさない。動画・紙で、その間に発進が無かった・当たっていないと確かめたら --skip 記録名 で外せる。外すと読めた発進も比べから外れる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "a305661a792ef46c1529d46a9d69f67aef4d2a77bd57b20927e205775248c583",
+  "stdout_sha": "b803704c81ab8c38e6db6315a7370e3d0130d7adb216e6a435e1b130c0f8bbcb"
+ },
+ "C_skip_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 4,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.350 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。読めた発進のあとなので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "4bb87cbb8ff3e3f6e7b800c32b0c6f74968f9f41256fc5dc8da5df173ad09afb",
+  "stdout_sha": "67d91ac0ac8ba357eeee0a9ff603f5aa3dfe31456459e146a8a3b480a01a597c"
+ },
+ "C_midrun": {
+  "log": "20261103-133500",
+  "all_ok": false,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "on_n": 3,
+  "off_n": 4,
+  "unreadable": [
+   {
+    "log": "20261103-133500",
+    "why": "シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)",
+    "launch_state": "on",
+    "lost_scenes": [
+     "0002",
+     "0003",
+     "0004"
+    ],
+    "launch_starts": null,
+    "lost_after_s": 19.967,
+    "launch_on_from": [
+     "走行中に launch_boost を 1 に(30.0 秒)"
+    ]
+   }
+  ],
+  "lines": [
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'on_all_readable': False}",
+   "  読めない記録 1 本(比べの数に入れない): 20261103-133500(シーン 0002・0003・0004(最後の読めるフレーム 19.97 秒のあと)にフレームが無い(電源断・落ちの形。npz が無い・0 バイト・読めない)。発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。発進の前進 ON: log.json OFF・計画 ?・走行中に launch_boost を 1 に(30.0 秒))",
+   "  → 読めない(欠けた)ON の本がある = 満たさない(電源断・jetformer-web の落ちなどで npz が書かれなかった。最初の周に当たったかを確かめられない)。動画・紙で確かめ、当たっていない・車のせいでないと分かった本だけ、main session が --skip 記録名 で外して読み直せる(外した名前が出る)",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。「読めない記録」に入れた(ON なので満たさない。動画・紙で、その間に発進が無かった・当たっていないと確かめたら --skip 記録名 で外せる。外すと読めた発進も比べから外れる)→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "19b76dc9c07fed7db71836430d24c96d1c4c1954f868a06a230970bebcccfd0a",
+  "stdout_sha": "79cdb9df5c87f80839e350b33d6a78f5666763d94dc63af8bca15fba2ab5ae3c"
+ },
+ "C_midrun_first": {
+  "log": "20261103-133500",
+  "all_ok": true,
+  "checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "on_n": 3,
+  "off_n": 4,
+  "unreadable": [],
+  "lines": [
+   "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}",
+   "記録が欠けている本 20261103-133500(11/03 回3・発進の前進 ON): シーン 0002・0003・0004 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)。最後の読めるフレーム 19.97 秒のあとのシーン 0002・0003・0004 にフレームが無い(落ちた形)= 発進の前進 ON の本なので、その間の発進(2 回目以降)の記録が無いかもしれない(電源断では events.jsonl の start も消える)。読めた発進のあとなので --first-only の比べには入れない→ 動画・紙で(手順書 7 章「いつでも」)"
+  ],
+  "json_sha": "b5c9ef93b3770e1d3abe6c9283ffae157b6dc355eac3ce41cc578df308d848f2",
+  "stdout_sha": "52ebbdf6c6a54ce9aed7214fb0a4024ac14996d89aecec54188830a3e6477737"
+ }
+}

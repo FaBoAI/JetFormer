@@ -1,0 +1,505 @@
+"""直す 5 回目・係 tools(2026-10-27。反証 4 回目の指摘 c1・c2・c3)の試験。夜の道具だけ(tools/car_check.py・③ tools/standing_3lap.py・
+④ tools/quick_eval_by_params.py・⑤ experiments/20261026_fix/diag_launch/collect.py)と手順書 7・8 章の文。
+
+  c1(major)最後のシーンが書けなかった記録(電源断・jetformer-web の落ち: log.json は書けたが、書いている途中のシーンの npz が無い・
+     0 バイト)を car_check が「判定: 合格」「衝突 0 回」と出し、--latest もその本を選んで止まらなかった。③ の 0 バイトの行・④ の印も
+     npz の無いシーンを数えなかった → car_check の data_missing・「! 記録が欠けている」の行・番号 3(不合格は 2 のまま)・--latest は
+     止まる・③ の missing_npz と行・④ の印「無い npz N」・⑤ の「記録が欠けている本 …」の 1 行。
+  c2 走行中に設定を変えた本(events.jsonl の params・log.json の params_end)を ③ が counted = True で数え、best_standing・④ の
+     止まってから 3 周に入れた → 3 周目の終わりより前(か時刻が分からない)に変えた発進は counted = False・midrun = True・
+     「数えない(途中で変えた)」。
+  c3 回 3 が天井・左・自動合わせ・目標の違いで組に分かれても注意が出ず、2 本対 2 本の 2 行で片方が「使ってよい」と出た
+     → 同じ回・同じモデルで比べに入る本の組が 2 つ以上の形に分かれ、発進の前進 ON の本があれば、どの組にも form_split と注意の行、
+     比べは「満たさない」(checks の one_form = False。安全側 = 回 4 は発進の前進 OFF)。
+
+どの試験も「直す前の写し(tests/fixtures/fix5_tools_before/*.orig。sha256 を照らす)で指摘が起きる」か「その場面のほかは直す前と
+出力(JSON・文・標準出力・終わりの番号)が同じ」を見る。作り物の記録だけ(tmp)。本物の data/raw・labels・装置・GPU は使わない。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \\
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_fix5_tools.py
+"""
+import contextlib
+import hashlib
+import io
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+JF = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(JF))
+sys.path.insert(0, str(JF / 'tools'))
+sys.path.insert(0, str(JF / 'tests'))
+from test_fix3_r1_2 import Day, ON, PRM, load_mod  # noqa: E402
+from test_fix3_r3_2_tools import RealDay, runc, no_path, on_kw, G, HAND  # noqa: E402
+from test_lap_anchor import T0_US  # noqa: E402
+from test_standing_3lap import write_standing_log  # noqa: E402
+import car_check as cc  # noqa: E402
+import quick_eval_by_params as qp  # noqa: E402
+import standing_3lap as s3  # noqa: E402
+
+FIX = JF / 'tests' / 'fixtures' / 'fix5_tools_before'
+RUNBOOK = Path('/home/jetson/jetformer_reports/fix_20261026/runbook_20261103.md')
+DAY = '20261103'
+PRM0 = {'throttle_gain': 0.92, 'steer_gain': 1.0, 'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0,
+        'auto_target_mps': 4.27, 'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2, 'zone_caps': 0}
+DESC = ('ai_no=%d bench=real_bench_20261023 day=2026-11-03 block=%d cand=EXP model=runB battery=#__ V_before=__ '
+        'V_after=__ check=__ official=0 memo=計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)')
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+@pytest.fixture(scope='module')
+def old():
+    """直す前の写し(sha256 を照らしてから読む)。④ の写しは ③ の写しを使う(今の ③ と混ぜない)"""
+    sums = dict(reversed(x.split()) for x in (FIX / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    for name, h in sums.items():
+        assert _sha(FIX / name) == h, name
+    o = {'cc': load_mod('car_check_fix5_before', FIX / 'car_check.py.orig'),
+         's3': load_mod('standing_3lap_fix5_before', FIX / 'standing_3lap.py.orig'),
+         'qp': load_mod('qp_fix5_before', FIX / 'quick_eval_by_params.py.orig')}
+    o['qp'].s3 = o['s3']
+    assert not hasattr(o['cc'], 'data_missing_of') and not hasattr(o['s3'], 'missing_npz_files')      # 写しは直す前
+    return o
+
+
+def strip_cc(res):
+    """car_check の JSON から毎回変わる欄を除く"""
+    return {k: v for k, v in json.loads(json.dumps(res, default=cc._json_default)).items() if k not in ('created_at', 'seconds')}
+
+
+def strip_txt(t):
+    return '\n'.join(x for x in t.splitlines() if not x.startswith('  ('))
+
+
+# ================================================================== c1 記録の欠け
+def make_partial(raw, log, lost, dur=40.0, hit=24.0, block=20):
+    """反証の probe_partial_carcheck と同じ作り物の本(止まって走り出す・シーン 20 秒ごと)。hit 秒に 9G で当たる。
+    lost = 'zero': 最後のシーンの npz が 0 バイト(電源断)/ 'none': 最後のシーンに npz が無く CAM_FRONT/ だけ(jetformer-web の落ち:
+    シーンの終わりに書く前に落ちた)/ 'full': 落ちていない"""
+    d, _, _ = write_standing_log(raw, log, dur=dur, t_ai=1.0, t_move=1.5, ramp_s=0.5, hits=[(hit, 9.0)], params=PRM0,
+                                 description=DESC % (block, block), run='runB', scene_s=20.0)
+    sc = sorted(p for p in d.iterdir() if p.is_dir())[-1]
+    if lost == 'zero':
+        for p in sc.glob('*.npz'):
+            p.write_bytes(b'')
+    elif lost == 'none':
+        for p in sc.glob('*.npz'):
+            p.unlink()
+        (sc / 'CAM_FRONT').mkdir()
+    return d
+
+
+CASES = [('zero', 40.0, 24.0, '0002'), ('none', 40.0, 24.0, '0002'), ('none', 60.0, 45.0, '0003'), ('zero', 60.0, 45.0, '0003')]
+
+
+@pytest.mark.parametrize('lost,dur,hit,scene', CASES)
+def test_c1_car_check_partial_record(tmp_path, old, lost, dur, hit, scene):
+    """落ちた本: 直す前は欠けの文が無く、60 秒の本(落ちる前に 4 周)は「合格」(番号 0)・「衝突 0 回」(45 秒の 9G が消えた)。
+    今は data_missing と判定の頭の「! 記録が欠けている」・番号 3・衝突の行の頭に「!」と「欠けた区間の衝突・8G 以上は入っていない」"""
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    make_partial(raw, log, lost, dur, hit)
+    ro = old['cc'].check_log(log, tmp_path / 'nolab', raw)
+    to = old['cc'].to_text(ro)
+    assert 'data_missing' not in ro and '欠け' not in to and ro['collisions']['n'] == 0
+    if dur == 60.0:
+        assert ro['judge']['code'] == 0 and ro['judge']['label'] == '合格'          # 指摘の形の再現
+    r = cc.check_log(log, tmp_path / 'nolab', raw)
+    t = cc.to_text(r)
+    dm = r['data_missing']
+    assert dm['scenes'] == [scene]
+    kinds = {(n, k) for s, n, k in dm['items']}
+    if lost == 'zero':
+        assert kinds == {(n, 'zero') for n in ('AI_CMD', 'VEHICLE', 'IMU', 'CAM_FRONT')}
+        assert 'シーン %s: AI_CMD・VEHICLE・IMU・CAM_FRONT が 0 バイト' % scene in dm['text']
+    else:
+        assert kinds == {(n, 'none') for n in ('VEHICLE', 'IMU', 'CAM_FRONT')}             # AI_CMD が無いだけは数えない
+        assert 'シーン %s: VEHICLE・IMU・CAM_FRONT が無い' % scene in dm['text']
+    assert r['judge']['code'] == 3 and r['judge']['label'] == '足りない'
+    it0 = r['judge']['items'][0]
+    assert it0['item'] == 'data_missing' and it0['status'] == 'missing'
+    assert 'この本の衝突・8G 以上は記録で確かめられない → 動画・紙で' in it0['text']
+    lines = t.splitlines()
+    assert lines[2].startswith('! 記録が欠けている(シーン %s' % scene)
+    cl = [x for x in lines if '衝突(AI・' in x]
+    assert len(cl) == 1 and cl[0].startswith('! ') and '欠けた区間の衝突・8G 以上は入っていない' in cl[0]
+    # ほかの数・判定の項目は直す前と同じ(欠けの項目を足しただけ)
+    rest = {k: v for k, v in strip_cc(r).items() if k not in ('data_missing', 'judge')}
+    assert rest == {k: v for k, v in strip_cc(ro).items() if k != 'judge'}
+    assert r['judge']['items'][1:] == ro['judge']['items']
+
+
+@pytest.mark.parametrize('dur,hit', [(40.0, 24.0), (60.0, 45.0)])
+def test_c1_car_check_full_record_unchanged(tmp_path, old, dur, hit):
+    """落ちていない本(9G が記録にある): JSON・文・番号とも直す前と同じ"""
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    make_partial(raw, log, 'full', dur, hit)
+    r, ro = cc.check_log(log, tmp_path / 'nolab', raw), old['cc'].check_log(log, tmp_path / 'nolab', raw)
+    assert 'data_missing' not in r and strip_cc(r) == strip_cc(ro)
+    assert strip_txt(cc.to_text(r)) == strip_txt(old['cc'].to_text(ro))
+    assert r['collisions']['n_ge8'] == 1
+
+
+def test_c1_ai_cmd_missing_only_is_not_a_gap(tmp_path, old):
+    """AI_CMD.npz だけ無いシーン(AI が動いていないシーン。本物の 20261023-203740 の形)は欠けにしない(load_log と同じ決まり)"""
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    d = make_partial(raw, log, 'full', 60.0, 45.0)
+    (sorted(p for p in d.iterdir() if p.is_dir())[-1] / 'AI_CMD.npz').unlink()
+    assert cc.data_missing_of(log, raw) is None and cc.data_missing_of(log, raw, []) is None
+    r, ro = cc.check_log(log, tmp_path / 'nolab', raw), old['cc'].check_log(log, tmp_path / 'nolab', raw)
+    assert 'data_missing' not in r and strip_cc(r) == strip_cc(ro)
+    assert s3.missing_npz_files(log, raw) == []
+
+
+@pytest.mark.parametrize('lost', ['zero', 'none'])
+def test_c1_static_and_load_log_agree(tmp_path, lost):
+    """npz を開かない見方(ラベルが作れなかった本)と load_log の problems からの見方が同じ欠けを出す"""
+    import label_events as le
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    make_partial(raw, log, lost, 40.0, 24.0)
+    a = cc.data_missing_of(log, raw)
+    b = cc.data_missing_of(log, raw, le.load_log(log, raw)['problems'])
+    assert a is not None and sorted(map(tuple, a['items'])) == sorted(map(tuple, b['items'])) and a['text'] == b['text']
+
+
+def test_c1_unlabelable_record_shows_the_gap(tmp_path, old):
+    """全部のシーンが 0 バイト(ラベルが作れない)でも、JSON と文に欠けが出る(番号は前と同じ 3)"""
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    d = make_partial(raw, log, 'zero', 20.0, 10.0)
+    assert len([p for p in d.iterdir() if p.is_dir()]) == 1
+    r, ro = cc.check_log(log, tmp_path / 'nolab', raw), old['cc'].check_log(log, tmp_path / 'nolab', raw)
+    assert r.get('error') and ro.get('error') and r['judge']['code'] == ro['judge']['code'] == 3
+    assert 'data_missing' not in ro and r['data_missing']['scenes'] == ['0001']
+    t = cc.to_text(r)
+    assert '! 記録が欠けている(シーン 0001' in t and t.startswith(old['cc'].to_text(ro))
+
+
+def _m(**kw):
+    m = {'turn': {'ratio': 1.0, 'n_left': 100, 'n_right': 100}, 's0': {'s0_us': 0.0, 'n': 500},
+         'r1_bump': {'passes': 5, 'a3_median': 1.0, 'a3_max': 2.0}, 'vbat': {'start_v': 8.2, 'source': '基板'},
+         'laps': {'p90_median_mps': 4.0}, 'speed_ctrl': {}}
+    m.update(kw)
+    return m
+
+
+DM = {'scenes': ['0002'], 'items': [['x-0002', 'IMU', 'zero']], 'text': 'シーン 0002: IMU が 0 バイト'}
+
+
+@pytest.mark.parametrize('kw,code_old,code_new', [
+    ({}, 0, 3),                                                              # 合格 → 足りない
+    ({'s0': {'s0_us': -12.0, 'n': 500}}, 1, 3),                               # 注意 → 足りない
+    ({'turn': {'ratio': 0.80, 'n_left': 100, 'n_right': 100}}, 2, 2),         # 不合格は 2 のまま(重い方)
+    ({'r1_bump': {'passes': 1, 'a3_median': 1.0, 'a3_max': 2.0}}, 3, 3),      # 足りない → 足りない
+])
+def test_c1_judge_code_with_missing_data(old, kw, code_old, code_new):
+    m = _m(**kw)
+    assert cc.judge(m) == old['cc'].judge(m) and cc.judge(m)['code'] == code_old      # 欠けが無ければ前と同じ
+    j = cc.judge(dict(m, data_missing=DM))
+    assert j['code'] == code_new and j['items'][0]['status'] == 'missing' and j['items'][1:] == cc.judge(m)['items']
+
+
+def _main(mod, argv):
+    out, err = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+        rc = mod.main(argv)
+    return rc, out.getvalue(), err.getvalue()
+
+
+@pytest.mark.parametrize('lost', ['zero', 'none'])
+def test_c1_latest_stops_on_partial_record(tmp_path, old, lost):
+    """--latest: いちばん新しい本が落ちた本なら「いちばん新しい記録 X は記録が欠けています」と出して番号 3(文・JSON は出さない)。
+    直す前は、その本を選んで文を出した(60 秒の本は「合格」で番号 0)"""
+    raw = tmp_path / 'raw'
+    make_partial(raw, '20261103-130000', 'full', 60.0, 45.0, block=19)
+    make_partial(raw, '20261103-140000', lost, 60.0, 45.0)
+    args = ['--latest', '--day', DAY, '--raw', str(raw), '--labels', str(tmp_path / 'nolab')]
+    rco, oo, eo = _main(old['cc'], args + ['--json', str(tmp_path / 'old.json')])
+    assert rco == 0 and '車の確認: 20261103-140000' in oo and '判定: 合格' in oo          # 指摘の形の再現
+    out = tmp_path / 'new.json'
+    rc, o, e = _main(cc, args + ['--json', str(out)])
+    assert rc == 3 and o == '' and not out.exists()
+    assert 'いちばん新しい記録 20261103-140000 は記録が欠けています(シーン 0003' in e
+    assert '名前で: python3 tools/car_check.py 20261103-140000' in e
+    # 名前で読むと文と JSON(欠けの行・番号 3)
+    rc2, o2, _ = _main(cc, ['20261103-140000', '--raw', str(raw), '--labels', str(tmp_path / 'nolab'), '--json', str(out)])
+    assert rc2 == 3 and '! 記録が欠けている(シーン 0003' in o2 and json.loads(out.read_text())['data_missing']['scenes'] == ['0003']
+
+
+def test_c1_latest_full_record_unchanged(tmp_path, old):
+    """--latest: いちばん新しい本が落ちていなければ、文・番号・JSON とも直す前と同じ"""
+    raw = tmp_path / 'raw'
+    make_partial(raw, '20261103-130000', 'none', 60.0, 45.0, block=19)      # 1 本前が落ちた本でも、新しい本は読む
+    make_partial(raw, '20261103-140000', 'full', 60.0, 45.0)
+    args = ['--latest', '--day', DAY, '--raw', str(raw), '--labels', str(tmp_path / 'nolab')]
+    rco, oo, eo = _main(old['cc'], args + ['--json', str(tmp_path / 'old.json')])
+    rc, o, e = _main(cc, args + ['--json', str(tmp_path / 'new.json')])
+    assert rc == rco == 0 and e == eo
+    assert strip_txt(o.replace(str(tmp_path / 'new.json'), 'J')) == strip_txt(oo.replace(str(tmp_path / 'old.json'), 'J'))
+    jn, jo = (json.loads((tmp_path / n).read_text()) for n in ('new.json', 'old.json'))
+    assert strip_cc(jn) == strip_cc(jo)
+
+
+@pytest.mark.parametrize('lost', ['zero', 'none', 'full'])
+def test_c1_standing_3lap_and_by_params(tmp_path, old, lost):
+    """③: 無い npz を missing_npz に並べ、表の下に「無いので飛ばした npz」と「記録が欠けている」の行。④: 印「無い npz N」。
+    0 バイトだけの本・落ちていない本は ③ の JSON・md と ④ の md が直す前と同じ"""
+    raw = tmp_path / 'raw'
+    log = '20261103-140000'
+    make_partial(raw, log, lost, 60.0, 45.0)
+    rn = s3.run([log], raw, tmp_path / 'nolab', None)
+    ro = old['s3'].run([log], raw, tmp_path / 'nolab', None)
+    mdn, mdo = s3.to_markdown(rn), old['s3'].to_markdown(ro)
+    qn, qo = qp.to_markdown(rn, DAY, None)[0], old['qp'].to_markdown(ro, DAY, None)[0]
+    if lost == 'none':
+        assert 'missing_npz' not in ro[0] and '無いので飛ばした' not in mdo and '無い npz' not in qo           # 直す前は出ない
+        assert rn[0]['missing_npz'] == ['%s-0003/%s.npz' % (log, n) for n in ('VEHICLE', 'IMU', 'CAM_FRONT')]
+        assert '- 無いので飛ばした npz(VEHICLE・IMU・CAM_FRONT): %s/%s-0003/VEHICLE.npz' % (log, log) in mdn
+        assert '- 上の npz のある本(%s)は記録が欠けている' % log in mdn
+        flags = qp.flags_of(rn[0])
+        assert any(f.startswith('無い npz 3(記録が欠けている') for f in flags)
+        assert [f for f in flags if not f.startswith('無い npz')] == old['qp'].flags_of(ro[0])
+        assert {k: v for k, v in rn[0].items() if k != 'missing_npz'} == ro[0]
+    else:
+        assert 'missing_npz' not in rn[0] and rn == ro and mdn == mdo and qn == qo
+
+
+def _add_lost_scene(d):
+    """記録の終わりのあとに、npz の無いシーン(CAM_FRONT/ だけ)を足す(jetformer-web の落ち)"""
+    n = len([p for p in d.iterdir() if p.is_dir()])
+    s = d / ('%s-%04d' % (d.name, n + 1))
+    (s / 'CAM_FRONT').mkdir(parents=True)
+
+
+def test_c1_collect_prints_one_line_per_broken_record(tmp_path):
+    """⑤: シーンが欠けた本を標準出力に 1 本 1 行(最初の周に掛からない欠け = 前は JSON の problems にしか出なかった)。
+    その行を除けば JSON・標準出力とも直す前と同じ。欠けの無い日は前と同じ"""
+    D = Day(tmp_path)
+    bad = None
+    for i in range(4):
+        lg, d = D.add(12 + i, ON if i % 2 else PRM)
+        if i == 1:
+            _add_lost_scene(d)
+            bad = lg
+    jn, on, tn = runc(D, 'n_c1')
+    jo, oo, to = runc(D, 'o_c1', path=FIX / 'collect.py.orig')
+    extra = [x for x in on.splitlines() if x.startswith('記録が欠けている本 ')]
+    assert len(extra) == 1 and extra[0].startswith('記録が欠けている本 %s(11/03 回3・発進の前進 ON): シーン 0003 の npz' % bad)
+    assert not any(x.startswith('記録が欠けている本 ') for x in oo.splitlines())
+    rest = '\n'.join(x for x in on.splitlines() if not x.startswith('記録が欠けている本 '))
+    assert tn == to and no_path(rest) == no_path(oo) and jn['problems'][bad]
+
+
+def test_c1_collect_unchanged_without_gaps(tmp_path):
+    D = Day(tmp_path)
+    for i in range(4):
+        D.add(12 + i, ON if i % 2 else PRM)
+    jn, on, tn = runc(D, 'n_c1b')
+    jo, oo, to = runc(D, 'o_c1b', path=FIX / 'collect.py.orig')
+    assert tn == to and no_path(on) == no_path(oo) and '記録が欠けている本' not in on
+
+
+# ================================================================== c2 途中で変えた発進
+def make_midrun(raw, log, t_change=None, params_end=None, block=20):
+    """止まってから 3 周の本(40 秒・3 周目の終わり ≒ 28.5 秒)。t_change 秒に天井を OFF(events.jsonl の params)。
+    params_end: 止めたときの log.json の params_end(新しいサーバーの形)"""
+    P = dict(PRM0, speed_ceiling=1)
+    d, _, _ = write_standing_log(raw, log, dur=40.0, t_ai=1.0, t_move=1.3, ramp_s=0.5, params=P, run='runB',
+                                 description=DESC % (block, block))
+    if t_change is not None:
+        (d / 'events.jsonl').write_text(json.dumps({'kind': 'params', 'changed': {'speed_ceiling': [1, 0]},
+                                                    'epoch_us': T0_US + int(t_change * 1e6)}) + '\n', encoding='utf-8')
+    if params_end is not None:
+        j = json.loads((d / 'log.json').read_text(encoding='utf-8'))
+        j['drive']['params_end'] = dict(P, **params_end)
+        (d / 'log.json').write_text(json.dumps(j), encoding='utf-8')
+    return d
+
+
+def _st(res):
+    return [s for s in res['standing'] if s.get('to_r1_s') is not None]
+
+
+@pytest.mark.parametrize('kind', ['event', 'params_end_only'])
+def test_c2_change_before_third_lap_end_is_not_counted(tmp_path, old, kind):
+    """12 秒に天井を OFF(events.jsonl と params_end)・params_end だけ(時刻が分からない): 直す前は counted = True で
+    best_standing 27.20・④ 1 章の止まってから 3 周 27.20。今は数えない(midrun・「数えない(途中で変えた)」・注の 1 行・④ は —・
+    印「数えない発進 1(3 周目の終わりより前に途中で変えた)」・2 章の「数えない」1)"""
+    raw = tmp_path / 'raw'
+    log = '20261103-150500'
+    make_midrun(raw, log, t_change=12.0 if kind == 'event' else None, params_end={'speed_ceiling': 0})
+    ro = old['s3'].run([log], raw, tmp_path / 'nolab', None)
+    so = _st(ro[0])
+    assert ro[0]['midrun'] and [s['counted'] for s in so] == [True] and old['s3'].best_standing(ro[0]) is not None   # 再現
+    rn = s3.run([log], raw, tmp_path / 'nolab', None)
+    sn = _st(rn[0])
+    assert [s['counted'] for s in sn] == [False] and [s.get('midrun') for s in sn] == [True] and sn[0]['valid'] is True
+    assert sn[0]['from_move_s'] == so[0]['from_move_s'] and s3.best_standing(rn[0]) is None
+    md = s3.to_markdown(rn)
+    row = [x for x in md.splitlines() if x.startswith('| ') and log in x][0]
+    assert row.endswith('ok・数えない(途中で変えた) |') and '- 途中で変えた = 走行中に設定を変えた本' in md
+    _, runs, groups = qp.to_markdown(rn, DAY, None)
+    assert runs[0]['standing_best_s'] is None
+    assert '数えない発進 1(3 周目の終わりより前に途中で変えた)' in runs[0]['flags']
+    assert not any('前に衝突' in f for f in runs[0]['flags'])
+    assert groups[0]['standing_n'] == 0 and groups[0]['standing_excluded_n'] == 1
+    _, runs_o, groups_o = old['qp'].to_markdown(ro, DAY, None)
+    assert runs_o[0]['standing_best_s'] is not None and groups_o[0]['standing_n'] == 1                     # 直す前は数えた
+
+
+def test_c2_change_after_third_lap_end_is_counted(tmp_path, old):
+    """35 秒(3 周目の終わりのあと)に変えた: その 3 周は走行開始の設定 → 数える(③ の JSON・md と ④ の md が直す前と同じ)"""
+    raw = tmp_path / 'raw'
+    log = '20261103-150500'
+    make_midrun(raw, log, t_change=35.0)
+    rn, ro = s3.run([log], raw, tmp_path / 'nolab', None), old['s3'].run([log], raw, tmp_path / 'nolab', None)
+    assert rn[0]['midrun'] and _st(rn[0])[0]['end_s'] < 35.0
+    assert [s['counted'] for s in _st(rn[0])] == [True] and not _st(rn[0])[0].get('midrun')
+    assert rn == ro and s3.to_markdown(rn) == old['s3'].to_markdown(ro)
+    assert qp.to_markdown(rn, DAY, None)[0] == old['qp'].to_markdown(ro, DAY, None)[0]
+
+
+def test_c2_no_change_is_unchanged(tmp_path, old):
+    raw = tmp_path / 'raw'
+    logs = ['20261103-150000', '20261103-150500']
+    make_midrun(raw, logs[0])
+    make_midrun(raw, logs[1], block=21)
+    rn, ro = s3.run(logs, raw, tmp_path / 'nolab', None), old['s3'].run(logs, raw, tmp_path / 'nolab', None)
+    assert rn == ro and s3.to_markdown(rn) == old['s3'].to_markdown(ro)
+    for ig in ((), ('gain',), ('launch',)):
+        assert qp.to_markdown(rn, DAY, None, ig)[0] == old['qp'].to_markdown(ro, DAY, None, ig)[0]
+
+
+def test_c2_flags_keep_collision_reason(old):
+    """前に衝突があって途中でも変えた発進は、今まで通り「前に衝突」に数える(印は直す前と同じ)。途中で変えただけの発進は別の印"""
+    st_ = {'valid': True, 'counted': False, 'coll_before': 2, 'midrun': True, 'from_move_s': 26.0, 't_ai': 50.0}
+    st2 = {'valid': True, 'counted': False, 'coll_before': 0, 'midrun': True, 'from_move_s': 27.0, 't_ai': 1.0}
+    base = {'log': 'x', 'settings': dict(PRM0), 'midrun': [{'key': 'speed_ceiling', 'from': 1, 'to': 0, 't_s': 12.0}],
+            'speed_ctrl_flags': [], 'windows': [], 'zero_byte': []}
+    r1 = dict(base, standing=[st_])
+    assert qp.flags_of(r1) == old['qp'].flags_of(r1) and '数えない発進 1(前に衝突)' in qp.flags_of(r1)
+    r2 = dict(base, standing=[st2])
+    f2 = qp.flags_of(r2)
+    assert '数えない発進 1(3 周目の終わりより前に途中で変えた)' in f2 and not any('前に衝突' in f for f in f2)
+    assert '数えない発進 1(前に衝突)' in old['qp'].flags_of(r2)          # 直す前はわけを取り違えた
+
+
+# ================================================================== c3 回 3 の形が分かれた
+def split_day(tmp, split=True, mark_trial=False, gains=False):
+    """反証の probe_split_left と同じ回 3(本番の形 = 天井 ON・左 4.2)。split: 3-5〜3-8 は起こし直しのあと左 4.1(天井 ON のまま)。
+    起点まで: 3-2 ON 3.133・3-4 ON 3.033・3-6 ON 2.733・3-8 ON 2.833、OFF は 3.013。mark_trial: 4.1 の 4 本の走り終わりのメモに「試し」。
+    gains: 4.2 の本は自動合わせ ON・ゲイン 0.92、4.1 の本は自動合わせ ON・ゲイン 0.90(--ignore-gain なしでもゲインで組が分かれる)"""
+    tmp.mkdir(parents=True, exist_ok=True)
+    D = RealDay(tmp)
+    L42 = dict(G, speed_ceiling=1, ceil_left_mps=4.2)
+    if gains:
+        L42 = dict(L42, speed_auto=1, auto_target_mps=4.27)
+    L41 = dict(L42, ceil_left_mps=4.1, **({'throttle_gain': 0.90} if gains else {})) if split else L42
+    on = lambda P: dict(P, launch_boost=1)        # noqa: E731
+    tr = ('その他', '試し(起こし直しで左が 4.1 に戻っていた)') if mark_trial else HAND
+    D.add_real(12, L42, HAND)
+    D.add_real(13, on(L42), HAND, **on_kw(26))
+    D.add_real(14, L42, HAND)
+    D.add_real(15, on(L42), HAND, **on_kw(29))
+    D.add_real(16, L41, tr)
+    D.add_real(17, on(L41), tr, **on_kw(38))
+    D.add_real(18, L41, tr)
+    D.add_real(19, on(L41), tr, **on_kw(35))
+    return D
+
+
+def _notice(out):
+    return [x for x in out.splitlines() if '天井・左・自動合わせ・目標の違いで' in x]
+
+
+@pytest.mark.parametrize('args', [('--ignore-gain',), ()])
+def test_c3_split_by_left_fails_every_group(tmp_path, args):
+    """起こし直しで左が 4.1 に戻った回 3: 直す前は 2 本対 2 本の 2 組で、4.1 の組が「使ってよい」・注意なし。今はどの組にも
+    form_split・注意の行・checks の one_form = False → 「満たさない」"""
+    D = split_day(tmp_path)
+    jo, oo, _ = runc(D, 'o_c3', path=FIX / 'collect.py.orig', args=args)
+    go = {g['ceil_left_mps']: g for g in jo['summary']}
+    assert go[4.1]['compare']['all_ok'] is True and go[4.2]['compare']['all_ok'] is False and not _notice(oo)       # 再現
+    jn, on, _ = runc(D, 'n_c3', args=args)
+    gn = {g['ceil_left_mps']: g for g in jn['summary']}
+    for left in (4.1, 4.2):
+        g = gn[left]
+        assert g['form_split'] == ['天井1(4.1) 自動0', '天井1(4.2) 自動0']
+        assert g['compare']['checks']['one_form'] is False and g['compare']['all_ok'] is False
+        # 比べの数は直す前と同じ(one_form のほか)
+        assert {k: v for k, v in g['compare']['checks'].items() if k != 'one_form'} == go[left]['compare']['checks']
+        assert g['compare']['d_to_r1_s'] == go[left]['compare']['d_to_r1_s']
+    assert len(_notice(on)) == 2 and '2 組に分かれた(天井1(4.1) 自動0・天井1(4.2) 自動0)' in _notice(on)[0]
+    assert [x for x in on.splitlines() if 'ON − OFF' in x and '使ってよい' in x] == []
+
+
+def test_c3_split_also_without_ignore_gain_when_gains_differ(tmp_path):
+    """ゲインも違う(自動合わせ ON・0.92 と 0.90)と、--ignore-gain なしでは形もゲインも違う 2 組。直す前はどちらの注意(gain_split・
+    形)も出なかった。今は形の注意と「満たさない」"""
+    D = split_day(tmp_path, gains=True)
+    jo, oo, _ = runc(D, 'o_c3g', path=FIX / 'collect.py.orig')
+    assert len(jo['summary']) == 2 and not any(g.get('gain_split') for g in jo['summary']) and not _notice(oo)
+    assert any(g['compare']['all_ok'] for g in jo['summary'])                                              # 片方が「使ってよい」
+    jn, on, _ = runc(D, 'n_c3g')
+    assert all(g['form_split'] and g['compare']['all_ok'] is False for g in jn['summary']) and len(_notice(on)) == 2
+
+
+@pytest.mark.parametrize('args', [('--ignore-gain',), ()])
+def test_c3_one_form_is_unchanged(tmp_path, args):
+    """1 つの形(左 4.2 で 8 本): JSON・標準出力が直す前と同じ"""
+    D = split_day(tmp_path, split=False)
+    jn, on, tn = runc(D, 'n_c3s', args=args)
+    jo, oo, to = runc(D, 'o_c3s', path=FIX / 'collect.py.orig', args=args)
+    assert tn == to and no_path(on) == no_path(oo) and 'form_split' not in tn
+
+
+def test_c3_trial_runs_do_not_split(tmp_path):
+    """4.1 の 4 本を走り終わりのメモで「試し」にした(手順書 4 章 9): 比べに入らないので形は 1 つ → 直す前と同じ"""
+    D = split_day(tmp_path, mark_trial=True)
+    jn, on, tn = runc(D, 'n_c3t', args=['--ignore-gain'])
+    jo, oo, to = runc(D, 'o_c3t', path=FIX / 'collect.py.orig', args=['--ignore-gain'])
+    assert tn == to and no_path(on) == no_path(oo) and 'form_split' not in tn
+    assert any(g.get('trial_excluded') for g in jn['summary'])
+
+
+def test_c3_skip_restores_one_form(tmp_path):
+    """--skip で 4.1 の本を外すと形は 1 つ → 直す前の同じ --skip と同じ"""
+    D = split_day(tmp_path)
+    logs = sorted(p.name for p in D.raw.iterdir())[4:]
+    args = ['--ignore-gain'] + ['--skip=%s' % x for x in logs]
+    jn, on, tn = runc(D, 'n_c3k', args=args)
+    jo, oo, to = runc(D, 'o_c3k', path=FIX / 'collect.py.orig', args=args)
+    assert tn == to and no_path(on) == no_path(oo) and 'form_split' not in tn
+
+
+def test_c3_no_launch_on_no_notice(tmp_path):
+    """発進の前進 ON の本の無い回(回 2 など。形は本ごとに違ってよい)は注意を出さない → 直す前と同じ"""
+    D = Day(tmp_path)
+    for i, left in enumerate((4.1, 4.2, 4.1, 4.2)):
+        D.add(12 + i, dict(PRM, speed_ceiling=1, ceil_left_mps=left))
+    D.add(16, dict(PRM, speed_ceiling=0))
+    jn, on, tn = runc(D, 'n_c3n', args=['--ignore-gain'])
+    jo, oo, to = runc(D, 'o_c3n', path=FIX / 'collect.py.orig', args=['--ignore-gain'])
+    assert tn == to and no_path(on) == no_path(oo) and 'form_split' not in tn
+
+
+# ================================================================== 手順書 7・8 章
+def test_runbook_chapters_7_8():
+    t = RUNBOOK.read_text(encoding='utf-8')
+    ch7 = t[t.index('## 7. 止める条件'):t.index('## 8. 休みと夜の集計')]
+    ch8 = t[t.index('## 8. 休みと夜の集計'):t.index('## 9. まだ無いもの')]
+    every = [x for x in ch7.splitlines() if x.startswith('| いつでも |')][0]
+    assert '落ちた本は 8G を記録で確かめられない前提で、後輪・舵のリンクを見る' in every
+    assert '「! 記録が欠けている(シーン …)。この本の衝突・8G 以上は記録で確かめられない' in every
+    assert '「いちばん新しい記録 X は記録が欠けています」と出して止まる' in every
+    assert '「数えない(途中で変えた)」' in ch7 and '天井・左・自動合わせ・目標の違いで N 組に分かれた' in ch7
+    assert '無いので飛ばした npz' in ch8 and '無い npz N' in ch8 and '記録が欠けている本 …' in ch8
+    assert '3 周目の終わりより前に設定を変えた発進も「数えない(途中で変えた)」' in ch8
+    assert 'checks の one_form' in ch8

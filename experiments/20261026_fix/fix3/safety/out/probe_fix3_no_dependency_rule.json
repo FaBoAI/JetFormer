@@ -1,0 +1,160 @@
+{
+ "1a_giveup_then_hold": {
+  "giveup_s": 11.85,
+  "hold_at_s": 13.35,
+  "hold_len_s": 0.2,
+  "keep0": {
+   "hold_frames": 2,
+   "model_forward_s_after_hold": 10.4,
+   "giveup_s_after_hold": 0.13,
+   "out_after_hold": [
+    [
+     1376.0,
+     312
+    ],
+    [
+     1496.0,
+     4
+    ]
+   ]
+  },
+  "keep1": {
+   "hold_frames": 2,
+   "model_forward_s_after_hold": 0.0,
+   "giveup_s_after_hold": 10.53,
+   "out_after_hold": [
+    [
+     1496.0,
+     316
+    ]
+   ]
+  }
+ },
+ "1b_hold_in_recovery": {
+  "recovery_first_s": 2.85,
+  "hold_at_s": 3.3,
+  "scene_end_s": 14.0,
+  "keep0": {
+   "recovery_s_after_hold": 0.13,
+   "recovery_starts_after_hold": 0,
+   "model_forward_s_after_hold": 10.43,
+   "giveup_first_s": null
+  },
+  "keep1": {
+   "recovery_s_after_hold": 4.8,
+   "recovery_starts_after_hold": 2,
+   "model_forward_s_after_hold": 3.67,
+   "giveup_first_s": 11.85
+  }
+ },
+ "replay_1010": {
+  "record_first_recovery_row": 177,
+  "off": 177,
+  "on": 168,
+  "off_no_noise": null,
+  "on_no_noise": 165,
+  "human_takeover_row": 190,
+  "hold_rows": [
+   141,
+   142
+  ],
+  "impact_row_note": "7.5G の 0.43 秒あとに中立止め"
+ },
+ "launch_skip_kick": {
+  "d350_nokick0": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 2.03,
+   "forward_us": [
+    80.0
+   ]
+  },
+  "d350_nokick1": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 0.0,
+   "forward_us": []
+  },
+  "d500_nokick0": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 2.03,
+   "forward_us": [
+    80.0
+   ]
+  },
+  "d500_nokick1": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 0.0,
+   "forward_us": []
+  },
+  "d900_nokick0": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 2.03,
+   "forward_us": [
+    80.0
+   ]
+  },
+  "d900_nokick1": {
+   "skip": [
+    "near"
+   ],
+   "forward_s": 0.0,
+   "forward_us": []
+  },
+  "nofloor_nokick0": {
+   "skip": [
+    "tof"
+   ],
+   "forward_s": 2.03,
+   "forward_us": [
+    80.0
+   ]
+  },
+  "nofloor_nokick1": {
+   "skip": [
+    "tof"
+   ],
+   "forward_s": 0.0,
+   "forward_us": []
+  }
+ },
+ "back_guard_combo": {
+  "guard0_keep0": {
+   "reverse_side_s_after_hit": 0.0,
+   "reverse_side_s_total": 0.27,
+   "guard_events": [],
+   "recovery_starts": 1
+  },
+  "guard1_keep0": {
+   "reverse_side_s_after_hit": 0.0,
+   "reverse_side_s_total": 0.33,
+   "guard_events": [
+    "back_early"
+   ],
+   "recovery_starts": 1
+  },
+  "guard0_keep1": {
+   "reverse_side_s_after_hit": 1.07,
+   "reverse_side_s_total": 1.37,
+   "guard_events": [],
+   "recovery_starts": 2
+  },
+  "guard1_keep1": {
+   "reverse_side_s_after_hit": 0.0,
+   "reverse_side_s_total": 0.33,
+   "guard_events": [
+    "back_early",
+    "rear_impact"
+   ],
+   "recovery_starts": 2
+  }
+ }
+}

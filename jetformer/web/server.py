@@ -977,13 +977,86 @@ def api_drive_status(token: str = Query(default='')):
     return st
 
 
-DRIVE_CLIENT_VERSION = 6        # 生存確認(token)を送る画面の版。これより古い画面(キャッシュ)からは走行を始めない
+# 走行を始められる画面の版。これより古い画面(キャッシュ)からは走行を始めない(409。止める・設定を変える・表示は断らない)。
+# 6 = 生存確認(token)を送る画面。7 = 2026-10-26 の画面の直し(発進の前進・天井・自動合わせのスイッチを走行開始で送る・トリムを
+# ブロックで 0 に戻さない・天井だけ ON で自動合わせが戻らない・速度ゲイン 0.01 刻み。fix3 state-5)。前の画面はスイッチの値を
+# 送らないので、サーバーに残った ON がそのまま使われた。版を上げたら app.js の client も同じ数に。
+# 8 = 2026-10-26 夜〜10/27 の画面の直し(fix3 直す 1 回目 r1-state3-1・3-2・rs1-2・state3-4、直す 2 回目 r2-r2-state-1・2・3)。
+# 7 のあと app.js を 2 回直したのに版を上げていなかった(反証 2 回目 r2-r2-state-3: 20:25〜23:11 に開いたままの画面も断られなかった)
+# 9 = 2026-10-27 fix5(反証 4 回目 t1・t2・t3 の画面の直し): 走行開始の body に、画面が最後に読んだ status の boot_at を入れる(下の
+# _boot_refusal。サーバーが起き直したあとの古い表示のままの走行開始を断る)
+DRIVE_CLIENT_VERSION = 9
+
+
+def _client_version(body):
+    try:
+        return int(body.get('client') or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _page_build(body):
+    """走行開始の body の build(その画面が読み込んだ app.js の更新時刻 [秒]。index が付ける ?v= の値。無い・読めない = 0)"""
+    try:
+        return int(body.get('build') or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _app_js_mtime():
+    try:
+        return int((STATIC / 'app.js').stat().st_mtime)
+    except OSError:
+        return 0
+
+
+def _hm(t):
+    return time.strftime('%m/%d %H:%M', time.localtime(t))
+
+
+def _boot_refusal(body, boot):
+    """走行開始を断る文(断らないなら None)。boot = 今のサーバーの起動の時刻(drive.Driver の boot_at。読むだけ)。
+
+    画面は、最後に読んだ status の boot_at を body の boot_at に入れて送る(app.js。版 9 から)。違う = 画面が読んだあとにサーバーが
+    起き直した(systemd は落ちると 3 秒で起こし直す)。起動のたびに既定に戻る項目(drive.RESET_ON_BOOT: 試験の選択肢・天井の左・発進の
+    前進の強さなど)は走行開始で送らずサーバーの値のままなので、確認の文(起き直す前の表示から)と違う値で走る(2026-10-27 fix5 反証
+    4 回目 t1)。無い・読めない boot_at も断る(この画面は今のサーバーの設定をまだ読んでいない。版 9 の画面は、今のサーバーの status を
+    一度読めば必ず入れる)。boot が無い(作り物の driver)ときは見ない"""
+    if boot is None:
+        return None
+    try:
+        seen = None if body.get('boot_at') is None else float(body.get('boot_at'))
+    except (TypeError, ValueError):
+        seen = None
+    if seen is not None and seen == seen and abs(seen - float(boot)) <= 5e-4:     # seen == seen: NaN でない
+        return None
+
+    def hms(t):
+        try:
+            return time.strftime('%H:%M:%S', time.localtime(float(t)))
+        except (TypeError, ValueError, OverflowError, OSError):        # NaN・大きすぎる値
+            return '?'
+    seen_text = ('この画面が読んだのは %s に起動したサーバーの設定' % hms(seen) if seen is not None
+                 else 'この画面は今のサーバーの設定をまだ読んでいません')
+    return ('管理画面のサーバーが %s に起動し直しました(%s)。起動のたびに既定に戻るもの(試験の選択肢・天井の左・発進の前進の'
+            '強さなど)が確認の文と違う値で走るので、始めません。表示が新しくなるのを待ち、止まっているときに朝の設定を入れ直して'
+            '(手順書 7 章)、スイッチと確認の文を読んでから走行を開始してください' % (hms(boot), seen_text))
 
 
 @app.post('/api/drive/start')
 def api_drive_start(body: dict = Body(...)):
-    if int(body.get('client') or 0) < DRIVE_CLIENT_VERSION:
-        raise HTTPException(409, '管理画面が古いままです。ページを再読み込み(更新)してから走行を開始してください')
+    if _client_version(body) < DRIVE_CLIENT_VERSION:
+        raise HTTPException(409, '管理画面が古いままです(画面の版 %d・走行を始められるのは版 %d から)。'
+                                 'ページを再読み込み(更新)してから走行を開始してください' % (_client_version(body), DRIVE_CLIENT_VERSION))
+    # 画面の app.js が今のファイルより古い(画面を開いたあとに app.js を直した)なら走行を始めない(2026-10-27 fix3 r2-r2-state-3。
+    # 版を上げ忘れても古い画面で走らない)。build を送らない画面(版 7 まで・試験)は版だけを見る(前と同じ)
+    if 0 < _page_build(body) < _app_js_mtime():
+        raise HTTPException(409, '管理画面が古いままです(この画面の app.js は %s、今のファイルは %s に直したもの)。'
+                                 'ページを再読み込み(更新)してから走行を開始してください' % (_hm(_page_build(body)), _hm(_app_js_mtime())))
+    # 画面が読んだあとにサーバーが起き直した(boot_at が違う)なら走行を始めない(2026-10-27 fix5 反証 4 回目 t1)
+    why = _boot_refusal(body, getattr(driver, 'boot_at', None))
+    if why:
+        raise HTTPException(409, why)
     if trainer.running:
         raise HTTPException(409, '学習中は走行できません(GPUを奪い合い、30fpsを守れないため)')
     dry = bool(body.get('dry_run'))

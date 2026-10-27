@@ -1,0 +1,139 @@
+"""diag_launch/collect.py のほかの日(--day。11/3 用、2026-10-26 fix2・係 tools)の試験。作り物の記録(tests/test_standing_3lap.py の
+write_standing_log)。実機・GPU 不要。10/23・10/24 の結果が変わらないことは tools_check(本物の記録で cmp)で見る。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- python3 -m pytest -q \
+        experiments/20261026_fix/fix2/test_tools_collect.py --basetemp=experiments/20261026_fix/fix2/tmp_tools/pt
+"""
+import json
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+JF = Path('/home/jetson/jetformer')
+sys.path.insert(0, str(JF / 'tests'))
+sys.path.insert(0, str(JF / 'experiments/20261026_fix/diag_launch'))
+import collect  # noqa: E402
+from test_standing_3lap import write_standing_log  # noqa: E402
+
+PRM = {'throttle_gain': 0.9, 'steer_gain': 1.0, 'speed_ceiling': 1, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0,
+       'auto_target_mps': 4.27, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2, 'zone_caps': 0, 'start_kick': 1}
+
+
+def add_empty_launch_fields(d):
+    """発進の前進のあるコードの OFF の記録(launch_on は全部 False・launch_end は 0)"""
+    for p in sorted(d.glob('*/AI_CMD.npz')):
+        with np.load(p) as z:
+            a = {k: z[k] for k in z.files}
+        n = len(a['timestamps_us'])
+        a.update(launch_on=np.zeros(n, bool), launch_end=np.zeros(n, np.int8))
+        np.savez(p, **a)
+
+
+@pytest.fixture()
+def day(tmp_path, monkeypatch):
+    raw = tmp_path / 'raw'
+    raw.mkdir()
+    bench = tmp_path / 'bench.json'
+    bench.write_text(json.dumps({'candidates': [{'id': 'B', 'run': 'runB'}],
+                                 'days': [{'date': '2026-11-03', 'blocks': [{'block': 12, 'run_id': '3-1'},
+                                                                            {'block': 13, 'run_id': '3-2'},
+                                                                            {'block': 15, 'run_id': '3-4'}]}]}),
+                     encoding='utf-8')
+    desc = 'ai_no=%d bench=real_bench_20261023 day=2026-11-03 block=%d cand=EXP model=runB memo=x'
+    # 3-1 OFF: 1.5 秒に動き始めて 4.0 秒に R1(起点まで 3.0 秒)。10 秒(最初の周の中)に 3G
+    d_off, _, _ = write_standing_log(raw, '20261103-120000', params=dict(PRM, launch_boost=0), run='runB', ramp_s=0.5,
+                                     description=desc % (12, 12), hits=[(10.0, 3.0)])
+    add_empty_launch_fields(d_off)
+    # 3-2 ON(出た): 1.2 秒に動き始めて 3.7 秒に R1(起点まで 2.7 秒)。発進の前進 0.5 秒・速さに届いた
+    write_standing_log(raw, '20261103-120500', params=dict(PRM, launch_boost=1), run='runB', ramp_s=0.5, t_move=1.2,
+                       first_anchor=3.7, launch=(1.0, 0.5, 1), description=desc % (13, 13))
+    # 3-4 ON なのに出なかった(最初から AI 側など)
+    d_ns, _, _ = write_standing_log(raw, '20261103-121000', params=dict(PRM, launch_boost=1), run='runB', ramp_s=0.5,
+                                    description=desc % (15, 15))
+    add_empty_launch_fields(d_ns)
+    (d_ns / 'events.jsonl').write_text(json.dumps({'kind': 'launch_boost', 'event': 'skip', 'why': 'no_switch',
+                                                   'reason': 'AI 側にしたのを見ていない(走行の始めから AI 側)',
+                                                   'cam_t_us': 1_800_000_001_000_000}) + '\n', encoding='utf-8')
+    # 0 バイトの log.json・dry run・人の収集・ほかの日 → 読まない
+    for name, meta in (('20261103-121500', None), ('20261103-122000', {'drive': {'run': 'runB', 'dry_run': True}}),
+                       ('20261103-122500', {'description': '収集'}), ('20261104-090000', {'drive': {'run': 'runB'}})):
+        (raw / name).mkdir()
+        (raw / name / 'log.json').write_text('' if meta is None else json.dumps(meta), encoding='utf-8')
+    monkeypatch.setattr(collect, 'RAW', raw)
+    monkeypatch.setattr(collect, 'LAB', tmp_path / 'no_labels')
+    monkeypatch.setattr(collect, 'BENCH', bench)
+    monkeypatch.setattr(collect, 'OUT', tmp_path / 'out')
+    return raw, tmp_path
+
+
+def test_logs_of_a_new_day(day):
+    assert collect.logs(('20261103',)) == ['20261103-120000', '20261103-120500', '20261103-121000']
+
+
+def test_collect_reads_launch_fields_and_compares(day, capsys):
+    raw, tmp = day
+    collect.main(['--day', '2026-11-03'])
+    out = tmp / 'out' / 'launches_20261103.json'          # 既定の名前(10/23・10/24 の launches.json を上書きしない)
+    assert out.exists() and not (tmp / 'out' / 'launches.json').exists()
+    j = json.loads(out.read_text(encoding='utf-8'))
+    assert j['days'] == ['20261103']
+    R = {r['log']: r for r in j['launches'] if r.get('to_r1_s') is not None}
+    assert set(R) == {'20261103-120000', '20261103-120500', '20261103-121000'}
+    off, on, ns = R['20261103-120000'], R['20261103-120500'], R['20261103-121000']
+    assert [x['session'] for x in (off, on, ns)] == ['11/03 回3'] * 3 and off['model'] == 'B'
+    assert off['labels_src'] == 'computed'
+    # 発進の前進の欄
+    assert off['launch_state'] == 'off' and off['launch_recorded'] and off['launch_on_frames'] == 0
+    assert on['launch_state'] == 'on' and on['launch_frames'] == 15 and on['launch_on_frames'] == 15
+    assert on['launch_on_s'] == pytest.approx(0.5, abs=0.04)
+    assert on['launch_end_code'] == 1 and on['launch_end_reason'] == '速さに届いた'
+    assert on['launch_end_s'] == pytest.approx(0.5, abs=0.04)
+    assert on['launch_events'] == [[pytest.approx(1.0, abs=0.01), 'start', '']]
+    assert ns['launch_state'] == 'on_not_started' and ns['launch_events'][0][1] == 'skip'
+    assert on['settings']['speed_ceiling'] == 1 and on['settings']['ceil_left_mps'] == 4.1
+    # 起点まで・最初の周の衝突(OFF の 10 秒に 3G。場所つき)
+    assert off['to_r1_s'] == pytest.approx(3.0, abs=0.05) and on['to_r1_s'] == pytest.approx(2.7, abs=0.05)
+    # 最初の周の終わり = 1 周目の線(A2 13.0 秒から d_pre 4.5 m 戻った所。2026-10-26 fix3 tools:F9。前は A2 の 13.0 秒)
+    assert off['first_lap_full'] and off['first_lap_a2_s'] == pytest.approx(13.0, abs=0.06)
+    assert off['first_lap_end'] == 'line' and off['first_lap_end_s'] == pytest.approx(10.75, abs=0.06)
+    assert len(off['collisions_first_lap']) == 1 and off['collisions_first_lap'][0][1] == pytest.approx(3.0, abs=0.3)
+    assert isinstance(off['collisions_first_lap'][0][2], str)
+    assert on['collisions_first_lap'] == []
+    assert (on.get('slip') or {}).get('ratio') == pytest.approx(1.0, abs=0.1)
+    # まとめ: ON − OFF
+    S = j['summary']
+    assert len(S) == 1 and S[0]['session'] == '11/03 回3' and S[0]['model'] == 'B' and S[0]['speed_ceiling'] == 1 and S[0]['ceil_left_mps'] == 4.1
+    b = S[0]['by_launch']
+    assert set(b) == {'off', 'on', 'on_not_started'} and b['on']['n'] == 1 and b['off']['collisions_first_lap'] == 1
+    c = S[0]['compare']
+    assert c['d_to_r1_s'] == pytest.approx(-0.3, abs=0.06)
+    assert c['checks']['to_r1'] and c['checks']['first_lap_collisions_0'] and c['checks']['slip']
+    txt = capsys.readouterr().out
+    assert '発進の前進の比べ' in txt and 'ON − OFF' in txt
+
+
+def test_out_option_and_default_days_unchanged_path(day, monkeypatch):
+    raw, tmp = day
+    seen = {}
+    monkeypatch.setattr(collect, 'logs', lambda days=collect.DEFAULT_DAYS: seen.setdefault('days', days) and [])
+    collect.main([])
+    assert seen['days'] == collect.DEFAULT_DAYS                  # 引数なし = 10/23・10/24(今までと同じ)
+    assert (tmp / 'out' / 'launches.json').exists()
+    seen.clear()
+    collect.main(['--day', '20261024,20261023'])                 # 同じ 2 日なら今までと同じ読み方
+    assert seen['days'] == collect.DEFAULT_DAYS
+    seen.clear()
+    collect.main(['--day', '20261103', '--out', str(tmp / 'x.json')])
+    assert seen['days'] == ('20261103',) and (tmp / 'x.json').exists()
+
+
+def test_first_only_option_and_start_no(day):
+    """2026-10-26 fix2 R2-rec-3: 行に start_no・hits_before。--first-only でまとめは 1 回目の発進だけ"""
+    raw, tmp = day
+    collect.main(['--day', '2026-11-03', '--first-only', '--out', str(tmp / 'f.json')])
+    j = json.loads((tmp / 'f.json').read_text(encoding='utf-8'))
+    assert j['summary_first_only'] is True
+    assert all(r['start_no'] == 1 and r['hits_before'] == 0 for r in j['launches'])
+    assert all(b.get('restarts') == 0 for g in j['summary'] for b in g['by_launch'].values())

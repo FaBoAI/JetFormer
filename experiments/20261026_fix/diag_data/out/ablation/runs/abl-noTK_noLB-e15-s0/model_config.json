@@ -1,0 +1,134 @@
+{
+ "num_modes": 10,
+ "modes": [
+  {
+   "id": 0,
+   "name": "未設定",
+   "description": "ジャンル未設定(学習には使わない)"
+  },
+  {
+   "id": 1,
+   "name": "駐車(1)",
+   "description": ""
+  },
+  {
+   "id": 2,
+   "name": "駐車(2)",
+   "description": ""
+  },
+  {
+   "id": 3,
+   "name": "駐車(3)",
+   "description": ""
+  },
+  {
+   "id": 4,
+   "name": "高速走行",
+   "description": ""
+  },
+  {
+   "id": 5,
+   "name": "低速走行",
+   "description": ""
+  },
+  {
+   "id": 6,
+   "name": "低速走行・良",
+   "description": "オフライン強化学習(アドバンテージ条件付き)用: 低速走行のうち「良い」の印のフレーム。収集には使わない"
+  },
+  {
+   "id": 7,
+   "name": "高速走行・良",
+   "description": "オフライン強化学習(アドバンテージ条件付き)用: 高速走行のうち「良い」の印のフレーム。収集には使わない"
+  },
+  {
+   "id": 8,
+   "name": "シミュレーター",
+   "description": ""
+  },
+  {
+   "id": 9,
+   "name": "AI・きれいな速い周",
+   "description": "ゲインを焼き込んだ B のきれいな速い周(10/23・10/24 2 回目、9.5 秒未満)。学習用。収集には使わない。速さの手段ではない"
+  }
+ ],
+ "future_steps": 10,
+ "inputs": [
+  "image",
+  "tof",
+  "imu",
+  "state",
+  "mode"
+ ],
+ "tof_channels": 2,
+ "pwm_center": 1500.0,
+ "pwm_scale": 500.0,
+ "tof_max_mm": 4000.0,
+ "erpm_scale": 20000.0,
+ "dataset": "dataset_v2_20261025",
+ "stride": 3,
+ "trained_modes": [
+  4,
+  5
+ ],
+ "train_mode_counts": {
+  "4": 2228,
+  "5": 3877
+ },
+ "steer_center_us": 1433.0,
+ "throttle_neutral_us": 1500.0,
+ "command_input": false,
+ "mask_impacts": true,
+ "policy": "jetformer_v0",
+ "policy_cfg": {
+  "dim": 256,
+  "layers": 4,
+  "heads": 8
+ },
+ "contract": 1,
+ "input_shapes": {
+  "image": [
+   1,
+   3,
+   224,
+   224
+  ],
+  "tof": [
+   1,
+   2,
+   42,
+   54
+  ],
+  "imu": [
+   1,
+   10,
+   6
+  ],
+  "state": [
+   1,
+   3
+  ],
+  "mode": [
+   1,
+   10
+  ]
+ },
+ "outputs": [
+  "actions"
+ ],
+ "output_shapes": {
+  "actions": [
+   1,
+   10,
+   2
+  ]
+ },
+ "engine": {
+  "precision": "fp16",
+  "workspace_gb": 1.0
+ },
+ "params_m": {
+  "total": 14.1,
+  "trainable": 14.1
+ }
+}

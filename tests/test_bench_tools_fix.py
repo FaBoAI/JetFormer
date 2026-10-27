@@ -285,19 +285,28 @@ def test_brake_fit_is_provisional_with_few_strong_events():
     assert f2['n_ge150us'] == 5 and not f2.get('provisional')
 
 
+def _no_records(*days):
+    """記録の無い日(本物の data/raw/<日>-* があると bench_nightly が最後まで回ってしまう: 重く、試験のねらいからも外れる)"""
+    for d in days:
+        assert not list(RAW.glob(d + '-*')), '%s の記録がある(試験は記録の無い日で行う)' % d
+
+
 def test_nightly_takes_day1_from_bench(tmp_path):
+    """--day1 を忘れても bench_candidates.json の days から 1 日目を決める(V-tools 4 章 11: 2 日目の初めてのブロックの K を誤らない)。
+    記録の無い日(2000 年)で試す(2026-10-26 fix2: 10/23・10/24 は本物の記録ができて、ここで止まらずに落ちていた)"""
     import subprocess
+    _no_records('20001023', '20001024', '20001001', '20001002')
     b = tmp_path / 'bench.json'
-    b.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2026-10-23', 'blocks': []}, {'date': '2026-10-24', 'blocks': []}]}))
-    r = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20261024', '--bench', str(b), '--out', str(tmp_path / 'n'),
+    b.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2000-10-23', 'blocks': []}, {'date': '2000-10-24', 'blocks': []}]}))
+    r = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20001024', '--bench', str(b), '--out', str(tmp_path / 'n'),
                         '--report', str(tmp_path / 'r')], capture_output=True, text=True, timeout=120)
     head = (tmp_path / 'n' / 'nightly.log').read_text(encoding='utf-8').splitlines()[0]
-    assert '1 日目 20261023、bench_candidates.json の days から' in head      # --day1 を忘れても K を誤らない
-    assert r.returncode == 1 and 'data/raw/20261024-* がありません' in r.stdout   # 記録が無いのでここで止まる
-    # 1 日目そのもの: 記録の無い日(10/01)で確かめる(10/23 は本物の記録ができたので、ここで止まらない)
+    assert '1 日目 20001023、bench_candidates.json の days から' in head      # --day1 を忘れても K を誤らない
+    assert r.returncode == 1 and 'data/raw/20001024-* がありません' in r.stdout   # 記録が無いのでここで止まる
+    # 1 日目そのもの(days[0])は「1 日目 なし」
     b1 = tmp_path / 'bench1.json'
-    b1.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2026-10-01', 'blocks': []}, {'date': '2026-10-02', 'blocks': []}]}))
-    r1 = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20261001', '--bench', str(b1), '--out', str(tmp_path / 'n1'),
+    b1.write_text(json.dumps({'bench': 'x', 'days': [{'date': '2000-10-01', 'blocks': []}, {'date': '2000-10-02', 'blocks': []}]}))
+    r1 = subprocess.run(['bash', str(ROOT / 'tools' / 'bench_nightly.sh'), '20001001', '--bench', str(b1), '--out', str(tmp_path / 'n1'),
                          '--report', str(tmp_path / 'r1')], capture_output=True, text=True, timeout=120)
     assert r1.returncode == 1 and '1 日目 なし' in (tmp_path / 'n1' / 'nightly.log').read_text(encoding='utf-8').splitlines()[0]
 

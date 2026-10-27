@@ -1,0 +1,310 @@
+{
+ "est_off_drive": {
+  "failed": 19,
+  "passed": 160,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[brake]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.35]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.45]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.4]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.5]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.6]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[brake]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-200.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[brake]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[rev]"
+  ],
+  "tail": [
+   "19 failed, 160 passed in 126.27s (0:02:06)"
+  ],
+  "what": "s3-a を drive で戻す(見積もりを渡さない = fix5 の形。指摘が戻る)"
+ },
+ "est_off_assist": {
+  "failed": 54,
+  "passed": 125,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[brake]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.35]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.45]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.4]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.5]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.6]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[brake]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-200.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[brake]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[rev]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.05-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.05-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.05-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.15-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.15-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.05-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.05-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.05-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.15-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.15-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.05-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.05-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.05-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.15-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.15-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.05-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.05-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.05-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.15-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.15-0.6]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.6]"
+  ],
+  "tail": [
+   "54 failed, 125 passed in 143.62s (0:02:23)"
+  ],
+  "what": "s3-a を assist で戻す(見積もりを下がった時間に足さない)"
+ },
+ "gap_full_count": {
+  "failed": 48,
+  "passed": 131,
+  "failed_tests": [
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.05-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.2-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.2-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.3-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.3-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.3-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.05-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.2-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.2-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.3-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.3-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.3-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.05-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.2-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.2-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.3-0.2]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.3-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[brake]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.35]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.45]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.4]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.5]",
+   "tests/test_rec_fix6_safety.py::test_finding_rear_object_not_hit[1.6]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[brake]",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-200.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-200.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.4-400.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.6-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[brake]",
+   "tests/test_rec_fix6_safety.py::test_same_window_no_escape_into_front_wall[rev]"
+  ],
+  "tail": [
+   "48 failed, 131 passed in 91.77s (0:01:31)"
+  ],
+  "what": "値が来なかった間をいつも全部数える(fix3 r2 の数え方に近い。前の壁へ escape)"
+ },
+ "double_count": {
+  "failed": 2,
+  "passed": 179,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_backing_not_cut_short_after_stale_frames[brake-cells1]",
+   "tests/test_rec_fix6_safety.py::test_backing_not_cut_short_after_stale_frames[rev-cells0]"
+  ],
+  "tail": [
+   "2 failed, 179 passed in 220.32s (0:03:40)"
+  ],
+  "what": "古い値で Recovery が数えたフレームの分を除かない(二重に数える)"
+ },
+ "fast_off": {
+  "failed": 5,
+  "passed": 174,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_before_copy_defaults_and_changed_parts",
+   "tests/test_rec_fix6_safety.py::test_coast_hold_not_more_than_keep0[rev]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_mid_reverse_fast_backing_not_more_than_keep0[0.2-0.45]",
+   "tests/test_rec_fix6_safety.py::test_mid_reverse_fast_backing_not_more_than_keep0[0.2-0.55]"
+  ],
+  "tail": [
+   "5 failed, 174 passed in 222.82s (0:03:42)"
+  ],
+  "what": "速く下がっていても見積もりだけ数える(惰性の分を数えない。後ろへ多く)"
+ },
+ "track_no_ready": {
+  "failed": 16,
+  "passed": 163,
+  "failed_tests": [
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.25-0.2-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.35-0.2-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.05-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.05-0.4]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.2-0.3]",
+   "tests/test_rec_fix5_safety.py::test_s3_loop_vehicle_gap_no_escape_into_wall[0.45-0.2-0.4]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_brake_neutral_reverse",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[6]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[7]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_forward_then_reverse_side_is_brake"
+  ],
+  "tail": [
+   "16 failed, 163 passed in 230.90s (0:03:50)"
+  ],
+  "what": "EscTrack が「下がれる」を見ない(前進のあとのブレーキも後退として数える)"
+ },
+ "track_delay_long": {
+  "failed": 11,
+  "passed": 168,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_esctrack_brake_neutral_reverse",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[0]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[1]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[2]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[3]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[4]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[5]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[6]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_covers_fake_esc_reverse[7]",
+   "tests/test_rec_fix6_safety.py::test_esctrack_unknown_is_ready_and_window",
+   "tests/test_rec_fix6_safety.py::test_finding_window_not_more_back_no_front_push[brake]"
+  ],
+  "tail": [
+   "11 failed, 168 passed in 215.13s (0:03:35)"
+  ],
+  "what": "EscTrack の下がり始めを遅くする(少なく数える側)"
+ },
+ "cap_off": {
+  "failed": 27,
+  "passed": 152,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-brake]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.3-300.0-rev]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.05-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.15-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[brake-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.05-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.15-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[gap-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.05-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.15-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[reverse-0.3-0.4]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.05-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.15-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.15-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.2]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_estimate_counts_up_to_min_left[wait-0.3-0.4]"
+  ],
+  "tail": [
+   "27 failed, 152 passed in 204.69s (0:03:24)"
+  ],
+  "what": "見積もりで後退を 0.2 秒残す決まりをやめる(短い rev_s で前の壁へ)"
+ },
+ "coast_shift_back": {
+  "failed": 6,
+  "passed": 175,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_coast_hold_not_more_than_keep0[brake]",
+   "tests/test_rec_fix6_safety.py::test_coast_hold_not_more_than_keep0[rev]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[brake]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_unit_coast_hold_is_coast_time[0.3]",
+   "tests/test_rec_fix6_safety.py::test_unit_coast_hold_is_coast_time[0.45]"
+  ],
+  "tail": [
+   "6 failed, 175 passed in 212.30s (0:03:32)"
+  ],
+  "what": "s3-b を一部戻す('coast' の途中の中立止めで段の時間をずらす)"
+ },
+ "coast_from_now": {
+  "failed": 5,
+  "passed": 176,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_coast_hold_not_more_than_keep0[rev]",
+   "tests/test_rec_fix6_safety.py::test_default_grid_no_front_push_and_bounded[rev]",
+   "tests/test_rec_fix6_safety.py::test_unit_reverse_done_in_hold_coasts_from_hold_start[0.3-0.12]",
+   "tests/test_rec_fix6_safety.py::test_unit_reverse_done_in_hold_coasts_from_hold_start[0.38-0.05]",
+   "tests/test_rec_fix6_safety.py::test_unit_reverse_done_in_hold_coasts_from_hold_start[0.39-0.3]"
+  ],
+  "tail": [
+   "5 failed, 176 passed in 218.30s (0:03:38)"
+  ],
+  "what": "s3-b を一部戻す(中立止めのあいだに後退を出し終えても、惰性を明けてから始める)"
+ },
+ "off_break_guard": {
+  "failed": 5,
+  "passed": 176,
+  "failed_tests": [
+   "tests/test_rec_fix6_safety.py::test_off_bit_identical[guard0-params1-brake_cam_long]",
+   "tests/test_rec_fix6_safety.py::test_off_bit_identical[guard0-params1-brake_veh]",
+   "tests/test_rec_fix6_safety.py::test_off_bit_identical[guard0-params1-rev_cam]",
+   "tests/test_rec_fix6_safety.py::test_off_bit_identical[guard0-params1-rev_veh_late]",
+   "tests/test_rec_fix6_safety.py::test_off_bit_identical[guard0-params1-rev_veh_on]"
+  ],
+  "tail": [
+   "5 failed, 176 passed in 227.69s (0:03:47)"
+  ],
+  "what": "OFF を壊す(見張りが OFF でも中立止めでリカバリーを残す)= 直す前の写しとの比べが落ちるか"
+ }
+}

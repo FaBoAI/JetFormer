@@ -1,0 +1,171 @@
+"""画面とサーバーの直す 1 回目・2 組目(2026-10-26 fix3。反証 1 回目の指摘 r1-state3-4 の画面の側)の試験。
+
+  r1-state3-4: 昼に jetformer-web(か Jetson)が起動し直すと、RESET_ON_BOOT で朝に入れた試験の選択肢(後ろの見張り・中立止めの
+    あとも残す・発進の前進を出さない区間は補助も出さない)が 0 に、天井の左の値が 4.1 に、launch_us が 250 に戻る。画面のスイッチは
+    同期で黙って OFF になり、確認の文から行が消えるだけで、知らせが無かった。
+  直し(表示だけ): drive.py の status に boot_at(Driver を作った時刻)。画面(app.js)は、この画面で前に見た boot_at から変わったら
+    トーストと、走行タブの文(#dr-message)に「管理画面のサーバーが HH:MM に起動し直しました。起動のたびに既定に戻るもの…」を出す。
+    送る値・スイッチは変えない。boot_at の無いサーバー(07:41 の古い版)では何もしない。手順書 4 章 6・7 章も直した。
+
+本物の app.js をまるごと node の vm で読み込む(tests/fixtures/app_sim_fix3_r1_2.js。app_sim_fix3_r1.js の写しに boot_at と
+['reboot'] を足したもの)。直す前の写しは tests/fixtures/fix3_r1_2_before/(sha256 を照らす)。サーバー・車・ブラウザは使わない。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \\
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_ui_fix3_r1_2.py
+"""
+import hashlib
+import json
+import shutil
+import subprocess
+import time
+from pathlib import Path
+
+import pytest
+
+from jetformer import drive
+from jetformer.web import bench
+
+from test_ui_fix3 import _flows
+
+ROOT = Path(__file__).resolve().parents[1]
+STATIC = ROOT / 'jetformer' / 'web' / 'static'
+BEFORE = ROOT / 'tests' / 'fixtures' / 'fix3_r1_2_before'
+SIM = ROOT / 'tests' / 'fixtures' / 'app_sim_fix3_r1_2.js'
+NODE = shutil.which('node')
+needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
+BOOT1, BOOT2 = 1793667600.0, 1793674800.0                       # 2026-11-03 10:00・12:00(JST)
+RESET = {k: drive.DEFAULT_PARAMS[k] for k in drive.RESET_ON_BOOT}
+MORNING = {'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 1, 'ceil_left_mps': 4.2, 'launch_us': 200.0}
+
+
+def test_before_copies():
+    sums = dict(reversed(x.split()) for x in (BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    for name, h in sums.items():
+        assert hashlib.sha256((BEFORE / name).read_bytes()).hexdigest() == h, name
+
+
+@pytest.fixture(scope='module')
+def cands():
+    c = bench.load_candidates()
+    days = [i for i, d in enumerate(c.get('days') or []) if d.get('date') == '2026-11-03' and d.get('blocks')]
+    if not days:
+        pytest.skip('data/bench_candidates.json に 2026-11-03 のブロックがありません')
+    return dict(c, today='2026-11-03'), days[0]
+
+
+def blk(c, di, no):
+    return next(i for i, b in enumerate(c['days'][di]['blocks']) if int(b['block']) == no)
+
+
+def server_params(**over):
+    sp = dict(drive.DEFAULT_PARAMS, steer_gain=1.0, throttle_gain=1.0, lookahead=3, start_kick=1)
+    sp.update(over)
+    return sp
+
+
+def run_sim(tmp_path, c, steps, server=None, old=False, name='input.json', **extra):
+    app = BEFORE / 'app.js.orig' if old else STATIC / 'app.js'
+    inp = tmp_path / name
+    d = {'bench': c, 'server_params': server if server is not None else server_params(), 'steps': steps,
+         'server_client_version': 7, 'confirm': True}
+    d.update(extra)
+    inp.write_text(json.dumps(d, ensure_ascii=False, default=str), encoding='utf-8')
+    r = subprocess.run([NODE, str(SIM), str(app), str(STATIC / 'index.html'), str(inp)], capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stderr[-3000:]
+    out = json.loads(r.stdout.strip().splitlines()[-1])
+    return out['steps'], out['toasts']
+
+
+def els(res):
+    return [x['value'] for x in res if x['op'] == 'el']
+
+
+def starts(res):
+    return [x for x in res if x['op'] == 'start']
+
+
+def boot_toasts(toasts):
+    return [t for t in toasts if '起動し直しました' in t]
+
+
+# ------------------------------------------------------------------ サーバー(drive.py)
+class _Rec(object):
+    recording = False
+
+
+def test_status_has_boot_at_and_nothing_else_changes(monkeypatch, tmp_path):
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    t0 = time.time()
+    d = drive.Driver(hub=None, recorder=_Rec())
+    st = d.status()
+    assert t0 - 0.01 <= st['boot_at'] <= time.time() + 0.01 and 'boot_at' not in st['params']
+    assert d.status()['boot_at'] == st['boot_at']                              # 同じ起動のあいだは変わらない
+    d.set_params(dict(MORNING))
+    assert not (tmp_path / 'drive_settings.json').exists() or 'boot_at' not in (tmp_path / 'drive_settings.json').read_text()
+    time.sleep(0.01)
+    d2 = drive.Driver(hub=None, recorder=_Rec())                               # 起動し直し = Driver を作り直す
+    st2 = d2.status()
+    assert st2['boot_at'] > st['boot_at']
+    assert {k: st2['params'][k] for k in MORNING} == {k: drive.DEFAULT_PARAMS[k] for k in MORNING}     # RESET_ON_BOOT(前から)
+
+
+def test_drive_py_differs_from_before_only_by_boot_at():
+    """drive.py の違いは boot_at の行だけ(走行・params には使わない)。2026-10-27 fix3 直す 2 回目・1 組目が drive.py を直したので、
+    この組の直しのあとの写し(tests/fixtures/fix3_r2_1_before/drive.py = 直す 2 回目の前)と比べる"""
+    a = (BEFORE / 'drive.py.orig').read_text(encoding='utf-8').splitlines()
+    b = (ROOT / 'tests' / 'fixtures' / 'fix3_r2_1_before' / 'drive.py').read_text(encoding='utf-8').splitlines()
+    added = [x for x in b if x not in a]
+    assert [x for x in b if x not in added] == a
+    assert len(added) == 4 and all('boot_at' in x or 'r1-state3-4' in x for x in added), added
+
+
+# ------------------------------------------------------------------ 画面(app.js)
+@needs_node
+def test_reboot_shows_note_and_toast_once(tmp_path, cands):
+    c, di = cands
+    steps = [['poll'], ['el', '#dr-message', 'html'],
+             ['reboot', BOOT2, RESET], ['poll'], ['el', '#dr-message', 'html'],
+             ['poll'], ['el', '#dr-message', 'html'],
+             ['el', '#dr-rec-back-guard', 'checked']]
+    res, toasts = run_sim(tmp_path, c, steps, server=server_params(**MORNING), boot_at=BOOT1)
+    h0, h1, h2, guard = els(res)
+    assert '起動し直しました' not in h0
+    assert '管理画面のサーバーが 12:00 に起動し直しました。起動のたびに既定に戻るもの: ' in h1
+    assert ('リカバリーの後ろの見張り・中立止めのあともリカバリーを残す・発進の前進を出さない区間は発進の補助も出さないは OFF、'
+            '天井の左旋回中 4.1 m/s、発進の前進の強さ 250 µs など') in h1
+    assert '手順書 7 章' in h1 and h2 == h1                                    # 読み直すまで残る
+    assert len(boot_toasts(toasts)) == 1 and '12:00' in boot_toasts(toasts)[0]
+    assert guard is False                                                       # スイッチはサーバーの値(前と同じ)
+
+
+@needs_node
+@pytest.mark.parametrize('boot', [None, BOOT1])
+def test_no_note_without_reboot_or_without_boot_at(tmp_path, cands, boot):
+    """boot_at の無いサーバー(07:41 の古い版)・起動し直していない: 知らせは出ず、文は直す前の写しと同じ"""
+    c, di = cands
+    steps = [['poll'], ['el', '#dr-message', 'html'], ['server_set', RESET], ['poll'], ['el', '#dr-message', 'html']]
+    kw = {} if boot is None else {'boot_at': boot}
+    new, tn = run_sim(tmp_path, c, steps, server=server_params(**MORNING), name='n.json', **kw)
+    old, to = run_sim(tmp_path, c, steps, server=server_params(**MORNING), old=True, name='o.json', **kw)
+    assert els(new) == els(old) and not boot_toasts(tn) and tn == to
+
+
+@needs_node
+def test_reboot_does_not_change_sent_values(tmp_path, cands):
+    """起動し直しの前後で、走行開始で送る params・確認の文・送った POST は直す前の写しと同じ(知らせは表示だけ)"""
+    c, di = cands
+    flows = dict(_flows(c, di))
+    flows['朝の設定 → 走行 → 起動し直し → 走行'] = (
+        [['pick', di, blk(c, di, 20)], ['start'], ['running', False], ['poll'], ['reboot', BOOT2, RESET], ['poll'],
+         ['pick', di, blk(c, di, 21)], ['start']], MORNING)
+    for i, (name, (steps, srv)) in enumerate(flows.items()):
+        st = [['poll']] + steps + [['reboot', BOOT2, RESET], ['poll'], ['start'], ['posts']]
+        new, tn = run_sim(tmp_path, c, st, server=server_params(**srv), name='n%d.json' % i, boot_at=BOOT1)
+        old, to = run_sim(tmp_path, c, st, server=server_params(**srv), old=True, name='o%d.json' % i, boot_at=BOOT1)
+        sn, so = starts(new), starts(old)
+        assert len(sn) == len(so) > 0, name
+        for a, b in zip(sn, so):
+            assert a['sent'] == b['sent'] and a['confirm'] == b['confirm'] and (a['client'], b['client']) == (9, 7), name   # fix5 で版 9
+        from test_ui_fix3_r1 import posts_no_ver                    # 走行開始の版 client・build のほか(2026-10-27 r2-r2-state-3)
+        assert posts_no_ver(new) == posts_no_ver(old), name
+        assert [t for t in tn if t not in boot_toasts(tn)] == to and len(boot_toasts(tn)) >= 1, name

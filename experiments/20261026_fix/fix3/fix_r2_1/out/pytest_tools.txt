@@ -1,0 +1,8 @@
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r1_2.py: 23 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r1_2_before/collect.py.orig:374: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+139 passed, 275 warnings in 51.38s

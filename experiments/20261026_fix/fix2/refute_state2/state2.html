@@ -1,0 +1,123 @@
+<!doctype html><html><head><meta charset="utf-8"><title>state2</title></head><body>
+<div style="display:none"><b id="dr-steer-gain-v">1.00</b><input type="range" id="dr-steer-gain" min="0" max="2" step="0.05" value="1">
+<b id="dr-throttle-gain-v">1.00</b><input type="range" id="dr-throttle-gain" min="0" max="2" step="0.05" value="1">
+<b id="dr-trim-v">0 µs</b><input type="range" id="dr-trim" min="-200" max="200" step="5" value="0">
+<b id="dr-look-v">1</b><input type="range" id="dr-look" min="1" max="10" step="1" value="1">
+<b id="dr-osc-v">0.0 %</b><input type="range" id="dr-osc" min="-10" max="10" step="0.1" value="0">
+<b id="dr-rev-us-v">中立+300 µs</b><input type="range" id="dr-rev-us" min="150" max="500" step="10" value="300">
+<b id="dr-rev-s-v">0.40 秒</b><input type="range" id="dr-rev-s" min="0.2" max="1.2" step="0.05" value="0.4">
+<b id="dr-speed-cap-v">上限なし</b><input type="range" id="dr-speed-cap" min="0" max="5" step="0.05" value="0">
+<b id="dr-speed-scale-v">1.00</b><input type="range" id="dr-speed-scale" min="0.5" max="1.5" step="0.05" value="1">
+<b id="dr-ens-j-v">オフ</b><input type="range" id="dr-ens-j" min="0" max="3" step="1" value="0">
+<b id="dr-ens-m-v">0.5</b><input type="range" id="dr-ens-m" min="0" max="2" step="0.1" value="0.5">
+<input type="checkbox" id="dr-esc-reverse">
+<input type="checkbox" id="dr-recovery">
+<input type="checkbox" id="dr-start-kick">
+<select id="dr-tof-guard">
+              <option value="0">OFF</option>
+              <option value="1" selected>記録だけ(動きは変えない。まずこれで警報のタイミングを確認)</option>
+              <option value="2">減速(衝突まで0.5秒未満で前進を弱め、0.3秒未満でブレーキ)</option>
+              <option value="3">減速+ハンドル(近い側から離す)</option>
+            </select>
+<select id="dr-tcp-mode">
+              <option value="0" selected>操作の枝だけ(既定・比較で評価した出力)</option>
+              <option value="1">ハイブリッド(ステア = 操作の枝、スロットル = 目標速度 → 制御器)</option>
+              <option value="2">混ぜる(試験的)</option>
+              <option value="3">通過点を追う(試験的)</option>
+            </select>
+<input type="checkbox" id="dr-zone-caps" autocomplete="off">
+<input type="checkbox" id="dr-speed-ceiling" autocomplete="off">
+<input type="checkbox" id="dr-speed-auto" autocomplete="off">
+<input type="checkbox" id="dr-launch-boost" autocomplete="off"></div><pre id="out" style="font-size:14px"></pre>
+<script>
+const $ = (s) => document.querySelector(s);
+const state = {drive: {pending: {}, st: null}};
+const drBusy = {};
+function renderSpeedSwitches() {} function renderLaunchSwitch() {}
+const DR_PARAMS = [
+  ['#dr-steer-gain', 'steer_gain', (v) => (+v).toFixed(2)],
+  ['#dr-throttle-gain', 'throttle_gain', (v) => (+v).toFixed(2)],
+  ['#dr-trim', 'steer_trim_us', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(0)} µs`],
+  ['#dr-look', 'lookahead', (v) => `${v}(約${Math.round(v * 33)}ms先)`],
+  ['#dr-osc', 'osc_percent', (v) => `${v > 0 ? '+' : ''}${(+v).toFixed(1)} %`],
+  ['#dr-rev-us', 'rev_us', (v) => `中立+${(+v).toFixed(0)} µs`],
+  ['#dr-rev-s', 'rev_s', (v) => `${(+v).toFixed(2)} 秒`],
+  // TCP の制御器(tcp だけ)・予測の重ね合わせ(どのモデルにも)
+  ['#dr-speed-cap', 'speed_cap', (v) => (+v > 0 ? `${(+v).toFixed(2)} m/s(約 ${Math.round(+v / 0.5e-3)} eRPM)` : '上限なし')],
+  ['#dr-speed-scale', 'speed_scale', (v) => (+v).toFixed(2)],
+  ['#dr-ens-j', 'ensemble_j', (v) => (+v > 0 ? `${v} フレーム前まで` : 'オフ')],
+  ['#dr-ens-m', 'ensemble_m', (v) => (+v).toFixed(1)],
+];
+const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery'], ['#dr-start-kick', 'start_kick']];
+function readDriveParams() {
+  const p = {};
+  for (const [sel, key] of DR_PARAMS) p[key] = +$(sel).value;
+  for (const [sel, key] of DR_FLAGS) p[key] = $(sel).checked ? 1 : 0;
+  p.tof_guard = +$('#dr-tof-guard').value;
+  p.tcp_mode = +$('#dr-tcp-mode').value;
+  p.zone_caps = $('#dr-zone-caps').checked ? 1 : 0;     // 区間の速度上限(古いサーバーは知らない項目として読み飛ばす)
+  p.speed_ceiling = $('#dr-speed-ceiling').checked ? 1 : 0;                              // 速さの天井(2026-10-25)
+  p.speed_auto = $('#dr-speed-ceiling').checked && $('#dr-speed-auto').checked ? 1 : 0;  // 自動合わせは天井が ON のときだけ
+  p.launch_boost = $('#dr-launch-boost').checked ? 1 : 0;                                  // 発進の前進(2026-10-26)
+  return p;
+}
+function setDriveParams(p) {
+  const pend = state.drive.pending || {};         // 基準の設定で入れて、まだ送っていない項目は戻さない
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined && !pend[key]) $(sel).checked = !!+p[key];
+  if (p.tof_guard !== undefined && !pend.tof_guard && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
+  if (p.tcp_mode !== undefined && !pend.tcp_mode && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
+  if (p.zone_caps !== undefined && !pend.zone_caps) $('#dr-zone-caps').checked = +p.zone_caps === 1;
+  if (p.speed_ceiling !== undefined && !pend.speed_ceiling) $('#dr-speed-ceiling').checked = +p.speed_ceiling === 1;
+  if (p.speed_auto !== undefined && !pend.speed_auto) $('#dr-speed-auto').checked = +p.speed_auto === 1;
+  if (p.launch_boost !== undefined && !pend.launch_boost) $('#dr-launch-boost').checked = +p.launch_boost === 1;
+  for (const [sel, key, fmt] of DR_PARAMS) {
+    if (p[key] === undefined || drBusy[key] || pend[key]) continue;
+    if (+$(sel).value !== +p[key]) $(sel).value = p[key];
+    $(sel + '-v').textContent = fmt(p[key]);
+  }
+}
+function benchSetFields(p) {
+  const srv = (state.drive.st && state.drive.st.params) || {};
+  const mark = (k) => {
+    if (srv[k] !== undefined && Math.abs(+srv[k] - +p[k]) > 1e-6) state.drive.pending[k] = true;
+    else delete state.drive.pending[k];
+  };
+  for (const [sel, key, fmt] of DR_PARAMS) {
+    if (p[key] === undefined) continue;
+    $(sel).value = p[key]; $(sel + '-v').textContent = fmt($(sel).value); mark(key);
+  }
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined) { $(sel).checked = !!+p[key]; mark(key); }
+  if (p.tof_guard !== undefined) { $('#dr-tof-guard').value = String(p.tof_guard); mark('tof_guard'); }
+  if (p.tcp_mode !== undefined) { $('#dr-tcp-mode').value = String(p.tcp_mode); mark('tcp_mode'); }
+  $('#dr-zone-caps').checked = false; mark('zone_caps');
+  for (const [sel, key] of [['#dr-speed-ceiling', 'speed_ceiling'], ['#dr-speed-auto', 'speed_auto'], ['#dr-launch-boost', 'launch_boost']]) {
+    $(sel).checked = false;
+    if (srv[key] !== undefined && +srv[key] !== 0) state.drive.pending[key] = true; else delete state.drive.pending[key];
+  }
+  if (state.drive.st) { renderSpeedSwitches(state.drive.st); renderLaunchSwitch(state.drive.st); }   // OFF にしたことをすぐ出す
+}
+try { 
+const R = {};
+const tg = $('#dr-throttle-gain'), tr = $('#dr-trim');
+R.attrs = {gain: [tg.min, tg.max, tg.step], trim: [tr.min, tr.max, tr.step]};
+// 1) 欄に直接入れる(スライダーに入れる値)
+R.direct = {};
+for (const v of [0.90, 0.92, 0.95, 0.97, 1.00, 1.02, 0.93, 0.87, 1.037, 1.10]) { tg.value = String(v); R.direct[v] = tg.value; }
+R.trim_direct = {};
+for (const v of [15, 17, 18, 20, -17]) { tr.value = String(v); R.trim_direct[v] = tr.value; }
+// 2) サーバーの値(API で入れた 0.92・17)を表示の同期で受ける → 走行開始で送る値
+tg.value = '1'; tr.value = '0';
+setDriveParams({throttle_gain: 0.92, steer_trim_us: 17});
+R.sync = {gain_slider: tg.value, gain_text: $('#dr-throttle-gain-v').textContent, trim_slider: tr.value, trim_text: $('#dr-trim-v').textContent,
+          start_sends: {throttle_gain: readDriveParams().throttle_gain, steer_trim_us: readDriveParams().steer_trim_us}};
+// 3) ブロックの params(benchSetFields)に 0.92 があるとき
+state.drive.st = {params: {throttle_gain: 1.0, steer_trim_us: 0}};
+benchSetFields({throttle_gain: 0.97, steer_trim_us: 17});
+R.bench = {gain_slider: tg.value, gain_text: $('#dr-throttle-gain-v').textContent, pending: Object.assign({}, state.drive.pending),
+           start_sends: {throttle_gain: readDriveParams().throttle_gain, steer_trim_us: readDriveParams().steer_trim_us}};
+R.ua = navigator.userAgent;
+const s = JSON.stringify(R);
+console.log('STATE2RESULT ' + s);
+document.getElementById('out').textContent = JSON.stringify(R, null, 1);
+ } catch (e) { console.log('STATE2ERR ' + e + ' ' + e.stack); document.getElementById('out').textContent = 'ERR ' + e; }
+</script></body></html>

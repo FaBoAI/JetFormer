@@ -1,0 +1,48 @@
+{
+ "S4a_rev_slider": {
+  "server_after_morning_slider": {
+   "rev_s": 0.3,
+   "rev_us": 250
+  },
+  "block_note": "<b>ブロック 1(B モデルB(基準))</b>を画面に入れました。変えた所: 収集 OFF → ON、説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。",
+  "sent": {
+   "rev_s": 0.4,
+   "rev_us": 300
+  },
+  "confirm_has_rev_line": false,
+  "real_driver": {
+   "rev_s": 0.4,
+   "rev_us": 300.0
+  }
+ },
+ "S4b_get_in_flight_at_click": {
+  "launch_checkbox": [
+   false,
+   false
+  ],
+  "sent_launch_boost": 0,
+  "confirm_launch_line": [],
+  "real_driver_launch_boost": 0
+ },
+ "S4b_normal": {
+  "launch_checkbox": [
+   true,
+   true
+  ],
+  "sent_launch_boost": 1,
+  "confirm_launch_line": [
+   "発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+  ],
+  "real_driver_launch_boost": 1
+ },
+ "S4b_after_next_poll": {
+  "launch_checkbox": [
+   true
+  ],
+  "sent_launch_boost": 1,
+  "confirm_launch_line": [
+   "発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+  ],
+  "real_driver_launch_boost": 1
+ }
+}

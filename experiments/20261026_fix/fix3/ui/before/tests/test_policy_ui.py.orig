@@ -1,0 +1,121 @@
+"""管理画面のモデルの種類(方策)まわりのテスト(GET /api/policies の中身・学習の開始の引数・書き出しの説明・画面の要素)。
+サーバーは起動しない(センサー・PCA9685 に触れない)。関数を直接呼ぶ
+
+    cd ~/jetformer && python -m pytest -q tests/test_policy_ui.py
+"""
+
+import json
+import os
+import py_compile
+import re
+import shutil
+
+import pytest
+
+from jetformer import model_export, policies, training
+
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+STATIC = os.path.join(ROOT, 'jetformer', 'web', 'static')
+
+
+def test_api_policies_payload_is_json_and_complete():
+    specs = policies.list_specs()
+    json.dumps(specs, allow_nan=False)
+    by = {s['name']: s for s in specs}
+    assert list(by)[0] == 'jetformer_v0' and by['jetformer_v0']['ready'] is True
+    for s in specs:
+        assert {'name', 'title', 'slug', 'description', 'status', 'defaults', 'options', 'hints', 'outputs', 'postprocess',
+                'requires_pretrained', 'ready', 'why_not'} <= set(s)
+        assert s['ready'] or s['why_not']
+        for o in s['options']:
+            assert o['key'] in s['defaults'] and o['type'] in ('int', 'float', 'bool', 'choice')
+    assert by['tcp']['postprocess'] == 'tcp_controller' and by['dinov2']['requires_pretrained'] is True
+
+
+def test_train_start_args_old_body_is_v0():
+    old = {'dataset': 'd', 'stride': 3, 'epochs': 30, 'batch': 64, 'lr': 3e-4, 'pretrained': True, 'build_engine': True,
+           'command_input': False, 'mask_impacts': True}                     # 古い画面(キャッシュ)の body
+    a = training.start_args(old)
+    assert a['policy'] == 'jetformer_v0' and a['policy_cfg'] is None and a['impact_g'] is None and a['seed'] is None
+    assert a['command_input'] is False and a['stride'] == 3
+    new = dict(old, policy='act', policy_cfg={'dec_layers': 3}, impact_g=2.5, seed=0)
+    b = training.start_args(new)
+    assert (b['policy'], b['policy_cfg'], b['impact_g'], b['seed']) == ('act', {'dec_layers': 3}, 2.5, 0)
+    assert training.start_args(dict(old, policy='', policy_cfg={}))['policy'] == 'jetformer_v0'
+    assert training.start_args(dict(old, policy_cfg={}))['policy_cfg'] is None
+
+
+def test_train_start_passes_policy_to_trainer(monkeypatch):
+    seen = {}
+
+    class T(training.TrainingManager):
+        def start(self, dataset, **kw):
+            seen.update(kw, dataset=dataset)
+            return 'x'
+    T().start('d', **training.start_args({'dataset': 'd', 'policy': 'tcp', 'impact_g': 2.5, 'seed': 1}))
+    assert seen['policy'] == 'tcp' and seen['impact_g'] == 2.5 and seen['seed'] == 1
+
+
+def test_server_module_compiles_and_has_policy_route():
+    path = os.path.join(ROOT, 'jetformer', 'web', 'server.py')
+    py_compile.compile(path, doraise=True)
+    src = open(path, encoding='utf-8').read()
+    assert "@app.get('/api/policies')" in src and 'training_start_args(body)' in src
+    assert 'DRIVE_CLIENT_VERSION = 6' in src                                 # 走行の開始の中身は変わらない
+
+
+def test_static_ui_has_policy_controls():
+    html = open(os.path.join(STATIC, 'index.html'), encoding='utf-8').read()
+    for el in ('tr-policy', 'tr-policy-info', 'tr-policy-opts', 'tr-impact-g', 'tr-seed', 'dr-tcp', 'dr-tcp-mode',
+               'dr-speed-cap', 'dr-speed-scale', 'dr-tcp-live', 'dr-ens-j', 'dr-ens-m'):
+        assert 'id="%s"' % el in html, el
+    assert '水平4G以上' not in html
+    js = open(os.path.join(STATIC, 'app.js'), encoding='utf-8').read()
+    assert "'/api/policies'" in js and 'policy_cfg: readPolicyCfg()' in js
+    for key in ('speed_cap', 'speed_scale', 'ensemble_j', 'ensemble_m', 'tcp_mode'):
+        assert key in js, key
+    assert re.search(r'client: 6\b', js)                                     # DRIVE_CLIENT_VERSION のまま
+    if shutil.which('node'):
+        import subprocess
+        r = subprocess.run(['node', '--check', os.path.join(STATIC, 'app.js')], capture_output=True, text=True)
+        assert r.returncode == 0, r.stderr
+
+
+def _fake_run(tmp_path, cfg):
+    import onnx
+    from onnx import TensorProto, helper
+    d = tmp_path / 'runs' / 'r1'
+    d.mkdir(parents=True)
+    (d / 'model_config.json').write_text(json.dumps(cfg))
+    ins = [helper.make_tensor_value_info(n, TensorProto.FLOAT, s) for n, s in
+           (('image', [1, 3, 224, 224]), ('mode', [1, 6]))]
+    outs = [helper.make_tensor_value_info('actions', TensorProto.FLOAT, [1, 10, 2]),
+            helper.make_tensor_value_info('waypoints', TensorProto.FLOAT, [1, 10, 2]),
+            helper.make_tensor_value_info('speed_logits', TensorProto.FLOAT, [1, 10])]
+    nodes = [helper.make_node('Identity', ['image'], ['actions']), helper.make_node('Identity', ['image'], ['waypoints']),
+             helper.make_node('Identity', ['mode'], ['speed_logits'])]
+    onnx.save(helper.make_model(helper.make_graph(nodes, 'g', ins, outs)), str(d / 'jetformer.onnx'))
+    return d
+
+
+def test_io_spec_describes_tcp_outputs(monkeypatch, tmp_path):
+    pytest.importorskip('onnx')
+    cfg = {'num_modes': 6, 'policy': 'tcp', 'postprocess': {'kind': 'tcp_controller', 'version': 1, 'wp_dt': 0.1,
+                                                            'speed_bins': [0.5 * k for k in range(10)]}}
+    _fake_run(tmp_path, cfg)
+    monkeypatch.setattr(model_export, 'RUNS_DIR', tmp_path / 'runs')
+    spec = model_export.io_spec('r1')
+    outs = {o['name']: o for o in spec['outputs']}
+    assert '前' in outs['waypoints']['how']['axes'] and outs['speed_logits']['how']['speed_bins'][-1] == 4.5
+    assert spec['policy'] == 'tcp' and 'controller.py' in spec['postprocess_note']
+    text = model_export.readme('r1', spec)
+    assert 'waypoints' in text and 'controller.py' in text
+
+
+def test_io_spec_without_postprocess_has_no_note(monkeypatch, tmp_path):
+    pytest.importorskip('onnx')
+    _fake_run(tmp_path, {'num_modes': 6})
+    monkeypatch.setattr(model_export, 'RUNS_DIR', tmp_path / 'runs')
+    spec = model_export.io_spec('r1')
+    assert spec['policy'] == 'jetformer_v0' and spec['postprocess_note'] is None
+    assert '%s' not in model_export.readme('r1', spec)

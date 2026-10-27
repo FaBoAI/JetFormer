@@ -52,7 +52,7 @@ def _npz(p):
     try:
         with np.load(p, allow_pickle=False) as d:
             return {k: d[k] for k in d.files}
-    except (OSError, ValueError) as e:     # 壊れたファイル(電源断など)は飛ばす
+    except Exception as e:     # 壊れたファイル(電源断など)は飛ばす。0 バイトは EOFError・壊れた zip は BadZipFile(2026-10-26 fix2)
         return e
 
 
@@ -71,6 +71,8 @@ def load(log, raw_dir=None):
             d = _npz(p)
             if isinstance(d, Exception) or 'timestamps_us' not in d:
                 problems.append('%s/%s: 読めません' % (s.name, n))
+                print('注意: %s/%s/%s.npz が読めません(%s)。飛ばします' % (log, s.name, n, type(d).__name__ if isinstance(
+                    d, Exception) else '形式'), file=sys.stderr)
                 continue
             parts[n].append(d)
     if not parts['TOF_FRONT'] or not parts['VEHICLE'] or not parts['IMU']:

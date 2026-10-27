@@ -61,7 +61,7 @@ def test_server_module_compiles_and_has_policy_route():
     py_compile.compile(path, doraise=True)
     src = open(path, encoding='utf-8').read()
     assert "@app.get('/api/policies')" in src and 'training_start_args(body)' in src
-    assert 'DRIVE_CLIENT_VERSION = 6' in src                                 # 走行の開始の中身は変わらない
+    assert 'DRIVE_CLIENT_VERSION = 9' in src                                 # 2026-10-27 fix5 で 8 → 9(方策の欄では変えない)
 
 
 def test_static_ui_has_policy_controls():
@@ -74,7 +74,7 @@ def test_static_ui_has_policy_controls():
     assert "'/api/policies'" in js and 'policy_cfg: readPolicyCfg()' in js
     for key in ('speed_cap', 'speed_scale', 'ensemble_j', 'ensemble_m', 'tcp_mode'):
         assert key in js, key
-    assert re.search(r'client: 6\b', js)                                     # DRIVE_CLIENT_VERSION のまま
+    assert re.search(r'client: 9\b', js)                                     # DRIVE_CLIENT_VERSION と同じ(2026-10-27 fix5 で 9)
     if shutil.which('node'):
         import subprocess
         r = subprocess.run(['node', '--check', os.path.join(STATIC, 'app.js')], capture_output=True, text=True)

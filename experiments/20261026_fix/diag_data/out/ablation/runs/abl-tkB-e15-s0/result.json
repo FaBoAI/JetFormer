@@ -1,0 +1,295 @@
+{
+ "state": "done",
+ "dataset": "dataset_v2_20261025",
+ "stride": 3,
+ "epochs_planned": 15,
+ "epochs_done": 15,
+ "batch": 64,
+ "lr": 0.0003,
+ "pretrained": true,
+ "train_samples": 6506,
+ "val_samples": 1559,
+ "best_val_us": 49.0,
+ "best_epoch": 13,
+ "best_val_per_mode_us": {
+  "4": 60.2,
+  "5": 41.2
+ },
+ "modes": [
+  {
+   "id": 0,
+   "name": "未設定",
+   "description": "ジャンル未設定(学習には使わない)"
+  },
+  {
+   "id": 1,
+   "name": "駐車(1)",
+   "description": ""
+  },
+  {
+   "id": 2,
+   "name": "駐車(2)",
+   "description": ""
+  },
+  {
+   "id": 3,
+   "name": "駐車(3)",
+   "description": ""
+  },
+  {
+   "id": 4,
+   "name": "高速走行",
+   "description": ""
+  },
+  {
+   "id": 5,
+   "name": "低速走行",
+   "description": ""
+  },
+  {
+   "id": 6,
+   "name": "低速走行・良",
+   "description": "オフライン強化学習(アドバンテージ条件付き)用: 低速走行のうち「良い」の印のフレーム。収集には使わない"
+  },
+  {
+   "id": 7,
+   "name": "高速走行・良",
+   "description": "オフライン強化学習(アドバンテージ条件付き)用: 高速走行のうち「良い」の印のフレーム。収集には使わない"
+  },
+  {
+   "id": 8,
+   "name": "シミュレーター",
+   "description": ""
+  },
+  {
+   "id": 9,
+   "name": "AI・きれいな速い周",
+   "description": "ゲインを焼き込んだ B のきれいな速い周(10/23・10/24 2 回目、9.5 秒未満)。学習用。収集には使わない。速さの手段ではない"
+  }
+ ],
+ "train_mode_counts": {
+  "4": 2228,
+  "5": 4278
+ },
+ "command_input": false,
+ "mask_impacts": true,
+ "impact_g": 2.5,
+ "impact_masked_frames": {
+  "train": 3557,
+  "val": 1083
+ },
+ "steer_center_us": 1433.0,
+ "throttle_neutral_us": 1500.0,
+ "history": [
+  {
+   "epoch": 1,
+   "train_us": 79.0,
+   "val_us": 62.1,
+   "val_per_mode_us": {
+    "4": 73.2,
+    "5": 54.3
+   },
+   "seconds": 46.6,
+   "best": true
+  },
+  {
+   "epoch": 2,
+   "train_us": 55.5,
+   "val_us": 57.7,
+   "val_per_mode_us": {
+    "4": 67.9,
+    "5": 50.6
+   },
+   "seconds": 51.1,
+   "best": true
+  },
+  {
+   "epoch": 3,
+   "train_us": 49.3,
+   "val_us": 55.5,
+   "val_per_mode_us": {
+    "4": 64.7,
+    "5": 49.0
+   },
+   "seconds": 39.7,
+   "best": true
+  },
+  {
+   "epoch": 4,
+   "train_us": 46.2,
+   "val_us": 53.4,
+   "val_per_mode_us": {
+    "4": 65.0,
+    "5": 45.2
+   },
+   "seconds": 39.0,
+   "best": true
+  },
+  {
+   "epoch": 5,
+   "train_us": 41.4,
+   "val_us": 52.6,
+   "val_per_mode_us": {
+    "4": 64.4,
+    "5": 44.3
+   },
+   "seconds": 38.4,
+   "best": true
+  },
+  {
+   "epoch": 6,
+   "train_us": 39.3,
+   "val_us": 51.6,
+   "val_per_mode_us": {
+    "4": 62.5,
+    "5": 43.9
+   },
+   "seconds": 36.6,
+   "best": true
+  },
+  {
+   "epoch": 7,
+   "train_us": 36.0,
+   "val_us": 50.6,
+   "val_per_mode_us": {
+    "4": 62.1,
+    "5": 42.6
+   },
+   "seconds": 37.7,
+   "best": true
+  },
+  {
+   "epoch": 8,
+   "train_us": 33.4,
+   "val_us": 53.9,
+   "val_per_mode_us": {
+    "4": 64.5,
+    "5": 46.5
+   },
+   "seconds": 36.2,
+   "best": false
+  },
+  {
+   "epoch": 9,
+   "train_us": 30.7,
+   "val_us": 51.2,
+   "val_per_mode_us": {
+    "4": 62.1,
+    "5": 43.6
+   },
+   "seconds": 36.0,
+   "best": false
+  },
+  {
+   "epoch": 10,
+   "train_us": 28.0,
+   "val_us": 49.7,
+   "val_per_mode_us": {
+    "4": 61.0,
+    "5": 41.9
+   },
+   "seconds": 39.9,
+   "best": true
+  },
+  {
+   "epoch": 11,
+   "train_us": 25.8,
+   "val_us": 49.8,
+   "val_per_mode_us": {
+    "4": 60.7,
+    "5": 42.3
+   },
+   "seconds": 35.9,
+   "best": false
+  },
+  {
+   "epoch": 12,
+   "train_us": 23.7,
+   "val_us": 49.5,
+   "val_per_mode_us": {
+    "4": 61.0,
+    "5": 41.5
+   },
+   "seconds": 37.7,
+   "best": true
+  },
+  {
+   "epoch": 13,
+   "train_us": 22.3,
+   "val_us": 49.0,
+   "val_per_mode_us": {
+    "4": 60.2,
+    "5": 41.2
+   },
+   "seconds": 37.7,
+   "best": true
+  },
+  {
+   "epoch": 14,
+   "train_us": 21.4,
+   "val_us": 49.3,
+   "val_per_mode_us": {
+    "4": 60.9,
+    "5": 41.3
+   },
+   "seconds": 36.0,
+   "best": false
+  },
+  {
+   "epoch": 15,
+   "train_us": 20.7,
+   "val_us": 49.1,
+   "val_per_mode_us": {
+    "4": 60.5,
+    "5": 41.2
+   },
+   "seconds": 36.0,
+   "best": false
+  }
+ ],
+ "policy": "jetformer_v0",
+ "policy_cfg": {
+  "dim": 256,
+  "layers": 4,
+  "heads": 8
+ },
+ "seed": 0,
+ "params_m": {
+  "total": 14.1,
+  "trainable": 14.1
+ },
+ "peak_mem_mb": 1262.8,
+ "rl_options": {
+  "init": null,
+  "init_mode_copy": null,
+  "seed": 0,
+  "drop_mask": "experiments/20261026_fix/diag_data/out/ablation/drop_v2h_same.npz",
+  "sample_weights_npz": null,
+  "mode_remap_npz": null,
+  "mode_remap_dropout": 0.0,
+  "weight_scale": 1.0,
+  "dropped_frames": {
+   "train": 72852,
+   "val": 0
+  },
+  "impact_kept_frames": {
+   "train": 0,
+   "val": 0
+  },
+  "sha1": {
+   "drop_mask": "ce082c1db59f"
+  }
+ },
+ "bench_options": {
+  "label_override_npz": "experiments/20261026_fix/diag_data/out/ablation/override_tk_thr_B.npz",
+  "aug": null,
+  "label_overridden_rows": {
+   "all": 3640,
+   "used": 3640
+  },
+  "sha1": {
+   "label_override_npz": "fb081e608b42"
+  }
+ },
+ "duration_s": 768.9
+}

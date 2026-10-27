@@ -1,0 +1,319 @@
+{
+ "scene": "data/raw/20261023-205458/20261023-205458-0002",
+ "note": "開いたループ。記録には中立止めが無い。距離は記録の eRPM のまま",
+ "record_dist_back_to_hit_m": 1.23,
+ "combos": {
+  "guard0_keep0": {
+   "reverse_side_frames": 18,
+   "reverse_side_while_backing_frames": 15,
+   "reverse_side_while_backing_s": 0.5,
+   "last_reverse_row": 125,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 0,
+   "stop_row": 126,
+   "x_back_at_stop_plus_0p1s_m": 1.24,
+   "v_back_at_stop_plus_0p1s_mps": 0.0,
+   "room_to_rear_obstacle_m": -0.01,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": null
+  },
+  "guard0_keep1": {
+   "reverse_side_frames": 18,
+   "reverse_side_while_backing_frames": 15,
+   "reverse_side_while_backing_s": 0.5,
+   "last_reverse_row": 125,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 0,
+   "stop_row": 126,
+   "x_back_at_stop_plus_0p1s_m": 1.24,
+   "v_back_at_stop_plus_0p1s_mps": 0.0,
+   "room_to_rear_obstacle_m": -0.01,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": null
+  },
+  "guard1_keep0": {
+   "reverse_side_frames": 15,
+   "reverse_side_while_backing_frames": 12,
+   "reverse_side_while_backing_s": 0.4,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ],
+    [
+     126,
+     "rear_impact",
+     "coast",
+     0.448
+    ]
+   ],
+   "mismatch_rows": 13,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  },
+  "guard1_keep1": {
+   "reverse_side_frames": 15,
+   "reverse_side_while_backing_frames": 12,
+   "reverse_side_while_backing_s": 0.4,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ],
+    [
+     126,
+     "rear_impact",
+     "coast",
+     0.448
+    ]
+   ],
+   "mismatch_rows": 13,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  }
+ },
+ "what_if_holds": {
+  "hold_108_109_guard0_keep0": {
+   "reverse_side_frames": 5,
+   "reverse_side_while_backing_frames": 2,
+   "reverse_side_while_backing_s": 0.07,
+   "last_reverse_row": 107,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 20,
+   "stop_row": 108,
+   "x_back_at_stop_plus_0p1s_m": 0.18,
+   "v_back_at_stop_plus_0p1s_mps": 1.44,
+   "room_to_rear_obstacle_m": 1.05,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 0.99
+  },
+  "hold_108_109_guard0_keep1": {
+   "reverse_side_frames": 5,
+   "reverse_side_while_backing_frames": 2,
+   "reverse_side_while_backing_s": 0.07,
+   "last_reverse_row": 107,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 20,
+   "stop_row": 108,
+   "x_back_at_stop_plus_0p1s_m": 0.18,
+   "v_back_at_stop_plus_0p1s_mps": 1.44,
+   "room_to_rear_obstacle_m": 1.05,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 0.99
+  },
+  "hold_108_109_guard1_keep0": {
+   "reverse_side_frames": 5,
+   "reverse_side_while_backing_frames": 2,
+   "reverse_side_while_backing_s": 0.07,
+   "last_reverse_row": 107,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ],
+   "mismatch_rows": 20,
+   "stop_row": 108,
+   "x_back_at_stop_plus_0p1s_m": 0.18,
+   "v_back_at_stop_plus_0p1s_mps": 1.44,
+   "room_to_rear_obstacle_m": 1.05,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 0.99
+  },
+  "hold_108_109_guard1_keep1": {
+   "reverse_side_frames": 13,
+   "reverse_side_while_backing_frames": 10,
+   "reverse_side_while_backing_s": 0.33,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ],
+    [
+     126,
+     "rear_impact",
+     "coast",
+     0.448
+    ]
+   ],
+   "mismatch_rows": 13,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  },
+  "hold_114_115_guard0_keep0": {
+   "reverse_side_frames": 8,
+   "reverse_side_while_backing_frames": 5,
+   "reverse_side_while_backing_s": 0.17,
+   "last_reverse_row": 110,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 14,
+   "stop_row": 111,
+   "x_back_at_stop_plus_0p1s_m": 0.34,
+   "v_back_at_stop_plus_0p1s_mps": 1.32,
+   "room_to_rear_obstacle_m": 0.89,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 0.98
+  },
+  "hold_114_115_guard0_keep1": {
+   "reverse_side_frames": 8,
+   "reverse_side_while_backing_frames": 5,
+   "reverse_side_while_backing_s": 0.17,
+   "last_reverse_row": 110,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 14,
+   "stop_row": 111,
+   "x_back_at_stop_plus_0p1s_m": 0.34,
+   "v_back_at_stop_plus_0p1s_mps": 1.32,
+   "room_to_rear_obstacle_m": 0.89,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 0.98
+  },
+  "hold_114_115_guard1_keep0": {
+   "reverse_side_frames": 11,
+   "reverse_side_while_backing_frames": 8,
+   "reverse_side_while_backing_s": 0.27,
+   "last_reverse_row": 113,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ],
+   "mismatch_rows": 17,
+   "stop_row": 114,
+   "x_back_at_stop_plus_0p1s_m": 0.5,
+   "v_back_at_stop_plus_0p1s_mps": 1.55,
+   "room_to_rear_obstacle_m": 0.73,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 1.64
+  },
+  "hold_114_115_guard1_keep1": {
+   "reverse_side_frames": 13,
+   "reverse_side_while_backing_frames": 10,
+   "reverse_side_while_backing_s": 0.33,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ],
+    [
+     126,
+     "rear_impact",
+     "coast",
+     0.448
+    ]
+   ],
+   "mismatch_rows": 11,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  },
+  "hold_121_122_guard0_keep0": {
+   "reverse_side_frames": 13,
+   "reverse_side_while_backing_frames": 10,
+   "reverse_side_while_backing_s": 0.33,
+   "last_reverse_row": 120,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 7,
+   "stop_row": 121,
+   "x_back_at_stop_plus_0p1s_m": 0.96,
+   "v_back_at_stop_plus_0p1s_mps": 2.19,
+   "room_to_rear_obstacle_m": 0.27,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 8.86
+  },
+  "hold_121_122_guard0_keep1": {
+   "reverse_side_frames": 13,
+   "reverse_side_while_backing_frames": 10,
+   "reverse_side_while_backing_s": 0.33,
+   "last_reverse_row": 120,
+   "brake_phase_starts": 1,
+   "guard_events": [],
+   "mismatch_rows": 7,
+   "stop_row": 121,
+   "x_back_at_stop_plus_0p1s_m": 0.96,
+   "v_back_at_stop_plus_0p1s_mps": 2.19,
+   "room_to_rear_obstacle_m": 0.27,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 8.86
+  },
+  "hold_121_122_guard1_keep0": {
+   "reverse_side_frames": 15,
+   "reverse_side_while_backing_frames": 12,
+   "reverse_side_while_backing_s": 0.4,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ]
+   ],
+   "mismatch_rows": 15,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  },
+  "hold_121_122_guard1_keep1": {
+   "reverse_side_frames": 15,
+   "reverse_side_while_backing_frames": 12,
+   "reverse_side_while_backing_s": 0.4,
+   "last_reverse_row": 117,
+   "brake_phase_starts": 1,
+   "guard_events": [
+    [
+     106,
+     "back_early",
+     "brake",
+     0.0
+    ],
+    [
+     126,
+     "rear_impact",
+     "coast",
+     0.448
+    ]
+   ],
+   "mismatch_rows": 11,
+   "stop_row": 118,
+   "x_back_at_stop_plus_0p1s_m": 0.75,
+   "v_back_at_stop_plus_0p1s_mps": 1.99,
+   "room_to_rear_obstacle_m": 0.48,
+   "coast_decel_needed_to_stop_before_obstacle_mps2": 4.15
+  }
+ }
+}

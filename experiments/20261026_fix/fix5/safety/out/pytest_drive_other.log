@@ -1,0 +1,46 @@
+.............s.s........................................................ [ 34%]
+..........................x............................................. [ 69%]
+...............................................................F         [100%]
+=================================== FAILURES ===================================
+_____________________________ test_time_per_frame ______________________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xfffe744e46e0>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix5/tmp_safety/pt9/test_time_per_frame0')
+
+    def test_time_per_frame(monkeypatch, tmp_path):
+        """天井 + 自動合わせの時間: 平均 ≤ 0.3 ms/フレーム、周を閉じるフレームでも ≤ 1.0 ms(Jetson の CPU)"""
+        per = collections.defaultdict(float)
+        closing = []
+        orig = {name: getattr(drive._SpeedCeil, name) for name in ('frame',)}
+        orig.update({name: getattr(drive._SpeedAuto, name) for name in ('gain', 'after')})
+    
+        def wrap(cls, name):
+            f = orig[name]
+    
+            def w(self, cam_t_ns, *a, **kw):
+                t0 = _time.perf_counter()
+                r = f(self, cam_t_ns, *a, **kw)
+                per[cam_t_ns] += (_time.perf_counter() - t0) * 1000.0
+                if name == 'after' and self.event != sa.EV_NONE:
+                    closing.append(cam_t_ns)
+                return r
+            monkeypatch.setattr(cls, name, w)
+        wrap(drive._SpeedCeil, 'frame')
+        wrap(drive._SpeedAuto, 'gain')
+        wrap(drive._SpeedAuto, 'after')
+        sc_ = build(vbat=lambda s: 8.1)
+        d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_)
+        ms = list(per.values())
+        mean = float(np.mean(ms))
+        worst_close = max(per[t] for t in closing)
+        print('天井 + 自動合わせ: 平均 %.3f ms・95%% %.3f ms・最大 %.3f ms・周を閉じるフレームの最大 %.3f ms(%d フレーム)'
+              % (mean, np.percentile(ms, 95), max(ms), worst_close, len(ms)))
+>       assert mean <= 0.3 and worst_close <= 1.0
+E       assert (0.31181699272870333 <= 0.3)
+
+tests/test_speed_ctrl.py:836: AssertionError
+----------------------------- Captured stdout call -----------------------------
+天井 + 自動合わせ: 平均 0.312 ms・95% 0.437 ms・最大 1.059 ms・周を閉じるフレームの最大 1.059 ms(978 フレーム)
+=========================== short test summary info ============================
+FAILED tests/test_speed_ctrl.py::test_time_per_frame - assert (0.311816992728...
+1 failed, 204 passed, 2 skipped, 1 xfailed in 113.44s (0:01:53)

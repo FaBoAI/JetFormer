@@ -54,6 +54,7 @@ import math
 import os
 import re
 import sys
+import zipfile
 from datetime import datetime
 from pathlib import Path
 
@@ -304,13 +305,32 @@ def assign_candidate(desc, run, bench):
 
 
 # ------------------------------------------------------------------ 1 本のログ
+# 記録・ラベルのファイルが読めないときの例外(0 バイト・書きかけ・壊れた zip・JSON。電源断の記録)
+UNREADABLE = (OSError, ValueError, EOFError, zipfile.BadZipFile)
+
+
 def _labels(log, labels_dir, raw_dir):
+    """ラベル → (info, lab, 元)。ファイルがあれば読み、無ければ記録からその場で作る(書き出さない)。
+    2026-10-26 fix2: ラベルのファイルが読めなければ記録から作り直す。記録の log.json が読めない(0 バイト。20261023-204825)
+    ときは落ちずに注意を出し、(error 付きの info, None, 元) を返す(score_log・car_check は「読めなかった」にする)"""
     pj, pn = Path(labels_dir) / (log + '.json'), Path(labels_dir) / (log + '.npz')
     if pj.exists() and pn.exists():
-        info = json.loads(pj.read_text(encoding='utf-8'))
-        with np.load(pn) as z:
-            lab = {k: z[k] for k in z.files}
-        return info, lab, 'file'
+        try:
+            info = json.loads(pj.read_text(encoding='utf-8'))
+            with np.load(pn) as z:
+                lab = {k: z[k] for k in z.files}
+            return info, lab, 'file'
+        except UNREADABLE as e:
+            print('注意: %s のラベルのファイルが読めません(%s: %s)。記録から作り直します' % (log, type(e).__name__, e),
+                  file=sys.stderr)
+    rd = Path(raw_dir or config.RAW_DIR) / log
+    if rd.is_dir():         # 記録の log.json(0 バイト = 電源断。label_log は npz の壊れは飛ばすが log.json は読めないと落ちる)
+        try:                # 記録の dir が無い(名前の間違い)は今まで通り例外(呼び手が捕まえる)
+            json.loads((rd / 'log.json').read_text(encoding='utf-8'))
+        except (OSError, ValueError) as e:
+            msg = '記録の log.json が読めません(%s: %s)' % (type(e).__name__, str(e)[:120])
+            print('注意: %s の%s。飛ばします' % (log, msg), file=sys.stderr)
+            return {'log': log, 'error': msg}, None, 'computed'
     info, lab = le.label_log(log, raw_dir)
     return info, lab, 'computed'
 
@@ -628,6 +648,11 @@ def speed_ctrl_summary(A, t0, t, ai, params=None):
             out['flags'].append('ceil_switch_gt%d_per_s' % CEIL_SWITCH_MAX_PER_S)
         if out['ceil']['failed_frames']:
             out['flags'].append('ceil_failed')
+        # 走行中に OFF にした(2026-10-26 fix2 R2-rec-2): 走行開始は ON なのに、AI のフレームの ceil_on が途中から False
+        off_at = _midrun_off_at(p.get('speed_ceiling'), aif, on, at)
+        if off_at is not None:
+            out['ceil']['off_at_s'] = off_at
+            out['flags'].append('ceil_off_midrun')
     if out['auto_recorded']:
         m = col('sa_m', np.nan, np.float64)
         mfb = col('sa_m_fb', np.nan, np.float64)
@@ -668,6 +693,96 @@ def speed_ctrl_summary(A, t0, t, ai, params=None):
             out['flags'].append('auto_edge_%dlaps' % AUTO_EDGE_LAPS)
         if out['auto']['flip_run_max'] >= AUTO_FLIP_LAPS:
             out['flags'].append('auto_flip_%dlaps' % AUTO_FLIP_LAPS)
+        off_at = _midrun_off_at(p.get('speed_auto'), aif, on, at)
+        if off_at is not None:
+            out['auto']['off_at_s'] = off_at
+            out['flags'].append('auto_off_midrun')
+    return out
+
+
+# 衝突の場所の分け方(2026-10-26 fix2 R2-rec-1。手順書 7 章の止める条件「8G 以上」「同じ場所で 2 本」「SW の出口・LH」のため)
+PLACES = ('R1', 'GM', 'DE', 'SW', 'HS', 'LH', '?')
+STOP_G = 8.0                 # 手順書 7 章: 8G 以上の衝突 1 回 → 止めて後輪・舵のリンクを見る
+SRC_NAMES = {0: 'なし', 1: '基板', 2: '説明欄'}     # 自動合わせの電圧の源(speed_auto.SRC_NONE・SRC_BOARD・SRC_DESC)
+
+
+def place_of(c):
+    """衝突の場所(loc_detail の GM_in・GM_out は GM。loc_detail が無い古い行は loc。other・unknown は ?)"""
+    d = c.get('loc_detail')
+    if d in ('GM_in', 'GM_out'):
+        return 'GM'
+    if d in PLACES[:-1]:
+        return d
+    return c.get('loc') if c.get('loc') in ('R1', 'GM', 'DE', 'HS', 'LH') else '?'
+
+
+def collision_summary(coll):
+    """1 本の衝突(score_log の collision_events。label の決まり・AI 側・立て直し中・リカバリー中も入れる)の
+    最大 G・8G 以上の数・強い(4G 以上)・場所ごとの数・種類ごとの数・一覧 [[秒, G, 場所, 種類]]"""
+    rows = list(coll or [])
+    g = [float(c['g']) for c in rows]
+    by = {k: 0 for k in PLACES}
+    cls = {}
+    for c in rows:
+        by[place_of(c)] += 1
+        cls[c.get('class') or 'main'] = cls.get(c.get('class') or 'main', 0) + 1
+    return {'n': len(rows), 'max_g': _r(max(g), 2) if g else None, 'n_ge8': sum(1 for x in g if x >= STOP_G),
+            'strong': sum(1 for x in g if x >= le.STRONG_G), 'by_place': by, 'by_class': cls,
+            'list': [[_r(c['t_s'], 2), _r(float(c['g']), 2), place_of(c), c.get('class') or 'main'] for c in rows]}
+
+
+def collision_text(cs, with_list=True):
+    """衝突の短い文。例: '8 回・最大 11.30G・8G 以上 3・場所 R1 2・DE 6(強い: 76.3 秒 DE 10.77G、…)'"""
+    if not cs or not cs.get('n'):
+        return '0 回'
+    pl = '・'.join('%s %d' % (k, v) for k, v in cs['by_place'].items() if v)
+    txt = '%d 回・最大 %.2fG・8G 以上 %d・場所 %s' % (cs['n'], cs['max_g'], cs['n_ge8'], pl)
+    strong = [x for x in cs.get('list') or [] if x[1] is not None and x[1] >= le.STRONG_G]
+    if with_list and strong:
+        txt += '(強い: %s)' % '、'.join('%.1f 秒 %s %.2fG%s' % (x[0], x[2], x[1], '' if x[3] == 'main' else '・' + x[3])
+                                      for x in strong)
+    return txt
+
+
+def _midrun_off_at(param, aif, on, at):
+    """走行開始の値が 1 なのに、AI のフレームで ON でない最初の時刻 [秒](無ければ None)。drive.py は毎フレームの今の params
+    から ceil_on・sa_on を書く(走行中は 0 → 1 にできない)ので、途中から False = 走行中に OFF にした"""
+    try:
+        p1 = int(float(param)) == 1
+    except (TypeError, ValueError):
+        return None
+    if not p1 or not aif.any():
+        return None
+    k = np.nonzero(aif & ~np.asarray(on, bool))[0]
+    return _r(float(at[k[0]]), 3) if len(k) else None
+
+
+def midrun_params(log, raw_dir=None, t0_us=None):
+    """走行中に変えた設定(2026-10-26 fix2 state2-2): events.jsonl の params(drive.set_params が走行中に書く。changed =
+    {項目: [前, 後]}・epoch_us)と log.json の drive.params_end。戻り値 {'events': [{'t_s', 'changed'}], 'params_end': dict か None}。
+    t_s は t0_us(ラベルの t0)からの秒(t0_us が無ければ None)。古い記録(このコードの前)は空"""
+    root = Path(raw_dir or config.RAW_DIR) / log
+    out = {'events': [], 'params_end': None}
+    try:
+        lines = (root / 'events.jsonl').read_text(encoding='utf-8').splitlines()
+    except OSError:
+        lines = []
+    for line in lines:
+        try:
+            e = json.loads(line)
+        except ValueError:
+            continue
+        if e.get('kind') != 'params' or not isinstance(e.get('changed'), dict):
+            continue
+        tu = e.get('epoch_us')
+        out['events'].append({'t_s': _r((int(tu) - int(t0_us)) / 1e6, 3) if tu is not None and t0_us is not None else None,
+                              'changed': e['changed']})
+    try:
+        drv = json.loads((root / 'log.json').read_text(encoding='utf-8')).get('drive') or {}
+        if isinstance(drv.get('params_end'), dict):
+            out['params_end'] = drv['params_end']
+    except (OSError, ValueError):
+        pass
     return out
 
 
@@ -1383,20 +1498,27 @@ def _onoff(x):
     return '—' if x is None else ('ON' if int(x) else 'OFF')
 
 
+def _onoff_mid(x, off_at):
+    """ON/OFF の文。走行中に OFF にした本は「ON→途中で OFF(t 秒)」(2026-10-26 fix2)"""
+    return _onoff(x) if off_at is None else 'ON→途中で OFF(%.1f 秒)' % off_at
+
+
 def ctrl_cells(s):
     """走行ごとの表の「天井」「自動合わせ」「電圧」「印」の文(scorecard・bench_report で使う)"""
     sp = s.get('speed_ctrl') or {}
     c, a = sp.get('ceil') or {}, sp.get('auto') or {}
     if sp.get('ceil_recorded'):
         ceil = '%s・変えた %s・影 弱め %s/中立 %s・左 %s' % (
-            _onoff(sp.get('speed_ceiling')), _f((c.get('applied_frac') or 0) * 100, '%.1f%%'),
+            _onoff_mid(sp.get('speed_ceiling'), c.get('off_at_s')), _f((c.get('applied_frac') or 0) * 100, '%.1f%%'),
             _f((c.get('weak_frac') or 0) * 100, '%.1f%%'), _f((c.get('neutral_frac') or 0) * 100, '%.1f%%'),
             _f((c.get('left_frac') or 0) * 100, '%.0f%%'))
     else:
         ceil = '%s(記録なし)' % _onoff(sp.get('speed_ceiling'))
     if sp.get('auto_recorded'):
-        auto = '%s・m_fb %s・m %s・周 %d(外した %d)' % (_onoff(sp.get('speed_auto')), _f(a.get('m_fb_end'), '%.3f'),
+        auto = '%s・m_fb %s・m %s・周 %d(外した %d)' % (_onoff_mid(sp.get('speed_auto'), a.get('off_at_s')), _f(a.get('m_fb_end'), '%.3f'),
                                                    _f(a.get('m_end'), '%.3f'), a.get('laps_used', 0), a.get('laps_skipped', 0))
+        if a.get('src') is not None:            # 自動合わせの電圧の源(手順書 6 章「基板 か 説明欄」。2026-10-26 fix2 R2-rec-5)
+            auto += '・電圧の源 %s' % SRC_NAMES.get(int(a['src']), str(a['src']))
     else:
         auto = '%s(記録なし)' % _onoff(sp.get('speed_auto'))
     vb = s.get('vbat') or {}

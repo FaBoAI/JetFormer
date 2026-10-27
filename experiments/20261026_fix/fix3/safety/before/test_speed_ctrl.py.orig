@@ -1,0 +1,837 @@
+"""速さの天井・速さのゲインの自動合わせを走行ループ(drive.py の speed_ceiling・speed_auto)につないだ部分の試験(2026-10-25)。
+仕様: jetformer_reports/speed_control_20261025/spec.md 6.1 節の D-o1〜o4・D-c3・D-c5・D-a1〜a3(つなぎ)・D-e1・D-t1。
+実機・GPU・torch は使わない(センサー・PCA9685・TensorRT・入力の正規化は偽物。時刻も決まった値で、スレッドを使わずに回す。
+偽物は tests/test_drive_caps.py と同じ)。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \
+        /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q tests/test_speed_ctrl.py
+
+「変更の前」は git の commit ではなく、手を入れる前の写し tests/fixtures/speed_ctrl_before/(drive.py・safety_caps.py・
+assist.py。作業ツリーに c247daa から未 commit の変更があったため。sha256 は BEFORE_SHA)。
+"""
+import collections
+import hashlib
+import importlib.util
+import json
+import math
+import time as _time
+import types
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from jetformer import clock, config, drive
+from jetformer import safety_caps as sc
+from jetformer import speed_auto as sa
+from jetformer.sensors.base import Sample
+
+from test_drive_caps import FakePCA, FakeRecorder, SeqRunner, fake_normalize, same
+
+ROOT = Path(__file__).resolve().parents[1]
+FIX = ROOT / 'tests' / 'fixtures' / 'speed_ctrl_before'
+BEFORE_SHA = {'drive.py': 'ac9ad980d067bac4c9850f0c3adc65e798e8f81b2f8615cfbe77e11d7bcbf454',
+              'safety_caps.py': 'd614ac919365519b8d5af7f6850e483a40ffe75ff7b3f3d16f0c1c9bde02e8de',
+              'assist.py': '8e73208762f9d8b5068aaf37919899d5f454476dea456eea47b566b0b6aff81c'}
+REF = (1441.0, 1496.0)
+NS = 1_000_000_000
+T0 = 1_800_000_000 * NS
+PARAMS = {'steer_gain': 1.0, 'throttle_gain': 1.0, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
+          'esc_reverse': 1, 'recovery': 1, 'rev_us': 300.0, 'rev_s': 0.6, 'tof_guard': 1, 'speed_cap': 0.0,
+          'speed_scale': 1.0, 'tcp_mode': 0, 'ensemble_j': 0, 'ensemble_m': 0.5, 'zone_caps': 0, 'start_kick': 0}
+SC_KEYS = ('speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto', 'auto_target_mps', 'auto_vref_v')
+CEIL_FIELDS = {'ceil_on': bool, 'ceil_left': bool, 'ceil_cap': float, 'ceil_v': float, 'ceil_vpred': float,
+               'ceil_steer': float, 'ceil_gz': float, 'ceil_mode': int, 'ceil_in_us': float, 'ceil_thr_us': float,
+               'ceil_applied': bool}
+SA_FIELDS = {'sa_on': bool, 'sa_m': float, 'sa_m_ff': float, 'sa_m_fb': float, 'sa_gain': float, 'sa_src': int,
+             'sa_v': float, 'sa_eff': float, 'sa_event': int, 'sa_lap_p90': float, 'sa_lap_s': float, 'sa_applied': bool}
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def load_before():
+    """手を入れる前の drive.py(写し)をモジュールにする。写しの sha256 が仕様の頭 12 桁と同じか確かめる"""
+    for name, h in BEFORE_SHA.items():
+        assert sha(FIX / name) == h, name
+    spec = importlib.util.spec_from_loader('jetformer._drive_before_speed_ctrl', loader=None)
+    mod = importlib.util.module_from_spec(spec)
+    mod.__package__ = 'jetformer'
+    exec(compile((FIX / 'drive.py').read_text(encoding='utf-8'), str(FIX / 'drive.py'), 'exec'), mod.__dict__)
+    assert not hasattr(mod, '_SpeedCeil') and 'speed_ceiling' not in mod.PARAM_LIMITS
+    # 補助も写しの assist.py にする(2026-10-26 の発進の前進で jetformer/assist.py を変えたため。変える前と同じ動きで比べる)
+    aspec = importlib.util.spec_from_loader('jetformer._assist_before_speed_ctrl', loader=None)
+    amod = importlib.util.module_from_spec(aspec)
+    exec(compile((FIX / 'assist.py').read_text(encoding='utf-8'), str(FIX / 'assist.py'), 'exec'), amod.__dict__)
+    mod.assist_mod = amod
+    return mod
+
+
+def test_before_copies_and_untouched_modules():
+    """写しが仕様の書いた時点のファイル(頭 12 桁)。safety_caps.py は末尾に足しただけ。assist.py は速さの天井では
+    変えていない(2026-10-26 の発進の前進で変えた。変える前の動きは写しで比べ、OFF の同じさは tests/test_launch_drive.py)"""
+    assert {k: v[:12] for k, v in BEFORE_SHA.items()} == {'drive.py': 'ac9ad980d067', 'safety_caps.py': 'd614ac919365',
+                                                           'assist.py': '8e73208762f9'}
+    load_before()
+    now = (ROOT / 'jetformer' / 'safety_caps.py').read_text(encoding='utf-8')
+    assert now.startswith((FIX / 'safety_caps.py').read_text(encoding='utf-8'))
+    assert sha(ROOT / 'tests' / 'fixtures' / 'launch_before' / 'assist.py') == BEFORE_SHA['assist.py']   # 発進の前進の前も同じ
+
+
+# ---------------------------------------------------------------- 合成の走行(天井より速い周)
+# (秒, ヨー deg/s, 速さ m/s)。左回り。R1 は右 −300 deg/s × 0.6 秒。1 周 7.4 秒・向き +360 度
+LAP_FAST = [(0.6, -300.0, 2.8), (1.0, 160.0, 2.6), (2.0, 30.0, 4.7), (1.5, 90.0, 4.3), (1.0, 40.0, 4.4),
+            (1.0, 145.0, 4.1), (0.3, 0.0, 3.5)]
+START = [(1.0, 0.0, 0.0), (1.0, 0.0, 2.0), (1.0, 180.0, 2.5), (0.3, 0.0, 3.0)]
+LAP_SLOW = [(0.6, -300.0, 2.8), (1.0, 160.0, 2.6), (2.0, 30.0, 4.0), (1.5, 90.0, 3.8), (1.0, 40.0, 3.9),
+            (1.0, 145.0, 3.6), (0.3, 0.0, 3.2)]          # 周の速さ p90 4.0
+# 周の時間で遅い周(8.4 秒。自動合わせの物差しは周の時間 = fix.md)。LAP_SLOW の最後の直線を 1.3 秒にしただけ
+LAP_SLOW_T = LAP_SLOW[:-1] + [(1.3, 0.0, 3.2)]
+# 偽の起点の周: 向き +195 度のところで衝突のように右へ 180 度回る(R1 と同じ形)→ 残りの左旋回 → 本物の R1
+LAP_SPIN = [(0.6, -300.0, 2.8), (1.0, 160.0, 2.6), (2.0, 30.0, 4.7), (1.5, 90.0, 4.3), (0.5, 40.0, 4.4),
+            (0.6, -300.0, 2.8), (1.0, 160.0, 2.6), (2.0, 30.0, 4.4), (1.5, 90.0, 4.0), (0.3, 0.0, 3.5)]
+
+
+def course(laps, hz=100.0, impacts=()):
+    """[(t_ns, gz, v, ax, ay)] 100 Hz。impacts = [(秒, 水平の加速度 m/s²)] でそのサンプルに衝撃"""
+    out, k = [], 0
+    imp = {int(round(s * hz)): a for s, a in impacts}
+    for dur, g, v in laps:
+        for _ in range(int(round(dur * hz))):
+            ax = imp.get(k, 0.0)
+            out.append((T0 + int(round(k * NS / hz)), g + 0.4, v, ax, 0.0))
+            k += 1
+    return out
+
+
+def build(laps=None, n_frames=None, human=(6.6, 7.1), lost=(7.6, 7.7), stale=(8.6, 8.72), reverse=(4.3, 4.63),
+          weak=(4.63, 4.96), left_steer=(3.0, 3.66), vbat=None, impacts=()):
+    """カメラ 30 fps のフレームと 100 Hz の車両のサンプル。時刻の範囲(秒、始まりから)で:
+    human 人が操縦・lost CH3 が届かない(中立で止める)・stale 車両のサンプルが来ない(0.12 秒: 天井は動かさない、止めない)・
+    reverse 後退側の予測(補助が中立を挟む)・weak 弱い前進・left_steer 舵 1600 µs(左旋回の決まりの舵)。
+    vbat(t) → 基板の電圧(None なら無し = 古いファーム)"""
+    laps = laps if laps is not None else START + LAP_FAST * 4
+    imu = course(laps, impacts=impacts)
+    t_end = imu[-1][0]
+
+    def inside(rng, s):
+        return rng is not None and rng[0] <= s < rng[1]
+    veh = []
+    for t, g, v, ax, ay in imu:
+        s = (t - T0) / 1e9
+        if inside(stale, s):
+            continue
+        sel = not inside(human, s)
+        d = {'pwm': [1441, 1496, 2000 if sel else 1000], 'valid': [True, True, not inside(lost, s)], 'select': sel,
+             'moving': v > 0, 'erpm': int(round(-v / sc.KV))}
+        if vbat is not None:
+            vb = vbat(s)
+            d['vbat_ok'] = vb is not None
+            d['vbat_v'] = float(vb) if vb is not None else float('nan')
+        veh.append((t, d))
+    frames = []
+    i = 0
+    while True:
+        cam_t = T0 + 150_000_000 + int(round(i * NS / 30))
+        if cam_t > t_end - 50_000_000 or (n_frames is not None and i >= n_frames):
+            break
+        s = (cam_t - T0) / 1e9
+        pred = np.tile([[1450.0, 1250.0]], (10, 1))
+        if inside(left_steer, s):
+            pred[:, 0] = 1600.0
+        if inside(reverse, s):
+            pred[:, 1] = 1650.0
+        if inside(weak, s):
+            pred[:, 1] = 1380.0
+        frames.append({'cam_t': cam_t, 'pred': pred})
+        i += 1
+    return {'frames': frames, 'imu': imu, 'veh': veh}
+
+
+class Feeder(object):
+    """cam_evt の代わり。wait() のたびに次のフレームまでのセンサー値をバッファへ入れ、時計を進める(スレッドなし)"""
+
+    def __init__(self, d, sc_, bufs, cam_slot, box):
+        self.d, self.sc = d, sc_
+        self.tof_buf, self.imu_buf, self.veh_buf = bufs
+        self.cam_slot, self.box = cam_slot, box
+        self.i = self.ki = self.kv = 0
+
+    def wait(self, timeout):
+        fr = self.sc['frames']
+        if self.i >= len(fr):
+            self.d._stop.set()
+            return False
+        cam_t = fr[self.i]['cam_t']
+        imu, veh = self.sc['imu'], self.sc['veh']
+        while self.ki < len(imu) and imu[self.ki][0] <= cam_t + 2_000_000:
+            t, g, v, ax, ay = imu[self.ki]
+            self.imu_buf.append((t, np.array([ax, ay, 9.8, 0.0, 0.0, np.deg2rad(g)], np.float32)))
+            self.ki += 1
+        while self.kv < len(veh) and veh[self.kv][0] <= cam_t - 1_000_000:
+            self.veh_buf.append((veh[self.kv][0], dict(veh[self.kv][1])))
+            self.kv += 1
+        self.tof_buf.append((cam_t - 5_000_000, np.full((8, 8), 1000, np.uint16)))
+        self.cam_slot[0] = Sample(cam_t, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': self.i})
+        self.box['ns'] = cam_t + 8_000_000
+        self.box['m'] = (cam_t - T0) / 1e9 + 100.0
+        self.d.heartbeat_t = self.box['m']
+        self.i += 1
+        return True
+
+    def clear(self):
+        pass
+
+    def set(self):
+        pass
+
+
+def run(mod, monkeypatch, tmp_path, params, sc_, dry_run=False, description=None):
+    """mod(drive か変更前の drive)の _loop を決まった時刻・決まった入力の列で回す → (driver, pca, recorder)"""
+    box = {'ns': T0, 'm': 100.0}
+    monkeypatch.setattr(clock, 'now_ns', lambda: box['ns'])
+    monkeypatch.setattr(mod, 'time', types.SimpleNamespace(monotonic=lambda: box['m'], perf_counter=_time.perf_counter,
+                                                           time=lambda: 1.0, sleep=lambda s: None, strftime=_time.strftime))
+    monkeypatch.setattr(mod, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    monkeypatch.setattr(mod, 'FLOOR_REF_PATH', tmp_path / 'no_floor_ref.npy')
+    rec = FakeRecorder()
+    d = mod.Driver(hub=None, recorder=rec)
+    d.params = dict(mod.DEFAULT_PARAMS, **{k: v for k, v in params.items() if k in mod.DEFAULT_PARAMS})
+    d.hb_token, d.hb_count = 'tok', 1
+    d.st = {'phase': 'driving', 'mode_id': 4}
+    if description is not None:
+        d.st['description'] = description
+    pca = FakePCA()
+    out = mod._Output(pca, config.PCA9685, REF, lambda: d.params)
+    bufs = (collections.deque(maxlen=10), collections.deque(maxlen=60), collections.deque(maxlen=50))
+    cam_slot = [None]
+    feeder = Feeder(d, sc_, bufs, cam_slot, box)
+    runner = SeqRunner([f['pred'] for f in sc_['frames']])
+    d._loop(d.st, runner, fake_normalize, pca, out, REF, 6, 0.0, cam_slot, feeder, *bufs, dry_run)
+    d._stop.clear()
+    return d, pca, rec
+
+
+def assert_before_fields_equal(rows_before, rows_new):
+    """変更前の記録の欄(infer_ms は時間の計測なので除く)が、新しい記録でビット単位で同じ"""
+    assert len(rows_before) == len(rows_new)
+    for (t0, r0), (t1, r1) in zip(rows_before, rows_new):
+        assert t0 == t1
+        for k, v in r0.items():
+            if k != 'infer_ms':
+                assert same(v, r1[k]), (t0, k, v, r1[k])
+
+
+def on_params(**kw):
+    return dict(PARAMS, speed_ceiling=1, **kw)
+
+
+# ================================================================ D-o1 既定・起動
+def test_defaults_and_reset_on_boot(monkeypatch, tmp_path):
+    before = load_before()
+    assert {k: drive.DEFAULT_PARAMS[k] for k in SC_KEYS} == {'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1,
+                                                            'speed_auto': 0, 'auto_target_mps': 4.27, 'auto_vref_v': 8.35}
+    assert {k: drive.PARAM_LIMITS[k] for k in SC_KEYS} == {'speed_ceiling': (0, 1), 'ceil_all_mps': (4.0, 5.0),
+                                                          'ceil_left_mps': (3.5, 4.5), 'speed_auto': (0, 1),
+                                                          'auto_target_mps': (3.8, 4.4), 'auto_vref_v': (7.0, 9.0)}
+    # 今の項目の既定値・範囲は変わらない(発進の前進の 4 つは 2026-10-26 に足した。tests/test_launch_drive.py)
+    added = SC_KEYS + drive.LAUNCH_KEYS + ('rec_back_guard',)     # 後ろの見張りは 2026-10-26 fix2(tests/test_recovery_back_guard.py)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in added} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in added} == before.PARAM_LIMITS
+    assert set(before.RESET_ON_BOOT) <= set(drive.RESET_ON_BOOT)
+    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) - set(drive.LAUNCH_KEYS) - {'rec_back_guard'} == set(SC_KEYS) - {'auto_vref_v'}
+    path = tmp_path / 'drive_settings.json'
+    path.write_text(json.dumps({'params': {'speed_ceiling': 1, 'speed_auto': 1, 'ceil_all_mps': 4.9, 'ceil_left_mps': 3.6,
+                                           'auto_target_mps': 4.4, 'auto_vref_v': 8.1, 'steer_gain': 1.5}}))
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', path)
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    assert d.params['speed_ceiling'] == 0 and d.params['speed_auto'] == 0            # ON は次の起動に持ち越さない
+    assert (d.params['ceil_all_mps'], d.params['ceil_left_mps'], d.params['auto_target_mps']) == (4.5, 4.1, 4.27)
+    assert d.params['auto_vref_v'] == 8.1 and d.params['steer_gain'] == 1.5           # 較正の値だけ残す
+    # 古い設定ファイル(新しい項目なし)でも既定で埋まる・0/1 にそろう
+    p = d._clean_params({'speed_ceiling': 0.7})
+    assert p['speed_ceiling'] == 1 and p['speed_auto'] == 0 and isinstance(p['ceil_all_mps'], float)
+    assert d._clean_params({'ceil_all_mps': 9})['ceil_all_mps'] == 5.0
+    st = d.status()
+    spec = st['speed_ctrl_spec']
+    json.dumps(spec)
+    assert spec['ceiling']['all_mps'] == 4.5 and spec['ceiling']['left_mps'] == 4.1
+    assert spec['ceiling']['left_rule'] == {'steer_us': 100.0, 'gz_dps': 45.0, 'hold_s': 0.25}
+    assert spec['ceiling']['brake'] is False and spec['ceiling']['changes_steer'] is False
+    assert '4.5' in spec['ceiling']['title'] and '4.1' in spec['ceiling']['title']
+    assert spec['auto']['target_mps'] == 4.27 and spec['auto']['m_range'] == [0.85, 1.20]
+    assert spec['auto']['raise_max_gain'] == 1.10 and spec['auto']['requires_ceiling'] is True
+    assert st['limits']['speed_ceiling'] == [0, 1]
+    assert drive.speed_ctrl_spec(dict(d.params, ceil_all_mps=4.2, ceil_left_mps=4.5))['ceiling']['left_mps'] == 4.2
+
+
+# ================================================================ D-o4 走行中は ON にできない
+class _Alive(object):
+    def is_alive(self):
+        return True
+
+
+def test_running_rules_and_start_refusal(monkeypatch, tmp_path):
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+    d = drive.Driver(hub=None, recorder=FakeRecorder())
+    # 止まっているとき: ON にできる。自動合わせは天井が ON のときだけ
+    with pytest.raises(ValueError, match='天井が ON'):
+        d.set_params({'speed_auto': 1})
+    assert d.set_params({'speed_ceiling': 1, 'speed_auto': 1})['speed_auto'] == 1
+    p = d.set_params({'speed_ceiling': 0})                                          # 天井を OFF → 自動合わせも OFF
+    assert p['speed_ceiling'] == 0 and p['speed_auto'] == 0
+    assert d.set_params({'ceil_all_mps': 4.6, 'auto_vref_v': 8.2})['ceil_all_mps'] == 4.6
+    d.set_params({'ceil_all_mps': 4.5, 'auto_vref_v': 8.35})
+    # 走行中: 0 → 1・値の変更は断る。1 → 0 はできる
+    d.thread = _Alive()
+    assert d.running
+    for k in ('speed_ceiling', 'speed_auto'):
+        with pytest.raises(ValueError, match='走行中は'):
+            d.set_params({k: 1, 'speed_ceiling': 1})
+    assert d.params['speed_ceiling'] == 0
+    d.thread = None
+    d.set_params({'speed_ceiling': 1, 'speed_auto': 1})
+    d.thread = _Alive()
+    for k, v in (('ceil_all_mps', 4.6), ('ceil_left_mps', 3.9), ('auto_target_mps', 4.15), ('auto_vref_v', 8.2)):
+        with pytest.raises(ValueError, match=k):
+            d.set_params({k: v})
+    assert d.set_params({'ceil_all_mps': 4.5, 'steer_gain': 1.1})['steer_gain'] == 1.1     # 同じ値を送るのはよい
+    p = d.set_params({'speed_ceiling': 0})                                          # 走行中に天井を OFF → 自動合わせも OFF
+    assert p['speed_ceiling'] == 0 and p['speed_auto'] == 0
+    with pytest.raises(ValueError, match='走行中は'):
+        d.set_params({'speed_ceiling': 1})
+    d.thread = None
+    d.set_params({'speed_ceiling': 1, 'speed_auto': 1})
+    d.thread = _Alive()
+    assert d.set_params({'speed_auto': 0})['speed_auto'] == 0 and d.params['speed_ceiling'] == 1
+    d.thread = None
+    # start も自動合わせだけ(天井 OFF)を断る
+    info = {'name': 'm', 'drivable': True, 'trained_modes': [4], 'postprocess': None}
+    monkeypatch.setattr(drive, 'model_info', lambda run: dict(info))
+    d.params = dict(drive.DEFAULT_PARAMS)
+    with pytest.raises(ValueError, match='天井が ON'):
+        d.start('m', 4, params={'speed_auto': 1, 'speed_ceiling': 0})
+    assert not d.running and d.params['speed_auto'] == 0
+
+
+# ================================================================ D-o2 OFF はビット単位で同じ・D-o3 OFF の影
+@pytest.mark.parametrize('extra', [{}, {'zone_caps': 1}, {'throttle_gain': 0.9, 'steer_trim_us': 12.0}])
+def test_off_is_bit_identical_to_before(monkeypatch, tmp_path, extra):
+    before = load_before()
+    sc_ = build(vbat=lambda s: 8.2)
+    params = dict(PARAMS, **extra)
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, params, sc_)
+    d1, pca1, rec1 = run(drive, monkeypatch, tmp_path, params, sc_, description='V_before=8.30')
+    assert len(pca0.pairs) > 900
+    assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+    assert_before_fields_equal(rec0.rows, rec1.rows)
+    rows = [r for _, r in rec1.rows]
+    # 影の判定(OFF): 天井は弱めた・中立にしたはずのフレームがある・出力は変えていない
+    modes = collections.Counter(r['ceil_mode'] for r in rows if not r['hold'])
+    assert modes[sc.CEIL_LIMIT] > 20 and modes[sc.CEIL_NEUTRAL] > 20 and modes[sc.CEIL_PASS] > 20 and modes[-1] > 0
+    assert all(r['ceil_on'] is False and r['ceil_applied'] is False and r['sa_on'] is False and r['sa_applied'] is False
+               for r in rows)
+    assert all(r['gains'][1] == params['throttle_gain'] for r in rows)
+    assert d1.st['speed_ctrl_error'] is None and d1.st['stats']['ceil_applied'] == 0
+    assert any(r['sa_event'] == sa.EV_FIXED for r in rows) and d1.st['auto_end']['laps_used'] >= 2
+    assert d1.st['auto_end']['on'] is False and d1.st['auto_end']['suggest_throttle_gain_auto'] is not None
+
+
+def test_off_identical_dry_run_and_old_scenario(monkeypatch, tmp_path):
+    """推論の確認(dry run)・ON の設定でも dry run なら変更前と同じ。区間の上限の試験の合成の走行(遅い周)も同じ"""
+    from test_drive_caps import scenario as zc_scenario
+    before = load_before()
+    sc_ = build(n_frames=200)
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, PARAMS, sc_, dry_run=True)
+    _, pca1, rec1 = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_, dry_run=True)
+    assert pca0.pairs == pca1.pairs
+    assert_before_fields_equal(rec0.rows, rec1.rows)
+    assert all(r['ceil_mode'] == -1 for _, r in rec1.rows)              # dry run は動かさない(影も「動かしていない」)
+    # test_drive_caps の合成の走行(フレームごとに 1 つの車両のサンプル)
+    frames, imu = zc_scenario()
+    sc_old = {'frames': [{'cam_t': f['cam_t'], 'pred': f['pred']} for f in frames],
+              'imu': [(t, g, v, 0.0, 0.0) for t, g, v in imu],
+              'veh': [(f['cam_t'] - 3_000_000, f['veh']) for f in frames if not f['veh_skip']]}
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, PARAMS, sc_old)
+    _, pca1, rec1 = run(drive, monkeypatch, tmp_path, PARAMS, sc_old)
+    assert pca0.pairs == pca1.pairs and len(pca0.pairs) > 300
+    assert_before_fields_equal(rec0.rows, rec1.rows)
+
+
+def test_off_identical_when_speed_ctrl_raises(monkeypatch, tmp_path):
+    """OFF で天井・自動合わせの計算に例外が入っても、出力と今の欄は変更前と同じ。影が止まったことは記録とメッセージに 1 回"""
+    before = load_before()
+    sc_ = build()
+    _, pca0, rec0 = run(before, monkeypatch, tmp_path, PARAMS, sc_)
+    real_ceil, real_lap = sc.ceil_step, sa.fb_lap
+    calls = [0, 0]
+
+    def boom_ceil(*a, **kw):
+        calls[0] += 1
+        if calls[0] == 800:                     # 周の例外(最初の周を閉じる約 10.7 秒)より後
+            raise RuntimeError('試験の例外(天井)')
+        return real_ceil(*a, **kw)
+
+    def boom_lap(*a, **kw):
+        calls[1] += 1
+        raise RuntimeError('試験の例外(周)')
+    monkeypatch.setattr(sc, 'ceil_step', boom_ceil)
+    monkeypatch.setattr(sa, 'fb_lap', boom_lap)
+    d, pca1, rec1 = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+    assert_before_fields_equal(rec0.rows, rec1.rows)
+    assert calls[0] >= 800 and calls[1] >= 1
+    kinds = [e for e in rec1.events if e[0] == 'speed_ctrl_error']
+    assert sorted(e[1]['part'] for e in kinds) == ['auto', 'ceil']
+    assert '記録だけ' in d.st['recording_note'] and '車への出力は変わりません' in d.st['message']
+    rows = [r for _, r in rec1.rows]
+    k = next(i for i, r in enumerate(rows) if r['ceil_mode'] == -2)
+    assert all(r['ceil_mode'] == -2 and r['sa_src'] == -1 for r in rows[k:])
+
+
+def test_off_shadow_fields_on_every_row(monkeypatch, tmp_path):
+    """OFF でも ceil_*・sa_* が全部の行に入る(名前と型は spec 2.6・3.9 節)。nan の決まり"""
+    sc_ = build(vbat=lambda s: 8.1)
+    d, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    rows = [dict(r, _s=(t - T0) / 1e9) for t, r in rec.rows]
+    assert any(r['hold'] for r in rows)
+    for r in rows:
+        for name, typ in list(CEIL_FIELDS.items()) + list(SA_FIELDS.items()):
+            assert name in r and isinstance(r[name], typ), (name, r.get(name))
+        if r['hold']:
+            assert r['ceil_mode'] == -1 and np.isnan(r['ceil_cap']) and np.isnan(r['ceil_thr_us'])
+            assert r['ceil_in_us'] == r['out'][1] and np.isfinite(r['sa_m']) and np.isnan(r['sa_gain'])
+            continue
+        assert r['ceil_in_us'] == r['out'][1]                     # OFF: 天井への入力 = 車に出した値
+        if r['ceil_mode'] >= 0:
+            assert np.isfinite(r['ceil_cap']) and np.isfinite(r['ceil_thr_us']) and np.isfinite(r['ceil_vpred'])
+            assert r['ceil_thr_us'] >= r['ceil_in_us']
+        else:
+            assert np.isnan(r['ceil_cap']) and np.isnan(r['ceil_thr_us'])
+        assert np.isfinite(r['sa_m']) and np.isfinite(r['sa_gain'])
+        # 基板の電圧は、走り出す前は 20 サンプル(約 0.2 秒)そろってから(fix.md。前は 100 サンプル = 約 1 秒で、走り出しと重なった)。
+        # それまでは説明欄も無いので源 0
+        assert r['sa_src'] == (sa.SRC_BOARD if r['_s'] >= 0.25 else sa.SRC_NONE) or 0.15 <= r['_s'] < 0.25
+        assert np.isfinite(r['sa_lap_p90']) == (r['sa_event'] not in (sa.EV_NONE, sa.EV_FALSE_ANCHOR,
+                                                                      sa.EV_ABANDON_COLL))
+    # 人の操縦・車両の値が古いフレームでは天井を動かさない
+    by_s = {(t - T0) / 1e9: r for t, r in rec.rows}
+    assert all(r['ceil_mode'] == -1 for s, r in by_s.items() if 6.62 <= s < 7.1 and not r['hold'])
+    vt = np.array([t for t, _ in sc_['veh']])
+    stale = []
+    for t, r in rec.rows:                       # 最新の車両のサンプルが 0.1 秒以上前のフレーム(止めない・天井は動かさない)
+        j = np.searchsorted(vt, t - 1_000_000, side='right') - 1
+        if not r['hold'] and r['select'] and t - vt[j] >= 100_000_000:
+            stale.append(r)
+    assert stale and all(r['ceil_mode'] == -1 for r in stale)
+    assert d.st['now']['ceil']['on'] is False and d.st['now']['auto']['on'] is False
+    strict_json(d)
+
+
+def test_recorder_keeps_fields_in_ai_cmd_npz(monkeypatch, tmp_path):
+    """記録(AI_CMD.npz)まで ceil_*・sa_* が残る。recorder の欄は段 volt の担当: まだ入っていなければ skip"""
+    src = (ROOT / 'jetformer' / 'recorder.py').read_text(encoding='utf-8')
+    if 'ceil_on' not in src or 'sa_on' not in src:
+        pytest.skip('recorder.py に ceil_*・sa_* の欄がまだありません(段 volt)')
+    from jetformer.recorder import Recorder
+    from test_drive_caps import _Hub
+    sc_ = build(n_frames=400)
+    _, _, fake = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_)
+    monkeypatch.undo()
+    monkeypatch.setattr(config, 'RAW_DIR', tmp_path)
+    monkeypatch.setattr(config, 'SCENE_SECONDS', 1.0)
+    rec = Recorder(_Hub())
+    rec._warm_up = lambda: None
+    log = rec.start(description='t')
+    t0 = rec.log['start_ns']
+    for i in range(20):
+        rec._on_sample('CAM_FRONT', Sample(t0 + i * 33_000_000, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': i}))
+    rows = [r for _, r in fake.rows if not r['hold'] and r['ceil_applied']][:1] + [r for _, r in fake.rows if r['hold']][:1]
+    old = {k: v for k, v in rows[0].items() if not (k.startswith('ceil_') or k.startswith('sa_'))}
+    for j, r in enumerate(rows + [old]):
+        rec.add_ai(t0 + (2 + j) * 33_000_000, r)
+    rec._io.join()
+    rec._finalize(0, partial=False)
+    rec.stop(only_log=log)
+    z = np.load(tmp_path / log / ('%s-0001' % log) / 'AI_CMD.npz')
+    for name in list(CEIL_FIELDS) + list(SA_FIELDS):
+        assert name in z.files and len(z[name]) == 3, name
+    assert z['ceil_applied'].tolist() == [True, False, False] and z['ceil_on'].tolist() == [True, True, False]
+    assert z['ceil_mode'][2] == -1 and np.isnan(z['ceil_thr_us'][2])
+
+
+# ================================================================ D-c3 ON の出力
+def test_on_output_is_pure_function_value(monkeypatch, tmp_path):
+    """ON: 書いた値 = 純粋な関数の値(AI のフレーム)。舵は変えない・前進を強めない。dry run・人・中立止めのフレームは変えない"""
+    sc_ = build()
+    _, pca0, rec0 = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    calls = []
+    real = sc.ceil_step
+
+    def spy(*a, **kw):
+        r = real(*a, **kw)
+        calls.append((a, r))
+        return r
+    monkeypatch.setattr(sc, 'ceil_step', spy)
+    d1, pca1, rec1 = run(drive, monkeypatch, tmp_path, on_params(), sc_)
+    monkeypatch.setattr(sc, 'ceil_step', real)
+    assert len(rec0.rows) == len(rec1.rows) and len(calls) == sum(1 for _, r in rec1.rows if not r['hold'])
+    # 純粋な関数を同じ入力の列でもう一度回すと同じ(状態は前の出力)
+    # 状態は前の呼び出しの出力か、中立止めのあとの初めの状態
+    prev_state = sc.CeilState()
+    for args, (st_out, o) in calls:
+        assert args[0] == prev_state or args[0] == sc.CeilState()
+        st2, o2 = real(*args)
+        assert st2 == st_out and o2.mode == o.mode and o2.thr_us == o.thr_us and o2.allow_us == o.allow_us
+        prev_state = st_out
+    rows_on = [r for _, r in rec1.rows if not r['hold']]
+    rows_off = [r for _, r in rec0.rows if not r['hold']]
+    n_applied = 0
+    for (args, (_, o)), r_on, r_off in zip(calls, rows_on, rows_off):
+        assert r_on['ceil_in_us'] == r_off['out'][1] == args[6]             # 天井への入力 = OFF の出力
+        assert r_on['out'][0] == r_off['out'][0]                            # 舵は変えない
+        assert r_on['out'][1] >= r_off['out'][1]                            # 前進を強めない
+        if r_on['ceil_applied']:
+            assert r_on['out'][1] == o.thr_us == r_on['ceil_thr_us'] and o.active
+            n_applied += 1
+        else:
+            assert r_on['out'][1] == r_off['out'][1]
+        if r_on['dry_run'] or not r_on['select']:
+            assert not r_on['ceil_applied'] and r_on['ceil_mode'] == -1
+    assert n_applied > 50 and d1.st['stats']['ceil_applied'] == n_applied
+    assert d1.st['stats']['ceil_neutral'] > 10
+    modes = collections.Counter(r['ceil_mode'] for r in rows_on if r['ceil_applied'])
+    assert set(modes) == {sc.CEIL_LIMIT, sc.CEIL_NEUTRAL}
+    assert any(r['ceil_left'] and r['ceil_steer'] >= 100 for r in rows_on)       # 舵の決まりで左旋回
+    assert any(r['ceil_left'] and r['ceil_steer'] < 100 and r['ceil_gz'] >= 45 for r in rows_on)   # ヨーの決まりで
+    # 中立止めの行は OFF と同じ
+    holds_on = [r['out'] for _, r in rec1.rows if r['hold']]
+    holds_off = [r['out'] for _, r in rec0.rows if r['hold']]
+    assert holds_on == holds_off and holds_on
+    assert d1.st['now']['ceil']['on'] is True and d1.st['speed_ctrl_error'] is None
+
+
+def test_speed_inputs_rules():
+    """天井の入力: 最新 3 サンプルの速さの中央値・0.1 秒前との差・最新 5 つのヨーの平均(spec 1.1 節)"""
+    t = 10 * NS
+    veh = [(t - k * 10_000_000, {'erpm': e}) for k, e in enumerate([-8000, -9000, -8800, -8600, -8000, -7900, -7800,
+                                                                   -7700, -7600, -7500, -7400, -7300, -7000])][::-1]
+    imu = [(t - k * 10_000_000, np.array([0, 0, 9.8, 0, 0, np.deg2rad(g)], np.float32))
+           for k, g in enumerate([50.0, 40.0, 30.0, 20.0, 10.0, 0.0])][::-1]
+    v, a, gz5, t_last = drive.speed_inputs(veh, imu, t)
+    assert v == pytest.approx(8800 * sc.KV) and t_last == t                      # 中央値(9000・8800・8000 → 8800)
+    v_old = sorted([7400, 7300, 7000])[1] * sc.KV                                # 0.1 秒前(t − 100 ms 以前の 3 つ)
+    assert a == pytest.approx((v - v_old) / 0.1)
+    assert gz5 == pytest.approx(30.0, abs=1e-3)
+    v, a, gz5, t_last = drive.speed_inputs(veh[:2], imu[:2], t - 110 * 10_000_000)
+    assert np.isnan(v) and np.isnan(a) and np.isnan(gz5) and t_last is None
+    v, a, gz5, t_last = drive.speed_inputs(veh[-2:], imu, t)                     # 2 つしかない: 古い方で埋める
+    assert v == pytest.approx(9000 * sc.KV) and np.isnan(a)
+
+
+# ================================================================ D-c5 区間の上限との順番
+def test_with_zone_caps_takes_less_forward(monkeypatch, tmp_path):
+    from test_drive_caps import scenario as zc_scenario
+    frames, imu = zc_scenario()
+    fast = {'frames': [{'cam_t': f['cam_t'], 'pred': f['pred']} for f in frames],
+            'imu': [(t, g, v + 1.3, 0.0, 0.0) for t, g, v in imu],                # 速くして天井にも掛かるように
+            'veh': [(f['cam_t'] - 3_000_000, dict(f['veh'], erpm=int(f['veh']['erpm'] - 1.3 / sc.KV)))
+                    for f in frames if not f['veh_skip']]}
+    _, _, rz = run(drive, monkeypatch, tmp_path, dict(PARAMS, zone_caps=1), fast)
+    _, _, rb = run(drive, monkeypatch, tmp_path, on_params(zone_caps=1), fast)
+    n_ceil = n_brake = 0
+    for (_, z), (_, b) in zip(rz.rows, rb.rows):
+        if z['hold']:
+            continue
+        assert b['ceil_in_us'] == z['out'][1]                    # 天井の入力 = 区間の上限のあと
+        assert b['out'][1] >= z['out'][1]                        # 出力は前進の少ない方
+        if z['cap_mode'] == 3:                                   # 区間の上限のブレーキは天井を通っても変わらない
+            assert b['out'][1] == z['out'][1] and not b['ceil_applied'] and b['ceil_mode'] == sc.CEIL_PASS
+            n_brake += 1
+        n_ceil += int(b['ceil_applied'])
+    # 区間の上限が掛かる速さ(≤ 3.0 m/s)では天井は掛からないので、同じフレームで両方が弱めることはない
+    assert n_brake > 0 and n_ceil > 0
+
+
+# ================================================================ D-a1〜a3 自動合わせのつなぎ
+def test_auto_on_gain_applied_and_recorded(monkeypatch, tmp_path):
+    """ON: 掛けたゲイン g が記録の gains[:,1]。AI のフレームだけ。ブレーキ・後退側には掛からない。m は 1 秒 0.03 まで"""
+    sc_ = build(vbat=lambda s: 7.8)
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_)
+    rows = [(t, r) for t, r in rec.rows if not r['hold']]
+    m_ff = sa.ff_of_voltage(7.8)
+    assert m_ff == pytest.approx(1.0705, abs=1e-3)
+    n_app = 0
+    prev = None
+    for t, r in rows:
+        ai = r['select'] and not r['dry_run']
+        assert r['sa_on'] is True
+        if ai:
+            assert r['gains'][1] == pytest.approx(r['sa_gain']) and r['sa_gain'] == pytest.approx(
+                sa.gain_of(0.9, r['sa_m']))
+            n_app += int(r['sa_applied'])
+            raw_t = r['raw'][1]
+            if raw_t > REF[1] and r['assist'] == 0:
+                assert r['model_out'][1] == pytest.approx(raw_t)              # ブレーキ・後退側はモデルのまま
+            elif r['assist'] == 0 and r['guard'] == 0:
+                assert r['model_out'][1] == pytest.approx(REF[1] + r['sa_gain'] * (raw_t - REF[1]))
+        else:
+            assert r['gains'][1] == 0.9 and not r['sa_applied']
+        if prev is not None and np.isfinite(prev[1]['sa_m']) and prev[1]['sa_src'] == sa.SRC_BOARD:
+            dt = (t - prev[0]) / 1e9               # 基板の電圧の最初の値(約 1 秒・走り出しと同じころ)はそのまま入る
+            assert abs(r['sa_m'] - prev[1]['sa_m']) <= 0.03 * dt + 1e-9
+        prev = (t, r)
+    assert n_app > 500
+    first = next(r for _, r in rows if r['sa_src'] == sa.SRC_BOARD)
+    assert first['sa_m_ff'] == pytest.approx(m_ff) and first['sa_m'] == pytest.approx(m_ff)   # 最初の値はそのまま
+    assert first['sa_v'] == pytest.approx(7.8) and rows[0][1]['sa_src'] == sa.SRC_NONE
+    assert d.st['now']['auto']['on'] is True and d.st['auto_end']['on'] is True
+    strict_json(d)
+
+
+def strict_json(d):
+    """画面へ送る状態に NaN が無い(サーバーの JSON は allow_nan=False)"""
+    json.dumps({k: d.st.get(k) for k in ('now', 'auto_end', 'stats', 'speed_ctrl_error')}, allow_nan=False)
+    json.dumps(d.status()['speed_ctrl_spec'], allow_nan=False)
+
+
+def test_auto_voltage_sources_and_sag(monkeypatch, tmp_path):
+    # 基板の電圧: 1 秒だけ 0.6 V 下がっても m_ff の変化は 0.5% 以下(上の包絡)
+    sc_ = build(vbat=lambda s: 7.6 if 12.0 <= s < 13.0 else 8.2)
+    _, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    ff = [r['sa_m_ff'] for _, r in rec.rows if not r['hold'] and r['sa_src'] == sa.SRC_BOARD]
+    assert len(ff) > 900 and max(ff) - min(ff) <= 0.005 * min(ff)
+    assert ff[0] == pytest.approx(sa.ff_of_voltage(8.2))
+    # 走り出したあとの電圧の下がりは 1 秒 0.01 まで
+    sc_ = build(vbat=lambda s: 8.35 if s < 25.0 else 7.6)          # 走り出したあと(25 秒)に下がる
+    _, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    rows = [(t, r) for t, r in rec.rows if not r['hold'] and r['sa_src'] == sa.SRC_BOARD]
+    for (t0, a), (t1, b) in zip(rows, rows[1:]):
+        assert abs(b['sa_m_ff'] - a['sa_m_ff']) <= 0.01 * (t1 - t0) / 1e9 + 1e-9
+    assert rows[-1][1]['sa_m_ff'] > 1.0 and rows[-1][1]['sa_m_ff'] < sa.ff_of_voltage(7.6)
+    # 基板の電圧なし → 説明欄の V_before → なし(1.00)
+    sc_ = build(n_frames=200)
+    _, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_, description='battery=#1 V_before=7.80 V_after=__')
+    r = [r for _, r in rec.rows if not r['hold']][-1]
+    assert r['sa_src'] == sa.SRC_DESC and r['sa_v'] == 7.8 and r['sa_m_ff'] == pytest.approx(sa.ff_of_voltage(7.8))
+    _, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_, description='V_before=__')
+    r = [r for _, r in rec.rows if not r['hold']][-1]
+    assert r['sa_src'] == sa.SRC_NONE and np.isnan(r['sa_v']) and r['sa_m_ff'] == 1.0
+    # 基板の電圧が途切れた: 最後の m_ff を保つ(源は基板のまま)
+    sc_ = build(vbat=lambda s: 7.9 if s < 10.0 else None)
+    _, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_, description='V_before=8.35')
+    r = [r for _, r in rec.rows if not r['hold']][-1]
+    assert r['sa_src'] == sa.SRC_BOARD and r['sa_m_ff'] == pytest.approx(sa.ff_of_voltage(7.9))
+
+
+def test_auto_laps_close_at_r1_anchors(monkeypatch, tmp_path):
+    """周は R1 の起点(区間の判定のジャイロの位相)ごとに閉じる。乱れた周(人・中立止め・補助)は使わない。
+    使った周で m_fb を直す(目標より速い周 → 下げる)"""
+    sc_ = build()
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_)
+    ev = [(round((t - T0) / 1e9, 2), r['sa_event'], r['sa_lap_p90'], r['sa_lap_s'], r['sa_m_fb'])
+          for t, r in rec.rows if r['sa_event'] not in (sa.EV_NONE, -1)]
+    assert len(ev) == 3                           # 起点 4 つ(4 周の頭の R1)→ 周 3 つ
+    assert ev[0][1] == sa.EV_UNUSED               # 1 周目: 後退の補助・人の操縦・中立止め
+    used = [e for e in ev if e[1] == sa.EV_FIXED]
+    assert len(used) >= 2 and all(abs(e[3] - 7.4) < 0.1 for e in used)
+    assert all(e[2] > 4.25 for e in used)         # 速い周 → 下げる
+    m = [e[4] for e in ev]
+    assert m[-1] < 1.0 and all(b <= a + 1e-12 for a, b in zip(m, m[1:]))
+    assert all(abs(math.log(b / a)) <= 0.03 + 1e-12 for a, b in zip([1.0] + m, m))
+    end = d.st['auto_end']
+    assert end['laps_used'] == len(used) and end['laps_skipped'] and end['suggest_laps'] == len(used)
+    # 目安(fix.md): 掛けたゲインの平均 × 周 ÷ 目標の周(既定 8.12 秒)の中央値。7.4 秒の周 → 約 0.9 × 0.97 = 0.87(使うなら 0.90 で丸め)
+    g = {}
+    for t, r in rec.rows:
+        if not r['hold'] and r['select']:
+            g.setdefault(sum(1 for e in ev if e[0] < round((t - T0) / 1e9, 2)), []).append(r['gains'][1])
+    k_used = [i for i, e in enumerate(ev) if e[1] == sa.EV_FIXED]
+    need = sorted(float(np.mean(g[i])) * ev[i][3] / (14.52 - 1.50 * drive.DEFAULT_PARAMS['auto_target_mps']) for i in k_used)
+    want = need[len(need) // 2] if len(need) % 2 else 0.5 * (need[len(need) // 2 - 1] + need[len(need) // 2])
+    assert end['suggest_throttle_gain_fixed'] == pytest.approx(min(max(want, 0.85), 1.20), abs=2e-3)
+    assert end['suggest_throttle_gain'] == end['suggest_throttle_gain_auto'] == pytest.approx(max(min(want, 1.10), 0.90),
+                                                                                              abs=2e-3)
+
+
+def test_auto_false_anchor_and_collision(monkeypatch, tmp_path):
+    """偽の起点(前に使った起点から向き < 270 度)は使わない。衝突(水平 2.5G 以上)の周は使わず、次の周は上げない"""
+    laps = START + LAP_FAST + LAP_FAST + LAP_SPIN + LAP_FAST + LAP_SLOW_T + LAP_SLOW_T + LAP_FAST
+    t_spin = sum(x[0] for x in START + LAP_FAST * 2) + sum(x[0] for x in LAP_SPIN[:5])
+    t_hit = sum(x[0] for x in START + LAP_FAST * 2 + LAP_SPIN) + 3.0          # 偽の起点の次の周の途中
+    sc_ = build(laps=laps, human=None, lost=None, stale=None, reverse=None, weak=None, impacts=[(t_hit, 30.0)])
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, auto_target_mps=4.4), sc_)
+    ev = [(round((t - T0) / 1e9, 2), r['sa_event'], r['sa_lap_s']) for t, r in rec.rows
+          if r['sa_event'] not in (sa.EV_NONE, -1)]
+    kinds = [e[1] for e in ev]
+    assert sa.EV_FALSE_ANCHOR in kinds
+    fa = next(e for e in ev if e[1] == sa.EV_FALSE_ANCHOR)
+    assert abs(fa[0] - t_spin) < 0.6
+    k = kinds.index(sa.EV_FALSE_ANCHOR)
+    assert ev[k + 1][2] == pytest.approx(sum(x[0] for x in LAP_SPIN), abs=0.1)   # 偽の起点をはさんだ周は 1 つにつながる
+    k_hit = next(i for i, e in enumerate(ev) if e[1] == sa.EV_UNUSED and e[0] > t_hit)
+    assert ev[k_hit + 1][1] == sa.EV_NORAISE_COLL            # 衝突の次の周(遅い周)は上げない
+    assert ev[k_hit + 2][1] == sa.EV_FIXED                   # その次の遅い周は上げる
+    m = {e[0]: r for e, r in zip(ev, [r for _, r in rec.rows if r['sa_event'] not in (sa.EV_NONE, -1)])}
+    assert m[ev[k_hit + 2][0]]['sa_m_fb'] > m[ev[k_hit + 1][0]]['sa_m_fb'] == m[ev[k_hit][0]]['sa_m_fb']
+    end = d.st['auto_end']
+    assert end['laps_skipped'].get('collision') == 1
+
+
+# ================================================================ D-e1 例外
+def test_auto_collision_then_stop_does_not_raise_next(monkeypatch, tmp_path):
+    """衝突 → 人が取り返して 2 秒止める → 再開(いちばん多い形): 衝突の周は閉じられない(位相が不確かに戻る)が、
+    「閉じられない周(衝突)」と数えて、再開後の最初の周は上げない(fix.md。前は +3% 上げた)"""
+    hit_part = LAP_FAST[:3]
+    stop = [(2.0, 0.0, 0.0)]
+    restart = START[1:]
+    laps = START + LAP_FAST + LAP_FAST + hit_part + stop + restart + LAP_SLOW_T + LAP_SLOW_T + LAP_FAST
+    t_hit = sum(x[0] for x in START + LAP_FAST * 2) + 3.0
+    t_stop = sum(x[0] for x in START + LAP_FAST * 2 + hit_part)
+    sc_ = build(laps=laps, human=(t_stop - 0.2, t_stop + 2.0), lost=None, stale=None, reverse=None, weak=None,
+                impacts=[(t_hit, 30.0)])
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, auto_target_mps=4.4), sc_)
+    ev = [(round((t - T0) / 1e9, 2), r['sa_event'], r['sa_lap_s'], r['sa_m_fb']) for t, r in rec.rows
+          if r['sa_event'] not in (sa.EV_NONE, -1)]
+    kinds = [e[1] for e in ev]
+    assert sa.EV_ABANDON_COLL in kinds, ev
+    k = kinds.index(sa.EV_ABANDON_COLL)
+    assert t_stop < ev[k][0] < t_stop + 2.5 and np.isnan(ev[k][2])
+    after = [e for e in ev[k + 1:] if e[1] != sa.EV_FALSE_ANCHOR]
+    assert after[0][1] == sa.EV_NORAISE_COLL and after[0][2] == pytest.approx(8.4, abs=0.1)   # 再開後の最初の周
+    assert after[0][3] == ev[k][3]                                                          # m_fb は上げない
+    assert after[1][1] == sa.EV_FIXED and after[1][3] > after[0][3]                         # その次の遅い周は上げる
+    end = d.st['auto_end']
+    assert end['laps_skipped'].get('collision') == 1
+    strict_json(d)
+
+
+def test_auto_first_board_voltage_while_moving_is_rate_limited(monkeypatch, tmp_path):
+    """走り出したあとに基板の電圧が初めて来た(説明欄の V_before 8.35 = 1.00 倍、基板 7.8 V = 1.07 倍): 1 フレームで跳ばずに
+    1 秒 0.01・0.03 で寄る(fix.md。前は 1 フレームで 1.00 → 1.07)。差が 0.02 以下ならそのまま入る"""
+    sc_ = build(vbat=lambda s: 7.8 if s >= 3.0 else None)
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_,
+                    description='V_before=8.35')
+    rows = [(t, r) for t, r in rec.rows if not r['hold'] and np.isfinite(r['sa_m'])]
+    first = next(i for i, (_, r) in enumerate(rows) if r['sa_src'] == sa.SRC_BOARD)
+    assert rows[first - 1][1]['sa_src'] == sa.SRC_DESC and rows[first - 1][1]['sa_m_ff'] == pytest.approx(1.0)
+    for (t0, a), (t1, b) in zip(rows, rows[1:]):
+        dt = (t1 - t0) / 1e9
+        assert abs(b['sa_m_ff'] - a['sa_m_ff']) <= 0.01 * dt + 1e-9
+        assert abs(b['sa_m'] - a['sa_m']) <= 0.03 * dt + 1e-9
+    assert rows[first][1]['sa_m_ff'] < 1.01 and rows[-1][1]['sa_m_ff'] > 1.03
+    # 差が小さい(V_before 7.85 → 1.064、基板 7.8 → 1.071)ならそのまま
+    _, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_,
+                    description='V_before=7.85')
+    rows = [r for _, r in rec.rows if not r['hold'] and np.isfinite(r['sa_m'])]
+    first = next(r for r in rows if r['sa_src'] == sa.SRC_BOARD)
+    assert first['sa_m_ff'] == pytest.approx(sa.ff_of_voltage(7.8))
+
+
+@pytest.mark.parametrize('bad', [0.5, 3.0, 12.75])
+def test_auto_ignores_broken_board_voltage(monkeypatch, tmp_path, bad):
+    """基板の電圧が 6.0〜9.0 V の外(分圧の外れ・張り付き): 古い解読・偽物で vbat_ok が立っていても使わない。
+    ゲインは上がらない(前は 0.5 V・3.0 V で 0.90 → 1.08、1 フレームで +15%)"""
+    sc_ = build(vbat=lambda s: bad)
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_)
+    rows = [r for _, r in rec.rows if not r['hold'] and np.isfinite(r['sa_m'])]
+    assert rows and all(r['sa_src'] == sa.SRC_NONE and r['sa_m_ff'] == 1.0 for r in rows)
+    assert max(r['sa_gain'] for r in rows) <= 0.9 + 1e-9
+    _, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_,
+                    description='V_before=7.80')
+    rows = [r for _, r in rec.rows if not r['hold'] and np.isfinite(r['sa_m'])]
+    assert all(r['sa_src'] == sa.SRC_DESC and r['sa_m_ff'] == pytest.approx(sa.ff_of_voltage(7.8)) for r in rows)
+
+
+def test_auto_view_shows_shadow_gain_when_off(monkeypatch, tmp_path):
+    """OFF のときの画面の「ゲイン(ON なら)」は、影で計算したゲイン(掛けていない throttle_gain ではない。fix.md)"""
+    sc_ = build(vbat=lambda s: 7.8)
+    d, _, rec = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    a = d.st['now']['auto']
+    last = [r for _, r in rec.rows if not r['hold']][-1]
+    assert a['on'] is False and a['gain'] == pytest.approx(last['sa_gain'], abs=1e-3) and a['gain'] != 1.0
+
+
+def test_ceiling_exception_turns_both_off(monkeypatch, tmp_path):
+    sc_ = build()
+    _, pca0, rec0 = run(drive, monkeypatch, tmp_path, PARAMS, sc_)
+    real = sc.ceil_step
+    calls = [0]
+
+    def boom(*a, **kw):
+        calls[0] += 1
+        if calls[0] == 400:
+            raise RuntimeError('試験の例外')
+        return real(*a, **kw)
+    monkeypatch.setattr(sc, 'ceil_step', boom)
+    d, pca1, rec1 = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_, description='V_before=7.8')
+    rows0, rows1 = [r for _, r in rec0.rows], [r for _, r in rec1.rows]
+    k = next(i for i, r in enumerate(rows1) if r['ceil_mode'] == -2)
+    assert any(r['ceil_applied'] for r in rows1[:k]) and any(r['sa_applied'] for r in rows1[:k])
+    # 例外のフレームでは天井は掛けない。自動合わせのゲインはそのフレームの前(推論のあと)に掛け終わっているので、
+    # OFF と同じになるのは次のフレームから(1 フレーム = 約 33 ms だけ m を掛けたまま)
+    assert not rows1[k]['ceil_applied']
+    for r0, r1 in zip(rows0[k + 1:], rows1[k + 1:]):            # 例外のあとは OFF と同じ出力(天井も自動合わせも外す)
+        assert r1['out'] == r0['out'] and r1['gains'] == r0['gains'] and not r1['ceil_applied'] and not r1['sa_applied']
+    events = [e for e in rec1.events if e[0] == 'speed_ctrl_error']
+    assert len(events) == 1 and events[0][1]['part'] == 'ceil'
+    assert '天井と自動合わせを外しました' in d.st['message'] and 'RuntimeError' in d.st['speed_ctrl_error']['ceil']
+    assert 'auto' in d.st['speed_ctrl_error']
+
+
+def test_auto_exception_keeps_ceiling(monkeypatch, tmp_path):
+    sc_ = build()
+    real = sa.gain_of
+    calls = [0]
+
+    def boom(*a, **kw):
+        calls[0] += 1
+        if calls[0] == 300:
+            raise ValueError('試験の例外')
+        return real(*a, **kw)
+    monkeypatch.setattr(sa, 'gain_of', boom)
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1, throttle_gain=0.9), sc_,
+                    description='V_before=7.6')
+    rows = [r for _, r in rec.rows if not r['hold']]
+    k = next(i for i, r in enumerate(rows) if r['sa_src'] == -1)
+    assert any(r['sa_applied'] for r in rows[:k])
+    assert all(r['gains'][1] == 0.9 and not r['sa_applied'] for r in rows[k:])
+    assert any(r['ceil_applied'] for r in rows[k:])              # 天井は続ける
+    events = [e for e in rec.events if e[0] == 'speed_ctrl_error']
+    assert len(events) == 1 and events[0][1]['part'] == 'auto'
+    assert '自動合わせを外しました' in d.st['message'] and 'ceil' not in d.st['speed_ctrl_error']
+
+
+# ================================================================ D-t1 時間
+def test_time_per_frame(monkeypatch, tmp_path):
+    """天井 + 自動合わせの時間: 平均 ≤ 0.3 ms/フレーム、周を閉じるフレームでも ≤ 1.0 ms(Jetson の CPU)"""
+    per = collections.defaultdict(float)
+    closing = []
+    orig = {name: getattr(drive._SpeedCeil, name) for name in ('frame',)}
+    orig.update({name: getattr(drive._SpeedAuto, name) for name in ('gain', 'after')})
+
+    def wrap(cls, name):
+        f = orig[name]
+
+        def w(self, cam_t_ns, *a, **kw):
+            t0 = _time.perf_counter()
+            r = f(self, cam_t_ns, *a, **kw)
+            per[cam_t_ns] += (_time.perf_counter() - t0) * 1000.0
+            if name == 'after' and self.event != sa.EV_NONE:
+                closing.append(cam_t_ns)
+            return r
+        monkeypatch.setattr(cls, name, w)
+    wrap(drive._SpeedCeil, 'frame')
+    wrap(drive._SpeedAuto, 'gain')
+    wrap(drive._SpeedAuto, 'after')
+    sc_ = build(vbat=lambda s: 8.1)
+    d, _, rec = run(drive, monkeypatch, tmp_path, on_params(speed_auto=1), sc_)
+    ms = list(per.values())
+    mean = float(np.mean(ms))
+    worst_close = max(per[t] for t in closing)
+    print('天井 + 自動合わせ: 平均 %.3f ms・95%% %.3f ms・最大 %.3f ms・周を閉じるフレームの最大 %.3f ms(%d フレーム)'
+          % (mean, np.percentile(ms, 95), max(ms), worst_close, len(ms)))
+    assert mean <= 0.3 and worst_close <= 1.0
+    st = d.st['stats']
+    assert 0 < st['ceil_ms'] and 0 < st['auto_ms'] and st['ceil_ms'] + st['auto_ms'] <= 0.5

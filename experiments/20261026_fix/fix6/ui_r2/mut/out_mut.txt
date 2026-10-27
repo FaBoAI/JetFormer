@@ -1,0 +1,66 @@
+一覧の失敗で輪を始めない(前の形): 落ちた 5 本(動きの試験 4 本)
+    test_first_open_with_models_fail
+    test_models_fail_and_status_hangs_refuses_start
+    test_models_fail_server_down_then_reboot
+    test_models_fail_then_curl_left_is_read
+一覧の失敗・期限で drLost しない: 落ちた 2 本(動きの試験 1 本)
+    test_models_fail_and_status_hangs_refuses_start
+一覧の失敗・期限で輪を始めない(drLost だけ): 落ちた 6 本(動きの試験 5 本)
+    test_first_open_with_models_fail
+    test_models_fail_and_status_hangs_refuses_start
+    test_models_fail_server_down_then_reboot
+    test_models_fail_then_curl_left_is_read
+    test_models_hang_starts_the_loop
+一覧の期限なし: 落ちた 1 本(動きの試験 1 本)
+    test_models_hang_starts_the_loop
+一覧の期限を返事で消さない: 落ちた 11 本(動きの試験 11 本)
+    test_normal_paths_exactly_as_before[poll_fail_fix5]
+    test_normal_paths_exactly_as_before[reboot_noticed]
+    test_normal_paths_exactly_as_before[tabs_curl_block_start]
+    test_running_page_polls_exactly_as_before[down_running]
+    test_running_page_polls_exactly_as_before[hold_after_start]
+    test_running_page_polls_exactly_as_before[hold_other_page]
+    test_running_page_polls_exactly_as_before[hold_token]
+    test_running_page_polls_exactly_as_before[models_fail_running]
+    test_running_page_polls_exactly_as_before[models_hang_running]
+    test_status_body_stall_is_cut
+    test_status_hang_while_idle_is_cut
+走行中も一覧の期限・失敗で問い合わせる: 落ちた 3 本(動きの試験 3 本)
+    test_running_page_polls_exactly_as_before[down_running]
+    test_running_page_polls_exactly_as_before[models_fail_running]
+    test_running_page_polls_exactly_as_before[models_hang_running]
+打ち切らない: 落ちた 3 本(動きの試験 3 本)
+    test_models_fail_and_status_hangs_refuses_start
+    test_status_body_stall_is_cut
+    test_status_hang_while_idle_is_cut
+走行中も打ち切る: 落ちた 3 本(動きの試験 3 本)
+    test_running_page_polls_exactly_as_before[hold_after_start]
+    test_running_page_polls_exactly_as_before[hold_other_page]
+    test_running_page_polls_exactly_as_before[hold_token]
+token を見ない(走行を始めた画面でも打ち切る): 落ちた 1 本(動きの試験 1 本)
+    test_running_page_polls_exactly_as_before[hold_after_start]
+走行中の表示を見ない(ほかの画面の走行中も打ち切る): 落ちた 1 本(動きの試験 1 本)
+    test_running_page_polls_exactly_as_before[hold_other_page]
+打ち切りのタイマーを返事で消さない: 落ちた 10 本(動きの試験 10 本)
+    test_fix6_r1_scenes_and_flows_exactly_as_before
+    test_models_fail_and_status_hangs_refuses_start
+    test_models_fail_server_down_then_reboot
+    test_models_fail_then_curl_left_is_read
+    test_models_hang_starts_the_loop
+    test_normal_paths_exactly_as_before[poll_fail_fix5]
+    test_normal_paths_exactly_as_before[reboot_noticed]
+    test_normal_paths_exactly_as_before[tabs_curl_block_start]
+    test_running_page_polls_exactly_as_before[hold_after_start]
+    test_status_hang_while_idle_is_cut
+本文の途中の打ち切りを失敗にしない: 落ちた 1 本(動きの試験 1 本)
+    test_status_body_stall_is_cut
+api が打ち切りの印を渡さない: 落ちた 4 本(動きの試験 3 本)
+    test_models_fail_and_status_hangs_refuses_start
+    test_status_body_stall_is_cut
+    test_status_hang_while_idle_is_cut
+期限が 60 秒: 落ちた 5 本(動きの試験 4 本)
+    test_models_fail_and_status_hangs_refuses_start
+    test_models_hang_starts_the_loop
+    test_status_body_stall_is_cut
+    test_status_hang_while_idle_is_cut
+見逃し 0 / 14

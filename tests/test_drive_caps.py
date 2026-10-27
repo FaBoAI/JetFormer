@@ -225,7 +225,7 @@ def test_default_off_and_reset_on_boot(monkeypatch, tmp_path):
     before = load_before()
     assert drive.DEFAULT_PARAMS['zone_caps'] == 0
     added = (('zone_caps', 'start_kick') + drive.SPEED_CTRL_SWITCHES + drive.SPEED_CTRL_VALUES
-             + drive.LAUNCH_KEYS)          # 30b71e8 より後に足した項目(発進の前進は 2026-10-26)
+             + drive.LAUNCH_KEYS + ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick'))   # 30b71e8 より後に足した項目(発進の前進・後ろの見張りは 2026-10-26。あとの 2 つは fix3)
     assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in added} == before.DEFAULT_PARAMS
     assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in added} == before.PARAM_LIMITS
     assert drive.PARAM_LIMITS['zone_caps'] == (0, 1)

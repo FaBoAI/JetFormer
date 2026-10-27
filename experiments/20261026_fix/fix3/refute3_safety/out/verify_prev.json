@@ -1,0 +1,200 @@
+{
+ "base": {
+  "t_brake": 2.09,
+  "t_reverse": 2.52,
+  "back_m": 2.0
+ },
+ "r1-rs1-1": {
+  "max_rear_push_s": 0.02,
+  "worst": [
+   {
+    "back": 0.5,
+    "o": 0.05,
+    "L": 0.2,
+    "rear_push_s": 0.02,
+    "rear_hits": [
+     [
+      3.31,
+      "rear",
+      -1.66,
+      6.14
+     ],
+     [
+      6.58,
+      "rear",
+      -2.25,
+      7.62
+     ]
+    ],
+    "ev": [
+     "rear_impact",
+     "rear_impact"
+    ]
+   },
+   {
+    "back": 0.5,
+    "o": 0.05,
+    "L": 0.45,
+    "rear_push_s": 0.02,
+    "rear_hits": [
+     [
+      3.58,
+      "rear",
+      -1.67,
+      6.16
+     ],
+     [
+      6.88,
+      "rear",
+      -2.25,
+      7.62
+     ]
+    ],
+    "ev": [
+     "rear_impact",
+     "rear_impact"
+    ]
+   },
+   {
+    "back": 0.5,
+    "o": 0.1,
+    "L": 0.2,
+    "rear_push_s": 0.02,
+    "rear_hits": [
+     [
+      6.58,
+      "rear",
+      -2.25,
+      7.62
+     ]
+    ],
+    "ev": [
+     "rear_impact"
+    ]
+   },
+   {
+    "back": 0.5,
+    "o": 0.1,
+    "L": 0.45,
+    "rear_push_s": 0.02,
+    "rear_hits": [
+     [
+      6.38,
+      "rear",
+      -2.25,
+      7.62
+     ]
+    ],
+    "ev": [
+     "rear_impact"
+    ]
+   }
+  ]
+ },
+ "r2-r2-rs-1": {
+  "max_written": 1796.0,
+  "max_back": 2.0
+ },
+ "r2-r2-rs-2": [
+  {
+   "where": "stuck",
+   "L": 0.6,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "stuck",
+   "L": 1.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "stuck",
+   "L": 2.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "stuck",
+   "L": 4.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "brake",
+   "L": 0.6,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "brake",
+   "L": 1.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "brake",
+   "L": 2.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "brake",
+   "L": 4.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "reverse",
+   "L": 0.6,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "reverse",
+   "L": 1.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "reverse",
+   "L": 2.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  },
+  {
+   "where": "reverse",
+   "L": 4.0,
+   "rev_side_after": 0,
+   "ev": [
+    "hold_long"
+   ]
+  }
+ ],
+ "r1-rs1-2": {
+  "kick_rows_after_no_kick_1to0": 0,
+  "start_kick_0to1_refused": true
+ }
+}

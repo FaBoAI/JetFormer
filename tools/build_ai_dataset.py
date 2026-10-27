@@ -340,8 +340,14 @@ def scene_problem(path):
             with np.load(f, allow_pickle=False) as z:
                 if 'timestamps_us' not in z.files or not len(z['timestamps_us']):
                     return '%s が空です' % n
+                for k in z.files:   # 中身も全部読む(壊れた zip は読むときに Bad CRC で落ちる。2026-10-26 fix2)
+                    z[k]
         except Exception as e:      # 書きかけ・空のファイル(電源断)
             return '%s が読めません(%s)' % (n, type(e).__name__)
+    try:                            # scene.json(0 バイト = 電源断。読む側 choose_ai_scenes・make_intervention_set が落ちないように)
+        json.loads((Path(path) / 'scene.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError) as e:
+        return 'scene.json が読めません(%s)' % type(e).__name__
     return None
 
 

@@ -1,0 +1,82 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+...................F.................................................... [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_______________ test_other_rev_settings_window[0.2-300.0-brake] ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xffff2e4cb310>
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix6/tmp_safety/bt1/test_other_rev_settings_window1')
+kind = 'brake', rev_s = 0.2, rev_us = 300.0
+
+    @pytest.mark.parametrize('kind', ['rev', 'brake'])
+    @pytest.mark.parametrize('rev_s,rev_us', [(0.2, 300.0), (0.3, 300.0), (0.4, 200.0), (0.6, 300.0), (0.4, 400.0)])
+    def test_other_rev_settings_window(monkeypatch, tmp_path, kind, rev_s, rev_us):
+        """既定でない rev_s・rev_us(approvals 10)の指摘の窓: escape が前の壁を押さない。rev_s 0.3 以上は下がる距離が値の止まりなし
+        以下(+0.05 m)。rev_s 0.2 は見積もりで後退を短くしない(後退を 0.2 秒残す。短くすると escape が前の壁に当たる)ので、値の
+        止まりなしより最大 約 0.3 m 多く下がる。その最大は直す前の写しの最大を超えない(+0.02 m)。直す前の写しは rev_s 0.2 で escape が
+        前の壁を押した場面がある"""
+        _, before = load_before()
+        p = P1(rev_s=rev_s, rev_us=rev_us)
+        ref = m_of(drive, monkeypatch, tmp_path, p, scene(kind), key=('ref', kind, rev_s, rev_us))
+        cells = WINDOW if rev_s < 0.3 else WINDOW[::2]
+        mx, mx0, push0 = 0.0, 0.0, 0
+        for d0, L in cells:
+            sc = cell(kind, d0, L)
+            m = first_rec(run(drive, monkeypatch, tmp_path, p, sc), rev_us)
+            assert m['push'] == 0.0, (d0, L, m)
+            if rev_s >= 0.3:
+                assert m['back'] <= ref['back'] + 0.05, (d0, L, m, ref)
+            else:
+                m0 = first_rec(run(before, monkeypatch, tmp_path, p, sc), rev_us)
+                mx, mx0, push0 = max(mx, m['back']), max(mx0, m0['back']), push0 + (m0['push'] > 0.0)
+        if rev_s < 0.3:
+>           assert mx <= mx0 + 0.02 and mx <= ref['back'] + 0.35 and push0 >= 1, (mx, mx0, ref['back'], push0)
+E           AssertionError: (0.79, 0.79, 0.394, 8)
+E           assert (0.79 <= (0.79 + 0.02) and 0.79 <= (0.394 + 0.35))
+
+tests/test_rec_fix6_safety.py:629: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix3_r1_2.py: 50 warnings
+tests/test_fix3_r2_1_collect.py: 118 warnings
+tests/test_fix3_r2_2.py: 169 warnings
+tests/test_fix3_r3_1_tools.py: 90 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:730: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r1_2.py: 23 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r1_2_before/collect.py.orig:374: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r2_1_collect.py: 59 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r2_1_before/collect.py:420: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r2_2.py: 145 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r2_2_before/collect.py.orig:430: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_1_tools.py: 85 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_1_before/collect.py:520: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_rec_fix6_safety.py::test_other_rev_settings_window[0.2-300.0-brake]
+1 failed, 1029 passed, 1164 warnings in 717.79s (0:11:57)

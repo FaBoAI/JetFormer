@@ -1,0 +1,214 @@
+"""diag_launch/collect.py の直す 3 回目(2026-10-26 fix3・係 tools)の試験。作り物の記録・作り物の行だけ(tmp)。
+本物の data/raw・labels・装置・GPU は使わない。
+
+- 反証 1 回目 tools:F4 の残り  ON に launch_us 250 と 200 が混ざったら、比べは最後の ON の強さ(回 4 はその強さで走る。
+                               protocol_v3 14 章「比 > 1.3 → 残りの ON を 200 µs に」)の ON と OFF。最初の周の衝突は全部の ON
+- 反証 1 回目 tools:F9  「最初の周」の終わり = 1 周目の線(standing_3lap の 1 周目と同じ。前は A2 で、2 周目の LH の当たりも入った)
+- 反証 1 回目 tools:F6  _on(None)・launch_on_s の +1/30・同じ設定の周の鍵の天井・自動合わせ(ON のときだけ左・目標)
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \\
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> experiments/20261026_fix/fix3/tools/test_fix3_collect.py
+"""
+import importlib.machinery
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+JF = Path('/home/jetson/jetformer')
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(JF / 'tools'))
+sys.path.insert(0, str(JF / 'tests'))
+from test_standing_3lap import analyze, write_standing_log  # noqa: E402
+
+COLLECT = JF / 'experiments' / '20261026_fix' / 'diag_launch' / 'collect.py'
+ORIG = HERE / 'before' / 'collect.py.orig'          # 直す前の写し(比べ用)
+
+
+def load_mod(name, path):
+    loader = importlib.machinery.SourceFileLoader(name, str(path))          # .orig(拡張子が .py でない)も読む
+    spec = importlib.util.spec_from_file_location(name, str(path), loader=loader)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+@pytest.fixture(scope='module')
+def collect():
+    return load_mod('collect_fix3', COLLECT)
+
+
+def _row(log, state, to_r1, launch_us=250.0, slip=1.05, hits=(), v_lh=2.0, t_ai=1.0):
+    S = {'throttle_gain': 0.9, 'speed_ceiling': 0, 'ceil_left_mps': 4.1, 'speed_auto': 0, 'auto_target_mps': 4.27,
+         'launch_boost': 0 if state == 'off' else 1, 'launch_us': launch_us}
+    return {'log': log, 'no': log[-4:], 'session': '11/03 回3', 'model': 'B', 'gain': 0.9, 'settings': S, 't_ai': t_ai,
+            'to_r1_s': to_r1, 'loss_s': to_r1 - 2.25, 'move_0p2_s': 0.3, 'slip': {'ratio': slip}, 'v_launch_at_lh': v_lh,
+            'collisions': [], 'collisions_first_lap': [list(h) for h in hits], 'launch_on_s': 0.5 if state == 'on' else None,
+            'launch_end_reason': '速さに届いた' if state == 'on' else None, 'launch_state': state, 'start_no': 1}
+
+
+def round3_mixed():
+    """手順書 7 章の形: OFF・ON 250(空転の比 1.45 > 1.3)→ 残りの ON を 200 に → OFF・ON 200・OFF・ON 200・ON 200"""
+    return [_row('20261103-133000', 'off', 3.00), _row('20261103-133500', 'on', 2.70, 250.0, slip=1.45),
+            _row('20261103-134000', 'off', 3.00), _row('20261103-134500', 'on', 2.80, 200.0, slip=1.08),
+            _row('20261103-135000', 'off', 3.00), _row('20261103-135500', 'on', 2.80, 200.0, slip=1.12),
+            _row('20261103-140000', 'on', 2.82, 200.0, slip=1.10)]
+
+
+# ------------------------------------------------------------------ tools:F4 の残り
+def test_f4_mixed_launch_us_compares_the_last_strength(collect):
+    """前は ON 4 本を混ぜ、250 の 1 本の空転の比 1.45 が残って「満たさない」に決まっていた。今は 200 の 3 本と OFF で比べる"""
+    g = collect.summarize(round3_mixed())[0]
+    assert g['mixed_launch_us'] == [200.0, 250.0] and g['launch_us_used'] == 200.0
+    assert g['by_launch']['on']['n'] == 4 and g['by_launch']['on']['slip_max'] == 1.45          # 全部の ON の欄は今まで通り
+    assert g['on_used']['n'] == 3 and g['on_used']['slip_max'] == 1.12 and g['on_used']['to_r1_median_s'] == 2.8
+    c = g['compare']
+    assert c['launch_us_used'] == 200.0 and c['n_on_used'] == 3
+    assert c['d_to_r1_s'] == pytest.approx(-0.2) and c['checks'] == {'to_r1': True, 'first_lap_collisions_0': True,
+                                                                     'slip': True, 'lh_speed': True}
+    assert c['all_ok'] is True
+    txt = '\n'.join(collect.summary_lines([g]))
+    assert '注意: ON に launch_us の違う本が混ざっている(200・250 µs)。比べは最後の ON の強さ 200 µs の ON 3 本と OFF' in txt
+    assert 'on(200 µs だけ)' in txt and '使ってよい' in txt
+
+
+def test_f4_first_lap_collision_of_any_strength_fails(collect):
+    """250 の ON の最初の周に当たった(14 章「ON の最初の周で当たる → ON をやめる」)→ 200 の本がきれいでも「満たさない」"""
+    rows = round3_mixed()
+    rows[1] = _row('20261103-133500', 'on', 2.70, 250.0, slip=1.45, hits=[(3.5, 3.2, 'LH')])
+    g = collect.summarize(rows)[0]
+    assert g['on_used']['collisions_first_lap'] == 0 and g['by_launch']['on']['collisions_first_lap'] == 1
+    assert g['compare']['checks']['first_lap_collisions_0'] is False and g['compare']['all_ok'] is False
+
+
+def test_f4_last_strength_is_by_time_not_by_value(collect):
+    """最後の ON が 250(200 → 250 に戻した)なら 250 で比べる(大きい・小さいではなく、時刻の最後)"""
+    rows = [_row('20261103-133000', 'off', 3.0), _row('20261103-133500', 'on', 2.8, 200.0),
+            _row('20261103-134000', 'off', 3.0), _row('20261103-134500', 'on', 2.95, 250.0, slip=1.2)]
+    g = collect.summarize(rows)[0]
+    assert g['launch_us_used'] == 250.0 and g['on_used']['n'] == 1
+    assert g['compare']['d_to_r1_s'] == pytest.approx(-0.05) and g['compare']['checks']['to_r1'] is False
+
+
+@pytest.mark.skipif(not ORIG.exists(), reason='直す前の写しが無い')
+def test_f4_not_mixed_output_is_the_same_as_before(collect):
+    """混ざっていないとき(250 だけ・200 だけ・ON なし・自動合わせ ON)のまとめと表の文は、直す前の collect.py と同じ"""
+    old = load_mod('collect_before_fix3', ORIG)
+    cases = [[r for r in round3_mixed() if r['settings']['launch_us'] == 200.0 or r['launch_state'] == 'off'],
+             [_row('20261103-133000', 'off', 3.0), _row('20261103-133500', 'on', 2.7, slip=1.5, hits=[(3.0, 2.8, 'LH')])],
+             [_row('20261103-133000', 'off', 3.0), _row('20261103-133500', 'on_not_started', 3.0)],
+             [dict(_row('20261103-133000', 'off', 3.0), gain=0.93, settings=dict(_row('a', 'off', 3)['settings'], speed_auto=1)),
+              dict(_row('20261103-133500', 'on', 2.7), gain=0.95, settings=dict(_row('a', 'on', 3)['settings'], speed_auto=1))]]
+    for rows in cases:
+        for fo in (False, True):
+            a, b = collect.summarize(rows, first_only=fo), old.summarize(rows, first_only=fo)
+            assert json.dumps(a, sort_keys=False) == json.dumps(b, sort_keys=False)
+            assert collect.summary_lines(a) == old.summary_lines(b)
+
+
+# ------------------------------------------------------------------ 作り物の記録の日(tools:F9・F6)
+@pytest.fixture()
+def day(tmp_path, monkeypatch, collect):
+    raw = tmp_path / 'raw'
+    raw.mkdir()
+    bench = tmp_path / 'bench.json'
+    bench.write_text(json.dumps({'candidates': [{'id': 'B', 'run': 'runB'}],
+                                 'days': [{'date': '2026-11-03', 'blocks': [{'block': b, 'run_id': '3-%d' % b} for b in range(1, 9)]}]}),
+                     encoding='utf-8')
+    monkeypatch.setattr(collect, 'RAW', raw)
+    monkeypatch.setattr(collect, 'LAB', tmp_path / 'no_labels')
+    monkeypatch.setattr(collect, 'BENCH', bench)
+    monkeypatch.setattr(collect, 'OUT', tmp_path / 'out')
+    return raw, tmp_path
+
+
+DESC = 'ai_no=%d bench=real_bench_20261023 day=2026-11-03 block=%d cand=EXP model=runB memo=x'
+PRM = {'throttle_gain': 0.9, 'steer_gain': 1.0, 'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0,
+       'auto_target_mps': 4.27, 'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2, 'zone_caps': 0}
+
+
+def run_collect(collect, tmp, *args):
+    out = tmp / ('c_%d.json' % len(list(tmp.glob('c_*.json'))))
+    collect.main(['--day', '20261103', '--out', str(out)] + list(args))
+    return json.loads(out.read_text(encoding='utf-8'))
+
+
+def test_f9_first_lap_ends_at_the_line_like_standing_3lap(day, collect):
+    """2 周目の LH の当たり(11.5 秒。1 周目の線 10.5 秒のあと・A2 13.0 秒の前)は最初の周に入れない。1 周目の当たり(7.0 秒)は入れる。
+    終わりの時刻は standing_3lap の 1 周目の線と同じ"""
+    raw, tmp = day
+    write_standing_log(raw, '20261103-120000', params=PRM, run='runB', description=DESC % (1, 1), hits=[(7.0, 3.0), (11.5, 3.5)])
+    j = run_collect(collect, tmp)
+    r = [x for x in j['launches'] if x.get('to_r1_s') is not None][0]
+    assert r['first_lap_end'] == 'line' and r['first_lap_a2_s'] == pytest.approx(13.0, abs=0.06)
+    assert r['first_lap_end_s'] == pytest.approx(10.5, abs=0.05)
+    assert [round(h[0], 1) for h in r['collisions_first_lap']] == [7.0]
+    s = [x for x in analyze(raw, '20261103-120000')['standing'] if x.get('valid')][0]
+    assert r['first_lap_end_s'] == pytest.approx(s['line_ends'][0], abs=0.02)            # 2 つの道具で同じ
+    assert s['collisions_by_lap'] == [1, 1, 0]
+
+
+def test_f9_no_a2_ends_at_ai_end_as_before(day, collect):
+    """A2 が無い(1 周目の途中で人側)ときは今まで通り AI の区間の終わりまで"""
+    raw, tmp = day
+    write_standing_log(raw, '20261103-120500', params=PRM, run='runB', description=DESC % (2, 2), human_after=9.0, stop_after=9.2,
+                       hits=[(7.0, 3.0)])
+    r = [x for x in run_collect(collect, tmp)['launches'] if x.get('to_r1_s') is not None][0]
+    assert r['first_lap_end'] == 'ai_end' and r['first_lap_a2_s'] is None and not r['first_lap_full']
+    assert r['first_lap_end_s'] == pytest.approx(r['t_ai'] + r['ai_seg_s'], abs=0.05)
+    assert len(r['collisions_first_lap']) == 1
+
+
+def test_f9_human_after_the_line_and_before_a2(day, collect):
+    """1 周目の線(10.5 秒)のあと・A2(13.0 秒)の前に人側(11.5 秒)→ 線で終わる(standing_3lap と同じ。前は A2 が AI の区間に
+    無いので AI の区間の終わり 11.5 秒まで数え、線のあとの 11.0 秒の当たりも入った)。線の前に人側(9.0 秒)→ AI の区間の終わり"""
+    raw, tmp = day
+    write_standing_log(raw, '20261103-121500', params=PRM, run='runB', description=DESC % (4, 4), human_after=11.5,
+                       hits=[(11.0, 3.0)])
+    write_standing_log(raw, '20261103-122000', params=PRM, run='runB', description=DESC % (4, 4), human_after=9.0, hits=[(8.0, 3.0)])
+    R = {x['log']: x for x in run_collect(collect, tmp)['launches'] if x.get('to_r1_s') is not None}
+    a, b = R['20261103-121500'], R['20261103-122000']
+    sa = [x for x in analyze(raw, '20261103-121500')['standing'] if x.get('line_ends')][0]
+    assert a['first_lap_end'] == 'line' and a['first_lap_full'] and a['first_lap_a2_s'] == pytest.approx(13.0, abs=0.06)
+    assert a['first_lap_end_s'] == pytest.approx(sa['line_ends'][0], abs=0.02) and a['collisions_first_lap'] == []
+    assert b['first_lap_end'] == 'ai_end' and not b['first_lap_full']
+    assert b['first_lap_end_s'] == pytest.approx(b['t_ai'] + b['ai_seg_s'], abs=0.05) and len(b['collisions_first_lap']) == 1
+
+
+def test_f6_launch_on_s_counts_the_last_frame(day, collect):
+    """発進の前進 15 フレーム(1.0〜1.467 秒)→ 0.500 秒(最後のフレームの 1/30 秒を足す)。足さないと 0.467"""
+    raw, tmp = day
+    write_standing_log(raw, '20261103-121000', params=dict(PRM, launch_boost=1), run='runB', description=DESC % (3, 3),
+                       launch=(1.0, 0.5, 1))
+    r = [x for x in run_collect(collect, tmp)['launches'] if x.get('to_r1_s') is not None][0]
+    assert r['launch_on_frames'] == 15 and r['launch_on_s'] == pytest.approx(0.5, abs=0.004)
+
+
+def test_f6_on_helper(collect):
+    assert collect._on(None) is False and collect._on('x') is False and collect._on(0) is False
+    assert collect._on(1) is True and collect._on('1') is True and collect._on(1.0) is True
+
+
+def test_f6_same_setting_laps_follow_ceiling_and_auto(day, collect):
+    """周の無い本(R1 の起点のすぐあとで人側)の「走りながらの同じ区間」は、同じ回・同じ天井の本の周から取る。
+    天井 OFF の本の左の値(4.2)が違っても同じ組(2026-10-26 fix3: OFF のときは左・目標を鍵に入れない)"""
+    raw, tmp = day
+    short = dict(human_after=6.0, stop_after=6.2)
+    write_standing_log(raw, '20261103-130000', params=dict(PRM, speed_ceiling=1), run='runB', description=DESC % (5, 5))
+    write_standing_log(raw, '20261103-130500', params=PRM, run='runB', description=DESC % (6, 5), **short)
+    j = run_collect(collect, tmp)
+    R = {x['log']: x for x in j['launches']}
+    assert R['20261103-130500']['to_r1_s'] is not None and R['20261103-130500']['fly_ref'] == 'none'   # 天井 ON の周は使わない
+    write_standing_log(raw, '20261103-131000', params=dict(PRM, ceil_left_mps=4.2), run='runB', description=DESC % (7, 5))
+    R = {x['log']: x for x in run_collect(collect, tmp)['launches']}
+    assert R['20261103-130500']['fly_ref'] == 'same_setting' and R['20261103-130500']['fly_n'] >= 1
+    write_standing_log(raw, '20261103-131500', params=dict(PRM, speed_auto=1), run='runB', description=DESC % (8, 5), **short)
+    R = {x['log']: x for x in run_collect(collect, tmp)['launches']}
+    assert R['20261103-131500']['fly_ref'] == 'none'                                       # 自動合わせ ON は別の組
+    # 天井 ON で左の欄が無い記録(欄の無いコード)も、天井 OFF の周とは別の組(鍵の天井の ON/OFF そのものが効く)
+    write_standing_log(raw, '20261103-132000', params={k: v for k, v in dict(PRM, speed_ceiling=1).items() if k != 'ceil_left_mps'},
+                       run='runB', description=DESC % (9, 5), **short)
+    R = {x['log']: x for x in run_collect(collect, tmp)['launches']}
+    assert R['20261103-132000']['to_r1_s'] is not None and R['20261103-132000']['fly_ref'] == 'none'

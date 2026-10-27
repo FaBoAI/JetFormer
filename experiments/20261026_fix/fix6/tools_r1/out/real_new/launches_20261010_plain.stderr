@@ -1,0 +1,4 @@
+/home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:739: RuntimeWarning: Mean of empty slice
+  row['f_model_mean_%.1fs' % w] = round(float(np.nanmean(fm[mm])), 1)
+/home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:672: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+  dv_i = float(np.trapz(d['ay'][m], it[m]))

@@ -6,9 +6,10 @@ const COLORS = { steering: '#2563eb', throttle: '#dc2626', aux: '#9ca3af', motor
                  accel: '#7c3aed', ax: '#0891b2', ay: '#f59e0b', gyro: '#db2777', min: '#dc2626', median: '#2563eb' };
 
 // ------------------------------------------------------------ 共通
-async function api(method, url, body) {
+async function api(method, url, body, signal) {
   const opt = { method, headers: {} };
   if (body !== undefined) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+  if (signal) opt.signal = signal;        // 返事を打ち切る印(走行タブの止まっているときの表示の問い合わせだけ = pollDrive。2026-10-27 fix6)
   const res = await fetch(url, opt);
   let data = null;
   try { data = await res.json(); } catch (e) { /* 本文なし */ }
@@ -1178,8 +1179,23 @@ function pickDriveModel(models, { running = '', last = '', cur = '', first = fal
   const any = models.find((m) => m.drivable !== false);
   return any ? any.name : '';
 }
+// 走行タブの表示の問い合わせの返事を待つ長さ(2026-10-27 fix6 直す 6-2 回目 w2-ui-w1-ui-r62-1)。止まっているとき(drIdle)だけ使う。
+// サーバーの生存確認(token の問い合わせが途絶えて 5 秒で止める)と同じ 5 秒
+const DR_IDLE_WAIT_MS = 5000;
+// 止まっている = この画面が最後に読んだ status が走行中でなく、この画面が走行を始めた印(token。付けた問い合わせが生存確認になる)も無い。
+// 走行中・走行を始めた画面では、表示の問い合わせの出し方(回数・間隔・打ち切らない)を前とまったく同じにする
+const drIdle = () => !state.drive.token && !(state.drive.st && state.drive.st.running);
 async function loadDrive() {
-  try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { toast(e.message, true); return; }
+  // モデルの一覧の GET が失敗した・DR_IDLE_WAIT_MS のあいだ返事が無い(サーバーが起き直している・通信の途切れ)とき、止まっていれば
+  // 表示の問い合わせの輪を始め、次に同期するまで ▶・基準の設定・ブロックを断る(drLost)。前は toast を出して return するだけで、
+  // 輪は走行タブでも止まったまま(pollDrive は走行タブか走行中のときしか次を掛けない)・paramsLoaded は true のまま・▶ も押せて、
+  // 天井の横の文・スイッチと ▶ の確認の文が前の表示のまま(curl で入れた左 4.2 を読まず 4.1・起き直したあとも起き直す前の 4.2・
+  // 200 µs)だった(2026-10-27 fix6 反証 w2-ui-w1-ui-r62-1)。一覧の GET は打ち切らない(遅いだけなら、返事が来たところで前と同じに
+  // 続ける)。一覧が通るときは前とまったく同じ(期限のタイマーは返事で消す)
+  const lost = () => { if (drIdle()) { drLost(); pollDrive(); } };
+  const late = setTimeout(lost, DR_IDLE_WAIT_MS);
+  try { state.drive.models = await api('GET', '/api/drive/models'); } catch (e) { clearTimeout(late); toast(e.message, true); lost(); return; }
+  clearTimeout(late);
   if (!state.drive.st) { try { state.drive.st = await api('GET', '/api/drive/status'); } catch (e) { /* 後で */ } }
   const sel = $('#dr-model'), cur = sel.value;
   sel.innerHTML = state.drive.models.map((m) =>
@@ -1246,13 +1262,34 @@ $('#dr-model').addEventListener('change', async () => {
 $('#dr-record').addEventListener('change', () => $('#dr-record-opts').classList.toggle('hidden', !$('#dr-record').checked));
 // 補助のスイッチ(チェックボックス)。変えたらすぐ送る(走行中も反映)
 const DR_FLAGS = [['#dr-esc-reverse', 'esc_reverse'], ['#dr-recovery', 'recovery'], ['#dr-start-kick', 'start_kick']];
+// 送った項目の返事の順番(2026-10-26 fix3 r1-state3-1)。drAckAt[項目] = その項目の送信の返事が来たときの drSync.clock。表示の
+// 問い合わせ(pollDrive)はその前の clock を since として持ち、since より後に返事が来た項目は、その問い合わせの値で画面を戻さない
+// (問い合わせがサーバーに届いたのが送信より前なら、古い値のことがある)
+const drAckAt = {}, drSync = { clock: 0 };
+const drAcked = (keys) => { const c = ++drSync.clock; for (const k of keys) drAckAt[k] = c; };
+// 画面の欄の値をサーバーへ送る(2026-10-26 fix3 r1-state3-2)。送る前に keys の pending(ブロック・基準の設定で入れて、まだ
+// 送っていない印)を消し、送れなかった(通信の途切れ・400 など)ら元に戻す。前は印を消したまま失敗したので、次の表示の同期
+// (約 1 秒後)で、ブロックで OFF にした欄(押していない自動合わせも)にサーバーに残った前の本の値が黙って戻り、走行開始で
+// それを送っていた(天井の ON の送信が失敗 → 自動合わせ ON を送る)。途中で基準の設定・取り消し・走行開始(pending を作り直す)
+// をしたときは、そちらを正とする(戻さない)
+// 送信中の印(2026-10-27 fix5 反証 4 回目 t2): drPostN[項目] = その項目を送っていて、まだ返事が来ていない数(下の drBusy と同じ文で
+// 作る)。返事を待つ間に届いた表示の問い合わせの返事(押す前のサーバーの値)では、その項目の欄・スイッチを戻さない(setDriveParams の
+// keep。スライダーの drSending と同じ考え)。前は返事が来たあとの印(drAckAt)しか無く、2-4(天井 + 自動合わせ)のあと 2-5 で天井を
+// ON にした送信の途中に古い問い合わせの返事が来ると、自動合わせのスイッチが前の本の ON に約 1 秒戻り、その間の ▶ で自動合わせ ON を
+// 送った(発進の前進の ON も、同じ形で OFF に戻って OFF を送った)
+const postDriveParams = async (body, keys) => {
+  const pend = state.drive.pending, had = keys.filter((k) => pend[k]), sent = Object.keys(body);
+  for (const k of keys) delete pend[k];
+  for (const k of sent) drPostN[k] = (drPostN[k] || 0) + 1;
+  try { return await api('POST', '/api/drive/params', body); }
+  catch (e) { if (state.drive.pending === pend) for (const k of had) pend[k] = true; throw e; }
+  finally { for (const k of sent) drPostN[k] = Math.max(0, (drPostN[k] || 0) - 1); drAcked(sent); }
+};
 $('#dr-tof-guard').addEventListener('change', async () => {
-  delete state.drive.pending.tof_guard;
-  try { await api('POST', '/api/drive/params', { tof_guard: +$('#dr-tof-guard').value }); } catch (e) { toast(e.message, true); }
+  try { await postDriveParams({ tof_guard: +$('#dr-tof-guard').value }, ['tof_guard']); } catch (e) { toast(e.message, true); }
 });
 $('#dr-tcp-mode').addEventListener('change', async () => {
-  delete state.drive.pending.tcp_mode;
-  try { await api('POST', '/api/drive/params', { tcp_mode: +$('#dr-tcp-mode').value }); } catch (e) { toast(e.message, true); }
+  try { await postDriveParams({ tcp_mode: +$('#dr-tcp-mode').value }, ['tcp_mode']); } catch (e) { toast(e.message, true); }
   updateTcpWarn();
 });
 function updateTcpWarn() {
@@ -1273,9 +1310,8 @@ function updateNoPostNote() {
   }
 }
 $('#btn-dr-nopost-reset').addEventListener('click', async () => {
-  delete state.drive.pending.speed_cap; delete state.drive.pending.tcp_mode;
   try {
-    const p = await api('POST', '/api/drive/params', { speed_cap: 0, tcp_mode: 0 });
+    const p = await postDriveParams({ speed_cap: 0, tcp_mode: 0 }, ['speed_cap', 'tcp_mode']);
     if (state.drive.st) state.drive.st.params = p;
     setDriveParams(p);
   } catch (e) { toast(e.message, true); }
@@ -1283,8 +1319,16 @@ $('#btn-dr-nopost-reset').addEventListener('click', async () => {
 });
 for (const [sel, key] of DR_FLAGS) {
   $(sel).addEventListener('change', async () => {
-    delete state.drive.pending[key];
-    try { await api('POST', '/api/drive/params', { [key]: $(sel).checked ? 1 : 0 }); } catch (e) { toast(e.message, true); }
+    const el = $(sel), on = el.checked, st = state.drive.st || {};
+    // 発進の補助は走行中に ON にできない(drive.set_params も断る。2026-10-26 fix3 r1-rs1-2: 走行中に 0 → 1 にすると、2 秒の窓が
+    // AI の区間の途中で新しく開き、リカバリーの中止・後退の途中を上書きして前進を出していた)。OFF にするのは走行中でもできる
+    if (key === 'start_kick' && on && st.running) {
+      el.checked = false;
+      toast('走行中は発進の補助(AI側にしたら走り出す)を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true);
+      return;
+    }
+    // 送れなかったら押す前に戻す(ほかのスイッチと同じ。pending も postDriveParams が戻す。2026-10-26 fix3 r1-state3-2)
+    try { await postDriveParams({ [key]: on ? 1 : 0 }, [key]); } catch (e) { toast(e.message, true); el.checked = !on; }
   });
 }
 function readDriveParams() {
@@ -1299,34 +1343,77 @@ function readDriveParams() {
   p.launch_boost = $('#dr-launch-boost').checked ? 1 : 0;                                  // 発進の前進(2026-10-26)
   return p;
 }
-// スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる
-const drBusy = {}, drTimers = {};
+// スライダーは動かした項目だけを送る(別の画面の値を巻き戻さない)。操作中・送信中でなければサーバーの値に合わせる。
+// 送信中の印は数で持つ(2026-10-26 fix3 r1-state3-1)。前は「送信中」の 1 ビットを送るたびに立てて返事で消したので、±0.01 を 2 回
+// 押したとき、1 回目の返事が 2 回目のタイマー(120 ms)より先に戻ると印が消え、その間の表示の同期でスライダーがサーバーの古い値に
+// 戻り、2 回目はその値を送った(0.92 のつもりが 0.91。確認の文も 0.91)。今は動かすたびに drSeq を 1 増やし、送った返事がその番号に
+// 届くまで送信中のまま。同じ項目の送信は 1 本ずつ(前の返事を待ってから、そのときのスライダーの値を送る)。送信の返事より前に
+// 出た表示の問い合わせの返事でも戻さない(drAckAt と pollDrive の since)
+// drPostN = postDriveParams(スイッチ・選ぶ欄)の項目ごとの送信中の数(2026-10-27 fix5 t2。上の postDriveParams の注)。これも drBusy と同じ文
+const drBusy = {}, drTimers = {}, drSeq = {}, drAck = {}, drInflight = {}, drAgain = {}, drPend = {}, drPostN = {},
+  drSending = (key) => (drSeq[key] || 0) !== (drAck[key] || 0);      // drBusy と同じ文(関数を切り出して試す台本も読めるように)
+async function drSend(key, el) {
+  if (drInflight[key]) { drAgain[key] = true; return; }      // 前の送信の返事を待ってから、もう一度(そのときの値)
+  drInflight[key] = true;
+  try {
+    do {
+      drAgain[key] = false;
+      const seq = drSeq[key] || 0;
+      try { await api('POST', '/api/drive/params', { [key]: +el.value }); }
+      catch (e) {
+        toast(e.message, true);
+        // 送れなかった: ブロック・基準の設定で入れた印(pending)を戻す(そのあと動かしていなければ。r1-state3-2 と同じ)
+        if (drPend[key] && drPend[key] === state.drive.pending && seq === (drSeq[key] || 0)) drPend[key][key] = true;
+      }
+      if (seq === (drSeq[key] || 0)) delete drPend[key];
+      drAck[key] = Math.max(drAck[key] || 0, seq);
+      drAcked([key]);
+    } while (drAgain[key]);
+  } finally { drInflight[key] = false; }
+}
 for (const [sel, key, fmt] of DR_PARAMS) {
   const el = $(sel);
   el.addEventListener('pointerdown', () => { drBusy[key] = (drBusy[key] || 0) | 1; });
   for (const ev of ['pointerup', 'pointercancel', 'change']) el.addEventListener(ev, () => { drBusy[key] = (drBusy[key] || 0) & ~1; });
   el.addEventListener('input', () => {
     $(sel + '-v').textContent = fmt(el.value);
+    if (state.drive.pending[key]) drPend[key] = state.drive.pending;     // 送れなかったときに戻す印
     delete state.drive.pending[key];                // 動かした項目は、今まで通りすぐ送る
-    drBusy[key] = (drBusy[key] || 0) | 2;
+    drSeq[key] = (drSeq[key] || 0) + 1;
     clearTimeout(drTimers[key]);
-    drTimers[key] = setTimeout(async () => {
-      try { await api('POST', '/api/drive/params', { [key]: +el.value }); } catch (e) { toast(e.message, true); }
-      drBusy[key] &= ~2;
-    }, 120);
+    drTimers[key] = setTimeout(() => drSend(key, el), 120);
   });
 }
-function setDriveParams(p) {
+// 速度ゲインの ±0.01 のボタン(2026-10-26 fix3 state-2)。スライダーは 0.01 刻み(0〜2 の 200 段)で、スマホの指では 0.92 などに
+// 合わせにくいので、スライダーを 1 段ずつ動かす。動かしたあとはスライダーを動かしたのと同じ(input の処理 = すぐ送る・走行中も)
+const GAIN_STEP = 0.01, GAIN_MIN = 0, GAIN_MAX = 2;              // index.html の #dr-throttle-gain・drive.PARAM_LIMITS と同じ
+function gainStep(v, d) {                                         // 0.01 の倍数に丸めて範囲の中へ(DOM を使わない。試験で確かめる)
+  const x = Math.round(((Number.isFinite(+v) ? +v : 1) + d) / GAIN_STEP) * GAIN_STEP;
+  return +Math.min(GAIN_MAX, Math.max(GAIN_MIN, x)).toFixed(2);
+}
+for (const [id, d] of [['#btn-dr-tg-down', -GAIN_STEP], ['#btn-dr-tg-up', GAIN_STEP]]) {
+  if (!$(id)) continue;                                           // 古い index.html(キャッシュ)でも画面全体を止めない
+  $(id).addEventListener('click', () => {
+    const el = $('#dr-throttle-gain');
+    el.value = String(gainStep(el.value, d));
+    el.dispatchEvent(new Event('input'));
+  });
+}
+// since = 表示の問い合わせを出したときの drSync.clock(pollDrive だけが渡す)。その後に送信の返事が来た項目は、この値で戻さない
+// (問い合わせのほうが古いかもしれない。次の同期で合わせる。2026-10-26 fix3 r1-state3-1)。since なし = 今まで通り。
+// スイッチ・選ぶ欄を送っている間(postDriveParams の返事を待つ間。drPostN)も戻さない(2026-10-27 fix5 t2。返事のあとは since で守る)
+function setDriveParams(p, since) {
   const pend = state.drive.pending || {};         // 基準の設定で入れて、まだ送っていない項目は戻さない
-  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined && !pend[key]) $(sel).checked = !!+p[key];
-  if (p.tof_guard !== undefined && !pend.tof_guard && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
-  if (p.tcp_mode !== undefined && !pend.tcp_mode && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
-  if (p.zone_caps !== undefined && !pend.zone_caps) $('#dr-zone-caps').checked = +p.zone_caps === 1;
-  if (p.speed_ceiling !== undefined && !pend.speed_ceiling) $('#dr-speed-ceiling').checked = +p.speed_ceiling === 1;
-  if (p.speed_auto !== undefined && !pend.speed_auto) $('#dr-speed-auto').checked = +p.speed_auto === 1;
-  if (p.launch_boost !== undefined && !pend.launch_boost) $('#dr-launch-boost').checked = +p.launch_boost === 1;
+  const keep = (k) => !!pend[k] || (drPostN[k] || 0) > 0 || (since !== undefined && (drAckAt[k] || 0) > since);
+  for (const [sel, key] of DR_FLAGS) if (p[key] !== undefined && !keep(key)) $(sel).checked = !!+p[key];
+  if (p.tof_guard !== undefined && !keep('tof_guard') && document.activeElement !== $('#dr-tof-guard')) $('#dr-tof-guard').value = String(p.tof_guard);
+  if (p.tcp_mode !== undefined && !keep('tcp_mode') && document.activeElement !== $('#dr-tcp-mode')) $('#dr-tcp-mode').value = String(p.tcp_mode);
+  if (p.zone_caps !== undefined && !keep('zone_caps')) $('#dr-zone-caps').checked = +p.zone_caps === 1;
+  if (p.speed_ceiling !== undefined && !keep('speed_ceiling')) $('#dr-speed-ceiling').checked = +p.speed_ceiling === 1;
+  if (p.speed_auto !== undefined && !keep('speed_auto')) $('#dr-speed-auto').checked = +p.speed_auto === 1;
+  if (p.launch_boost !== undefined && !keep('launch_boost')) $('#dr-launch-boost').checked = +p.launch_boost === 1;
   for (const [sel, key, fmt] of DR_PARAMS) {
-    if (p[key] === undefined || drBusy[key] || pend[key]) continue;
+    if (p[key] === undefined || drBusy[key] || drSending(key) || keep(key)) continue;
     if (+$(sel).value !== +p[key]) $(sel).value = p[key];
     $(sel + '-v').textContent = fmt(p[key]);
   }
@@ -1337,10 +1424,40 @@ $('#dr-mode').addEventListener('change', async () => {
   try { await api('POST', '/api/drive/params', { mode_id: +$('#dr-mode').value }); toast(`ジャンルを「${modeName(+$('#dr-mode').value)}」に切り替えました`); }
   catch (e) { toast(e.message, true); }
 });
+// 画面の版と、この画面が読み込んだ app.js の更新時刻(2026-10-27 fix3 r2-r2-state-3)。版は走行開始の body の client と同じ数
+// (server.py の DRIVE_CLIENT_VERSION)。更新時刻は index.html が付ける「app.js?v=秒」(server.py の index)を、読み込んだときの
+// script の src から読む(読めなければ 0 = サーバーは版だけを見る)。走行開始で build として送り、▶ の横に「画面の版 N(app.js
+// MM/DD HH:MM)」と出す(手順書 3 章の「新しい画面の印」。前は 20:25〜23:11 の画面と見分けられなかった)。
+// 9 = 2026-10-27 fix5(反証 4 回目 t1・t2・t3): 走行開始で画面が読んだサーバーの起動の時刻(boot_at)を送る(サーバーが起き直していれば
+// 409)・表示の問い合わせが通らない間は ▶・基準の設定・ブロックを断る・スイッチの送信中は表示の同期で戻さない
+const DRIVE_CLIENT = 9;
+const PAGE_BUILD = (() => {
+  try {
+    const m = /[?&]v=(\d+)/.exec((document.currentScript && document.currentScript.src) || '');
+    return m ? +m[1] : 0;
+  } catch (e) { return 0; }
+})();
+(() => {
+  const el = $('#dr-client-ver');
+  if (!el) return;                                    // 古い index.html(キャッシュ)
+  const d = new Date(PAGE_BUILD * 1000), p2 = (x) => String(x).padStart(2, '0');
+  el.textContent = `画面の版 ${DRIVE_CLIENT}` + (PAGE_BUILD ? `(app.js ${p2(d.getMonth() + 1)}/${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())})` : '');
+})();
 $('#btn-dr-start').addEventListener('click', async () => {
   const m = drModel();
   if (!m) { toast('モデルを選んでください', true); return; }
+  // 画面を開いた直後、サーバーの設定(トリム・ゲイン・スイッチ)を一度も読んでいないうちは始めない(読む前の欄は index.html の
+  // 初めの値 = トリム 0・速度 1.00 で、それを送ってしまう。2026-10-26 fix3)。表示の問い合わせが失敗したあと(サーバーが落ちた・
+  // 起き直している)も、次に同期するまで始めない(drNotSynced。2026-10-27 fix5 t1)
+  if (drNotSynced()) return;
   const dry = $('#dr-dry').checked;
+  // 「モーターに出力しない」のまま、説明欄がベンチマークのブロックの本(block=・official=1)のときは聞く(2026-10-27 fix3 直す 3 回目
+  // r3-r3-state-2: dry では下の確認の文が出ないので、朝の dry run の印が残ったままブロックの本を ▶ すると、推論の確認で黙って始まった)
+  const dDesc = $('#dr-desc').value;
+  if (dry && (descField(dDesc, 'block') || /(^|\s)official=1(\s|$)/.test(dDesc))
+      && !confirm('「モーターに出力しない」が ON です(推論の確認。出力は中立で、CH3 を AI 側にしても車は動きません)。\n'
+        + `説明欄はベンチマークのブロックの本です(block=${descField(dDesc, 'block') || '?'})。\n\n`
+        + 'このまま推論の確認で始めますか?(本番の走行なら キャンセル →「モーターに出力しない」を外してから ▶)')) return;
   const isTcp = !!(m.postprocess && m.postprocess.kind === 'tcp_controller');
   const tcpMode = +$('#dr-tcp-mode').value, cap = +$('#dr-speed-cap').value;
   // TCP の出し方 1〜3 は机上の比較で評価していない(制御器のスロットルの写像はまだ粗い)ので、始める前に確かめる
@@ -1349,17 +1466,53 @@ $('#btn-dr-start').addEventListener('click', async () => {
   const zoneLine = $('#dr-zone-caps').checked ? `\n区間の速度上限: ON(${zoneSpecText(state.drive.st)})${zoneUnknownCap(state.drive.st) != null ? '\n  位相が不確かなとき(1 周目のほぼ全部)も上限が掛かります' : ''}` : '';
   const prepLine = prepStartLines();
   const speedLine = speedStartLines(state.drive.st) + launchStartLine(state.drive.st);
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${capLine}${zoneLine}${speedLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
-  const body = { client: 6, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry, record: $('#dr-record').checked,
-                 description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value), params: readDriveParams() };
+  const trimLine = trimGuardStartLines(state.drive.st) + revStartLine();
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${trimLine}${capLine}${zoneLine}${speedLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。`)) return;
+  // client: 画面の版(server.py の DRIVE_CLIENT_VERSION。7 = 2026-10-26 の画面の直し。fix3 state-5。8 = 2026-10-26 夜〜10/27 の直し
+  // (r1-state3-1・3-2・rs1-2・state3-4・r2-r2-state-1・2・3)。9 = 2026-10-27 fix5(t1・t2・t3)。古い画面からは走行を始めない)。build: この画面の app.js の更新時刻
+  // (PAGE_BUILD。サーバーは今のファイルより古ければ断る = 版を上げ忘れても古い画面で走らない。2026-10-27 fix3 r2-r2-state-3)。
+  // boot_at: この画面が最後に読んだ status の boot_at(drive.Driver を作った時刻)。サーバーは今の起動の時刻と違えば断る(409)。確認の文の
+  // 見張り・残す・補助なし・天井の左・発進の前進の強さは走行開始で送らずサーバーの値のままなので、起き直す前の表示(state.drive.st)の
+  // ままの文で、既定に戻った値で走らないように(2026-10-27 fix5 反証 4 回目 t1。確認の文を読んでいる間に起き直したときも)
+  const body = { client: 9, build: PAGE_BUILD, boot_at: state.drive.bootAt ?? null, run: m.name, mode_id: +$('#dr-mode').value, dry_run: dry,
+                 record: $('#dr-record').checked, description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value),
+                 params: readDriveParams() };
+  const seq = state.drive.startSeq = (state.drive.startSeq || 0) + 1;     // この ▶ の番号(下の断りの文の出し直しで使う。fix6)
   try {
     const r = await api('POST', '/api/drive/start', body);
     setDriveToken(r.token);
     benchSent();                                    // 基準の設定で入れた値は、走行開始で送って保存された
     toast(dry ? '推論の確認を開始しました(出力は中立)' : (r.ai_no ? `AI走行 No.${r.ai_no} を開始しました` : '走行を開始しました')); pollDrive();
     if (r.plan_diffs && r.plan_diffs.length) toast(`ブロックの計画と違うので「試し」(cand=EXP)として記録します: ${r.plan_diffs.join('、')}`, true);
-  } catch (e) { toast(e.message, true); }
+  } catch (e) {
+    toast(e.message, true);
+    // 断られた・届かなかった: すぐ同期して、表示と確認の文を今のサーバーに(t1)。同期の返事で起動し直しの知らせ(noteServerBoot の
+    // トースト)が出ると、断った文(「…始めません」)が数十 ms で消え、見える文に走行を始めていないことが出なかった(2026-10-27 fix6
+    // 反証 w1-ui-ui61-2: 起き直しの 409 のあと「…既定に戻っています」だけが残った)。同期のあと、起き直しで断った文(server.py の
+    // _boot_refusal)か、同期のあいだに知らせが出たときは、断った文をもう一度出す(どの返事の順でも最後に残る文が同じになるように)。
+    // 頭に、同期した status で止まっていれば「走行は始まっていません(停止中)。」。断った文に起動し直しが無ければ知らせを後ろに付ける。
+    // ほかの断り(古い画面・学習中など)で知らせが出ないときは前と同じ。同期を待つあいだに次の ▶ を押したときは出し直さない(前の ▶ の
+    // 文で、次の ▶ の知らせ = 走り出した知らせを消さない。遅れて届いた古い返事は止まっている)。表示だけ(送った body・断る決まり・同期は前と同じ)
+    const nBoot = state.drive.bootToasts || 0;
+    try { await pollDrive(); } finally {
+      const m = String(e.message), bootRefusal = /^管理画面のサーバーが .*に起動し直しました\(/.test(m);
+      if (seq === state.drive.startSeq && (bootRefusal || (state.drive.bootToasts || 0) !== nBoot)) {
+        const st = state.drive.st;
+        toast((st && !st.running ? '走行は始まっていません(停止中)。' : '')
+          + (bootRefusal ? m : `${m.replace(/。$/, '')}。${state.drive.bootToast}`), true);
+      }
+    }
+  }
 });
+// サーバーの設定をまだ読んでいない・表示の問い合わせが失敗したあと次に同期していない: 知らせて true(▶・基準の設定・ブロックは断る)。
+// 文は、一度も同期していない(画面を開いた直後)なら前と同じ「読み込んでいます」、同期したあとに失敗したなら「つながっていません」
+function drNotSynced() {
+  if (state.drive.paramsLoaded) return false;
+  toast(state.drive.lostAt && state.drive.synced ? 'サーバーにつながっていません(表示の問い合わせが通りません)。表示が戻って同期してから押してください。'
+    + '「起動し直しました」が出たら、止まっているときに朝の設定を入れ直す(手順書 7 章)'
+    : 'サーバーの設定を読み込んでいます。少し待ってから押してください', true);
+  return true;
+}
 async function stopDrive(reason) {
   try { await api('POST', '/api/drive/stop', { reason }); toast('停止しました'); } catch (e) { toast(e.message, true); }
   pollDrive();
@@ -1388,19 +1541,75 @@ async function pollDrive() {
   let st;
   // 生存確認: 走行を始めたこの画面から token を送り続ける(タブが裏に回っても、ブラウザが動かしている間は送る)
   const tok = state.drive.token ? `?token=${encodeURIComponent(state.drive.token)}` : '';
-  try { st = await api('GET', '/api/drive/status' + tok); } catch (e) { st = null; }
+  const since = drSync.clock;         // この問い合わせのあとに返事が来た送信の項目は、この返事で戻さない(r1-state3-1)
+  // 止まっているとき(drIdle)だけ、返事を DR_IDLE_WAIT_MS で打ち切って失敗にする(drLost と次の問い合わせ。2026-10-27 fix6
+  // w2-ui-w1-ui-r62-1)。前は返事が来ないまま止まると輪も止まり、drLost も呼ばれず、表示は前のまま ▶ も押せた。本文を読む途中で
+  // 打ち切ったとき(api は本文なしの null を返す)も失敗にする。走行中・token のある画面は打ち切らない(生存確認の問い合わせは前と同じ)
+  const ac = drIdle() && typeof AbortController === 'function' ? new AbortController() : null;
+  const cut = ac ? setTimeout(() => ac.abort(), DR_IDLE_WAIT_MS) : null;
+  try {
+    st = await api('GET', '/api/drive/status' + tok, undefined, ac ? ac.signal : undefined);
+    if (ac && ac.signal.aborted) throw new Error('打ち切り');
+  } catch (e) { st = null; drLost(); }
+  if (ac) clearTimeout(cut);
   if (st && !st.running && state.drive.token) setDriveToken(null);
-  if (st) renderDrive(st);
+  if (st) renderDrive(st, since);
   const running = st ? st.running : (state.drive.st && state.drive.st.running);
   if (running || state.tab === 'drive') driveTimer = setTimeout(pollDrive, running ? 250 : 1000);
 }
+// 表示の問い合わせが失敗した(サーバーが落ちた・起き直している・通信の途切れ。2026-10-27 fix5 反証 4 回目 t1): 次に同期する
+// (renderDrive が params を読む)まで、サーバーの設定を読んでいない扱いにする(▶・基準の設定・ブロックは drNotSynced で断る)。
+// 前は表示が古いまま(st = null だけ)で、起き直した直後・確認の文を読んでいる間に起き直したときに、確認の文は起き直す前の値
+// (見張り ON・左 4.2・200 µs)のまま、車は既定の値(見張り OFF・左 4.1・250 µs)で走った。走行中は止める操作を変えない
+function drLost() {
+  state.drive.paramsLoaded = false;
+  state.drive.lostAt = Date.now();
+  const st = state.drive.st;
+  if (st && st.running) return;
+  const b = $('#btn-dr-start');
+  b.disabled = true; b.title = 'サーバーにつながっていません';
+  const d = new Date(state.drive.lostAt), p2 = (x) => String(x).padStart(2, '0');
+  $('#dr-message').innerHTML = `<div class="warn-text">サーバーにつながっていません(表示の問い合わせが ${p2(d.getHours())}:${p2(d.getMinutes())}:`
+    + `${p2(d.getSeconds())} に失敗)。つながって表示が戻るまで、走行開始・基準の設定・ベンチマークは押せません</div>`;
+}
 const PHASE = { idle: ['', '停止中'], starting: ['warn', '準備中'], driving: ['ok', '走行中'], error: ['warn', 'エラー'] };
 function gaugePos(us) { return `${Math.max(0, Math.min(100, (us - 1000) / 10))}%`; }
-function renderDrive(st) {
+// 管理画面のサーバーの起動し直し(2026-10-26 fix3 直す 1 回目 r1-state3-4): status の boot_at(drive.Driver を作った時刻)が、この画面で
+// 前に見た値から変わったら知らせる。起動のたびに既定へ戻る項目(drive.RESET_ON_BOOT: 試験の選択肢は OFF・天井の値・発進の前進の値
+// など)が、朝に入れた値のつもりのまま走らないように(前はスイッチが黙って OFF に戻り、確認の文から行が消えるだけだった)。
+// 表示だけ(送る値・スイッチは変えない)。boot_at の無いサーバー(再起動の前の古い版)では何もしない。画面を読み直すと消える
+function noteServerBoot(st) {
+  const b = st && st.boot_at;
+  if (b === undefined || b === null) return;
+  const prev = state.drive.bootAt;
+  state.drive.bootAt = b;
+  if (prev === undefined || prev === null || prev === b) return;
+  const d = new Date(+b * 1000), p = st.params || {};
+  const hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  const opts = OPT_SWITCHES.filter((o) => p[o.key] !== undefined).map((o) => o.name);
+  state.drive.bootNote = `管理画面のサーバーが ${hm} に起動し直しました。起動のたびに既定に戻るもの: `
+    + (opts.length ? `${opts.join('・')}は OFF、` : '')
+    + `天井の左旋回中 ${p.ceil_left_mps ?? '-'} m/s、発進の前進の強さ ${p.launch_us ?? '-'} µs など。`
+    + '朝に入れた値は、止まっているときに入れ直し、スイッチと走行開始の確認の文で読む(手順書 7 章)。画面を読み直すとこの文は消えます';
+  const msg = `管理画面のサーバーが ${hm} に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています`;
+  state.drive.bootToast = msg;                        // 走行開始の断りの文を出し直すときに使う(▶ の catch。2026-10-27 fix6)
+  state.drive.bootToasts = (state.drive.bootToasts || 0) + 1;
+  toast(msg, true);
+}
+function renderDrive(st, since) {
   const prev = state.drive.st;
   state.drive.st = st;
+  // 試験の選択肢(スイッチを押すとすぐ送る。走行開始では送らない)は、送信の返事より前に出た問い合わせの返事(since より後に返事が
+  // 来た項目)なら、前の値(送信の返事の値)のままにする。スイッチ(renderOptSwitches)と走行開始の確認の文(trimGuardStartLines)は
+  // st.params を読むので(2026-10-27 fix3 r2-r2-state-2。setDriveParams の since と同じ考え。次の問い合わせで合う)
+  if (since !== undefined && prev && prev.params && st.params) {
+    for (const o of OPT_SWITCHES) {
+      if ((drAckAt[o.key] || 0) > since && prev.params[o.key] !== undefined) st.params[o.key] = prev.params[o.key];
+    }
+  }
+  noteServerBoot(st);                 // サーバーの起動し直しの知らせ(2026-10-26 fix3 r1-state3-4。表示だけ)
   if (st.running && Object.keys(state.drive.pending).length) benchSent();     // 走り出したらサーバーの値が正
-  if (st.params) setDriveParams(st.params);
+  if (st.params) { setDriveParams(st.params, since); state.drive.paramsLoaded = true; state.drive.synced = true; state.drive.lostAt = null; }
   if (prev && prev.running && !st.running && state.tab === 'scenes') loadScenes();
   const [cls, txt] = PHASE[st.phase] || ['', st.phase];
   const ph = $('#dr-phase');
@@ -1409,7 +1618,8 @@ function renderDrive(st) {
   $('#dr-message').innerHTML = esc(st.message || '') + (st.error ? `<div class="warn-text">${esc(st.error)}</div>` : '')
     + (st.recording_note ? `<div class="muted">${esc(st.recording_note)}</div>` : '')
     + (st.running && st.recording ? '<div><span class="badge warn">● 収集中</span></div>' : '')
-    + (st.running && !st.controller ? '<div class="warn-text">別の画面(またはこの画面の以前の表示)が走行を操作しています。この画面を閉じても走行は止まりません。止めるときは停止ボタンを押してください。</div>' : '');
+    + (st.running && !st.controller ? '<div class="warn-text">別の画面(またはこの画面の以前の表示)が走行を操作しています。この画面を閉じても走行は止まりません。止めるときは停止ボタンを押してください。</div>' : '')
+    + (state.drive.bootNote ? `<div class="warn-text">${esc(state.drive.bootNote)}</div>` : '');
   const now = st.running ? st.now : null;
   const who = $('#dr-who');
   if (now) {
@@ -1487,6 +1697,9 @@ function renderDrive(st) {
   renderZoneSwitch(st);
   renderSpeedSwitches(st);
   renderLaunchSwitch(st);
+  renderOptSwitches(st);              // 試験の選択肢(後ろの見張りなど。2026-10-26 fix3)
+  // 発進の補助は走行中は OFF にだけできる(サーバーも 0 → 1 を断る。2026-10-26 fix3 r1-rs1-2)
+  $('#dr-start-kick').disabled = !!st.running && !(st.params && +st.params.start_kick === 1);
   renderVbatStrip(st);
   renderPrepHints();
   $('#btn-dr-baseline').disabled = !!st.running;
@@ -1583,7 +1796,8 @@ const BENCH_FALLBACK = {
             rev_us: 300.0, rev_s: 0.4, tof_guard: 1, speed_cap: 0.0, speed_scale: 1.0, tcp_mode: 0, ensemble_j: 0, ensemble_m: 0.5,
             zone_caps: 0, start_kick: 1,
             speed_ceiling: 0, ceil_all_mps: 4.5, ceil_left_mps: 4.1, speed_auto: 0, auto_target_mps: 4.27, auto_vref_v: 8.35,
-            launch_boost: 0, launch_us: 250.0, launch_mps: 2.5, launch_max_s: 1.2 },
+            launch_boost: 0, launch_us: 250.0, launch_mps: 2.5, launch_max_s: 1.2, rec_back_guard: 0,
+            rec_hold_keep: 0, launch_no_kick: 0 },
 };
 const BENCH_LABEL = { steer_gain: 'ステア', throttle_gain: '速度', steer_trim_us: 'トリム', lookahead: '先読み', osc_percent: '時計補正',
                       esc_reverse: '後退の前に中立', recovery: 'リカバリー', rev_us: '後退の強さ', rev_s: '下がる時間', tof_guard: 'ToF ガード',
@@ -1613,6 +1827,11 @@ function benchFieldValues(baseline, steer) {
   // 発進の前進(2026-10-26)も ON にしない(スイッチで、確かめてから)。値(launch_us など)はそのまま
   if (+p.launch_boost === 1) notes.push('発進の前進は ON にしていません(スイッチで入れてください)');
   if (p.launch_boost !== undefined) p.launch_boost = 0;
+  // トリム(steer_trim_us)は車の左右の直し(car_check の「直す」)。基準の設定・ブロックでは変えない(画面の欄・サーバーの値の
+  // まま。2026-10-26 fix2 state2-1: 前は基準の 0 で上書きし、走行開始で黙って 0 を送っていた)。ブロックの params に書いたときだけ入る。
+  // リカバリーの後ろの見張り(rec_back_guard)も入れない。今は試験の選択肢のスイッチ(OPT_SWITCHES。2026-10-26 fix3)で入れ、走行開始では
+  // 送らない(サーバーの値のまま)。ほかの試験の選択肢(rec_hold_keep・launch_no_kick)も benchApply が f.params から外す(ブロックでも)
+  for (const k of ['steer_trim_us', 'rec_back_guard']) delete p[k];
   if (steer !== undefined && steer !== null && steer !== '' && Number.isFinite(+steer)) p.steer_gain = +steer;
   return { run: b.run || '', mode_id: b.mode_id == null ? 5 : +b.mode_id, params: p, notes };
 }
@@ -1655,18 +1874,33 @@ function renderBaseInfo() {
     + `・区間の速度上限 OFF。ほかは drive.py の既定(リカバリー・後退は ON)。押しても走行は始めません。`;
 }
 // 「AI走行」のカードの「ベンチマーク」の選択(2026-10-23 ユーザーの依頼: ベンチマーク 1, 2, 3… の順に select で選ぶ)。
-// 今日のブロック(無ければブロックのある最初の日)を並べる。選ぶとブロックのボタンと同じ(モデル・基準の値・説明欄)
+// 今日のブロックを並べる。選ぶとブロックのボタンと同じ(モデル・基準の値・説明欄)。
+// 今日(サーバーの日付 d.today)のブロックが無いときは、ほかの日に落とさない(2026-10-27 fix3 直す 3 回目 r3-r3-state-1): 前は黙って
+// 「ブロックのある最初の日」(10/23)を並べ、Jetson の時計が 11/03 でない朝(電源を切ると RTC が戻り、ネットが無いと NTP で合わない)に
+// 「ベンチマーク 2」を選ぶと 10/23 の SLOW-SEC1・ゲイン 1.00・説明欄 day=2026-10-23 が入った。今は注意の 1 行だけで選べない
 function renderBenchPick(d) {
   const sel = $('#dr-bench-pick'), days = (d && d.exists && d.days) || [];
-  let di = days.findIndex((x) => x.date === d.today && x.blocks.length);
-  if (di < 0) di = days.findIndex((x) => x.blocks.length);
-  $('#dr-bench-pick-wrap').classList.toggle('hidden', di < 0);
-  if (di < 0) return;
+  const di = days.findIndex((x) => x.date === d.today && x.blocks.length);
+  const other = di < 0 ? days.filter((x) => x.blocks.length).map((x) => x.date) : [];
+  $('#dr-bench-pick-wrap').classList.toggle('hidden', di < 0 && !other.length);
+  if (di < 0) {
+    if (other.length) {
+      sel.innerHTML = `<option value="">— 今日(サーバーの日付 ${esc(d.today || '?')})のベンチマークはありません。Jetson の時刻を`
+        + `確かめてください(ブロックのある日: ${esc(other.join('・'))}。手順書 3 章)—</option>`;
+      sel.value = '';
+      sel.disabled = true;
+    }
+    return;
+  }
   const ap = state.bench.applied || {};
-  sel.innerHTML = '<option value="">— ベンチマークを選ぶ —</option>' + days[di].blocks.map((b, bi) =>
+  // 選ぶ欄は毎回「選ぶ」の行に戻す。ブラウザは選ばれている項目を選び直しても change を出さないので、今のブロックを
+  // 選んだままにすると「同じブロックを選び直して入れ直す」ができなかった(2026-10-26 fix2 state2-3)。今のブロックは先頭の行に出す
+  const cur = ap.day === di && ap.i !== undefined ? days[di].blocks[ap.i] : null;
+  sel.innerHTML = `<option value="">${cur ? `— 今: ベンチマーク${esc(cur.block)}: ${esc(cur.id)}${cur.tune ? ` ・ ${esc(cur.tune)}` : ''}`
+    + '(同じ番号をもう一度選ぶと入れ直す)—' : '— ベンチマークを選ぶ —'}</option>` + days[di].blocks.map((b, bi) =>
     `<option value="${di}:${bi}"${b.drivable ? '' : ' disabled'}>ベンチマーク${esc(b.block)}: ${esc(b.id)} ${esc(b.label || '')}`
     + `${b.tune ? ` ・ ${esc(b.tune)}` : ''}${b.drivable ? '' : '(走れません)'}</option>`).join('');
-  sel.value = ap.day === di && ap.i !== undefined ? `${di}:${ap.i}` : '';
+  sel.value = '';
   sel.disabled = !!(state.drive.st && state.drive.st.running);
 }
 // モデルを手で替えて、選んだベンチマークのモデルと違ってしまったら、ベンチマークの選択を外す(説明欄と食い違わないように知らせる)
@@ -1684,7 +1918,10 @@ $('#dr-bench-pick').addEventListener('change', (e) => {
   const [di, bi] = v.split(':').map(Number);
   const block = ((d.days[di] || {}).blocks || [])[bi];
   if (!block || !block.drivable) return;
-  benchApply(block, { day: di, i: bi });
+  if ((d.days[di] || {}).date !== d.today) { e.target.value = ''; return; }   // 選ぶ欄は今日のブロックだけ(r3-r3-state-1。古い一覧の値も入れない)
+  // 入れなかった(サーバーの設定をまだ読んでいない・走行中・モデルが無い)ときは説明欄に official=1 を足さず、選ぶ欄を「選ぶ」の行に
+  // 戻す(同じ番号をもう一度選べるように。2026-10-27 fix3 直す 3 回目 r3-r3-state-3。前は入れなかったときも今の説明欄に足した)
+  if (!benchApply(block, { day: di, i: bi })) { e.target.value = ''; return; }
   // 本番の印(official=1)と予定の周(plan_laps=3)を説明欄に足す(夜の集計で試しの走行と分ける)
   const desc = $('#dr-desc').value;
   if (!/(^|\s)official=1(\s|$)/.test(desc)) {
@@ -1693,11 +1930,11 @@ $('#dr-bench-pick').addEventListener('change', (e) => {
       : `${desc.slice(0, i).trimEnd()} official=1 ${desc.slice(i).trimStart()}`;
   }
 });
-// 「モデル(学習結果)」の一覧にも、ベンチマークの番号を付けて先頭に並べる(値は学習結果の名前のまま。選択は変えない)
+// 「モデル(学習結果)」の一覧にも、ベンチマークの番号を付けて先頭に並べる(値は学習結果の名前のまま。選択は変えない)。
+// 今日のブロックが無いときは番号を付けない(ほかの日の番号に落とさない。r3-r3-state-1)
 function labelDriveModels(d) {
   const sel = $('#dr-model'), days = (d && d.exists && d.days) || [], tags = {};
-  let di = days.findIndex((x) => x.date === d.today && x.blocks.length);
-  if (di < 0) di = days.findIndex((x) => x.blocks.length);
+  const di = days.findIndex((x) => x.date === d.today && x.blocks.length);
   if (di >= 0) days[di].blocks.forEach((b) => { (tags[b.run] = tags[b.run] || { nums: [], id: b.id, label: b.label || '' }).nums.push(b.block); });
   const cur = sel.value, opts = [...sel.options];
   for (const o of opts) {
@@ -1719,8 +1956,13 @@ function renderBench() {
   if (!show) return;
   $('#bench-head').textContent = [d.bench, d.protocol_sha256 ? `手順 sha256 ${String(d.protocol_sha256).slice(0, 12)}…` : '',
                                   d.created_at ? `作成 ${d.created_at}` : ''].filter(Boolean).join(' ・ ');
+  // 今日(サーバーの日付)のブロックが無い: 選ぶ欄は選べない(r3-r3-state-1)。カードのボタンはほかの日のブロックも押せる(確認の文あり)
+  const noToday = (d.days || []).some((x) => x.blocks.length) && !(d.days || []).some((x) => x.date === d.today && x.blocks.length);
   $('#bench-error').innerHTML = (d.error ? `<div>data/bench_candidates.json を読めません: ${esc(d.error)}</div>` : '')
-    + (d.warnings || []).map((w) => `<div>${esc(w)}</div>`).join('');
+    + (d.warnings || []).map((w) => `<div>${esc(w)}</div>`).join('')
+    + (noToday ? `<div>今日(サーバーの日付 ${esc(d.today || '?')})のブロックはありません(「今日」の印が無い)。ベンチマークの日なら `
+      + 'Jetson の時刻を確かめてください(端末で date。違えばネットにつなぐか sudo date -s で合わせて、画面を読み直す。手順書 3 章)。'
+      + '記録の名前もこの時刻で付きます</div>' : '');
   const running = !!(state.drive.st && state.drive.st.running);
   const ap = state.bench.applied || {};
   $('#bench-days').innerHTML = (d.days || []).map((day, di) => {
@@ -1764,19 +2006,30 @@ function benchSetFields(p) {
   }
   if (state.drive.st) { renderSpeedSwitches(state.drive.st); renderLaunchSwitch(state.drive.st); }   // OFF にしたことをすぐ出す
 }
-// block: ベンチマークのブロック(null なら「基準の設定」= モデル B)
+// block: ベンチマークのブロック(null なら「基準の設定」= モデル B)。戻り値: 画面に入れたら true(断ったら false)
 function benchApply(block, where) {
   const st = state.drive.st || {};
-  if (st.running) { toast('走行中は変えられません(止めてから)', true); return; }
+  if (st.running) { toast('走行中は変えられません(止めてから)', true); return false; }
+  // 画面を開いた直後、サーバーの設定をまだ一度も読んでいないうちは入れない(▶ と同じ。2026-10-27 fix3 直す 3 回目 r3-r3-state-3:
+  // 前は状態の問い合わせが失敗している間に押すと、サーバーの値が分からず天井・自動合わせ・発進の前進・ゲインを pending にしないので、
+  // 最初の同期で前の本の値(天井 ON・0.97 など)に黙って戻り、▶ でそれを送った)
+  // 表示の問い合わせが失敗したあと、次に同期するまでも断る(▶ と同じ drNotSynced。2026-10-27 fix5 t1)
+  if (drNotSynced()) return false;
   const f = benchFieldValues(benchBaseline(), $('#dr-base-steer').value);
   if (block && block.params) f.params = Object.assign({}, f.params, block.params);       // ブロックの上書き(速度ゲインなど)
   if (block && block.mode_id != null) f.mode_id = +block.mode_id;
   const run = block ? block.run : f.run;
   const m = state.drive.models.find((x) => x.name === run);
-  if (!m) { toast(`モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return; }
-  if (m.drivable === false) { toast(`このモデルでは走行できません: ${m.why_not || ''}`, true); return; }
+  if (!m) { toast(`モデル ${run} が走行の一覧にありません(TensorRT エンジンが必要)`, true); return false; }
+  if (m.drivable === false) { toast(`このモデルでは走行できません: ${m.why_not || ''}`, true); return false; }
+  // ほかの日のブロック(カードのボタン。今日 = サーバーの日付のブロックではない)は確かめてから入れる(r3-r3-state-1。選ぶ欄は今日だけ)
+  const bday = block && where && state.bench.data ? ((state.bench.data.days || [])[where.day] || {}).date : null;
+  if (bday && bday !== state.bench.data.today
+      && !confirm(`このブロックは ${bday} の段です(今日 = サーバーの日付 ${state.bench.data.today || '?'})。\n`
+        + `説明欄は ${bday} の本になり、記録の名前はサーバーの時刻で付きます。ベンチマークの日なら、キャンセルして Jetson の時刻を`
+        + '合わせてから画面を読み直してください(手順書 3 章)。\n\nこのまま入れますか?')) return false;
   const before = { run: $('#dr-model').value, mode: $('#dr-mode').value, desc: $('#dr-desc').value, record: $('#dr-record').checked,
-                   params: readDriveParams() };
+                   dry: $('#dr-dry').checked, params: readDriveParams() };
   if (!state.bench.prev) state.bench.prev = before;            // 取り消しで戻す値(最初に入れる前のもの)
   const changes = [];
   if (before.run !== run) changes.push(`モデル ${before.run || '-'} → ${run}`);
@@ -1789,6 +2042,19 @@ function benchApply(block, where) {
   else notes.push(`このモデルではジャンル ${f.mode_id} を選べません。ジャンルを確かめてください`);
   if (before.mode !== $('#dr-mode').value) changes.push(`ジャンル ${before.mode || '-'} → ${$('#dr-mode').value}`);
   const diff = benchDiff(before.params, f.params);
+  const trimKeep = +before.params.steer_trim_us;
+  if (f.params.steer_trim_us === undefined && Number.isFinite(trimKeep) && Math.abs(trimKeep) > 1e-6) {
+    notes.push(`トリム ${trimKeep > 0 ? '+' : ''}${trimKeep.toFixed(0)} µs はそのままです`
+      + '(車の左右の直し。基準の設定・ブロックでは変えません。0 に戻すときはスライダーで)');
+  }
+  // 試験の選択肢(後ろの見張りなど。2026-10-26 fix3)は基準の設定・ブロックでは変えない(ON にも OFF にもしない。スイッチで)。
+  // ブロックの params に書いてあっても入れない(画面の欄も無いので前から入らなかった。ここで外して、ON なら注を出す)
+  const stP = (state.drive.st && state.drive.st.params) || {};
+  for (const o of OPT_SWITCHES) {
+    if (block && block.params && +block.params[o.key] === 1) notes.push(`${o.name}はブロックでは ON にしません(スイッチで入れてください)`);
+    delete f.params[o.key];
+    if (+stP[o.key] === 1) notes.push(`${o.name}は ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)`);
+  }
   benchSetFields(f.params);
   if (block) {
     $('#dr-record').checked = true;                            // 説明欄は収集するときだけ記録に残る
@@ -1796,6 +2062,19 @@ function benchApply(block, where) {
     if (!before.record) changes.push('収集 OFF → ON');
     $('#dr-desc').value = block.description || '';
     changes.push('説明欄に雛形');
+    // ブロックは本番の走行: 朝の dry run の「モーターに出力しない」が残っていたら外す(2026-10-27 fix3 直す 3 回目 r3-r3-state-2。
+    // 前は残ったまま ▶ で確認の文が出ず、推論の確認(出力は中立)で始まって 1-1 の 1 本を失った)。取り消すで戻る
+    if (before.dry) {
+      $('#dr-dry').checked = false;
+      changes.push('「モーターに出力しない」ON → OFF(ブロックは本番の走行。推論の確認にするならもう一度入れる)');
+    }
+  } else if (descField(before.desc, 'bench') && descField(before.desc, 'block')) {
+    // 基準の設定はベンチマークの本ではない(2026-10-27 fix3 r2-r2-state-1): 前に選んだブロックの雛形(bench=・block=N・cand=・
+    // official=1)が説明欄に残ると、その走行(朝の車輪を浮かせた発進の前進の確かめなど)が公式のブロックの本(AI No.1)として
+    // 記録され、夜の道具 ①〜⑤ が回の本に数えた。雛形を消す(走行開始は「AI走行 モデル名」になる。取り消すで戻る)
+    $('#dr-desc').value = '';
+    changes.push(`説明欄のベンチマークの雛形(ブロック ${descField(before.desc, 'block')}${/(^|\s)official=1(\s|$)/.test(before.desc) ? '・official=1' : ''})を消した`);
+    if (before.record) notes.push('「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)');
   }
   state.bench.applied = block ? { day: where.day, i: where.i } : { baseline: true };
   updateTcpWarn(); updateNoPostNote(); renderBench(); renderPrepHints();
@@ -1808,6 +2087,7 @@ function benchApply(block, where) {
     + notes.map((n) => `<div class="warn-text">${esc(n)}</div>`).join('');
   $('#dr-base-note').classList.remove('hidden');
   toast(`${what}を画面に入れました(走行は始めていません)`);
+  return true;
 }
 // 走行開始で送った・走行が始まった: 入れた値はサーバーの値になった
 function benchSent() {
@@ -1840,6 +2120,7 @@ $('#btn-dr-base-undo').addEventListener('click', () => {
     if ([...$('#dr-mode').options].some((o) => o.value === prev.mode && !o.disabled)) $('#dr-mode').value = prev.mode;
     $('#dr-desc').value = prev.desc; $('#dr-record').checked = prev.record;
     $('#dr-record-opts').classList.toggle('hidden', !prev.record);
+    if (prev.dry !== undefined) $('#dr-dry').checked = prev.dry;     // r3-r3-state-2(ブロックで外した「モーターに出力しない」も戻す)
   }
   if (st.params) setDriveParams(st.params);
   state.bench.prev = null; state.bench.applied = null;
@@ -1878,8 +2159,34 @@ function renderPrepHints() {
   const mode = $('#dr-mode').value;
   const bad = (mode && mode !== String(f.mode_id) ? [`ジャンル ${mode}(基準 ${f.mode_id})`] : [])
     .concat(diff.map(([k, a, b]) => `${BENCH_LABEL[k] || k} ${benchFmt(k, a)}(基準 ${benchFmt(k, b)})`));
-  $('#dr-check-base').innerHTML = bad.length ? `<span class="warn-text">基準と違う: ${esc(bad.join('、'))}</span>`
-    : '<span class="ok-text">画面の値は基準と同じ</span> <span class="muted">(モデルはブロックごとに替わる)</span>';
+  $('#dr-check-base').innerHTML = (bad.length ? `<span class="warn-text">基準と違う: ${esc(bad.join('、'))}</span>`
+    : '<span class="ok-text">画面の値は基準と同じ</span> <span class="muted">(モデルはブロックごとに替わる)</span>') + trimNote() + optNote(state.drive.st);
+}
+// トリムが 0 でないときの文(基準の設定・ブロックでは変えない値なので、基準と同じかの判定とは別に出す。2026-10-26 fix2 state2-1)
+function trimNote() {
+  const v = +$('#dr-trim').value;
+  return Number.isFinite(v) && Math.abs(v) > 1e-6
+    ? ` <span class="muted">・トリム ${v > 0 ? '+' : ''}${v.toFixed(0)} µs(車の左右の直し。基準の設定・ブロックでは変えない)</span>` : '';
+}
+// 走行開始の確認に足す行: トリムが 0 でない・リカバリーの後ろの見張りが ON(どちらも 0・OFF なら行を出さない)
+function trimGuardStartLines(st) {
+  const v = +$('#dr-trim').value, p = (st && st.params) || {};
+  return (Number.isFinite(v) && Math.abs(v) > 1e-6 ? `\nトリム: ${v > 0 ? '+' : ''}${v.toFixed(0)} µs(車の左右の直し。基準の設定・ブロックでは変わりません)` : '')
+    + (+p.rec_back_guard === 1 ? '\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)' : '')
+    // 2026-10-26 fix3: 後ろの見張りとこの 2 つは、試験の選択肢のスイッチ(OPT_SWITCHES)か API で入れる(走行開始では送らない =
+    // サーバーの値のまま。行もサーバーの値から)。OFF なら行を出さない
+    + (+p.rec_hold_keep === 1 ? '\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)' : '')
+    + (+p.launch_no_kick === 1 ? '\n発進の前進を出さない区間は発進の補助も出さない: ON'
+       + ($('#dr-launch-boost').checked ? '' : '(この本は発進の前進が OFF なので、何も変わりません)') : '');
+}
+// 走行開始の確認に足す行: リカバリーの下がる量(rev_s・rev_us。走行開始で送る値 = スライダー)が、10/23・24 と同じ 0.40 秒・300 µs
+// (drive.py の既定・bench_candidates.json の基準)でないとき(2026-10-27 fix5 反証 4 回目 t3。approvals 10 の (b) を選んだ日に読む。
+// 同じなら行を出さない = 前と同じ)。基準の設定・ブロックは今まで通り基準の値を入れる(トリムと違い、変えない項目にはしない)
+const REV_USUAL = { s: +BENCH_FALLBACK.params.rev_s, us: +BENCH_FALLBACK.params.rev_us };
+function revStartLine() {
+  const s = +$('#dr-rev-s').value, us = +$('#dr-rev-us').value;
+  if (!Number.isFinite(s) || !Number.isFinite(us) || (Math.abs(s - REV_USUAL.s) < 1e-6 && Math.abs(us - REV_USUAL.us) < 1e-6)) return '';
+  return `\nリカバリーの下がる量: ${s.toFixed(2)} 秒・中立+${us.toFixed(0)} µs(10/23・24 は ${REV_USUAL.s.toFixed(2)} 秒・${REV_USUAL.us.toFixed(0)} µs)`;
 }
 // 走行開始の確認に足す行: チェックが残っている・説明欄の電池が空欄
 function prepStartLines() {
@@ -1936,9 +2243,8 @@ $('#dr-zone-caps').addEventListener('change', async () => {
     const unk = zoneUnknownNote(st);
     if (!confirm(`区間の速度上限を ON にします(${zoneSpecText(st)})。\n\n${unk ? unk + '。\n\n' : ''}ON にするのは、10/23 の記録で G1 に合格し、ユーザーが了承したあとです。\n了承は${unk ? '、3 区間に加えて 4 つめ(位相が不確かなときの上限)にも' : ''}出ていますか?`)) { el.checked = false; return; }
   }
-  delete state.drive.pending.zone_caps;
   try {
-    const p = await api('POST', '/api/drive/params', { zone_caps: on ? 1 : 0 });
+    const p = await postDriveParams({ zone_caps: on ? 1 : 0 }, ['zone_caps']);    // 送れなければ pending も戻す(r1-state3-2)
     if (p && p.zone_caps === undefined) { el.checked = false; toast('今のサーバーは区間の速度上限に対応していません(再起動が必要)', true); }
     else if (state.drive.st) state.drive.st.params = p;
     if (p && p.zone_caps !== undefined) toast(on ? '区間の速度上限を ON にしました' : '区間の速度上限を OFF にしました');
@@ -2029,20 +2335,24 @@ function renderSpeedSwitches(st) {
   else an.innerHTML = srvAuto ? '<b class="warn-text">ON: 速度ゲインを電圧と周の時間で合わせます</b>' : '';
 }
 $('#dr-speed-ceiling').addEventListener('change', async () => {
-  const el = $('#dr-speed-ceiling'), st = state.drive.st || {}, on = el.checked;
+  const el = $('#dr-speed-ceiling'), st = state.drive.st || {}, on = el.checked, auWas = $('#dr-speed-auto').checked;
   if (on) {
     if (st.running) { el.checked = false; toast('走行中は速さの天井を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
     if (!confirm(ceilConfirmText(speedSpec(st)))) { el.checked = false; return; }
   } else $('#dr-speed-auto').checked = false;
-  delete state.drive.pending.speed_ceiling; delete state.drive.pending.speed_auto;
   try {
-    const p = await api('POST', '/api/drive/params', on ? { speed_ceiling: 1 } : { speed_ceiling: 0, speed_auto: 0 });
+    // 天井を ON にしたら、自動合わせは OFF から始める(サーバーに残った ON も消す)。前は { speed_ceiling: 1 } だけを送り、
+    // ブロック・基準の設定で OFF にした自動合わせが、次の表示の同期(約 1 秒後)で黙って ON に戻っていた(2026-10-26 fix3 state-1)。
+    // 自動合わせを使う本(2-3・2-4)は、今まで通り天井のあとに自動合わせのスイッチで入れる(別の POST)。
+    // 送れなかったら、天井・自動合わせのスイッチと pending を押す前に戻す(前は pending を消したままで、同期でサーバーに残った
+    // 前の本の天井・自動合わせの ON が画面に戻り、走行開始で送っていた。2026-10-26 fix3 r1-state3-2)
+    const p = await postDriveParams(on ? { speed_ceiling: 1, speed_auto: 0 } : { speed_ceiling: 0, speed_auto: 0 }, ['speed_ceiling', 'speed_auto']);
     if (p && p.speed_ceiling === undefined) { el.checked = false; toast('今のサーバーは速さの天井に対応していません(再起動が必要)', true); }
     else {
       if (state.drive.st) state.drive.st.params = p;
       toast(on ? '速さの天井を ON にしました' : '速さの天井を OFF にしました(自動合わせも OFF)');
     }
-  } catch (e) { toast(e.message, true); el.checked = !on; }
+  } catch (e) { toast(e.message, true); el.checked = !on; $('#dr-speed-auto').checked = auWas; }
   if (state.drive.st) renderSpeedSwitches(state.drive.st);
 });
 $('#dr-speed-auto').addEventListener('change', async () => {
@@ -2052,9 +2362,8 @@ $('#dr-speed-auto').addEventListener('change', async () => {
     if (st.running) { el.checked = false; toast('走行中は自動合わせを ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
     if (!confirm(autoConfirmText(speedSpec(st), st))) { el.checked = false; return; }
   }
-  delete state.drive.pending.speed_auto;
   try {
-    const p = await api('POST', '/api/drive/params', { speed_auto: on ? 1 : 0 });
+    const p = await postDriveParams({ speed_auto: on ? 1 : 0 }, ['speed_auto']);    // 送れなければ pending も戻す(r1-state3-2)
     if (p && p.speed_auto === undefined) { el.checked = false; toast('今のサーバーは自動合わせに対応していません(再起動が必要)', true); }
     else {
       if (state.drive.st) state.drive.st.params = p;
@@ -2106,9 +2415,8 @@ $('#dr-launch-boost').addEventListener('change', async () => {
     if (st.running) { el.checked = false; toast('走行中は発進の前進を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)', true); return; }
     if (!confirm(launchConfirmText(launchSpec(st)))) { el.checked = false; return; }
   }
-  delete state.drive.pending.launch_boost;
   try {
-    const p = await api('POST', '/api/drive/params', { launch_boost: on ? 1 : 0 });
+    const p = await postDriveParams({ launch_boost: on ? 1 : 0 }, ['launch_boost']);    // 送れなければ pending も戻す(r1-state3-2)
     if (p && p.launch_boost === undefined) { el.checked = false; toast('今のサーバーは発進の前進に対応していません(再起動が必要)', true); }
     else {
       if (state.drive.st) state.drive.st.params = p;
@@ -2117,6 +2425,105 @@ $('#dr-launch-boost').addEventListener('change', async () => {
   } catch (e) { toast(e.message, true); el.checked = !on; }
   if (state.drive.st) renderLaunchSwitch(state.drive.st);
 });
+// 試験の選択肢のスイッチ(2026-10-26 fix3): リカバリーの後ろの見張り(rec_back_guard。fix2 safety2-1)・中立止めのあともリカバリーを
+// 残す(rec_hold_keep。fix3 safety1-1)・発進の前進を出さない区間は発進の補助も出さない(launch_no_kick。fix3 safety1-2)。
+// drive.py ではどれも既定 0・起動のたびに 0。作りは発進の前進のスイッチと同じ(既定 OFF・注意書き・ON の確認の文・走行中は ON に
+// できない(OFF はできる)・走行開始の確認の文に ON の行(trimGuardStartLines))。発進の前進と違うところ:
+// - 基準の設定・ブロックでは変えない(ON にも OFF にもしない)。トリムと同じく車・日の設定(fix2 state2-1 の決め)。手順書 3 章の
+//   「朝に 1 回入れる」のまま使えるように(OFF にすると、朝に入れた ON がブロックを押すたびに黙って消える)
+// - 走行開始では送らない(readDriveParams に入れない)。スイッチを押したらすぐ送り、走行開始のときはサーバーの値のまま
+//   (前と同じ。API で入れても、画面の古い表示で上書きしない)。スイッチの表示はサーバーの値に合わせる
+// - サーバーに無い項目(再起動の前の古いサーバー)はスイッチを出さず、「今のサーバーには無い」の 1 行だけ出す
+const OPT_SWITCHES = [
+  { key: 'rec_back_guard', sel: '#dr-rec-back-guard', group: 'rec', name: 'リカバリーの後ろの見張り',
+    on: 'ON: リカバリーで下がった時間をどの段でも数え、後ろに当たったらすぐ前へ出します',
+    text: 'リカバリーの「ブレーキ」「待つ」「中立」の段でも、後ろへ動いていたら下がった時間として数え、下がる時間に届いたら惰性にします。'
+      + '後ろへ動いている(直前まで動いていた)ときの衝撃(2.5G 以上)は、後ろに当たったとしてすぐ前へ出します。'
+      + '模型と記録の再生でしか確かめていません(実車の ESC ではまだ)。使う日は最初のリカバリーを人が見て、'
+      + '1 m 以上下がる・後ろの物に近づくときはすぐ CH3 を人側へ' },
+  // rec_hold_keep は後ろの見張りが ON のときだけ(drive._opt_rules。見張りを OFF にするとサーバーがこれも OFF にする)
+  { key: 'rec_hold_keep', sel: '#dr-rec-hold-keep', group: 'rec', name: '中立止めのあともリカバリーを残す', needs: 'rec_back_guard',
+    on: 'ON: AI 側のままの中立止めではリカバリーを戻しません(中止は CH3 を人側にするまで解けない)',
+    text: '後ろの見張りが ON のときだけ使えます(後ろの見張りを OFF にすると、これも OFF)。AI 側のままの中立止め(カメラの遅れ・I2C の失敗など。1 フレームでも)で、リカバリーの中止・途中の段・ぶつかった印を消しません。'
+      + 'OFF(今まで)は中立止め 1 回で全部消え、中止が解けるとモデルの弱い前進が壁を押し続けることがあります。'
+      + '戻すのは CH3 を人側にしたとき・人側の中立止め・走行の開始。机上の試験だけで、実車ではまだです' },
+  { key: 'launch_no_kick', sel: '#dr-launch-no-kick', group: 'launch', name: '発進の前進を出さない区間は発進の補助も出さない',
+    on: 'ON: 発進の前進を出さないと決めた区間では、発進の補助も出しません',
+    text: '発進の前進が ON で、前が近い・ToF が無い・車両の値が古いなどで「出さない」と決めた区間では、'
+      + '発進の補助(止まっていてモデルが進まないときの弱い前進を最大 2 秒)も出しません。発進の前進が OFF のときは何も変えません。'
+      + '机上の試験だけで、実車ではまだです' },
+];
+const optSupported = (st, key) => !!(st && st.params && st.params[key] !== undefined);
+const optName = (key) => (OPT_SWITCHES.find((o) => o.key === key) || { name: key }).name;
+const optBusy = {};                                   // 送っている間は表示の同期でスイッチを戻さない
+function optConfirmText(o) {
+  return `${o.name}を ON にします。\n\n${o.text}。\n\n`
+    + '試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。'
+    + '基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?';
+}
+function renderOptSwitches(st) {
+  const running = !!(st && st.running), p = (st && st.params) || {}, missing = { rec: [], launch: [] };
+  let recOn = false;
+  for (const o of OPT_SWITCHES) {
+    const el = $(o.sel), line = $(`#dr-opt-line-${o.key}`), note = $(o.sel + '-note');
+    if (!el) continue;                                  // 古い index.html(キャッシュ)
+    const ok = optSupported(st, o.key), srvOn = ok && +p[o.key] === 1;
+    if (line) line.classList.toggle('hidden', !ok);
+    if (!ok) {
+      el.checked = false; el.disabled = true; missing[o.group].push(o.name);
+      if (note) note.innerHTML = '';
+      continue;
+    }
+    const needOk = !o.needs || +p[o.needs] === 1;       // 先に ON にしておく選択肢(rec_hold_keep → 後ろの見張り)
+    if (!optBusy[o.key]) el.checked = srvOn;
+    el.disabled = (running && !srvOn) || (!needOk && !srvOn);   // 走行中は OFF にだけできる
+    if (note) note.innerHTML = srvOn ? `<b class="warn-text">${esc(o.on)}</b>`
+      : (!needOk ? `<span class="muted">${esc(optName(o.needs))}が OFF のあいだは押せません</span>` : '');
+    if (srvOn && o.group === 'rec') recOn = true;
+  }
+  for (const g of ['rec', 'launch']) {
+    const m = $(`#dr-opt-${g}-missing`);
+    if (m) m.textContent = missing[g].length ? `今のサーバーには無い選択肢: ${missing[g].join('・')}(管理画面のサーバーを再起動すると出ます)` : '';
+  }
+  const panel = $('#dr-opt-rec-panel');
+  if (panel) panel.classList.toggle('on', recOn);
+}
+for (const o of OPT_SWITCHES) {
+  const el0 = $(o.sel);
+  if (!el0) continue;
+  el0.addEventListener('change', async () => {
+    const el = $(o.sel), st = state.drive.st || {}, on = el.checked;
+    const before = Object.assign({}, st.params || {});
+    if (on) {
+      if (st.running) { el.checked = false; toast(`走行中は${o.name}を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)`, true); return; }
+      if (o.needs && +before[o.needs] !== 1) { el.checked = false; toast(`${o.name}は、${optName(o.needs)}が ON のときだけ使えます(先に${optName(o.needs)}を ON に)`, true); return; }
+      if (!confirm(optConfirmText(o))) { el.checked = false; return; }
+    }
+    optBusy[o.key] = true;
+    try {
+      const p = await api('POST', '/api/drive/params', { [o.key]: on ? 1 : 0 });
+      if (p && p[o.key] === undefined) { el.checked = false; toast(`今のサーバーは${o.name}に対応していません(再起動が必要)`, true); }
+      else {
+        if (state.drive.st) state.drive.st.params = p;
+        // OFF にしたら、それを要る選択肢もサーバーが OFF にする(後ろの見張り → 中立止めのあとも残す)
+        const also = OPT_SWITCHES.filter((x) => x.needs === o.key && +before[x.key] === 1 && +p[x.key] !== 1).map((x) => x.name);
+        toast(`${o.name}を ${on ? 'ON' : 'OFF'} にしました${also.length ? `(${also.join('・')}も OFF)` : ''}`);
+      }
+    } catch (e) { toast(e.message, true); el.checked = !on; }
+    // 返事の順番(2026-10-27 fix3 r2-r2-state-2): この送信の返事より前に出た表示の問い合わせの返事では、この項目とそれを要る項目
+    // (後ろの見張り → 中立止めのあとも残す)を戻さない(renderDrive の since。天井などの postDriveParams と同じ)。前は返事のあとすぐ
+    // optBusy を下ろすだけで、古い問い合わせの返事がスイッチと確認の文(trimGuardStartLines)を約 1 秒、前の値に戻した
+    drAcked([o.key].concat(OPT_SWITCHES.filter((x) => x.needs === o.key).map((x) => x.key)));
+    optBusy[o.key] = false;
+    if (state.drive.st) renderOptSwitches(state.drive.st);
+  });
+}
+// 走る前のチェックの行に足す文: ON の試験の選択肢(基準の設定・ブロックでは変えない値なので、基準と同じかの判定とは別に出す)
+function optNote(st) {
+  const p = (st && st.params) || {};
+  const on = OPT_SWITCHES.filter((o) => +p[o.key] === 1).map((o) => o.name);
+  return on.length ? ` <span class="muted">・${esc(on.join('・'))}: ON(基準の設定・ブロックでは変えない)</span>` : '';
+}
 const fmtN = (x, d = 2) => (x === undefined || x === null || !Number.isFinite(+x) ? '-' : (+x).toFixed(d));
 // 走行中の表示(drive.py の now.ceil: on・error・active・left・cap・v・mode(名前)・applied・thr_us)
 function ceilLiveText(c, s) {

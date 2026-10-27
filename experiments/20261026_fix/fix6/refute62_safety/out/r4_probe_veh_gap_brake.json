@@ -1,0 +1,4982 @@
+{
+ "rev_s=0.4 no_gap": {
+  "t_brake": 2.09,
+  "t_escape": 3.32,
+  "backed_m_before_escape": 1.068,
+  "reverse_side_rows_before_escape": 23,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 0,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.32,
+    "coast",
+    "escape"
+   ],
+   [
+    3.82,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.89,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.53,
+    "front",
+    1.74,
+    6.35
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 22,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.49,
+    "brake",
+    "gap"
+   ],
+   [
+    2.65,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.75,
+    null,
+    "brake"
+   ],
+   [
+    6.02,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.53,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.85,
+  "backed_m_before_escape": 0.178,
+  "reverse_side_rows_before_escape": 12,
+  "escape_rows_pushing_front_wall": 5,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "reverse",
+    true,
+    0.28,
+    0.28
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.42,
+    "brake",
+    "reverse"
+   ],
+   [
+    2.65,
+    "reverse",
+    "coast"
+   ],
+   [
+    2.85,
+    "coast",
+    "escape"
+   ],
+   [
+    3.35,
+    "escape",
+    null
+   ],
+   [
+    5.15,
+    null,
+    "brake"
+   ],
+   [
+    5.42,
+    "brake",
+    "gap"
+   ],
+   [
+    5.59,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.28
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.19,
+    "front",
+    1.19,
+    4.98
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.52,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 22,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.59,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.25,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.52,
+    "coast",
+    "escape"
+   ],
+   [
+    4.02,
+    "escape",
+    null
+   ],
+   [
+    5.85,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.63,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.65,
+  "backed_m_before_escape": 0.007,
+  "reverse_side_rows_before_escape": 9,
+  "escape_rows_pushing_front_wall": 12,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "reverse",
+    true,
+    0.38,
+    0.38
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.52,
+    "brake",
+    "reverse"
+   ],
+   [
+    2.65,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.15,
+    "escape",
+    null
+   ],
+   [
+    4.99,
+    null,
+    "brake"
+   ],
+   [
+    5.25,
+    "brake",
+    "gap"
+   ],
+   [
+    5.42,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.92,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.38
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    2.75,
+    "front",
+    0.35,
+    2.88
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.65,
+  "backed_m_before_escape": 1.086,
+  "reverse_side_rows_before_escape": 23,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.69,
+    "brake",
+    "gap"
+   ],
+   [
+    2.85,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.39,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.65,
+    "coast",
+    "escape"
+   ],
+   [
+    4.15,
+    "escape",
+    null
+   ],
+   [
+    5.99,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.88,
+    "front",
+    1.74,
+    6.36
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.05..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.62,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "escape",
+    true,
+    0.48,
+    0.48
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.62,
+    "brake",
+    "escape"
+   ],
+   [
+    3.12,
+    "escape",
+    null
+   ],
+   [
+    4.95,
+    null,
+    "brake"
+   ],
+   [
+    5.22,
+    "brake",
+    "gap"
+   ],
+   [
+    5.39,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.92,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.48
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.39,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 22,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.62,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.12,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.39,
+    "coast",
+    "escape"
+   ],
+   [
+    3.89,
+    "escape",
+    null
+   ],
+   [
+    5.72,
+    null,
+    "brake"
+   ],
+   [
+    5.99,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.5,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.15,
+  "backed_m_before_escape": 0.289,
+  "reverse_side_rows_before_escape": 15,
+  "escape_rows_pushing_front_wall": 2,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "gap",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.62,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.89,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.15,
+    "coast",
+    "escape"
+   ],
+   [
+    3.65,
+    "escape",
+    null
+   ],
+   [
+    5.49,
+    null,
+    "brake"
+   ],
+   [
+    5.75,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.59,
+    "front",
+    1.39,
+    5.48
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.49,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 22,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.72,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.22,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.49,
+    "coast",
+    "escape"
+   ],
+   [
+    3.99,
+    "escape",
+    null
+   ],
+   [
+    5.79,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.6,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.89,
+  "backed_m_before_escape": 0.022,
+  "reverse_side_rows_before_escape": 12,
+  "escape_rows_pushing_front_wall": 9,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "gap",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.72,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.89,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.39,
+    "escape",
+    null
+   ],
+   [
+    5.22,
+    null,
+    "brake"
+   ],
+   [
+    5.49,
+    "brake",
+    "gap"
+   ],
+   [
+    5.65,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.06,
+    "front",
+    0.6,
+    3.5
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.62,
+  "backed_m_before_escape": 1.068,
+  "reverse_side_rows_before_escape": 23,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.82,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.35,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.62,
+    "coast",
+    "escape"
+   ],
+   [
+    4.12,
+    "escape",
+    null
+   ],
+   [
+    5.95,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.83,
+    "front",
+    1.74,
+    6.35
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.20..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.75,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "escape"
+   ],
+   [
+    3.25,
+    "escape",
+    null
+   ],
+   [
+    5.09,
+    null,
+    "brake"
+   ],
+   [
+    5.35,
+    "brake",
+    "gap"
+   ],
+   [
+    5.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.46
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 23,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.75,
+    null,
+    "brake"
+   ],
+   [
+    6.02,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.53,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.12,
+  "backed_m_before_escape": 0.211,
+  "reverse_side_rows_before_escape": 15,
+  "escape_rows_pushing_front_wall": 4,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "reverse",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.89,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.12,
+    "coast",
+    "escape"
+   ],
+   [
+    3.62,
+    "escape",
+    null
+   ],
+   [
+    5.45,
+    null,
+    "brake"
+   ],
+   [
+    5.72,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.48,
+    "front",
+    1.24,
+    5.1
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.52,
+  "backed_m_before_escape": 0.962,
+  "reverse_side_rows_before_escape": 23,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.25,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.52,
+    "coast",
+    "escape"
+   ],
+   [
+    4.02,
+    "escape",
+    null
+   ],
+   [
+    5.85,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.63,
+    "front",
+    1.72,
+    6.31
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.89,
+  "backed_m_before_escape": 0.01,
+  "reverse_side_rows_before_escape": 12,
+  "escape_rows_pushing_front_wall": 11,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "reverse",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.89,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.39,
+    "escape",
+    null
+   ],
+   [
+    5.22,
+    null,
+    "brake"
+   ],
+   [
+    5.49,
+    "brake",
+    "gap"
+   ],
+   [
+    5.65,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.0,
+    "front",
+    0.4,
+    3.01
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.65,
+  "backed_m_before_escape": 1.086,
+  "reverse_side_rows_before_escape": 24,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.39,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.65,
+    "coast",
+    "escape"
+   ],
+   [
+    4.15,
+    "escape",
+    null
+   ],
+   [
+    5.99,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.88,
+    "front",
+    1.74,
+    6.36
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.4 veh_gap=brake+0.30..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.85,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.85,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.35,
+    "escape",
+    null
+   ],
+   [
+    5.15,
+    null,
+    "brake"
+   ],
+   [
+    5.42,
+    "brake",
+    "gap"
+   ],
+   [
+    5.59,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 no_gap": {
+  "t_brake": 2.09,
+  "t_escape": 3.22,
+  "backed_m_before_escape": 0.731,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 0,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.95,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.22,
+    "coast",
+    "escape"
+   ],
+   [
+    3.72,
+    "escape",
+    null
+   ],
+   [
+    5.55,
+    null,
+    "brake"
+   ],
+   [
+    5.82,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.1,
+    "front",
+    1.66,
+    6.16
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.35,
+  "backed_m_before_escape": 0.748,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.49,
+    "brake",
+    "gap"
+   ],
+   [
+    2.65,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.09,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.35,
+    "coast",
+    "escape"
+   ],
+   [
+    3.85,
+    "escape",
+    null
+   ],
+   [
+    5.65,
+    null,
+    "brake"
+   ],
+   [
+    5.92,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.26,
+    "front",
+    1.67,
+    6.18
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.55,
+  "backed_m_before_escape": 0.007,
+  "reverse_side_rows_before_escape": 9,
+  "escape_rows_pushing_front_wall": 12,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "reverse",
+    true,
+    0.28,
+    0.28
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.42,
+    "brake",
+    "reverse"
+   ],
+   [
+    2.55,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.05,
+    "escape",
+    null
+   ],
+   [
+    4.89,
+    null,
+    "brake"
+   ],
+   [
+    5.15,
+    "brake",
+    "gap"
+   ],
+   [
+    5.32,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.75,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.28
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    2.65,
+    "front",
+    0.35,
+    2.88
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.639,
+  "reverse_side_rows_before_escape": 19,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.59,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.42,
+    null,
+    "brake"
+   ],
+   [
+    5.69,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.21,
+    "front",
+    1.63,
+    6.08
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.52,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "escape",
+    true,
+    0.38,
+    0.38
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.52,
+    "brake",
+    "escape"
+   ],
+   [
+    3.02,
+    "escape",
+    null
+   ],
+   [
+    4.85,
+    null,
+    "brake"
+   ],
+   [
+    5.12,
+    "brake",
+    "gap"
+   ],
+   [
+    5.29,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.75,
+    "reverse",
+    "coast"
+   ],
+   [
+    6.02,
+    "coast",
+    "escape"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.38
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.55,
+  "backed_m_before_escape": 0.748,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.69,
+    "brake",
+    "gap"
+   ],
+   [
+    2.85,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.29,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.55,
+    "coast",
+    "escape"
+   ],
+   [
+    4.05,
+    "escape",
+    null
+   ],
+   [
+    5.89,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.46,
+    "front",
+    1.67,
+    6.18
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.05..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.62,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "escape",
+    true,
+    0.48,
+    0.48
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.62,
+    "brake",
+    "escape"
+   ],
+   [
+    3.12,
+    "escape",
+    null
+   ],
+   [
+    4.95,
+    null,
+    "brake"
+   ],
+   [
+    5.22,
+    "brake",
+    "gap"
+   ],
+   [
+    5.39,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.85,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.48
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.32,
+  "backed_m_before_escape": 0.731,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.62,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.32,
+    "coast",
+    "escape"
+   ],
+   [
+    3.82,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.89,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.2,
+    "front",
+    1.66,
+    6.16
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.79,
+  "backed_m_before_escape": 0.022,
+  "reverse_side_rows_before_escape": 12,
+  "escape_rows_pushing_front_wall": 9,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "gap",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.62,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.79,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.29,
+    "escape",
+    null
+   ],
+   [
+    5.12,
+    null,
+    "brake"
+   ],
+   [
+    5.39,
+    "brake",
+    "gap"
+   ],
+   [
+    5.55,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    2.96,
+    "front",
+    0.6,
+    3.5
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.39,
+  "backed_m_before_escape": 0.639,
+  "reverse_side_rows_before_escape": 19,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.72,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.12,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.39,
+    "coast",
+    "escape"
+   ],
+   [
+    3.89,
+    "escape",
+    null
+   ],
+   [
+    5.72,
+    null,
+    "brake"
+   ],
+   [
+    5.99,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.18,
+    "front",
+    1.63,
+    6.08
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.65,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "escape",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.65,
+    "gap",
+    "escape"
+   ],
+   [
+    3.15,
+    "escape",
+    null
+   ],
+   [
+    4.99,
+    null,
+    "brake"
+   ],
+   [
+    5.25,
+    "brake",
+    "gap"
+   ],
+   [
+    5.42,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.85,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.36
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.52,
+  "backed_m_before_escape": 0.731,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.82,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.25,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.52,
+    "coast",
+    "escape"
+   ],
+   [
+    4.02,
+    "escape",
+    null
+   ],
+   [
+    5.85,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.4,
+    "front",
+    1.66,
+    6.16
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.20..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.75,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "escape"
+   ],
+   [
+    3.25,
+    "escape",
+    null
+   ],
+   [
+    5.09,
+    null,
+    "brake"
+   ],
+   [
+    5.35,
+    "brake",
+    "gap"
+   ],
+   [
+    5.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.95,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.46
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.35,
+  "backed_m_before_escape": 0.748,
+  "reverse_side_rows_before_escape": 21,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.09,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.35,
+    "coast",
+    "escape"
+   ],
+   [
+    3.85,
+    "escape",
+    null
+   ],
+   [
+    5.65,
+    null,
+    "brake"
+   ],
+   [
+    5.92,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.26,
+    "front",
+    1.67,
+    6.18
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.79,
+  "backed_m_before_escape": 0.01,
+  "reverse_side_rows_before_escape": 12,
+  "escape_rows_pushing_front_wall": 11,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "reverse",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.79,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.29,
+    "escape",
+    null
+   ],
+   [
+    5.12,
+    null,
+    "brake"
+   ],
+   [
+    5.39,
+    "brake",
+    "gap"
+   ],
+   [
+    5.55,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    2.9,
+    "front",
+    0.4,
+    3.01
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.639,
+  "reverse_side_rows_before_escape": 20,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.42,
+    null,
+    "brake"
+   ],
+   [
+    5.69,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.21,
+    "front",
+    1.63,
+    6.08
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.75,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "escape",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.75,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.25,
+    "escape",
+    null
+   ],
+   [
+    5.09,
+    null,
+    "brake"
+   ],
+   [
+    5.35,
+    "brake",
+    "gap"
+   ],
+   [
+    5.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.55,
+  "backed_m_before_escape": 0.748,
+  "reverse_side_rows_before_escape": 21,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.29,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.55,
+    "coast",
+    "escape"
+   ],
+   [
+    4.05,
+    "escape",
+    null
+   ],
+   [
+    5.89,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    4.46,
+    "front",
+    1.67,
+    6.18
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.3 veh_gap=brake+0.30..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.85,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.85,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.35,
+    "escape",
+    null
+   ],
+   [
+    5.15,
+    null,
+    "brake"
+   ],
+   [
+    5.42,
+    "brake",
+    "gap"
+   ],
+   [
+    5.59,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 no_gap": {
+  "t_brake": 2.09,
+  "t_escape": 3.12,
+  "backed_m_before_escape": 0.443,
+  "reverse_side_rows_before_escape": 17,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 0,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.85,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.12,
+    "coast",
+    "escape"
+   ],
+   [
+    3.62,
+    "escape",
+    null
+   ],
+   [
+    5.45,
+    null,
+    "brake"
+   ],
+   [
+    5.72,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.72,
+    "front",
+    1.53,
+    5.84
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.22,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.49,
+    "brake",
+    "gap"
+   ],
+   [
+    2.65,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.95,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.22,
+    "coast",
+    "escape"
+   ],
+   [
+    3.72,
+    "escape",
+    null
+   ],
+   [
+    5.55,
+    null,
+    "brake"
+   ],
+   [
+    5.82,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.74,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 4,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.42,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 4,
+  "after_hold_calls": [
+   [
+    2.42,
+    "brake",
+    "escape",
+    true,
+    0.28,
+    0.28
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.42,
+    "brake",
+    "escape"
+   ],
+   [
+    2.92,
+    "escape",
+    null
+   ],
+   [
+    4.75,
+    null,
+    "brake"
+   ],
+   [
+    5.02,
+    "brake",
+    "gap"
+   ],
+   [
+    5.19,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.52,
+    "reverse",
+    "coast"
+   ],
+   [
+    5.79,
+    "coast",
+    "escape"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.28
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.32,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.59,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.32,
+    "coast",
+    "escape"
+   ],
+   [
+    3.82,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.89,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.84,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 7,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.52,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 7,
+  "after_hold_calls": [
+   [
+    2.52,
+    "brake",
+    "escape",
+    true,
+    0.38,
+    0.38
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.52,
+    "brake",
+    "escape"
+   ],
+   [
+    3.02,
+    "escape",
+    null
+   ],
+   [
+    4.85,
+    null,
+    "brake"
+   ],
+   [
+    5.12,
+    "brake",
+    "gap"
+   ],
+   [
+    5.29,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.62,
+    "reverse",
+    "coast"
+   ],
+   [
+    5.89,
+    "coast",
+    "escape"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.38
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "brake",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.69,
+    "brake",
+    "gap"
+   ],
+   [
+    2.85,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.75,
+    null,
+    "brake"
+   ],
+   [
+    6.02,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.94,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 10,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.05..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.62,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 5,
+  "escape_rows_pushing_front_wall": 14,
+  "hold_rows": 10,
+  "after_hold_calls": [
+   [
+    2.62,
+    "brake",
+    "escape",
+    true,
+    0.48,
+    0.48
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.62,
+    "brake",
+    "escape"
+   ],
+   [
+    3.12,
+    "escape",
+    null
+   ],
+   [
+    4.95,
+    null,
+    "brake"
+   ],
+   [
+    5.22,
+    "brake",
+    "gap"
+   ],
+   [
+    5.39,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.72,
+    "reverse",
+    "coast"
+   ],
+   [
+    5.99,
+    "coast",
+    "escape"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "brake",
+    0.48
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.19,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.62,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.92,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.19,
+    "coast",
+    "escape"
+   ],
+   [
+    3.69,
+    "escape",
+    null
+   ],
+   [
+    5.52,
+    null,
+    "brake"
+   ],
+   [
+    5.79,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.71,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.55,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.55,
+    "gap",
+    "escape",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.55,
+    "gap",
+    "escape"
+   ],
+   [
+    3.05,
+    "escape",
+    null
+   ],
+   [
+    4.89,
+    null,
+    "brake"
+   ],
+   [
+    5.15,
+    "brake",
+    "gap"
+   ],
+   [
+    5.32,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.62,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.26
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.29,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.72,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.02,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.29,
+    "coast",
+    "escape"
+   ],
+   [
+    3.79,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.89,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.81,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.65,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.65,
+    "gap",
+    "escape",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.65,
+    "gap",
+    "escape"
+   ],
+   [
+    3.15,
+    "escape",
+    null
+   ],
+   [
+    4.99,
+    null,
+    "brake"
+   ],
+   [
+    5.25,
+    "brake",
+    "gap"
+   ],
+   [
+    5.42,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.72,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.36
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.39,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 16,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "gap",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.82,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.12,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.39,
+    "coast",
+    "escape"
+   ],
+   [
+    3.89,
+    "escape",
+    null
+   ],
+   [
+    5.72,
+    null,
+    "brake"
+   ],
+   [
+    5.99,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.91,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.20..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.75,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 7,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.75,
+    "gap",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.75,
+    "gap",
+    "escape"
+   ],
+   [
+    3.25,
+    "escape",
+    null
+   ],
+   [
+    5.09,
+    null,
+    "brake"
+   ],
+   [
+    5.35,
+    "brake",
+    "gap"
+   ],
+   [
+    5.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    5.85,
+    "reverse",
+    "coast"
+   ]
+  ],
+  "events": [
+   [
+    "back_hold",
+    "gap",
+    0.46
+   ]
+  ],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.25 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.22,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 17,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.95,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.22,
+    "coast",
+    "escape"
+   ],
+   [
+    3.72,
+    "escape",
+    null
+   ],
+   [
+    5.55,
+    null,
+    "brake"
+   ],
+   [
+    5.82,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.74,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.25 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 3,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.25 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.65,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 3,
+  "after_hold_calls": [
+   [
+    2.65,
+    "reverse",
+    "escape",
+    true,
+    0.26,
+    0.26
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.65,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.15,
+    "escape",
+    null
+   ],
+   [
+    4.99,
+    null,
+    "brake"
+   ],
+   [
+    5.25,
+    "brake",
+    "gap"
+   ],
+   [
+    5.42,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.35 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.32,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 17,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.05,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.32,
+    "coast",
+    "escape"
+   ],
+   [
+    3.82,
+    "escape",
+    null
+   ],
+   [
+    5.62,
+    null,
+    "brake"
+   ],
+   [
+    5.89,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.84,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.35 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 6,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.35 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.75,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 6,
+  "after_hold_calls": [
+   [
+    2.75,
+    "reverse",
+    "escape",
+    true,
+    0.36,
+    0.36
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.75,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.25,
+    "escape",
+    null
+   ],
+   [
+    5.09,
+    null,
+    "brake"
+   ],
+   [
+    5.35,
+    "brake",
+    "gap"
+   ],
+   [
+    5.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.45 now_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 3.42,
+  "backed_m_before_escape": 0.367,
+  "reverse_side_rows_before_escape": 17,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "reverse",
+    true,
+    0.0,
+    0.0
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    3.15,
+    "reverse",
+    "coast"
+   ],
+   [
+    3.42,
+    "coast",
+    "escape"
+   ],
+   [
+    3.92,
+    "escape",
+    null
+   ],
+   [
+    5.75,
+    null,
+    "brake"
+   ],
+   [
+    6.02,
+    "brake",
+    "gap"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ],
+   [
+    3.94,
+    "front",
+    1.48,
+    5.71
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.45 now_keep0": {
+  "t_brake": 2.09,
+  "t_escape": null,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 0,
+  "hold_rows": 9,
+  "after_hold_calls": [],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ },
+ "rev_s=0.2 veh_gap=brake+0.30..+0.45 before_keep1": {
+  "t_brake": 2.09,
+  "t_escape": 2.85,
+  "backed_m_before_escape": 0.0,
+  "reverse_side_rows_before_escape": 8,
+  "escape_rows_pushing_front_wall": 15,
+  "hold_rows": 9,
+  "after_hold_calls": [
+   [
+    2.85,
+    "reverse",
+    "escape",
+    true,
+    0.46,
+    0.46
+   ]
+  ],
+  "phases": [
+   [
+    2.09,
+    null,
+    "brake"
+   ],
+   [
+    2.35,
+    "brake",
+    "gap"
+   ],
+   [
+    2.52,
+    "gap",
+    "reverse"
+   ],
+   [
+    2.85,
+    "reverse",
+    "escape"
+   ],
+   [
+    3.35,
+    "escape",
+    null
+   ],
+   [
+    5.15,
+    null,
+    "brake"
+   ],
+   [
+    5.42,
+    "brake",
+    "gap"
+   ],
+   [
+    5.59,
+    "gap",
+    "reverse"
+   ]
+  ],
+  "events": [],
+  "front_hits": [
+   [
+    1.55,
+    "front",
+    1.78,
+    6.46
+   ]
+  ]
+ }
+}

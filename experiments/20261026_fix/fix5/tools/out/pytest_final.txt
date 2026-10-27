@@ -1,0 +1,33 @@
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+..................................................................F..... [ 62%]
+........................................................................ [ 83%]
+.........................................................                [100%]
+=================================== FAILURES ===================================
+_____________________________ test_untouched_files _____________________________
+
+    def test_untouched_files():
+        """走行の動き・既定値(DEFAULT_PARAMS・RESET_ON_BOOT は drive.py)・画面・計画のファイルは直す前と同じ。
+        drive.py・bench.py は 10/27 fix4 の版でもよい(そのときは、この組のときの版の写しが上の sha256 と同じか見る)。
+        drive.py・assist.py は 10/27 fix5 safety の版でもよい(そのときは fix5 の直す前の写しから同じようにたどる)。
+        server.py・app.js は 10/27 fix5 画面の係の版でもよい(同じ)"""
+        for rel, h in UNTOUCHED.items():
+            cur = _sha(JF / rel)
+            if rel in LATER_FIX5_UI and cur == LATER_FIX5_UI[rel]:
+                cur = _sha(FIX5_UI_BEFORE / Path(rel).name)       # fix5 画面の係の直す前の写し(UNTOUCHED の版)
+            if rel in LATER_FIX5 and cur == LATER_FIX5[rel]:
+                cur = _sha(FIX5_BEFORE / Path(rel).name)          # fix5 の直す前の写し(fix4 の版かこの組の版)
+            if rel in LATER_FIX4 and cur == LATER_FIX4[rel]:
+                assert _sha(FIX4_BEFORE / Path(rel).name) == h, rel
+                continue
+>           assert cur == h, rel
+E           AssertionError: jetformer/drive.py
+E           assert '041a66de7590...65875ee0be39c' == 'b8c3ddba3968...ee88afbc85db6'
+E             
+E             - b8c3ddba39681d81f14249981c770a9349e6dba3bcf5b4a8d88ee88afbc85db6
+E             + 041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c
+
+tests/test_fix3_r3_2_tools.py:97: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r3_2_tools.py::test_untouched_files - AssertionError: ...
+1 failed, 344 passed in 177.34s (0:02:57)

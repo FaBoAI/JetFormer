@@ -1,0 +1,329 @@
+{
+ "now/no_sync": {
+  "starts": [
+   {
+    "sim_status": 409,
+    "real_server_refused": true,
+    "why": "管理画面のサーバーが 09:21:34 に起動し直しました(この画面が読んだのは 09:20:34 に起動したサーバーの設定)。起動のたびに",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": null,
+    "confirm_vs_real_mismatch": null
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが起動し直しました(sim5: 画面 1000・今 2000)",
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  ],
+  "start_disabled_while_down": []
+ },
+ "now/dialog_spans_restart": {
+  "starts": [
+   {
+    "no_start_post": true,
+    "confirm_shown": false
+   }
+  ],
+  "toasts_tail": [
+   "発進の前進を ON にしました",
+   "サーバーにつながっていません(表示の問い合わせが通りません)。表示が戻って同期してから押してください。「起動し直しました」が出たら、止まっているときに朝の設定を入れ直す(手順書 7 章)"
+  ],
+  "start_disabled_while_down": [
+   true
+  ]
+ },
+ "now/dialog_only": {
+  "starts": [
+   {
+    "sim_status": 409,
+    "real_server_refused": true,
+    "why": "管理画面のサーバーが 09:21:35 に起動し直しました(この画面が読んだのは 09:20:35 に起動したサーバーの設定)。起動のたびに",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": null,
+    "confirm_vs_real_mismatch": null
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが起動し直しました(sim5: 画面 1000・今 2000)",
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  ],
+  "start_disabled_while_down": []
+ },
+ "now/synced": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 0,
+     "launch_boost": 0,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": []
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "AI走行 No.1 を開始しました"
+  ],
+  "start_disabled_while_down": []
+ },
+ "now/retry": {
+  "starts": [
+   {
+    "sim_status": 409,
+    "real_server_refused": true,
+    "why": "管理画面のサーバーが 09:21:35 に起動し直しました(この画面が読んだのは 09:20:35 に起動したサーバーの設定)。起動のたびに",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": null,
+    "confirm_vs_real_mismatch": null
+   },
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 0,
+     "launch_boost": 0,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": []
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "AI走行 No.1 を開始しました"
+  ],
+  "start_disabled_while_down": []
+ },
+ "before/no_sync": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 1,
+     "launch_boost": 1,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": [
+     "rec_back_guard",
+     "rec_hold_keep",
+     "launch_no_kick",
+     "ceil_left_mps",
+     "launch_us"
+    ]
+   }
+  ],
+  "toasts_tail": [
+   "AI走行 No.1 を開始しました",
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  ],
+  "start_disabled_while_down": []
+ },
+ "before/dialog_spans_restart": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 1,
+     "launch_boost": 1,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": [
+     "rec_back_guard",
+     "rec_hold_keep",
+     "launch_no_kick",
+     "ceil_left_mps",
+     "launch_us"
+    ]
+   }
+  ],
+  "toasts_tail": [
+   "AI走行 No.1 を開始しました",
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  ],
+  "start_disabled_while_down": [
+   false
+  ]
+ },
+ "before/dialog_only": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 1,
+     "launch_boost": 1,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": [
+     "rec_back_guard",
+     "rec_hold_keep",
+     "launch_no_kick",
+     "ceil_left_mps",
+     "launch_us"
+    ]
+   }
+  ],
+  "toasts_tail": [
+   "AI走行 No.1 を開始しました",
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  ],
+  "start_disabled_while_down": []
+ },
+ "before/synced": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 0,
+     "launch_boost": 0,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": []
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "AI走行 No.1 を開始しました"
+  ],
+  "start_disabled_while_down": []
+ },
+ "before/retry": {
+  "starts": [
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [
+     "リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)",
+     "中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)",
+     "発進の前進を出さない区間は発進の補助も出さない: ON",
+     "速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 1,
+     "launch_boost": 1,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": [
+     "rec_back_guard",
+     "rec_hold_keep",
+     "launch_no_kick",
+     "ceil_left_mps",
+     "launch_us"
+    ]
+   },
+   {
+    "sim_status": 200,
+    "real_server_refused": false,
+    "why": "",
+    "confirm_lines": [
+     "速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)",
+     "発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)"
+    ],
+    "real_driver": {
+     "rec_back_guard": 0,
+     "rec_hold_keep": 0,
+     "launch_no_kick": 0,
+     "ceil_left_mps": 4.1,
+     "launch_us": 250.0,
+     "speed_ceiling": 1,
+     "launch_boost": 1,
+     "throttle_gain": 0.92
+    },
+    "confirm_vs_real_mismatch": []
+   }
+  ],
+  "toasts_tail": [
+   "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+   "AI走行 No.1 を開始しました"
+  ],
+  "start_disabled_while_down": []
+ }
+}

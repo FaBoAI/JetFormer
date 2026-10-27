@@ -1,0 +1,51 @@
+出し直さない: 落ちた 9 本(動きの試験 9 本)
+    test_no_prefix_when_synced_status_is_running
+    test_refused_start_keeps_the_refusal_visible[A_no_sync]
+    test_refused_start_keeps_the_refusal_visible[B_dialog_only]
+    test_refused_start_keeps_the_refusal_visible[C_overdue_get_first]
+    test_refused_start_keeps_the_refusal_visible[D_overdue_post_first]
+    test_refused_start_keeps_the_refusal_visible[E_get_inflight]
+    test_refused_start_keeps_the_refusal_visible[F_net_fail_then_up]
+    test_refused_start_keeps_the_refusal_visible[G_old_page_and_reboot]
+    test_refused_start_keeps_the_refusal_visible[I_never_read_boot]
+同期を待たない: 落ちた 8 本(動きの試験 7 本)
+    test_next_start_while_waiting_is_not_overwritten
+    test_refused_start_keeps_the_refusal_visible[A_no_sync]
+    test_refused_start_keeps_the_refusal_visible[B_dialog_only]
+    test_refused_start_keeps_the_refusal_visible[D_overdue_post_first]
+    test_refused_start_keeps_the_refusal_visible[E_get_inflight]
+    test_refused_start_keeps_the_refusal_visible[F_net_fail_then_up]
+    test_refused_start_keeps_the_refusal_visible[G_old_page_and_reboot]
+知らせを数えない: 落ちた 2 本(動きの試験 2 本)
+    test_refused_start_keeps_the_refusal_visible[F_net_fail_then_up]
+    test_refused_start_keeps_the_refusal_visible[G_old_page_and_reboot]
+断りの文を見分けない: 落ちた 8 本(動きの試験 8 本)
+    test_no_prefix_when_synced_status_is_running
+    test_refusal_pattern_matches_only_the_boot_refusal
+    test_refused_start_keeps_the_refusal_visible[A_no_sync]
+    test_refused_start_keeps_the_refusal_visible[B_dialog_only]
+    test_refused_start_keeps_the_refusal_visible[C_overdue_get_first]
+    test_refused_start_keeps_the_refusal_visible[D_overdue_post_first]
+    test_refused_start_keeps_the_refusal_visible[E_get_inflight]
+    test_refused_start_keeps_the_refusal_visible[I_never_read_boot]
+頭の文なし: 落ちた 8 本(動きの試験 8 本)
+    test_refused_start_keeps_the_refusal_visible[A_no_sync]
+    test_refused_start_keeps_the_refusal_visible[B_dialog_only]
+    test_refused_start_keeps_the_refusal_visible[C_overdue_get_first]
+    test_refused_start_keeps_the_refusal_visible[D_overdue_post_first]
+    test_refused_start_keeps_the_refusal_visible[E_get_inflight]
+    test_refused_start_keeps_the_refusal_visible[F_net_fail_then_up]
+    test_refused_start_keeps_the_refusal_visible[G_old_page_and_reboot]
+    test_refused_start_keeps_the_refusal_visible[I_never_read_boot]
+走行中でも頭の文: 落ちた 1 本(動きの試験 1 本)
+    test_no_prefix_when_synced_status_is_running
+次の ▶ を見ない: 落ちた 1 本(動きの試験 1 本)
+    test_next_start_while_waiting_is_not_overwritten
+知らせを後ろに付けない: 落ちた 2 本(動きの試験 2 本)
+    test_refused_start_keeps_the_refusal_visible[F_net_fail_then_up]
+    test_refused_start_keeps_the_refusal_visible[G_old_page_and_reboot]
+断りの文の形が広すぎる: 落ちた 1 本(動きの試験 1 本)
+    test_refusal_pattern_matches_only_the_boot_refusal
+番号を数えない: 落ちた 1 本(動きの試験 1 本)
+    test_next_start_while_waiting_is_not_overwritten
+見逃し 0 / 10

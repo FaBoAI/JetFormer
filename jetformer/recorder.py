@@ -360,6 +360,27 @@ class Recorder(object):
             f.write(line + '\n')
         return True
 
+    def update_drive(self, only_log, **fields):
+        """走り終わりに log.json の drive へ欄を足す(走行中に変えた設定の params_end・params_changes。2026-10-26 fix2)。
+        only_log の収集中でなければ何もしない(False)。drive.params(走行開始の値)は変えない。書き方は write_json
+        (一時ファイル → 置き換え)。このあと保存するシーンの scene.json にも入る"""
+        with self.lock:
+            if not self.recording or self.log is None or self.log['name'] != only_log:
+                return False
+            drv = self.log.get('drive')
+            if not isinstance(drv, dict):
+                return False
+            drv.update(fields)
+            path = self.log['path'] / 'log.json'
+            try:
+                with open(path, encoding='utf-8') as f:
+                    j = json.load(f)
+            except (OSError, ValueError):
+                return False
+            j['drive'] = dict(j.get('drive') or {}, **fields)
+            write_json(path, j)
+        return True
+
     def add_ai(self, t_ns, data):
         """AI走行の指令を記録する(収集中でなければ何もしない)。t_ns は推論に使ったカメラ画像の時刻"""
         with self.lock:

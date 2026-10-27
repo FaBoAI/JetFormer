@@ -1,0 +1,475 @@
+{
+ "tag": "after",
+ "source": "/home/jetson/jetformer/data/raw/20261024-185926",
+ "variants": {
+  "good": "そのままの写し",
+  "zero_scene": "写し + 4 番目のシーン(npz 5 つ・scene.json・thumb.jpg が 0 バイト。20261024-162305-0007 と同じ形)",
+  "trunc_ai": "2 番目のシーンの AI_CMD.npz を半分で切った(BadZipFile)",
+  "crc_veh": "2 番目のシーンの VEHICLE.npz の中身を 0 で潰した(Bad CRC-32。開けるが読むと落ちる)",
+  "zero_logjson": "log.json が 0 バイト(20261023-204825 と同じ形)",
+  "zero_imu_tof": "2 番目のシーンの IMU.npz・TOF_FRONT.npz・CAM_FRONT.npz が 0 バイト",
+  "zero_scenejson": "2 番目のシーンの scene.json が 0 バイト(npz は読める)"
+ },
+ "logs": {
+  "good": "20001024-100000",
+  "zero_scene": "20001024-100001",
+  "trunc_ai": "20001024-100002",
+  "crc_veh": "20001024-100003",
+  "zero_logjson": "20001024-100004",
+  "zero_imu_tof": "20001024-100005",
+  "zero_scenejson": "20001024-100006"
+ },
+ "results": {
+  "label_events.py": {
+   "rc": 1,
+   "tail": "rd_only/irrelevant 検算 [1.0, 1.0]\n20001024-100003 ai_no=20 bench=real_benc 衝突   3(AI   2) 交代   1 {'operational': 0, 'after_collision': 0, 'stuck': 1, 'preemptive': 0} 戻し   1 リカバリー  0 再起動  0 周   0 有効AI    49 規則 forward_only/irrelevant 検算 [1.0, 1.0]\n20001024-100005 ai_no=20 bench=real_benc 衝突   0(AI   0) 交代   1 {'operational': 0, 'after_collision': 0, 'stuck': 0, 'preemptive': 1} 戻し   1 リカバリー  0 再起動  0 周   0 有効AI   225 規則 forward_only/irrelevant 検算 [1.0, 1.0]\n20001024-100006 ai_no=20 bench=real_benc 衝突   3(AI   2) 交代   1 {'operational': 0, 'after_collision': 1, 'stuck': 0, 'preemptive': 0} 戻し   1 リカバリー  0 再起動  0 周   0 有効AI   225 規則 forward_only/irrelevant 検算 [1.0, 1.0]\n衝突の検証(collision_map 目視 0件): 水平だけで一致 None / 上下の衝撃も入れて None / 検出のうち正しい None(一覧にあるもの None)/ 場所の一致 None\n場所(009/010/101 の目視): {'n': 0, 'agree': 0, 'agreement': None}\n交代の分類(interventions.json): {'reference': 57, 'matched': 0, 'agreement': None}\n割り戻しの検算(AI、assist=0・hold なし): {'n': 1203, 'match_0.5us': [1.0, 1.0]}\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/labels\n20001024-100004 ラベルを作れません(飛ばして続けます): JSONDecodeError: Expecting value: line 1 column 1 (char 0)\nラベルを作れなかった記録 1 本: 20001024-100004\n",
+   "traceback": null,
+   "labels_made": [
+    "20001024-100000",
+    "20001024-100001",
+    "20001024-100002",
+    "20001024-100003",
+    "20001024-100005",
+    "20001024-100006"
+   ]
+  },
+  "section_scorecard.py": {
+   "rc": 0,
+   "tail": "AI 0.7 分・周相当 3.51・衝突/周 3.14 [1.76–5.19]・R1 強/通過 0/3(0%)・DE/通過 0/3(0%)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/sc/scorecard.json /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/sc/scorecard.md\n注意: 20001024-100004 の記録の log.json が読めません(JSONDecodeError: Expecting value: line 1 column 1 (char 0))。飛ばします\n",
+   "traceback": null
+  },
+  "cap_replay.py": {
+   "rc": 0,
+   "tail": "1024-100005 g1 R1 0 causal 0 false 0 fs/min strict 7.47\n14:17:43 20001024-100006 g1 R1 1 causal 1 false 0 fs/min strict 0.00\nG1 3zone: False 落ちた ['false_signal_le_1_per_min', 'gyro_r1_detection_ge_95pct_false_0'] 判定できない ['R1_signal_ge_90pct', 'R1_signal_strong_ge_90pct', 'lap_loss_le_0.3_3zone']\nG1(protocol 4 項目)3zone: False 落ちた ['false_signal_le_1_per_min'] 判定できない ['R1_signal_ge_90pct', 'lap_loss_le_0.3_3zone']\nG1 R1GM: False 落ちた ['false_signal_le_1_per_min', 'gyro_r1_detection_ge_95pct_false_0'] 判定できない ['R1_signal_ge_90pct', 'R1_signal_strong_ge_90pct', 'lap_loss_le_0.3_R1GM']\nG1(protocol 4 項目)R1GM: False 落ちた ['false_signal_le_1_per_min'] 判定できない ['R1_signal_ge_90pct', 'lap_loss_le_0.3_R1GM']\nG1 DE3.3: False 落ちた ['false_signal_le_1_per_min', 'gyro_r1_detection_ge_95pct_false_0'] 判定できない ['R1_signal_ge_90pct', 'R1_signal_strong_ge_90pct', 'lap_loss_le_0.3_DE3.3']\nG1(protocol 4 項目)DE3.3: False 落ちた ['false_signal_le_1_per_min'] 判定できない ['R1_signal_ge_90pct', 'lap_loss_le_0.3_DE3.3']\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cr/cap_replay.json /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cr/cap_replay.md (0.6 秒)\n",
+   "traceback": null
+  },
+  "brake_table.py": {
+   "rc": 0,
+   "tail": "ブレーキ 10 回(きれい 1) 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/bt\n",
+   "traceback": null
+  },
+  "de_swing.py": {
+   "rc": 0,
+   "tail": "# DE の揺れの表 20001024\n\n行き過ぎ = DE に入って 0.5 秒の右への最大(− = 右)。切り返し = 0.6〜1.0 秒の左への最大(+ = 左)。10/23 の公式 8 本: 行き過ぎの中央値 ぶつからない −73・ぶつかった −141 µs、切り返し 103・125 µs、通過あたりの衝突 10/30。\n\n## 設定ごと\n\n| 設定(モデル・ゲイン・先読み・重ね合わせ・ToF ガード) | 通過 | 衝突 | 率 | 行き過ぎ | 切り返し | −120 µs 超 |\n|---|---|---|---|---|---|---|\n| clean_driving_20261011-nocmd-s3-20261011-024626 | steer_gain=1.0 throttle_gain=1.0 lookahead=3 ensemble_j=0 tof_guard=1 | 3 | 0 | 0.0 | -37.2 | 95.2 | 0 |\n\n## 記録ごと\n\n| 記録 | ai_no | cand | 通過 | 衝突 | 行き過ぎ | 切り返し |\n|---|---|---|---|---|---|---|\n| 20001024-100000 | 20 | B | 1 | 0 | -37.2 | 95.2 |\n| 20001024-100001 | 20 | B | 1 | 0 | -37.2 | 95.2 |\n| 20001024-100002 | 20 | B | 0 | 0 | None | None |\n| 20001024-100003 | 20 | B | 0 | 0 | None | None |\n| 20001024-100005 | 20 | B | 0 | 0 | None | None |\n| 20001024-100006 | 20 | B | 1 | 0 | -37.2 | 95.2 |\n\n",
+   "traceback": null
+  },
+  "car_check.py": {
+   "good": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100000(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 50・右 27 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(117 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 1、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 27.354・右 38.055(比 0.719、50・27 フレーム)\n  まっすぐ進む舵 s0 None µs(117 フレーム)\n  直線の最高速 p90 3.91 m/s(HS 3.94 m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 1.57 G・最大 1.57 G・2.5G 以上 0 / 1 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 1 通過・AI の衝突 2(強い 0)・外した R1 の起点 0\n  (0.08 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100000.json\n",
+    "traceback": null
+   },
+   "zero_scene": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100001(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 50・右 27 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(117 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 1、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 27.354・右 38.055(比 0.719、50・27 フレーム)\n  まっすぐ進む舵 s0 None µs(117 フレーム)\n  直線の最高速 p90 3.91 m/s(HS 3.94 m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 1.57 G・最大 1.57 G・2.5G 以上 0 / 1 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 1 通過・AI の衝突 2(強い 0)・外した R1 の起点 0\n  (0.08 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100001.json\n",
+    "traceback": null
+   },
+   "trunc_ai": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100002(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 1・右 0 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(8 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 0、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 26.937・右 None(比 None、1・0 フレーム)\n  まっすぐ進む舵 s0 None µs(8 フレーム)\n  直線の最高速 p90 3.9 m/s(HS 3.94 m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 None G・最大 None G・2.5G 以上 0 / 0 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 0 通過・AI の衝突 3(強い 0)・外した R1 の起点 0\n  (0.07 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100002.json\n",
+    "traceback": null
+   },
+   "crc_veh": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100003(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 22・右 0 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(44 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 0、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 25.266・右 None(比 None、22・0 フレーム)\n  まっすぐ進む舵 s0 None µs(44 フレーム)\n  直線の最高速 p90 3.87 m/s(HS None m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 None G・最大 None G・2.5G 以上 0 / 0 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 0 通過・AI の衝突 2(強い 0)・外した R1 の起点 0\n  (0.08 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100003.json\n",
+    "traceback": null
+   },
+   "zero_logjson": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100004(No.?)\n判定: 足りない — 判定に足りません(記録が読めない)(番号 3)\n読めません: 記録の log.json が読めません(JSONDecodeError: Expecting value: line 1 column 1 (char 0))\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100004.json\n注意: 20001024-100004 の記録の log.json が読めません(JSONDecodeError: Expecting value: line 1 column 1 (char 0))。飛ばします\n",
+    "traceback": null
+   },
+   "zero_imu_tof": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100005(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 83・右 27 フレーム、30 以上要る)\n! まっすぐ進む舵 s0 -5623.2 µs(< -10): 左へ流れる向き(10/24 の No.9 は −17.8 µs で問題なし)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 0、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 22.256・右 -20.33(比 -1.095、83・27 フレーム)\n  まっすぐ進む舵 s0 -5623.2 µs(226 フレーム)\n  直線の最高速 p90 3.91 m/s(HS None m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 None G・最大 None G・2.5G 以上 0 / 0 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 0 通過・AI の衝突 0(強い 0)・外した R1 の起点 0\n  (0.07 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100005.json\n",
+    "traceback": null
+   },
+   "zero_scenejson": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100006(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 50・右 27 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(117 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 1、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 27.354・右 38.055(比 0.719、50・27 フレーム)\n  まっすぐ進む舵 s0 None µs(117 フレーム)\n  直線の最高速 p90 3.91 m/s(HS 3.94 m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 1.57 G・最大 1.57 G・2.5G 以上 0 / 1 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 1 通過・AI の衝突 2(強い 0)・外した R1 の起点 0\n  (0.08 秒)\n書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix2/tmp_code/probe_after/out/cc/20001024-100006.json\n",
+    "traceback": null
+   },
+   "--latest": {
+    "rc": 3,
+    "tail": "車の確認: 20001024-100006(No.20)\n判定: 足りない — 判定に足りません(もう 1 本)(番号 3)\n? 左右の旋回の効き: 判定に足りません(左 50・右 27 フレーム、30 以上要る)\n? まっすぐ進む舵 s0: 判定に足りません(117 フレーム、200 以上要る)\n? R1 の板の衝撃: 判定に足りません(AI の R1 の通過 1、3 以上要る)\n  電圧: 記録・説明欄に無い(LiPo チェッカーで測って説明欄に書く)\n  周が無いので速さの直しは出せません\n\n数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):\n  左右の旋回の効き 左 27.354・右 38.055(比 0.719、50・27 フレーム)\n  まっすぐ進む舵 s0 None µs(117 フレーム)\n  直線の最高速 p90 3.91 m/s(HS 3.94 m/s)\n  周 0 本: 中央 None 秒・ベスト None 秒・周の速さ p90 の中央 None m/s・SW の最高の中央 None m/s\n  R1 の板の衝撃(3 軸): 中央 1.57 G・最大 1.57 G・2.5G 以上 0 / 1 通過\n  電圧: 始め None・終わり None・最小 None V(なし)\n  参考: DE の衝突 0 / 1 通過・AI の衝突 2(強い 0)・外した R1 の起点 0\n  (0.09 秒)\n",
+    "traceback": null
+   }
+  },
+  "bench_report.py": {
+   "rc": 0,
+   "tail": "使い回した?)\n警告: 説明欄の照らし合わせ: 20001024-100002(2000-10-24 ブロック 1・cand=B): 日 2000-10-24 は bench_candidates.json の days に無い\n警告: 説明欄の照らし合わせ: 20001024-100003(2000-10-24 ブロック 1・cand=B): 説明欄の day=2026-10-24 が記録の日付 2000-10-24 と違う → 記録の日付 2000-10-24 で数えた(前の日の説明欄を使い回した?)\n警告: 説明欄の照らし合わせ: 20001024-100003(2000-10-24 ブロック 1・cand=B): 日 2000-10-24 は bench_candidates.json の days に無い\n警告: 説明欄の照らし合わせ: 20001024-100004(2000-10-24 ブロック 1・cand=B): 説明欄の day=2026-10-24 が記録の日付 2000-10-24 と違う → 記録の日付 2000-10-24 で数えた(前の日の説明欄を使い回した?)\n警告: 説明欄の照らし合わせ: 20001024-100004(2000-10-24 ブロック 1・cand=B): 日 2000-10-24 は bench_candidates.json の days に無い\n警告: 説明欄の照らし合わせ: 20001024-100004(2000-10-24 ブロック 1・cand=B): 記録に drive.run が無い(モデルを照らし合わせられない)\n警告: 説明欄の照らし合わせ: 20001024-100005(2000-10-24 ブロック 1・cand=B): 説明欄の day=2026-10-24 が記録の日付 2000-10-24 と違う → 記録の日付 2000-10-24 で数えた(前の日の説明欄を使い回した?)\n警告: 説明欄の照らし合わせ: 20001024-100005(2000-10-24 ブロック 1・cand=B): 日 2000-10-24 は bench_candidates.json の days に無い\n警告: 説明欄の照らし合わせ: 20001024-100006(2000-10-24 ブロック 1・cand=B): 説明欄の day=2026-10-24 が記録の日付 2000-10-24 と違う → 記録の日付 2000-10-24 で数えた(前の日の説明欄を使い回した?)\n警告: 説明欄の照らし合わせ: 20001024-100006(2000-10-24 ブロック 1・cand=B): 日 2000-10-24 は bench_candidates.json の days に無い\n",
+   "traceback": null
+  },
+  "label_events.load_log": {
+   "good": {
+    "ok": true,
+    "note": []
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": [
+     "20001024-100001-0004/AI_CMD: 読めません(EOFError)",
+     "20001024-100001-0004/VEHICLE: 読めません(EOFError)",
+     "20001024-100001-0004/IMU: 読めません(EOFError)",
+     "20001024-100001-0004/CAM_FRONT: 読めません(EOFError)"
+    ]
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": [
+     "20001024-100002-0002/AI_CMD: 読めません(BadZipFile)"
+    ]
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": [
+     "20001024-100003-0002/VEHICLE: 読めません(BadZipFile)"
+    ]
+   },
+   "zero_logjson": {
+    "ok": false,
+    "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "where": "  File \"/home/jetson/miniconda/envs/jetracer/lib/python3.13/json/decoder.py\", line 363, in raw_decode"
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": [
+     "20001024-100005-0002/IMU: 読めません(EOFError)",
+     "20001024-100005-0002/CAM_FRONT: 読めません(EOFError)"
+    ]
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": []
+   }
+  },
+  "tof_floor_ref.load": {
+   "good": {
+    "ok": true,
+    "note": []
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": [
+     "20001024-100001-0004/TOF_FRONT: 読めません",
+     "20001024-100001-0004/VEHICLE: 読めません",
+     "20001024-100001-0004/IMU: 読めません"
+    ]
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": []
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": [
+     "20001024-100003-0002/VEHICLE: 読めません"
+    ]
+   },
+   "zero_logjson": {
+    "ok": true,
+    "note": []
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": [
+     "20001024-100005-0002/TOF_FRONT: 読めません",
+     "20001024-100005-0002/IMU: 読めません"
+    ]
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": []
+   }
+  },
+  "drive_report.analyze": {
+   "good": {
+    "ok": true,
+    "note": "ok"
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": "ok"
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": "ok"
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": "ok"
+   },
+   "zero_logjson": {
+    "ok": false,
+    "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "where": "  File \"/home/jetson/miniconda/envs/jetracer/lib/python3.13/json/decoder.py\", line 363, in raw_decode"
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": "ok"
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": "ok"
+   }
+  },
+  "course_fit.LogData": {
+   "good": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100000-0001",
+      "20001024-100000-0002",
+      "20001024-100000-0003"
+     ]
+    }
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100001-0001",
+      "20001024-100001-0002",
+      "20001024-100001-0003"
+     ]
+    }
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100002-0001",
+      "20001024-100002-0002",
+      "20001024-100002-0003"
+     ]
+    }
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100003-0001",
+      "20001024-100003-0003"
+     ]
+    }
+   },
+   "zero_logjson": {
+    "ok": false,
+    "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "where": "  File \"/home/jetson/miniconda/envs/jetracer/lib/python3.13/json/decoder.py\", line 363, in raw_decode"
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100005-0001",
+      "20001024-100005-0003"
+     ]
+    }
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": {
+     "scenes": [
+      "20001024-100006-0001",
+      "20001024-100006-0002",
+      "20001024-100006-0003"
+     ]
+    }
+   }
+  },
+  "course_landmarks.list_frames": {
+   "good": {
+    "ok": true,
+    "note": 1198
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": 1198
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": 1198
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": 1198
+   },
+   "zero_logjson": {
+    "ok": true,
+    "note": 1198
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": 604
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": 1198
+   }
+  },
+  "build_ai_dataset.choose_ai_scenes": {
+   "good": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100000-0001",
+      "20001024-100000-0002"
+     ],
+     "skipped": [
+      [
+       "20001024-100000-0003",
+       "短い(0.1 秒)"
+      ]
+     ]
+    }
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100001-0001",
+      "20001024-100001-0002"
+     ],
+     "skipped": [
+      [
+       "20001024-100001-0003",
+       "短い(0.1 秒)"
+      ],
+      [
+       "20001024-100001-0004",
+       "CAM_FRONT が読めません(EOFError)"
+      ]
+     ]
+    }
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100002-0001"
+     ],
+     "skipped": [
+      [
+       "20001024-100002-0002",
+       "使える AI のフレームがありません"
+      ],
+      [
+       "20001024-100002-0003",
+       "短い(0.1 秒)"
+      ]
+     ]
+    }
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100003-0001"
+     ],
+     "skipped": [
+      [
+       "20001024-100003-0002",
+       "VEHICLE が読めません(BadZipFile)"
+      ],
+      [
+       "20001024-100003-0003",
+       "短い(0.1 秒)"
+      ]
+     ]
+    }
+   },
+   "zero_logjson": {
+    "ok": false,
+    "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+    "where": "  File \"/home/jetson/miniconda/envs/jetracer/lib/python3.13/json/decoder.py\", line 363, in raw_decode"
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100005-0001"
+     ],
+     "skipped": [
+      [
+       "20001024-100005-0002",
+       "CAM_FRONT が読めません(EOFError)"
+      ],
+      [
+       "20001024-100005-0003",
+       "短い(0.1 秒)"
+      ]
+     ]
+    }
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": {
+     "use": [
+      "20001024-100006-0001"
+     ],
+     "skipped": [
+      [
+       "20001024-100006-0002",
+       "scene.json が読めません(JSONDecodeError)"
+      ],
+      [
+       "20001024-100006-0003",
+       "短い(0.1 秒)"
+      ]
+     ]
+    }
+   }
+  },
+  "make_intervention_set.load_raw": {
+   "good": {
+    "ok": true,
+    "note": []
+   },
+   "zero_scene": {
+    "ok": true,
+    "note": [
+     [
+      "20001024-100001-0004",
+      "CAM_FRONT が読めません(EOFError)"
+     ]
+    ]
+   },
+   "trunc_ai": {
+    "ok": true,
+    "note": []
+   },
+   "crc_veh": {
+    "ok": true,
+    "note": [
+     [
+      "20001024-100003-0002",
+      "VEHICLE が読めません(BadZipFile)"
+     ]
+    ]
+   },
+   "zero_logjson": {
+    "ok": true,
+    "note": []
+   },
+   "zero_imu_tof": {
+    "ok": true,
+    "note": [
+     [
+      "20001024-100005-0002",
+      "CAM_FRONT が読めません(EOFError)"
+     ]
+    ]
+   },
+   "zero_scenejson": {
+    "ok": true,
+    "note": [
+     [
+      "20001024-100006-0002",
+      "scene.json が読めません(JSONDecodeError)"
+     ]
+    ]
+   }
+  }
+ }
+}

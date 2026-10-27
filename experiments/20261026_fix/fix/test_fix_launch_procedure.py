@@ -25,7 +25,10 @@ from jetformer import drive  # noqa: E402
 
 APP_JS = JF / 'jetformer' / 'web' / 'static' / 'app.js'
 NODE = shutil.which('node')
-NAMES = ('DR_PARAMS', 'DR_FLAGS', 'drBusy', 'readDriveParams', 'setDriveParams', 'BENCH_FALLBACK', 'benchFieldValues',
+# drAckAt・drAcked・postDriveParams は 2026-10-26 fix3 直す 1 回目(r1-state3-1・3-2)で app.js に足した、送信の返事の順番と
+# 送れなかったときの pending の戻し(発進の前進のスイッチの change の処理が使う)。足しただけで、この試験の流れは同じ
+NAMES = ('DR_PARAMS', 'DR_FLAGS', 'drAckAt', 'drAcked', 'postDriveParams', 'drBusy', 'readDriveParams', 'setDriveParams',
+         'BENCH_FALLBACK', 'benchFieldValues',
          'benchSetFields', 'benchSent', 'launchSupported', 'LAUNCH_FALLBACK', 'launchSpec', 'launchSpecText',
          'launchConfirmText', 'launchStartLine', 'renderLaunchSwitch')
 

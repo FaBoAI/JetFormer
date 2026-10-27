@@ -1,0 +1,15 @@
+OK   control: rc=0 9 passed in 1.83s  落ちた: —
+OK   bench を直す前に戻す: rc=1 6 failed, 3 passed in 1.84s  落ちた: test_switch_keys_have_the_three_options, test_block_params_drop_options_with_warning, test_baseline_options_warn_and_keep_value, test_bench_changed_only_switch_parts, test_drive_docstring_claims_match_code, test_ui_block_with_options_never_turns_on
+OK   SWITCH_KEYS から 3 つを外す: rc=1 5 failed, 4 passed in 2.10s  落ちた: test_switch_keys_have_the_three_options, test_block_params_drop_options_with_warning, test_bench_changed_only_switch_parts, test_drive_docstring_claims_match_code, test_ui_block_with_options_never_turns_on
+OK   SWITCH_KEYS から rec_hold_keep だけ外す: rc=1 4 failed, 5 passed in 1.70s  落ちた: test_switch_keys_have_the_three_options, test_block_params_drop_options_with_warning, test_drive_docstring_claims_match_code, test_ui_block_with_options_never_turns_on
+OK   名前を変える: rc=1 3 failed, 6 passed in 1.94s  落ちた: test_switch_keys_have_the_three_options, test_block_params_drop_options_with_warning, test_baseline_options_warn_and_keep_value
+OK   基準の警告を外す: rc=1 1 failed, 8 passed in 1.74s  落ちた: test_baseline_options_warn_and_keep_value
+OK   基準で 0 にしてしまう: rc=1 2 failed, 7 passed in 1.67s  落ちた: test_baseline_options_warn_and_keep_value, test_bench_changed_only_switch_parts
+OK   PLAN_KEYS に足す: rc=1 3 failed, 6 passed in 1.73s  落ちた: test_switch_keys_have_the_three_options, test_plan_check_is_the_same, test_bench_changed_only_switch_parts
+OK   ブロックの値も捨てる(launch_us): rc=1 1 failed, 8 passed in 1.60s  落ちた: test_bench_changed_only_switch_parts
+OK   drive.py のコードを 1 か所(HOLD_VEH_GAP_S): rc=1 1 failed, 8 passed in 1.79s  落ちた: test_drive_only_docstring_changed
+OK   drive.py の既定値を 1 か所(rec_hold_keep 1): rc=1 5 failed, 4 passed in 1.87s  落ちた: test_switch_keys_have_the_three_options, test_baseline_options_warn_and_keep_value, test_real_bench_candidates_read_the_same, test_drive_only_docstring_changed, test_ui_block_with_options_never_turns_on
+OK   drive.py の説明を直す前に戻す: rc=1 1 failed, 8 passed in 1.75s  落ちた: test_drive_only_docstring_changed
+OK   app.js が基準の設定・ブロックで選択肢を消さない: rc=1 1 failed, 8 passed in 1.79s  落ちた: test_drive_docstring_claims_match_code
+OK   app.js が走行開始で後ろの見張りを送る: rc=1 2 failed, 7 passed in 1.77s  落ちた: test_drive_docstring_claims_match_code, test_ui_block_with_options_never_turns_on
+14 通り(対照 1・壊し 13): 思いどおりでないもの なし

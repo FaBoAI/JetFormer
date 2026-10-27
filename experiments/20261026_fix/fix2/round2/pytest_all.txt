@@ -1,0 +1,23 @@
+........................................................................ [ 10%]
+........................................................................ [ 20%]
+....................................................................s.s. [ 30%]
+........................................................................ [ 41%]
+...........x............................................................ [ 51%]
+..............................................s......................... [ 61%]
+........................................................................ [ 71%]
+........................................................................ [ 82%]
+........................................................................ [ 92%]
+.....................................................                    [100%]
+=============================== warnings summary ===============================
+experiments/20261026_fix/fix2/test_tools_collect.py::test_collect_reads_launch_fields_and_compares
+experiments/20261026_fix/fix2/test_tools_collect.py::test_collect_reads_launch_fields_and_compares
+experiments/20261026_fix/fix2/test_tools_collect.py::test_collect_reads_launch_fields_and_compares
+experiments/20261026_fix/fix2/test_tools_collect.py::test_first_only_option_and_start_no
+experiments/20261026_fix/fix2/test_tools_collect.py::test_first_only_option_and_start_no
+experiments/20261026_fix/fix2/test_tools_collect.py::test_first_only_option_and_start_no
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:333: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+697 passed, 3 skipped, 1 xfailed, 6 warnings in 215.78s (0:03:35)
+exit=0

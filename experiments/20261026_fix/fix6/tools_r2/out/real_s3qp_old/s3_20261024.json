@@ -1,0 +1,4733 @@
+{
+ "schema": "jf-standing-3lap/v1",
+ "line_ahead_m": 0.0,
+ "skipped": [],
+ "results": [
+  {
+   "log": "20261024-134607",
+   "zero_byte": [],
+   "ai_no": "1",
+   "cand": "B",
+   "block": 1,
+   "tune": null,
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "B・1.00",
+   "lap_dist_median_m": 27.19,
+   "r1_anchors": 4,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 27.88,
+     "t_ai_end": 28.646,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 0.77,
+     "t_move": 27.962,
+     "move_after_s": 0.082,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     },
+     "move_0p4_after_s": 0.082
+    }
+   ],
+   "flying": {
+    "n": 1,
+    "n_clean": 1,
+    "best_s": 29.154,
+    "best": {
+     "t_start": 39.883,
+     "laps_s": [
+      9.582,
+      9.793,
+      9.779
+     ],
+     "total_s": 29.154,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "best_clean_s": 29.154,
+    "best_clean": {
+     "t_start": 39.883,
+     "laps_s": [
+      9.582,
+      9.793,
+      9.779
+     ],
+     "total_s": 29.154,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "median_s": 29.154,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 39.883,
+     "laps_s": [
+      9.582,
+      9.793,
+      9.779
+     ],
+     "total_s": 29.154,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 4,
+    "laps": 3,
+    "clean": 3,
+    "clean_laps_s": [
+     9.582,
+     9.793,
+     9.779
+    ],
+    "best_clean_s": 9.582,
+    "median_clean_s": 9.779,
+    "r1_entry_median_erpm": 5016.5,
+    "entries_erpm": [
+     5665.0,
+     4958.0,
+     4981.0,
+     5052.0
+    ]
+   },
+   "collisions": {
+    "all": 0,
+    "strong": 0,
+    "max_g": null,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "0 回"
+   },
+   "midrun": [],
+   "takeovers_failure": 2,
+   "ai_s": 44.67,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-134907",
+   "zero_byte": [],
+   "ai_no": "2",
+   "cand": "SLOW-SEC1",
+   "block": 2,
+   "tune": null,
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "SLOW-SEC1・1.00",
+   "lap_dist_median_m": 24.97,
+   "r1_anchors": 5,
+   "r1_anchors_rejected": [],
+   "standing": [],
+   "flying": {
+    "n": 2,
+    "n_clean": 2,
+    "best_s": 29.241,
+    "best": {
+     "t_start": 14.064,
+     "laps_s": [
+      9.79,
+      9.701,
+      9.75
+     ],
+     "total_s": 29.241,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "best_clean_s": 29.241,
+    "best_clean": {
+     "t_start": 14.064,
+     "laps_s": [
+      9.79,
+      9.701,
+      9.75
+     ],
+     "total_s": 29.241,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "median_s": 29.364,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 14.064,
+     "laps_s": [
+      9.79,
+      9.701,
+      9.75
+     ],
+     "total_s": 29.241,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 23.854,
+     "laps_s": [
+      9.701,
+      9.75,
+      10.035
+     ],
+     "total_s": 29.486,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 5,
+    "laps": 4,
+    "clean": 4,
+    "clean_laps_s": [
+     9.79,
+     9.701,
+     9.75,
+     10.035
+    ],
+    "best_clean_s": 9.701,
+    "median_clean_s": 9.77,
+    "r1_entry_median_erpm": 4718.0,
+    "entries_erpm": [
+     4718.0,
+     4837.0,
+     4851.0,
+     4632.0,
+     4621.0
+    ]
+   },
+   "collisions": {
+    "all": 0,
+    "strong": 0,
+    "max_g": null,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "0 回"
+   },
+   "midrun": [],
+   "takeovers_failure": 2,
+   "ai_s": 49.13,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-135608",
+   "zero_byte": [],
+   "ai_no": "3",
+   "cand": "ENS",
+   "block": 3,
+   "tune": null,
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261021-ens-p2",
+    "model": "ENS",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "ENS・1.00",
+   "lap_dist_median_m": null,
+   "r1_anchors": 0,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 13.556,
+     "t_ai_end": 16.088,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 2.53,
+     "t_move": 13.765,
+     "move_after_s": 0.209,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 7,
+      "events": []
+     },
+     "move_0p4_after_s": 0.237
+    },
+    {
+     "t_ai": 27.346,
+     "t_ai_end": 28.345,
+     "erpm_at_ai": -48.0,
+     "ai_seg_s": 1.0,
+     "t_move": 27.575,
+     "move_after_s": 0.229,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 2,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 7,
+      "events": []
+     },
+     "move_0p4_after_s": 0.229
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 0,
+    "laps": 0,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": null,
+    "entries_erpm": []
+   },
+   "collisions": {
+    "all": 0,
+    "strong": 0,
+    "max_g": null,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "0 回"
+   },
+   "midrun": [],
+   "takeovers_failure": 0,
+   "ai_s": 3.6,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-135656",
+   "zero_byte": [],
+   "ai_no": "4",
+   "cand": "B",
+   "block": 4,
+   "tune": null,
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "B・1.00",
+   "lap_dist_median_m": 27.51,
+   "r1_anchors": 5,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 48.23,
+     "t_ai_end": 50.261,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 2.03,
+     "t_move": 48.397,
+     "move_after_s": 0.168,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 1・線 0 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 1,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 5,
+      "events": []
+     },
+     "move_0p4_after_s": 0.288,
+     "anchors": [
+      49.561
+     ],
+     "to_r1_s": 1.332,
+     "d_from_ai_m": 2.55,
+     "launch_slip": {
+      "t_a": 48.397,
+      "t_b": 48.997,
+      "dv_wheel": 2.546,
+      "dv_imu": 2.605,
+      "ratio": 0.977
+     },
+     "d_pre_m": 2.55,
+     "lap_dist_median_m": 27.51,
+     "start_frac_of_lap": 0.907,
+     "line_ends": [],
+     "laps_line_s": [],
+     "laps_anchor_s": []
+    },
+    {
+     "t_ai": 51.028,
+     "t_ai_end": 52.66,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 1.63,
+     "t_move": 51.217,
+     "move_after_s": 0.19,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 2,
+     "coll_before": 2,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.21
+    },
+    {
+     "t_ai": 83.303,
+     "t_ai_end": 111.381,
+     "erpm_at_ai": -398.0,
+     "ai_seg_s": 28.08,
+     "t_move": 83.347,
+     "move_after_s": 0.045,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 2・線 1 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 3,
+     "coll_before": 3,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 1,
+      "events": []
+     },
+     "move_0p4_after_s": 0.13,
+     "anchors": [
+      92.709,
+      102.899
+     ],
+     "to_r1_s": 9.407,
+     "d_from_ai_m": 26.06,
+     "launch_slip": {
+      "t_a": 83.347,
+      "t_b": 83.947,
+      "dv_wheel": 2.495,
+      "dv_imu": 2.548,
+      "ratio": 0.979
+     },
+     "d_pre_m": 26.05,
+     "lap_dist_median_m": 27.51,
+     "start_frac_of_lap": 0.053,
+     "line_ends": [
+      93.451
+     ],
+     "laps_line_s": [
+      10.104
+     ],
+     "laps_anchor_s": [
+      10.19
+     ]
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 5,
+    "laps": 1,
+    "clean": 1,
+    "clean_laps_s": [
+     10.19
+    ],
+    "best_clean_s": 10.19,
+    "median_clean_s": 10.19,
+    "r1_entry_median_erpm": 5058.0,
+    "entries_erpm": [
+     5145.0,
+     4878.0,
+     6113.0,
+     4811.0,
+     5058.0
+    ]
+   },
+   "collisions": {
+    "all": 4,
+    "strong": 3,
+    "max_g": 6.06,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 1,
+     "GM": 1,
+     "DE": 2,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "4 回・最大 6.06G・8G 以上 0・場所 R1 1・GM 1・DE 2"
+   },
+   "midrun": [],
+   "takeovers_failure": 6,
+   "ai_s": 65.25,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-160133",
+   "zero_byte": [],
+   "ai_no": "5",
+   "cand": null,
+   "block": null,
+   "tune": null,
+   "day": null,
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.1,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": null
+   },
+   "settings_text": "SLOW-SEC1・1.10",
+   "lap_dist_median_m": null,
+   "r1_anchors": 0,
+   "r1_anchors_rejected": [],
+   "standing": [],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 0,
+    "laps": 0,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": null,
+    "entries_erpm": []
+   },
+   "collisions": {
+    "all": 0,
+    "strong": 0,
+    "max_g": null,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "0 回"
+   },
+   "midrun": [],
+   "takeovers_failure": 0,
+   "ai_s": 0.0,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-160536",
+   "zero_byte": [],
+   "ai_no": "6",
+   "cand": null,
+   "block": null,
+   "tune": null,
+   "day": null,
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.1,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.1
+   },
+   "settings_text": "SLOW-SEC1・1.10",
+   "lap_dist_median_m": 29.95,
+   "r1_anchors": 3,
+   "r1_anchors_rejected": [],
+   "standing": [],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 2,
+    "laps": 1,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 6907.0,
+    "entries_erpm": [
+     5900.0,
+     7914.0
+    ]
+   },
+   "collisions": {
+    "all": 5,
+    "strong": 5,
+    "max_g": 10.48,
+    "n_ge8": 4,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 1,
+     "SW": 3,
+     "HS": 0,
+     "LH": 1,
+     "?": 0
+    },
+    "text": "5 回・最大 10.48G・8G 以上 4・場所 DE 1・SW 3・LH 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 2,
+   "ai_s": 20.02,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-160654",
+   "zero_byte": [],
+   "ai_no": "7",
+   "cand": null,
+   "block": null,
+   "tune": null,
+   "day": null,
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "SLOW-SEC1・1.00",
+   "lap_dist_median_m": 27.33,
+   "r1_anchors": 6,
+   "r1_anchors_rejected": [
+    33.898
+   ],
+   "standing": [],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 6,
+    "laps": 4,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 5121.0,
+    "entries_erpm": [
+     5384.0,
+     4886.0,
+     5265.0,
+     5205.0,
+     5037.0,
+     4957.0
+    ]
+   },
+   "collisions": {
+    "all": 10,
+    "strong": 7,
+    "max_g": 11.3,
+    "n_ge8": 6,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 5,
+     "SW": 2,
+     "HS": 2,
+     "LH": 1,
+     "?": 0
+    },
+    "text": "10 回・最大 11.30G・8G 以上 6・場所 DE 5・SW 2・HS 2・LH 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 2,
+   "ai_s": 56.89,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-160847",
+   "zero_byte": [],
+   "ai_no": "8",
+   "cand": "EXP",
+   "block": 2,
+   "tune": "速さ1.20(8秒台ねらい)",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.1,
+    "steer_gain": 1.1,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.1
+   },
+   "settings_text": "SLOW-SEC1・1.10・ステア 1.10",
+   "lap_dist_median_m": 28.44,
+   "r1_anchors": 5,
+   "r1_anchors_rejected": [
+    14.724
+   ],
+   "standing": [
+    {
+     "t_ai": 5.729,
+     "t_ai_end": 16.288,
+     "erpm_at_ai": -42.0,
+     "ai_seg_s": 10.56,
+     "t_move": 5.863,
+     "move_after_s": 0.134,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 1・線 0 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 2,
+      "events": []
+     },
+     "move_0p4_after_s": 0.154,
+     "anchors": [
+      8.53
+     ],
+     "to_r1_s": 2.801,
+     "d_from_ai_m": 6.34,
+     "launch_slip": {
+      "t_a": 5.863,
+      "t_b": 6.463,
+      "dv_wheel": 1.579,
+      "dv_imu": 1.295,
+      "ratio": 1.219
+     },
+     "d_pre_m": 6.33,
+     "lap_dist_median_m": 28.44,
+     "start_frac_of_lap": 0.777,
+     "line_ends": [],
+     "laps_line_s": [],
+     "laps_anchor_s": []
+    },
+    {
+     "t_ai": 22.816,
+     "t_ai_end": 40.436,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 17.62,
+     "t_move": 22.873,
+     "move_after_s": 0.057,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 2・線 1 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 2,
+     "coll_before": 2,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     },
+     "move_0p4_after_s": 0.118,
+     "anchors": [
+      25.816,
+      34.445
+     ],
+     "to_r1_s": 3.0,
+     "d_from_ai_m": 7.87,
+     "launch_slip": {
+      "t_a": 22.873,
+      "t_b": 23.473,
+      "dv_wheel": 2.049,
+      "dv_imu": 2.072,
+      "ratio": 0.989
+     },
+     "d_pre_m": 7.87,
+     "lap_dist_median_m": 28.44,
+     "start_frac_of_lap": 0.723,
+     "line_ends": [
+      32.271
+     ],
+     "laps_line_s": [
+      9.398
+     ],
+     "laps_anchor_s": [
+      8.629
+     ]
+    },
+    {
+     "t_ai": 46.498,
+     "t_ai_end": 47.298,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 0.8,
+     "t_move": null,
+     "move_after_s": null,
+     "valid": false,
+     "why": "AI の区間で動いていない",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 3,
+     "coll_before": 4,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     }
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 5,
+    "laps": 2,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 5795.0,
+    "entries_erpm": [
+     5789.0,
+     5795.0,
+     6697.0,
+     5114.0,
+     6275.0
+    ]
+   },
+   "collisions": {
+    "all": 6,
+    "strong": 6,
+    "max_g": 11.21,
+    "n_ge8": 4,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 1,
+     "SW": 2,
+     "HS": 2,
+     "LH": 1,
+     "?": 0
+    },
+    "text": "6 回・最大 11.21G・8G 以上 4・場所 DE 1・SW 2・HS 2・LH 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 4,
+   "ai_s": 41.6,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-162033",
+   "zero_byte": [],
+   "ai_no": "9",
+   "cand": "EXP",
+   "block": 4,
+   "tune": "基準と比べる・速さ1.10",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90",
+   "lap_dist_median_m": 26.43,
+   "r1_anchors": 12,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 20.118,
+     "t_ai_end": 123.806,
+     "erpm_at_ai": -154.0,
+     "ai_seg_s": 103.69,
+     "t_move": 20.247,
+     "move_after_s": 0.129,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 26.37,
+     "from_ai_s": 26.499,
+     "from_line_s": null,
+     "dist3_from_ai_s": 26.355,
+     "dist3_from_move_s": 26.225,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 1,
+      "events": []
+     },
+     "move_0p4_after_s": 0.129,
+     "anchors": [
+      22.462,
+      30.714,
+      39.074,
+      48.062
+     ],
+     "to_r1_s": 2.344,
+     "d_from_ai_m": 4.74,
+     "launch_slip": {
+      "t_a": 20.247,
+      "t_b": 20.847,
+      "dv_wheel": 1.551,
+      "dv_imu": 1.8,
+      "ratio": 0.861
+     },
+     "dist3_end": 46.473,
+     "d_pre_m": 4.74,
+     "lap_dist_median_m": 26.43,
+     "start_frac_of_lap": 0.821,
+     "line_ends": [
+      29.228,
+      37.536,
+      46.617
+     ],
+     "laps_line_s": [
+      8.981,
+      8.308,
+      9.081
+     ],
+     "laps_anchor_s": [
+      8.252,
+      8.36,
+      8.988
+     ],
+     "end_s": 46.617,
+     "to_a4_from_move_s": 27.815,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 3.96,
+      "list": [
+       [
+        43.101,
+        3.96,
+        "other"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      0,
+      0,
+      1
+     ],
+     "dpsi_anchor_deg": [
+      360.6,
+      361.6,
+      367.7
+     ],
+     "dist_anchor_m": [
+      26.73,
+      26.05,
+      27.12
+     ]
+    }
+   ],
+   "flying": {
+    "n": 9,
+    "n_clean": 3,
+    "best_s": 25.286,
+    "best": {
+     "t_start": 48.062,
+     "laps_s": [
+      8.398,
+      8.498,
+      8.39
+     ],
+     "total_s": 25.286,
+     "kind": "軽い接触だけ",
+     "gmax": 2.58,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 2.58,
+      "list": [
+       [
+        65.508,
+        2.58,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": 26.111,
+    "best_clean": {
+     "t_start": 73.348,
+     "laps_s": [
+      8.681,
+      8.528,
+      8.902
+     ],
+     "total_s": 26.111,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "median_s": 25.746,
+    "n_le25": 0,
+    "n_le27": 9
+   },
+   "windows": [
+    {
+     "t_start": 22.462,
+     "laps_s": [
+      8.252,
+      8.36,
+      8.988
+     ],
+     "total_s": 25.6,
+     "kind": "軽い接触だけ",
+     "gmax": 3.96,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 3.96,
+      "list": [
+       [
+        43.101,
+        3.96,
+        "other"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 30.714,
+     "laps_s": [
+      8.36,
+      8.988,
+      8.398
+     ],
+     "total_s": 25.746,
+     "kind": "軽い接触だけ",
+     "gmax": 3.96,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 3.96,
+      "list": [
+       [
+        43.101,
+        3.96,
+        "other"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 39.074,
+     "laps_s": [
+      8.988,
+      8.398,
+      8.498
+     ],
+     "total_s": 25.884,
+     "kind": "軽い接触だけ",
+     "gmax": 3.96,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 3.96,
+      "list": [
+       [
+        43.101,
+        3.96,
+        "other"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 48.062,
+     "laps_s": [
+      8.398,
+      8.498,
+      8.39
+     ],
+     "total_s": 25.286,
+     "kind": "軽い接触だけ",
+     "gmax": 2.58,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 2.58,
+      "list": [
+       [
+        65.508,
+        2.58,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 56.46,
+     "laps_s": [
+      8.498,
+      8.39,
+      8.681
+     ],
+     "total_s": 25.569,
+     "kind": "軽い接触だけ",
+     "gmax": 2.58,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 2.58,
+      "list": [
+       [
+        65.508,
+        2.58,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 64.958,
+     "laps_s": [
+      8.39,
+      8.681,
+      8.528
+     ],
+     "total_s": 25.599,
+     "kind": "軽い接触だけ",
+     "gmax": 2.58,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 2.58,
+      "list": [
+       [
+        65.508,
+        2.58,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 73.348,
+     "laps_s": [
+      8.681,
+      8.528,
+      8.902
+     ],
+     "total_s": 26.111,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 82.03,
+     "laps_s": [
+      8.528,
+      8.902,
+      8.833
+     ],
+     "total_s": 26.263,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 90.558,
+     "laps_s": [
+      8.902,
+      8.833,
+      8.96
+     ],
+     "total_s": 26.695,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 12,
+    "laps": 11,
+    "clean": 9,
+    "clean_laps_s": [
+     8.252,
+     8.36,
+     8.398,
+     8.498,
+     8.681,
+     8.528,
+     8.902,
+     8.833,
+     8.96
+    ],
+    "best_clean_s": 8.252,
+    "median_clean_s": 8.528,
+    "r1_entry_median_erpm": 5651.5,
+    "entries_erpm": [
+     5545.0,
+     6118.0,
+     5795.0,
+     5666.0,
+     5578.0,
+     6069.0,
+     5637.0,
+     5806.0,
+     5279.0,
+     5280.0,
+     5801.0,
+     5530.0
+    ]
+   },
+   "collisions": {
+    "all": 3,
+    "strong": 1,
+    "max_g": 6.01,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 1,
+     "GM": 0,
+     "DE": 0,
+     "SW": 1,
+     "HS": 1,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "3 回・最大 6.01G・8G 以上 0・場所 R1 1・SW 1・HS 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 103.72,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-162305",
+   "zero_byte": [
+    "20261024-162305-0007/AI_CMD.npz",
+    "20261024-162305-0007/CAM_FRONT.npz",
+    "20261024-162305-0007/IMU.npz",
+    "20261024-162305-0007/TOF_FRONT.npz",
+    "20261024-162305-0008/AI_CMD.npz",
+    "20261024-162305-0008/CAM_FRONT.npz",
+    "20261024-162305-0008/IMU.npz",
+    "20261024-162305-0008/TOF_FRONT.npz"
+   ],
+   "missing_npz": [
+    "20261024-162305-0005/VEHICLE.npz",
+    "20261024-162305-0006/VEHICLE.npz",
+    "20261024-162305-0007/VEHICLE.npz",
+    "20261024-162305-0008/VEHICLE.npz",
+    "20261024-162305-0009/VEHICLE.npz",
+    "20261024-162305-0009/IMU.npz",
+    "20261024-162305-0009/CAM_FRONT.npz"
+   ],
+   "ai_no": "10",
+   "cand": "EXP",
+   "block": 4,
+   "tune": "基準と比べる・速さ1.10",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [
+    "20261024-162305-0005/VEHICLE: ありません",
+    "20261024-162305-0006/VEHICLE: ありません",
+    "20261024-162305-0007/AI_CMD: 読めません(EOFError)",
+    "20261024-162305-0007/VEHICLE: ありません",
+    "20261024-162305-0007/IMU: 読めません(EOFError)",
+    "20261024-162305-0007/CAM_FRONT: 読めません(EOFError)",
+    "20261024-162305-0008/AI_CMD: 読めません(EOFError)",
+    "20261024-162305-0008/VEHICLE: ありません",
+    "20261024-162305-0008/IMU: 読めません(EOFError)",
+    "20261024-162305-0008/CAM_FRONT: 読めません(EOFError)",
+    "20261024-162305-0009/VEHICLE: ありません",
+    "20261024-162305-0009/IMU: ありません",
+    "20261024-162305-0009/CAM_FRONT: ありません"
+   ],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "B・1.00",
+   "lap_dist_median_m": 29.07,
+   "r1_anchors": 2,
+   "r1_anchors_rejected": [
+    22.804
+   ],
+   "standing": [
+    {
+     "t_ai": 4.763,
+     "t_ai_end": 24.315,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 19.55,
+     "t_move": 4.892,
+     "move_after_s": 0.129,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 2・線 1 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.198,
+     "anchors": [
+      7.454,
+      16.073
+     ],
+     "to_r1_s": 2.691,
+     "d_from_ai_m": 7.39,
+     "launch_slip": {
+      "t_a": 4.892,
+      "t_b": 5.492,
+      "dv_wheel": 2.598,
+      "dv_imu": 2.475,
+      "ratio": 1.05
+     },
+     "d_pre_m": 7.39,
+     "lap_dist_median_m": 29.07,
+     "start_frac_of_lap": 0.746,
+     "line_ends": [
+      13.959
+     ],
+     "laps_line_s": [
+      9.067
+     ],
+     "laps_anchor_s": [
+      8.62
+     ]
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 2,
+    "laps": 1,
+    "clean": 1,
+    "clean_laps_s": [
+     8.62
+    ],
+    "best_clean_s": 8.62,
+    "median_clean_s": 8.62,
+    "r1_entry_median_erpm": 6347.5,
+    "entries_erpm": [
+     5773.0,
+     6922.0
+    ]
+   },
+   "collisions": {
+    "all": 4,
+    "strong": 3,
+    "max_g": 11.3,
+    "n_ge8": 1,
+    "by_place": {
+     "R1": 1,
+     "GM": 0,
+     "DE": 1,
+     "SW": 1,
+     "HS": 1,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "4 回・最大 11.30G・8G 以上 1・場所 R1 1・DE 1・SW 1・HS 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 19.59,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-183123",
+   "zero_byte": [],
+   "ai_no": "11",
+   "cand": null,
+   "block": null,
+   "tune": null,
+   "day": null,
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90",
+   "lap_dist_median_m": 26.53,
+   "r1_anchors": 9,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 28.676,
+     "t_ai_end": 28.91,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 0.23,
+     "t_move": 28.865,
+     "move_after_s": 0.188,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 5,
+      "events": []
+     },
+     "move_0p4_after_s": 0.2
+    },
+    {
+     "t_ai": 38.502,
+     "t_ai_end": 39.701,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 1.2,
+     "t_move": null,
+     "move_after_s": null,
+     "valid": false,
+     "why": "AI の区間で動いていない",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 2,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     }
+    },
+    {
+     "t_ai": 40.1,
+     "t_ai_end": 43.364,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 3.26,
+     "t_move": null,
+     "move_after_s": null,
+     "valid": false,
+     "why": "AI の区間で動いていない",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 3,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     }
+    },
+    {
+     "t_ai": 58.619,
+     "t_ai_end": 62.316,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 3.7,
+     "t_move": 59.068,
+     "move_after_s": 0.449,
+     "valid": false,
+     "why": "15 秒以内(AI の区間の中)に R1 の起点が無い",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 4,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 10,
+      "events": []
+     },
+     "move_0p4_after_s": 0.449
+    },
+    {
+     "t_ai": 70.209,
+     "t_ai_end": 155.142,
+     "erpm_at_ai": -269.0,
+     "ai_seg_s": 84.93,
+     "t_move": 70.379,
+     "move_after_s": 0.17,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 28.165,
+     "from_ai_s": 28.335,
+     "from_line_s": null,
+     "dist3_from_ai_s": 27.769,
+     "dist3_from_move_s": 27.599,
+     "start_no": 5,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.2,
+     "anchors": [
+      73.074,
+      82.164,
+      91.194,
+      100.724
+     ],
+     "to_r1_s": 2.865,
+     "d_from_ai_m": 6.77,
+     "launch_slip": {
+      "t_a": 70.379,
+      "t_b": 70.979,
+      "dv_wheel": 1.933,
+      "dv_imu": 1.85,
+      "ratio": 1.045
+     },
+     "dist3_end": 97.978,
+     "d_pre_m": 6.75,
+     "lap_dist_median_m": 26.53,
+     "start_frac_of_lap": 0.746,
+     "line_ends": [
+      80.025,
+      88.994,
+      98.545
+     ],
+     "laps_line_s": [
+      9.646,
+      8.969,
+      9.551
+     ],
+     "laps_anchor_s": [
+      9.09,
+      9.03,
+      9.53
+     ],
+     "end_s": 98.545,
+     "to_a4_from_move_s": 30.345,
+     "collisions": {
+      "n": 3,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        73.484,
+        2.92,
+        "R1"
+       ],
+       [
+        76.265,
+        10.77,
+        "DE"
+       ],
+       [
+        85.354,
+        11.3,
+        "DE"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      2,
+      1,
+      0
+     ],
+     "dpsi_anchor_deg": [
+      364.3,
+      363.8,
+      352.4
+     ],
+     "dist_anchor_m": [
+      26.73,
+      26.4,
+      28.32
+     ]
+    }
+   ],
+   "flying": {
+    "n": 6,
+    "n_clean": 0,
+    "best_s": 27.61,
+    "best": {
+     "t_start": 120.204,
+     "laps_s": [
+      9.31,
+      9.42,
+      8.88
+     ],
+     "total_s": 27.61,
+     "kind": "強い衝突あり",
+     "gmax": 4.14,
+     "collisions": {
+      "n": 2,
+      "strong": 1,
+      "gmax": 4.14,
+      "list": [
+       [
+        132.655,
+        4.14,
+        "DE"
+       ],
+       [
+        139.345,
+        2.72,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": 28.385,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 73.074,
+     "laps_s": [
+      9.09,
+      9.03,
+      9.53
+     ],
+     "total_s": 27.65,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 3,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        73.484,
+        2.92,
+        "R1"
+       ],
+       [
+        76.265,
+        10.77,
+        "DE"
+       ],
+       [
+        85.354,
+        11.3,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 82.164,
+     "laps_s": [
+      9.03,
+      9.53,
+      10.2
+     ],
+     "total_s": 28.76,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 3,
+      "strong": 3,
+      "gmax": 11.3,
+      "list": [
+       [
+        85.354,
+        11.3,
+        "DE"
+       ],
+       [
+        104.135,
+        9.1,
+        "DE"
+       ],
+       [
+        104.964,
+        7.86,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 91.194,
+     "laps_s": [
+      9.53,
+      10.2,
+      9.28
+     ],
+     "total_s": 29.01,
+     "kind": "強い衝突あり",
+     "gmax": 9.1,
+     "collisions": {
+      "n": 3,
+      "strong": 2,
+      "gmax": 9.1,
+      "list": [
+       [
+        104.135,
+        9.1,
+        "DE"
+       ],
+       [
+        104.964,
+        7.86,
+        "DE"
+       ],
+       [
+        113.694,
+        2.89,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 100.724,
+     "laps_s": [
+      10.2,
+      9.28,
+      9.31
+     ],
+     "total_s": 28.79,
+     "kind": "強い衝突あり",
+     "gmax": 9.1,
+     "collisions": {
+      "n": 3,
+      "strong": 2,
+      "gmax": 9.1,
+      "list": [
+       [
+        104.135,
+        9.1,
+        "DE"
+       ],
+       [
+        104.964,
+        7.86,
+        "DE"
+       ],
+       [
+        113.694,
+        2.89,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 110.924,
+     "laps_s": [
+      9.28,
+      9.31,
+      9.42
+     ],
+     "total_s": 28.01,
+     "kind": "強い衝突あり",
+     "gmax": 4.14,
+     "collisions": {
+      "n": 2,
+      "strong": 1,
+      "gmax": 4.14,
+      "list": [
+       [
+        113.694,
+        2.89,
+        "DE"
+       ],
+       [
+        132.655,
+        4.14,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 120.204,
+     "laps_s": [
+      9.31,
+      9.42,
+      8.88
+     ],
+     "total_s": 27.61,
+     "kind": "強い衝突あり",
+     "gmax": 4.14,
+     "collisions": {
+      "n": 2,
+      "strong": 1,
+      "gmax": 4.14,
+      "list": [
+       [
+        132.655,
+        4.14,
+        "DE"
+       ],
+       [
+        139.345,
+        2.72,
+        "R1"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 9,
+    "laps": 8,
+    "clean": 2,
+    "clean_laps_s": [
+     9.53,
+     9.31
+    ],
+    "best_clean_s": 9.31,
+    "median_clean_s": 9.42,
+    "r1_entry_median_erpm": 4758.0,
+    "entries_erpm": [
+     5782.0,
+     5180.0,
+     4127.0,
+     5122.0,
+     4125.0,
+     4757.0,
+     4758.0,
+     5170.0,
+     4440.0
+    ]
+   },
+   "collisions": {
+    "all": 8,
+    "strong": 5,
+    "max_g": 11.3,
+    "n_ge8": 3,
+    "by_place": {
+     "R1": 2,
+     "GM": 0,
+     "DE": 6,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "8 回・最大 11.30G・8G 以上 3・場所 R1 2・DE 6"
+   },
+   "midrun": [],
+   "takeovers_failure": 6,
+   "ai_s": 94.99,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-183437",
+   "zero_byte": [],
+   "ai_no": "12",
+   "cand": null,
+   "block": null,
+   "tune": null,
+   "day": null,
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90",
+   "lap_dist_median_m": 26.44,
+   "r1_anchors": 7,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 18.086,
+     "t_ai_end": 83.702,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 65.62,
+     "t_move": 18.356,
+     "move_after_s": 0.27,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 27.739,
+     "from_ai_s": 28.009,
+     "from_line_s": null,
+     "dist3_from_ai_s": 28.594,
+     "dist3_from_move_s": 28.324,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.29,
+     "anchors": [
+      20.619,
+      29.818,
+      38.669,
+      48.008
+     ],
+     "to_r1_s": 2.533,
+     "d_from_ai_m": 5.4,
+     "launch_slip": {
+      "t_a": 18.356,
+      "t_b": 18.956,
+      "dv_wheel": 2.164,
+      "dv_imu": 2.153,
+      "ratio": 1.005
+     },
+     "dist3_end": 46.68,
+     "d_pre_m": 5.39,
+     "lap_dist_median_m": 26.44,
+     "start_frac_of_lap": 0.796,
+     "line_ends": [
+      27.883,
+      36.835,
+      46.095
+     ],
+     "laps_line_s": [
+      9.528,
+      8.952,
+      9.26
+     ],
+     "laps_anchor_s": [
+      9.199,
+      8.851,
+      9.339
+     ],
+     "end_s": 46.095,
+     "to_a4_from_move_s": 29.652,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        23.838,
+        11.3,
+        "DE"
+       ],
+       [
+        32.998,
+        5.04,
+        "DE"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      1,
+      1,
+      0
+     ],
+     "dpsi_anchor_deg": [
+      353.4,
+      355.2,
+      358.9
+     ],
+     "dist_anchor_m": [
+      25.57,
+      25.12,
+      26.69
+     ]
+    }
+   ],
+   "flying": {
+    "n": 4,
+    "n_clean": 0,
+    "best_s": 27.389,
+    "best": {
+     "t_start": 20.619,
+     "laps_s": [
+      9.199,
+      8.851,
+      9.339
+     ],
+     "total_s": 27.389,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        23.838,
+        11.3,
+        "DE"
+       ],
+       [
+        32.998,
+        5.04,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": 27.989,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 20.619,
+     "laps_s": [
+      9.199,
+      8.851,
+      9.339
+     ],
+     "total_s": 27.389,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        23.838,
+        11.3,
+        "DE"
+       ],
+       [
+        32.998,
+        5.04,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 29.818,
+     "laps_s": [
+      8.851,
+      9.339,
+      9.36
+     ],
+     "total_s": 27.55,
+     "kind": "強い衝突あり",
+     "gmax": 5.04,
+     "collisions": {
+      "n": 1,
+      "strong": 1,
+      "gmax": 5.04,
+      "list": [
+       [
+        32.998,
+        5.04,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 38.669,
+     "laps_s": [
+      9.339,
+      9.36,
+      9.73
+     ],
+     "total_s": 28.429,
+     "kind": "軽い接触だけ",
+     "gmax": 3.48,
+     "collisions": {
+      "n": 1,
+      "strong": 0,
+      "gmax": 3.48,
+      "list": [
+       [
+        60.778,
+        3.48,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 48.008,
+     "laps_s": [
+      9.36,
+      9.73,
+      9.56
+     ],
+     "total_s": 28.65,
+     "kind": "軽い接触だけ",
+     "gmax": 3.48,
+     "collisions": {
+      "n": 2,
+      "strong": 0,
+      "gmax": 3.48,
+      "list": [
+       [
+        60.778,
+        3.48,
+        "DE"
+       ],
+       [
+        69.888,
+        2.72,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 7,
+    "laps": 6,
+    "clean": 2,
+    "clean_laps_s": [
+     9.339,
+     9.36
+    ],
+    "best_clean_s": 9.339,
+    "median_clean_s": 9.349,
+    "r1_entry_median_erpm": 4577.0,
+    "entries_erpm": [
+     4434.0,
+     4613.0,
+     4302.0,
+     5067.0,
+     4647.0,
+     4566.0,
+     4577.0
+    ]
+   },
+   "collisions": {
+    "all": 4,
+    "strong": 2,
+    "max_g": 11.3,
+    "n_ge8": 1,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 4,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "4 回・最大 11.30G・8G 以上 1・場所 DE 4"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 65.65,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-183656",
+   "zero_byte": [],
+   "ai_no": "13",
+   "cand": "EXP",
+   "block": 2,
+   "tune": "遅く入る型・速さ0.90",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "bench_20261022-slow-sec-s1",
+    "model": "SLOW-SEC1",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "SLOW-SEC1・0.90",
+   "lap_dist_median_m": 24.83,
+   "r1_anchors": 5,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 12.69,
+     "t_ai_end": 59.422,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 46.73,
+     "t_move": 12.805,
+     "move_after_s": 0.115,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 28.225,
+     "from_ai_s": 28.34,
+     "from_line_s": null,
+     "dist3_from_ai_s": 28.436,
+     "dist3_from_move_s": 28.321,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 0,
+      "events": []
+     },
+     "move_0p4_after_s": 0.124,
+     "anchors": [
+      15.056,
+      24.255,
+      33.682,
+      42.662
+     ],
+     "to_r1_s": 2.366,
+     "d_from_ai_m": 4.81,
+     "launch_slip": {
+      "t_a": 12.805,
+      "t_b": 13.405,
+      "dv_wheel": 1.59,
+      "dv_imu": 1.471,
+      "ratio": 1.081
+     },
+     "dist3_end": 41.126,
+     "d_pre_m": 4.8,
+     "lap_dist_median_m": 24.83,
+     "start_frac_of_lap": 0.807,
+     "line_ends": [
+      22.594,
+      31.975,
+      41.03
+     ],
+     "laps_line_s": [
+      9.789,
+      9.38,
+      9.056
+     ],
+     "laps_anchor_s": [
+      9.199,
+      9.427,
+      8.98
+     ],
+     "end_s": 41.03,
+     "to_a4_from_move_s": 29.857,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 6.65,
+      "list": [
+       [
+        18.526,
+        5.92,
+        "DE"
+       ],
+       [
+        27.906,
+        6.65,
+        "DE"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      1,
+      1,
+      0
+     ],
+     "dpsi_anchor_deg": [
+      376.1,
+      355.0,
+      337.0
+     ],
+     "dist_anchor_m": [
+      24.73,
+      24.47,
+      24.94
+     ]
+    }
+   ],
+   "flying": {
+    "n": 2,
+    "n_clean": 0,
+    "best_s": 27.606,
+    "best": {
+     "t_start": 15.056,
+     "laps_s": [
+      9.199,
+      9.427,
+      8.98
+     ],
+     "total_s": 27.606,
+     "kind": "強い衝突あり",
+     "gmax": 6.65,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 6.65,
+      "list": [
+       [
+        18.526,
+        5.92,
+        "DE"
+       ],
+       [
+        27.906,
+        6.65,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": 27.627,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 15.056,
+     "laps_s": [
+      9.199,
+      9.427,
+      8.98
+     ],
+     "total_s": 27.606,
+     "kind": "強い衝突あり",
+     "gmax": 6.65,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 6.65,
+      "list": [
+       [
+        18.526,
+        5.92,
+        "DE"
+       ],
+       [
+        27.906,
+        6.65,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 24.255,
+     "laps_s": [
+      9.427,
+      8.98,
+      9.24
+     ],
+     "total_s": 27.647,
+     "kind": "強い衝突あり",
+     "gmax": 6.65,
+     "collisions": {
+      "n": 1,
+      "strong": 1,
+      "gmax": 6.65,
+      "list": [
+       [
+        27.906,
+        6.65,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 5,
+    "laps": 4,
+    "clean": 2,
+    "clean_laps_s": [
+     8.98,
+     9.24
+    ],
+    "best_clean_s": 8.98,
+    "median_clean_s": 9.11,
+    "r1_entry_median_erpm": 4643.0,
+    "entries_erpm": [
+     4774.0,
+     4643.0,
+     4506.0,
+     4838.0,
+     4537.0
+    ]
+   },
+   "collisions": {
+    "all": 3,
+    "strong": 3,
+    "max_g": 7.17,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 3,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "3 回・最大 7.17G・8G 以上 0・場所 DE 3"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 46.76,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-183826",
+   "zero_byte": [],
+   "ai_no": "14",
+   "cand": "EXP",
+   "block": 3,
+   "tune": "最終コーナー対策・速さ0.85",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.85,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.85
+   },
+   "settings_text": "B・0.85",
+   "lap_dist_median_m": 25.53,
+   "r1_anchors": 6,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 48.897,
+     "t_ai_end": 109.418,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 60.52,
+     "t_move": 49.065,
+     "move_after_s": 0.168,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 30.41,
+     "from_ai_s": 30.578,
+     "from_line_s": null,
+     "dist3_from_ai_s": 30.116,
+     "dist3_from_move_s": 29.948,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.195,
+     "anchors": [
+      51.335,
+      61.303,
+      71.353,
+      81.328
+     ],
+     "to_r1_s": 2.439,
+     "d_from_ai_m": 4.92,
+     "launch_slip": {
+      "t_a": 49.065,
+      "t_b": 49.665,
+      "dv_wheel": 1.975,
+      "dv_imu": 1.851,
+      "ratio": 1.067
+     },
+     "dist3_end": 79.013,
+     "d_pre_m": 4.92,
+     "lap_dist_median_m": 25.53,
+     "start_frac_of_lap": 0.807,
+     "line_ends": [
+      59.41,
+      69.485,
+      79.474
+     ],
+     "laps_line_s": [
+      10.345,
+      10.075,
+      9.99
+     ],
+     "laps_anchor_s": [
+      9.968,
+      10.05,
+      9.974
+     ],
+     "end_s": 79.474,
+     "to_a4_from_move_s": 32.263,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "collisions_by_lap": [
+      0,
+      0,
+      0
+     ],
+     "dpsi_anchor_deg": [
+      363.0,
+      357.1,
+      354.0
+     ],
+     "dist_anchor_m": [
+      25.53,
+      26.54,
+      25.93
+     ]
+    }
+   ],
+   "flying": {
+    "n": 3,
+    "n_clean": 1,
+    "best_s": 29.992,
+    "best": {
+     "t_start": 51.335,
+     "laps_s": [
+      9.968,
+      10.05,
+      9.974
+     ],
+     "total_s": 29.992,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "best_clean_s": 29.992,
+    "best_clean": {
+     "t_start": 51.335,
+     "laps_s": [
+      9.968,
+      10.05,
+      9.974
+     ],
+     "total_s": 29.992,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "median_s": 30.321,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 51.335,
+     "laps_s": [
+      9.968,
+      10.05,
+      9.974
+     ],
+     "total_s": 29.992,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 61.303,
+     "laps_s": [
+      10.05,
+      9.974,
+      10.297
+     ],
+     "total_s": 30.321,
+     "kind": "強い衝突あり",
+     "gmax": 9.22,
+     "collisions": {
+      "n": 1,
+      "strong": 1,
+      "gmax": 9.22,
+      "list": [
+       [
+        84.703,
+        9.22,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 71.353,
+     "laps_s": [
+      9.974,
+      10.297,
+      10.519
+     ],
+     "total_s": 30.79,
+     "kind": "強い衝突あり",
+     "gmax": 9.22,
+     "collisions": {
+      "n": 1,
+      "strong": 1,
+      "gmax": 9.22,
+      "list": [
+       [
+        84.703,
+        9.22,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 6,
+    "laps": 5,
+    "clean": 4,
+    "clean_laps_s": [
+     9.968,
+     10.05,
+     9.974,
+     10.519
+    ],
+    "best_clean_s": 9.968,
+    "median_clean_s": 10.012,
+    "r1_entry_median_erpm": 4360.0,
+    "entries_erpm": [
+     4342.0,
+     4378.0,
+     4415.0,
+     4492.0,
+     4162.0,
+     3935.0
+    ]
+   },
+   "collisions": {
+    "all": 1,
+    "strong": 1,
+    "max_g": 9.22,
+    "n_ge8": 1,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 1,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "1 回・最大 9.22G・8G 以上 1・場所 DE 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 60.55,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-184043",
+   "zero_byte": [],
+   "ai_no": "15",
+   "cand": "EXP",
+   "block": 4,
+   "tune": "最終コーナー対策・速さ0.90・ステア1.10",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.1,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90・ステア 1.10",
+   "lap_dist_median_m": 26.62,
+   "r1_anchors": 5,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 9.659,
+     "t_ai_end": 59.389,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 49.73,
+     "t_move": 9.835,
+     "move_after_s": 0.175,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 29.971,
+     "from_ai_s": 30.147,
+     "from_line_s": null,
+     "dist3_from_ai_s": 30.131,
+     "dist3_from_move_s": 29.956,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 5,
+      "events": []
+     },
+     "move_0p4_after_s": 0.195,
+     "anchors": [
+      12.321,
+      22.031,
+      31.91,
+      41.741
+     ],
+     "to_r1_s": 2.662,
+     "d_from_ai_m": 5.07,
+     "launch_slip": {
+      "t_a": 9.835,
+      "t_b": 10.435,
+      "dv_wheel": 1.455,
+      "dv_imu": 1.305,
+      "ratio": 1.115
+     },
+     "dist3_end": 39.791,
+     "d_pre_m": 5.07,
+     "lap_dist_median_m": 26.62,
+     "start_frac_of_lap": 0.81,
+     "line_ends": [
+      20.156,
+      30.029,
+      39.806
+     ],
+     "laps_line_s": [
+      10.322,
+      9.872,
+      9.777
+     ],
+     "laps_anchor_s": [
+      9.709,
+      9.88,
+      9.83
+     ],
+     "end_s": 39.806,
+     "to_a4_from_move_s": 31.906,
+     "collisions": {
+      "n": 3,
+      "strong": 0,
+      "gmax": 3.38,
+      "list": [
+       [
+        15.313,
+        2.99,
+        "DE"
+       ],
+       [
+        25.171,
+        3.38,
+        "DE"
+       ],
+       [
+        35.041,
+        3.24,
+        "DE"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      1,
+      1,
+      1
+     ],
+     "dpsi_anchor_deg": [
+      355.0,
+      365.6,
+      339.0
+     ],
+     "dist_anchor_m": [
+      26.66,
+      26.7,
+      26.54
+     ]
+    }
+   ],
+   "flying": {
+    "n": 2,
+    "n_clean": 0,
+    "best_s": 29.419,
+    "best": {
+     "t_start": 12.321,
+     "laps_s": [
+      9.709,
+      9.88,
+      9.83
+     ],
+     "total_s": 29.419,
+     "kind": "軽い接触だけ",
+     "gmax": 3.38,
+     "collisions": {
+      "n": 3,
+      "strong": 0,
+      "gmax": 3.38,
+      "list": [
+       [
+        15.313,
+        2.99,
+        "DE"
+       ],
+       [
+        25.171,
+        3.38,
+        "DE"
+       ],
+       [
+        35.041,
+        3.24,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": 29.499,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 12.321,
+     "laps_s": [
+      9.709,
+      9.88,
+      9.83
+     ],
+     "total_s": 29.419,
+     "kind": "軽い接触だけ",
+     "gmax": 3.38,
+     "collisions": {
+      "n": 3,
+      "strong": 0,
+      "gmax": 3.38,
+      "list": [
+       [
+        15.313,
+        2.99,
+        "DE"
+       ],
+       [
+        25.171,
+        3.38,
+        "DE"
+       ],
+       [
+        35.041,
+        3.24,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 22.031,
+     "laps_s": [
+      9.88,
+      9.83,
+      9.87
+     ],
+     "total_s": 29.58,
+     "kind": "軽い接触だけ",
+     "gmax": 3.38,
+     "collisions": {
+      "n": 3,
+      "strong": 0,
+      "gmax": 3.38,
+      "list": [
+       [
+        25.171,
+        3.38,
+        "DE"
+       ],
+       [
+        35.041,
+        3.24,
+        "DE"
+       ],
+       [
+        44.761,
+        2.88,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 5,
+    "laps": 4,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 4780.0,
+    "entries_erpm": [
+     4264.0,
+     4780.0,
+     4506.0,
+     4941.0,
+     4894.0
+    ]
+   },
+   "collisions": {
+    "all": 4,
+    "strong": 0,
+    "max_g": 3.38,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 4,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "4 回・最大 3.38G・8G 以上 0・場所 DE 4"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 49.76,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-184400",
+   "zero_byte": [],
+   "ai_no": "16",
+   "cand": "EXP",
+   "block": 4,
+   "tune": "最終コーナー対策・速さ0.90・ステア1.10",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.1,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90・ステア 1.10",
+   "lap_dist_median_m": 25.97,
+   "r1_anchors": 6,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 7.828,
+     "t_ai_end": 29.645,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 21.82,
+     "t_move": 7.988,
+     "move_after_s": 0.161,
+     "valid": false,
+     "why": "3 周目の終わりの前に人側",
+     "method": "anchor",
+     "from_move_s": 32.875,
+     "from_ai_s": 33.035,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.181,
+     "anchors": [
+      10.416,
+      19.635,
+      33.436,
+      43.285
+     ],
+     "to_r1_s": 2.588,
+     "d_from_ai_m": 5.15,
+     "launch_slip": {
+      "t_a": 7.988,
+      "t_b": 8.588,
+      "dv_wheel": 1.612,
+      "dv_imu": 1.451,
+      "ratio": 1.111
+     },
+     "d_pre_m": 5.14,
+     "lap_dist_median_m": 25.97,
+     "start_frac_of_lap": 0.802,
+     "line_ends": [
+      17.788,
+      28.055,
+      40.863
+     ],
+     "laps_line_s": [
+      9.799,
+      10.267,
+      12.808
+     ],
+     "laps_anchor_s": [
+      9.219,
+      13.8,
+      9.85
+     ],
+     "end_s": 40.863,
+     "to_a4_from_move_s": 35.297,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 5.65,
+      "list": [
+       [
+        20.185,
+        4.14,
+        "R1"
+       ],
+       [
+        28.245,
+        5.65,
+        "HS"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      0,
+      1,
+      1
+     ],
+     "dpsi_anchor_deg": [
+      334.4,
+      382.3,
+      322.7
+     ],
+     "dist_anchor_m": [
+      25.91,
+      28.05,
+      24.71
+     ]
+    }
+   ],
+   "flying": {
+    "n": 1,
+    "n_clean": 0,
+    "best_s": 29.79,
+    "best": {
+     "t_start": 33.436,
+     "laps_s": [
+      9.85,
+      9.81,
+      10.13
+     ],
+     "total_s": 29.79,
+     "kind": "強い衝突あり",
+     "gmax": 9.32,
+     "collisions": {
+      "n": 2,
+      "strong": 1,
+      "gmax": 9.32,
+      "list": [
+       [
+        41.675,
+        9.32,
+        "HS"
+       ],
+       [
+        61.5,
+        2.64,
+        "HS"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": 29.79,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [
+    {
+     "t_start": 33.436,
+     "laps_s": [
+      9.85,
+      9.81,
+      10.13
+     ],
+     "total_s": 29.79,
+     "kind": "強い衝突あり",
+     "gmax": 9.32,
+     "collisions": {
+      "n": 2,
+      "strong": 1,
+      "gmax": 9.32,
+      "list": [
+       [
+        41.675,
+        9.32,
+        "HS"
+       ],
+       [
+        61.5,
+        2.64,
+        "HS"
+       ]
+      ]
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 6,
+    "laps": 4,
+    "clean": 2,
+    "clean_laps_s": [
+     9.219,
+     9.81
+    ],
+    "best_clean_s": 9.219,
+    "median_clean_s": 9.514,
+    "r1_entry_median_erpm": 4848.5,
+    "entries_erpm": [
+     4647.0,
+     4863.0,
+     4868.0,
+     4385.0,
+     4834.0,
+     5095.0
+    ]
+   },
+   "collisions": {
+    "all": 5,
+    "strong": 3,
+    "max_g": 9.32,
+    "n_ge8": 1,
+    "by_place": {
+     "R1": 2,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 3,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "5 回・最大 9.32G・8G 以上 1・場所 R1 2・HS 3"
+   },
+   "midrun": [],
+   "takeovers_failure": 2,
+   "ai_s": 60.72,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-184549",
+   "zero_byte": [],
+   "ai_no": "17",
+   "cand": "EXP",
+   "block": 5,
+   "tune": "様子見・速さ0.95",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.95,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.95
+   },
+   "settings_text": "B・0.95",
+   "lap_dist_median_m": 26.04,
+   "r1_anchors": 8,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 9.127,
+     "t_ai_end": 82.905,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 73.78,
+     "t_move": 9.294,
+     "move_after_s": 0.167,
+     "valid": true,
+     "why": null,
+     "method": "anchor",
+     "from_move_s": 27.492,
+     "from_ai_s": 27.659,
+     "from_line_s": null,
+     "dist3_from_ai_s": 27.846,
+     "dist3_from_move_s": 27.678,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": true,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.187,
+     "anchors": [
+      11.677,
+      20.336,
+      29.677,
+      38.637
+     ],
+     "to_r1_s": 2.55,
+     "d_from_ai_m": 5.43,
+     "launch_slip": {
+      "t_a": 9.294,
+      "t_b": 9.894,
+      "dv_wheel": 1.687,
+      "dv_imu": 1.556,
+      "ratio": 1.084
+     },
+     "dist3_end": 36.972,
+     "d_pre_m": 5.43,
+     "lap_dist_median_m": 26.04,
+     "start_frac_of_lap": 0.792,
+     "line_ends": [
+      18.543,
+      27.754,
+      36.786
+     ],
+     "laps_line_s": [
+      9.249,
+      9.212,
+      9.032
+     ],
+     "laps_anchor_s": [
+      8.66,
+      9.341,
+      8.959
+     ],
+     "end_s": 36.786,
+     "to_a4_from_move_s": 29.342,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 10.04,
+      "list": [
+       [
+        23.606,
+        10.04,
+        "DE"
+       ],
+       [
+        32.812,
+        9.79,
+        "DE"
+       ]
+      ]
+     },
+     "collisions_by_lap": [
+      0,
+      1,
+      1
+     ],
+     "dpsi_anchor_deg": [
+      354.2,
+      349.2,
+      357.2
+     ],
+     "dist_anchor_m": [
+      26.45,
+      25.94,
+      25.09
+     ]
+    }
+   ],
+   "flying": {
+    "n": 5,
+    "n_clean": 1,
+    "best_s": 26.96,
+    "best": {
+     "t_start": 11.677,
+     "laps_s": [
+      8.66,
+      9.341,
+      8.959
+     ],
+     "total_s": 26.96,
+     "kind": "強い衝突あり",
+     "gmax": 10.04,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 10.04,
+      "list": [
+       [
+        23.606,
+        10.04,
+        "DE"
+       ],
+       [
+        32.812,
+        9.79,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    "best_clean_s": 27.3,
+    "best_clean": {
+     "t_start": 48.176,
+     "laps_s": [
+      9.1,
+      9.12,
+      9.08
+     ],
+     "total_s": 27.3,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    },
+    "median_s": 27.599,
+    "n_le25": 0,
+    "n_le27": 1
+   },
+   "windows": [
+    {
+     "t_start": 11.677,
+     "laps_s": [
+      8.66,
+      9.341,
+      8.959
+     ],
+     "total_s": 26.96,
+     "kind": "強い衝突あり",
+     "gmax": 10.04,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 10.04,
+      "list": [
+       [
+        23.606,
+        10.04,
+        "DE"
+       ],
+       [
+        32.812,
+        9.79,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 20.336,
+     "laps_s": [
+      9.341,
+      8.959,
+      9.54
+     ],
+     "total_s": 27.84,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 3,
+      "strong": 3,
+      "gmax": 11.3,
+      "list": [
+       [
+        23.606,
+        10.04,
+        "DE"
+       ],
+       [
+        32.812,
+        9.79,
+        "DE"
+       ],
+       [
+        41.887,
+        11.3,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 29.677,
+     "laps_s": [
+      8.959,
+      9.54,
+      9.1
+     ],
+     "total_s": 27.599,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 2,
+      "strong": 2,
+      "gmax": 11.3,
+      "list": [
+       [
+        32.812,
+        9.79,
+        "DE"
+       ],
+       [
+        41.887,
+        11.3,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 38.637,
+     "laps_s": [
+      9.54,
+      9.1,
+      9.12
+     ],
+     "total_s": 27.76,
+     "kind": "強い衝突あり",
+     "gmax": 11.3,
+     "collisions": {
+      "n": 1,
+      "strong": 1,
+      "gmax": 11.3,
+      "list": [
+       [
+        41.887,
+        11.3,
+        "DE"
+       ]
+      ]
+     },
+     "suspect": false
+    },
+    {
+     "t_start": 48.176,
+     "laps_s": [
+      9.1,
+      9.12,
+      9.08
+     ],
+     "total_s": 27.3,
+     "kind": "きれい",
+     "gmax": 0.0,
+     "collisions": {
+      "n": 0,
+      "strong": 0,
+      "gmax": 0.0,
+      "list": []
+     },
+     "suspect": false
+    }
+   ],
+   "laps": {
+    "passes": 8,
+    "laps": 7,
+    "clean": 4,
+    "clean_laps_s": [
+     8.66,
+     9.1,
+     9.12,
+     9.08
+    ],
+    "best_clean_s": 8.66,
+    "median_clean_s": 9.09,
+    "r1_entry_median_erpm": 4789.5,
+    "entries_erpm": [
+     4933.0,
+     4790.0,
+     4956.0,
+     4658.0,
+     4789.0,
+     4413.0,
+     4876.0,
+     4673.0
+    ]
+   },
+   "collisions": {
+    "all": 5,
+    "strong": 5,
+    "max_g": 11.3,
+    "n_ge8": 5,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 5,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "5 回・最大 11.30G・8G 以上 5・場所 DE 5"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 73.81,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-185703",
+   "zero_byte": [],
+   "ai_no": "18",
+   "cand": "EXP",
+   "block": 1,
+   "tune": "8秒台の本命・速さ0.90(No.9_ベスト8.25・中央値8.53)",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 0.9,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 0.9
+   },
+   "settings_text": "B・0.90",
+   "lap_dist_median_m": 26.63,
+   "r1_anchors": 3,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 23.516,
+     "t_ai_end": 53.26,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 29.74,
+     "t_move": 23.655,
+     "move_after_s": 0.14,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 3・線 2 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 3,
+      "events": []
+     },
+     "move_0p4_after_s": 0.19,
+     "anchors": [
+      26.052,
+      35.518,
+      46.251
+     ],
+     "to_r1_s": 2.537,
+     "d_from_ai_m": 5.95,
+     "launch_slip": {
+      "t_a": 23.655,
+      "t_b": 24.255,
+      "dv_wheel": 2.341,
+      "dv_imu": 2.227,
+      "ratio": 1.051
+     },
+     "d_pre_m": 5.94,
+     "lap_dist_median_m": 26.63,
+     "start_frac_of_lap": 0.777,
+     "line_ends": [
+      33.414,
+      43.784
+     ],
+     "laps_line_s": [
+      9.759,
+      10.37
+     ],
+     "laps_anchor_s": [
+      9.466,
+      10.733
+     ]
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 3,
+    "laps": 1,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 4465.0,
+    "entries_erpm": [
+     4465.0,
+     4886.0,
+     4308.0
+    ]
+   },
+   "collisions": {
+    "all": 2,
+    "strong": 1,
+    "max_g": 7.14,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 2,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "2 回・最大 7.14G・8G 以上 0・場所 DE 2"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 29.58,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-185823",
+   "zero_byte": [],
+   "ai_no": "19",
+   "cand": "B",
+   "block": 7,
+   "tune": "7秒台挑戦・速さ1.00(電圧8.0V以下のとき)",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": null
+   },
+   "settings_text": "B・1.00",
+   "lap_dist_median_m": null,
+   "r1_anchors": 0,
+   "r1_anchors_rejected": [],
+   "standing": [],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 0,
+    "laps": 0,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": null,
+    "entries_erpm": []
+   },
+   "collisions": {
+    "all": 0,
+    "strong": 0,
+    "max_g": null,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 0,
+     "DE": 0,
+     "SW": 0,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "0 回"
+   },
+   "midrun": [],
+   "takeovers_failure": 0,
+   "ai_s": 0.0,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  },
+  {
+   "log": "20261024-185926",
+   "zero_byte": [],
+   "ai_no": "20",
+   "cand": "B",
+   "block": 1,
+   "tune": "8秒台の本命・速さ0.90(No.9_ベスト8.25・中央値8.53)",
+   "day": "2026-10-24",
+   "labels": "file",
+   "problems": [],
+   "settings": {
+    "throttle_gain": 1.0,
+    "steer_gain": 1.0,
+    "speed_ceiling": null,
+    "ceil_all_mps": null,
+    "ceil_left_mps": null,
+    "speed_auto": null,
+    "auto_target_mps": null,
+    "launch_boost": null,
+    "launch_us": null,
+    "launch_mps": null,
+    "launch_max_s": null,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "steer_trim_us": 0.0,
+    "rec_back_guard": null,
+    "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+    "model": "B",
+    "mode_id": 5,
+    "throttle_gain_frames": 1.0
+   },
+   "settings_text": "B・1.00",
+   "lap_dist_median_m": null,
+   "r1_anchors": 1,
+   "r1_anchors_rejected": [],
+   "standing": [
+    {
+     "t_ai": 18.22,
+     "t_ai_end": 26.513,
+     "erpm_at_ai": 0.0,
+     "ai_seg_s": 8.29,
+     "t_move": 18.401,
+     "move_after_s": 0.181,
+     "valid": false,
+     "why": "3 周に届かない(続いた起点 1・線 0 回)",
+     "method": null,
+     "from_move_s": null,
+     "from_ai_s": null,
+     "from_line_s": null,
+     "dist3_from_ai_s": null,
+     "dist3_from_move_s": null,
+     "start_no": 1,
+     "coll_before": 0,
+     "counted": false,
+     "launch": {
+      "recorded": false,
+      "assist5_frames": null,
+      "on_frames": null,
+      "on_s": null,
+      "end_code": null,
+      "end_reason": null,
+      "end_s": null,
+      "kick_frames": 5,
+      "events": []
+     },
+     "move_0p4_after_s": 0.201,
+     "anchors": [
+      20.975
+     ],
+     "to_r1_s": 2.755,
+     "d_from_ai_m": 6.47,
+     "launch_slip": {
+      "t_a": 18.401,
+      "t_b": 19.001,
+      "dv_wheel": 2.088,
+      "dv_imu": 1.916,
+      "ratio": 1.09
+     },
+     "d_pre_m": 6.47,
+     "lap_dist_median_m": null,
+     "start_frac_of_lap": null,
+     "line_ends": [],
+     "laps_line_s": [],
+     "laps_anchor_s": []
+    }
+   ],
+   "flying": {
+    "n": 0,
+    "n_clean": 0,
+    "best_s": null,
+    "best": null,
+    "best_clean_s": null,
+    "best_clean": null,
+    "median_s": null,
+    "n_le25": 0,
+    "n_le27": 0
+   },
+   "windows": [],
+   "laps": {
+    "passes": 1,
+    "laps": 0,
+    "clean": 0,
+    "clean_laps_s": [],
+    "best_clean_s": null,
+    "median_clean_s": null,
+    "r1_entry_median_erpm": 5458.0,
+    "entries_erpm": [
+     5458.0
+    ]
+   },
+   "collisions": {
+    "all": 2,
+    "strong": 0,
+    "max_g": 2.72,
+    "n_ge8": 0,
+    "by_place": {
+     "R1": 0,
+     "GM": 1,
+     "DE": 0,
+     "SW": 1,
+     "HS": 0,
+     "LH": 0,
+     "?": 0
+    },
+    "text": "2 回・最大 2.72G・8G 以上 0・場所 GM 1・SW 1"
+   },
+   "midrun": [],
+   "takeovers_failure": 1,
+   "ai_s": 8.33,
+   "vbat": {
+    "source": null,
+    "start_v": null,
+    "end_v": null,
+    "min_v": null,
+    "median_v": null,
+    "n": 0,
+    "V_before": null,
+    "V_after": null,
+    "Vb_before": null,
+    "Vb_after": null,
+    "Vb_min": null
+   },
+   "speed_ctrl_flags": []
+  }
+ ]
+}

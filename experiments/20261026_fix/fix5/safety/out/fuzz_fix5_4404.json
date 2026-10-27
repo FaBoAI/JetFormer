@@ -1,0 +1,386 @@
+{
+ "seed": 4404,
+ "runs": 300,
+ "bad": {
+  "K1_rear_after_kept_hold_worse_than_keep0": 8
+ },
+ "bad_bef1": {
+  "K2_giveup_while_moving": 4
+ },
+ "examples": [
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 37,
+   "detail": [
+    [
+     3.55,
+     "rear",
+     -4.0,
+     9.0
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 1,
+    "launch_no_kick": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "zone_caps": 1,
+    "tof_guard": 1,
+    "rev_s": 0.6,
+    "rev_us": 400.0,
+    "throttle_gain": 0.8
+   },
+   "scene": {
+    "dur": 8.0,
+    "xf": 2.1426215428326345,
+    "drops": [
+     [
+      2.5151253952457884,
+      2.7151253952457886
+     ]
+    ],
+    "veh_skip": [
+     [
+      1.3349486679754619,
+      1.6533724375943826
+     ],
+     [
+      2.301822030482504,
+      2.639890024893911
+     ]
+    ],
+    "spikes": [],
+    "xr": 0.8631246004816644,
+    "front_soft": 0.5
+   }
+  },
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 72,
+   "detail": [
+    [
+     3.8,
+     "rear",
+     -1.53,
+     5.83
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 1,
+    "launch_no_kick": 1,
+    "start_kick": 0,
+    "speed_ceiling": 0,
+    "zone_caps": 0,
+    "tof_guard": 1,
+    "rev_s": 0.6,
+    "rev_us": 300.0,
+    "throttle_gain": 0.8
+   },
+   "scene": {
+    "dur": 10.0,
+    "xf": 3.127980088307421,
+    "drops": [],
+    "veh_skip": [
+     [
+      3.2509260675465828,
+      3.6255680575803644
+     ],
+     [
+      2.4089165481337984,
+      2.6054512702053425
+     ],
+     [
+      6.354404902043447,
+      6.741282684091115
+     ]
+    ],
+    "spikes": [],
+    "xr": 2.004637572290933
+   }
+  },
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 107,
+   "detail": [
+    [
+     5.04,
+     "rear",
+     -1.38,
+     5.45
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 0,
+    "launch_no_kick": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "zone_caps": 1,
+    "tof_guard": 3,
+    "rev_s": 0.2,
+    "rev_us": 400.0,
+    "throttle_gain": 1.0
+   },
+   "scene": {
+    "dur": 8.0,
+    "xf": 2.9759462354270285,
+    "drops": [
+     [
+      4.8676570250304,
+      4.9876570250304
+     ],
+     [
+      2.4004993999970083,
+      2.5204993999970084
+     ],
+     [
+      1.7092579757652748,
+      1.829257975765275
+     ],
+     [
+      6.500792954558437,
+      6.850792954558437
+     ]
+    ],
+    "veh_skip": [
+     [
+      3.438658447270856,
+      3.9364438000018764
+     ],
+     [
+      6.031704592944783,
+      6.242916095907911
+     ]
+    ],
+    "spikes": [
+     [
+      3.3,
+      4.0
+     ],
+     [
+      1.23,
+      4.0
+     ],
+     [
+      1.85,
+      3.0
+     ]
+    ],
+    "xr": 2.475740544946561,
+    "hit_drop": [
+     0.05,
+     0.45
+    ],
+    "human": [
+     [
+      5.803975303270907,
+      6.10010620668403
+     ]
+    ],
+    "front_soft": 0.3
+   }
+  },
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 145,
+   "detail": [
+    [
+     4.27,
+     "rear",
+     -1.68,
+     6.2
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 1,
+    "launch_no_kick": 0,
+    "start_kick": 0,
+    "speed_ceiling": 0,
+    "zone_caps": 0,
+    "tof_guard": 1,
+    "rev_s": 0.3,
+    "rev_us": 400.0,
+    "throttle_gain": 0.8
+   },
+   "scene": {
+    "dur": 10.0,
+    "xf": 2.8691269798333066,
+    "drops": [
+     [
+      2.7303499334290846,
+      2.930349933429085
+     ],
+     [
+      6.035650537502443,
+      7.035650537502443
+     ],
+     [
+      5.155050655237757,
+      5.7050506552377565
+     ],
+     [
+      3.884100290980803,
+      4.584100290980803
+     ]
+    ],
+    "veh_skip": [
+     [
+      2.8417488969602713,
+      3.1074993431094495
+     ]
+    ],
+    "spikes": [
+     [
+      3.96,
+      2.6
+     ],
+     [
+      7.25,
+      3.0
+     ],
+     [
+      6.72,
+      3.0
+     ]
+    ],
+    "xr": 1.4634040602921778
+   }
+  },
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 183,
+   "detail": [
+    [
+     3.39,
+     "rear",
+     -1.21,
+     5.03
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 0,
+    "launch_no_kick": 1,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "zone_caps": 0,
+    "tof_guard": 3,
+    "rev_s": 0.3,
+    "rev_us": 400.0,
+    "throttle_gain": 1.0
+   },
+   "scene": {
+    "dur": 8.0,
+    "xf": 2.0181200250646554,
+    "drops": [
+     [
+      3.9049890419275557,
+      4.454989041927556
+     ],
+     [
+      2.084145722238369,
+      2.534145722238369
+     ]
+    ],
+    "veh_skip": [],
+    "spikes": [],
+    "xr": 1.3528008723916713,
+    "human": [
+     [
+      3.2034609401116256,
+      3.728769399157432
+     ]
+    ],
+    "front_soft": 0.5
+   }
+  },
+  {
+   "kind": "K1_rear_after_kept_hold_worse_than_keep0",
+   "run": 204,
+   "detail": [
+    [
+     5.27,
+     "rear",
+     -3.97,
+     9.0
+    ],
+    []
+   ],
+   "params": {
+    "launch_boost": 1,
+    "launch_no_kick": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "zone_caps": 0,
+    "tof_guard": 2,
+    "rev_s": 0.6,
+    "rev_us": 400.0,
+    "throttle_gain": 0.8
+   },
+   "scene": {
+    "dur": 12.0,
+    "xf": 3.171868705794378,
+    "drops": [
+     [
+      7.293279722230793,
+      8.793279722230793
+     ],
+     [
+      4.38542534311434,
+      4.50542534311434
+     ],
+     [
+      2.3441982703347737,
+      2.544198270334774
+     ],
+     [
+      10.451526112049015,
+      10.901526112049014
+     ]
+    ],
+    "veh_skip": [],
+    "spikes": [],
+    "xr": 1.7025042970374136,
+    "hit_drop": [
+     0.05,
+     0.12
+    ],
+    "human": [
+     [
+      8.511721153049146,
+      9.25807324919654
+     ]
+    ],
+    "front_soft": 0.3
+   }
+  }
+ ],
+ "identity": {
+  "keep0_same": 300,
+  "off4_same": 300
+ },
+ "giveup_runs": {
+  "now1": 201,
+  "bef1": 204,
+  "now0": 2
+ },
+ "rows": 72593,
+ "kinds": {
+  "none": 38565,
+  "リカバリー中止": 23579,
+  "リカバリー": 8033,
+  "発進の補助": 263,
+  "発進の前進": 644
+ },
+ "holds_ai": 1493,
+ "cmp": {
+  "front_push_s_now1": 511.07,
+  "front_push_s_bef1": 518.49,
+  "front_push_s_now0": 1441.02,
+  "rear_faster_than_keep0_any": 13,
+  "bef1_rear_faster_than_keep0_any": 10
+ }
+}

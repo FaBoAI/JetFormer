@@ -4,6 +4,10 @@
 
     python3 tools/car_check.py 20261103-xxxxxx          # 1 本
     python3 tools/car_check.py --latest                 # 今日のいちばん新しい AI の記録(dry run でない)
+        (それより新しい記録の log.json が読めない・AI_CMD が無いときは「いちばん新しい記録 X は読めません(…)」と出して
+         終わりの番号 3。1 本前を黙って出さない。2026-10-27 fix3 直す 3 回目 r3-r3-rec-1)
+        (選んだ記録のシーンが欠けている = npz が無い・0 バイト・読めないときも「いちばん新しい記録 X は記録が欠けています(…)」と
+         出して終わりの番号 3。文・JSON は出さない。2026-10-27 fix5 c1)
     python3 tools/car_check.py LOG --json out.json      # JSON の書き先(既定は data/reports/car_check/<LOG>.json)
     python3 tools/car_check.py LOG --no-json            # 画面に出すだけ
 
@@ -23,17 +27,44 @@
   電圧                  VEHICLE.npz の vbat_v(走り始め・終わりの 2 秒の中央値・1 秒ごとの中央値の最小)→ 無ければ説明欄
   R1 の板の衝撃          fix/r1_bump.py。AI の R1 の起点ごとに、起点 → +1.2 秒の 3 軸 |‖a‖/G − 1| の最大。中央・最大・2.5G 以上の数
   参考                  DE の衝突/通過(成績表の通過の数え方)・強い衝突の数・天井と自動合わせの記録の要約
+  衝突                  1 本の AI の衝突(label の決まり。立て直し中・リカバリー中も入れる)の最大 G・8G 以上の数・場所ごとの数
+                        (R1・GM・DE・SW・HS・LH・?)と強い衝突(4G 以上)の時刻・場所・G(2026-10-26 fix2 R2-rec-1。手順書 7 章の
+                        「8G 以上 1 回」「同じ場所で 2 本続けて」「左 4.2 で SW の出口・LH」を 1 本ごとに決めるため。判定の番号には入れない)
+  自動合わせの電圧の源    天井・自動合わせの行に「電圧の源 基板 / 説明欄 / なし」(AI_CMD の sa_src。手順書 6 章)
+  人側にした直後の衝突    AI の区間の終わりから AFTER_AI_S(0.5 秒)以内の人側の衝突(ラベルの衝突 = suspect でないもの)も「衝突」の
+                        行と 8G 以上の数・場所に入れ、「人側にした直後」の印と AI の終わりからの秒を付ける(2026-10-27 fix3 直す 2 回目
+                        r2-rec2-4。人が当たる直前に CH3 を人側にした 9G が「衝突 0 回」と出て、手順書 7 章の「8G 以上 1 回」
+                        「同じ場所で 2 本続けて」が読めなかった)。JSON の collisions に after_ai(あるときだけ)。判定の番号は変えない。
+                        そういう衝突の無い本は、文・JSON とも前と同じ
 
 判定(qualify_plan 3.2・3.3・3.7、ユーザーの了承の値)。終わりの番号: 0 合格・1 直す/注意・2 不合格・3 足りない
   合格   左右の比 ≥ 0.90 かつ s0 が −10〜+10 µs
   直す   比 0.85〜0.90、または s0 が +10〜+15 µs → steer_trim_us を +15〜+20 µs(左へ)にして 1 本走り、もう一度
   不合格 比 < 0.85、または s0 > +15 µs → 本番の設定に進まない(後輪・舵のリンクを見る)
   注意   s0 < −10 µs(左へ流れる向き。10/24 の No.9 は −17.8 µs で問題なし)
-  板     R1 の 3 軸の中央 ≥ 4.5G、または 1 回でも ≥ 7.0G → 止めて後輪・取り付けを見る。次はゲイン −0.05(不合格に数える)
+  板     R1 の 3 軸の中央 ≥ 4.5G、または 1 回でも ≥ 7.0G → 止めて後輪・取り付けを見る。次はゲイン −0.05(不合格に数える)。
+         「1 回でも ≥ 7.0G」は R1 の通過が 1〜2 でも不合格(2026-10-26 fix3 直す 1 回目 r1-rec3-2。中央は通過 3 以上のときだけ)
   電圧   走り始めが 7.70 V 未満 → パックを替える(注意)
   速さ   周の p90 の中央値 → qualify_plan 3.2 節の表のゲインの直し(番号には入れない)
-  足りない 左右のどちらかが 30 フレーム未満・s0 が 200 フレーム未満・R1 の通過が 3 未満
+  足りない 左右のどちらかが 30 フレーム未満・s0 が 200 フレーム未満・R1 の通過が 3 未満(1 回でも ≥ 7.0G なら不合格)
+  試験の選択肢 log.json の rec_back_guard・rec_hold_keep・launch_no_kick が 1 なら、文に「試験の選択肢: …」の行(判定には入れない。
+         2026-10-26 fix3 直す 1 回目 r1-rec3-5。どれも 0 か無ければ行を出さない = 前と同じ)
   番号: 不合格が 1 つでもあれば 2、なければ足りないものがあれば 3、なければ直す・注意があれば 1、なければ 0
+  発進の空転の比(2026-10-27 fix3 直す 3 回目・2 組目 r3-r3-rec-2・rec-4) log.json の launch_boost が 1 の本だけ、発進ごとの空転の比
+         (tools/standing_3lap.py の standing_starts をそのまま流す = ③ と同じ値: 動いてから 0.6 秒か A1 まで、車輪の速さの増え ÷
+         IMU の前の加速の積分)の行。> 1.3、または比が出ないのに車輪が 0.5 m/s より増えた(いちばんひどい空転とみなす)なら行の頭に
+         「!」と「→ 残りの ON を launch_us 200 に」(手順書 7 章。もう 200 以下なら「⑤ は空転の条件を満たさない」)。比が出ない発進は
+         「動画で空転を見る」。前は回 3 の途中に比を読む道具が無く、7 章の「比 > 1.3 → 残りの ON を 200 µs に」が通らなかった。
+         判定の番号には入れない。JSON の launch_slip(ON の本だけ)。発進の前進 OFF の本は文・JSON とも前と同じ
+  記録の欠け(2026-10-27 fix5、反証 4 回目 c1) シーンの npz が無い・0 バイト・読めない本(label_events.load_log の problems と同じ決まり:
+         VEHICLE・IMU・CAM_FRONT が無い、どれかが 0 バイト・読めない。AI_CMD が無いだけのシーンは AI の動いていないシーンなので
+         数えない)。電源断・jetformer-web の落ちで、書いている途中のシーンが書けなかった本の形(本物の 20261024-162305 の 0005〜0009・
+         20261010-163247 の 0021〜0023)。前は欠けた区間の 9G が消えて「判定: 合格」「衝突 0 回」と出て、--latest もその本を選んで
+         止まらなかった(手順書 7 章の 8G・同じ場所・左 4.2 の止める条件が、落ちた本では読めない)。今は JSON の data_missing
+         (欠けたシーン・名前・無い / 0 バイト / 読めない)・判定の頭に「! 記録が欠けている(シーン …)。この本の衝突・8G 以上は記録で
+         確かめられない → 動画・紙で」の行(状態 missing。番号は「足りない」の 3。不合格があれば 2 のまま = 不合格の方が重い)・
+         衝突の行の頭に「!」と「欠けた区間の衝突・8G 以上は入っていない」。--latest は「いちばん新しい記録 X は記録が欠けています」と
+         出して止まる(終わりの番号 3。文・JSON は出さない。読める分は名前で)。欠けの無い本は文・JSON・番号とも前と同じ
 """
 
 import argparse
@@ -89,6 +120,8 @@ BUMP_W = (0.0, 1.2)
 BUMP_THR = 2.5
 BUMP_MIN_SAMPLES = 5
 CODES = {0: '合格', 1: '直す・注意', 2: '不合格', 3: '足りない'}
+AFTER_AI_S = 0.5           # 人側にした直後の衝突: AI の区間の終わりからこれだけ(r2-rec2-4。本物の 10/23・10/24 の 50 本で、この中の
+                           # 人側の衝突は 7 件。4G 以上 4 件は 0.16〜0.35 秒あと、8G 以上 2 件は 0.34・0.35 秒あと)
 
 
 def _r(x, n=3):
@@ -250,7 +283,8 @@ def speed_advice(p90, sw_max=None, ceiling_on=False):
 
 def judge(m):
     """指標 → 判定。m: {'turn': {...}, 's0': {...}, 'r1_bump': {...}, 'vbat': {...}, 'laps': {...}, 'speed_ctrl': {...}}。
-    返り値 {'code', 'label', 'items': [{'item', 'status', 'text'}], 'lines': [...]}。status: ok・fix・caution・fail・insufficient・na・info"""
+    返り値 {'code', 'label', 'items': [{'item', 'status', 'text'}], 'lines': [...]}。status: ok・fix・caution・fail・insufficient・na・info・
+    missing(記録が欠けている。m['data_missing'] があるときだけ。2026-10-27 fix5 c1)"""
     items = []
     tr = m.get('turn') or {}
     ratio = tr.get('ratio')
@@ -260,7 +294,7 @@ def judge(m):
     elif ratio >= RATIO_PASS:
         items.append(('turn', 'ok', '左右の旋回の効きの比 %.3f(≥ %.2f)' % (ratio, RATIO_PASS)))
     elif ratio >= RATIO_FAIL:
-        items.append(('turn', 'fix', '左右の旋回の効きの比 %.3f(%.2f〜%.2f)→ 車を見る。steer_trim_us を +15〜+20 µs(左へ)にして 1 本走り、もう一度' % (
+        items.append(('turn', 'fix', '左右の旋回の効きの比 %.3f(%.2f〜%.2f)→ 車を見る。steer_trim_us を +15〜+20 µs(左へ)にして 1 本走り、もう一度(トリムはブロックを選んでも残る。走行開始の確認の文の「トリム:」の行で見る)' % (
             ratio, RATIO_FAIL, RATIO_PASS)))
     else:
         items.append(('turn', 'fail', '左右の旋回の効きの比 %.3f(< %.2f)→ 本番の設定に進まない(後輪・舵のリンクを見る)' % (ratio, RATIO_FAIL)))
@@ -271,20 +305,28 @@ def judge(m):
     elif S0_LO <= s0 <= S0_HI:
         items.append(('s0', 'ok', 'まっすぐ進む舵 s0 %+.1f µs(%+.0f〜%+.0f)' % (s0, S0_LO, S0_HI)))
     elif S0_HI < s0 <= S0_FAIL:
-        items.append(('s0', 'fix', 'まっすぐ進む舵 s0 %+.1f µs(+%.0f〜+%.0f)→ steer_trim_us を +15〜+20 µs(左へ)にして 1 本走り、もう一度' % (
+        items.append(('s0', 'fix', 'まっすぐ進む舵 s0 %+.1f µs(+%.0f〜+%.0f)→ steer_trim_us を +15〜+20 µs(左へ)にして 1 本走り、もう一度(トリムはブロックを選んでも残る。走行開始の確認の文の「トリム:」の行で見る)' % (
             s0, S0_HI, S0_FAIL)))
     elif s0 > S0_FAIL:
         items.append(('s0', 'fail', 'まっすぐ進む舵 s0 %+.1f µs(> +%.0f)→ 本番の設定に進まない(後輪・舵のリンクを見る)' % (s0, S0_FAIL)))
     else:
         items.append(('s0', 'caution', 'まっすぐ進む舵 s0 %+.1f µs(< %+.0f): 左へ流れる向き(10/24 の No.9 は −17.8 µs で問題なし)' % (s0, S0_LO)))
     rb = m.get('r1_bump') or {}
-    if rb.get('passes', 0) < MIN_R1_PASSES:
+    if 1 <= rb.get('passes', 0) < MIN_R1_PASSES and rb.get('a3_max') is not None and rb['a3_max'] >= BOARD_MAX_G:
+        # 2026-10-26 fix3 直す 1 回目 r1-rec3-2: 「1 回でも ≥ 7.0G」は通過の数によらず不合格(止める条件。回 3 の止まって 1〜2 周の
+        # 本は通過が 1〜2 で、前は「足りない(もう 1 本)」と出た)。中央 ≥ 4.5G の判定は今まで通り通過 3 以上のときだけ
+        items.append(('r1_bump', 'fail', 'R1 の板の衝撃 最大 %.2fG(1 回でも ≥ %.1fG。AI の R1 の通過 %d。中央の判定は %d 通過から)→ 止めて後輪・取り付けを見る。次はゲイン −0.05' % (
+            rb['a3_max'], BOARD_MAX_G, rb['passes'], MIN_R1_PASSES)))
+    elif rb.get('passes', 0) < MIN_R1_PASSES:
         items.append(('r1_bump', 'insufficient', 'R1 の板の衝撃: 判定に足りません(AI の R1 の通過 %d、%d 以上要る)' % (rb.get('passes', 0), MIN_R1_PASSES)))
     elif rb['a3_median'] >= BOARD_MEDIAN_G or rb['a3_max'] >= BOARD_MAX_G:
         items.append(('r1_bump', 'fail', 'R1 の板の衝撃 中央 %.2fG・最大 %.2fG(中央 ≥ %.1fG か 最大 ≥ %.1fG)→ 止めて後輪・取り付けを見る。次はゲイン −0.05' % (
             rb['a3_median'], rb['a3_max'], BOARD_MEDIAN_G, BOARD_MAX_G)))
     else:
         items.append(('r1_bump', 'ok', 'R1 の板の衝撃 中央 %.2fG・最大 %.2fG(%d 通過)' % (rb['a3_median'], rb['a3_max'], rb['passes'])))
+    dm = m.get('data_missing')
+    if dm:                      # 2026-10-27 fix5 c1: 記録が欠けた本(あるときだけ。無ければ前と同じ)。判定の頭に出す
+        items.insert(0, ('data_missing', 'missing', missing_text(dm)))
     vb = m.get('vbat') or {}
     v0 = vb.get('start_v')
     if v0 is None:
@@ -298,7 +340,9 @@ def judge(m):
     adv = speed_advice(lp.get('p90_median_mps'), lp.get('sw_max_median_mps'), sc_on)
     items.append(('speed', 'info', adv['text']))
     st = [s for _, s, _ in items]
-    code = 2 if 'fail' in st else (3 if 'insufficient' in st else (1 if ('fix' in st or 'caution' in st) else 0))
+    # 記録の欠け(missing)は「足りない」と同じ 3(c1)。不合格(2)があれば 2 のまま(本番の設定に進まない方が重い)
+    code = 2 if 'fail' in st else (3 if ('insufficient' in st or 'missing' in st) else
+                                   (1 if ('fix' in st or 'caution' in st) else 0))
     head = {0: '本番の設定へ進めます', 1: '直す・注意があります(下の行)', 2: '本番の設定に進まない(下の行)',
             3: '判定に足りません(もう 1 本)'}[code]
     return {'code': code, 'label': CODES[code], 'headline': head, 'speed_advice': adv,
@@ -318,8 +362,14 @@ def check_log(log, labels_dir=None, raw_dir=None, labels=None):
     if lab is None or 'events' not in info:
         res['error'] = info.get('error', 'ラベルがありません')
         res['judge'] = {'code': 3, 'label': CODES[3], 'headline': '判定に足りません(記録が読めない)', 'items': []}
+        dm = data_missing_of(log, raw_dir)          # c1(あるときだけ。npz を開かずに、無い・0 バイトだけを見る)
+        if dm:
+            res['data_missing'] = dm
         return res
     L = le.load_log(log, raw_dir)
+    dm = data_missing_of(log, raw_dir, L.get('problems'))      # 2026-10-27 fix5 c1(あるときだけ。無ければ前と同じ)
+    if dm:
+        res['data_missing'] = dm
     ex = {}
     sc = ss.score_log(log, labels_dir, raw_dir, labels=(info, lab, src), loaded=L, extras=ex)
     if sc.get('error'):
@@ -351,10 +401,193 @@ def check_log(log, labels_dir=None, raw_dir=None, labels=None):
                         'de_passes': len(de_n), 'collisions_ai': (sc.get('collisions') or {}).get('label', {}).get('main'),
                         'strong_collisions_ai': (sc.get('collisions') or {}).get('label', {}).get('strong'),
                         'r1_anchors_rejected': sc.get('r1_anchors_rejected') or []}
+    coll = sc.get('collision_events') or []
+    after = after_ai_collisions(ex.get('ev') or info.get('events') or {}, lab)
+    if after:                   # 2026-10-27 fix3 r2-rec2-4: 人側にした直後の衝突も(あるときだけ。無ければ前と同じ)
+        coll = sorted(list(coll) + after, key=lambda c: float(c['t_s']))
+    res['collisions'] = ss.collision_summary(coll)
+    if after:
+        res['collisions']['after_ai'] = [[_r(float(c['t_s']), 2), _r(float(c['g']), 2), ss.place_of(c), c['after_ai_s']]
+                                         for c in after]
     res['speed_ctrl'] = sc.get('speed_ctrl')
+    ls = launch_slips(log, raw_dir, info, lab, L, sc, ex)
+    if ls is not None:          # 2026-10-27 r3-r3-rec-2・rec-4: 発進の前進 ON の本だけ(OFF の本は前と同じ)
+        res['launch_slip'] = ls
     res['judge'] = judge(res)
     res['seconds'] = _r(time.time() - t_start, 2)
     return res
+
+
+SLIP_LOW_US = 200.0        # 手順書 7 章・protocol_v3 14 章: 空転の比 > 1.3 → 残りの ON をこの強さに(r3-r3-rec-2)
+
+
+def _on1(x):
+    try:
+        return int(float(x)) == 1
+    except (TypeError, ValueError):
+        return False
+
+
+def launch_slips(log, raw_dir, info, lab, L, sc, ex):
+    """発進の前進 ON の本の、発進ごとの空転の比(2026-10-27 fix3 直す 3 回目・2 組目 r3-r3-rec-2・rec-4)。③ standing_3lap の
+    analyze_log と同じ入れ物で standing_starts を流す(同じ値・同じ印)。発進の前進 OFF(か欄が無い)の本は None(文・JSON は前と同じ)。
+    判定の番号には入れない"""
+    p = info.get('params_at_start') or {}
+    if not _on1(p.get('launch_boost')):
+        return None
+    import standing_3lap as s3  # noqa: E402  ON の本だけ読む(OFF の本の道は前のまま)
+    t = np.asarray(lab['t_s'], np.float64)
+    ai = np.asarray(lab['ai'], bool)
+    if 'dry_run' in lab:
+        ai = ai & ~np.asarray(lab['dry_run'], bool)
+    anchors = np.asarray(ex['anchors'], float)
+    _, Df = le.cumulative_distance(ex['vt'], ex['verpm'])
+    Lrun = s3.lap_dist_median(anchors, ex['it'], ex['hd'], ex['vt'], Df)
+    I = L.get('IMU')
+    ay = None
+    if I is not None and len(I['accel']) == len(ex['it']):          # standing_3lap.analyze_log と同じ前の加速
+        still = (np.abs(np.interp(ex['it'], ex['vt'], ex['verpm'])) < 50) & (np.abs(I['gyro'][:, 2]) < 5)
+        _, bias = le.horizontal_g(I['accel'], still)
+        ay = np.asarray(I['accel'][:, 1], np.float64) - bias[1]
+    rows = s3.standing_starts(t, ai, ex['it'], ex['hd'], ex['vt'], ex['verpm'], anchors, sc.get('collision_events') or [],
+                              L.get('AI_CMD'), info['t0_us'], s3.launch_events(log, raw_dir), 0.0, Lrun, ay)
+    try:
+        us = float(p.get('launch_us'))
+    except (TypeError, ValueError):
+        us = None
+    starts = []
+    for r in rows:
+        if r.get('t_move') is None:
+            continue                       # 動いていない発進(比は無い)
+        lr = r.get('launch') or {}
+        started = bool(lr.get('on_frames') or any(e[1] == 'start' for e in lr.get('events') or []))
+        sl = r.get('launch_slip')
+        kind = s3.slip_kind(sl) if r.get('anchors') else 'no_r1'
+        starts.append({'start_no': r.get('start_no'), 't_ai': r.get('t_ai'), 'started': started,
+                       'launch': s3.launch_text(lr), 'slip': sl, 'kind': kind, 'why': r.get('why') if kind == 'no_r1' else None})
+    warn = any(x['started'] and x['kind'] in ('high', 'extreme') for x in starts)
+    return {'launch_us': us, 'starts': starts, 'warn': warn,
+            'unmeasured': any(x['started'] and x['kind'] == 'unknown' for x in starts)}
+
+
+def launch_slip_lines(ls):
+    """発進の空転の比の文(r3-r3-rec-2・rec-4)。ls = launch_slips の戻り値"""
+    f = lambda x: '?' if x is None else '%g' % x      # noqa: E731
+
+    def one(x):
+        sl, k = x['slip'] or {}, x['kind']
+        if k in ('ok', 'high'):
+            v = '%.2f%s' % (sl['ratio'], ' > 1.3' if k == 'high' else '(≤ 1.3)')
+        elif k == 'extreme':
+            v = '比が出ない(車輪 +%.2f m/s・IMU +%.2f m/s)= いちばんひどい空転とみなす > 1.3' % (sl['dv_wheel'], sl['dv_imu'])
+        elif k == 'unknown':
+            v = '比が出ない(%s)' % (('車輪 +%.2f m/s・IMU +%.2f m/s' % (sl['dv_wheel'], sl['dv_imu'])) if sl else
+                                   '窓が短い(A1 が近い)か IMU が抜けた')
+        else:
+            v = '出せない(R1 の起点まで行っていない)'
+        return '発進 %s(AI 側 %.2f 秒・発進の前進 %s%s): %s' % (x['start_no'], x['t_ai'], x['launch'],
+                                                       '' if x['started'] else '。出ていないので 7 章の空転の行には数えない', v)
+    L = ['%s 発進の空転の比(発進の前進 ON・前進 %s µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): %s' % (
+        '!' if ls['warn'] else ' ', f(ls['launch_us']), '・'.join(one(x) for x in ls['starts']) or '止まった状態からの発進なし')]
+    if ls['warn']:
+        if ls['launch_us'] is not None and ls['launch_us'] <= SLIP_LOW_US:
+            L.append('  → もう %g µs 以下。⑤ collect.py は空転の条件を満たさない(回 4 は発進の前進 OFF。6 章)' % ls['launch_us'])
+        else:
+            L.append('  → 止まっているうちに、残りの ON を launch_us %g に(5 章の API・紙に書く。7 章。⑤ は最後の ON の強さで比べる)'
+                     % SLIP_LOW_US)
+    if ls['unmeasured']:
+        L.append('  → 比が出ない発進は動画で空転を見る(⑤ collect.py もその ON を「空転の比が出ない」として「満たさない」にする)')
+    return L
+
+
+def after_ai_collisions(ev, lab, after_s=AFTER_AI_S):
+    """AI の区間の終わりから after_s 秒以内の人側の衝突(ラベルの events.collisions。suspect は別の一覧なので入らない)。
+    section_scorecard.score_log の collision_events と同じ形 + class 'after_ai'・after_ai_s(AI の最後のフレームからの秒)。
+    人が当たる直前に CH3 を人側にした衝突(惰性で当たる。車への衝撃は AI 側と同じ)を落とさないため(r2-rec2-4)"""
+    t = np.asarray(lab['t_s'], np.float64)
+    ai = np.asarray(lab['ai'], bool)
+    if 'dry_run' in lab:
+        ai = ai & ~np.asarray(lab['dry_run'], bool)
+    ta = t[ai]
+    out = []
+    if not len(ta):
+        return out
+    for c in (ev or {}).get('collisions', []):
+        if c.get('ai'):
+            continue
+        tc = float(c['t_s'])
+        j = int(np.searchsorted(ta, tc, side='right')) - 1
+        if j < 0:
+            continue
+        dt = tc - float(ta[j])
+        if not (0.0 < dt <= after_s):
+            continue
+        out.append({'t_s': c['t_s'], 'loc': c.get('loc'), 'loc_detail': c.get('loc_detail'), 'g': c['g'],
+                    'strong': bool(c.get('strong')), 'outcome': c.get('outcome'), 'class': 'after_ai',
+                    'speed_before_mps': c.get('speed_before_mps'), 'after_ai_s': _r(dt, 3)})
+    return out
+
+
+MISSING_SENSORS = ('VEHICLE', 'IMU', 'CAM_FRONT')     # 無ければ欠け(label_events.load_log と同じ。AI_CMD は AI のいないシーンに無い)
+MISSING_KIND = {'none': 'が無い', 'zero': 'が 0 バイト', 'bad': 'が読めない'}
+
+
+def data_missing_of(log, raw_dir=None, problems=None):
+    """記録の欠け(2026-10-27 fix5、反証 4 回目 c1)。problems = label_events.load_log の problems(「シーン/名前: ありません」・
+    「シーン/名前: 読めません(…)」)。None なら npz を開かずに、シーンの VEHICLE・IMU・CAM_FRONT が無い・どれかが 0 バイトだけを見る
+    (ラベルが作れなかった本)。返り値 {'scenes': [シーンの番号], 'items': [[シーン, 名前, 'none' / 'zero' / 'bad']], 'text'} か、
+    欠けが無ければ None"""
+    root = Path(raw_dir or config.RAW_DIR) / log
+    items = []
+    if problems is None:
+        scenes = sorted(d.name for d in root.iterdir() if d.is_dir() and d.name.startswith(log + '-')) if root.is_dir() else []
+        for s in scenes:
+            for n in le.SENSORS:
+                p = root / s / (n + '.npz')
+                try:
+                    if p.stat().st_size == 0:
+                        items.append([s, n, 'zero'])
+                except FileNotFoundError:
+                    if n in MISSING_SENSORS:
+                        items.append([s, n, 'none'])
+                except OSError:
+                    items.append([s, n, 'bad'])
+    else:
+        for x in problems:
+            head, _, why = str(x).partition(': ')
+            s, _, n = head.partition('/')
+            if not n:
+                continue
+            if 'ありません' in why:
+                items.append([s, n, 'none'])
+            elif '読めません' in why:
+                try:
+                    zero = (root / s / (n + '.npz')).stat().st_size == 0
+                except OSError:
+                    zero = False
+                items.append([s, n, 'zero' if zero else 'bad'])
+    if not items:
+        return None
+    scenes = []
+    for s, _, _ in items:
+        if s not in scenes:
+            scenes.append(s)
+    short = lambda s: s[len(log) + 1:] if s.startswith(log + '-') else s      # noqa: E731
+    parts = []
+    for s in scenes:
+        kinds = []
+        for k in ('zero', 'none', 'bad'):
+            ns = [n for s2, n, k2 in items if s2 == s and k2 == k]
+            if ns:
+                kinds.append('%s %s' % ('・'.join(ns), MISSING_KIND[k]))
+        parts.append('シーン %s: %s' % (short(s), '・'.join(kinds)))
+    return {'scenes': [short(s) for s in scenes], 'items': items, 'text': '、'.join(parts)}
+
+
+def missing_text(dm):
+    """判定の頭の行(c1)"""
+    return ('記録が欠けている(%s。電源断・jetformer-web の落ちで書けなかったシーン)。この本の衝突・8G 以上は記録で確かめられない'
+            ' → 動画・紙で(手順書 7 章「いつでも」: 8G を記録で確かめられない前提で後輪・舵のリンクを見る)' % dm['text'])
 
 
 def latest_log(raw_dir=None, day=None):
@@ -374,6 +607,60 @@ def latest_log(raw_dir=None, day=None):
     return None
 
 
+def newer_unreadable(raw_dir=None, day=None, than=None):
+    """その日の記録のうち、latest_log の選んだ記録 than(無ければ None = その日の全部)より新しく、log.json が読めない
+    (0 バイト・壊れた・無い)か、AI の記録(dry run でない)なのに AI_CMD が無いもの [(名前, 理由)](新しい順)。
+    2026-10-27 fix3 直す 3 回目 r3-r3-rec-1: 電源断の本物の形(10/23 の 20261023-204825 は log.json も 0 バイト)の本を latest_log が
+    黙って飛ばし、--latest は 1 本前の記録を出した(落ちた本の 9G が出ず、手順書 7 章の「8G 以上 1 回」が読めない)。
+    dry run・人の収集(drive なし)は前と同じく数えない"""
+    raw_dir = Path(raw_dir or config.RAW_DIR)
+    day = (day or datetime.now().strftime('%Y%m%d')).replace('-', '')
+    out = []
+    for d in sorted(raw_dir.glob(day + '-*'), reverse=True):
+        if than is not None and d.name <= than:
+            break
+        if not d.is_dir():
+            continue
+        f = d / 'log.json'
+        try:
+            if f.stat().st_size == 0:
+                out.append((d.name, 'log.json が 0 バイト'))
+                continue
+            meta = json.loads(f.read_text(encoding='utf-8'))
+        except FileNotFoundError:
+            out.append((d.name, 'log.json が無い'))
+            continue
+        except OSError as e:
+            out.append((d.name, 'log.json が読めない(%s)' % e.__class__.__name__))
+            continue
+        except ValueError:
+            out.append((d.name, 'log.json が壊れている'))
+            continue
+        drv = (meta.get('drive') if isinstance(meta, dict) else None) or {}
+        if not drv or drv.get('dry_run'):
+            continue
+        if not any((s / 'AI_CMD.npz').exists() for s in d.iterdir() if s.is_dir()):
+            out.append((d.name, 'AI の記録なのに AI_CMD が無い'))
+    return out
+
+
+# 試験の選択肢(drive.py。どれも既定 0・起動のたびに 0)。2026-10-26 fix3 直す 1 回目 r1-rec3-5
+OPTION_NAMES = (('rec_back_guard', 'リカバリーの後ろの見張り'), ('rec_hold_keep', '中立止めのあともリカバリーを残す'),
+                ('launch_no_kick', '発進の前進を出さない区間は発進の補助も出さない'))
+
+
+def options_on(params):
+    """log.json の params で 1 の試験の選択肢の名前(無い・0・読めない値は OFF)"""
+    out = []
+    for k, name in OPTION_NAMES:
+        try:
+            if int(float((params or {}).get(k))) == 1:
+                out.append(name)
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
 def to_text(res):
     """画面に出す文"""
     j = res.get('judge') or {}
@@ -381,9 +668,12 @@ def to_text(res):
          '判定: %s — %s(番号 %s)' % (j.get('label'), j.get('headline'), j.get('code'))]
     if res.get('error'):
         L.append('読めません: %s' % res['error'])
+        if res.get('data_missing'):             # c1(あるときだけ)
+            L.append('! ' + missing_text(res['data_missing']))
         return '\n'.join(L)
     for x in j.get('items', []):
-        mark = {'ok': '  ', 'info': '  ', 'na': '  ', 'fix': '! ', 'caution': '! ', 'fail': '× ', 'insufficient': '? '}[x['status']]
+        mark = {'ok': '  ', 'info': '  ', 'na': '  ', 'fix': '! ', 'caution': '! ', 'fail': '× ', 'insufficient': '? ',
+                'missing': '! '}[x['status']]
         L.append(mark + x['text'])
     tr, so, ts, lp, rb = res['turn'], res['s0'], res['top_speed'], res['laps'], res['r1_bump']
     L += ['', '数(定義は cond_metrics.py・steer_offset.py・r1_bump.py と同じ):',
@@ -398,10 +688,28 @@ def to_text(res):
     rf = res['reference']
     L.append('  参考: DE の衝突 %d / %d 通過・AI の衝突 %s(強い %s)・外した R1 の起点 %d' % (
         rf['de_collisions'], rf['de_passes'], rf['collisions_ai'], rf['strong_collisions_ai'], len(rf['r1_anchors_rejected'])))
+    cs = res.get('collisions')
+    if cs is not None:          # 1 本ごとの最大 G・8G 以上・場所(手順書 7 章の止める条件)
+        txt = ss.collision_text(cs)
+        aa = cs.get('after_ai')
+        if aa:                  # 2026-10-27 fix3 r2-rec2-4: 人側にした直後の衝突(あるときだけ。無ければ前と同じ文)
+            txt = txt.replace('・after_ai', '・人側にした直後') + '。うち人側にした直後(AI の区間の終わりから %.1f 秒以内)%d: %s' % (
+                AFTER_AI_S, len(aa), '、'.join('%.1f 秒 %s %.2fG(AI の終わりから %.2f 秒)' % (x[0], x[2], x[1], x[3]) for x in aa))
+        dm = res.get('data_missing')
+        if dm:                  # 2026-10-27 fix5 c1: 記録が欠けた本(あるときだけ。無ければ前と同じ文)
+            txt += '。記録が欠けている(%s)ので、欠けた区間の衝突・8G 以上は入っていない → 動画・紙で' % '・'.join(
+                'シーン %s' % s for s in dm['scenes'])
+        L.append('%s 衝突(AI・立て直し中とリカバリー中%s): %s' % ('!' if (cs.get('n_ge8') or dm) else ' ',
+                                                       '・人側にした直後も' if aa else 'も', txt))
     sp = res.get('speed_ctrl') or {}
     if sp.get('ceil_recorded') or sp.get('auto_recorded'):
         c, a, v, f = ss.ctrl_cells({'speed_ctrl': sp, 'vbat': vb})
         L.append('  天井: %s / 自動合わせ: %s / 印: %s' % (c, a, f))
+    opts = options_on(res.get('params'))
+    if opts:                    # 2026-10-26 fix3 直す 1 回目 r1-rec3-5(どれも OFF なら行を出さない)
+        L.append('  試験の選択肢(log.json の走行開始の値): %s が ON' % '・'.join(opts))
+    if res.get('launch_slip') is not None:      # 2026-10-27 r3-r3-rec-2・rec-4(発進の前進 ON の本だけ)
+        L += launch_slip_lines(res['launch_slip'])
     L.append('  (%s 秒)' % res.get('seconds'))
     return '\n'.join(L)
 
@@ -423,6 +731,15 @@ def main(argv=None):
     log = args.log
     if args.latest:
         log = latest_log(args.raw, args.day)
+        bad = newer_unreadable(args.raw, args.day, log)
+        if bad:                         # r3-r3-rec-1: 読めない新しい本があれば、1 本前を黙って出さない
+            name, why = bad[0]
+            print('いちばん新しい記録 %s は読めません(%s。電源断・jetformer-web の落ちで書かれなかった本)。この本の car_check は'
+                  'できません: 衝突・8G 以上を記録で確かめられない → 動画・紙で確かめる(手順書 7 章の「いつでも」の行)。%s%s' % (
+                      name, why, ('ほかにも読めない新しい記録: %s。' % '・'.join('%s(%s)' % x for x in bad[1:])) if bad[1:] else '',
+                      ('1 本前の読める記録 %s を見るときは名前で: python3 tools/car_check.py %s' % (log, log)) if log else
+                      'その日の読める AI の記録はほかにありません'), file=sys.stderr)
+            return 3
         if not log:
             print('%s の AI の記録(dry run でない)がありません' % (args.day or '今日'), file=sys.stderr)
             return 3
@@ -432,6 +749,13 @@ def main(argv=None):
         print('記録がありません: %s' % log, file=sys.stderr)
         return 3
     res = check_log(log, args.labels, args.raw)
+    if args.latest and res.get('data_missing'):
+        # 2026-10-27 fix5 c1: いちばん新しい本の記録が欠けている(落ちた本)。「合格」「衝突 0 回」に見せないよう止める(r3-r3-rec-1 と同じ形)
+        print('いちばん新しい記録 %s は記録が欠けています(%s。電源断・jetformer-web の落ちで書けなかったシーン)。この本の衝突・8G 以上は'
+              '記録で確かめられない → 動画・紙で確かめ、8G があった前提で後輪・舵のリンクを見る(手順書 7 章の「いつでも」の行)。'
+              '読める分を見るときは名前で: python3 tools/car_check.py %s(「記録が欠けている」の行が出る)' % (
+                  log, res['data_missing']['text'], log), file=sys.stderr)
+        return 3
     print(to_text(res))
     if not args.no_json:
         out = Path(args.json) if args.json else config.DATA_DIR / 'reports' / 'car_check' / (log + '.json')

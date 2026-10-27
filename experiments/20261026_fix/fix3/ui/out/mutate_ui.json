@@ -1,0 +1,248 @@
+[
+ {
+  "mutation": "state1_revert",
+  "failed": [
+   "test_state1_auto_blocks_still_turn_auto_on",
+   "test_state1_ceiling_on_keeps_block_auto_off"
+  ],
+  "caught": true,
+  "want_prefix": "test_state1",
+  "want_caught": true,
+  "tail": [
+   "2 failed, 30 passed in 29.81s"
+  ]
+ },
+ {
+  "mutation": "step_005",
+  "failed": [
+   "test_start_waits_for_first_sync",
+   "test_state2_api_value_survives_start",
+   "test_state2_block_values_and_3_digit_api",
+   "test_state2_buttons_move_by_001_and_send",
+   "test_state2_buttons_while_running_send_now",
+   "test_state2_slider_attributes_and_defaults"
+  ],
+  "caught": true,
+  "want_prefix": "test_state2",
+  "want_caught": true,
+  "tail": [
+   "10 failed, 22 passed in 9.09s"
+  ]
+ },
+ {
+  "mutation": "gainstep_no_clamp",
+  "failed": [
+   "test_state2_gain_step_function"
+  ],
+  "caught": true,
+  "want_prefix": "test_state2_gain_step",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 10.42s"
+  ]
+ },
+ {
+  "mutation": "button_no_send",
+  "failed": [
+   "test_state2_buttons_move_by_001_and_send",
+   "test_state2_buttons_while_running_send_now"
+  ],
+  "caught": true,
+  "want_prefix": "test_state2_buttons",
+  "want_caught": true,
+  "tail": [
+   "2 failed, 30 passed in 9.68s"
+  ]
+ },
+ {
+  "mutation": "client_6",
+  "failed": [
+   "test_sent_values_same_as_before_except_listed",
+   "test_state5_old_page_refused_new_page_starts",
+   "test_state5_versions",
+   "test_ui_posts_replayed_on_real_driver"
+  ],
+  "caught": true,
+  "want_prefix": "test_state5",
+  "want_caught": true,
+  "tail": [
+   "4 failed, 28 passed in 9.43s"
+  ]
+ },
+ {
+  "mutation": "opt_running_on",
+  "failed": [
+   "test_opt_cancel_and_running"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_cancel_and_running",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 15.86s"
+  ]
+ },
+ {
+  "mutation": "opt_disabled_running",
+  "failed": [
+   "test_opt_cancel_and_running"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_cancel_and_running",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 10.31s"
+  ]
+ },
+ {
+  "mutation": "opt_no_confirm",
+  "failed": [
+   "test_opt_cancel_and_running",
+   "test_opt_switch_on_off"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt",
+  "want_caught": true,
+  "tail": [
+   "4 failed, 28 passed in 9.90s"
+  ]
+ },
+ {
+  "mutation": "opt_sent_at_start",
+  "failed": [
+   "test_new_app_with_old_index_html_still_works",
+   "test_opt_old_server_hides_switches",
+   "test_opt_switch_on_off",
+   "test_opt_switches_static",
+   "test_sent_values_same_as_before_except_listed"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt",
+  "want_caught": true,
+  "tail": [
+   "5 failed, 27 passed in 8.95s"
+  ]
+ },
+ {
+  "mutation": "opt_block_turns_off",
+  "failed": [
+   "test_new_app_with_old_index_html_still_works",
+   "test_opt_switch_on_off"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_switch_on_off",
+  "want_caught": true,
+  "tail": [
+   "4 failed, 28 passed in 18.00s"
+  ]
+ },
+ {
+  "mutation": "opt_show_old_server",
+  "failed": [
+   "test_opt_old_server_hides_switches"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_old_server",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 9.65s"
+  ]
+ },
+ {
+  "mutation": "opt_no_mirror",
+  "failed": [
+   "test_opt_block_and_baseline_never_turn_on_or_off",
+   "test_opt_hold_keep_needs_back_guard"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_block_and_baseline",
+  "want_caught": true,
+  "tail": [
+   "2 failed, 30 passed in 10.37s"
+  ]
+ },
+ {
+  "mutation": "trim_reset",
+  "failed": [
+   "test_sent_values_same_as_before_except_listed",
+   "test_trim_survives_every_screen_path"
+  ],
+  "caught": true,
+  "want_prefix": "test_trim",
+  "want_caught": true,
+  "tail": [
+   "2 failed, 30 passed in 36.01s"
+  ]
+ },
+ {
+  "mutation": "html_switch_checked",
+  "failed": [
+   "test_opt_switches_static"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_switches_static",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 9.22s"
+  ]
+ },
+ {
+  "mutation": "button_unguarded",
+  "failed": [
+   "test_new_app_with_old_index_html_still_works"
+  ],
+  "caught": true,
+  "want_prefix": "test_new_app_with_old_index",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 9.16s"
+  ]
+ },
+ {
+  "mutation": "no_first_sync_guard",
+  "failed": [
+   "test_start_waits_for_first_sync"
+  ],
+  "caught": true,
+  "want_prefix": "test_start_waits_for_first_sync",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 8.94s"
+  ]
+ },
+ {
+  "mutation": "hold_keep_no_needs_check",
+  "failed": [
+   "test_opt_hold_keep_needs_back_guard"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_hold_keep_needs_back_guard",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 29.31s"
+  ]
+ },
+ {
+  "mutation": "hold_keep_no_needs_disable",
+  "failed": [
+   "test_opt_hold_keep_needs_back_guard"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt_hold_keep_needs_back_guard",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 9.98s"
+  ]
+ },
+ {
+  "mutation": "server_sends_ceiling_only_mirror",
+  "failed": [
+   "test_opt_hold_keep_needs_back_guard"
+  ],
+  "caught": true,
+  "want_prefix": "test_opt",
+  "want_caught": true,
+  "tail": [
+   "1 failed, 31 passed in 9.44s"
+  ]
+ }
+]

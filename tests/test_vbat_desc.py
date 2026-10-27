@@ -160,7 +160,7 @@ def fake_start(monkeypatch, tmp_path):
 
 
 def _start(desc, dry=False):
-    return srv.api_drive_start({'client': srv.DRIVE_CLIENT_VERSION, 'run': B, 'mode_id': 5, 'description': desc,
+    return srv.api_drive_start({'client': srv.DRIVE_CLIENT_VERSION, 'boot_at': srv.driver.boot_at, 'run': B, 'mode_id': 5, 'description': desc,
                                 'dry_run': dry, 'record': True, 'params': {}})
 
 
@@ -187,6 +187,23 @@ def test_drive_start_does_not_write_when_moving_or_no_voltage(tracker, fake_star
     _start(DESC, dry=True)
     assert fake_start[-1]['description'] == DESC and srv.VBAT_RUN['v_before'] is None
     srv.vbat = tracker
+
+
+def test_drive_start_refuses_old_page(tracker, fake_start):
+    """画面の版(2026-10-26 fix3 state-5): 版 6 以下・版の無い・数でない body は 409 で走行を始めない(driver.start を呼ばない)。
+    版 9 は始まる(2026-10-27 fix3 r2-r2-state-3 で 7 → 8、2026-10-27 fix5 で 9。版 8・7 も断る)"""
+    feed(tracker, 97.0, 100.0, 8.3)
+    for client in (8, 7, 6, 0, None, 'x', '6'):               # 2026-10-27 fix5 で版 9 から(8 も断る)
+        body = {'run': B, 'mode_id': 5, 'description': DESC, 'dry_run': False, 'record': True, 'params': {}}
+        if client is not None:
+            body['client'] = client
+        with pytest.raises(HTTPException) as e:
+            srv.api_drive_start(body)
+        assert e.value.status_code == 409 and '管理画面が古いまま' in e.value.detail and '版 9 から' in e.value.detail, client
+    assert fake_start == []
+    r = srv.api_drive_start({'client': 9, 'boot_at': srv.driver.boot_at, 'run': B, 'mode_id': 5, 'description': DESC, 'dry_run': False, 'record': True,
+                             'params': {}})
+    assert r['ok'] is True and len(fake_start) == 1
 
 
 def _bad_sample(t, raw, erpm=0):
@@ -322,5 +339,5 @@ def test_calibration_endpoint(tracker, monkeypatch, tmp_path):
 def test_server_wiring_is_light():
     src = open(os.path.join(os.path.dirname(srv.__file__), 'server.py'), encoding='utf-8').read()
     assert "hub['VEHICLE'].subscribe(vbat.on_sample)" in src and 'driver.listeners.append(_vbat_on_drive)' in src
-    assert 'DRIVE_CLIENT_VERSION = 6' in src                                          # 画面の版は変えない
+    assert 'DRIVE_CLIENT_VERSION = 9' in src                                          # 電圧では変えない(2026-10-27 fix5 で 8 → 9)
     assert time.monotonic() > 0

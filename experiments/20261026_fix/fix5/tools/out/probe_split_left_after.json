@@ -1,0 +1,46 @@
+{
+ "split": {
+  "groups": [
+   {
+    "left": 4.1,
+    "n_on": 2,
+    "n_off": 2,
+    "d_to_r1_s": -0.25,
+    "all_ok": false
+   },
+   {
+    "left": 4.2,
+    "n_on": 2,
+    "n_off": 2,
+    "d_to_r1_s": 0.05,
+    "all_ok": false
+   }
+  ],
+  "notice_lines": [
+   "  注意: 同じ回・同じモデルの本が、天井・左・自動合わせ・目標の違いで 2 組に分かれた(天井1(4.1) 自動0・天井1(4.2) 自動0)。手順書 6 章の「同じ回の ON 4 本対 OFF 4 本」(本番の形 1 つ)でないので、この回のどの組も「満たさない」(checks の one_form)→ 回 4 は発進の前進 OFF。起こし直しで左・天井・自動合わせが既定に戻った本が無いか ② runs_1103 で見る。計画と違う形の本は走り終わりのメモに「試し」(4 章 9)か、main session が --skip 記録名 で外して読み直す",
+   "  注意: 同じ回・同じモデルの本が、天井・左・自動合わせ・目標の違いで 2 組に分かれた(天井1(4.1) 自動0・天井1(4.2) 自動0)。手順書 6 章の「同じ回の ON 4 本対 OFF 4 本」(本番の形 1 つ)でないので、この回のどの組も「満たさない」(checks の one_form)→ 回 4 は発進の前進 OFF。起こし直しで左・天井・自動合わせが既定に戻った本が無いか ② runs_1103 で見る。計画と違う形の本は走り終わりのメモに「試し」(4 章 9)か、main session が --skip 記録名 で外して読み直す"
+  ],
+  "compare_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.1) 自動0",
+   "  ON − OFF: 起点まで -0.250 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'one_form': False}",
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.2) 自動0",
+   "  ON − OFF: 起点まで 0.050 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True, 'one_form': False}"
+  ]
+ },
+ "same": {
+  "groups": [
+   {
+    "left": 4.2,
+    "n_on": 4,
+    "n_off": 4,
+    "d_to_r1_s": -0.1,
+    "all_ok": false
+   }
+  ],
+  "notice_lines": [],
+  "compare_lines": [
+   "11/03 回3 B g0.90(ゲインをまとめた --ignore-gain) 天井1(4.2) 自動0",
+   "  ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+  ]
+ }
+}

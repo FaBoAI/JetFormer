@@ -1,0 +1,21 @@
+........................................................................ [ 31%]
+..................................s..................................... [ 62%]
+........................................................................ [ 93%]
+............F.                                                           [100%]
+=================================== FAILURES ===================================
+________________ test_runbook_has_no_api_launch_and_has_checks _________________
+
+    def test_runbook_has_no_api_launch_and_has_checks():
+        rb = Path('/home/jetson/jetformer_reports/fix_20261026/runbook_20261103.md').read_text(encoding='utf-8')
+        assert '{"launch_boost": 1}' not in rb and "`launch_boost` 1" not in rb             # 古い入れ方が残っていない
+        for words in ('スイッチ', '発進の前進: ON', '1.5 m', '区間の速度上限', '車輪を浮かせ', 'dry run では発進の前進は出ない',
+                      'CH3 は人側', 'events.jsonl', '出した'):
+>           assert words in rb, words
+E           AssertionError: events.jsonl
+E           assert 'events.jsonl' in '# 11/3(火・祝)実車の手順書(1 枚)— 止まってから 3 周 25 秒の確かめ\n\n- 目標(ユーザー、10/25): **ぶつからずに、止まってから 3 周 25 秒**(1 周 約 8.12 秒)。\n- 並びは `fi...えるときだけ 5 章の API |\n| v3 の候補(V1)を走らせるブロック | 無い(23 本とも B)。学習 v3 に候補が残ったら、了承のあと 11/1〜11/2 に足す(`fix2/critic.md` 4 章 7) |\n'
+
+experiments/20261026_fix/fix/test_fix_launch_procedure.py:194: AssertionError
+=========================== short test summary info ============================
+FAILED experiments/20261026_fix/fix/test_fix_launch_procedure.py::test_runbook_has_no_api_launch_and_has_checks
+1 failed, 228 passed, 1 skipped in 129.66s (0:02:09)
+rc=1

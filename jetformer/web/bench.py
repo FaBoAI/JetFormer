@@ -12,6 +12,9 @@
   速さの天井(speed_ceiling)・速さのゲインの自動合わせ(speed_auto)も同じ(2026-10-25)。発進の前進(launch_boost)も同じ
   (2026-10-26)。ブロックの上書きでは捨てる(launch_us などの値は上書きできる。ON にしなければ効かない)。
   基準(baseline)に 1 と書けば、計画の照らし合わせ(plan_check)では「計画どおり ON」とみなす(画面は ON にしない)。
+  試験の選択肢(rec_back_guard・rec_hold_keep・launch_no_kick。drive.Driver.OPT_NAMES)も同じスイッチ(2026-10-27 fix4):
+  ブロックの上書きでは捨てて警告、基準に 1 と書けば警告(画面は前から基準の設定・ブロックで ON にも OFF にもしない)。
+  計画の照らし合わせ(PLAN_KEYS)には入れない(走る日の設定で、朝に 1 回入れる)。
 - 電池の電圧(2026-10-25): 走行の開始・終わりに基板の電圧を説明欄に入れる決まり(vbat_before_description・
   vbat_after_description。server.py が呼ぶ)。V_before・V_after が空(__・無し)なら基板の値を入れて V_src=board、
   人の数があればそのまま残して Vb_before・Vb_after に基板の値。走行中の 1 秒ごとの中央値の最小は Vb_min。
@@ -110,9 +113,15 @@ PLAN_KEYS = ('throttle_gain', 'lookahead', 'tof_guard', 'ensemble_j', 'speed_cap
              'speed_ceiling', 'speed_auto')
 # 画面の「基準の設定」・ブロックでは ON にしないスイッチ(ON はスイッチで、確かめてから。1 走行 = 1 設定)
 # 発進の前進(launch_boost、2026-10-26)も同じ: 基準の設定・ブロックの上書きでは ON にしない(スイッチで、確かめてから)
-SWITCH_KEYS = ('zone_caps', 'speed_ceiling', 'speed_auto', 'launch_boost')
+# 試験の選択肢 3 つ(2026-10-27 fix4。fix3 で足した drive.py の rec_back_guard・rec_hold_keep・launch_no_kick)も同じ。画面
+# (app.js の benchApply・benchFieldValues)は前から基準の設定・ブロックで入れない・送らないが、サーバーはブロックの params に
+# 書くと一覧に残し、説明欄の札に「rec_back_guard=1.0」などと書いていた(入っていない値が記録の説明に残る・警告も無い)
+SWITCH_KEYS = ('zone_caps', 'speed_ceiling', 'speed_auto', 'launch_boost', 'rec_back_guard', 'rec_hold_keep', 'launch_no_kick')
+OPT_KEYS = ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick')       # 試験の選択肢(drive.Driver.OPT_NAMES と同じ 3 つ)
 SWITCH_NAMES = {'zone_caps': '区間の速度上限', 'speed_ceiling': '速さの天井', 'speed_auto': '速さのゲインの自動合わせ',
-                'launch_boost': '発進の前進'}
+                'launch_boost': '発進の前進',
+                'rec_back_guard': 'リカバリーの後ろの見張り', 'rec_hold_keep': '中立止めのあともリカバリーを残す',
+                'launch_no_kick': '発進の前進を出さない区間は発進の補助も出さない'}     # 3 つは drive.Driver.OPT_NAMES と同じ名前
 EXP_ID = 'EXP'
 
 
@@ -321,6 +330,10 @@ def _baseline(raw, warnings):
         if base['params'].get(k):
             warnings.append('baseline.params の %s が 1 です。画面の「基準の設定」は%sを ON にしません'
                             '(スイッチで入れてください。計画の照らし合わせでは ON の計画とみなします)' % (k, SWITCH_NAMES[k]))
+    for k in OPT_KEYS:          # 試験の選択肢(2026-10-27 fix4)。値はそのまま返す(画面が入れない。plan_check も見ない)
+        if base['params'].get(k):
+            warnings.append('baseline.params の %s が 1 です。画面の「基準の設定」は「%s」を ON にしません'
+                            '(試験の選択肢。了承した日に、止まっているときにスイッチで入れてください)' % (k, SWITCH_NAMES[k]))
     return base
 
 

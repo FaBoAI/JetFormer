@@ -1,0 +1,26 @@
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+...................F.................................................... [ 69%]
+........................................................................ [ 92%]
+.......................                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_before_copies_and_defaults_unchanged ___________________
+
+    def test_before_copies_and_defaults_unchanged():
+        s = sums()
+        for name in ('assist.py', 'drive.py', 'app.js', 'index.html', 'collect.py', 'car_check.py'):
+            assert sha(FIX / name) == s[name], name
+        # この組は drive.py を変えていない。あとの組の版でもよい(10/27 fix4 small = 説明の文だけ・10/27 fix5 safety = 反証 4 回目の
+        # s2・s3)。そのときは、その組の直す前の写しの sha256 をたどってこの組の版(SHA256SUMS)につながるか見る
+        cur = sha(ROOT / 'jetformer' / 'drive.py')
+        chain = {LATER_DRIVE['fix5_safety']: ROOT / 'tests' / 'fixtures' / 'fix5_safety_before' / 'drive.py',
+                 LATER_DRIVE['fix4_small']: ROOT / 'tests' / 'fixtures' / 'fix4_small_before' / 'drive.py'}
+        while cur != s['drive.py']:
+>           assert cur in chain, cur
+E           AssertionError: 041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c
+E           assert '041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c' in {'FIX5_DRIVE_SHA': PosixPath('/home/jetson/jetformer/tests/fixtures/fix5_safety_before/drive.py'), 'c575af1262836c3e10...e34293117a2144b3e568acb326ada57d59a471': PosixPath('/home/jetson/jetformer/tests/fixtures/fix4_small_before/drive.py')}
+
+tests/test_fix3_r3_1.py:94: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r3_1.py::test_before_copies_and_defaults_unchanged - A...
+1 failed, 310 passed in 216.92s (0:03:36)

@@ -1,0 +1,24 @@
+==== 2026-10-26 14:32:16 開始(cd ~/jetformer && /home/jetson/bin/jf-heavy --mem 3872M --lock big --need-mb 3200 -- nice -n 10 env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True MALLOC_ARENA_MAX=2 choom -n 1000 -- /home/jetson/miniconda/envs/jetracer/bin/python -I experiments/20261015_real_accuracy/train/nothp.py /home/jetson/miniconda/envs/jetracer/bin/python -u tools/train.py --policy jetformer_v0 --data data/datasets/dataset_v2_20261025 --drop-mask experiments/20261026_fix/diag_data/out/ablation/drop_v2h_noTK_noLB.npz --epochs 15 --lr 3e-4 --stride 3 --batch 64 --workers 2 --no-command-input --impact-g 2.5 --seed 0 --out experiments/20261026_fix/diag_data/out/ablation/runs/abl-noTK_noLB-e15-s0)====
+衝突の前後として外したフレーム: 学習 3557 / 検証 1083
+フレームの表: drop で外した 学習 73253 / 検証 0、衝突の前後の除外から戻した 学習 0 / 検証 0
+学習 6105 サンプル / 検証 1559 サンプル / 間引き 1/3 / ジャンル数 10 / device=cuda
+ジャンル別の学習サンプル数: {'高速走行': 2228, '低速走行': 3877}
+/home/jetson/jetformer/tools/../jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+  self.fusion = nn.TransformerEncoder(layer, layers)
+epoch   1  train 79µs  val 65µs  51s *  [高速走行 78µs  低速走行 56µs]
+epoch   2  train 55µs  val 61µs  114s *  [高速走行 67µs  低速走行 56µs]
+epoch   3  train 48µs  val 54µs  44s *  [高速走行 64µs  低速走行 47µs]
+epoch   4  train 44µs  val 54µs  50s  [高速走行 66µs  低速走行 47µs]
+epoch   5  train 41µs  val 54µs  44s  [高速走行 64µs  低速走行 47µs]
+epoch   6  train 38µs  val 51µs  81s *  [高速走行 61µs  低速走行 44µs]
+epoch   7  train 35µs  val 52µs  49s  [高速走行 64µs  低速走行 44µs]
+epoch   8  train 32µs  val 51µs  44s *  [高速走行 62µs  低速走行 43µs]
+epoch   9  train 30µs  val 51µs  44s  [高速走行 63µs  低速走行 44µs]
+epoch  10  train 27µs  val 52µs  45s  [高速走行 63µs  低速走行 45µs]
+epoch  11  train 25µs  val 52µs  59s  [高速走行 63µs  低速走行 44µs]
+epoch  12  train 23µs  val 49µs  50s *  [高速走行 61µs  低速走行 41µs]
+epoch  13  train 22µs  val 50µs  53s  [高速走行 61µs  低速走行 42µs]
+epoch  14  train 21µs  val 50µs  47s  [高速走行 61µs  低速走行 42µs]
+epoch  15  train 20µs  val 50µs  46s  [高速走行 61µs  低速走行 42µs]
+保存: experiments/20261026_fix/diag_data/out/ablation/runs/abl-noTK_noLB-e15-s0/best.pth, jetformer.onnx, model_config.json
+==== 2026-10-26 14:47:34 終了 rc=0 ====

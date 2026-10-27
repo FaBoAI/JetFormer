@@ -1,0 +1,223 @@
+# 係 safety の報告(直す 3 回目、2026-10-26 19:4x〜20:4x)
+
+- 依頼(ユーザー、10/26 10:0x):「それでは、今日の課題の整理と、それを修正する作業を開始してください。」
+- 依頼(ユーザー、10/26 13:4x):「ここまでの課題の整理、修正コードの作成、時間はたっぷりあります」→ 急がず、正しく、全部。
+- 目標: ぶつからずに、止まってから 3 周 25 秒。次の実車は 11/3。
+- この係の仕事: critic.md の safety1-1(major)・safety1-2(minor)を assist.py・drive.py で直す。反証 2 回目の safety2-1(後ろの見張り `rec_back_guard`)と組み合わせて確かめる。本物の走行ループのでたらめな場面で安全の決まりを確かめる。
+- 守ったこと:
+  - 車・PCA9685・I2C・カメラ・ToF・基板に触れていない。API は呼んでいない(GET も)。jetformer-web は再起動していない。2 つ目のサーバーも起動していない。
+  - lock2(protocol_v3_lock2.json)に sha256 があるファイルは変えていない(assist.py・drive.py・app.js・試験は lock2 に無い。触る前に lock2 の一覧で確かめた)。protocol_v2・decisions_v3.json も変えていない。
+  - GPU・torch は使っていない(`jf-heavy --lock none --mem 1500M`)。pytest は対象のファイルだけ。`--basetemp` は `experiments/20261026_fix/fix3/tmp_safety/`(終わって消した)。空きディスクは約 9.7 GB(学習が使っている分。この係が足したのは 1 MB 未満)。
+  - 既定値(DEFAULT_PARAMS の今の値・推奨モデル・drive_settings.json・bench_candidates.json)・data/raw・labels は変えていない。git commit はしていない。ファイルは消していない(この係の試しの出力だけ消した)。
+  - 直す前の写し: `experiments/20261026_fix/fix3/safety/before/`(`*.orig`・SHA256SUMS)と `tests/fixtures/fix3_before/`(drive.py・assist.py・app.js。試験が sha256 で照らす)。
+
+## 係 ui・main session へ(先に読んでほしいこと)
+
+| こと | 中身 |
+|---|---|
+| 新しい項目 | `rec_hold_keep`(safety1-1)・`launch_no_kick`(safety1-2)。どちらも既定 0・起動で 0(RESET_ON_BOOT)・範囲 (0, 1) |
+| サーバーの決まり(drive.py `_opt_rules`) | ① この 2 つと `rec_back_guard` は、**走行中は 0 → 1 にできない**(400。1 → 0 はできる)。画面のスイッチ(係 ui の OPT_SWITCHES)と同じ決まり<br>② **`rec_hold_keep` は `rec_back_guard` が ON のときだけ**。見張りが OFF で `rec_hold_keep: 1` を送ると 400「「中立止めのあともリカバリーを残す」は、リカバリーの後ろの見張りが ON のときだけ使えます(先にリカバリーの後ろの見張りを ON にしてください)」。見張りを OFF にすると `rec_hold_keep` も一緒に 0 になる(速さの天井と自動合わせと同じ形)。理由は 3 章 |
+| 画面 | app.js は 2 か所だけ足した(19:49): `BENCH_FALLBACK` に 2 つ(0)、`trimGuardStartLines` に ON の行。係 ui のスイッチ・注はそのまま。走行開始で送る値は直す前と同じ(試験 6 章) |
+| 道具(係 tools) | `tools/standing_3lap.py` の `SETTING_KEYS`・`quick_eval_by_params.py` の鍵に、この 2 つはまだ無い(ON の本と OFF の本が同じ組になる)。足すなら 0 のとき今までと同じ形で。この係は道具を変えていない |
+
+## 0. 要点
+
+| 指摘 | 重さ | 直し | OFF(既定) | ON の効き |
+|---|---|---|---|---|
+| safety1-1 中立止め 1 回でリカバリーが全部消える | major | **`rec_hold_keep`**(と `rec_back_guard` の両方が 1 のとき): AI 側のままの中立止めでは Recovery を戻さない | 直す前とビット単位で同じ | 中止のあとの中立止め: 壁を押す前進 **10.4 秒 → 0 秒**。後退の途中の中立止め: リカバリーが続き・見つけ直し・3 回で中止(OFF は二度と始まらない)。10/10 の記録: リカバリーの始まり 行 177 → 168(雑音なしなら「始まらない」→ 行 165) |
+| safety1-2 発進の前進が出さない区間でも StartKick | minor | **`launch_no_kick`**: `launch_boost = 1` で「出さない」と決めた区間は StartKick も出さない | 直す前とビット単位で同じ(`launch_boost = 0` なら 1 でも同じ) | 前 0.35・0.5・0.9 m・床の基準なし: 前進 80 µs **2.0 秒 → 0 秒** |
+| (3) safety2-1 との組み合わせ | — | 見つけた矛盾を直した: 見張りなしで残すと、後退の途中の中立止めのあとに後ろへ当たってもやり直しで後ろを押す → `rec_hold_keep` は見張りが ON のときだけ | — | 10/23 の再生(ON): 下がりながらの後退側 0.50 → 0.40 秒、後退側をやめた時に下がっていた距離 **1.24 m(当たった)→ 0.75 m**。その先の惰性は記録から読めない(3 章) |
+| (4) でたらめな走行ループ | — | 決まり 9 つ × 800 本(新しい項目の ON/OFF を混ぜる。28 万行・AI 側の中立止め 1.3 万行) | — | **破られた数 0**(5 章) |
+
+- **11/3 に使うかはユーザーの了承が要る**(7 章)。どちらも jetformer-web の再起動のあとに効く(サーバーのコード)。実車の ESC では確かめていない。
+
+## 1. 直したこと
+
+### safety1-1 `rec_hold_keep`(assist.py・drive.py)
+
+- 今まで: drive の `hold()`(中立止め。カメラが 0.1 秒来ない・処理の遅れ・センサーが古い・CH3 が届かない・I2C の失敗)の最後の `helper.reset()` が `Recovery.reset()` を呼び、中止(giveup)・途中の段・armed・衝撃・あきらめの数を全部消していた。
+- 直し:
+  - `assist.Assist.reset(keep_recovery=False)`: True なら後退の受け付け(EscReverse)だけ戻し、Recovery は何も戻さない。既定 False は今までと同じ。
+  - drive の `hold()`: `rec_hold_keep = 1`・`rec_back_guard = 1`・最新の車両の値が AI 側・dry run でない、のときだけ `reset(keep_recovery=True)`。ほかは今まで通り `reset()`。
+  - 戻すのは: CH3 を人側(`step(select=False)` が今まで通り全部戻す)・人側の中立止め・走行の開始(走行ごとに Assist を作る)。
+  - 中立止めのあと: 中止は中止のまま中立。途中の段は続きから(段の時間は中立止めの間も進む → 長い中立止めのあとは段が早く終わる側)。止まっていた時間(slow_since)・1 フレームの時間(dt、0.2 秒まで)も残す(下がった時間を多めに数える側)。
+- 項目: `PARAM_LIMITS (0, 1)`・`DEFAULT_PARAMS 0`・`RESET_ON_BOOT`・`_clean_params` で 0/1 に丸める。
+
+### safety1-2 `launch_no_kick`(assist.py・drive.py)
+
+- 今まで: 発進の前進が「出さない」と決めた区間(near・tof・ttc_n・veh など)では、protocol_v3.json `launch_boost.start[4]`「(今まで通り StartKick)」のとおり StartKick が前進 80 µs を最大 2 秒出していた。StartKick の止まる条件は TTC < 1.0 秒だけ。
+- 依頼の文は「launch_boost が 1 で出さないと決めたら StartKick も出さない」。けれど **protocol(lock2 で固定)と試験 T5(`test_t5_off_is_untouched_and_kick_still_works`)は「ON でも始めなかったら今まで通り StartKick」**。launch_boost だけで切り替えると、11/3 の回 3・4 の ON が protocol から黙って外れる。そこで **別の項目 `launch_no_kick`(既定 0)** にした。0 なら launch_boost が 0 でも 1 でも今までと同じ(protocol どおり)。
+- 直し: `LaunchBoost.skipped`(その AI の区間で「出さない」と決めた。ON のときだけ立つ。理由は near・tof・ttc_n・veh・moving・no_switch・hold・end の全部)。`Assist.step(launch_no_kick=True)` なら `skipped` の区間は StartKick を出さない。出来事 launch_boost の skip に `no_kick: true`。次の区間(CH3 を人側 → AI 側)は決め直す。
+- `launch_boost = 0` のときは決めない(`skipped` が立たない)ので、`launch_no_kick = 1` でも何も変わらない(試験)。
+
+### サーバーの決まり(drive.py `_opt_rules`。set_params と start)
+
+- 走行中は `rec_back_guard`・`rec_hold_keep`・`launch_no_kick` を 0 → 1 にできない(1 → 0 はできる)。
+- `rec_hold_keep` は `rec_back_guard` が ON のときだけ(3 章の矛盾)。見張りを OFF にすると一緒に OFF。走行ループも両方 1 のときだけ残す(片方なら直す前と同じ)。
+- `rec_back_guard` の「走行中に ON にできない」は、反証 2 回目の版には無かった足し(手順書は朝の準備で入れるので当たらない)。
+
+### 画面(app.js、2 か所)
+
+- `BENCH_FALLBACK` に `rec_hold_keep: 0, launch_no_kick: 0`(サーバーの `fallback_baseline` と同じにするため)。
+- 走行開始の確認の文: ON のときだけ「中立止めのあともリカバリーを残す: ON(…)」「発進の前進を出さない区間は発進の補助も出さない: ON」。OFF なら行を出さない。
+- 走行開始・基準の設定・ブロックで送る値は変わらない(この 2 つは送らない = サーバーの値のまま)。スイッチは係 ui が足した。
+
+| ファイル | sha256(前 → 後) |
+|---|---|
+| `jetformer/assist.py` | `6ee550c0…` → `acbf702a…` |
+| `jetformer/drive.py` | `216efc09…` → `ecb1ff62…` |
+| `jetformer/web/static/app.js` | 2 か所だけ(ほかは係 ui が同時に直している) |
+
+## 2. OFF のときの同じ(tests/test_rec_hold_keep.py、71 個)
+
+| 確かめたこと | 結果 |
+|---|---|
+| Assist: でたらめな入力 3,000 フレーム × 5 種 × 5 組(発進の前進あり/なし・見張り・StartKick・リカバリー OFF。中立止め 1〜8 フレームを混ぜる) | `rec_hold_keep = 0`・`launch_no_kick = 0` で直す前の写しと出力・出来事・launch_on・launch_end が全部同じ。発進の前進なしなら `launch_no_kick = 1` でも同じ |
+| 走行ループ(drive._loop、偽物のセンサー): 区間の上限の場面・発進・中止のあとの中立止め・後退の途中の中立止め・前が近い(ON)・床の基準なし(ON)・後退中の中立止めと後ろの衝撃・でたらめ 3 本 | PCA9685 に書く値・記録の行・出来事が直す前の写しと同じ |
+| `launch_boost = 0` で `launch_no_kick = 1`(4 場面) | 直す前と同じ |
+| AI 側の中立止めが無い走行で `rec_hold_keep = 1`(2 場面) | 直す前と同じ(効くのは中立止めのときだけ) |
+| 既定値・範囲・起動 | 2 つを除いた DEFAULT_PARAMS・PARAM_LIMITS は直す前と同じ。RESET_ON_BOOT の差はこの 2 つだけ。保存した 1 は起動で 0 |
+| 画面(本物の app.js を node の vm で。今と直す前の写し) | 基準の設定 → 走行開始・ブロック 1・2 → 走行開始の 3 回で、送る値が直す前の写しと同じ(サーバーの値 5 通り)。確認の文は ON の行が足されるだけ |
+
+## 3. ON の効き(本物の走行ループ。偽物のセンサー)
+
+### safety1-1(`rec_hold_keep = 1`・`rec_back_guard = 1`)
+
+場面: 人側 1 秒 → AI 側。2 m/s で 1 秒走って壁に当たり、止まったまま。モデルはずっと中立 − 120 µs(弱い前進)。反証 1 回目の場面と同じ。
+
+| 場面 | OFF(今まで) | ON |
+|---|---|---|
+| 中止(11.85 秒)の 1.5 秒あとに中立止め 0.2 秒(2 フレーム) | 中止が解けて **1376 µs(前進 120 µs)を 10.4 秒**(終わりまで) | 中立 1496 µs のまま 10.5 秒(人の交代を待つ) |
+| リカバリーの後退の途中(2.85 秒に始まり、3.3 秒に中立止め) | 取り消し。そのあとリカバリー 0 回・前進 10.4 秒 | 続きから。そのあと 2 回見つけ直し、11.85 秒に中止。前進は見つけ直すまでの 3.7 秒だけ |
+| 中止のあと CH3 を人側 → AI 側 | 解ける | 解ける(今まで通り) |
+| 人側の中立止め・dry run | 戻す | 戻す(今まで通り。drive が keep を渡さない) |
+
+### 本物の記録 10/10 20261010-181504-0004(7.5G の衝突の 0.43 秒あとに中立止め 2 フレーム)
+
+| | OFF | ON |
+|---|---|---|
+| リカバリーの始まり | 行 177(記録と同じ) | **行 168**(0.3 秒早い) |
+| 止まった車の eRPM の雑音(+1386)が無かったら | 人が取り返す(行 190)まで始まらない | **行 165** |
+
+### safety1-2(`launch_no_kick = 1`・`launch_boost = 1`・`start_kick = 1`)
+
+| 前の物(止まっている・モデル 中立) | 発進の前進 | OFF | ON |
+|---|---|---|---|
+| 0.35 m | 出さない(near) | 前進 80 µs を 2.0 秒 | 0 秒 |
+| 0.5 m | 出さない(near) | 2.0 秒 | 0 秒 |
+| 0.9 m | 出さない(near) | 2.0 秒 | 0 秒 |
+| 床の基準なし(ToF ガードなし) | 出さない(tof) | 2.0 秒 | 0 秒 |
+| 前が空いている | 始める | 0 と 1 で全く同じ(出したあとは前から StartKick を出さない) | |
+
+- Assist の形で、出さない理由 8 つ(near・ttc_n・tof・veh・moving・end・no_switch・hold)すべてで「ON は StartKick なし・OFF はあり」。
+- ON の区間のあと CH3 を人側 → AI 側にして前が空いていれば、次の区間は発進の前進が始まる。
+
+## 4. (3) 後ろの見張り(rec_back_guard、fix_round2.md)と組み合わせ
+
+### 中身を読んだ
+
+- 見張り ON: 'brake'・'wait' で後ろへ動いていたらすぐ 'reverse'(下がった時間はそこから数える)。'gap' の惰性も数える。後ろへ動いている・0.3 秒以内に動いていたときの 2.5G 以上は、後ろに当たったとしてすぐ 'escape'。OFF は直す前と同じ(round2 の 45 個の試験は今も通る)。
+- 中立止めで残すと: 見張りの `back_t`・`backed_s` も残る。中立止めのあとの最初のフレームは dt が最大 0.2 秒(下がった時間を多めに数える側)。~~後ろの衝撃は `back_t` から 0.3 秒の内なら見える。ここは矛盾なし。~~
+- **訂正(10/26 22:23、直す 1 回目・1 組目 r1-rs1-1。`fix3/fix_r1_1.md`)**: 上の「見える」は、**中立止めの最中に当たった場合には成り立たなかった**。中立止めの間は `step` が呼ばれず、`impact_g` は処理したフレームの直近 0.15 秒(10 個)の IMU しか見ない。`back_t` も中立止めの間は進まない。後退の途中に 0.1 秒より長い中立止めが当たりの直前 約 0.05 秒以内に始まると、見張りも 'reverse' 自身の衝撃の決まりも当たりを見落とし、明けたあと 'reverse' が後ろの物を最大 約 0.8 秒押した(カメラ 0.134〜0.5 秒・車両の値 0.4 秒の止まりで 0.48〜0.84 秒。反証の `refute1_check/r1_rs1_1.py`)。
+  - 直した: 残した中立止めのあとの最初のフレームで、前に処理したフレームのあとに来た IMU の水平 G の最大(`hold_g`)を Recovery に渡す。中立止めの前から手順が後退側・下がる惰性の段('brake'・'wait'・'gap'・'reverse'・'coast')にいて 2.5G 以上なら、すぐ 'escape'(出来事 `recovery_guard` の `rear_impact_hold`)。見張りが先に見つけたときは今まで通り `rear_impact`。
+  - 今: 当たったあとに後退側を書くフレームは 0(出ていたのは、中立止めの中立を書くまでの前の値の 0.075 秒だけ。0.1 秒の待ちが切れるまでで、避けられない)。`rec_hold_keep = 0`(または見張り OFF)は直す前とビット単位で同じ(`tests/test_fix3_r1_1.py`)。7 章 1 の判断はこの訂正のあとの形で。
+
+### 見つけた矛盾(直した)
+
+- **見張りなしでリカバリーを残すと、後退の途中の中立止めのあとに後ろへ当たっても、やり直しで後ろを押し続ける。** 'reverse' は「始めて 0.1 秒の内の衝撃」を見ないので、中立止めをはさんで当たると見落とし、下がらない(壁に当たっている)ので +50 µs のやり直しを 2 回する。
+- 今まで(OFF)は中立止めの reset が手順を偶然切っていたので押さなかった。
+
+| 後退の途中に中立止め → 後ろに当たる | 見張り OFF | 見張り ON |
+|---|---|---|
+| 残さない(今まで) | 当たったあと後ろを押す 0 秒 | 0 秒 |
+| 残す | **0.73 秒(Assist の形)・1.07 秒(走行ループ)** | **0 秒**(当たったフレームで前へ。rear_impact) |
+
+- そこで `rec_hold_keep` は `rec_back_guard` が ON のときだけにした(サーバーが断る・走行ループも両方 1 のときだけ残す)。直したあと、走行ループの「残す・見張り OFF」は「残さない・見張り OFF」と全く同じ(試験)。
+
+### 10/23 20261023-205458-0002 の記録の再生(開いたループ。`fix3/safety/replay_1023_combo.py`)
+
+- 記録には中立止めが無いので、`rec_hold_keep` はこの記録では効かない。OFF(4 つとも 0)は記録の 600 行と同じ。
+
+| | 見張り OFF(記録) | 見張り ON |
+|---|---|---|
+| 下がりながら後退側を出した | 15 フレーム(0.50 秒) | 12 フレーム(0.40 秒 = rev_s) |
+| 後退側をやめた行 | 125 | 117(0.27 秒早い) |
+| やめた 0.1 秒あと(ESC の遅れ)に下がっていた距離 | 1.24 m(後ろの物に 2.3 m/s で当たった) | **0.75 m**・そのときの速さ 1.99 m/s |
+| 後ろの物の手前で止まるのに要る惰性の減速 | — | 4.15 m/s² 以上 |
+
+- **ON で下がる距離がどれだけ減るかは、この記録からは決まらない。** 後退側をやめた時点の距離は 1.24 m → 0.75 m に減る。けれどそのあとの惰性(中立)の減速は記録に無い(10/20〜10/24 で後ろへ 1000 eRPM 以上で惰性になった場面は 3 つで、3 つとも後ろの物に当たった。`out/coast_decel.json` は 0 件)。減速が 4.15 m/s² に届かなければ、ON でも後ろの物に当たる(速さは下がる)。
+- 「もし中立止めがあったら」(行 108・114・121 を中立止めにした): 見張り ON・残す ON は、どこで止めても下がりながらの後退側は 0.33〜0.40 秒・やめる行は 117(rev_s で決まる)。OFF は中立止めが手順を切るので短くなる(0.07〜0.33 秒)が、それは偶然で、切られたあとはモデルのまま。
+- 下がる量そのものを減らすなら `rev_s`(既定 0.4 秒)・`rev_us`(既定 300 µs)を小さくするのが直接効く(画面のスライダー。10/23 の 2 本はどちらも 0.4 秒の後退で約 1 m 下がって後ろに当たった)。決めるのはユーザー。
+
+## 5. (4) でたらめな走行ループ(`fix3/safety/fuzz_loop3.py`)
+
+- 本物の `drive._loop` を偽物のセンサーで。反証 2 回目の `fix2/safety2/fuzz_loop.py` の場面と決まりをそのまま使い、新しい項目を混ぜる。
+- 混ぜたもの: `rec_hold_keep`・`launch_no_kick`・`rec_back_guard`・`start_kick`・`recovery`(1 か 0)・`launch_boost`(1 か 0)・速さの天井・自動合わせ・区間の上限・ToF ガード(1〜3)・ゲイン(0.5〜1.2)・launch_us(150〜300)。車両の値が来ない区切り(0.17〜0.5 秒)を 1 本に 0〜6 か所足して中立止めを増やした。4 本に 1 本は「壁に当たって止まったまま 24 秒」(リカバリー中止まで行く)。
+
+決まり:
+
+| # | 決まり |
+|---|---|
+| 1 | 値は 1000〜2000 µs・数(nan・inf でない) |
+| 2 | 中立止めの行は中立・補助の種類は「なし」 |
+| 3 | 人側では補助なし・発進の前進なし・出力 = モデル(ゲインのあと)のまま |
+| 4 | 前進は出どころより強くならない(モデル・後退の受け付けはモデルまで、StartKick は 80 µs、発進の前進は launch_us、リカバリーは 130 µs、中止は 0) |
+| 5 | 止まっているときの後退側はリカバリーと区間のブレーキだけ(発進の前進・StartKick・中止は後退側を出さない。リカバリー ON で後退の受け付けも出さない) |
+| 6 | 天井: 速さ ≥ 天井 + 0.2 なら前進を出さない |
+| 7 | 自動合わせのゲインは max(throttle_gain, 1.10) まで |
+| 8 | `launch_no_kick = 1`(と launch_boost = 1)なら StartKick が出ない |
+| 9 | `rec_hold_keep = 1`・`rec_back_guard = 1` なら、リカバリー中止は同じ AI の区間の中で解けない(中立止めをはさんでも) |
+
+結果(種 1103・2026、400 本ずつ。`out/fuzz_loop3_1103.json`・`fuzz_loop3_2026.json`):
+
+| | 種 1103 | 種 2026 |
+|---|---|---|
+| 本・行 | 400 本・141,600 行 | 400 本・141,600 行 |
+| AI 側の中立止めの行 | 6,099 | 6,892 |
+| リカバリー・中止の行 | 7,851・4,674 | 7,704・4,640 |
+| 発進の前進・StartKick の行 | 882・2,130 | 779・2,409 |
+| **決まりが破られた数(1〜9)** | **0** | **0** |
+| 中止のあとに AI 側の中立止めがあった本(残す ON・見張り ON) | 10 本 → 中止は 1 本も解けない | 10 本 → 解けない |
+| 同じ(OFF の形: 残さない、または見張りなし) | 中止が中立止めで解けた 4 回(指摘の再現) | 4 回 |
+| launch_boost = 1 の本の StartKick の行 | launch_no_kick 0: 1,469・1: **0** | 0: 1,146・1: **0** |
+
+- 1 回目に流したとき、決まり 9 が 3 回「破られた」と出た。3 回とも `rec_hold_keep = 1`・`rec_back_guard = 0` の本で、drive は見張りが無いと残さない(この組はサーバーが断る)ので、台本の決まりのほうを drive に合わせて直し、流し直した。
+- でたらめな場面は開いたループ(車の動きは出力に応じない)。ESC の後退の決まり・後ろの壁は模型に無い。
+
+## 6. 試験
+
+```bash
+cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q -p no:cacheprovider \
+  --basetemp=<消せる場所> tests/test_rec_hold_keep.py tests/test_recovery_back_guard.py tests/test_launch_boost.py tests/test_launch_drive.py \
+  tests/test_launch_replay.py tests/test_launch_ui.py tests/test_start_kick.py tests/test_assist.py tests/test_drive_caps.py tests/test_speed_ctrl.py \
+  tests/test_bench_ui.py tests/test_bench_ui_round2.py tests/test_vbat_ui.py
+```
+
+- 結果: **291 passed・1 skipped**(1 分 59 秒)。走行ループのほかの試験(`tests/test_drive.py`・`test_drive_midrun_params.py`・`test_drive_caps_fix.py`・`test_drive_ai_time.py`・`test_drive_model_select.py`・`test_speed_ctrl_replay.py`・`test_speed_ctrl_pure.py`)も 168 passed・2 skipped・1 xfailed。
+- 途中で落ちたもの: `test_bench_ui`・`test_vbat_ui` の 3 個(`client: 6`)は係 ui が同時に DRIVE_CLIENT_VERSION を 7 にしたため(この係の直しではない。そのあと係 ui が試験を直し、最後の回では通った)。`test_speed_ctrl.py::test_time_per_frame`(1 フレームの計算 ≤ 1.0 ms)は、でたらめな走行ループと同時に回したときだけ 1.20 ms で落ち、ひとりで回すと通った。
+- 流していないもの: `experiments/20261026_fix/fix2/safety1/test_probe_safety1.py`(反証の結果の json を書き直す)・`verify/test_verify_launch.py`(`verify/out/v3_*.json` を書き直す)。どちらも OFF の形を見る試験で、OFF は直す前と同じ。pytest 一式は学習のあと(main session)。
+- 直した試験(足した項目を数えるだけ。決まりは緩めていない): `tests/test_recovery_back_guard.py`・`test_launch_drive.py`・`test_drive_caps.py`・`test_speed_ctrl.py` の「あとで足した項目」の一覧に 2 つ。
+- 新しい試験: `tests/test_rec_hold_keep.py`(71 個)。写し `tests/fixtures/fix3_before/`(sha256 を試験で照らす)。
+
+## 7. ユーザーの了承・main session が決めること
+
+| # | こと | 案 |
+|---|---|---|
+| 1 | **11/3 に `rec_back_guard` + `rec_hold_keep` を ON にするか** | ON にするなら朝の準備で(再起動のあと)画面のスイッチか `curl -s -X POST http://localhost:8080/api/drive/params -H 'Content-Type: application/json' -d '{"rec_back_guard": 1, "rec_hold_keep": 1}'`(見張りが先・同じ送りで可)。起動のたびに OFF。実車の ESC で確かめていない(模型と記録の再生だけ)。ON の日は最初のリカバリーを人が見る。OFF のままなら手順書 7 章「AI 側のまま壁を押し続けたらすぐ人側」で守る |
+| 2 | **`launch_no_kick` を、発進の前進を ON にする回(回 3・回 4)で ON にするか** | ON は protocol_v3.json `launch_boost.start[4]`「(今まで通り StartKick)」から外れる → 使うなら deviations_v3.md に書く(ON と OFF の比べで違うのは「出さない」と決めた区間だけ。その本は deviations 2 d で数えない案)。OFF のままなら手順書 7 章「当たった場所から AI 側に戻さない」で守る |
+| 3 | `rec_back_guard` を走行中に ON にできなくした | 画面のスイッチと同じ決まり。手順書(朝の準備で入れる)には当たらない。了承を |
+| 4 | jetformer-web の再起動 | drive.py・assist.py の直しは再起動のあとに効く(学習のあと。todo_user 4 章の手順)。app.js は読み直しで効く |
+| 5 | 下がる量 | 後ろに当たるのを減らすなら `rev_s`・`rev_us` を小さくするのが直接効く(4 章)。決めるのはユーザー |
+| 6 | 道具の鍵 | standing_3lap・quick_eval_by_params に 2 つを足す(係 tools・main session) |
+| 7 | commit | main session がまとめて(`tests/fixtures/fix3_before/` も一緒に) |
+
+## 8. ファイル
+
+| ファイル | 中身 |
+|---|---|
+| `/home/jetson/jetformer/jetformer/assist.py` | `Assist.reset(keep_recovery)`・`LaunchBoost.skipped`・`Assist.step(launch_no_kick)` |
+| `/home/jetson/jetformer/jetformer/drive.py` | 項目 2 つ・`_opt_rules`・`hold()` の keep・`helper.step` に launch_no_kick |
+| `/home/jetson/jetformer/jetformer/web/static/app.js` | `BENCH_FALLBACK`・`trimGuardStartLines`(2 か所) |
+| `/home/jetson/jetformer/tests/test_rec_hold_keep.py` | 新しい試験 71 個 |
+| `/home/jetson/jetformer/tests/fixtures/fix3_before/` | 直す前の drive.py・assist.py・app.js |
+| `/home/jetson/jetformer/experiments/20261026_fix/fix3/safety/` | `probe_fix3.py`(3 章の数)・`replay_1023_combo.py`(4 章)・`coast_decel.py`(惰性の減速を探した。0 件)・`fuzz_loop3.py`(5 章)・`out/`・`before/` |

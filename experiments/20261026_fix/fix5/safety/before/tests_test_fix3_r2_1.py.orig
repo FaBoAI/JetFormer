@@ -1,0 +1,769 @@
+"""直す 2 回目・1 組目(2026-10-27 fix3。反証 2 回目の指摘 r2-r2-rs-1・r2-r2-rs-2)の試験。走行ループ・補助の側。
+
+  r2-r2-rs-1: rec_hold_keep = 1・rec_back_guard = 1 のとき、リカバリーの途中の中立止めの間は Recovery.step が呼ばれず、
+    下がった時間(backed_s)は明けたフレームの dt(0.2 秒まで。止まっていれば 0)しか数えなかった。段の時間(t_phase)は中立止めの
+    間も進んだ。'reverse' の始めに 0.45〜1.0 秒の中立止めが入ると、明けたフレームで「下がらない」と見てやり直し(+50 µs = 1846 µs)、
+    新しく rev_s 下がった(中立止めなし 1.27 m → 1.45 m。後ろ 1.45 m の物に 4.8〜7.2G)。'brake' の途中(10/23 の形)も同じ向き。
+  r2-r2-rs-2: 2〜5 秒の中立止めのあとも段と slow_since が残り、明けて 0.02〜0.35 秒で後退を出した(段がすぐ終わる・すぐ stuck)。
+  直し(assist.Recovery._after_hold・drive の hold_veh・hold_t0): 残した中立止めのあとの最初のフレームに hold_since(中立を
+    書き始めた時刻)と、その間に後ろへ動いていた秒 hold_back_s(車両の値から。多めに数える側)を渡す。下がった時間に足す・
+    段の時間は中立を出していた間は止める・'reverse' の
+    CHECK_S は明けたフレームから・前に処理したフレームから 0.5 秒より長い中立止めのあとは、後退側の段と止まっている時間の途中を
+    中止(giveup。中立で人を待つ)。
+
+OFF(rec_hold_keep = 0・見張り OFF。今の既定)は、直す前の写し tests/fixtures/fix3_r2_1_before/(assist.py・drive.py。
+sha256 は SHA256SUMS)とビット単位で同じ(PCA9685 に書く値・記録の行・出来事)。走行ループは反証 2 回目の閉じたループ
+(experiments/20261026_fix/fix3/refute2_safety/closed_loop.py。本物の drive._loop を、書いた値で動く偽物の ESC と車で回す)と
+同じ作り。実機・GPU・torch は使わない。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_fix3_r2_1.py
+"""
+import collections
+import hashlib
+import importlib.util
+import random
+import time as _time
+import types
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from jetformer import assist as A
+from jetformer import clock, config, drive
+from jetformer import safety_caps as sc
+from jetformer.sensors.base import Sample
+
+from test_drive_caps import FakeRecorder, assert_rows_equal_before, fake_normalize
+from test_launch_drive import C, N, PARAMS, TOF_FREE, FLOOR_MM, tof_near, T0, NS
+
+ROOT = Path(__file__).resolve().parents[1]
+FIX = ROOT / 'tests' / 'fixtures' / 'fix3_r2_1_before'
+DT = 0.01
+FDT = 1 / 30.0
+KV = sc.KV
+XF = 2.0
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def sums():
+    return dict(reversed(line.split()) for line in (FIX / 'SHA256SUMS').read_text().splitlines())
+
+
+_BEFORE = {}
+
+
+def load_before():
+    """直す前の assist.py・drive.py(写し。2026-10-27 00:4x。直す 1 回目のあと)をモジュールにする"""
+    if _BEFORE:
+        return _BEFORE['a'], _BEFORE['d']
+    s = sums()
+    for name in ('drive.py', 'assist.py'):
+        assert sha(FIX / name) == s[name], name
+    aspec = importlib.util.spec_from_loader('jetformer._assist_before_fix3r21', loader=None)
+    amod = importlib.util.module_from_spec(aspec)
+    exec(compile((FIX / 'assist.py').read_text(encoding='utf-8'), str(FIX / 'assist.py'), 'exec'), amod.__dict__)
+    spec = importlib.util.spec_from_loader('jetformer._drive_before_fix3r21', loader=None)
+    mod = importlib.util.module_from_spec(spec)
+    mod.__package__ = 'jetformer'
+    exec(compile((FIX / 'drive.py').read_text(encoding='utf-8'), str(FIX / 'drive.py'), 'exec'), mod.__dict__)
+    mod.assist_mod = amod
+    assert 'held' not in amod.Recovery.step.__code__.co_varnames            # 写しは直す前
+    _BEFORE.update(a=amod, d=mod)
+    return amod, mod
+
+
+# ================================================================ 閉じたループ(refute2_safety/closed_loop.py と同じ作り)
+class Car(object):
+    """偽物の ESC と車(closed_loop.py と同じ)。前進側: ready を消す・下がっていれば 8 m/s² で止める。後退側: 後退中ならそのまま、
+    ready かつ止まっているなら 0.08 秒あとから後ろへ、ほかはブレーキ(braked)。中立の帯: 0.1 秒続いて braked なら ready"""
+
+    def __init__(self, s):
+        self.s = s
+        self.x, self.v = 0.0, 0.0
+        self.ready, self.braked, self.rev_on, self.rev_wait, self.neu_t = False, False, False, 0.0, 0.0
+        self.rear_active = False
+        self.hits = []
+        self.spike = []
+        self.contact = None
+
+    def step(self, t, thr):
+        s = self.s
+        fwd, rev = thr < N - 20.0, thr > N + 40.0
+        v0 = self.v
+        if fwd:
+            self.ready = self.braked = self.rev_on = False
+            self.rev_wait = self.neu_t = 0.0
+            if self.v < 0:
+                self.v = min(0.0, self.v + 8.0 * DT)
+            else:
+                vt = min((N - thr) / 80.0 * 1.2, 6.0)
+                self.v += float(np.clip((vt - self.v) / 0.3, -6.0, 6.0)) * DT
+        elif rev:
+            self.neu_t = 0.0
+            if self.rev_on:
+                a = (thr - N) / 300.0 * 5.0
+                self.v = max(self.v - a * DT, -(thr - N) / 300.0 * 3.0)
+            elif self.ready and self.v <= 0.075:
+                self.rev_wait += DT
+                if self.rev_wait >= 0.08:
+                    self.rev_on = True
+            else:
+                self.braked = True
+                self.v = max(0.0, self.v - 6.0 * DT) if self.v > 0 else min(0.0, self.v + 6.0 * DT)
+        else:
+            self.rev_wait = 0.0
+            self.neu_t += DT
+            if self.braked and self.neu_t >= 0.1:
+                self.ready, self.braked = True, False
+            if self.rev_on:
+                self.rev_on = False
+                self.ready = True
+            self.v = max(0.0, self.v - 1.5 * DT) if self.v > 0 else min(0.0, self.v + 1.5 * DT)
+        nx = self.x + self.v * DT
+        prev_con = self.contact
+        self.contact = None
+        if nx >= s['xf']:
+            if self.v > 0.05 and prev_con != 'front':
+                g = min(2.0 + 2.5 * self.v, 9.0)
+                self.hits.append((round(t, 3), 'front', round(self.v, 2), round(g, 2)))
+                self.spike = [g, g]
+            nx, self.v = s['xf'], 0.0
+            self.contact = 'front'
+        if s.get('xr') is not None:
+            if not self.rear_active and nx > s['xr'] + 0.1:
+                self.rear_active = True
+            if self.rear_active and nx <= s['xr']:
+                if self.v < -0.05 and prev_con != 'rear':
+                    g = min(2.0 + 2.5 * -self.v, 9.0)
+                    self.hits.append((round(t, 3), 'rear', round(self.v, 2), round(g, 2)))
+                    self.spike = [g, g]
+                nx, self.v = s['xr'], 0.0
+                self.contact = 'rear'
+        self.x = nx
+        acc = (self.v - v0) / DT
+        g = self.spike.pop(0) if self.spike else 0.0
+        return acc, g
+
+
+class TimedPCA(object):
+    def __init__(self, box):
+        self.box, self.w = box, []
+        self.thr, self.steer = N, C
+
+    def set_pair_us(self, sc_, s, tc, t):
+        self.thr, self.steer = float(t), float(s)
+        self.w.append(((self.box['ns'] - T0) / 1e9, float(s), float(t)))
+
+    def set_us(self, ch, us):
+        if ch == config.PCA9685['throttle_ch']:
+            self.thr = float(us)
+
+    def set_osc_scale(self, scale):
+        pass
+
+
+class Runner(object):
+    def __init__(self, sim):
+        self.sim = sim
+
+    def run_numpy(self, **kw):
+        st, th = self.sim.model()
+        p = np.tile([[st, th]], (10, 1))
+        return {'actions': ((np.asarray(p, np.float32) - drive.PWM_CENTER) / drive.PWM_SCALE)[None]}
+
+
+class Sim(object):
+    """cam_evt の代わり。時計・センサー・車をまとめて進める。drops = カメラが来ない区間・veh_skip = 車両の値が来ない区間"""
+
+    def __init__(self, d, s, bufs, cam_slot, box, pca):
+        self.d, self.s, self.box, self.pca = d, s, box, pca
+        self.tof_buf, self.imu_buf, self.veh_buf = bufs
+        self.cam_slot = cam_slot
+        self.car = Car(s)
+        self.t = 0.0
+        self.next_cam = s.get('cam0', 0.15)      # 最初のフレームの時刻(フレームの並びの位相を変えるとき)
+        self.next_veh = 0.0
+        self.next_tof = 0.0
+        self.seq = 0
+        self.log = []
+        self.drops = list(s.get('drops', []))
+
+    def sel(self, t):
+        return t >= self.s.get('ai_from', 1.0)
+
+    def model(self):
+        f = self.s['model']
+        return f(self.t, self.car) if callable(f) else f
+
+    def dropped(self, t):
+        return any(a <= t < b for a, b in self.drops)
+
+    def _advance(self, t_end):
+        while self.t + DT <= t_end + 1e-9:
+            self.t = round(self.t + DT, 6)
+            acc, g = self.car.step(self.t, self.pca.thr)
+            t_ns = T0 + int(round(self.t * NS))
+            self.imu_buf.append((t_ns, np.array([0.0, acc + g * 9.80665, 9.8, 0.0, 0.0, 0.0], np.float32)))
+            if self.t >= self.next_veh - 1e-9:
+                self.next_veh += 0.02
+                if not any(a <= self.t < b for a, b in self.s.get('veh_skip', [])):
+                    sl = self.sel(self.t)
+                    self.veh_buf.append((t_ns, {'pwm': [1441, 1496, 2000 if sl else 1000], 'valid': [True, True, True],
+                                                'select': sl, 'moving': abs(self.car.v) > 0.01,
+                                                'erpm': int(round(-self.car.v / KV))}))
+            if self.t >= self.next_tof - 1e-9:
+                self.next_tof += 1.0 / 30
+                dist = self.s['xf'] - self.car.x
+                self.tof_buf.append((t_ns, tof_near(int(dist * 1000)) if 0.05 < dist < 1.95 else TOF_FREE))
+            self.log.append((self.t, self.car.x, self.car.v, self.pca.thr))
+        self.box['ns'] = T0 + int(round(self.t * NS))
+        self.box['m'] = self.t + 100.0
+        self.d.heartbeat_t = self.box['m']
+
+    def wait(self, timeout):
+        if self.t >= self.s['dur']:
+            self.d._stop.set()
+            return False
+        while self.dropped(self.next_cam):
+            self.next_cam += 1.0 / 30
+        arrive = self.next_cam + 0.008
+        if arrive - self.t > timeout + 1e-9:
+            self._advance(self.t + timeout)
+            return False
+        self._advance(arrive)
+        cam_t = T0 + int(round(self.next_cam * NS))
+        self.cam_slot[0] = Sample(cam_t, {'image': np.zeros((8, 8, 3), np.uint8), 'seq': self.seq})
+        self.seq += 1
+        self.next_cam += 1.0 / 30
+        self.box['ns'] = T0 + int(round(self.t * NS))
+        return True
+
+    def clear(self):
+        pass
+
+    def set(self):
+        pass
+
+
+def run_cl(mod, monkeypatch, tmp_path, params, scene):
+    """mod(drive か直す前の写し)の _loop を閉じたループで回す → (sim, recorder, pca)"""
+    box = {'ns': T0, 'm': 100.0}
+    with monkeypatch.context() as mp:
+        mp.setattr(clock, 'now_ns', lambda: box['ns'])
+        mp.setattr(mod, 'time', types.SimpleNamespace(monotonic=lambda: box['m'], perf_counter=_time.perf_counter,
+                                                      time=lambda: 1.0, sleep=lambda s: None, strftime=_time.strftime))
+        mp.setattr(mod, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
+        fp = tmp_path / 'floor_ref.npy'
+        np.save(fp, np.full((42, 54), float(FLOOR_MM), np.float32))
+        mp.setattr(mod, 'FLOOR_REF_PATH', fp)
+        rec = FakeRecorder()
+        d = mod.Driver(hub=None, recorder=rec)
+        d.params = dict(params)
+        d.hb_token, d.hb_count = 'tok', 1
+        d.st = {'phase': 'driving', 'mode_id': 4}
+        pca = TimedPCA(box)
+        out = mod._Output(pca, config.PCA9685, (C, N), lambda: d.params)
+        bufs = (collections.deque(maxlen=10), collections.deque(maxlen=60), collections.deque(maxlen=50))
+        cam_slot = [None]
+        sim = Sim(d, scene, bufs, cam_slot, box, pca)
+        d._loop(d.st, Runner(sim), fake_normalize, pca, out, (C, N), 6, 0.0, cam_slot, sim, *bufs, False)
+        d._stop.clear()
+    return sim, rec, pca
+
+
+def P(keep, guard):
+    return dict(PARAMS, recovery=1, start_kick=0, rec_back_guard=guard, rec_hold_keep=keep)
+
+
+def guards(rec):
+    return [e[1]['what'] for e in rec.events if e[0] == 'recovery_guard']
+
+
+def same_cl(a, b):
+    (sa, ra, pa), (sb, rb, pb) = a, b
+    assert pa.w == pb.w
+    assert_rows_equal_before(rb.rows, ra.rows)
+    assert ra.events == rb.events
+
+
+# 場面 (a)(反証 refute2_safety/probe_hold_retry.py): 前の壁 2.0 m に当たって止まり、モデルはずっと弱い前進(中立 − 120)。
+# 中立止めなしの段: brake 2.09・gap 2.35・reverse 2.52 秒
+TR = 2.52
+
+
+def scene_a(drop=None, vskip=None, rear=1.45, dur=7.0):
+    return {'dur': dur, 'xf': XF, 'xr': None if rear is None else XF - rear, 'model': (C, N - 120.0),
+            'drops': [drop] if drop else [], 'veh_skip': [vskip] if vskip else []}
+
+
+def metrics_a(sim, pca, t_from=2.0):
+    """最初のリカバリー(t_from 秒から最初の 'escape' の 0.5 秒あとまで)で下がった距離・最高の後ろの速さ・後退側を書いた最大"""
+    t_esc = next((t for t, s, th in pca.w if t > t_from and th < N - 125.0), 99.0)     # 前進(escape は中立 − 130。モデルは − 120)
+    xs = [(t, x, v) for t, x, v, th in sim.log if t_from <= t <= t_esc + 0.5]
+    return {'back_m': round(XF - min(x for _, x, _ in xs), 3), 'v_back_max': round(min(v for _, _, v in xs), 2),
+            'rev_max': max((th for t, s, th in pca.w if t_from <= t <= t_esc), default=None),
+            'rear_hits': [h for h in sim.car.hits if h[1] == 'rear']}
+
+
+# 場面 (b)(反証 probe_hold_ready.py): ESC が後退を待っている(モデルが止まる前にブレーキ側 = 10/23 の形)。'brake' がそのまま後退
+def model_b(t, car):
+    return (C, N + 60.0) if XF - car.x < 0.5 else (C, N - 120.0)
+
+
+def scene_b(drop=None, rear=None, dur=7.0):
+    return {'dur': dur, 'xf': XF, 'xr': None if rear is None else XF - rear, 'model': model_b, 'drops': [drop] if drop else []}
+
+
+def back_b(sim, pca):
+    t_esc = next((t for t, s, th in pca.w if t > 2.0 and th < N - 125.0), 99.0)
+    xs = [(t, x) for t, x, v, th in sim.log if 1.0 <= t <= t_esc + 0.5]
+    return round(max(x for _, x in xs) - min(x for _, x in xs), 3)
+
+
+BRAKE_B = 2.42      # 場面 (b) の 'brake' の始まり(中立止めなし。反証の probe_hold_ready と同じ)
+
+
+# ================================================================ 0. 写し・既定値
+def test_before_copies_and_defaults_unchanged():
+    s = sums()
+    assert s['drive.py'].startswith('3a376fbd730a') and s['assist.py'].startswith('583908bedd3c')
+    for name in ('app.js', 'index.html', 'server.py', 'collect.py'):
+        assert sha(FIX / name) == s[name], name
+    amod, before = load_before()
+    assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS                 # 既定値は 1 つも変えていない(新しい項目も無い)
+    assert drive.PARAM_LIMITS == before.PARAM_LIMITS and drive.RESET_ON_BOOT == before.RESET_ON_BOOT
+    assert drive.DEFAULT_PARAMS['rec_hold_keep'] == 0 and 'rec_hold_keep' in drive.RESET_ON_BOOT
+    assert drive.START_KICK_TTC_S == before.START_KICK_TTC_S
+    for k, v in vars(amod.Recovery).items():                              # Recovery の定数は全部同じ(足したのは 1 つだけ)
+        if k.isupper():
+            assert getattr(A.Recovery, k) == v, k
+    # 2026-10-27 直す 3 回目・1 組目(r3-r3-safety-2)で HOLD_HALT_ERPM・HOLD_HALT_MAX_S を足した(tests/test_fix3_r3_1.py)
+    assert {k for k in vars(A.Recovery) if k.isupper()} - {k for k in vars(amod.Recovery) if k.isupper()} == {
+        'HOLD_KEEP_MAX_S', 'HOLD_HALT_ERPM', 'HOLD_HALT_MAX_S'}
+    assert A.Recovery.HOLD_KEEP_MAX_S == 0.5 and drive.HOLD_VEH_GAP_S == 0.06
+    for k in ('BACKING_ERPM', 'CHECK_S', 'STOPPED_ERPM', 'GAP_OFFSET_US', 'DEFAULT_REV_US', 'DEFAULT_REV_S'):
+        assert getattr(A, k) == getattr(amod, k)
+
+
+# ================================================================ 1. Recovery の形(held = False は前と同じ)
+def _rec_fuzz_steps(seed, n=2500):
+    """でたらめな入力: 走る・止まる・後ろへ・衝撃・時刻の飛び(中立止めの代わり。held は渡さない)・hold_g"""
+    rng = random.Random(seed)
+    t, out = 0.0, []
+    erpm = -4000.0
+    for i in range(n):
+        r = rng.random()
+        if r < 0.08:
+            erpm = rng.choice([-5000.0, -2000.0, -400.0, 0.0, 0.0, 200.0, 800.0, 1500.0, 3000.0])
+        elif r < 0.5:
+            erpm += rng.uniform(-300, 300)
+        t += rng.choice([FDT] * 20 + [0.1, 0.25, 0.6, 1.5])
+        out.append(((C + rng.uniform(-300, 300), N + rng.choice([-150.0, -60.0, 0.0, 20.0, 80.0])), erpm, t,
+                    rng.choice([0.0] * 12 + [3.0, 6.0]), rng.choice([0.0] * 20 + [3.0]), rng.random() < 0.5,
+                    rng.choice([250.0, 300.0]), rng.choice([0.3, 0.4])))
+    return out
+
+
+STATE = ('phase', 't_phase', 'slow_since', 'impact_t', 'cooldown_until', 'armed', 'retries', 'backed_s', 't_last', 'turn',
+         'back_t', 'guard_event', 'count')
+
+
+@pytest.mark.parametrize('seed', range(6))
+def test_recovery_held_false_bit_identical(seed):
+    """hold_since を渡さない(drive の rec_hold_keep = 0・見張り OFF・人側・dry run)Recovery は、直す前の写しと出力・状態が全部同じ"""
+    amod, _ = load_before()
+    r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+    n_phase = 0
+    for model, erpm, t, ig, hg, bg, rev_us, rev_s in _rec_fuzz_steps(seed):
+        a = r0.step(model, erpm, t, ig, rev_us, rev_s, back_guard=bg, hold_g=hg)
+        b = r1.step(model, erpm, t, ig, rev_us, rev_s, back_guard=bg, hold_g=hg)
+        assert a == b
+        for k in STATE:
+            assert getattr(r0, k) == getattr(r1, k), k
+        assert r1.t_check == r1.t_phase              # 段を変えたときは同じ(hold_since なしでは離れない)
+        n_phase += r1.phase is not None
+        r0.guard_event = r1.guard_event = None
+    assert n_phase > 300                              # 手順の途中を通っている(試験が空振りしていない)
+
+
+def _to(r, phase, t=0.0, back=False):
+    """Recovery を phase まで進める(前へ走って armed → 止まって見つける → 'brake' → 'wait' → 'gap' → 'reverse')。戻り値 次の時刻"""
+    for _ in range(40):
+        r.step((C, N - 150.0), -5000, t); t += FDT
+    while r.phase != phase:
+        r.step((C, N + 20.0), 0, t); t += FDT
+        assert t < 10.0
+    return t
+
+
+@pytest.mark.parametrize('gap', [0.3, 0.45])
+def test_rs1_unit_reverse_short_hold_no_retry(gap):
+    """反証の単体(unit_hold_retry): 'reverse' の 2 フレーム目のあと gap 秒呼ばず、明けたフレームは eRPM 0。直す前の写しは
+    'gap'(+10 µs)のやり直し → 続く 'reverse' は +350 µs。今は 'reverse' のまま 300 µs(CHECK_S は明けたフレームから数え直す)"""
+    amod, _ = load_before()
+    old, new = amod.Recovery((C, N)), A.Recovery((C, N))
+    t0 = _to(old, 'reverse')
+    assert _to(new, 'reverse') == t0
+    for r in (old, new):
+        r.step((C, N + 20.0), 0, t0, back_guard=True)
+    t = t0 + FDT + gap
+    o_old, _ = old.step((C, N + 20.0), 0, t, back_guard=True)
+    assert old.phase == 'gap' and old.retries == 1 and o_old[1] == N + A.GAP_OFFSET_US      # 指摘の再現
+    o_new, _ = new.step((C, N + 20.0), 0, t, back_guard=True, hold_since=t0 + 0.1, hold_back_s=0.0)   # 0.1 秒で中立(カメラの待ち)
+    assert new.phase == 'reverse' and new.retries == 0 and o_new[1] == N + 300.0
+    assert new.t_check == t and abs((t - new.t_phase) - (2 * FDT + 0.1 - FDT)) < 1e-9    # 中立を出していた間は段の時間を止めた
+    # 下がり始めないまま CHECK_S(明けたフレームから)を過ぎたら、今まで通りやり直し
+    tt = t
+    while new.phase == 'reverse':
+        tt += FDT
+        new.step((C, N + 20.0), 0, tt, back_guard=True)
+    assert new.phase == 'gap' and new.retries == 1 and tt - t > A.CHECK_S
+
+
+@pytest.mark.parametrize('phase', ['brake', 'wait', 'gap', 'reverse', 'coast'])
+@pytest.mark.parametrize('gap', [0.55, 1.0, 2.0, 5.0])
+def test_rs2_unit_long_hold_gives_up_in_backing_phases(phase, gap):
+    """0.5 秒より長い残した中立止めのあと、後退側・下がる惰性の段なら中止(中立で人を待つ)。直す前の写しは段の続きを出す"""
+    r = A.Recovery((C, N))
+    if phase in ('brake', 'wait', 'gap', 'reverse'):
+        t = _to(r, phase if phase != 'wait' else 'brake')
+        if phase == 'wait':
+            r._go('wait', t)
+    else:
+        t = _to(r, 'reverse')
+        r._go('coast', t)
+    r.step((C, N + 20.0), {'wait': -2000, 'coast': 2000}.get(phase, 0), t)       # その段のまま 1 フレーム
+    assert r.phase == phase
+    o, k = r.step((C, N - 120.0), 0, t + gap, hold_since=t + 0.1, hold_back_s=0.0)
+    assert (o, k) == ((C, N), A.ASSIST_GIVEUP) and r.phase == 'giveup'
+    assert r.guard_event[0] == 'hold_long' and r.guard_event[1] == phase and r.guard_event[3] == round(gap, 3)
+    assert r.step((C, N - 120.0), 2000, t + gap + FDT) == ((C, N), A.ASSIST_GIVEUP)         # 中止のまま
+    ast = A.Assist((C, N))                                                                     # CH3 を人側にすると戻る(今まで通り)
+    ast.rec = r
+    ast.step((C, N), 0, False, t + gap + 2 * FDT)
+    assert r.phase is None
+
+
+def test_rs2_unit_long_hold_rear_impact_first_and_escape_ends():
+    """長い中立止めでも、その間に後ろの衝撃(hold_g ≥ 2.5G)があれば rear_impact_hold(すぐ前へ。r1-rs1-1 のまま)。'escape' は
+    中止にしない(時間で終わる)。段なし・止まっていない(slow_since なし)ときは何もしない"""
+    r = A.Recovery((C, N))
+    t = _to(r, 'reverse')
+    r.step((C, N + 20.0), 0, t)
+    o, k = r.step((C, N + 20.0), 0, t + 1.0, hold_g=6.0, hold_since=t + 0.1)
+    assert r.phase == 'escape' and r.guard_event[0] == 'rear_impact_hold' and o[1] < N
+    r2 = A.Recovery((C, N))
+    t2 = _to(r2, 'reverse')
+    r2._go('escape', t2)
+    r2.step((C, N), 0, t2 + FDT)
+    # 2026-10-27 直す 3 回目・1 組目(r3-r3-safety-1)で変えた: 明けたフレームで前へ走っていれば 'escape' は時間で終わる(前と同じ)。
+    # 止まっていれば(前は同じく終わって cooldown → 約 1.8 秒後に後退)中止(tests/test_fix3_r3_1.py)
+    o, k = r2.step((C, N - 120.0), -2000, t2 + 2.0, hold_since=t2 + 0.1)
+    assert r2.phase is None and o is None and r2.guard_event is None
+    r3, t3 = A.Recovery((C, N)), 0.0
+    for _ in range(40):
+        r3.step((C, N - 150.0), -5000, t3); t3 += FDT
+    assert r3.slow_since is None
+    o, k = r3.step((C, N - 150.0), -5000, t3 + 3.0, hold_since=t3 + 0.1)
+    assert r3.phase is None and o is None and r3.guard_event is None
+
+
+def test_rs2_unit_stuck_detection_paused_or_given_up():
+    """段なしで止まっている時間を数えている途中(slow_since あり): 短い中立止めはその間を数えない(明けて残りの STUCK_S を待つ)。
+    長い中立止めは中止(明けてすぐ stuck と見て下がらない)。直す前の写しは明けた最初のフレームで始める"""
+    amod, _ = load_before()
+    for gap, want in ((0.4, 'wait'), (0.6, 'giveup'), (2.0, 'giveup'), (5.0, 'giveup')):
+        old, new = amod.Recovery((C, N)), A.Recovery((C, N))
+        t = 0.0
+        for _ in range(40):
+            for r in (old, new):
+                r.step((C, N - 150.0), -5000, t)
+            t += FDT
+        for r in (old, new):
+            r.step((C, N - 120.0), 0, t)                  # 止まった(slow_since = t)
+            r.step((C, N - 120.0), 0, t + FDT)
+        t_end = t + FDT + gap
+        old.step((C, N - 120.0), 0, t_end)
+        if gap + FDT >= A.Recovery.STUCK_S:
+            assert old.phase == 'brake'                   # 指摘の再現: 明けた最初のフレームで stuck → ブレーキ(後退側)
+        o, k = new.step((C, N - 120.0), 0, t_end, hold_since=t + FDT + 0.1)
+        if want == 'giveup':
+            assert new.phase == 'giveup' and k == A.ASSIST_GIVEUP and new.guard_event[0] == 'hold_long'
+            continue
+        assert new.phase is None and o is None and abs((t_end - new.slow_since) - (FDT + 0.1)) < 1e-9
+        tt = t_end
+        while new.phase is None:
+            tt += FDT
+            new.step((C, N - 120.0), 0, tt)
+        assert new.phase == 'brake' and tt - t_end >= A.Recovery.STUCK_S - FDT - 0.1 - 1e-9     # 直す前は 0.37 秒あと
+
+
+@pytest.mark.parametrize('phase,back,want', [('brake', 0.1, 'reverse'), ('wait', 0.1, 'reverse'), ('brake', 0.45, 'coast'),
+                                             ('wait', 0.5, 'coast'), ('gap', 0.45, 'coast'), ('gap', 0.1, 'gap'),
+                                             ('reverse', 0.45, 'coast')])
+def test_rs1_unit_hold_back_counts_as_backed(phase, back, want):
+    """中立止めの間に後ろへ動いていた秒(hold_back_s)を下がった時間に足す。'brake'・'wait' は見張りと同じく 'reverse'(rev_s に
+    届けば 'coast')へ、'gap' は rev_s に届けば 'coast' へ。明けたフレームの dt は足さない(数えるのは hold_back_s だけ)"""
+    r = A.Recovery((C, N))
+    t = _to(r, 'brake' if phase == 'wait' else phase)
+    if phase == 'wait':
+        r._go('wait', t)
+    r.step((C, N + 20.0), -2000 if phase == 'wait' else 0, t)
+    b0 = r.backed_s
+    o, k = r.step((C, N + 20.0), 0, t + 0.3, rev_s=0.4, hold_since=t + 0.1, hold_back_s=back)
+    assert r.phase == want or (want == 'coast' and r.phase == 'escape')       # 'coast' は止まっていればすぐ前進へ
+    assert abs(r.backed_s - (b0 + back)) < 1e-9
+    if want != phase:
+        assert r.guard_event is not None or r.phase in ('coast', 'escape')
+
+
+def test_rs1_unit_max_reverse_not_extended_by_repeated_holds():
+    """後退を出す長さの上限(MAX_REV_TOTAL_S)は止めた時間を数えないまま: 0.3 秒の中立止めを何度はさんでも、後退を出した
+    フレームの時間は約 1.2 秒まで(下がった時間が rev_s に届かない場面: 少し下がってから動かない)"""
+    r = A.Recovery((C, N))
+    t = _to(r, 'reverse')
+    rev_frames, k = 0, 0
+    while r.phase == 'reverse' and t < 30.0:
+        erpm = 1000 if k == 2 else 0                  # 1 フレームだけ下がる(backed_s > 0。CHECK_S のやり直しはしない)
+        held = k > 0 and k % 6 == 0
+        t_prev = t - FDT
+        if held:
+            t += 0.3                                   # 0.1 秒の待ちのあと中立 → 0.3 + 1/30 − 0.1 秒の中立
+        o, kind = r.step((C, N + 20.0), erpm, t, hold_since=(t_prev + 0.1) if held else None)
+        if r.phase == 'reverse' and o is not None and o[1] > N + 40:
+            rev_frames += 1
+        t += FDT
+        k += 1
+    assert r.phase in ('coast', 'escape') and r.retries == 0
+    assert rev_frames * FDT <= A.Recovery.MAX_REV_TOTAL_S + 2 * FDT
+
+
+# ================================================================ 2. 走行ループ(閉じたループ): OFF はビット単位で同じ
+OFF_SCENES = {
+    'a_cam_0.03_0.45': lambda: scene_a(drop=(TR + 0.03, TR + 0.48)),
+    'a_cam_0.10_1.0': lambda: scene_a(drop=(TR + 0.10, TR + 1.10)),
+    'a_veh_0.06_0.5': lambda: scene_a(vskip=(TR + 0.06, TR + 0.56)),
+    'b_brake_0.10_0.8': lambda: scene_b(drop=(BRAKE_B + 0.10, BRAKE_B + 0.90)),
+    'long_gap_2.0': lambda: scene_a(drop=(2.40, 4.40), rear=None, dur=7.5),
+}
+
+
+@pytest.mark.parametrize('keep,guard', [(0, 0), (0, 1), (1, 0)])
+@pytest.mark.parametrize('name', sorted(OFF_SCENES))
+def test_loop_off_bit_identical(monkeypatch, tmp_path, keep, guard, name):
+    """rec_hold_keep が効かない組(keep = 0、または見張り OFF)は、中立止めのある場面でも直す前の写しとビット単位で同じ"""
+    _, before = load_before()
+    s = OFF_SCENES[name]()
+    same_cl(run_cl(drive, monkeypatch, tmp_path, P(keep, guard), s), run_cl(before, monkeypatch, tmp_path, P(keep, guard), s))
+
+
+@pytest.mark.parametrize('name', ['a', 'b'])
+def test_loop_on_without_hold_bit_identical(monkeypatch, tmp_path, name):
+    """keep = 1・guard = 1 でも、中立止めの無い走行は直す前と同じ(効くのは残した中立止めのあとだけ)"""
+    _, before = load_before()
+    s = scene_a() if name == 'a' else scene_b()
+    a = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+    same_cl(a, run_cl(before, monkeypatch, tmp_path, P(1, 1), s))
+    assert not any(row['hold'] and row['select'] for _, row in a[1].rows)
+
+
+# ================================================================ 3. r2-r2-rs-1: 下がる距離が中立止めなし以下
+# 下がる距離は、フレームの並びの位相(最初のフレームの時刻)で、中立止めなしでも 1 フレーム分ずつ変わる(下がった時間は処理した
+# フレームの dt で数え、rev_s に届いたフレームで止めるため。偽物の ESC の 0.08 秒・0.01 秒の刻みとの組み合わせ)。そこで比べは
+# 「中立止めなしの位相 10 通りの最大」と。位相 0.15 秒(反証と同じ)では反証の数(1.272・1.133・1.417 m)と同じ
+PHASES = [round(0.15 + i * 0.0033, 4) for i in range(10)]
+NOHOLD_A = 1.272          # 場面 (a) の中立止めなし(位相 0.15。keep 0/1 とも)。反証と同じ
+NOHOLD_A_MAX = 1.452      # 位相 10 通りの最大(test_rs1_nohold_reference で確かめる)
+NOHOLD_B_GUARD = 1.133    # 場面 (b) の見張り ON・中立止めなし(位相 0.15)
+NOHOLD_B_MAX = 1.418      # 位相 10 通りの最大
+CHECK_PHASES = [0.15, 0.1566, 0.1665, 0.1797]     # 中立止めの場面を流す位相(0.15 = 反証と同じ)
+
+
+def test_rs1_nohold_reference(monkeypatch, tmp_path):
+    """比べの元(中立止めなし)。位相 0.15 は反証の数と同じ。段の時刻(LONG_STARTS・TR・BRAKE_B の元)も"""
+    for keep in (0, 1):
+        sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(keep, 1), scene_a())
+        m = metrics_a(sim, pca)
+        assert abs(m['back_m'] - NOHOLD_A) < 0.005 and m['rev_max'] == N + 300.0 and not m['rear_hits']
+    w = [(round(t, 3), th) for t, s, th in pca.w if 1.9 < t < 3.9]
+    ch = [w[0]] + [b for a, b in zip(w, w[1:]) if a[1] != b[1]]
+    assert ch[:6] == [(1.92, N - 120.0), (2.09, N + 300.0), (2.35, N + 10.0), (2.52, N + 300.0), (3.05, N), (3.32, N - 130.0)]
+    assert next(t for t, x, v, th in sim.log if t > 1.2 and abs(v) < 0.01 and x > 1.9) == T_STOP
+    sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), scene_b())
+    assert abs(back_b(sim, pca) - NOHOLD_B_GUARD) < 0.005
+    sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 0), scene_b())
+    assert abs(back_b(sim, pca) - 1.417) < 0.005                  # 見張り OFF
+    a = [metrics_a(*[x for k, x in enumerate(run_cl(drive, monkeypatch, tmp_path, P(1, 1), dict(scene_a(rear=None), cam0=c)))
+                     if k != 1])['back_m'] for c in PHASES]
+    b = [back_b(*[x for k, x in enumerate(run_cl(drive, monkeypatch, tmp_path, P(1, 1), dict(scene_b(), cam0=c))) if k != 1])
+         for c in PHASES]
+    assert abs(max(a) - NOHOLD_A_MAX) < 0.005 and abs(max(b) - NOHOLD_B_MAX) < 0.005, (a, b)
+
+
+# 反証の表の 4 場面(と近く)。o = 'reverse' に入ってからの秒・L = 来ない長さ
+RS1_A = [('cam', 0.03, 0.45), ('cam', 0.06, 0.6), ('cam', 0.10, 1.0), ('veh', 0.06, 0.5), ('cam', 0.03, 0.30),
+         ('cam', 0.06, 0.45), ('cam', 0.14, 0.45), ('veh', 0.10, 0.3)]
+
+
+@pytest.mark.parametrize('kind,o,L', RS1_A)
+def test_rs1_scene_a_no_retry_not_more_back(monkeypatch, tmp_path, kind, o, L):
+    """場面 (a)・keep = 1・guard = 1・後ろの物 1.45 m: やり直しの +50 µs(1846)を書かない・下がる距離は中立止めなしの位相 10 通りの
+    最大以下(位相 4 通りで)。位相 0.15(反証と同じ)では後ろに当たらない。直す前の写しは反証の表のとおり(4 場面で 1846・当たる)"""
+    _, before = load_before()
+    for c0 in CHECK_PHASES:
+        base = scene_a(drop=(TR + o, TR + o + L)) if kind == 'cam' else scene_a(vskip=(TR + o, TR + o + L))
+        s = dict(base, cam0=c0)
+        sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+        m = metrics_a(sim, pca)
+        assert m['rev_max'] == N + 300.0, (c0, m)
+        assert m['back_m'] <= NOHOLD_A_MAX + 0.005, (c0, m)
+        if c0 == 0.15:
+            assert not m['rear_hits'], m
+            if L > 0.5 and kind == 'cam':
+                assert 'hold_long' in guards(rec)                 # 長い中立止め: 中止で人を待つ
+            if (kind, o, L) in RS1_A[:4]:
+                sim0, rec0, pca0 = run_cl(before, monkeypatch, tmp_path, P(1, 1), s)
+                m0 = metrics_a(sim0, pca0)
+                assert m0['rev_max'] == N + 350.0 and m0['rear_hits'] and m0['back_m'] >= 1.44       # 指摘の再現
+
+
+@pytest.mark.parametrize('o,L', [(0.10, 0.8), (0.15, 0.5), (0.05, 0.3), (0.10, 0.3), (0.15, 0.3)])
+def test_rs1_scene_b_not_more_than_guard_without_hold(monkeypatch, tmp_path, o, L):
+    """場面 (b)(10/23 の形。'brake' の途中で中立止め)・keep = 1・guard = 1: 下がる距離は見張り ON・中立止めなしの位相 10 通りの
+    最大(1.418 m)以下。位相 0.15(反証と同じ)では見張り ON・中立止めなし(1.133 m)以下で、後ろの物 1.2・1.45 m にもこの
+    リカバリーでは当たらない。直す前の写しは見張り OFF(1.417 m)より多かった(1.43〜1.45 m)"""
+    _, before = load_before()
+    for c0 in CHECK_PHASES:
+        s = dict(scene_b(drop=(BRAKE_B + o, BRAKE_B + o + L)), cam0=c0)
+        sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+        d = back_b(sim, pca)
+        assert d <= NOHOLD_B_MAX + 0.005, (c0, d)
+        if c0 != 0.15:
+            continue
+        assert d <= NOHOLD_B_GUARD
+        if (o, L) in ((0.10, 0.8), (0.15, 0.5)):
+            sim0, rec0, pca0 = run_cl(before, monkeypatch, tmp_path, P(1, 1), s)
+            assert back_b(sim0, pca0) > 1.42                     # 指摘の再現
+        for back in (1.2, 1.45):    # 中立止めなしでも、1.2 m なら 3.21 秒に当たる。次のリカバリー(壁に当たり直したあと)は数えない
+            sim2, rec2, pca2 = run_cl(drive, monkeypatch, tmp_path, P(1, 1),
+                                      scene_b(drop=(BRAKE_B + o, BRAKE_B + o + L), rear=back))
+            t_esc = next((t for t, s_, th in pca2.w if t > 2.0 and th < N - 125.0), 99.0)
+            assert not [h for h in sim2.car.hits if h[1] == 'rear' and h[0] <= t_esc + 0.5]
+
+
+# ================================================================ 4. r2-r2-rs-2: 長い中立止めのあと後退を出さない
+# 中立止めなしの段の時刻(場面 (a) の前の壁・後ろの物なし): 壁で止まる 約 1.7・brake 2.09・gap 2.35・reverse 2.52
+T_STOP = 1.55            # 前の壁で止まった時刻(反証の t_slow)
+LONG_STARTS = {'stuck': T_STOP + 0.05, 'brake': 2.14, 'gap': 2.40, 'reverse': 2.57}
+
+
+def _after(pca, end, secs=2.0):
+    return [(round(t - end, 3), th) for t, s, th in pca.w if end <= t < end + secs]
+
+
+@pytest.mark.parametrize('L', [0.6, 2.0, 5.0])
+@pytest.mark.parametrize('where', sorted(LONG_STARTS))
+def test_rs2_long_hold_no_reverse_after(monkeypatch, tmp_path, where, L):
+    """反証の場面(probe_long_hold・probe.py): 2〜5 秒(と 0.6 秒)カメラが来ない。keep = 1・guard = 1 で、明けてから 2 秒の間に
+    後退側(中立 + 40 µs より上)を書かない・中止(出来事 hold_long・hold_s)。直す前の写しは 0.4 秒以内に後退側を書いた"""
+    _, before = load_before()
+    t0 = LONG_STARTS[where]
+    s = scene_a(drop=(t0, t0 + L), rear=None, dur=t0 + L + 3.0)
+    sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+    end = t0 + L
+    assert not [x for x in _after(pca, end) if x[1] > N + 40.0]
+    ev = [e[1] for e in rec.events if e[0] == 'recovery_guard' and e[1]['what'] == 'hold_long']
+    assert len(ev) == 1 and abs(ev[0]['hold_s'] - L) < 0.1
+    assert any(int(row['assist']) == A.ASSIST_GIVEUP for _, row in rec.rows if not row['hold'])
+    sim0, rec0, pca0 = run_cl(before, monkeypatch, tmp_path, P(1, 1), s)
+    first = next((t for t, th in _after(pca0, end) if th > N + 40.0), None)
+    assert first is not None and first <= 0.4                 # 指摘の再現
+
+
+@pytest.mark.parametrize('where', ['gap', 'reverse', 'stuck'])
+def test_rs2_short_hold_recovery_continues(monkeypatch, tmp_path, where):
+    """0.5 秒までの中立止め(0.3 秒)は続きから(中止にしない)。リカバリーは下がって前進まで進む"""
+    t0 = LONG_STARTS[where]
+    s = scene_a(drop=(t0, t0 + 0.3), rear=None)
+    sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+    assert 'hold_long' not in guards(rec)
+    assert not any(int(row['assist']) == A.ASSIST_GIVEUP for _, row in rec.rows if not row['hold'])
+    assert [x for x in _after(pca, t0 + 0.3, 1.5) if x[1] > N + 40.0]        # 後退(続き)を出した
+    m = metrics_a(sim, pca)
+    assert m['back_m'] <= NOHOLD_A_MAX + 0.005 and m['rev_max'] == N + 300.0
+
+
+def test_rs2_open_area_slow_then_long_hold(monkeypatch, tmp_path):
+    """反証の広い場面(probe_open): 壁は無く、モデルがゆるめて遅くなっただけのところで 1 秒の中立止め。直す前の写しは明けて
+    すぐ stuck と見て何も無い所で 1.4 m 下がった。今は下がらない(止まりかけで長く見ていない → 中止で人を待つ)"""
+    _, before = load_before()
+    s0 = {'dur': 4.0, 'xf': 20.0, 'model': lambda t, car: (C, N) if 1.6 <= t < 4.0 else (C, N - 120.0), 'drops': []}
+    sim0, _, _ = run_cl(drive, monkeypatch, tmp_path, P(0, 1), s0)
+    t_in = next(t for t, x, v, th in sim0.log if t > 1.6 and abs(v / KV) < 300)     # 遅い帯(|eRPM| < 300)に入る時刻
+    assert t_in == 2.72
+
+    def model(t, car):
+        return (C, N) if 1.6 <= t < t_in + 0.3 else (C, N - 120.0)
+    t0 = t_in + 0.1
+    s = {'dur': t0 + 1.0 + 4.0, 'xf': 20.0, 'model': model, 'drops': [(t0, t0 + 1.0)]}
+    sim, rec, pca = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s)
+    assert not [x for x in _after(pca, t0 + 1.0, 4.0) if x[1] > N + 40.0]
+    assert 'hold_long' in guards(rec)
+    sim0, rec0, pca0 = run_cl(before, monkeypatch, tmp_path, P(1, 1), s)
+    assert [x for x in _after(pca0, t0 + 1.0, 4.0) if x[1] > N + 40.0]          # 指摘の再現(直す前は下がった)
+    s_nohold = dict(s, drops=[])
+    sim1, rec1, pca1 = run_cl(drive, monkeypatch, tmp_path, P(1, 1), s_nohold)
+    assert not [x for x in _after(pca1, t0, 5.0) if x[1] > N + 40.0]           # 中立止めなしではリカバリーは始まらない(前と同じ)
+
+
+# ================================================================ 5. でたらめな場面: ON で変わるのは、手順の途中で残した中立止めのあとだけ
+def _recorder_step(step, log, strip=False):
+    """Recovery.step を包んで、呼ばれた順に (now, 段, 戻り値, 効いたか) を残す。効いた = hold_since があり、呼ぶ前に手順の途中
+    (段あり)か止まっている時間を数えている途中(slow_since あり)。strip = hold_since・hold_back_s を外す(直す 2 回目の前の形)"""
+    def wrapped(self, model_us, erpm, now, *a, **kw):
+        # 2026-10-27 直す 3 回目・1 組目(r3-r3-safety-1)で足した: armed で前に処理したフレームから HOLD_KEEP_MAX_S より長い中立止め
+        # のあと(段なし・'escape' でも、止まっていれば中止)も「効いた」に入れる
+        long_armed = self.armed and self.t_last is not None and now - self.t_last > A.Recovery.HOLD_KEEP_MAX_S
+        hit = kw.get('hold_since') is not None and (self.phase is not None or self.slow_since is not None or long_armed)
+        if strip:
+            kw.pop('hold_since', None)
+            kw.pop('hold_back_s', None)
+        r = step(self, model_us, erpm, now, *a, **kw)
+        log.append((round(now, 6), self.phase, r, hit))
+        return r
+    return wrapped
+
+
+def test_fuzz_on_changes_only_after_kept_hold_mid_procedure(monkeypatch, tmp_path):
+    """直す 1 回目の でたらめな場面 16 本(tests/test_fix3_r1_1.py の FUZZ。カメラ・車両の値が来ない区間と衝撃)を keep = 1・
+    guard = 1 で: 直す 2 回目の前の形(hold_since を外す)と比べ、Recovery の出力が違うのは、手順の途中(か止まっている時間の途中)で
+    残した中立止めのあとのフレームから。そこまでは同じ。そういうフレームが無い本は、PCA9685 に書く値・記録・出来事まで同じ"""
+    import test_fix3_r1_1 as R1
+    n_hit = n_same = 0
+    for kind, seed in R1.FUZZ:
+        rng = random.Random(seed)
+        frames, imu = R1._scene(kind, seed)
+        for keep, guard in ((0, 1), (1, 0), (0, 0)):
+            R1._fuzz_params(rng, keep, guard)
+        p = R1._fuzz_params(rng, 1, 1)
+        logs = {}
+        outs = {}
+        for name, strip in (('new', False), ('r1', True)):
+            logs[name] = []
+            with monkeypatch.context() as m:
+                m.setattr(A.Recovery, 'step', _recorder_step(A.Recovery.step, logs[name], strip))
+                outs[name] = R1.run_wait(drive, monkeypatch, tmp_path, p, frames, imu)
+        new, old = logs['new'], logs['r1']
+        first = next((i for i, x in enumerate(new) if x[3]), None)
+        if first is None:
+            R1.same_out(outs['new'], outs['r1'])
+            n_same += 1
+            continue
+        n_hit += 1
+        assert [x[:3] for x in new[:first]] == [x[:3] for x in old[:first]], (kind, seed)
+    assert n_hit >= 4 and n_same >= 4, (n_hit, n_same)           # どちらの道も通っている(試験が空振りしていない)

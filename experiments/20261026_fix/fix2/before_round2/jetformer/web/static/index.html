@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JetFormer 収集管理</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">JetFormer <span>データ収集管理</span></div>
+  <nav>
+    <button class="tab active" data-tab="live">ライブ・収集</button>
+    <button class="tab" data-tab="scenes">シーン <span id="scene-count" class="pill">0</span></button>
+    <button class="tab" data-tab="modes">ジャンル</button>
+    <button class="tab" data-tab="datasets">データセット</button>
+    <button class="tab" data-tab="train">学習</button>
+    <button class="tab" data-tab="drive">走行</button>
+    <button class="tab" data-tab="sim">シミュレーター</button>
+  </nav>
+  <div class="header-status">
+    <span id="rec-indicator" class="rec-off">待機中</span>
+    <span id="disk"></span>
+  </div>
+</header>
+
+<main>
+  <!-- ======================= ライブ・収集 ======================= -->
+  <section id="tab-live" class="tab-page active">
+    <div class="live-grid">
+      <div class="live-left">
+        <div class="card video-card">
+          <div class="card-title">カメラ | ToF距離 <small>(近い=赤 / 遠い=青)</small></div>
+          <img id="live-video" alt="live">
+        </div>
+        <div class="charts">
+          <div class="card"><div class="card-title">操作値 PWM [µs]</div><canvas id="chart-pwm" height="140"></canvas></div>
+          <div class="card"><div class="card-title">モーター回転 [eRPM]</div><canvas id="chart-motor" height="140"></canvas></div>
+          <div class="card"><div class="card-title">加速度 [m/s²]</div><canvas id="chart-accel" height="140"></canvas></div>
+          <div class="card"><div class="card-title">ヨーレート [deg/s]</div><canvas id="chart-gyro" height="140"></canvas></div>
+        </div>
+      </div>
+
+      <div class="live-right">
+        <div class="card">
+          <div class="card-title">収集</div>
+          <div id="rec-state" class="rec-state">待機中</div>
+          <div class="progress"><div id="scene-progress" class="bar"></div></div>
+          <div id="rec-detail" class="muted small"></div>
+          <label>走行ジャンル <span class="muted">(収集中に変えると、その瞬間から切り替わります)</span>
+            <select id="rec-mode"></select></label>
+          <label>走行の説明<input id="rec-desc" placeholder="例: 白線の駐車枠に後退で入れる"></label>
+          <label>タグ(カンマ区切り。シミュレーターのデータには simulator)<input id="rec-tags" placeholder="例: indoor, cw, daylight / simulator"></label>
+          <label>場所<input id="rec-location" placeholder="例: GClue lab"></label>
+          <div class="row">
+            <label>コースの配置<input id="rec-layout" placeholder="例: A(10/10の配置)"></label>
+            <label>電池<input id="rec-battery" placeholder="例: 2号・満充電"></label>
+          </div>
+          <div class="muted small">直近15分以内に「センサーの向きの点検」をしていれば、その結果も一緒に記録します。</div>
+          <label>収集のしかた</label>
+          <div class="row tight">
+            <label class="inline"><input type="radio" name="rec-method" value="runs" checked> 走行ごと(カウントダウン)</label>
+            <label class="inline"><input type="radio" name="rec-method" value="continuous"> 区切らずに連続</label>
+          </div>
+          <div id="rec-runs-opts" class="opts">
+            <div class="row tight">
+              <label class="inline">回数 <input id="rec-runs" type="number" min="1" max="200" value="1" class="num"> 回</label>
+              <label class="inline">1回の走行 <input id="rec-run-seconds" type="number" min="3" max="300" value="20" class="num"> 秒</label>
+            </div>
+            <div class="row tight">
+              <label class="inline">走行の間 <input id="rec-pause" type="number" min="0" max="600" value="10" class="num"> 秒停止</label>
+            </div>
+            <div class="muted small">「n回目の走行をスタート、3、2、1、ピ」で記録を始め、「ピ、n回目の走行終了」で止めます。
+              回数を2以上にすると、指定秒数停止して次の走行をくり返します(連続収集)。1回の走行が1シーンになります。</div>
+          </div>
+          <div id="rec-cont-opts" class="opts hidden">
+            <div class="row tight">
+              <label class="inline"><input type="radio" name="rec-mode" value="continuous" checked> 停止まで</label>
+              <label class="inline"><input type="radio" name="rec-mode" value="count"> シーン数
+                <input id="rec-count" type="number" min="1" value="3" class="num"></label>
+            </div>
+            <div class="muted small">開始から20秒ごとにシーンを区切って記録し続けます(カウントダウンなし)。</div>
+          </div>
+          <div id="run-panel" class="run-panel hidden">
+            <div id="run-big" class="run-big"></div>
+            <div class="row buttons">
+              <button id="btn-run-end" class="small">この走行を終える</button>
+              <button id="btn-run-next" class="small">次の走行を始める</button>
+            </div>
+          </div>
+          <div class="row buttons">
+            <button id="btn-rec-start" class="primary">● 収集開始</button>
+            <button id="btn-rec-stop" class="danger" disabled>■ 停止</button>
+          </div>
+          <div id="session-scenes" class="session-scenes"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">センサー
+            <span class="title-actions">
+              <button id="btn-sensors-start" class="small">開始</button>
+              <button id="btn-sensors-stop" class="small">停止</button>
+            </span>
+          </div>
+          <table class="sensor-table" id="sensor-table"></table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">センサーの向きの点検 <small>(走る前と後に。車を止め、前に障害物のない床の上で)</small>
+            <span class="title-actions"><button id="btn-sensor-check" class="small">点検する</button></span></div>
+          <div id="sensor-check-result" class="small muted">カメラ(写るバンパーの行)と ToF(遠い床の距離)が、学習データと同じ向きかを測ります(約1秒)。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">サウンド <small>(車のスピーカー)</small>
+            <span class="title-actions"><button id="btn-snd-test" class="small">テスト</button></span></div>
+          <div class="row">
+            <label class="inline"><input type="checkbox" id="snd-enabled"> 音で知らせる</label>
+            <label class="inline small">音量 <input type="range" id="snd-volume" min="0" max="100" step="5"> <span id="snd-volume-v"></span></label>
+          </div>
+          <div id="snd-events" class="snd-events"></div>
+          <div class="row">
+            <input id="snd-text" class="snd-text" maxlength="100" placeholder="話す内容(例: 出発します)">
+            <button id="btn-snd-say" class="small">話す</button>
+          </div>
+          <div id="snd-status" class="small muted"></div>
+        </div>
+
+        <div class="card hidden" id="mic-card">
+          <div class="card-title">マイク
+            <span class="title-actions"><button id="btn-mic-listen" class="small">🔊 聞く</button></span></div>
+          <div class="mic-meter"><div id="mic-bar" class="mic-bar"></div></div>
+          <div id="mic-level" class="small muted">センサー停止中</div>
+          <label class="inline small">音量 <input type="range" id="mic-gain" min="0" max="2.5" step="0.05" value="1.5"> <span id="mic-gain-v">×32</span></label>
+        </div>
+
+        <div class="card">
+          <div class="card-title">現在値</div>
+          <div class="values" id="values"></div>
+          <details class="adv" id="vbat-calib"><summary class="small">電池の電圧の較正(基板の値 ↔ 電圧計)</summary>
+            <div class="muted small">車を止めて、LiPo チェッカー・電圧計で測った電池の電圧を入れて保存すると、基板の値に掛ける係数
+              (data/vbat_calib.json)を作ります。走行中はできません。</div>
+            <div class="row"><label class="inline small">電圧計の値 <input id="vbat-meter" type="number" step="0.01" min="5" max="13" placeholder="8.31"> V</label>
+              <button id="btn-vbat-calib" class="small">係数を保存</button>
+              <button id="btn-vbat-calib-reset" class="small">係数を 1.0 に戻す</button></div>
+            <div id="vbat-calib-note" class="small"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= シーン ======================= -->
+  <section id="tab-scenes" class="tab-page">
+    <div class="toolbar">
+      <input id="scene-filter" placeholder="名前・説明・タグで絞り込み">
+      <select id="scene-mode-filter" class="compact"></select>
+      <label class="inline"><input type="checkbox" id="only-complete"> 完全なシーンのみ(20秒・走行を完走)</label>
+      <button id="btn-select-all" class="small">表示中を全選択</button>
+      <button id="btn-select-none" class="small">選択解除</button>
+      <span id="selection-info" class="muted"></span>
+      <span class="spacer"></span>
+      <select id="bulk-mode" class="compact"></select>
+      <button id="btn-bulk-mode">選択にジャンルを設定</button>
+      <button id="btn-to-dataset" class="primary">選択からデータセット作成 →</button>
+      <button id="btn-delete-selected" class="danger">選択を削除</button>
+    </div>
+    <div id="scene-summary" class="muted small"></div>
+    <div id="scene-grid" class="scene-grid"></div>
+  </section>
+
+  <!-- ======================= ジャンル ======================= -->
+  <section id="tab-modes" class="tab-page">
+    <div class="ds-grid">
+      <div class="card">
+        <div class="card-title">ジャンルを追加</div>
+        <p class="muted small">走行ジャンルは、モデルが走り方を切り替えるための指示(ID)です。
+          IDはモデルの出力の番号に直結するため、一度付けたIDは変わりません(名前と説明は後から変えられます)。</p>
+        <label>名前<input id="mode-new-name" placeholder="例: 駐車(4)"></label>
+        <label>説明<input id="mode-new-desc" placeholder="例: 縦列駐車"></label>
+        <div class="row buttons"><button id="btn-mode-add" class="primary">追加</button></div>
+      </div>
+      <div>
+        <div class="card-title section-title">ジャンル一覧</div>
+        <table class="mode-table" id="mode-table"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= データセット ======================= -->
+  <section id="tab-datasets" class="tab-page">
+    <div class="ds-grid">
+      <div class="card">
+        <div class="card-title">新しいデータセット</div>
+        <p class="muted small">シーンタブで選んだシーンから、nuScenes形式のデータセットを作ります。学習/検証はシーン単位で分割します。</p>
+        <label>データセット名<input id="ds-name" placeholder="例: indoor_v1(英数字と_ -)"></label>
+        <div id="ds-selected" class="muted"></div>
+        <label>検証用の割合<input id="ds-val" type="number" step="0.05" min="0" max="0.9" value="0.2"></label>
+        <label>最短シーン長 [秒]<input id="ds-min" type="number" step="1" min="0" value="5"></label>
+        <label class="inline"><input type="checkbox" id="ds-sim"> 🎮 シミュレーターのデータ(simulator のタグを付ける。シーンに simulator のタグがあれば自動で付く)</label>
+        <div class="row buttons"><button id="btn-ds-create" class="primary">作成</button></div>
+        <div class="card-title" style="margin-top:16px">📥 PC から取り込む(シミュレーターなど)</div>
+        <p class="muted small">別の環境(シミュレーター・エミュレーターなど)で作ったデータセットを、まとめて取り込みます。
+          1ファイル = 1データセットの .tar・.tar.gz・.zip(エクスポートと同じ形。中に dataset_card.json・splits.json・aligned/・samples/)。
+          取り込む前に、学習に使える形かを確かめます。</p>
+        <div id="imp-drop" class="drop-zone">ここにファイルをドロップ(複数可)<br><span class="small muted">または</span>
+          <label class="file-btn">ファイルを選ぶ<input type="file" id="imp-files" multiple accept=".tar,.tgz,.gz,.zip" hidden></label></div>
+        <label class="inline"><input type="checkbox" id="imp-sim" checked> 🎮 シミュレーターのデータとして取り込む(simulator のタグ)</label>
+        <div id="imp-list" class="imp-list"></div>
+        <details class="small"><summary>シミュレーターの PC からコマンドで送る</summary>
+          <p class="muted">フォルダのまま送れます(その場で tar にします)。Python 3 の標準ライブラリだけで動きます。</p>
+          <p><a id="imp-tool-link" href="/api/tools/upload_datasets.py" download>upload_datasets.py をダウンロード</a></p>
+          <pre class="log" id="imp-cmd"></pre></details>
+        <div class="card-title" style="margin-top:16px">🤗 Hugging Face からダウンロード</div>
+        <p class="muted small">Hub に上げた JetFormer のデータセット(学習用の nuScenes 形式の tar 入り)を、この Jetson に取り込みます。
+          取り込んだデータセットは一覧と学習タブに出ます。公開リポジトリはログインなしで取れます。</p>
+        <label>ユーザー名・組織(空なら JetFormer のデータセットすべて)<input id="hfdl-author" placeholder="例: FaBoAI"></label>
+        <label>種類<select id="hfdl-kind"><option value="all">すべて</option><option value="real">実機</option><option value="simulator">🎮 シミュレーター</option></select></label>
+        <div class="row buttons"><button id="btn-hfdl-search" class="small">探す</button></div>
+        <div id="hfdl-list" class="hfdl-list"></div>
+        <label>リポジトリ(ユーザー名または組織/名前)<input id="hfdl-repo" placeholder="例: FaBoAI/jetformer-clean_driving_20261011"></label>
+        <div id="hfdl-files" class="muted small"></div>
+        <div class="row buttons"><button id="btn-hfdl-check" class="small">確認</button>
+          <button id="btn-hfdl-start" class="primary small">ダウンロード</button></div>
+        <div class="card-title" style="margin-top:16px">処理状況</div>
+        <div id="jobs"></div>
+      </div>
+      <div>
+        <div class="card-title section-title">データセット一覧</div>
+        <div id="hf-status" class="hf-status small"></div>
+        <div id="dataset-list"></div>
+      </div>
+    </div>
+  </section>
+  <!-- ======================= 学習 ======================= -->
+  <section id="tab-train" class="tab-page">
+    <div class="ds-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">新しい学習</div>
+          <p class="muted small">このJetson(Orin Nano)のGPUで学習します。学習中は収集できません。</p>
+          <label>データセット<select id="tr-dataset"></select></label>
+          <div id="tr-ds-info" class="small"></div>
+          <label>モデルの種類<select id="tr-policy"></select></label>
+          <div id="tr-policy-info" class="small"></div>
+          <div id="tr-policy-opts" class="policy-opts"></div>
+          <label>間引き率(30fpsの連続フレームは似ているので、間引いても精度はあまり落ちません)
+            <select id="tr-stride">
+              <option value="1">1/1 全フレーム(30fps相当)</option>
+              <option value="2">1/2(15fps相当)</option>
+              <option value="3" selected>1/3(10fps相当)おすすめ</option>
+              <option value="5">1/5(6fps相当)</option>
+              <option value="10">1/10(3fps相当)</option>
+            </select></label>
+          <label>エポック数<input id="tr-epochs" type="number" value="30" min="1" max="500"></label>
+          <div class="row">
+            <label class="inline">バッチ<input id="tr-batch" type="number" value="64" min="4" max="256" class="num"></label>
+            <label class="inline">学習率<input id="tr-lr" type="number" value="0.0003" step="0.0001" min="0.00001" class="num wide"></label>
+          </div>
+          <label class="inline"><input type="checkbox" id="tr-pretrained" checked> ImageNet事前学習の重みを使う(初回のみネット接続が必要)</label>
+          <label class="inline"><input type="checkbox" id="tr-engine" checked> 学習後にTensorRTエンジンを作る(走行用)</label>
+          <label class="inline"><input type="checkbox" id="tr-nocmd"> 今の操作値を入力に使わない(AI走行と学習の条件をそろえる)</label>
+          <label class="inline"><input type="checkbox" id="tr-mask-impacts" checked> ぶつかった前後(水平の加速度が「衝突とみなす加速度」以上の1秒前〜2秒後)を学習に使わない(AIが衝突をまねないように)</label>
+          <details class="adv"><summary class="small">詳細(モデルどうしを比べるための設定)</summary>
+            <label>衝突とみなす加速度
+              <select id="tr-impact-g">
+                <option value="" selected>4.0 G(既定・強い衝突だけ)</option>
+                <option value="2.5">2.5 G(モデル B と同じ。比べるときはこちら)</option>
+              </select></label>
+            <label>乱数の種(空 = 決めない。同じ種なら学習のばらつきの一部がそろう)<input id="tr-seed" type="number" min="0" step="1" placeholder="例: 0" class="num"></label>
+          </details>
+          <div id="tr-estimate" class="estimate"></div>
+          <div class="row buttons"><button id="btn-tr-start" class="primary">学習を開始</button></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">実行中の学習
+            <span class="title-actions"><button id="btn-tr-stop" class="small danger" disabled>停止</button></span></div>
+          <div id="tr-current" class="small muted">実行中の学習はありません</div>
+          <div class="progress blue"><div id="tr-progress" class="bar"></div></div>
+          <div id="tr-progress-text" class="small muted"></div>
+          <canvas id="tr-chart" height="170"></canvas>
+          <div id="tr-modes" class="small"></div>
+          <details><summary class="small">ログ</summary><pre id="tr-log" class="log"></pre></details>
+        </div>
+        <div class="card-title section-title">学習結果</div>
+        <div id="run-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= AI走行 ======================= -->
+  <section id="tab-drive" class="tab-page">
+    <div id="dr-vbat" class="vbat-strip small"><span class="muted">電池の電圧: -</span></div>
+    <div class="ds-grid">
+      <div>
+        <div class="card" id="dr-prep">
+          <div class="card-title">走る日の準備</div>
+          <details class="prep-check" open><summary class="small">走る前のチェック <span id="dr-check-count" class="badge">0 / 6</span>
+            <span class="muted">(この画面の中だけ。保存しません)</span></summary>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> ip_status.service を止めた
+              <span class="muted small">(sudo systemctl stop ip_status。OLED が同じ I2C bus 7 でエラーを出し続けるため。走り終わったら戻す)</span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 空き容量 10 GB 以上 <span id="dr-check-disk" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 重い処理(学習・ワークフロー)が動いていない <span id="dr-check-heavy" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> プロポの CH3 が人側(SELECT = 0)</label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 「基準の設定」の値を画面で確かめた <span id="dr-check-base" class="small"></span></label>
+            <label class="inline check-line"><input type="checkbox" class="dr-check" autocomplete="off"> 電池の番号と電圧を測った
+              <span class="muted small">(説明欄の battery=#__ V_before=__ に書く。基板が電圧を送るときは、走行開始で V_before が空なら自動で入ります)</span></label>
+            <div class="row"><button id="btn-dr-check-clear" class="small">チェックを全部外す</button></div>
+          </details>
+          <label>この日のステア <span class="muted">(B が R1・LH を回り切れない日は 1.3。その日の全ブロックを同じにする。選んだ値はその日のあいだ、この画面が覚える)</span>
+            <select id="dr-base-steer" autocomplete="off">
+              <option value="" selected>基準どおり</option>
+              <option value="1.3">1.30(B が回り切れなかった日)</option>
+            </select></label>
+          <div class="row buttons"><button id="btn-dr-baseline">基準の設定を画面に入れる</button></div>
+          <div id="dr-base-info" class="muted small"></div>
+          <div id="dr-base-note" class="small hidden"><span id="dr-base-note-text"></span>
+            <button id="btn-dr-base-undo" class="small">取り消す(サーバーの値に戻す)</button></div>
+        </div>
+
+        <div class="card hidden" id="bench-card">
+          <div class="card-title">ベンチマークの候補</div>
+          <div id="bench-head" class="muted small"></div>
+          <div class="muted small">ブロックを押すと、そのモデル・基準の値・説明欄の雛形が画面に入ります(走行は始めません)。
+            電池の番号・電圧・点検の結果は、説明欄に書き足してください。</div>
+          <div id="bench-error" class="warn-text small"></div>
+          <div id="bench-days"></div>
+          <div id="bench-applied" class="small"></div>
+          <details class="adv"><summary class="small">候補の一覧</summary><div id="bench-cands"></div></details>
+        </div>
+
+        <div class="card">
+          <div class="card-title">AI走行</div>
+          <p class="muted small">学習結果のモデル(TensorRT)で車を操作します。プロポの<b>CH3をAI側(LED紫)</b>にすると、
+            この出力がサーボ・ESCに届きます。<b>CH3を戻せば、いつでも人の操縦に戻ります。</b></p>
+          <label id="dr-bench-pick-wrap" class="hidden">ベンチマーク(本番は 1 から順番に選ぶ)<select id="dr-bench-pick"></select></label>
+          <label>モデル(学習結果)<select id="dr-model"></select></label>
+          <div id="dr-model-info" class="small muted"></div>
+          <label>走行ジャンル <span class="muted">(走行中に変えると、すぐ切り替わります)</span><select id="dr-mode"></select></label>
+
+          <div class="gain">
+            <div class="gain-head"><span>ステアリング ゲイン</span><b id="dr-steer-gain-v">1.00</b></div>
+            <input type="range" id="dr-steer-gain" min="0" max="2" step="0.05" value="1">
+            <div class="gain-scale"><span>0(直進)</span><span>1(学習どおり)</span><span>2</span></div>
+          </div>
+          <div class="gain">
+            <div class="gain-head"><span>速度 ゲイン</span><b id="dr-throttle-gain-v">1.00</b></div>
+            <input type="range" id="dr-throttle-gain" min="0" max="2" step="0.05" value="1">
+            <div class="gain-scale"><span>0(停止)</span><span>1(学習どおり)</span><span>2</span></div>
+          </div>
+          <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
+
+          <div id="dr-nopost-note" class="warn-text small hidden"><span id="dr-nopost-text"></span>
+            <button id="btn-dr-nopost-reset" class="small">上限なし・操作の枝だけに戻す</button></div>
+          <div id="dr-tcp" class="tcp-panel hidden">
+            <div class="small"><b>TCP 型の出し方</b> <span class="muted">(走行中に変えると、すぐ切り替わります)</span></div>
+            <select id="dr-tcp-mode">
+              <option value="0" selected>操作の枝だけ(既定・比較で評価した出力)</option>
+              <option value="1">ハイブリッド(ステア = 操作の枝、スロットル = 目標速度 → 制御器)</option>
+              <option value="2">混ぜる(試験的)</option>
+              <option value="3">通過点を追う(試験的)</option>
+            </select>
+            <div class="gain">
+              <div class="gain-head"><span>速度の上限</span><b id="dr-speed-cap-v">上限なし</b></div>
+              <input type="range" id="dr-speed-cap" min="0" max="5" step="0.05" value="0">
+              <div class="gain-scale"><span>0(上限なし)</span><span>2.75 m/s ≒ 5500 eRPM</span><span>5 m/s</span></div>
+              <div class="muted small">上限は前進を弱めるだけで、速くはしません(どの出し方でも、速度ゲインに関係なく効きます。予測の重ね合わせの後にも掛け直します)。</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>目標速度の倍率</span><b id="dr-speed-scale-v">1.00</b></div>
+              <input type="range" id="dr-speed-scale" min="0.5" max="1.5" step="0.05" value="1">
+              <div class="muted small">出し方 1〜3 だけで効きます。</div>
+            </div>
+            <div id="dr-tcp-warn" class="warn-text small hidden">出し方 1〜3 では、速度ゲインが制御器のスロットル(目標速度の追従)にも掛かります(1.0 を勧めます)。速度の上限はゲインに関係なく効きます</div>
+            <div class="warn-text small">出し方 1〜3 は試験的です。制御器のスロットルの写像はまだ粗く(正解の目標速度を入れても人との相関 0.5 程度)、比較で評価したのは「操作の枝だけ」です</div>
+            <div id="dr-tcp-live" class="small"></div>
+          </div>
+
+          <label>ToFガード(距離センサーで衝突を予測して減速) <span class="muted">(走行中に変えると、すぐ切り替わります)</span>
+            <select id="dr-tof-guard">
+              <option value="0">OFF</option>
+              <option value="1" selected>記録だけ(動きは変えない。まずこれで警報のタイミングを確認)</option>
+              <option value="2">減速(衝突まで0.5秒未満で前進を弱め、0.3秒未満でブレーキ)</option>
+              <option value="3">減速+ハンドル(近い側から離す)</option>
+            </select></label>
+          <div class="zone-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-zone-caps" autocomplete="off"> 区間の速度上限を出力に掛ける
+              <span id="dr-zone-spec" class="muted small">(v1.1: R1 2.5・GM 2.2・DE 3.0 m/s)</span></label>
+            <div class="warn-text small">ON にするのは、10/23 の記録で G1 に合格し、ユーザーが了承したあとです。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div id="dr-zone-unknown" class="warn-text small">4 つめの上限: 位相が不確か(unknown)のときも 3.0 m/s で切ります。走行の始めから最初の R1 を見つけるまで(1 周目のほぼ全部)・R1 から 16 秒を超えたとき・1 秒以上止まったあと。ユーザーの了承は 3 区間(R1・GM・DE)だけです。ON の了承をもらうときに、これも含めて確かめてください</div>
+            <div class="muted small">OFF でも、区間と「上限ならこう出した」スロットルは記録(AI_CMD)に残ります。上限は前進を弱めるだけで、舵は変えません。</div>
+            <div id="dr-zone-note" class="small"></div>
+          </div>
+          <div class="zone-panel speed-panel" id="dr-speed-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-speed-ceiling" autocomplete="off"> 速さの天井を出力に掛ける
+              <span id="dr-ceil-spec" class="muted small">(全体 4.5・左旋回中 4.1 m/s)</span></label>
+            <div class="warn-text small">前進を弱めるだけです(ブレーキは出さない・舵は変えない)。速すぎる当たりを減らすもので、当たりを 0 にはしません。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。ON は OFF にするまで次の走行にも残ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div id="dr-ceil-note" class="small"></div>
+            <label class="inline check-line"><input type="checkbox" id="dr-speed-auto" autocomplete="off"> 速さのゲインの自動合わせ
+              <span id="dr-auto-spec" class="muted small">(目標 1 周 8.12 秒(周の速さ p90 4.27 m/s 相当))</span></label>
+            <div class="warn-text small">天井が ON のときだけ使えます。電池の電圧と周の時間(目標 1 周 約 8.1 秒)で、速度ゲインを 0.85〜1.20 倍(上げるのは 1.10 まで)に合わせます。
+              既定は OFF・起動のたびに OFF・走行中は ON にできません。</div>
+            <div class="muted small">OFF でも、天井と自動合わせの「効いたらこう出した」は記録(AI_CMD の ceil_*・sa_*)に残ります。</div>
+            <div id="dr-auto-note" class="small"></div>
+          </div>
+          <div class="zone-panel launch-panel" id="dr-launch-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-launch-boost" autocomplete="off"> 発進の前進(止まってからの発進を速くする)
+              <span id="dr-launch-spec" class="muted small">(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)</span></label>
+            <div class="warn-text small">試験の選択肢です(2026-10-26。机上の見積もりは 1 回の発進で約 0.3 秒縮む)。CH3 を AI 側にした最初のフレームで、
+              止まっていて前が 1 m 以上空いているときだけ、強い前進を出します。LH の入口に少し速く入ります。
+              コースで ON にするのはユーザーの了承のあとで、車輪を浮かせた確かめ(dry run ではなく実際の出力)を先にしてください。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。</div>
+            <div class="muted small">終わり: 速さ・最大の時間・ヨー 60 deg/s・舵 200 µs・衝撃・前が近い(TTC 0.8 秒)・CH3 を人側・中立で止めた。
+              終わったら同じ AI の区間ではもう出しません(下の発進の補助も出しません)。ToF ガードが OFF のときは始めません。</div>
+            <div id="dr-launch-note" class="small"></div>
+          </div>
+          <label class="inline check-line"><input type="checkbox" id="dr-start-kick"> AI側にしたら走り出す(発進の補助: 止まっていてモデルが進まないとき、弱い前進を最大2秒。前が近いときは出さない)</label>
+          <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
+          <label class="inline check-line"><input type="checkbox" id="dr-esc-reverse" checked> AIの後退の指令の前に中立を挟む(このESCは中立を挟まないと後退しない)</label>
+          <div class="indent">
+            <div class="gain">
+              <div class="gain-head"><span>リカバリーの後退の強さ</span><b id="dr-rev-us-v">中立+300 µs</b></div>
+              <input type="range" id="dr-rev-us" min="150" max="500" step="10" value="300">
+              <div class="gain-scale"><span>弱い</span><span>人は約+210</span><span>強い</span></div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>リカバリーで下がる時間(下がり始めてから)</span><b id="dr-rev-s-v">0.40 秒</b></div>
+              <input type="range" id="dr-rev-s" min="0.2" max="1.2" step="0.05" value="0.4">
+            </div>
+            <div class="muted small">ぶつかって止まると: ブレーキ → 止まるのを待つ → 中立 → 後退 → 惰性 → 曲がっていた向きへハンドルを切って前進 → AIへ。
+              下がり始めなければ中立を長くしてやり直します。20秒以内に3回続いたら中立で止まるので、CH3を人側へ戻して助けてください。</div>
+          </div>
+
+          <label class="inline check-line"><input type="checkbox" id="dr-record"> 走行中のデータを収集する(評価用)</label>
+          <div id="dr-record-opts" class="hidden indent">
+            <label>走行の説明<input id="dr-desc" placeholder="例: AI走行の評価 1周目"></label>
+            <label>タグ(カンマ区切り)<input id="dr-tags" value="ai-drive"></label>
+            <div class="muted small">20秒ごとのシーンとして保存され、シーンタブで予測・出力と映像を見返せます。
+              人が介入した区間(CH3が人側)は、そのまま学習データにも使えます。</div>
+          </div>
+          <label class="inline check-line"><input type="checkbox" id="dr-dry"> モーターに出力しない(中立のまま推論だけ確認)</label>
+
+          <details class="adv"><summary class="small">詳細設定</summary>
+            <div class="gain">
+              <div class="gain-head"><span>ステアリング トリム</span><b id="dr-trim-v">0 µs</b></div>
+              <input type="range" id="dr-trim" min="-200" max="200" step="5" value="0">
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>先読み(何フレーム先の予測を使うか)</span><b id="dr-look-v">1</b></div>
+              <input type="range" id="dr-look" min="1" max="10" step="1" value="1">
+              <div class="muted small">遅れて曲がり始めるときは大きく。1フレーム = 約33ms</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>予測の重ね合わせ(何フレーム前の予測まで混ぜるか)</span><b id="dr-ens-j-v">オフ</b></div>
+              <input type="range" id="dr-ens-j" min="0" max="3" step="1" value="0">
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>重ね合わせで古い予測を軽くする強さ</span><b id="dr-ens-m-v">0.5</b></div>
+              <input type="range" id="dr-ens-m" min="0" max="2" step="0.1" value="0.5">
+              <div class="muted small">どのモデルにも使えます。滑らかになる代わりに反応が少し遅れます(既定はオフ。モデルの比較には使っていません)。</div>
+            </div>
+            <div class="gain">
+              <div class="gain-head"><span>PCA9685 時計補正</span><b id="dr-osc-v">0.0 %</b></div>
+              <input type="range" id="dr-osc" min="-10" max="10" step="0.1" value="0">
+              <div class="muted small">PCA9685は個体ごとにパルス幅が数%ずれます。停止中にCH3をAI側へ切り替えて、
+                モーターが回り出す・ステアリングが動くときに合わせます。</div>
+            </div>
+            <div id="dr-ref" class="muted small"></div>
+          </details>
+
+          <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button></div>
+          <button id="btn-dr-stop" class="stop-big" disabled>■ 停止(スペースキー)</button>
+          <div id="dr-after" class="hidden">
+            <div class="card-title small">走り終わりのメモ <span id="dr-after-log" class="muted small"></span></div>
+            <div id="dr-after-ai" class="small"></div>
+            <div class="row">
+              <label>電池の番号<input id="dr-after-battery" placeholder="例: 3" size="4"></label>
+              <label>走る前の電圧 V<input id="dr-after-vb" type="number" step="0.01" placeholder="8.20"></label>
+              <label>走ったあとの電圧 V<input id="dr-after-va" type="number" step="0.01" placeholder="7.60"></label>
+            </div>
+            <div id="dr-after-vnote" class="muted small"></div>
+            <label>止めた理由<select id="dr-after-reason">
+              <option value="">選んでください</option><option>240秒走った</option><option>安全で中止</option>
+              <option>回れない</option><option>B止め</option><option>電池</option><option>その他</option></select></label>
+            <label>メモ<input id="dr-after-memo" placeholder="例: DE で 2 回当たって止めた"></label>
+            <div class="row buttons"><button id="btn-dr-after">記録に書く</button>
+              <button id="btn-dr-after-skip" class="small">書かずに閉じる</button></div>
+            <div class="muted small">夜の集計は、この欄(シーンの説明)を記録の説明欄に重ねて読みます。電池の直しには番号と電圧の両方が要ります。</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-title">状態 <span id="dr-phase" class="badge">停止中</span>
+            <span id="dr-who" class="who"></span></div>
+          <div id="dr-message" class="small"></div>
+          <div class="gauges">
+            <div class="gauge-row"><span class="gauge-label">ステアリング</span>
+              <div class="gauge"><div id="dr-g-steer-ref" class="g-ref"></div><div id="dr-g-steer-raw" class="g-needle raw"></div><div id="dr-g-steer-out" class="g-needle out"></div></div>
+              <span id="dr-v-steer" class="gauge-val"></span></div>
+            <div class="gauge-row"><span class="gauge-label">スロットル</span>
+              <div class="gauge"><div id="dr-g-thr-ref" class="g-ref"></div><div id="dr-g-thr-raw" class="g-needle raw"></div><div id="dr-g-thr-out" class="g-needle out"></div></div>
+              <span id="dr-v-thr" class="gauge-val"></span></div>
+            <div class="muted small"><span class="key raw"></span>モデルの予測 <span class="key out"></span><span id="dr-out-key">出力(ゲイン後)</span> <span class="key ref"></span>中心・中立 ・ 範囲 1000〜2000µs</div>
+          </div>
+          <div class="values" id="dr-stats"></div>
+          <div class="takeover-reasons">
+            <div class="small">交代したら理由を押してください(キー 1〜4)<span id="dr-tk-info" class="muted"></span></div>
+            <div class="row buttons">
+              <button class="small" data-tk="collision">1 衝突した</button>
+              <button class="small" data-tk="stuck">2 止まった</button>
+              <button class="small" data-tk="preemptive">3 危なかった(予防)</button>
+              <button class="small" data-tk="other">4 その他・終了</button>
+            </div>
+          </div>
+        </div>
+        <div class="charts">
+          <div class="card"><div class="card-title">ステアリング [µs]</div><canvas id="dr-chart-steer" height="140"></canvas></div>
+          <div class="card"><div class="card-title">スロットル [µs]</div><canvas id="dr-chart-thr" height="140"></canvas></div>
+        </div>
+        <div class="card video-card">
+          <div class="card-title">カメラ | ToF距離</div>
+          <img id="drive-video" alt="drive">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= シミュレーター ======================= -->
+  <section id="tab-sim" class="tab-page">
+    <div class="sim-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">🎮 シミュレーター本体 <span id="sim-rel-pill"></span></div>
+          <div id="sim-release" class="small"></div>
+          <p class="muted small">Jetson の <code id="sim-inbox-dir">~/sim</code> に置いたシミュレーターの ZIP(course-simulator-complete.zip など)から導入します。
+            ZIP の全ファイルを COMPLETE-MANIFEST.json と照合し、取り込み済みの大きなデータ(dataset-downloads/)は入れません。
+            本体(Python・JS)はブラウザからは入れられません。</p>
+          <div id="sim-inbox"></div>
+          <div id="sim-releases"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Python 環境(ブリッジ用) <span id="sim-env-pill"></span></div>
+          <div id="sim-env" class="small"></div>
+          <div class="row buttons">
+            <button id="btn-sim-setup" class="primary small">準備する</button>
+            <button id="btn-sim-resetup" class="small">準備し直す</button>
+          </div>
+          <p class="muted small">data/sim/venv に numpy・opencv(ヘッドレス)・onnxruntime(CPU 版)を、版とハッシュを固定して入れます(数分・約 290 MB)。
+            JetFormer の Python 環境には何も入れません。最後にブリッジの自己診断を行います。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">ブリッジ <span id="sim-bridge-pill"></span></div>
+          <div id="sim-bridge" class="small"></div>
+          <div class="row buttons">
+            <button id="btn-sim-start" class="primary small">起動</button>
+            <button id="btn-sim-stop" class="small">停止</button>
+          </div>
+          <details id="sim-log-box" class="small"><summary>ログ</summary><pre class="log" id="sim-log"></pre></details>
+          <p class="muted small">ブリッジは学習済みモデルの推論(ONNX)と、集めたデータの保存を受け持ちます。推論は Jetson の CPU で動きます(GPU は使いません)。学習中は遅くなります。<br>
+            管理画面(jetformer-web)を再起動すると、ブリッジも止まり、収集中のデータは失われます(起動し直すにはこのボタンを押します)。</p>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">シミュレーターを開く</div>
+          <label>コース<select id="sim-open-course"></select></label>
+          <label>モデル(JetFormer の学習済み。読み込んだ状態で開く)<select id="sim-open-model"></select></label>
+          <div id="sim-open-note" class="muted small"></div>
+          <div class="row buttons"><button id="btn-sim-open" class="primary">新しいタブで開く</button></div>
+          <p class="muted small">描画はこのブラウザ(WebGL)、推論とデータの保存は Jetson のブリッジが行います。
+            同時に AI で走らせられるのは 1 つのタブだけです(ブリッジのモデルは 1 つ)。</p>
+        </div>
+        <div class="card" id="sim-rl-card">
+          <div class="card-title">🤖 強化学習モード(データセットのばらつき) <span id="sim-rl-pill"></span></div>
+          <p class="muted small">シミュレーターの教師の走り方を、強化学習(RL)で学習した方策に変えて、いろいろな走りのデータセットを作ります
+            (最速・壁から離れて走る・わざと乱してから立て直す・速さを変える など)。Default コースだけで使えます。
+            数字はシミュレーターの中の試験の結果で、実車の保証ではありません。ジャンルはどれも 8(シミュレーター)で、モードはタグ(sim-rl-…)で分かれます。</p>
+          <div id="sim-rl-modes"><div class="muted small">読み込み中…</div></div>
+          <div class="card-title" style="margin-top:12px">収集プラン(モード × 分)</div>
+          <p class="muted small">1 分 = 20 秒のシーン 3 つ。シーンの開始・種・条件は、前もって Node で走らせて 20 秒を走り切ると確かめた組から選びます。
+            開くと新しいタブのシミュレーターで「開始」を押すだけで、1 シーンずつ記録し、モードごとに 1 つのデータセットに取り込みます(乱した操作は学習から外します)。
+            Jetson の Firefox では 1 シーン約 70 秒(5 分のモードで約 18 分)、Mac の GPU のブラウザならもっと速く記録できます。記録中はそのタブを表に出しておいてください。</p>
+          <div id="sim-rl-plan-form"></div>
+          <div class="row">
+            <label>検証(val)の割合<input type="number" id="sim-rl-val" min="0" max="0.5" step="0.05" value="0.2"></label>
+            <label>種(空欄 = 自動)<input type="number" id="sim-rl-seed" min="0" max="999999" step="1" placeholder="自動"></label>
+          </div>
+          <label class="inline"><input type="checkbox" id="sim-rl-delete" checked> 取り込んだら、元のシーン(ブリッジの 1 シーンの ZIP)を消す</label>
+          <div class="row buttons"><button id="btn-sim-rl-plan" class="primary">プランを作って開く</button></div>
+          <div id="sim-rl-plans"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">コース</div>
+          <div id="sim-courses"></div>
+          <div class="card-title" style="margin-top:12px">コースを追加(ZIP をアップロード)</div>
+          <label class="file-btn">ZIP を選ぶ<input type="file" id="sim-course-file" accept=".zip,application/zip" hidden></label>
+          <label class="inline"><input type="checkbox" id="sim-course-replace"> 同じ ID のアップロード済みコースを置き換える</label>
+          <div id="sim-course-upload" class="small"></div>
+          <details class="small"><summary>コースの ZIP の形式・作り方</summary>
+            <p>受け付ける形式は 2 つです(どちらも ZIP。中身が 1 つのフォルダーの下にあってもかまいません)。</p>
+            <ul>
+              <li><b>JetFormer 形式</b>: <code>course.json</code>({"format":"jetformer-sim-course/v1", "name", "world_version", ["id"], ["description"], ["visual"]})+ <code>physics-world.json</code> + 任意の <code>assets/*.jpg|png</code></li>
+              <li><b>シミュレーターのスナップショット形式</b>(qa/course-snapshots と同じ): <code>manifest.json</code> + <code>physics-world.json</code> [+ scene.js・world.js]</li>
+            </ul>
+            <p>いちばん簡単な作り方: コースの「書き出し」で雛形の ZIP を取り、<code>physics-world.json</code>(壁・柱・路面・ゲート列・開始位置)を編集し、
+              <code>course.json</code> の world_version と id を新しい名前に変え、world_hash の行を消してからアップロードします。world_version はコースごとに一意にしてください。</p>
+            <p><b>アップロードした JS(scene.js・world.js)は実行しません。</b>シミュレーターのページは JetFormer と同じアドレスで動くため、JS は実車の走行 API も呼べてしまうからです。
+              アップロードしたコースは JetFormer の汎用描画(簡易描画)で表示します。カメラ画像は Default とは同じにならないので、AI の評価結果は Default と直接は比べられません。
+              JS は、導入済みのシミュレーター本体のファイルと完全に一致するときだけ使います。</p>
+          </details>
+        </div>
+        <div class="card">
+          <div class="card-title">シミュレーターで集めたデータセット</div>
+          <div id="sim-datasets"></div>
+          <p class="muted small">ここでの取り込みは、ブリッジの ZIP をそのまま JetFormer のデータセットにします(送り直さないので速く、容量も少なくて済みます)。
+            シミュレーターの中の「JetFormerへ送る」も使えます。まとめ ZIP(20 秒シーンの集約)を作り終えてから元のシーンを消してください。</p>
+          <div class="card-title" style="margin-top:12px">処理状況</div>
+          <div id="sim-jobs"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- シーン詳細 -->
+<div id="modal" class="modal hidden">
+  <div class="modal-body">
+    <div class="modal-head">
+      <div><b id="m-name"></b> <span id="m-badges"></span></div>
+      <button id="m-close" class="small">閉じる ✕</button>
+    </div>
+    <div class="modal-grid">
+      <div>
+        <img id="m-frame" alt="frame">
+        <div class="row player">
+          <button id="m-play" class="small">▶ 再生</button>
+          <input id="m-slider" type="range" min="0" value="0">
+          <span id="m-pos" class="muted small"></span>
+        </div>
+        <audio id="m-audio" class="m-audio hidden" controls preload="none"></audio>
+        <div class="card"><div class="card-title">操作値 PWM [µs](人の操縦中のみ)</div><canvas id="m-chart-veh" height="150"></canvas></div>
+        <div class="card"><div class="card-title">加速度 [m/s²] / ヨーレート [deg/s]</div><canvas id="m-chart-imu" height="150"></canvas></div>
+        <div class="card"><div class="card-title">ToF 距離(最小・中央値)</div><canvas id="m-chart-tof" height="120"></canvas></div>
+        <div class="card hidden" id="m-ai-card"><div class="card-title">AI走行の指令 [µs](予測・出力)</div><canvas id="m-chart-ai" height="150"></canvas></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">情報</div>
+          <div id="m-info" class="small"></div>
+          <label>走行ジャンル<select id="m-mode"></select></label>
+          <div id="m-segments" class="small"></div>
+          <label>走行の説明<input id="m-desc"></label>
+          <label>タグ(カンマ区切り)<input id="m-tags"></label>
+          <div class="row buttons">
+            <button id="m-save" class="primary">保存</button>
+            <button id="m-delete" class="danger">このシーンを削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<button id="btn-float-stop" class="float-stop hidden">■ AI走行を停止(スペースキー)</button>
+<div id="toast" class="toast hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

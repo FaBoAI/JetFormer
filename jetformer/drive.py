@@ -38,6 +38,69 @@ v1.1 は位相が不確か(unknown: 最初の R1 の前・R1 から 16 秒超・
 できない(1 → 0 はできる)・値は変えられない。OFF のとき、PCA9685 に書く値と記録の今までの欄は手を入れる前と同じ
 (新しい欄 launch_on・launch_end は False・0)。記録: AI_CMD の assist = 5・launch_on・launch_end、stats の launch_boosts。
 
+リカバリーの後ろの見張り(2026-10-26 fix2 safety2-1): パラメータ rec_back_guard(既定 0・起動のたびに 0)。走行タブの
+「リカバリーの試験の選択肢」のスイッチ(2026-10-26 fix3 から。app.js の OPT_SWITCHES。fix2 のときは画面に欄が無く API だけ)か
+API(POST /api/drive/params)で入れる。走行開始では送らない(サーバーの値のまま)。基準の設定・ブロックでは変えない(app.js の
+benchApply が入れない。ブロックの params に書いても web/bench.py の SWITCH_KEYS が捨てて警告。2026-10-27 fix4)。走行中は
+0 → 1 にできない(下の _opt_rules)。走行開始の確認の文に ON の行。1 のとき
+assist.Recovery が、どの段でも後ろへ動いたことを数え(下がった時間が rev_s に届いたら惰性)、後ろへ動いている・直前まで
+動いていたときの衝撃ですぐ前進に移る。0 のとき PCA9685 に書く値と記録は手を入れる前と同じ。見張りが手順を変えたら
+events.jsonl に recovery_guard(what = 何・phase = 段・backed_s = 下がった秒・run・cam_epoch_us。hold_long は hold_s も)。
+
+中立止めでリカバリーを残す(2026-10-26 fix3 safety1-1): パラメータ rec_hold_keep(既定 0・起動のたびに 0。画面の試験の
+選択肢のスイッチか API で入れる。走行開始では送らない。基準の設定・ブロックでは変えない)。0 のとき今まで通り、中立止め(hold)の最後に補助の手順を全部戻す(リカバリーの中止・途中・armed も消える。
+中止が解けるとモデルの弱い前進が壁を押し続け、止まった車ではリカバリーが二度と始まらない)。1 のとき、AI 側のままの
+中立止め(最新の車両の値が AI 側・dry run でない)では assist.Recovery を戻さない(中止は中止のまま・途中の段は続きから・
+armed・衝撃・あきらめの数も残す)。戻すのは CH3 を人側にしたとき・人側の中立止め・走行の開始(Assist を作り直す)。
+後退の受け付け(リカバリー OFF のとき)は今まで通り戻す。0 のとき PCA9685 に書く値と記録は手を入れる前と同じ。
+残した中立止めの間の衝撃(2026-10-26 fix3 r1-rs1-1): 中立止めの間は Recovery に IMU が届かない(impact_g は処理したフレームの
+直近 0.15 秒だけ)ので、残した中立止めのあとの最初のフレームで、前に処理したフレームのあとに来た IMU の水平 G の最大を
+hold_g として渡す。後退側・下がる惰性の段で 2.5G 以上ならすぐ前進(出来事 recovery_guard の what = rear_impact_hold)。
+前は、後退の途中に 0.1 秒より長い中立止めをはさんで後ろへ当たると見落とし、明けたあと 'reverse' が後ろの物を最大 約 0.8 秒押した。
+残した中立止めの間の後退と長さ(2026-10-27 fix3 直す 2 回目 r2-r2-rs-1・rs-2): 残した中立止めの間、前に見た車両の値のあとに来た
+サンプルで後ろへ動いていた秒(eRPM > assist.BACKING_ERPM。隣り合う 2 つのどちらかが超えていたら、その間を全部。値が来なかった
+間も)を数え、明けた最初のフレームで hold_since(中立を書き始めた時刻)・hold_back_s として渡す(assist.Recovery._after_hold:
+下がった時間に足す・段の時間は中立を出していた間は進めない・前に処理したフレームから 0.5 秒より長い中立止めのあとは後退側の段と止まっている時間の
+途中を中止(giveup)にして人を待つ。出来事 recovery_guard の what = back_hold / hold_long(hold_long は見ていない秒 hold_s も))。
+長い中立止めのあとの中止は、2026-10-27 fix3 直す 3 回目 r3-r3-safety-1・2 で assist.Recovery の中で広げた(段なし・'escape' の
+途中でも、armed で、明けたフレームで止まっているか中立止めの間の衝撃が IMPACT_G 以上なら中止。中止にするとき後ろへ動いていれば、
+先に前進で止める段 'halt'(最大 0.3 秒)。drive.py が渡すもの・書くものは同じ。くわしくは assist.py の 1.「自動リカバリー」)。
+前は明けたフレームの dt(0.2 秒まで)しか数えず、段の時間も中立止めの間に進んだので、'reverse' の始めの中立止めのあと
+やり直し(+50 µs)で中立止めなしより後ろへ多く下がり、2〜5 秒の中立止めのあとは明けて 0.02〜0.35 秒で後退を出した。
+rec_hold_keep = 0 は今まで通り(hold_since は None のまま)。
+反証 4 回目の直し(2026-10-27 fix5 係 safety。rec_hold_keep = 1・rec_back_guard = 1 の日だけ効く。どちらかが 0 なら PCA9685 に
+書く値・記録・出来事は直す前とビット単位で同じ): 残した中立止めの間の後退の秒のうち、車両の値が来なかっただけの間(前後の
+サンプルはどちらも後ろへ動いていない)の秒を hold_unseen_s として別に渡す(s3。assist.Recovery は下がり始めたあとだけ下がった
+時間に数える)。helper.step に rec_keep(両方 1)を渡し、発進の前進・発進の補助が出したフレームでも Recovery の前に見た
+フレームの時刻を進める(s2)。衝撃だけの中止を走っている車にしないのは assist.py の中(s1)。
+反証 6-1 回目の直し(2026-10-27 fix6 係 safety。同じく両方 1 の日だけ効く。どちらかが 0 ならビット単位で同じ): 両方 1 の日は
+PCA9685 に書けたスロットル(人側は「分からない」)を assist.EscTrack に入れ、残した中立止めの間に車両の値が HOLD_VEH_GAP_S より
+来なかった間は、前に見た値が HOLD_VEH_FAST_ERPM より速く後ろへ動いていたなら全部、そうでなければ EscTrack が見積もった
+「ESC が後退で走らせていたかもしれない秒」を数える(前に見た値が後ろへ動いていたなら、その値で Recovery が数えたフレームの
+分は除く)。見積もりは hold_back_s とは別の hold_rev_s で渡し(hold_unseen_s は渡さない)、assist.Recovery が後退を 0.2 秒残す
+ところまで下がった時間に足す(s3-a)。前は、値が古いまま出した後退側で車が下がり始めても数えず、明けてから rev_s をまるごと
+下がり直す(後ろへ多く)か、値が来なかった間を全部二重に数えて後退を早く切る(前の壁へ escape)かが、明けたサンプルの速さで
+分かれた。'coast' の続きの直し(s3-b)は assist.py の中。
+
+発進の前進が出さない区間の発進の補助(2026-10-26 fix3 safety1-2): パラメータ launch_no_kick(既定 0・起動のたびに 0。
+画面の試験の選択肢のスイッチか API で入れる。走行開始では送らない。基準の設定・ブロックでは変えない)。launch_boost = 1 で発進の前進が「出さない」と決めた区間(前が近い・ToF が無い・TTC が
+そろわない・車両の値が古い・始めのフレームで終わり・中立止めのあと など)では、1 のとき StartKick も出さない
+(0 は protocol_v3 14 章どおり今まで通り StartKick)。記録: 出来事 launch_boost の skip に no_kick = True。
+launch_boost = 0 のときは何も変えない。「出さない」になった区間は、途中で 0 にしても StartKick を出さない(CH3 を人側にするまで。
+fix3 r1-rs1-2: 前は 1 → 0 にした最初のフレームで StartKick の 2 秒の窓が新しく開き、リカバリーの中止・後退を上書きした)。
+発進の補助 start_kick も、走行中は 0 → 1 にできない(1 → 0 はできる。set_params。同じ理由で、区間の途中に新しい窓が開くため。
+fix3 r1-rs1-2)。
+試験の選択肢の 3 つ(rec_back_guard・rec_hold_keep・launch_no_kick。OPT_NAMES)は、走行中は 0 → 1 にできない(1 → 0 は
+できる。1 走行 = 1 設定。画面の試験の選択肢のスイッチと同じ決まり。_opt_rules。断るときサーバーは 400)。rec_hold_keep は
+rec_back_guard が ON のときだけ使える(set_params も走行開始 start も。見張りを OFF にすると rec_hold_keep も OFF。
+走行ループも両方 1 のときだけ残す): 残したリカバリーは、見張りが無いと後退の途中の中立止めのあとに後ろへ当たっても
+やり直しで後ろを押す(今までは中立止めの reset が手順を偶然切っていた)。
+
+走行中に変えた設定(2026-10-26 fix2 state2-2): 走行中の set_params で値が変わった項目は、events.jsonl に params
+(changed = {項目: [前, 後]}・epoch_us = 変えた時刻(AI_CMD と同じ UNIX µs))を書く。止めるとき、変えた項目が 1 つでも
+あれば log.json(と残りの scene.json)の drive に params_end(走り終わりの値)と params_changes(変えた順の一覧)を足す。
+変えなかった走行の log.json は今までと同じ(drive.params = 走行開始の値)。
+
 AI の時間(stats['ai_s']、2026-10-21): CH3 が AI 側で dry run でない時間の和。道具(label_events の dt_s)と同じ決め方で、
 ベンチマークの「AI の時間が数える時間 + 1 分を過ぎたら止める」を画面で見るため。数えるだけで出力は変えない。
 """
@@ -79,6 +142,8 @@ PARAM_LIMITS = {
     'recovery': (0, 1),            # 1 = ぶつかって止まったら自動で少し下がってからモデルへ戻す
     'rev_us': (150.0, 500.0),      # リカバリーで下がる強さ(中立からのµs)
     'rev_s': (0.2, 1.2),           # リカバリーで後退を出し続ける時間(下がり始めてから)
+    'rec_back_guard': (0, 1),      # 1 = リカバリーの後ろの見張り(どの段でも下がった時間を数える・後ろの衝撃ですぐ前進。既定 0・起動で 0)
+    'rec_hold_keep': (0, 1),       # 1 = AI 側のままの中立止めでリカバリーを戻さない(中止・途中・armed を残す。既定 0・起動で 0。fix3)
     'tof_guard': (0, 3),           # ToFガード 0=OFF 1=記録だけ(動きは変えない) 2=減速 3=減速+ハンドル
     # 方策の後処理(tcp の制御器だけが読む)・予測の重ね合わせ(どの方策にも)
     'speed_cap': (0.0, 5.0),       # 速度の上限 [m/s](0 = なし)。tcp の制御器が前進を弱めるだけ(速くはしない)
@@ -101,12 +166,18 @@ PARAM_LIMITS = {
     'launch_us': (150.0, 300.0),   # 出す前進の下限 [µs](モデルの中立から。速さのゲインは掛けない)
     'launch_mps': (2.0, 3.0),      # 0.1 秒先の速さの見込みがこれに届いたら終わり [m/s]
     'launch_max_s': (0.5, 2.0),    # これより長く出さない [秒]
+    'launch_no_kick': (0, 1),      # 1 = 発進の前進が「出さない」と決めた区間では発進の補助(StartKick)も出さない(既定 0・起動で 0。fix3)
 }
 START_KICK_TTC_S = 1.0             # 発進の補助を出さない ToF の衝突までの時間 [秒](これより近い)
+HOLD_VEH_FAST_ERPM = 1000.0       # 残した中立止めの間に車両の値が来なかったとき、前に見た値がこれより速く後ろへ動いていたら、その間は全部
+                                  # 下がっていたとして数える('coast' が続く速さ。中立の惰性ではすぐ止まらない。2026-10-27 fix6 safety r1)
+HOLD_VEH_GAP_S = 0.06              # 残した中立止めの間、車両の値がこれより空いたら後ろへ動いていたとして数える(2026-10-27 fix3 r2-r2-rs-1)
 # 起動のたびに既定へ戻す項目(drive_settings.json から読まない)。区間の速度上限は ON のまま別の日に持ち越さない
 RESET_ON_BOOT = ('tcp_mode', 'speed_scale', 'zone_caps',
                  'speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto', 'auto_target_mps',
-                 'launch_boost', 'launch_us', 'launch_mps', 'launch_max_s')
+                 'launch_boost', 'launch_us', 'launch_mps', 'launch_max_s',
+                 'rec_back_guard',      # 走行の制御に足すものは既定 OFF・起動で OFF(protocol_v3 の決まり。2026-10-26 fix2)
+                 'rec_hold_keep', 'launch_no_kick')     # 2026-10-26 fix3 safety1-1・1-2
 SPEED_CTRL_SWITCHES = ('speed_ceiling', 'speed_auto')                               # 走行中は 0 → 1 にできない
 SPEED_CTRL_VALUES = ('ceil_all_mps', 'ceil_left_mps', 'auto_target_mps', 'auto_vref_v')   # 走行中は変えられない
 LAUNCH_VALUES = ('launch_us', 'launch_mps', 'launch_max_s')                         # 発進の前進の値(走行中は変えられない)
@@ -125,7 +196,22 @@ DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0,
                   'zone_caps': 0, 'start_kick': 0,
                   'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0, 'auto_target_mps': 4.27,
                   'auto_vref_v': 8.35,
-                  'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2}
+                  'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2,
+                  'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0}
+
+
+def params_changed(prev, new):
+    """set_params の前と後で値が変わった項目 {項目: [前, 後]}(2026-10-26 fix2 state2-2。数は 1e-9 より大きい差だけ)"""
+    out = {}
+    for k, v in new.items():
+        a = prev.get(k)
+        try:
+            same = a is not None and abs(float(a) - float(v)) <= 1e-9
+        except (TypeError, ValueError):
+            same = a == v
+        if not same:
+            out[k] = [a, v]
+    return out
 
 
 def _read_json(path):
@@ -1063,6 +1149,10 @@ class Driver(object):
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)。走行ループから呼ぶので待たせないこと
         self.last_takeover_ns = None
         self.takeover_reasons = []
+        self.params_changes = []        # この走行の中で set_params が変えた設定(_note_params)
+        # 起動の時刻(status の boot_at)。画面が「サーバーが起動し直した = RESET_ON_BOOT の項目が既定に戻った」を知らせるのに使う
+        # (2026-10-26 fix3 直す 1 回目 r1-state3-4。表示だけ。走行・params には使わない)
+        self.boot_at = round(time.time(), 3)
 
     def _emit(self, event, **info):
         for cb in list(self.listeners):
@@ -1095,7 +1185,7 @@ class Driver(object):
                 p[k] = min(max(v, lo), hi)
         p['lookahead'] = int(round(p['lookahead']))
         for k in ('esc_reverse', 'recovery', 'zone_caps', 'start_kick', 'speed_ceiling', 'speed_auto',
-                  'launch_boost'):     # 古い設定ファイル・古い画面には無い項目
+                  'launch_boost', 'rec_back_guard', 'rec_hold_keep', 'launch_no_kick'):     # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
         for k in ('tcp_mode', 'ensemble_j'):           # 整数の項目(古い設定ファイルには無い)
@@ -1114,6 +1204,27 @@ class Driver(object):
             for k in LAUNCH_VALUES:
                 if p[k] != float(prev.get(k, DEFAULT_PARAMS[k])):
                     raise ValueError('走行中は %s を変えられません。止めてから変えてください(1 走行 = 1 設定)' % k)
+        return p
+
+    OPT_NAMES = {'rec_back_guard': 'リカバリーの後ろの見張り', 'rec_hold_keep': '中立止めのあともリカバリーを残す',
+                 'launch_no_kick': '発進の前進を出さない区間は発進の補助も出さない'}
+
+    def _opt_rules(self, p, running):
+        """試験の選択肢(後ろの見張り・fix3 の 2 つ)の決まり(2026-10-26 fix3)。断るときは ValueError(サーバーは 400)。
+        ・走行中は 0 → 1 にできない(1 → 0 はできる。1 走行 = 1 設定。画面 app.js の OPT_SWITCHES と同じ決まりをサーバーでも守る)
+        ・rec_hold_keep は rec_back_guard が ON のときだけ(後ろの見張りを OFF にしたら rec_hold_keep も OFF)。中立止めで残した
+          リカバリーは、見張りが無いと、後退の途中の中立止めのあとに後ろへ当たってもやり直しで後ろを押し続ける
+          (今までは中立止めの reset が手順を偶然切っていた。safety.md 3 章)"""
+        prev = self.params
+        if int(prev.get('rec_back_guard', 0) or 0) == 1 and p['rec_back_guard'] == 0:
+            p['rec_hold_keep'] = 0
+        if running:
+            for k, name in self.OPT_NAMES.items():
+                if p[k] == 1 and int(prev.get(k, 0) or 0) == 0:
+                    raise ValueError('走行中は「%s」を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)' % name)
+        if p['rec_hold_keep'] == 1 and p['rec_back_guard'] == 0:
+            raise ValueError('「%s」は、%sが ON のときだけ使えます(先に%sを ON にしてください)'
+                             % (self.OPT_NAMES['rec_hold_keep'], self.OPT_NAMES['rec_back_guard'], self.OPT_NAMES['rec_back_guard']))
         return p
 
     def _speed_ctrl_rules(self, p, running):
@@ -1155,8 +1266,15 @@ class Driver(object):
             if self.running and p['zone_caps'] == 1 and int(self.params.get('zone_caps', 0) or 0) == 0:
                 # 区間の速度上限は 1 走行 = 1 設定(画面と同じ決まりをサーバーでも守る)。OFF にするのは走行中でもできる
                 raise ValueError('走行中は区間の速度上限を ON にできません。止めてから ON にしてください(1 走行 = 1 設定)')
+            if self.running and p['start_kick'] == 1 and int(self.params.get('start_kick', 0) or 0) == 0:
+                # 発進の補助も 1 走行 = 1 設定(2026-10-26 fix3 r1-rs1-2。画面 app.js の DR_FLAGS と同じ決まり)。走行中に 0 → 1 に
+                # すると、StartKick の 2 秒の窓が AI の区間の途中で新しく開き、リカバリーより先に見るので、リカバリーの中止・後退の
+                # 途中を上書きして前進 80 µs を最大 2 秒出していた。OFF にするのは走行中でもできる(StartKick を見なくなるだけ)
+                raise ValueError('走行中は発進の補助(AI側にしたら走り出す)を ON にできません。止めてから ON にしてください'
+                                 '(1 走行 = 1 設定)')
             p = self._speed_ctrl_rules(p, self.running)
             p = self._launch_rules(p, self.running)
+            p = self._opt_rules(p, self.running)
             if values.get('mode_id') is not None:
                 mode_id = int(values['mode_id'])
                 info = self.st.get('model')
@@ -1170,9 +1288,32 @@ class Driver(object):
                         except (RuntimeError, ValueError):
                             pass
                 self.last['mode_id'] = mode_id
+            changed = params_changed(self.params, p) if self.running else {}
             self.params = p
             self._save_settings()
+            if changed:
+                self._note_params(changed)
             return dict(p)
+
+    def _params_end_to_log(self, log):
+        """止めるとき: 走行中に設定を変えていたら、log.json の drive に params_end・params_changes を足す。戻り値 書いたか"""
+        if not self.params_changes:
+            return False
+        try:
+            upd = getattr(self.recorder, 'update_drive', None)
+            return bool(upd(log, params_end=dict(self.params), params_changes=list(self.params_changes))) if upd else False
+        except Exception:       # noqa: BLE001  書けなくても止める処理は続ける
+            traceback.print_exc()
+            return False
+
+    def _note_params(self, changed):
+        """走行中に変わった設定を events.jsonl(params)と走り終わりの log.json の欄に残す(2026-10-26 fix2 state2-2)"""
+        ev = {'changed': changed, 'run': self.st.get('run'), 'epoch_us': int(clock.to_epoch_us(clock.now_ns()))}
+        self.params_changes.append(ev)
+        try:
+            self.recorder.add_event('params', ev)
+        except Exception:       # noqa: BLE001  記録できなくても走行は続ける
+            traceback.print_exc()
 
     def start(self, run, mode_id, record=False, description='', tags=None, dry_run=False, params=None):
         """走行を始める。戻り値 (run, token)。token は生存確認(heartbeat)に使う"""
@@ -1187,7 +1328,8 @@ class Driver(object):
             mode_id = int(mode_id)
             if mode_id not in info['trained_modes']:
                 raise ValueError('このモデルはジャンル %d(%s)を学習していません' % (mode_id, modes.name_of(mode_id)))
-            new_params = self._launch_rules(self._speed_ctrl_rules(self._clean_params(params or {}), False), False)
+            new_params = self._opt_rules(self._launch_rules(self._speed_ctrl_rules(self._clean_params(params or {}), False), False),
+                                         False)
             if info.get('postprocess') and uses_post(new_params):
                 ref0 = (float(info.get('steer_center_us') or PWM_CENTER), float(info.get('throttle_neutral_us') or PWM_CENTER))
                 obj, note = post_mod.make(info, ref0)
@@ -1203,6 +1345,7 @@ class Driver(object):
             self.hb_count = 0
             self.last_takeover_ns = None
             self.takeover_reasons = []
+            self.params_changes = []
             self.st = {'phase': 'starting', 'message': 'モデルとセンサーを準備中…', 'error': None, 'run': run,
                        'model': info, 'mode_id': mode_id, 'dry_run': bool(dry_run), 'record': bool(record),
                        'recording_note': '', 'ref': None, 'started': time.time(), 'stop_reason': '',
@@ -1347,6 +1490,8 @@ class Driver(object):
                     except Exception:
                         pass
             if started_log:
+                self._params_end_to_log(started_log)     # 走行中に変えた設定(変えなかった走行の log.json は今までと同じ)
+            if started_log:
                 try:
                     st['message'] += '・収集したシーンを保存中…'
                     stopped = self.recorder.stop(only_log=started_log)     # 途中で人が始め直した収集は止めない
@@ -1480,7 +1625,8 @@ class Driver(object):
                 return
             info = dict(ev[1], event=ev[0], run=st.get('run'))
             if cam_t_ns is not None:
-                info['cam_t_us'] = int(cam_t_ns // 1000)
+                info['cam_t_us'] = int(cam_t_ns // 1000)                       # 単調時計(CLOCK_MONOTONIC)の µs
+                info['cam_epoch_us'] = int(clock.to_epoch_us(cam_t_ns))        # AI_CMD の timestamps_us と同じ時計(2026-10-26 fix2)
             try:
                 self.recorder.add_event('launch_boost', info)
             except Exception:       # noqa: BLE001  記録できなくても走行は続ける
@@ -1513,6 +1659,73 @@ class Driver(object):
         times = collections.deque(maxlen=30)
         lat_hist = collections.deque(maxlen=30)
         inf_hist = collections.deque(maxlen=30)
+        # 中立止めの間の IMU(2026-10-26 fix3 r1-rs1-1)。rec_hold_keep でリカバリーを残した中立止めの間は helper.step を呼ばず、
+        # impact_g は処理したフレームの直近 0.15 秒の IMU しか見ないので、その間に後ろへ当たっても Recovery が見落とし、明けたあと
+        # 'reverse' が後ろの物を押し続けた。残した中立止めのあとの最初のフレームで、前に処理したフレームのあとに来た IMU の
+        # 水平 G の最大を hold_g として渡す(assist.Recovery.step)。[見た IMU の最後の時刻 ns, 残した中立止めの間の G の最大,
+        # 残した中立止めがあった]。出力に効くのは残した中立止めのあとだけ(rec_hold_keep = 0 なら hold_g = 0 = 今までと同じ)
+        hold_imu = [None, 0.0, False]
+        # 残した中立止めの間の後退(2026-10-27 fix3 r2-r2-rs-1)。[前に見た車両の値の時刻 ns(None = まだ), その eRPM, 数えた秒]。
+        # 前に helper.step を呼んだフレームの撮像時刻(proc_cam)の車両の値から数え始める。出力に効くのは残した中立止めのあとだけ
+        # [3] = その中立止めの前に処理したフレームの撮像時刻 ns・[4] = 車両の値が来なかった間に ESC が後退で走らせていたかもしれない
+        # 秒(esc_track の見積もり。Recovery へ hold_rev_s で渡す)(2026-10-27 fix6 safety r1。fix5 の [3] = 値が来なかっただけの秒は
+        # やめた)。出力に効くのは残した中立止めのあとだけ
+        hold_veh = [None, 0.0, 0.0, None, 0.0]
+        proc_cam = [None]
+        hold_t0 = [None]            # 残した中立止めが中立を書き始めた時刻(time.monotonic()。helper.step の now と同じ時計)
+        # PCA9685 に書けたスロットルから、ESC が後退で走らせていたかもしれない区間(2026-10-27 fix6 safety r1。assist.EscTrack)。
+        # rec_hold_keep = 1・rec_back_guard = 1 の日だけ値を入れ、残した中立止めのあと車両の値が来なかった間の数えにだけ使う
+        esc_track = assist_mod.EscTrack(ref[1])
+
+        def keep_on():
+            return int(p.get('rec_hold_keep', 0) or 0) == 1 and int(p.get('rec_back_guard', 0) or 0) == 1
+
+        def veh_unseen_back(upto_ns=None):
+            """前に見た車両の値のあとに来たサンプル(upto_ns まで)で、後ろへ動いていた秒(見た時刻を進める。veh_buf は 50 個 =
+            100 Hz で約 0.5 秒。中立止めの hold() は 0.1 秒以内ごとに呼ばれる)。隣り合う 2 つのサンプルのどちらかが
+            BACKING_ERPM を超えていたら、その間を全部数える。間が HOLD_VEH_GAP_S より空いた(車両の値が来なかった)ら
+            (2026-10-27 fix6 safety r1): 前に見た値が HOLD_VEH_FAST_ERPM より速く後ろへ動いていたなら全部数える(中立の惰性でも
+            下がっていた)。そうでなければ、書いた値から見積もった「ESC が後退で走らせていたかもしれない秒」(esc_track)を
+            hold_veh[4] に足す(戻り値には入れない)。どちらも、前に見た値が後ろへ動いていた(> BACKING_ERPM)なら、そのあと
+            処理したフレームは Recovery がその値で dt を数えたので、前に処理したフレームの撮像時刻(hold_veh[3])から"""
+            s = 0.0
+            for t_ns, x in list(veh_buf):
+                if upto_ns is not None and t_ns > upto_ns:
+                    break
+                if hold_veh[0] is not None and t_ns <= hold_veh[0]:
+                    continue
+                e = float(x['erpm'])
+                if hold_veh[0] is not None:
+                    if t_ns - hold_veh[0] > HOLD_VEH_GAP_S * 1e9:
+                        a = hold_veh[0]
+                        if hold_veh[1] > assist_mod.BACKING_ERPM and hold_veh[3] is not None:
+                            a = max(a, hold_veh[3])
+                        if hold_veh[1] > HOLD_VEH_FAST_ERPM:
+                            s += max(t_ns - a, 0) / 1e9
+                        else:
+                            hold_veh[4] += esc_track.rev_s(a, t_ns)
+                    elif e > assist_mod.BACKING_ERPM or hold_veh[1] > assist_mod.BACKING_ERPM:
+                        s += (t_ns - hold_veh[0]) / 1e9
+                hold_veh[0], hold_veh[1] = t_ns, e
+            return s
+
+        def veh_seen_from(cam_ns):
+            """残した中立止めの始め: 前に処理したフレームが使った車両の値(撮像時刻より前の最新)から数える"""
+            hold_veh[0], hold_veh[1], hold_veh[2], hold_veh[3], hold_veh[4] = None, 0.0, 0.0, cam_ns, 0.0
+            if cam_ns is None:
+                return
+            for t_ns, x in list(veh_buf):
+                if t_ns <= cam_ns:
+                    hold_veh[0], hold_veh[1] = t_ns, float(x['erpm'])
+
+        def imu_unseen_g():
+            """前に見た IMU のあとに来たサンプルの水平 G の最大 [G](見た時刻を進める。imu_buf は 60 個 = 約 0.6 秒)"""
+            g, t_seen = 0.0, hold_imu[0]
+            for t_ns, x in list(imu_buf):
+                if t_seen is None or t_ns > t_seen:
+                    g = max(g, float(np.hypot(x[0], x[1])) / 9.80665)
+                    hold_imu[0] = t_ns if hold_imu[0] is None else max(hold_imu[0], t_ns)
+            return g
 
         def hold(reason, cam=None, veh_select=None, infer_ms=np.nan):
             if veh_select is None:          # 最新の車両値から(AI側のまま止めているのか分かるように)
@@ -1520,7 +1733,12 @@ class Driver(object):
             lb_end = helper.launch_hold()   # 発進の前進は中立で止めたら終わり(⑧)
             ttc_hist.clear()
             launch_note(cam.t_ns if cam is not None else None)
-            out.neutral()
+            n_ok = out.neutral()
+            if keep_on():                   # ESC に届いた値(人側・dry run は分からない。fix6 safety r1)
+                if not veh_select or dry_run:
+                    esc_track.unknown(clock.now_ns())
+                elif n_ok:
+                    esc_track.write(clock.now_ns(), out.neutral_values()[1])
             stats['holds'] += 1
             stats['i2c_errors'] = out.errors
             n_s, n_t = out.neutral_values()
@@ -1546,7 +1764,19 @@ class Driver(object):
                     **sceil.record(None, int(p.get('speed_ceiling', 0) or 0) == 1, False, n_t),
                     **sauto.record_hold(int(p.get('speed_auto', 0) or 0) == 1),
                     'launch_on': False, 'launch_end': int(lb_end)})
-            helper.reset()                  # 中立で止めた後は、補助の手順を最初から
+            if (int(p.get('rec_hold_keep', 0) or 0) == 1 and int(p.get('rec_back_guard', 0) or 0) == 1
+                    and veh_select and not dry_run):
+                helper.reset(keep_recovery=True)    # AI 側のままの中立止め: リカバリーは残す(rec_hold_keep。見張りが ON のときだけ)
+                hold_imu[1] = max(hold_imu[1], imu_unseen_g())     # この間の衝撃を、次に処理したフレームで Recovery に渡す
+                if not hold_imu[2]:
+                    veh_seen_from(proc_cam[0])      # この中立止めの始め(r2-r2-rs-1)
+                    hold_t0[0] = time.monotonic()
+                hold_veh[2] += veh_unseen_back()    # この間に後ろへ動いていた秒も、次に処理したフレームで渡す
+                hold_imu[2] = True
+            else:
+                helper.reset()              # 中立で止めた後は、補助の手順を最初から
+                hold_imu[1], hold_imu[2] = 0.0, False
+                hold_veh[2] = hold_veh[4] = 0.0
             stage.reset()                   # 後処理・重ね合わせも最初から(止めていた間の予測を混ぜない)
 
         while not self._stop.is_set():
@@ -1666,6 +1896,19 @@ class Driver(object):
             # 補助: 後退の受け付け(中立を挟む)・ぶつかって止まったときの自動リカバリー
             recent = [x[1] for x in list(imu_buf)[-10:] if x[0] > cam.t_ns - 150_000_000]
             impact_g = max((float(np.hypot(a[0], a[1])) / 9.80665 for a in recent), default=0.0)
+            # リカバリーを残した中立止めのあとの最初のフレーム: その間(前に処理したフレームのあと)の IMU の衝撃(r1-rs1-1)
+            held = hold_imu[2]
+            hold_since = hold_t0[0] if held else None
+            hold_g = max(hold_imu[1], imu_unseen_g()) if held else 0.0
+            # その間(前に処理したフレームからこのフレームまで)に後ろへ動いていた秒(r2-r2-rs-1)
+            hold_back_s = (hold_veh[2] + veh_unseen_back(cam.t_ns)) if held else 0.0
+            hold_rev_s = hold_veh[4] if held else 0.0          # 値が来なかった間の後退の見積もり(fix6 safety r1)
+            hold_imu[1], hold_imu[2] = 0.0, False
+            hold_veh[2] = hold_veh[4] = 0.0
+            proc_cam[0] = cam.t_ns
+            if imu_buf:
+                t_new = imu_buf[-1][0]
+                hold_imu[0] = t_new if hold_imu[0] is None else max(hold_imu[0], t_new)
             # 発進の前進の入力(launch_boost = 1 のときだけ作る。OFF は None = 今までと同じ)
             launch_in = None
             if int(p.get('launch_boost', 0) or 0) == 1:
@@ -1678,9 +1921,23 @@ class Driver(object):
                                        rev_s=float(p.get('rev_s', assist_mod.DEFAULT_REV_S)),
                                        kick_on=int(p.get('start_kick', 0) or 0) == 1,
                                        blocked=bool(np.isfinite(g_ttc) and g_ttc < START_KICK_TTC_S),
-                                       launch=launch_in)
+                                       launch=launch_in, rec_guard=int(p.get('rec_back_guard', 0) or 0) == 1,
+                                       launch_no_kick=int(p.get('launch_no_kick', 0) or 0) == 1, hold_g=hold_g,
+                                       hold_since=hold_since, hold_back_s=hold_back_s, hold_rev_s=hold_rev_s,
+                                       rec_keep=(int(p.get('rec_hold_keep', 0) or 0) == 1
+                                                 and int(p.get('rec_back_guard', 0) or 0) == 1))
             launch_on, launch_end = helper.launch_on, helper.launch_end
             launch_note(cam.t_ns)
+            if helper.rec.guard_event is not None:      # リカバリーの後ろの見張りが手順を変えた(rec_back_guard = 1 のときだけ)
+                rg, helper.rec.guard_event = helper.rec.guard_event, None
+                try:
+                    info = {'what': rg[0], 'phase': rg[1], 'backed_s': rg[2], 'run': st.get('run'),
+                            'cam_epoch_us': int(clock.to_epoch_us(cam.t_ns))}
+                    if len(rg) > 3:                     # hold_long: 見ていない秒(前に処理したフレームから。2026-10-27 fix3 r2-r2-rs-2)
+                        info['hold_s'] = rg[3]
+                    self.recorder.add_event('recovery_guard', info)
+                except Exception:       # noqa: BLE001  記録できなくても走行は続ける
+                    traceback.print_exc()
             out_us = (float(np.clip(out_us[0], lo, hi)), float(np.clip(out_us[1], lo, hi)))
             if kind != last_kind:
                 if kind == assist_mod.ASSIST_RECOVERY:
@@ -1721,6 +1978,11 @@ class Driver(object):
                 stats['ceil_ms'] = round(float(np.mean(sceil.ms)), 3)
                 stats['ceil_ms_max'] = round(sceil.ms_max, 3)
             written = out.neutral() if dry_run else out.write(*out_us)
+            if written and keep_on():       # ESC に届いた値(人側・dry run は分からない。fix6 safety r1)
+                if ai_frame:
+                    esc_track.write(clock.now_ns(), out_us[1])
+                else:
+                    esc_track.unknown(clock.now_ns())
             stats['i2c_errors'] = out.errors
             if not written:
                 hold('PCA9685への書き込みに失敗しました(読み直します)', cam, bool(veh['select']), infer_ms)
@@ -1806,6 +2068,7 @@ class Driver(object):
         st['running'] = self.running
         st['params'] = dict(self.params)
         st['last'] = dict(self.last)
+        st['boot_at'] = getattr(self, 'boot_at', None)      # 起動の時刻(r1-state3-4。画面の知らせだけ)
         st['recording'] = self.recorder.recording
         st['elapsed_s'] = int((st.get('finished') or time.time()) - st['started']) if st.get('started') else 0
         st['heartbeat_age_s'] = round(time.monotonic() - self.heartbeat_t, 1) if self.running else None

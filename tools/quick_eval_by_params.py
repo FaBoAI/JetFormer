@@ -1,0 +1,462 @@
+#!/usr/bin/env python3
+"""実際の設定で分ける早い集計(2026-10-26 fix2・係 tools): その日の AI 走行を、説明欄の cand ではなく log.json の実際の設定
+(モデル・速さのゲイン・ステアのゲイン・天井と左の値・自動合わせ・発進の前進・区間の速度上限・ジャンル)で分けて、
+周・衝突・R1 の進入・3 周の窓・止まってから 3 周を出す。11/3 は全部 cand=EXP なので、experiments/20261024_tune/quick_eval.py の
+「段ごと」((cand, ゲイン, ジャンル) で分ける)では天井・発進の前進の ON/OFF が混ざる。そのための別の表。quick_eval は変えない。
+
+    python3 tools/quick_eval_by_params.py 0000 --day=20261103          # quick_eval と同じ形(HHMM 以後・--day=)
+    python3 tools/quick_eval_by_params.py --day 20261103 --since 1300 --out ~/jetformer_reports/bench_20261103_tune/by_params
+    python3 tools/quick_eval_by_params.py --day 20261103 --ignore launch   # 発進の前進の ON/OFF をまとめる(周の比べ)
+      --ignore に並べられるもの: model・gain・steer・ceiling・auto・launch・zone・mode・trim(コンマで区切る)
+      --logs L1 L2 …(記録を名指し)・--raw・--labels・--bench(既定 data/raw・data/labels・data/bench_candidates.json)
+
+読むだけ(numpy。GPU なし)。data/raw・data/labels は変えない(ラベルの無い記録はその場で作る。書き出さない)。
+数え方は quick_eval.py と同じ(section_scorecard.score_log の 1 本ごとの値: 通過 = AI の R1 の起点・きれいな周・衝突は label の
+決まり・R1 の進入 = 起点の手前 0.4 秒の最大の前進 eRPM・失敗の交代)。ただし起点は今の決まり(偽の起点を外す)で数え直すので、
+偽の起点のあった記録(10/24 の No.7・8・10 など)だけ、10/24 に作った scorecard.json を読む quick_eval とは通過が 1 つ少ない。
+止まってから 3 周・3 周の窓は tools/standing_3lap.py と同じ。
+
+実際の設定の分け方(log.json の drive.params。欄が無い = その機能の無いコード = OFF):
+  天井     speed_ceiling = 1 なら (左の値 ceil_left_mps, 全体 ceil_all_mps) で分ける
+  自動合わせ speed_auto = 1 なら目標 auto_target_mps で分ける
+  発進の前進 launch_boost = 1 で、記録の中で 1 回でも出た(AI_CMD の launch_on か events.jsonl の start)なら (launch_us, launch_mps,
+           launch_max_s) で分ける。1 なのに 1 回も出なかった本は「発進 ON・出ず」(手順書 7 章: ON として数えない)
+  モデル   bench_candidates.json の候補の名前(run が同じもの)。無ければ run の名前
+  途中で変えた(2026-10-26 fix2 state2-2・R2-rec-2) 走行中に設定を変えた本(standing_3lap の midrun: events.jsonl の params・
+           log.json の params_end・天井・自動合わせが途中から OFF・発進の前進を OFF にした・フレームのゲインやトリムが途中で
+           変わった)は、鍵に「途中で変えた(項目)」を足す(ON の組にも OFF の組にも入れない)。印にも出す
+  止まってから 3 周(2026-10-26 fix2 R2-rec-3) 1 章・2 章は standing_3lap.counted の発進だけ(valid で、同じ本の中でそれより
+           前に衝突が無い)。2 章の「数えない」= valid だが前に衝突のあった発進の数
+  衝突(2026-10-26 fix2 R2-rec-1) 1 章に 1 本ごとの最大 G・8G 以上の数・場所(R1・GM・DE・SW・HS・LH)
+  確かめる(2026-10-26 fix3、反証 1 回目 tools:F5) standing_3lap の印(note: 速すぎる周・距離のずれ・A4 が無い・空転)の付いた
+           止まってから 3 周と、7 秒より速い周を含む 3 周の窓(suspect)は、1 章の印に出し、2 章の最速・中央値・25 秒以下・
+           衝突なしに入れない(2 章のその欄の後ろに「(確かめる N: 値)」。前は印が消えて、疑わしい値が最速・25 秒以下に入った)
+  発進ごとの ON/OFF(2026-10-26 fix3、反証 1 回目 tools:F7) 鍵の「発進」は記録ごと(1 回でも出たら ON)のまま。止まってから 3 周・
+           動く → A1 は発進ごとの状態(出た / 出ず)の組に入れる(同じ本の中で「出た」発進と「出ず」の発進が混ざったとき、
+           出なかった発進を「発進 250」の組に数えない)。混ざった本は 1 章の印「発進の前進が混ざっている」。2 章の設定の文に
+           「ほかの本の発進 N」(その組の本ではない記録から来た発進の数)
+  試験の選択肢(2026-10-26 fix3 直す 1 回目 r1-rec3-5) 鍵の「trim」(トリム・後ろの見張り)に、rec_hold_keep・launch_no_kick が
+           1 のときだけ足す(文「リカバリーを残す」「見送りで補助なし」)。どちらも 0 なら鍵・文は前と同じ。--ignore trim でまとめる
+  ぶつからずに 25 秒以下(2026-10-26 fix3 直す 1 回目 r1-rec3-4) 2 章に「ぶつからずに 25 秒以下(本・衝突なしの最速)」の列。
+           前の「25 秒以下」「最速」は、その発進の 3 周の中に衝突があっても数えた(今も同じ。列の後ろに「最速 N は衝突 M」)。
+           JSON の組に standing_clean_le25・standing_clean_best_s・standing_best_coll
+  試し(2026-10-27 fix3 直す 3 回目・2 組目 r3-r3-rec-3) 説明欄の memo に人が「試し」と書いた本(standing_3lap の trial。手順書 7 章
+           「その本は数えない」。走行開始でサーバーが足す「計画と違うので試し(元 cand=…)」は入らない)は、鍵に「試し」を足して別の組に
+           (どの --ignore でも分ける。途中で変えた本と同じ)。その本の発進は standing_3lap が数えない(counted = False)ので、1 章の
+           止まってから 3 周は —、2 章の「数えない」に入る。1 章の印に「試し(memo の文)」。試しの無い日は前と同じ
+  空転の比が出ない発進(2026-10-27 fix3 直す 3 回目・2 組目 r3-r3-rec-4) standing_3lap の印(いちばんひどい空転とみなす・IMU が
+           抜けて比が出ない)が付くので、上の「確かめる」と同じに 2 章の最速・中央値・25 秒以下・衝突なしに入れない(この台本は変えて
+           いない。standing_3lap の印のまま)
+  途中で変えた発進(2026-10-27 fix5、反証 4 回目 c2) standing_3lap が、3 周目の終わりより前(か時刻が分からない)に設定を変えた発進を
+           数えない(counted = False・midrun)ので、1 章の止まってから 3 周は —、2 章の「数えない」に入る。1 章の印に「数えない発進 N
+           (3 周目の終わりより前に途中で変えた)」(前に衝突のあった発進は今まで通り「前に衝突」の方に数える)
+  無い npz(2026-10-27 fix5、反証 4 回目 c1) 1 章の印に「無い npz N(記録が欠けている…)」(standing_3lap の missing_npz。書いている
+           途中で落ちたシーン・車両の値が来なかったシーン。前は 0 バイトの npz だけを数えた)。3 章の下に名前の行
+  人側にした直後の衝突(2026-10-27 fix6-2、反証 6-2 回目 w2-tools-r62-2) standing_3lap の本の衝突(collisions)に、AI の区間の終わり
+           から 0.5 秒以内の人側の衝突(car_check の「衝突」の行と同じ。人が当たる直前に CH3 を人側にした当たり)が入ったので、1 章の
+           衝突(強)・最大 G・8G 以上・場所と 2 章の衝突/通過・強い衝突にも入る(1 章の「最大 G・8G 以上・場所」の後ろに「(うち人側に
+           した直後 N: 場所 G)」、JSON の本に coll_after_ai・組に collisions_after_ai、2 章の下に入った組の行。あるときだけ)。止まって
+           から 3 周の「数えない(前に衝突)」も同じ数え方(standing_3lap)。前は AI 側だけで、手順書 6 章の「左 4.2 … SW の出口・LH の
+           当たり 0」を 1 章で読むと car_check と食い違った。そういう衝突の無い本・組は前と同じ。① quick_eval(AI 側だけ)とは、その本の
+           分だけ数が違う
+"""
+
+import argparse
+import json
+import statistics as st
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / 'tools'))
+from jetformer import config  # noqa: E402
+import standing_3lap as s3  # noqa: E402
+
+SCHEMA = 'jf-quick-eval-by-params/v1'
+PARTS = ('model', 'gain', 'steer', 'ceiling', 'auto', 'launch', 'zone', 'mode', 'trim')   # trim: 2026-10-26 critic
+FAST_LAP_S = 9.0             # quick_eval の「8 秒台の周」= 9.0 秒未満のきれいな周
+
+
+def _num(x, nd=3):
+    try:
+        return round(float(x), nd)
+    except (TypeError, ValueError):
+        return None
+
+
+def _started(s):
+    """その発進で発進の前進が出たか(AI_CMD の launch_on か events.jsonl の start)"""
+    lr = s.get('launch') or {}
+    return bool(lr.get('on_frames') or any(e[1] == 'start' for e in lr.get('events') or []))
+
+
+def launch_state(res):
+    """'off' / 'on'(1 回でも出た)/ 'on_not_started'(launch_boost = 1 なのに出なかった)。記録ごと(鍵・1 章の文)"""
+    S = res.get('settings') or {}
+    if not s3._onoff(S.get('launch_boost')):
+        return 'off'
+    for s in res.get('standing') or []:
+        if _started(s):
+            return 'on'
+    return 'on_not_started'
+
+
+def start_launch_state(res, s):
+    """発進ごとの状態(2026-10-26 fix3、反証 1 回目 tools:F7): 'off' / 'on'(この発進で出た)/ 'on_not_started'(出なかった)"""
+    S = res.get('settings') or {}
+    if not s3._onoff(S.get('launch_boost')):
+        return 'off'
+    return 'on' if _started(s) else 'on_not_started'
+
+
+def doubtful(s):
+    """standing_3lap の印(note)の付いた発進(2026-10-26 fix3、反証 1 回目 tools:F5。数えるかは counted のまま)"""
+    return bool(s.get('note'))
+
+
+def key_of(res, ignore=(), launch=None):
+    """実際の設定の鍵(並べ替えできる tuple)と、その表の文。launch: 発進の状態を記録ごとの状態の代わりに使う(発進ごとの組)"""
+    S = res.get('settings') or {}
+    key, txt = [], []
+    f = lambda x: '%g' % x if isinstance(x, (int, float)) else str(x)      # noqa: E731
+    if 'model' not in ignore:
+        key.append(('model', str(S.get('model'))))
+        txt.append(str(S.get('model') or '?'))
+    if 'gain' not in ignore:
+        g = _num(S.get('throttle_gain'))
+        key.append(('gain', g if g is not None else -1))
+        txt.append('%.2f' % g if g is not None else '速さ?')
+    if 'steer' not in ignore:
+        sg = _num(S.get('steer_gain'))
+        sg = 1.0 if sg is None else sg
+        key.append(('steer', sg))
+        if abs(sg - 1.0) > 1e-6:
+            txt.append('ステア %.2f' % sg)
+    if 'ceiling' not in ignore:
+        if s3._onoff(S.get('speed_ceiling')):
+            key.append(('ceiling', (1, _num(S.get('ceil_left_mps')) or 0, _num(S.get('ceil_all_mps')) or 0)))
+            t = '天井 %s' % f(S.get('ceil_left_mps'))
+            if S.get('ceil_all_mps') is not None and abs(float(S['ceil_all_mps']) - 4.5) > 1e-6:
+                t += '/%s' % f(S['ceil_all_mps'])
+            txt.append(t)
+        else:
+            key.append(('ceiling', (0, 0, 0)))
+            txt.append('天井 OFF')
+    if 'auto' not in ignore:
+        if s3._onoff(S.get('speed_auto')):
+            key.append(('auto', (1, _num(S.get('auto_target_mps')) or 0)))
+            txt.append('自動 %s' % f(S.get('auto_target_mps')))
+        else:
+            key.append(('auto', (0, 0)))
+    if 'launch' not in ignore:
+        ls = launch_state(res) if launch is None else launch
+        if ls == 'on':
+            key.append(('launch', (2, _num(S.get('launch_us')) or 0, _num(S.get('launch_mps')) or 0,
+                                   _num(S.get('launch_max_s')) or 0)))
+            t = '発進 %s' % f(S.get('launch_us'))
+            if (S.get('launch_mps') not in (None, 2.5)) or (S.get('launch_max_s') not in (None, 1.2)):
+                t += '/%s/%s' % (f(S.get('launch_mps')), f(S.get('launch_max_s')))
+            txt.append(t)
+        elif ls == 'on_not_started':
+            key.append(('launch', (1, 0, 0, 0)))
+            txt.append('発進 ON・出ず')
+        else:
+            key.append(('launch', (0, 0, 0, 0)))
+            txt.append('発進 OFF')
+    if 'zone' not in ignore:
+        z = 1 if s3._onoff(S.get('zone_caps')) else 0
+        key.append(('zone', z))
+        if z:
+            txt.append('区間の上限')
+    if 'trim' not in ignore:     # 2026-10-26 critic(反証 1 回目 tools:F8): トリム・後ろの見張り。どちらも 0 なら鍵は (0, 0)
+        tr = _num(S.get('steer_trim_us'), 1) or 0.0
+        bg = 1 if s3._onoff(S.get('rec_back_guard')) else 0
+        # 2026-10-26 fix3 直す 1 回目 r1-rec3-5: 中立止めのあともリカバリーを残す(rec_hold_keep)・発進の前進を見送った区間は
+        # 補助も出さない(launch_no_kick)。どちらも 0(か欄が無い)なら鍵・文は前と同じ (トリム, 見張り)
+        opt = tuple(1 if s3._onoff(S.get(k)) else 0 for k in s3.OPT_KEYS)
+        key.append(('trim', (tr, bg) + (opt if any(opt) else ())))
+        if tr:
+            txt.append('トリム %+g' % tr)
+        if bg:
+            txt.append('後ろの見張り')
+        txt += [s3.OPT_TEXT[k] for k, v in zip(s3.OPT_KEYS, opt) if v]
+    if 'mode' not in ignore:
+        m = S.get('mode_id')
+        key.append(('mode', m if isinstance(m, int) else -1))
+        if m not in (None, 5):
+            txt.append('ジャンル %s' % m)
+    mid = res.get('midrun') or S.get('midrun') or []
+    if mid:                  # 走行中に変えた本は別の組(どの --ignore でも分ける)
+        key.append(('midrun', tuple(sorted({m['key'] for m in mid}))))
+        txt.append('途中で変えた(%s)' % s3.midrun_text(mid))
+    if res.get('trial'):     # 2026-10-27 r3-r3-rec-3: 人が memo に「試し」と書いた本も別の組(どの --ignore でも分ける)
+        key.append(('trial', 1))
+        txt.append('試し(数えない)')
+    return tuple(key), '・'.join(txt)
+
+
+def flags_of(res):
+    """表の「印」: 速さの制御の印・発進 ON なのに出ない・フレームのゲインが log.json と違う(自動合わせ OFF のとき)"""
+    out = list(res.get('speed_ctrl_flags') or [])
+    S = res.get('settings') or {}
+    if launch_state(res) == 'on_not_started':
+        out.append('発進の前進が出ていない')
+    g, gf = _num(S.get('throttle_gain')), _num(S.get('throttle_gain_frames'))
+    if g is not None and gf is not None and not s3._onoff(S.get('speed_auto')) and abs(g - gf) > 0.005:
+        out.append('フレームのゲイン %.3f' % gf)
+    if res.get('zero_byte'):
+        out.append('0 バイトの npz %d' % len(res['zero_byte']))
+    if res.get('missing_npz'):   # 2026-10-27 fix5 c1(あるときだけ): 書いている途中で落ちたシーン・車両の値が来なかったシーン
+        out.append('無い npz %d(記録が欠けている。欠けた区間の衝突・8G 以上は入っていない → 動画・紙で)' % len(res['missing_npz']))
+    if res.get('midrun'):
+        out.append('途中で変えた: ' + s3.midrun_text(res['midrun']))
+    # 数えない発進のわけ: 前に衝突(coll_before)。試し・途中で変えた(fix5 c2)だけで数えない発進はここに入れない(わけが違う)
+    excl = [s for s in res.get('standing') or [] if s.get('valid') and not s3.counted(s) and not s.get('trial')
+            and (s.get('coll_before') or not s.get('midrun'))]
+    if excl:
+        out.append('数えない発進 %d(前に衝突)' % len(excl))
+    exm = [s for s in res.get('standing') or [] if s.get('valid') and s.get('midrun') and not s.get('coll_before')
+           and not s.get('trial')]
+    if exm:                      # 2026-10-27 fix5 c2(あるときだけ)
+        out.append('数えない発進 %d(3 周目の終わりより前に途中で変えた)' % len(exm))
+    if res.get('trial'):     # 2026-10-27 r3-r3-rec-3(あるときだけ)
+        out.append('試し(%s。止まってから 3 周を数えない)' % res['trial'][:40])
+    # 2026-10-26 fix3(反証 1 回目 tools:F7・F5)
+    st_ = [start_launch_state(res, s) for s in res.get('standing') or []]
+    if 'on' in st_ and 'on_not_started' in st_:
+        out.append('発進の前進が混ざっている(出た %d・出ず %d)' % (st_.count('on'), st_.count('on_not_started')))
+    chk = [s for s in res.get('standing') or [] if s3.counted(s) and doubtful(s)]
+    if chk:
+        out.append('確かめる(止まってから 3 周 %s)' % '・'.join('%.2f' % s['from_move_s'] for s in chk))
+    sw = [w for w in res.get('windows') or [] if w.get('suspect')]
+    if sw:
+        out.append('確かめる(3 周の窓 %s: 7 秒より速い周)' % '・'.join('%.2f' % w['total_s'] for w in sw))
+    return out
+
+
+def _med(xs):
+    return st.median(xs) if xs else None
+
+
+def _f(x, fmt='%.2f'):
+    return '—' if x is None else fmt % x
+
+
+def _i(x):
+    """quick_eval と同じ int()(切り捨て)の表示"""
+    return '—' if x is None else '%d' % int(x)
+
+
+def group_rows(results, ignore=()):
+    groups = {}
+
+    def grp(k, txt):
+        return groups.setdefault(k, {'key': [list(x) for x in k], 'text': txt, 'runs': [], 'starts': [], 'moved': []})
+    for r in results:
+        if 'error' in r:
+            continue
+        k, txt = key_of(r, ignore)
+        g = grp(k, txt)
+        g['runs'].append(r)
+        rec = launch_state(r)
+        for s in r.get('standing') or []:
+            # 発進ごとの組(2026-10-26 fix3、反証 1 回目 tools:F7): 記録の状態と違う発進は、その発進の状態の組へ
+            st_ = start_launch_state(r, s)
+            if 'launch' in ignore or st_ == rec:
+                g['starts'].append(s)
+            else:
+                k2, txt2 = key_of(r, ignore, launch=st_)
+                g2 = grp(k2, txt2)
+                g2['starts'].append(s)
+                g2['moved'].append('%s@%.2f' % (r['log'], s['t_ai']))
+    out = []
+    for k in sorted(groups, key=lambda k: [str(x) for x in k]):
+        g = groups[k]
+        rs = g['runs']
+        clean = [x for r in rs for x in r['laps']['clean_laps_s']]
+        ent = [x for r in rs for x in r['laps']['entries_erpm']]
+        n = sum(r['laps']['passes'] for r in rs)
+        col = sum(r['collisions']['all'] for r in rs)
+        # 7 秒より速い周を含む窓(suspect)は最速・中央値に入れず、数え分ける(2026-10-26 fix3、反証 1 回目 tools:F5)
+        wins = [w['total_s'] for r in rs for w in r.get('windows') or [] if not w.get('suspect')]
+        wcl = [w['total_s'] for r in rs for w in r.get('windows') or [] if w['kind'] == 'きれい' and not w.get('suspect')]
+        wchk = [w['total_s'] for r in rs for w in r.get('windows') or [] if w.get('suspect')]
+        starts = g['starts']
+        stand = [s for s in starts if s3.counted(s) and not doubtful(s)]
+        schk = [s['from_move_s'] for s in starts if s3.counted(s) and doubtful(s)]
+        excluded = [s for s in starts if s.get('valid') and not s3.counted(s)]
+        sv = [s['from_move_s'] for s in stand]
+        sclean = [s['from_move_s'] for s in stand if not (s.get('collisions') or {}).get('n')]
+        best = min(stand, key=lambda s: s['from_move_s']) if stand else None          # standing_best_s の発進
+        to_r1 =[s['to_r1_s'] - s['move_after_s'] for s in starts
+                 if s.get('to_r1_s') is not None and s.get('move_after_s') is not None]
+        row = {'text': g['text'], 'key': g['key'], 'runs': len(rs), 'logs': [r['log'] for r in rs],
+               'ai_no': [r.get('ai_no') for r in rs], 'cand': sorted({str(r.get('cand') or '—') for r in rs}),
+               'ai_s': round(sum(r.get('ai_s') or 0 for r in rs), 1), 'passes': n, 'clean_laps': len(clean),
+               'best_clean_s': min(clean) if clean else None, 'median_clean_s': _med(clean),
+               'fast_laps': sum(1 for x in clean if x < FAST_LAP_S),
+               'collisions': col, 'strong': sum(r['collisions']['strong'] for r in rs),
+               'coll_per_pass': round(col / n, 3) if n else None, 'r1_entry_median_erpm': _med(ent),
+               'takeovers_failure': sum(r.get('takeovers_failure') or 0 for r in rs),
+               'windows': len(wins), 'window_best_s': min(wins) if wins else None, 'window_median_s': _med(wins),
+               'window_best_clean_s': min(wcl) if wcl else None,
+               'standing_n': len(sv), 'standing_best_s': min(sv) if sv else None, 'standing_median_s': _med(sv),
+               'standing_clean_n': len(sclean), 'standing_le25': sum(1 for x in sv if x <= s3.GOAL_S),
+               'standing_list_s': sv, 'standing_excluded_n': len(excluded),
+               # 2026-10-26 fix3 直す 1 回目 r1-rec3-4: 目標「ぶつからずに 3 周 25 秒」の数(衝突なし・25 秒以下)と、最速の発進の衝突
+               'standing_clean_le25': sum(1 for x in sclean if x <= s3.GOAL_S),
+               'standing_clean_best_s': min(sclean) if sclean else None,
+               'standing_best_coll': ((best.get('collisions') or {}).get('n') or 0) if best else None,
+               'launch_to_r1_median_s': _med(to_r1), 'launch_n': len(to_r1)}
+        # 次の欄は、あるときだけ(無い = なし。前の出力と同じ形のまま)
+        if schk:
+            row['standing_check_s'] = schk
+        if wchk:
+            row['window_check_s'] = wchk
+        if g['moved']:
+            row['starts_from_other_runs'] = g['moved']
+        aa = sum(len((r['collisions'] or {}).get('after_ai') or []) for r in rs)
+        if aa:                       # 2026-10-27 fix6-2(あるときだけ): 衝突・強い衝突に入れた、人側にした直後の衝突の数
+            row['collisions_after_ai'] = aa
+        out.append(row)
+    return out
+
+
+def run_rows(results, ignore=()):
+    out = []
+    for r in results:
+        if 'error' in r:
+            out.append({'log': r['log'], 'ai_no': r.get('ai_no'), 'error': r['error']})
+            continue
+        _, txt = key_of(r, ignore)
+        L, C, F, V = r['laps'], r['collisions'], r['flying'], r.get('vbat') or {}
+        b = s3.best_standing(r)
+        out.append({'log': r['log'], 'ai_no': r.get('ai_no'), 'cand': r.get('cand'), 'block': r.get('block'),
+                    'tune': r.get('tune'), 'settings': txt, 'ai_s': r.get('ai_s'), 'passes': L['passes'],
+                    'clean_laps': L['clean'], 'best_clean_s': L['best_clean_s'], 'median_clean_s': L['median_clean_s'],
+                    'collisions': C['all'], 'strong': C['strong'], 'coll_max_g': C.get('max_g'), 'coll_ge8': C.get('n_ge8'),
+                    'coll_places': '/'.join('%s %d' % (k, v) for k, v in (C.get('by_place') or {}).items() if v),
+                    'r1_entry_median_erpm': L['r1_entry_median_erpm'],
+                    'takeovers_failure': r.get('takeovers_failure'), 'window_best_s': F['best_s'],
+                    'window_best_clean_s': F['best_clean_s'], 'standing_best_s': b['from_move_s'] if b else None,
+                    'standing_coll': (b.get('collisions') or {}).get('n') if b else None,
+                    'v_start': V.get('start_v'), 'v_end': V.get('end_v'), 'v_source': V.get('source'),
+                    'flags': flags_of(r)})
+        if C.get('after_ai'):        # 2026-10-27 fix6-2(あるときだけ): 人側にした直後の衝突(上の衝突・最大 G・8G 以上・場所に入っている)
+            out[-1]['coll_after_ai'] = C['after_ai']
+    return out
+
+
+def to_markdown(results, day, since, ignore=()):
+    runs = run_rows(results, ignore)
+    groups = group_rows(results, ignore)
+    out = ['# 実際の設定で分けた早い集計(tools/quick_eval_by_params.py)', '',
+           '- 日 %s・%s 以後・%d 本。分け方 = log.json の実際の設定(説明欄の cand ではない)%s。' % (
+               day or '—', since or '0000', len(results), '・まとめたもの: ' + '・'.join(ignore) if ignore else ''),
+           '- 数え方は quick_eval.py と同じ(衝突は label・通過 = AI の R1 の起点・9 秒未満 = 9.0 秒未満のきれいな周)。'
+           '3 周の窓・止まってから 3 周は tools/standing_3lap.py(動いてから。valid だけ)。', '',
+           '## 1. 本ごと', '',
+           '| No. | 記録 | cand | 説明欄の tune | 実際の設定 | AI 秒 | 通過 | きれいな周 | ベスト | 中央値 | 衝突(強) | 最大 G・8G 以上・場所 | '
+           'R1 進入 中央値 | 失敗の交代 | 3 周の窓 最速(きれい) | 止まってから 3 周(衝突) | 電池 V | 印 |',
+           '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|']
+    for x in runs:
+        if 'error' in x:
+            out.append('| %s | %s | (%s) | | | | | | | | | | | | | | | |' % (x.get('ai_no') or '—', x['log'], x['error']))
+            continue
+        vb = ('%s→%s(%s)' % (_f(x['v_start']), _f(x['v_end']), x['v_source'])) if x['v_source'] else '—'
+        cg = ('%s・%d・%s' % (_f(x['coll_max_g']) + 'G', x['coll_ge8'] or 0, x['coll_places'] or '—')
+              if x.get('coll_max_g') is not None else '—') + s3.after_ai_mark({'after_ai': x.get('coll_after_ai')})
+        out.append('| %s | %s | %s | %s | %s | %.0f | %d | %d | %s | %s | %d(%d) | %s | %s | %s | %s(%s) | %s | %s | %s |' % (
+            x['ai_no'] or '—', x['log'], x['cand'] or '—', (x['tune'] or '—')[:24], x['settings'], x['ai_s'] or 0,
+            x['passes'], x['clean_laps'], _f(x['best_clean_s']), _f(x['median_clean_s']), x['collisions'], x['strong'], cg,
+            _i(x['r1_entry_median_erpm']), x['takeovers_failure'] if x['takeovers_failure'] is not None else '—',
+            _f(x['window_best_s']), _f(x['window_best_clean_s']),
+            ('%s(%d)' % (_f(x['standing_best_s']), x['standing_coll'] or 0)) if x['standing_best_s'] is not None else '—',
+            vb, '・'.join(x['flags']) or ''))
+    out += ['', '## 2. 実際の設定ごと', '',
+            '| 実際の設定 | 本数 | No. | cand | 通過 | きれいな周 | ベスト | 中央値 | 9 秒未満 | 衝突/通過 | 強い衝突 | R1 進入 中央値 | '
+            '失敗の交代 | 3 周の窓(数・最速・中央値・きれいな最速) | 止まってから 3 周(本・最速・中央値・衝突なし・25 秒以下・数えない) | '
+            'ぶつからずに 25 秒以下(本・衝突なしの最速) | 動く → A1 中央値 |',
+            '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|']
+    chk = lambda xs: '(確かめる %d: %s)' % (len(xs), '・'.join('%.2f' % x for x in xs)) if xs else ''      # noqa: E731
+    # 2026-10-26 fix3 直す 1 回目 r1-rec3-4: 目標の数。前の列の「最速」「25 秒以下」は衝突のある発進も入るので、最速に衝突があれば書く
+    goal = lambda g: '%d・%s%s' % (g['standing_clean_le25'], _f(g['standing_clean_best_s']),      # noqa: E731
+                                   '(最速 %.2f は衝突 %d)' % (g['standing_best_s'], g['standing_best_coll'])
+                                   if g.get('standing_best_coll') else '')
+    for g in groups:
+        txt = g['text'] + ('・ほかの本の発進 %d' % len(g['starts_from_other_runs']) if g.get('starts_from_other_runs') else '')
+        out.append('| %s | %d | %s | %s | %d | %d | %s | %s | %d | %s | %d | %s | %d | %d・%s・%s・%s%s | %d・%s・%s・%d・%d・%d%s | %s | %s |' % (
+            txt, g['runs'], ','.join(str(x or '—') for x in g['ai_no']), ','.join(g['cand']), g['passes'],
+            g['clean_laps'], _f(g['best_clean_s']), _f(g['median_clean_s']), g['fast_laps'], _f(g['coll_per_pass']),
+            g['strong'], _i(g['r1_entry_median_erpm']), g['takeovers_failure'], g['windows'],
+            _f(g['window_best_s']), _f(g['window_median_s']), _f(g['window_best_clean_s']), chk(g.get('window_check_s')),
+            g['standing_n'], _f(g['standing_best_s']), _f(g['standing_median_s']), g['standing_clean_n'], g['standing_le25'],
+            g['standing_excluded_n'], chk(g.get('standing_check_s')), goal(g), _f(g['launch_to_r1_median_s'])))
+    out += ['', '- ぶつからずに 25 秒以下 = 止まってから 3 周(動いてから)が 25.0 秒以下で、その 3 周の中に衝突(水平 2.5G 以上)が無い発進の数'
+            '(目標の形)。前の列の「25 秒以下」「最速」は衝突のある発進も数える。25 秒の判定はストップウォッチと ③ standing_3lap(手順書 6 章)。']
+    if any(g.get('standing_check_s') or g.get('window_check_s') for g in groups):      # 2026-10-26 fix3(あるときだけ)
+        out += ['', '- (確かめる N: 値)= standing_3lap の印のある値(速すぎる周・1 周の距離のずれ・A4 が無い・空転の比)。'
+                '最速・中央値・25 秒以下・衝突なしに入れていない。3 章・standing_3lap の表と動画で読む。']
+    if any(g.get('collisions_after_ai') for g in groups):     # 2026-10-27 fix6-2(あるときだけ)
+        out += ['', '- 衝突(1 章の衝突(強)・最大 G・8G 以上・場所、2 章の衝突/通過・強い衝突)には、人側にした直後(AI の区間の終わりから '
+                '0.5 秒以内)の人側の衝突も入れた(car_check の「衝突」の行と同じ。手順書 7 章の止める条件・6 章の「左 4.2」に数える)。'
+                '入った組: %s。1 章の「(うち人側にした直後 N: 場所 G)」がその本の分。① quick_eval(AI 側だけ)とはその分だけ違う。'
+                % '・'.join('%s(%d)' % (g['text'], g['collisions_after_ai']) for g in groups if g.get('collisions_after_ai'))]
+    if any(g.get('starts_from_other_runs') for g in groups):
+        out += ['', '- ほかの本の発進 N = 発進の前進が「出た」発進と「出ず」の発進が混ざった本の、その組の状態の発進'
+                '(止まってから 3 周・動く → A1 は発進ごとの状態で分けた)。']
+    out += ['', '## 3. 止まってから 3 周(最初の R1 の起点まで行った発進。tools/standing_3lap.py と同じ表)', ''] + s3.standing_table(results, only_r1=True)
+    out += s3.zero_byte_line(results)
+    out += ['', '(衝突は label の数え方。「通過」= AI が R1 を回った回数 ≒ 周。発進 ON・出ず = launch_boost = 1 なのに発進の前進が'
+            '一度も出なかった本(手順書 7 章: ON として数えない)。途中で変えた = 走行中に設定を変えた本(数えない・別の組)。'
+            '止まってから 3 周は、同じ本の中でそれより前に衝突のあった発進を数えない(2 章の「数えない」)。'
+            '8G 以上 = 手順書 7 章の「止めて後輪・舵のリンクを見る」。比べは手順書 8 章の A/B/A で)']
+    return '\n'.join(out) + '\n', runs, groups
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description='実際の設定で分ける早い集計')
+    ap.add_argument('since', nargs='?', default=None, help='HHMM 以後(quick_eval と同じ。既定 0000)')
+    ap.add_argument('--day', default=None, help='YYYYMMDD(既定 今日)')
+    ap.add_argument('--since', dest='since_opt', default=None)
+    ap.add_argument('--logs', nargs='*', default=None, help='記録を名指し(--day・since の代わり)')
+    ap.add_argument('--ignore', default='', help='鍵から外すもの(%s)' % '・'.join(PARTS))
+    ap.add_argument('--raw', default=None)
+    ap.add_argument('--labels', default=None)
+    ap.add_argument('--bench', default=str(config.DATA_DIR / 'bench_candidates.json'))
+    ap.add_argument('--out', default=None, help='by_params.md・by_params.json を書くフォルダ(無ければ標準出力だけ)')
+    a = ap.parse_args(argv)
+    ignore = tuple(x.strip() for x in a.ignore.replace('・', ',').split(',') if x.strip())
+    bad = [x for x in ignore if x not in PARTS]
+    if bad:
+        print('知らない --ignore: %s(使えるのは %s)' % (','.join(bad), ','.join(PARTS)), file=sys.stderr)
+        return 2
+    since = a.since_opt or a.since
+    if a.logs:
+        logs, skipped, day = list(a.logs), [], (a.day or a.logs[0][:8])
+    else:
+        import time
+        day = (a.day or time.strftime('%Y%m%d')).replace('-', '')
+        logs, skipped = s3.day_logs(day, a.raw, since)
+    if not logs:
+        print('この日・時刻より後の AI 走行がありません(%s・%s)' % (day, since or '0000'))
+        return 1
+    res = s3.run(logs, a.raw, a.labels, a.bench)
+    md, runs, groups = to_markdown(res, day, since, ignore)
+    if skipped:
+        md += '- 飛ばした記録: ' + '、'.join('%s(%s)' % x for x in skipped) + '\n'
+    print(md)
+    if a.out:
+        out = Path(a.out).expanduser()
+        out.mkdir(parents=True, exist_ok=True)
+        (out / 'by_params.md').write_text(md, encoding='utf-8')
+        (out / 'by_params.json').write_text(json.dumps({'schema': SCHEMA, 'day': day, 'since': since, 'ignore': ignore,
+                                                       'skipped': skipped, 'runs': runs, 'groups': groups,
+                                                       'results': res}, ensure_ascii=False, indent=1,
+                                                      default=s3._json_default), encoding='utf-8')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

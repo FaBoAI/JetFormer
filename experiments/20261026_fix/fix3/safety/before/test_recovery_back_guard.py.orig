@@ -1,0 +1,399 @@
+"""リカバリーの後ろの見張り(assist.Recovery の back_guard・drive の rec_back_guard。2026-10-26 fix2 safety2-1)。
+
+指摘: 直前のモデルの指令がブレーキ側だと ESC は後退を待っていて、リカバリーの最初の「ブレーキ」がそのまま後退になる。
+'brake'・'gap' の間は eRPM を見ず、'reverse' が下がった時間を 0 から数え直す。後ろの衝撃は 'reverse' の中でしか見ない
+(10/23 20261023-205458-0002: 1.24 m 下がって後ろに 5.8G)。
+見張り ON: どの段でも後ろへ動いたことを数え、rev_s で惰性へ。後ろへ動いている・直前まで動いていたときの衝撃ですぐ前進。
+OFF(既定)は手を入れる前とビット単位で同じ(写し tests/fixtures/round2_before/ の assist.py・drive.py と比べる)。
+実機・GPU は使わない(drive の走行ループは tests/test_launch_drive.py の偽物で回す)。
+
+    cd ~/jetformer && /home/jetson/bin/jf-heavy --lock none --mem 1500M -- /home/jetson/miniconda/envs/jetracer/bin/python \
+        -m pytest -q -p no:cacheprovider --basetemp=<消せる場所> tests/test_recovery_back_guard.py
+"""
+import collections
+import hashlib
+import importlib.util
+import json
+import random
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from jetformer import assist as A
+from jetformer import drive
+
+from test_drive_caps import assert_rows_equal_before, run_det, scenario
+from test_launch_drive import C, N, PARAMS, build, launch_scene, run
+
+ROOT = Path(__file__).resolve().parents[1]
+FIX = ROOT / 'tests' / 'fixtures' / 'round2_before'
+BEFORE_SHA = {'drive.py': '2fe6bbe607d93dc1e66582774aecb141f4ce3145bad577fe37fe199d6e7cc558',
+              'assist.py': 'ff5921389a2c728be84dafba5bc599d21c566114897c79b0b59d35c95b03e5bd'}
+DT = 1 / 30.0
+REC_1023 = ROOT / 'data' / 'raw' / '20261023-205458' / '20261023-205458-0002'
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def load_before():
+    """直す前の assist.py・drive.py(写し)をモジュールにする(写しの drive は写しの assist で動かす)"""
+    for name, h in BEFORE_SHA.items():
+        assert sha(FIX / name) == h, name
+    aspec = importlib.util.spec_from_loader('jetformer._assist_before_round2', loader=None)
+    amod = importlib.util.module_from_spec(aspec)
+    exec(compile((FIX / 'assist.py').read_text(encoding='utf-8'), str(FIX / 'assist.py'), 'exec'), amod.__dict__)
+    spec = importlib.util.spec_from_loader('jetformer._drive_before_round2', loader=None)
+    mod = importlib.util.module_from_spec(spec)
+    mod.__package__ = 'jetformer'
+    exec(compile((FIX / 'drive.py').read_text(encoding='utf-8'), str(FIX / 'drive.py'), 'exec'), mod.__dict__)
+    mod.assist_mod = amod
+    assert 'rec_back_guard' not in mod.PARAM_LIMITS and not hasattr(amod.Recovery, '_guard')
+    return amod, mod
+
+
+# ---------------------------------------------------------------- 簡単な ESC と車(反証の probe_brake_hit.py と同じ)
+def esc_sim(guard, ready0, wall_m, rev_us=300.0, rev_s=0.4, mod=A):
+    """ready = 後退を待つ状態(直前がブレーキ → 中立)。止まっている・下がっているときに後退側(> 中立 + 40)を出すと
+    0.08 秒後から下がる。中立の帯では ready のまま。前進側で ready は消え、下がっていればすぐ止まる。
+    後ろへ 4400 eRPM/秒(最初 1400)、中立では 800 eRPM/秒で減る。後ろの壁 wall_m [m] に当たると 5G(0.15 秒見える)で止まる"""
+    ref = (1441.0, 1496.0)
+    kv = 0.5e-3
+    a = mod.Assist(ref)
+    kw = {'rec_guard': True} if guard else {}
+    t = 0.0
+    for _ in range(30):                       # 走って arm
+        a.step((1441, 1400), -3000, True, t, **kw); t += DT
+    for _ in range(20):                       # 中立の帯で止まる
+        a.step((1441, 1515), -100, True, t, **kw); t += DT
+    ready, braked, erpm, x, t_rev, hit_t = ready0, False, 0.0, 0.0, None, None
+    t_rec, rows = None, []
+    for _ in range(200):
+        g = 5.0 if (hit_t is not None and t - hit_t <= 0.15) else 0.0
+        o, kind = a.step((1441, 1515), erpm, True, t, impact_g=g, rev_us=rev_us, rev_s=rev_s, **kw)
+        thr = o[1]
+        if t_rec is None and kind == mod.ASSIST_RECOVERY:
+            t_rec = t
+        if t_rec is not None:
+            rows.append({'el': round(t - t_rec, 4), 'phase': a.rec.phase, 'thr': thr, 'steer': o[0], 'kind': kind,
+                         'erpm': erpm, 'x': x, 'g': g, 'retries': a.rec.retries})
+        if thr > 1538:
+            if ready and erpm >= -150:
+                if t_rev is None:
+                    t_rev = t
+                if t - t_rev >= 0.08 and hit_t is None:
+                    erpm = 1400.0 if erpm < 1400 else min(erpm + 4400 * DT, 6000)
+            else:
+                braked = True
+        elif thr < 1478:
+            ready, braked, t_rev = False, False, None
+            erpm = -1500.0 if hit_t is None or erpm <= 0 else 0.0
+        else:
+            t_rev = None
+            if braked:
+                ready, braked = True, False
+            erpm = max(erpm - 800 * DT, 0.0) if erpm > 0 else erpm
+        if erpm > 0 and hit_t is None:
+            x += erpm * kv * DT
+            if wall_m is not None and x >= wall_m:
+                hit_t, erpm = t + DT, 0.0
+        if hit_t is not None and erpm > 0:
+            erpm = 0.0
+        t += DT
+        if t_rec is not None and a.rec.phase is None:
+            break
+    hit_el = None if hit_t is None else hit_t - t_rec
+    return {'rows': rows, 'hit_el': hit_el,
+            'rev_back_s': sum(1 for r in rows if r['thr'] > 1538 and r['erpm'] > 300) * DT,
+            'push_after_hit_s': sum(1 for r in rows if r['thr'] > 1538 and hit_el is not None and r['el'] >= hit_el - 1e-6) * DT,
+            'escape_el': next((r['el'] for r in rows if r['phase'] == 'escape'), None),
+            'back_m': max((r['x'] for r in rows), default=0.0),
+            'retries_max': max((r['retries'] for r in rows), default=0)}
+
+
+def test_probe_ready_esc_with_wall_behind():
+    """直前がブレーキ・後ろ 5 cm に壁: OFF は当たったあとも後ろへ押し続ける(指摘の B)。ON はすぐ前へ・やり直さない"""
+    off, on = esc_sim(False, True, 0.05), esc_sim(True, True, 0.05)
+    assert off['hit_el'] is not None and off['push_after_hit_s'] > 0.5 and off['retries_max'] >= 1   # 指摘の再現
+    assert on['hit_el'] is not None and on['hit_el'] == pytest.approx(off['hit_el'])
+    assert on['push_after_hit_s'] <= DT + 1e-9                       # 当たったフレームだけ
+    assert on['escape_el'] is not None and on['escape_el'] <= on['hit_el'] + DT + 1e-9
+    assert on['retries_max'] == 0
+    esc_rows = [r for r in on['rows'] if r['phase'] == 'escape']
+    assert esc_rows and all(r['thr'] == 1496.0 - A.Recovery.ESCAPE_US for r in esc_rows)
+
+
+def test_probe_ready_esc_free_counts_backing_from_brake():
+    """直前がブレーキ・後ろが空いている: OFF は 'brake' で下がり始めた分を数えず rev_s を超えて後退を出す。ON は rev_s まで"""
+    off, on = esc_sim(False, True, None), esc_sim(True, True, None)
+    assert off['rev_back_s'] > 0.4 + 0.1                             # 指摘の再現(数えない分だけ長い)
+    assert on['rev_back_s'] <= 0.4 + DT + 1e-9
+    assert on['back_m'] < off['back_m']
+
+
+@pytest.mark.parametrize('wall', [None, 0.05])
+def test_probe_forward_before_is_unchanged(wall):
+    """対照: 直前が前進(ブレーキの段は本当のブレーキ)。後ろが空いていれば ON も OFF と同じ。壁があっても前へ出るのは遅くならない"""
+    off, on = esc_sim(False, False, wall), esc_sim(True, False, wall)
+    if wall is None:
+        assert [(r['thr'], r['steer'], r['kind']) for r in on['rows']] == [(r['thr'], r['steer'], r['kind']) for r in off['rows']]
+    else:
+        assert on['escape_el'] <= off['escape_el'] + 1e-9
+
+
+# ---------------------------------------------------------------- 段ごと(偽の入力)
+def _to_phase(r, phase, back_guard):
+    """走って止まり、リカバリーの phase の段まで(eRPM 0)。戻り値 時刻"""
+    t = 0.0
+    for _ in range(30):
+        r.step((1000.0, 1350.0), -5000, t, back_guard=back_guard); t += DT
+    for _ in range(200):
+        r.step((1000.0, 1450.0), 0, t, back_guard=back_guard); t += DT
+        if r.phase == phase:
+            return t
+    raise AssertionError('段 %s に来ない' % phase)
+
+
+def test_brake_phase_backing_becomes_reverse_and_ends_at_rev_s():
+    r = A.Recovery((C, N))
+    t = _to_phase(r, 'brake', True)
+    o, k = r.step((1000.0, 1450.0), 1500, t, back_guard=True)        # 'brake' の段で下がり始めた
+    assert r.phase == 'reverse' and r.guard_event[0] == 'back_early' and r.guard_event[1] == 'brake'
+    assert o[1] == N + A.DEFAULT_REV_US and k == A.ASSIST_RECOVERY
+    n_rev = 1
+    for i in range(40):
+        t += DT
+        o, k = r.step((1000.0, 1450.0), 1500, t, back_guard=True)
+        if r.phase != 'reverse':
+            break
+        n_rev += o[1] == N + A.DEFAULT_REV_US
+    assert r.phase in ('coast', 'escape') and n_rev <= int(round(A.DEFAULT_REV_S / DT)) + 1
+    # 対照: OFF は 'brake' のまま(下がっていても時間だけ)
+    r0 = A.Recovery((C, N))
+    t0 = _to_phase(r0, 'brake', False)
+    r0.step((1000.0, 1450.0), 1500, t0)
+    assert r0.phase == 'brake' and r0.guard_event is None
+
+
+def test_gap_phase_counts_coasting_backwards():
+    r = A.Recovery((C, N))
+    t = _to_phase(r, 'gap', True)
+    for _ in range(3):
+        r.step((1000.0, 1450.0), 1200, t, back_guard=True)
+        t += DT
+    assert r.backed_s == pytest.approx(3 * DT) and r.phase == 'gap'
+    r0 = A.Recovery((C, N))
+    t0 = _to_phase(r0, 'gap', False)
+    for _ in range(3):
+        r0.step((1000.0, 1450.0), 1200, t0)
+        t0 += DT
+    assert r0.backed_s == 0.0                                        # OFF は数えない(今まで)
+
+
+def test_gap_backing_long_enough_goes_coast():
+    r = A.Recovery((C, N))
+    t = _to_phase(r, 'gap', True)
+    r.backed_s = A.DEFAULT_REV_S - DT / 2
+    o, k = r.step((1000.0, 1450.0), 1500, t, back_guard=True)
+    assert r.guard_event[0] == 'back_enough' and r.phase == 'coast' and o[1] == N
+
+
+@pytest.mark.parametrize('phase', ['brake', 'gap', 'reverse', 'coast'])
+def test_rear_impact_any_phase_escapes_without_retry(phase):
+    r = A.Recovery((C, N))
+    t = _to_phase(r, 'brake', True)
+    r._go(phase, t)
+    r.step((1000.0, 1450.0), 900, t, back_guard=True)                # 後ろへ動いていた
+    if r.phase != phase:
+        r._go(phase, t)                                              # 'brake' は 'reverse' になるので段を戻して確かめる
+    t += DT
+    o, k = r.step((1000.0, 1450.0), 0, t, impact_g=5.0, back_guard=True)   # 当たって止まった(同じフレームは 0)
+    assert r.phase == 'escape' and r.guard_event[0] == 'rear_impact' and r.retries == 0
+    assert o[1] == N - A.Recovery.ESCAPE_US
+
+
+def test_impact_without_backing_is_not_rear():
+    """後ろへ動いていないときの衝撃(前の衝突の残りなど)は、見張りも前と同じく見ない"""
+    r = A.Recovery((C, N))
+    t = _to_phase(r, 'brake', True)
+    o, k = r.step((1000.0, 1450.0), 0, t, impact_g=5.0, back_guard=True)
+    assert r.phase == 'brake' and r.guard_event is None and o[1] == N + A.DEFAULT_REV_US
+
+
+# ---------------------------------------------------------------- OFF はビット単位で同じ(assist)
+def _random_inputs(seed, n=3000):
+    rng = random.Random(seed)
+    t, out, mode = 0.0, [], 'drive'
+    left = 0
+    for _ in range(n):
+        if left <= 0:
+            mode = rng.choice(['drive', 'stop', 'back', 'brake', 'human', 'impact'])
+            left = rng.randint(5, 60)
+        left -= 1
+        t += rng.choice([DT, DT, DT, 0.05, 0.25])
+        st = rng.uniform(950, 1950)
+        if mode == 'drive':
+            m, e = (st, rng.uniform(1250, 1480)), rng.uniform(-6000, -1200)
+        elif mode == 'stop':
+            m, e = (st, rng.uniform(1480, 1540)), rng.uniform(-200, 200)
+        elif mode == 'back':
+            m, e = (st, rng.uniform(1480, 1900)), rng.uniform(0, 4500)
+        elif mode == 'brake':
+            m, e = (st, rng.uniform(1550, 1900)), rng.uniform(-3000, 0)
+        else:
+            m, e = (st, rng.uniform(1300, 1900)), rng.uniform(-3000, 3000)
+        out.append({'m': m, 'e': e, 'sel': mode != 'human', 't': t,
+                    'g': rng.uniform(2.6, 8.0) if (mode == 'impact' and rng.random() < 0.2) else rng.uniform(0, 1.5),
+                    'rev_us': rng.choice([300.0, 300.0, 450.0, 150.0]), 'rev_s': rng.choice([0.4, 0.4, 0.2, 1.2])})
+    return out
+
+
+@pytest.mark.parametrize('seed', range(6))
+@pytest.mark.parametrize('esc_on,rec_on,kick_on', [(1, 1, 0), (1, 1, 1), (1, 0, 0), (0, 1, 1)])
+def test_assist_off_bit_identical_to_before(seed, esc_on, rec_on, kick_on):
+    amod, _ = load_before()
+    ins = _random_inputs(seed)
+    a0, a1 = amod.Assist((C, N)), A.Assist((C, N))
+    kinds = collections.Counter()
+    for x in ins:
+        r0 = a0.step(x['m'], x['e'], x['sel'], x['t'], esc_on=esc_on == 1, rec_on=rec_on == 1, impact_g=x['g'],
+                     rev_us=x['rev_us'], rev_s=x['rev_s'], kick_on=kick_on == 1)
+        r1 = a1.step(x['m'], x['e'], x['sel'], x['t'], esc_on=esc_on == 1, rec_on=rec_on == 1, impact_g=x['g'],
+                     rev_us=x['rev_us'], rev_s=x['rev_s'], kick_on=kick_on == 1)
+        assert r0 == r1
+        assert a1.rec.guard_event is None
+        kinds[r1[1]] += 1
+    if rec_on:
+        assert kinds[A.ASSIST_RECOVERY] > 50                         # リカバリーの段を何度も通った
+
+
+def test_esc_probe_off_equals_before():
+    amod, _ = load_before()
+    for ready0, wall in ((True, 0.05), (True, None), (False, None), (False, 0.05)):
+        b, c = esc_sim(False, ready0, wall, mod=amod), esc_sim(False, ready0, wall)
+        assert [(r['thr'], r['steer'], r['kind']) for r in b['rows']] == [(r['thr'], r['steer'], r['kind']) for r in c['rows']]
+
+
+# ---------------------------------------------------------------- 本物の記録(10/23 205458-0002)
+def _replay(guard, rows=None):
+    z = np.load(REC_1023 / 'AI_CMD.npz'); v = np.load(REC_1023 / 'VEHICLE.npz'); im = np.load(REC_1023 / 'IMU.npz')
+    L = json.loads((REC_1023.parent / 'log.json').read_text(encoding='utf-8'))
+    p = L['drive']['params']
+    ref = (float(L['drive']['steer_center_us']), float(L['drive']['throttle_neutral_us']))
+    t = z['timestamps_us'].astype(np.int64); sel = z['select'].astype(bool); hold = z['hold'].astype(bool)
+    dry = z['dry_run'].astype(bool); mo = z['model_out'].astype(float); lat = z['latency_ms'].astype(float)
+    vt = v['timestamps_us'].astype(np.int64); ve = v['erpm'].astype(float)
+    it = im['timestamps_us'].astype(np.int64); acc = im['accel'].astype(float)
+    hg = np.hypot(acc[:, 0], acc[:, 1]) / 9.80665
+    a = A.Assist(ref)
+    res = []
+    for i in range(len(t)):
+        if hold[i]:
+            a.launch_hold(); a.reset(); res.append(None); continue
+        now_us = t[i] + (lat[i] * 1000 if np.isfinite(lat[i]) else 0)
+        jv = np.searchsorted(vt, t[i], side='right') - 1
+        e = ve[jv] if jv >= 0 else 0.0
+        ji = np.searchsorted(it, now_us, side='right')
+        idx = np.arange(max(0, ji - 10), ji)
+        idx = idx[it[idx] > t[i] - 150_000]
+        ig = float(hg[idx].max()) if len(idx) else 0.0
+        o, k = a.step((mo[i, 0], mo[i, 1]), e, bool(sel[i]) and not dry[i], now_us / 1e6,
+                      esc_on=p.get('esc_reverse', 1) == 1, rec_on=p.get('recovery', 1) == 1, impact_g=ig,
+                      rev_us=float(p.get('rev_us', 300)), rev_s=float(p.get('rev_s', 0.4)),
+                      kick_on=int(p.get('start_kick', 0) or 0) == 1, rec_guard=guard)
+        ev, a.rec.guard_event = a.rec.guard_event, None
+        res.append({'out': o, 'kind': k, 'erpm': e, 'phase': a.rec.phase, 'ev': ev})
+    return z, ref, res
+
+
+@pytest.mark.skipif(not (REC_1023 / 'AI_CMD.npz').exists(), reason='10/23 の記録がありません')
+def test_replay_1023_off_matches_record_and_on_limits_backing():
+    z, ref, off = _replay(False)
+    out, kind = z['out'].astype(float), z['assist'].astype(int)
+    mism = [i for i, r in enumerate(off) if r is not None and (abs(r['out'][1] - out[i, 1]) >= 0.6
+                                                              or abs(r['out'][0] - out[i, 0]) >= 0.6 or r['kind'] != kind[i])]
+    assert len(off) == 600 and mism == []                            # OFF = 記録の出力と同じ(600 行)
+    _, _, on = _replay(True)
+    first = next(i for i, r in enumerate(on) if r is not None and r['ev'] is not None)
+    assert first == 106 and on[first]['ev'][0] == 'back_early'      # 'brake' の段で下がり始めたところ
+    assert all((a is None and b is None) or (a['out'] == b['out'] and a['kind'] == b['kind'])
+               for a, b in zip(off[:first], on[:first]))             # それより前は同じ
+
+    def rev_back(res):
+        return sum(1 for r in res[95:135] if r is not None and r['kind'] == A.ASSIST_RECOVERY and r['erpm'] > A.BACKING_ERPM
+                   and r['out'][1] > ref[1] + A.EscReverse.DEADBAND_US)
+    assert rev_back(off) == 15                                       # 指摘: 下がりながら後退側 15 フレーム(0.50 秒)
+    assert rev_back(on) <= int(round(0.4 / DT)) + 1                  # ON: rev_s(0.4 秒)まで
+    last_rev_on = max(i for i, r in enumerate(on[95:135], 95) if r is not None and r['out'][1] > ref[1] + 40)
+    last_rev_off = max(i for i, r in enumerate(off[95:135], 95) if r is not None and r['out'][1] > ref[1] + 40)
+    assert last_rev_on <= last_rev_off - 7                           # 後退側をやめるのが 7 フレーム(0.23 秒)以上早い
+
+
+# ---------------------------------------------------------------- 走行ループ(drive.py)
+def test_param_default_off_and_off_on_boot(monkeypatch, tmp_path):
+    assert drive.DEFAULT_PARAMS['rec_back_guard'] == 0 and drive.PARAM_LIMITS['rec_back_guard'] == (0, 1)
+    assert 'rec_back_guard' in drive.RESET_ON_BOOT                   # 走行の制御に足すものは起動で OFF(protocol_v3)
+    _, before = load_before()
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k != 'rec_back_guard'} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k != 'rec_back_guard'} == before.PARAM_LIMITS
+    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) == {'rec_back_guard'}
+    path = tmp_path / 'drive_settings.json'
+    path.write_text(json.dumps({'params': {'rec_back_guard': 1, 'steer_trim_us': 15}}), encoding='utf-8')
+    monkeypatch.setattr(drive, 'SETTINGS_PATH', path)
+    d = drive.Driver(hub=None, recorder=None)
+    assert d.params['rec_back_guard'] == 0 and d.params['steer_trim_us'] == 15   # 起動で 0(トリムは残す)
+    assert d._clean_params({'rec_back_guard': 1})['rec_back_guard'] == 1
+    assert d._clean_params({'rec_back_guard': 0.2})['rec_back_guard'] == 0
+
+
+def recovery_scene(back_from=None, hit_at=None):
+    """走る(3 m/s)→ 2.0 秒で止まる(モデルは中立の帯)→ リカバリー。back_from 秒から後ろへ 1 m/s(開いたループ)。
+    hit_at 秒に後ろの衝撃(IMU の横 6G)"""
+    def v(s):
+        if s < 2.0:
+            return 3.0
+        if back_from is not None and s >= back_from and (hit_at is None or s < hit_at):
+            return -1.0
+        return 0.0
+    return build(5.5, sel=True, v=v, pred=lambda s: (C, N - 150.0) if s < 1.8 else (C, N + 20.0),
+                 ax=lambda s: 60.0 if (hit_at is not None and hit_at <= s < hit_at + 0.02) else 0.0)
+
+
+@pytest.mark.parametrize('scene', ['caps', 'launch', 'rec_plain', 'rec_back', 'rec_hit'])
+def test_loop_off_bit_identical(monkeypatch, tmp_path, scene):
+    """rec_back_guard = 0(既定)の走行ループは、直す前の drive.py・assist.py と PCA9685 に書く値・記録・出来事が同じ"""
+    _, before = load_before()
+    pb = {k: v for k, v in PARAMS.items() if k in before.DEFAULT_PARAMS}
+    if scene == 'caps':
+        frames, imu = scenario()
+        _, pca0, rec0 = run_det(before, monkeypatch, tmp_path, pb, frames, imu)
+        _, pca1, rec1 = run_det(drive, monkeypatch, tmp_path, dict(PARAMS, rec_back_guard=0), frames, imu)
+    else:
+        frames, imu = {'launch': lambda: launch_scene(), 'rec_plain': lambda: recovery_scene(),
+                       'rec_back': lambda: recovery_scene(back_from=2.95),
+                       'rec_hit': lambda: recovery_scene(back_from=2.95, hit_at=3.15)}[scene]()
+        _, pca0, rec0 = run(before, monkeypatch, tmp_path, pb, frames, imu)
+        _, pca1, rec1 = run(drive, monkeypatch, tmp_path, dict(PARAMS, rec_back_guard=0), frames, imu)
+    assert len(pca0.pairs) > 100
+    assert pca0.pairs == pca1.pairs and pca0.single == pca1.single
+    assert_rows_equal_before(rec0.rows, rec1.rows)
+    assert rec0.events == rec1.events
+    if scene.startswith('rec'):
+        assert any(r['assist'] == A.ASSIST_RECOVERY for _, r in rec1.rows)
+
+
+def test_loop_guard_on_records_event_and_stops_reverse(monkeypatch, tmp_path):
+    frames, imu = recovery_scene(back_from=2.95, hit_at=3.15)
+    _, pca0, rec0 = run(drive, monkeypatch, tmp_path, dict(PARAMS, rec_back_guard=0), frames, imu)
+    _, pca1, rec1 = run(drive, monkeypatch, tmp_path, dict(PARAMS, rec_back_guard=1), frames, imu)
+    ev = [e[1] for e in rec1.events if e[0] == 'recovery_guard']
+    assert [e['what'] for e in ev][:2] == ['back_early', 'rear_impact']
+    assert all(isinstance(e['cam_epoch_us'], int) for e in ev)
+    assert not [e for e in rec0.events if e[0] == 'recovery_guard']
+    rev = N + 40.0
+
+    def n_rev_after(rec, s0):
+        return sum(1 for t, r in rec.rows if not r['hold'] and r['out'][1] > rev and (t - frames[0]['cam_t']) / 1e9 >= s0)
+    assert n_rev_after(rec1, 3.2) == 0 and n_rev_after(rec0, 3.2) > 3     # 当たったあと: ON は後ろへ押さない

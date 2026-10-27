@@ -265,8 +265,10 @@ def test_t2_limits_defaults_and_clipping(monkeypatch, tmp_path):
     assert {k: drive.DEFAULT_PARAMS[k] for k in drive.LAUNCH_KEYS} == {
         'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2}
     before = load_before()
-    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in drive.LAUNCH_KEYS} == before.DEFAULT_PARAMS
-    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in drive.LAUNCH_KEYS} == before.PARAM_LIMITS
+    later = drive.LAUNCH_KEYS + ('rec_back_guard',)      # 後ろの見張りは 2026-10-26 fix2(tests/test_recovery_back_guard.py)
+    later += ('rec_hold_keep', 'launch_no_kick')          # 2026-10-26 fix3(tests/test_rec_hold_keep.py)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in later} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in later} == before.PARAM_LIMITS
     assert drive.DEFAULT_PARAMS['start_kick'] == 0 and drive.DEFAULT_PARAMS['throttle_gain'] == 0.5   # 既定値は変えていない
     monkeypatch.setattr(drive, 'SETTINGS_PATH', tmp_path / 'drive_settings.json')
     d = drive.Driver(hub=None, recorder=FakeRecorder())

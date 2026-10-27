@@ -1,0 +1,300 @@
+{
+ "A": {
+  "A_camdrop keep=0 guard=0": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [],
+   "holds_rows": 0,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A_camdrop keep=0 guard=1": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [
+    "back_early"
+   ],
+   "holds_rows": 0,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A_camdrop keep=1 guard=1": {
+   "reverse_frames_after_rear_hit": 20,
+   "reverse_s_after_rear_hit": 0.67,
+   "first_last": [
+    3.483,
+    4.117
+   ],
+   "reverse_us": [
+    1796.0
+   ],
+   "guard_events": [
+    "back_early"
+   ],
+   "holds_rows": 0,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A_camdrop no_hold keep=1 guard=1": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [
+    "back_early",
+    "rear_impact"
+   ],
+   "holds_rows": 0,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A2_vehstale keep=0 guard=0": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [],
+   "holds_rows": 8,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A2_vehstale keep=0 guard=1": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [
+    "back_early"
+   ],
+   "holds_rows": 8,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A2_vehstale keep=1 guard=1": {
+   "reverse_frames_after_rear_hit": 19,
+   "reverse_s_after_rear_hit": 0.63,
+   "first_last": [
+    3.517,
+    4.117
+   ],
+   "reverse_us": [
+    1796.0
+   ],
+   "guard_events": [
+    "back_early"
+   ],
+   "holds_rows": 8,
+   "pca_neutral_writes_in_drop": null
+  },
+  "A2_vehstale no_hold keep=1 guard=1": {
+   "reverse_frames_after_rear_hit": 0,
+   "reverse_s_after_rear_hit": 0.0,
+   "first_last": null,
+   "reverse_us": [],
+   "guard_events": [
+    "back_early",
+    "rear_impact"
+   ],
+   "holds_rows": 0,
+   "pca_neutral_writes_in_drop": null
+  }
+ },
+ "B": {
+  "B_launch_no_kick_1to0 keep=0": {
+   "giveup_at_s": 11.85,
+   "changed_at_s": 12.85,
+   "change": {
+    "launch_no_kick": 0
+   },
+   "kick_frames_after_change": 61,
+   "kick_s": 2.03,
+   "kick_out_us": [
+    1416.0
+   ],
+   "first_kick": [
+    12.883,
+    4,
+    false,
+    1416.0,
+    true
+   ],
+   "giveup_rows_before_change": 30,
+   "giveup_rows_after_kick": 272,
+   "kinds_after_change_first_10": [
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "without_change_kick_after": 0,
+   "without_change_kind_after": [
+    3
+   ]
+  },
+  "B_launch_no_kick_1to0 keep=1": {
+   "giveup_at_s": 11.85,
+   "changed_at_s": 12.85,
+   "change": {
+    "launch_no_kick": 0
+   },
+   "kick_frames_after_change": 61,
+   "kick_s": 2.03,
+   "kick_out_us": [
+    1416.0
+   ],
+   "first_kick": [
+    12.883,
+    4,
+    false,
+    1416.0,
+    true
+   ],
+   "giveup_rows_before_change": 30,
+   "giveup_rows_after_kick": 272,
+   "kinds_after_change_first_10": [
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "without_change_kick_after": 0,
+   "without_change_kind_after": [
+    3
+   ]
+  },
+  "B2_start_kick_0to1 keep=0": {
+   "giveup_at_s": 11.85,
+   "changed_at_s": 12.85,
+   "change": {
+    "start_kick": 1
+   },
+   "kick_frames_after_change": 61,
+   "kick_s": 2.03,
+   "kick_out_us": [
+    1416.0
+   ],
+   "first_kick": [
+    12.883,
+    4,
+    false,
+    1416.0,
+    true
+   ],
+   "giveup_rows_before_change": 30,
+   "giveup_rows_after_kick": 272,
+   "kinds_after_change_first_10": [
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "without_change_kick_after": 0,
+   "without_change_kind_after": [
+    3
+   ]
+  },
+  "B2_start_kick_0to1 keep=1": {
+   "giveup_at_s": 11.85,
+   "changed_at_s": 12.85,
+   "change": {
+    "start_kick": 1
+   },
+   "kick_frames_after_change": 61,
+   "kick_s": 2.03,
+   "kick_out_us": [
+    1416.0
+   ],
+   "first_kick": [
+    12.883,
+    4,
+    false,
+    1416.0,
+    true
+   ],
+   "giveup_rows_before_change": 30,
+   "giveup_rows_after_kick": 272,
+   "kinds_after_change_first_10": [
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "without_change_kick_after": 0,
+   "without_change_kind_after": [
+    3
+   ]
+  }
+ },
+ "C": {
+  "C drop=[3.0, 4.2] keep=0": {
+   "recovery_frames": 0,
+   "first_recovery_s": null,
+   "reverse_side_frames": 0,
+   "reverse_side_s": 0.0,
+   "reverse_us": [],
+   "escape_forward_frames": 0,
+   "impacts": 0
+  },
+  "C drop=[3.0, 4.2] keep=1": {
+   "recovery_frames": 80,
+   "first_recovery_s": 5.05,
+   "reverse_side_frames": 41,
+   "reverse_side_s": 1.37,
+   "reverse_us": [
+    1796.0,
+    1846.0,
+    1896.0
+   ],
+   "escape_forward_frames": 15,
+   "impacts": 0
+  },
+  "C drop=[3.0, 3.5] keep=0": {
+   "recovery_frames": 80,
+   "first_recovery_s": 4.817,
+   "reverse_side_frames": 41,
+   "reverse_side_s": 1.37,
+   "reverse_us": [
+    1796.0,
+    1846.0,
+    1896.0
+   ],
+   "escape_forward_frames": 15,
+   "impacts": 0
+  },
+  "C drop=[3.0, 3.5] keep=1": {
+   "recovery_frames": 80,
+   "first_recovery_s": 4.817,
+   "reverse_side_frames": 41,
+   "reverse_side_s": 1.37,
+   "reverse_us": [
+    1796.0,
+    1846.0,
+    1896.0
+   ],
+   "escape_forward_frames": 15,
+   "impacts": 0
+  }
+ }
+}

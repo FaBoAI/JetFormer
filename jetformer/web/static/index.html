@@ -347,8 +347,11 @@
           </div>
           <div class="gain">
             <div class="gain-head"><span>速度 ゲイン</span><b id="dr-throttle-gain-v">1.00</b></div>
-            <input type="range" id="dr-throttle-gain" min="0" max="2" step="0.05" value="1">
+            <input type="range" id="dr-throttle-gain" min="0" max="2" step="0.01" value="1">
             <div class="gain-scale"><span>0(停止)</span><span>1(学習どおり)</span><span>2</span></div>
+            <div class="gain-fine"><button type="button" class="small" id="btn-dr-tg-down">− 0.01</button>
+              <button type="button" class="small" id="btn-dr-tg-up">+ 0.01</button>
+              <span class="muted small">0.01 刻み(0.92・0.97 などはボタンで合わせる)</span></div>
           </div>
           <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
 
@@ -417,6 +420,14 @@
             <div class="muted small">終わり: 速さ・最大の時間・ヨー 60 deg/s・舵 200 µs・衝撃・前が近い(TTC 0.8 秒)・CH3 を人側・中立で止めた。
               終わったら同じ AI の区間ではもう出しません(下の発進の補助も出しません)。ToF ガードが OFF のときは始めません。</div>
             <div id="dr-launch-note" class="small"></div>
+            <div class="opt-line hidden" id="dr-opt-line-launch_no_kick">
+              <label class="inline check-line"><input type="checkbox" id="dr-launch-no-kick" autocomplete="off"> 発進の前進を出さない区間は、発進の補助も出さない</label>
+              <div class="warn-text small">試験の選択肢です(2026-10-26 fix3)。発進の前進が ON で、前が近い・ToF が無いなどで「出さない」と決めた区間では、
+                下の発進の補助(弱い前進を最大 2 秒)も出しません。発進の前進が OFF のときは何も変えません。
+                既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません。</div>
+              <div id="dr-launch-no-kick-note" class="small"></div>
+            </div>
+            <div id="dr-opt-launch-missing" class="muted small"></div>
           </div>
           <label class="inline check-line"><input type="checkbox" id="dr-start-kick"> AI側にしたら走り出す(発進の補助: 止まっていてモデルが進まないとき、弱い前進を最大2秒。前が近いときは出さない)</label>
           <label class="inline check-line"><input type="checkbox" id="dr-recovery" checked> ぶつかって止まったら、自動で少し下がってからAIに戻す(リカバリー)</label>
@@ -433,6 +444,25 @@
             </div>
             <div class="muted small">ぶつかって止まると: ブレーキ → 止まるのを待つ → 中立 → 後退 → 惰性 → 曲がっていた向きへハンドルを切って前進 → AIへ。
               下がり始めなければ中立を長くしてやり直します。20秒以内に3回続いたら中立で止まるので、CH3を人側へ戻して助けてください。</div>
+            <div class="zone-panel opt-panel" id="dr-opt-rec-panel">
+              <div class="small"><b>リカバリーの試験の選択肢</b>(2026-10-26)</div>
+              <div class="warn-text small">どれも既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。
+                基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。ON にするのは、ユーザーの了承のあとです。</div>
+              <div class="opt-line hidden" id="dr-opt-line-rec_back_guard">
+                <label class="inline check-line"><input type="checkbox" id="dr-rec-back-guard" autocomplete="off"> 後ろの見張り(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)</label>
+                <div class="muted small">模型と記録の再生でしか確かめていません(実車の ESC ではまだ)。使う日は最初のリカバリーを人が見て、
+                  1 m 以上下がる・後ろの物に近づくときはすぐ CH3 を人側へ。</div>
+                <div id="dr-rec-back-guard-note" class="small"></div>
+              </div>
+              <div class="opt-line hidden" id="dr-opt-line-rec_hold_keep">
+                <label class="inline check-line"><input type="checkbox" id="dr-rec-hold-keep" autocomplete="off"> 中立止めのあともリカバリーを残す(リカバリー中止は CH3 を人側にするまで解けない)</label>
+                <div class="muted small">後ろの見張りが ON のときだけ使えます(後ろの見張りを OFF にすると、これも OFF)。
+                  AI 側のままの中立止め(カメラの遅れ・I2C の失敗など)で、リカバリーの中止・途中の段・ぶつかった印を消しません。
+                  OFF(今まで)は中立止め 1 回で全部消え、中止が解けるとモデルの弱い前進が壁を押し続けることがあります。机上の試験だけで、実車ではまだです。</div>
+                <div id="dr-rec-hold-keep-note" class="small"></div>
+              </div>
+              <div id="dr-opt-rec-missing" class="muted small"></div>
+            </div>
           </div>
 
           <label class="inline check-line"><input type="checkbox" id="dr-record"> 走行中のデータを収集する(評価用)</label>
@@ -472,7 +502,7 @@
             <div id="dr-ref" class="muted small"></div>
           </details>
 
-          <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button></div>
+          <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button> <span id="dr-client-ver" class="muted small"></span></div>
           <button id="btn-dr-stop" class="stop-big" disabled>■ 停止(スペースキー)</button>
           <div id="dr-after" class="hidden">
             <div class="card-title small">走り終わりのメモ <span id="dr-after-log" class="muted small"></span></div>

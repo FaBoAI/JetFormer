@@ -1,0 +1,45 @@
+# 本物の記録 10/23・10/24: 直す前と後(直す 2 回目・2 組目)
+collect 引数なし launches.json                   ビット単位で同じ
+collect 引数なし launches.stdout                 ビット単位で同じ
+collect --day 20261023 plain       行 29: 違う欄 {'first_lap_end_s': 17, 'collisions_first_lap': 2, 'lh_self': 4}。first_lap_end=ai_end 6 本。最初の周の衝突が変わった ['20261023-205309@31.88 ai_end 0→1', '20261023-211828@40.24 no_r1 0→1']。まとめの違い ['10/23 ? 1.0.by_launch'](組 12→12)。標準出力の違う行 1。JSON の新しい欄 なし
+    前:   off             n=4(2 回目以降の発進 2) 起点まで 3.304 失う 0.579 動く 0.113 空転max 1.098 LH 3.660 m/s 衝突(起点まで 0・最初の周 2) 出した — 
+    今:   off             n=4(2 回目以降の発進 2) 起点まで 3.304 失う 0.579 動く 0.113 空転max 1.098 LH 3.660 m/s 衝突(起点まで 0・最初の周 3) 出した — 
+collect --day 20261023 first-only  行 29: 違う欄 {'first_lap_end_s': 17, 'collisions_first_lap': 2, 'lh_self': 4}。first_lap_end=ai_end 6 本。最初の周の衝突が変わった ['20261023-205309@31.88 ai_end 0→1', '20261023-211828@40.24 no_r1 0→1']。まとめの違い なし(組 11→11)。標準出力の違う行 0。JSON の新しい欄 なし
+collect --day 20261023 ignore-gain 行 29: 違う欄 {'first_lap_end_s': 17, 'collisions_first_lap': 2, 'lh_self': 4}。first_lap_end=ai_end 6 本。最初の周の衝突が変わった ['20261023-205309@31.88 ai_end 0→1', '20261023-211828@40.24 no_r1 0→1']。まとめの違い ['10/23 ? None.by_launch'](組 7→7)。標準出力の違う行 1。JSON の新しい欄 なし
+collect --day 20261024 plain       行 24: 違う欄 {'collisions_first_lap': 1, 'first_lap_end_s': 12}。first_lap_end=ai_end 3 本。最初の周の衝突が変わった ['20261024-134607@27.88 no_r1 0→1']。まとめの違い ['10/24 ? 1.0.not_reached'](組 7→7)。標準出力の違う行 1。JSON の新しい欄 なし
+    前:   R1 に届かなかった発進(off)2 本(比べの数に入れない): 20261024-134607@27.88・20261024-135656@51.03。理由 AI の区間が短い。その衝突 1(135656 51.97 秒 5.8G GM_in)
+    今:   R1 に届かなかった発進(off)2 本(比べの数に入れない): 20261024-134607@27.88・20261024-135656@51.03。理由 AI の区間が短い。その衝突 2(134607 28.90 秒 4.7G ?・135656 51.97 秒 5.8G GM_in)
+collect --day 20261024 first-only  行 24: 違う欄 {'collisions_first_lap': 1, 'first_lap_end_s': 12}。first_lap_end=ai_end 3 本。最初の周の衝突が変わった ['20261024-134607@27.88 no_r1 0→1']。まとめの違い ['10/24 ? 1.0.not_reached'](組 7→7)。標準出力の違う行 1。JSON の新しい欄 なし
+collect --day 20261024 ignore-gain 行 24: 違う欄 {'collisions_first_lap': 1, 'first_lap_end_s': 12}。first_lap_end=ai_end 3 本。最初の周の衝突が変わった ['20261024-134607@27.88 no_r1 0→1']。まとめの違い ['10/24 ? None.not_reached'](組 3→3)。標準出力の違う行 1。JSON の新しい欄 なし
+car_check 50 本: 違う本 6
+  20261023-205205 違う欄 ['collisions']・判定 同じ・人側にした直後 [[41.19, 3.95, 'HS', 0.473]]
+    前:   衝突(AI・立て直し中とリカバリー中も): 3 回・最大 3.32G・8G 以上 0・場所 GM 1・DE 2
+    今:   衝突(AI・立て直し中とリカバリー中・人側にした直後も): 4 回・最大 3.95G・8G 以上 0・場所 GM 1・DE 2・HS 1。うち人側にした直後(AI の区間の終わりから 0.5 秒以内)1: 41.2 秒 HS 3.95G(AI の終わりから 0.47 秒)
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261023-205205.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261023-205205.json
+  20261023-205309 違う欄 ['collisions']・判定 同じ・人側にした直後 [[40.84, 3.75, 'SW', 0.269]]
+    前: ! 衝突(AI・立て直し中とリカバリー中も): 2 回・最大 8.68G・8G 以上 2・場所 SW 1・HS 1(強い: 12.4 秒 HS 8.45G、28.3 秒 SW 8.68G)
+    今: ! 衝突(AI・立て直し中とリカバリー中・人側にした直後も): 3 回・最大 8.68G・8G 以上 2・場所 SW 2・HS 1(強い: 12.4 秒 HS 8.45G、28.3 秒 SW 8.68G)。うち人側にした直後(AI の区間の終わりから 0.5 秒以内)1: 40.8 秒 SW 3.75G(AI の終わりから 0.27 秒)
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261023-205309.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261023-205309.json
+  20261023-211828 違う欄 ['collisions']・判定 同じ・人側にした直後 [[41.75, 8.59, 'HS', 0.35], [147.44, 2.79, 'R1', 0.483]]
+    前: ! 衝突(AI・立て直し中とリカバリー中も): 29 回・最大 11.31G・8G 以上 7・場所 R1 8・GM 7・DE 6・SW 5・HS 1・LH 2(強い: 48.2 秒 GM 6.81G・restart、58.3 秒 SW 8.80G・restart、60.0 秒 SW 5.79G、63.7 秒 R1 4.91G、95.2 秒 SW 8.23G、102.5 秒 DE 4.83G、118.7 秒 GM 5.33G、120.9 秒 DE 11.31G、122.9 秒 
+    今: ! 衝突(AI・立て直し中とリカバリー中・人側にした直後も): 31 回・最大 11.31G・8G 以上 8・場所 R1 9・GM 7・DE 6・SW 5・HS 2・LH 2(強い: 41.8 秒 HS 8.59G・人側にした直後、48.2 秒 GM 6.81G・restart、58.3 秒 SW 8.80G・restart、60.0 秒 SW 5.79G、63.7 秒 R1 4.91G、95.2 秒 SW 8.23G、102.5 秒 DE 4.83G、118.7 秒 GM 
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261023-211828.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261023-211828.json
+  20261023-212934 違う欄 ['collisions']・判定 同じ・人側にした直後 [[29.47, 4.64, 'R1', 0.161]]
+    前: ! 衝突(AI・立て直し中とリカバリー中も): 11 回・最大 9.45G・8G 以上 2・場所 R1 2・GM 2・DE 3・SW 1・HS 1・LH 2(強い: 12.4 秒 R1 7.58G、24.9 秒 GM 4.36G・restart、28.7 秒 LH 6.01G、32.5 秒 DE 6.55G・restart、41.1 秒 SW 6.95G、42.1 秒 LH 9.45G、49.6 秒 GM 4.06G、53.9 秒 HS 9.02G)
+    今: ! 衝突(AI・立て直し中とリカバリー中・人側にした直後も): 12 回・最大 9.45G・8G 以上 2・場所 R1 3・GM 2・DE 3・SW 1・HS 1・LH 2(強い: 12.4 秒 R1 7.58G、24.9 秒 GM 4.36G・restart、28.7 秒 LH 6.01G、29.5 秒 R1 4.64G・人側にした直後、32.5 秒 DE 6.55G・restart、41.1 秒 SW 6.95G、42.1 秒 LH 9.45G、49.6 秒 GM 4.0
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261023-212934.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261023-212934.json
+  20261023-213149 違う欄 ['collisions']・判定 同じ・人側にした直後 [[20.62, 8.6, 'HS', 0.335]]
+    前: ! 衝突(AI・立て直し中とリカバリー中も): 7 回・最大 11.28G・8G 以上 1・場所 R1 1・GM 2・DE 2・SW 2(強い: 6.2 秒 GM 6.03G、7.2 秒 DE 11.28G、19.3 秒 SW 6.94G)
+    今: ! 衝突(AI・立て直し中とリカバリー中・人側にした直後も): 8 回・最大 11.28G・8G 以上 2・場所 R1 1・GM 2・DE 2・SW 2・HS 1(強い: 6.2 秒 GM 6.03G、7.2 秒 DE 11.28G、19.3 秒 SW 6.94G、20.6 秒 HS 8.60G・人側にした直後)。うち人側にした直後(AI の区間の終わりから 0.5 秒以内)1: 20.6 秒 HS 8.60G(AI の終わりから 0.34 秒)
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261023-213149.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261023-213149.json
+  20261024-134607 違う欄 ['collisions']・判定 同じ・人側にした直後 [[28.9, 4.69, '?', 0.252]]
+    前:   衝突(AI・立て直し中とリカバリー中も): 0 回
+    今:   衝突(AI・立て直し中とリカバリー中・人側にした直後も): 1 回・最大 4.69G・8G 以上 0・場所 ? 1(強い: 28.9 秒 ? 4.69G・人側にした直後)。うち人側にした直後(AI の区間の終わりから 0.5 秒以内)1: 28.9 秒 ? 4.69G(AI の終わりから 0.25 秒)
+    前: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_old/car_check/20261024-134607.json
+    今: 書き出し: /home/jetson/jetformer/experiments/20261026_fix/fix3/tmp_fixr22/real/out_new/car_check/20261024-134607.json
+car_check の終わりの番号(rc) 全部同じ

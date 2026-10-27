@@ -1,0 +1,28 @@
+tools:F6 の確かめ(2026-10-26 16:0x、砂場の写しで。本物は触っていない)。SURVIVED = 壊しても試験が全部通った
+s3-frame-gap             SURVIVED 24 passed
+s3-veh-gap               SURVIVED 24 passed
+s3-line-lap-5-16         SURVIVED 24 passed
+s3-anchor-chain-5-16     SURVIVED 24 passed
+s3-to-r1-15s             SURVIVED 24 passed
+s3-cont-s                SURVIVED 24 passed
+s3-dryrun-mask           SURVIVED 24 passed
+s3-lapdist-dpsi          SURVIVED 24 passed
+s3-best-min              SURVIVED 24 passed
+s3-launch-on-s-+1/30     KILLED   test_settings_and_launch_record(standing_3lap 側の +1/FPS は試験が効く)
+qp-key-gain              SURVIVED 5 passed
+qp-key-steer             SURVIVED 5 passed
+qp-key-zone              SURVIVED 5 passed
+qp-key-mode              SURVIVED 5 passed
+qp-key-auto-target       SURVIVED 5 passed
+qp-key-launch-us         SURVIVED 5 passed
+qp-standing-valid        SURVIVED 5 passed
+qp-fast-9s               SURVIVED 5 passed
+col-launch-none          SURVIVED 3 passed
+col-launch-on-s-+1/30    SURVIVED 3 passed
+col-day-key-ceiling      SURVIVED 3 passed
+CONTROL-s3-human         KILLED   test_human_before_the_line_is_not_valid
+CONTROL-qp-ceiling       KILLED   2 failed
+CONTROL-col-state        KILLED   1 failed
+同じ働きの書き換えでない確かめ(demo): 途中 10.0〜10.3 秒のフレームを抜いた記録 → 元 valid=False「フレームの途切れ 0.30 秒」/ 壊し valid=True。
+  ゲイン 0.90 と 0.95 の 2 本 → 元 2 つの組 / 壊し 1 つの組(B・0.90 に 2 本)。
+本物の記録: 10/23 No.15(20261023-211547)は「フレームの途切れ 0.23 秒」で valid = False(tools_check/standing_20261023.md 24 行)。

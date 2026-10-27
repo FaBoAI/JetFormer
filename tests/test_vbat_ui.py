@@ -27,6 +27,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 STATIC = os.path.join(ROOT, 'jetformer', 'web', 'static')
 APP_JS = os.path.join(STATIC, 'app.js')
 NODE = shutil.which('node')
+KEEP = ('steer_trim_us', 'rec_back_guard')     # 基準の設定・ブロックで画面に入れない項目(app.js の benchFieldValues)
 B = bench.B_RUN
 
 
@@ -50,7 +51,7 @@ def test_static_has_vbat_and_speed_controls():
         assert words in html, words
     assert html.index('id="dr-vbat"') < html.index('class="ds-grid"', html.index('id="tab-drive"'))   # 走行タブの上
     js = _src('app.js')
-    assert re.search(r'client: 6\b', js) and js.count("'/api/drive/start'") == 1
+    assert re.search(r'client: 9\b', js) and js.count("'/api/drive/start'") == 1     # 画面の版 9(2026-10-27 fix5。前は 8)
     assert "p.speed_ceiling = $('#dr-speed-ceiling').checked ? 1 : 0" in js
     assert "'/api/vbat/calib'" in js
     fn = re.search(r'^function benchApply\(.*?^}\n', js, re.S | re.M).group(0)
@@ -103,7 +104,7 @@ def test_js_bench_values_never_turn_speed_switches_on():
     a, b, c, fb = got
     assert a['params']['speed_ceiling'] == 0 and a['params']['speed_auto'] == 0 and a['params']['zone_caps'] == 0
     assert any('速さの天井' in n for n in a['notes']) and any('自動合わせ' in n for n in a['notes'])
-    assert b['params'] == base['params'] and b['notes'] == []
+    assert b['params'] == {k: v for k, v in base['params'].items() if k not in KEEP} and b['notes'] == []   # トリム・後ろの見張りは入れない(2026-10-26 fix2)
     assert c['params'] == {'zone_caps': 0}                                         # 無い項目は足さない(古いサーバー)
     assert fb['params'] == base['params']                                          # 控えの値 = サーバーの基準(6 つの新しい項目も)
     for k in ('speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto', 'auto_target_mps', 'auto_vref_v'):

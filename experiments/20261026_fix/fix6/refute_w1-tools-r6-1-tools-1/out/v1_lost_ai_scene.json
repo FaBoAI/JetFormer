@@ -1,0 +1,69 @@
+{
+ "real": {
+  "A_intact": {
+   "n_launch_rows": 1,
+   "unreadable": null,
+   "problems": {},
+   "summary_groups": 1,
+   "stdout_interesting": [
+    "logs 1 launches 1 with R1 0 laps 3 flying accel windows 0",
+    "20261024-134607 No.1   B          g1.00 kick=0(  0fr) mv0.082  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None",
+    "  R1 に届かなかった発進(off)1 本(比べの数に入れない): 20261024-134607@27.88。理由 AI の区間が短い。その衝突 1(134607 28.90 秒 4.7G ?)"
+   ]
+  },
+  "B_lost": {
+   "n_launch_rows": 0,
+   "unreadable": null,
+   "problems": {},
+   "summary_groups": 0,
+   "stdout_interesting": [
+    "logs 0 launches 0 with R1 0 laps 0 flying accel windows 0"
+   ]
+  }
+ },
+ "synth": {
+  "A_intact": {
+   "log": "20261103-133500",
+   "rows_for_log": [
+    [
+     25.0,
+     "on"
+    ]
+   ],
+   "on_n": 4,
+   "on_first_lap_collisions": 1,
+   "unreadable": null,
+   "checks": {
+    "to_r1": true,
+    "first_lap_collisions_0": false,
+    "slip": true,
+    "lh_speed": true
+   },
+   "all_ok": false,
+   "log_named_in_stdout": [],
+   "stdout_key": [
+    "logs 8 launches 8 with R1 8 laps 15 flying accel windows 0",
+    "  ON − OFF: 起点まで -0.250 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_speed': True}"
+   ]
+  },
+  "B_lost": {
+   "log": "20261103-133500",
+   "rows_for_log": [],
+   "on_n": 3,
+   "on_first_lap_collisions": 0,
+   "unreadable": null,
+   "checks": {
+    "to_r1": true,
+    "first_lap_collisions_0": true,
+    "slip": true,
+    "lh_speed": true
+   },
+   "all_ok": true,
+   "log_named_in_stdout": [],
+   "stdout_key": [
+    "logs 7 launches 7 with R1 7 laps 14 flying accel windows 0",
+    "  ON − OFF: 起点まで -0.300 秒(≤ −0.15)・失う -0.400 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}"
+   ]
+  }
+ }
+}

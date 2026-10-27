@@ -22,6 +22,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 STATIC = os.path.join(ROOT, 'jetformer', 'web', 'static')
 APP_JS = os.path.join(STATIC, 'app.js')
 NODE = shutil.which('node')
+KEEP = ('steer_trim_us', 'rec_back_guard')     # 基準の設定・ブロックで画面に入れない項目(app.js の benchFieldValues)
 B = 'clean_driving_20261011-nocmd-s3-20261011-024626'
 MSF = 'clean_driving_20261011-msfusion-s0-nocmd-stride3-e30'
 TPL = ('bench=real_bench_20261023 day={date} block={block} cand={id} model={run} '
@@ -190,7 +191,7 @@ def test_custom_template_and_missing_baseline(env):
 def test_server_includes_bench_router_and_client_version_unchanged():
     src = open(os.path.join(ROOT, 'jetformer', 'web', 'server.py'), encoding='utf-8').read()
     assert 'from . import bench as bench_web' in src and 'app.include_router(bench_web.router)' in src
-    assert 'DRIVE_CLIENT_VERSION = 6' in src
+    assert 'DRIVE_CLIENT_VERSION = 9' in src                               # 2026-10-26 fix3 state-5 で 6 → 7、10/27 r2-r2-state-3 で 8、10/27 fix5 で 9(画面の直し)
     assert "@app.post('/api/bench" not in src                              # 読むだけ(書く API は無い)
     bsrc = open(os.path.join(ROOT, 'jetformer', 'web', 'bench.py'), encoding='utf-8').read()
     # 書く API は走り終わりのメモ(シーンの説明だけ。2026-10-24)の 1 つ。候補の表は書かない・走行は始めない
@@ -214,7 +215,7 @@ def test_static_ui_has_prep_bench_and_zone_controls():
     assert re.search(r'<div class="card hidden" id="bench-card">', html)     # ファイルが無ければ出さない
     js = open(APP_JS, encoding='utf-8').read()
     assert "'/api/bench/candidates'" in js
-    assert re.search(r'client: 6\b', js)                                    # DRIVE_CLIENT_VERSION のまま
+    assert re.search(r'client: 9\b', js)                                    # DRIVE_CLIENT_VERSION と同じ(2026-10-27 fix5 で 9)
     assert 'randomUUID' not in js and 'crypto.' not in js                    # http(安全でない接続)でも動く
     assert "p.zone_caps = $('#dr-zone-caps').checked ? 1 : 0" in js
     # 基準の設定・候補のボタンは走行を始めない(/api/drive/start を呼ぶのは走行開始のボタンだけ)
@@ -253,7 +254,7 @@ def test_js_field_values_force_zone_caps_off_and_steer_of_the_day():
     got = _node('const cases = %s;\nprocess.stdout.write(JSON.stringify(cases.map(([b, s]) => benchFieldValues(b, s))));'
                 % json.dumps(cases))
     a, b, c, d, e = got
-    assert a['run'] == B and a['mode_id'] == 5 and a['params'] == base['params'] and a['notes'] == []
+    assert a['run'] == B and a['mode_id'] == 5 and a['params'] == {k: v for k, v in base['params'].items() if k not in KEEP} and a['notes'] == []   # トリム・後ろの見張りは入れない(2026-10-26 fix2)
     assert b['params']['steer_gain'] == 1.3 and b['params']['throttle_gain'] == 1.0          # この日のステアだけ替わる
     assert c['params']['zone_caps'] == 0 and c['notes'] and 'ON にしていません' in c['notes'][0]   # 基準の設定は ON にしない
     assert d['params'] == {'zone_caps': 0} and d['mode_id'] == 5 and d['run'] == ''
