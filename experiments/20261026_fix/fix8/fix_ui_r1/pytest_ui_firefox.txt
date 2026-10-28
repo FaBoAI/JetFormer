@@ -1,0 +1,57 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+___________________ test_firefox_drive_tab_vbat_and_switches ___________________
+
+    @pytest.mark.skipif(not (FIREFOX and GECKO), reason='JF_UI_FIREFOX=1 と geckodriver のときだけ(--lock big)')
+    def test_firefox_drive_tab_vbat_and_switches():
+        import uvicorn
+        saved = (drive.RUNS_DIR, drive.RECOMMENDED_PATH, bench.BENCH_PATH)
+        work = tempfile.mkdtemp(prefix='vbat-ui-')
+        from pathlib import Path
+        app, state = _fake_app(Path(work))
+        port, wd_port = _free_port(), _free_port()
+        server = uvicorn.Server(uvicorn.Config(app, host='127.0.0.1', port=port, log_level='warning'))
+        th = threading.Thread(target=server.run, daemon=True)
+        th.start()
+        gd_log = open(os.path.join(work, 'geckodriver.log'), 'w')
+        gd = subprocess.Popen([GECKO, '--port', str(wd_port)], stdout=gd_log, stderr=subprocess.STDOUT)
+        wd = _WD(wd_port)
+        # snap の Firefox は /tmp・隠しフォルダを読めないので、プロファイルは snap の書ける場所に作る
+        snap_common = os.path.expanduser('~/snap/firefox/common')
+        profile = tempfile.mkdtemp(prefix='vbat-ui-profile-', dir=snap_common if os.path.isdir(snap_common) else work)
+        try:
+            assert _wait(lambda: urllib.request.urlopen('http://127.0.0.1:%d/api/status' % port, timeout=2))
+            assert _wait(lambda: wd.req('GET', '/status', timeout=3))
+            caps = {'capabilities': {'alwaysMatch': {'browserName': 'firefox', 'pageLoadStrategy': 'eager',
+                    'moz:firefoxOptions': {'args': ['-headless', '-profile', profile],
+                                           'env': {'MOZ_HEADLESS_WIDTH': '1440', 'MOZ_HEADLESS_HEIGHT': '1800'}}}}}
+            wd.sid = wd.req('POST', '/session', caps, timeout=180)['sessionId']
+            wd.req('POST', '/session/%s/url' % wd.sid, {'url': 'http://127.0.0.1:%d/' % port})
+            assert _wait(lambda: wd.js('return !!(window.jetformer && window.jetformer.showTab)'))
+            wd.js("window._errs = []; window.addEventListener('error', (e) => window._errs.push(String(e.message)));"
+                  "window._confirms = []; window._answer = false; window.confirm = (m) => { window._confirms.push(m); return window._answer; };")
+            wd.js("window.jetformer.showTab('drive')")
+            q = lambda sel, prop: wd.js("const e = document.querySelector('%s'); return e ? e.%s : null;" % (sel, prop))  # noqa: E731
+            # 電圧の帯(走行タブの上)
+            assert _wait(lambda: '8.31 V' in (q('#dr-vbat', 'textContent') or ''))
+            assert 'badge ok' in q('#dr-vbat', 'innerHTML')
+            for v, lv, words in ((7.8, 'warn', '低め'), (7.6, 'bad', 'パックを替える')):
+                state['vbat'] = dict(state['vbat'], v=v, level=lv)
+                assert _wait(lambda: words in (q('#dr-vbat', 'textContent') or '')), lv
+                assert lv in q('#dr-vbat', 'className')
+            state['vbat'] = {'supported': False, 'v': None, 'age_s': None, 'level': None, 'warn_v': 7.9, 'bad_v': 7.7, 'run': None}
+            assert _wait(lambda: '基板が対応していません' in (q('#dr-vbat', 'textContent') or ''))
+            # 読み込みで OFF。天井 OFF のあいだ自動合わせは押せない
+            assert q('#dr-speed-ceiling', 'checked') is False and q('#dr-speed-auto', 'checked') is False
+            assert _wait(lambda: q('#dr-speed-ceiling', 'disabled') is False)
+            assert q('#dr-speed-auto', 'disabled') is True
+            # ON の確認の文(キャンセル → 送らない・OFF のまま)。値は speed_ctrl_spec から
+            spec = drive.speed_ctrl_spec(state['params'])
+            wd.js("document.querySelector('#dr-speed-ceiling').click()")
+            assert _wait(lambda: wd.js('return window._confirms.length') == 1)
+            msg = wd.js('return window._confirms[0]')
+>           assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+E           AssertionError: assert ('左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま。終わったら 1.5 m/s² で全体の天井へ戻す)' in '速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま。終わったら 1.5 m/...)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?' and '前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。速すぎる当たり(奥の左スイーパーの出口・LH の手前)を減らすもので、当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)' in '速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま。終わったら 1.5 m/...)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?' and '全体 4.5・左旋回中 4.0 m/s' in '速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま。終わったら 1.5 m/...)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?')
+
+tests/test_vbat_ui.py:383: AssertionError
+1 failed, 1 passed, 44 deselected in 44.37s

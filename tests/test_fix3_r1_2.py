@@ -254,8 +254,9 @@ def test_rec3_5_runs_1103_marks_round_option_change(tmp_path, round3_blocks):
     table, rows = _runs_main(RUNS, raw, 'runs_r12_a')
     by = {r['run_id']: r for r in rows}
     assert not any('試験の選択肢' in x for x in by['3-1']['diffs'] + by['3-2']['diffs'])
+    # 2026-10-28 fix8 tools-decided: 印の後ろの文を「わざと OFF にした日」も分かる文に(fix7/fix_docs_r1.md 4 章 3。頭は同じ)
     assert ('回 3 の試験の選択肢が 3-1(No.12)と違う: 後ろの見張り OFF(3-1 は ON)・リカバリーを残す OFF(3-1 は ON)'
-            '(再起動で OFF に戻った? 手順書 7 章)') in by['3-3']['diffs']
+            '(再起動で OFF に戻った? 3 章で止めて OFF にした本 X から先なら数える。手順書 3・7 章)') in by['3-3']['diffs']
     assert by['3-1']['options'] == {'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 0}
     line = [x for x in table if x.startswith('試験の選択肢')]
     assert line == ['試験の選択肢(log.json の走行開始の値。起動のたびに OFF に戻る。再起動のあとは朝の設定を入れ直す・手順書 7 章): '
@@ -497,15 +498,25 @@ def test_rec3_1_first_only_also_reports_the_first_start():
 
 
 def test_rec3_1_off_unreached_is_listed_but_does_not_fail_on():
+    """R1 に届かなかった OFF の発進は名前を出すが、ON の条件(on_all_reached_r1・「→ ON の発進が R1 の前で終わった」の行)にはしない。
+    2026-10-28 fix8 tools r2(反証 8-2 回目 w2-tools-r8-2-off-few-left の決め): その OFF の本の発進が比べに 1 本も残らない(下の 134000)と、
+    残りの OFF 1 本で比べることになるので「満たさない」(checks の off_all_compared だけが False)。その本の別の発進が比べに残れば(2 つ目)
+    前と同じ「使ってよい」(tests/test_fix8_tools_r2.py)"""
     col = load_mod('collect_r12_off', COLLECT)
     rows = [_row('20261103-133000', 'off', 3.0), _row('20261103-134000', 'off', None, hits=[(2.0, 5.0, 'HS')]),
             _row('20261103-133500', 'on', 2.7), _row('20261103-134500', 'on', 2.7),
             _row('20261103-135000', 'on_not_started', None)]
     g = col.summarize(rows)[0]
     assert g['not_reached']['off']['n'] == 1 and g['not_reached']['on_not_started']['n'] == 1
-    assert g['compare']['all_ok'] is True and 'on_all_reached_r1' not in g['compare']['checks']
+    assert 'on_all_reached_r1' not in g['compare']['checks']
+    assert sorted(k for k, v in g['compare']['checks'].items() if v is False) == ['off_all_compared']
+    assert g['compare']['all_ok'] is False and g['off_dropped'] == ['20261103-134000@1.00(R1 に届かなかった・AI の区間が短い)']
     txt = '\n'.join(col.summary_lines([g]))
     assert 'R1 に届かなかった発進(off)1 本' in txt and '→ ON の発進が R1 の前で終わった' not in txt
+    rows2 = rows + [_row('20261103-134000', 'off', 3.0, start_no=2, t_ai=12.0)]     # 同じ本の 2 回目の発進が比べに残る
+    g2 = col.summarize(rows2)[0]
+    assert g2['not_reached']['off']['n'] == 1 and 'off_dropped' not in g2
+    assert g2['compare']['all_ok'] is True and 'on_all_reached_r1' not in g2['compare']['checks']
 
 
 def test_rec3_3_midrun_runs_are_left_out(tmp_path):

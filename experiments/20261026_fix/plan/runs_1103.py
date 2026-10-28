@@ -27,6 +27,18 @@
   params)。approvals 10 の (b)(下がる量を小さくする)を選んだ日に読む: 0.4 秒・300 µs でない本があれば表の下に「リカバリーの
   下がる量: 1-1(No.1)から 0.30 秒・250 µs → …」の 1 行。同じ回の中で回の最初の本と違う本に印(「回 2 の下がる量が 2-1(No.6)と
   違う」。基準の設定・ブロックで 0.4・300 に戻ったときなど)。どれも 0.4・300(か欄が無い)なら表・印は前と同じ。
+- 2026-10-28 fix8 tools-decided(fix7/fix_docs_r1.md 4 章 3): 試験の選択肢の印の後ろの文を「(再起動で OFF に戻った? 3 章で止めて OFF
+  にした本 X から先なら数える。手順書 3・7 章)」に(OPT_MARK_NOTE。前は「(再起動で OFF に戻った? 手順書 7 章)」。手順書 3 章の
+  「わざと OFF にした日」も分かる文に)。表の下の試験の選択肢の行(options_line)の本が「—」の記録(run_id が無い = 説明欄に block が
+  無い。朝の発進の前進の確かめを収集したまま走った試し)は今まで通り区切りに並べる(手順書 3 章 5・3 章「わざと OFF にした日」・8.1 ② が
+  その読み方を書き、tests/test_fix7_docs_r2.py::test_g3 が固定している。計画の無い日は全部の本が「—」なので外すと行が消える)。ただし
+  本「—」から始まった区切りに回の本が続いたら、その区切りの後ろに「回の本は X(No.Y)から」を足す(昼に本「—」のあと起こし直しのまま
+  回の本を走った日に、区切りが本「—」の名前だけになり、8.1 ② の朝の読み方と読み違えうるため。朝の手順どおりの行は前と同じ)。
+- 2026-10-28 fix8 ui r1(反証 8-1 回目 runs-opt-mark-on-the-on-runs): 試験の選択肢の印(round_options)は、回の最初の本ではなく、
+  その回の計画の選択肢(回の中で ON の選択肢がいちばん多い本。同じ数なら先の本)と比べる。前は回の最初の本が OFF の日(回の切れ目の
+  起き直し・入れ忘れのまま 1 本走り、2 本目から入れ直した)に、印と「計画と違う N 本」が ON で走った正しい本に付き、OFF の本に付かな
+  かった(表の下の「回の本は X から」とも食い違った)。起き直しも 3 章の「止めて OFF」も ON → OFF なので、OFF で走った本に印。回の途中
+  から OFF になった形・どれも同じ形の出力は前と同じ。回の形(round_form)・下がる量(round_rev)の印は前のまま(回の最初の本と比べる)。
 """
 import glob
 import json
@@ -43,9 +55,14 @@ KEYS = ('throttle_gain', 'speed_ceiling', 'ceil_left_mps', 'speed_auto', 'launch
 REV_KEYS = ('rev_s', 'rev_us')
 REV_USUAL = (0.4, 300.0)
 # 試験の選択肢(drive.py。どれも既定 0・起動のたびに 0。2026-10-26 fix3 直す 1 回目 r1-rec3-5)。計画(expect)には無いので KEYS とは
-# 別に読む: 同じ回の中で回の最初の本と違えば印(A/B/A に混ぜない)、ON の本があれば表の下に 1 行(どれも OFF なら出さない = 前と同じ)
+# 別に読む: 同じ回の中でその回の計画の選択肢(ON がいちばん多い本。fix8 ui r1)と違えば印(A/B/A に混ぜない)、ON の本があれば表の下に
+# 1 行(どれも OFF なら出さない = 前と同じ)
 OPT_KEYS = ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick')
 OPT_NAMES = {'rec_back_guard': '後ろの見張り', 'rec_hold_keep': 'リカバリーを残す', 'launch_no_kick': '見送りで補助なし'}
+# 試験の選択肢の印の後ろの文(round_options)。2026-10-28 fix8 tools-decided(fix7/fix_docs_r1.md 4 章 3): 前は「(再起動で OFF に戻った?
+# 手順書 7 章)」だけで、手順書 3 章の「わざと OFF にした日」(最初のリカバリーがおかしくて止めて OFF・紙に本 X)の本 X から先の印も
+# 起こし直しに見えた。頭の「(再起動で OFF に戻った? 」は同じ(手順書 3 章が引く「(再起動で OFF に戻った? …)」)
+OPT_MARK_NOTE = '(再起動で OFF に戻った? 3 章で止めて OFF にした本 X から先なら数える。手順書 3・7 章)'
 
 
 def kv(desc, k):
@@ -185,38 +202,53 @@ def opt_on(r):
 
 
 def round_options(rows):
-    """試験の選択肢の印(r1-rec3-5): 同じ回の本どうしで同じはず。回の最初の本と違う本に印を足す(計画の expect に無い項目)"""
-    first = {}
+    """試験の選択肢の印(r1-rec3-5): 同じ回の本どうしで同じはず。その回の計画の選択肢 = 回の中で ON の選択肢がいちばん多い本
+    (同じ数なら先の本)と違う本に印を足す(計画の expect に無い項目)。
+
+    2026-10-28 fix8 ui r1(反証 8-1 回目 runs-opt-mark-on-the-on-runs): 前は回の最初の本と比べたので、回の最初の本が OFF の日
+    (回の切れ目で起き直し・入れ忘れのまま 1 本走り、2 本目の前に入れ直した)は、印「回 N の試験の選択肢が …(再起動で OFF に戻った? …)」
+    と「計画と違う N 本」が ON で走った正しい本の側に付き、OFF で走った本には付かなかった(表の下の「回の本は X から」の行とも食い違った)。
+    試験の選択肢が計画と違う向きは、起き直し(drive.RESET_ON_BOOT)も手順書 3 章の「止めて OFF」も ON → OFF なので、その回で ON が
+    いちばん多い本を計画の側にする = OFF で走った本に印。回の途中から OFF になった形(前から正しかった形)の印は前と同じ"""
+    rounds = {}
     for r in rows:
-        if not r.get('run_id'):
-            continue
-        rnd = str(r['run_id']).split('-')[0]
-        if rnd not in first:
-            first[rnd] = r
-            continue
-        f = first[rnd]
-        a, b = opt_on(r), opt_on(f)
-        diff = ['%s %s(%s は %s)' % (OPT_NAMES[k], 'ON' if k in a else 'OFF', f['run_id'], 'ON' if k in b else 'OFF')
-                for k in OPT_KEYS if (k in a) != (k in b)]
-        if diff:
-            r['diffs'].append('回 %s の試験の選択肢が %s(No.%s)と違う: %s(再起動で OFF に戻った? 手順書 7 章)' % (
-                rnd, f['run_id'], f['ai_no'] or '—', '・'.join(diff)))
+        if r.get('run_id'):
+            rounds.setdefault(str(r['run_id']).split('-')[0], []).append(r)
+    for rnd, rs in rounds.items():
+        f = max(rs, key=lambda x: len(opt_on(x)))       # 同じ数なら先の本(max は最初のものを返す)
+        b = opt_on(f)
+        for r in rs:
+            if r is f:
+                continue
+            a = opt_on(r)
+            diff = ['%s %s(%s は %s)' % (OPT_NAMES[k], 'ON' if k in a else 'OFF', f['run_id'], 'ON' if k in b else 'OFF')
+                    for k in OPT_KEYS if (k in a) != (k in b)]
+            if diff:
+                r['diffs'].append('回 %s の試験の選択肢が %s(No.%s)と違う: %s%s' % (
+                    rnd, f['run_id'], f['ai_no'] or '—', '・'.join(diff), OPT_MARK_NOTE))
 
 
 def options_line(rows):
     """どれかの本で試験の選択肢が ON なら、ON/OFF が変わったところを並べた 1 行(どれも OFF なら None)"""
     if not any(opt_on(r) for r in rows):
         return None
-    segs, prev = [], None
+    segs, prev, dash = [], None, None
     for r in rows:
         o = opt_on(r)
         if o != prev:
-            segs.append('%s(No.%s)から %s%s' % (r.get('run_id') or r['log'], r.get('ai_no') or '—',
-                                              '・'.join(OPT_NAMES[k] for k in o) or 'なし',
-                                              '' if prev is None else '(前の本と違う)'))
+            segs.append(['%s(No.%s)から %s' % (r.get('run_id') or r['log'], r.get('ai_no') or '—',
+                                             '・'.join(OPT_NAMES[k] for k in o) or 'なし'),
+                         [] if prev is None else ['前の本と違う']])
             prev = o
+            dash = segs[-1] if not r.get('run_id') else None
+        elif dash is not None and r.get('run_id'):
+            # 2026-10-28 fix8 tools-decided: 本「—」(run_id の無い本)から始まった区切りに回の本が続いたら、その最初の回の本も書く
+            # (起こし直しのあとの最初の本が本「—」だと、回の本の名前が出ず、手順書 8.1 ② の「本「—」から始まる「なし」の区切り」と
+            # 読み違えうる。朝の確かめ(本「—」のあと選択肢を入れて回の本が別の区切りになる)の行は前と同じ)
+            dash[1].append('回の本は %s(No.%s)から' % (r['run_id'], r.get('ai_no') or '—'))
+            dash = None
     return ('試験の選択肢(log.json の走行開始の値。起動のたびに OFF に戻る。再起動のあとは朝の設定を入れ直す・手順書 7 章): '
-            + ' → '.join(segs))
+            + ' → '.join(h + ('(%s)' % '。'.join(n) if n else '') for h, n in segs))
 
 
 def rev_of(r):

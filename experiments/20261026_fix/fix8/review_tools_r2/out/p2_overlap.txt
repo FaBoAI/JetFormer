@@ -1,0 +1,180 @@
+# a ON の発進でカメラが 1.6〜2.5 秒止まり、3.0 秒に人側(R1 に届かない)
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 3(2.863)・OFF n 4(3.038)・ON − OFF -0.175・満たさない・False ['first_lap_collisions_0', 'on_all_reached_r1']・{"not_reached": {"on": {"n": 1, "logs": ["20261103-132500@1.00"], "collisions": 1, "after_abort": null}}}
+      発進 20261103-132500@1.00 on 起点まで None・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.175 秒(≤ −0.15)・失う -0.175 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_speed': True, 'on_all_reached_r1': Fal
+      行:   R1 に届かなかった発進(on)1 本(比べの数に入れない): 20261103-132500@1.00。理由 AI の区間が短い。その衝突 1(132500 1.58 秒 5.1G ?)
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 3(2.863)・OFF n 4(3.038)・ON − OFF -0.175・満たさない・False ['first_lap_collisions_0', 'on_all_reached_r1']・{"not_reached": {"on": {"n": 1, "logs": ["20261103-132500@1.00"], "collisions": 1, "after_abort": null}}}
+      発進 20261103-132500@1.00 on 起点まで None・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.175 秒(≤ −0.15)・失う -0.175 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_speed': True, 'on_all_reached_r1': Fal
+      行:   R1 に届かなかった発進(on)1 本(比べの数に入れない): 20261103-132500@1.00。理由 AI の区間が短い。その衝突 1(132500 1.58 秒 5.1G ?)
+
+# b 走り直しの発進にカメラの止まり(t_res + 0.6〜1.5 秒)
+ 3-8 = ON
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.903)・OFF n 4(3.028)・ON − OFF -0.125・満たさない・False ['to_r1']・{"abort_resume_excluded": ["20261103-133500@14.73(on・中止 11.533 秒・人側 1.03 秒・起点まで 2.040 秒・空転の比 1.02)"]}
+      発進 20261103-133500@1.00 on 起点まで 2.973・launch_stall None・after_abort None
+      発進 20261103-133500@14.73 on 起点まで 2.04・launch_stall None・after_abort abort
+      行:   ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      行:   リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.903)・OFF n 4(3.028)・ON − OFF -0.125・満たさない・False ['to_r1']・{"abort_resume_excluded": ["20261103-133500@14.73(on・中止 11.533 秒・人側 1.03 秒・起点まで 2.040 秒・空転の比 1.02)"]}
+      発進 20261103-133500@1.00 on 起点まで 2.973・launch_stall None・after_abort None
+      発進 20261103-133500@14.73 on 起点まで 2.04・launch_stall {'gap_s': 0.933, 'at_s': 15.3}・after_abort abort
+      行:   ON − OFF: 起点まで -0.125 秒(≤ −0.15)・失う -0.125 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      行:   リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも
+ 3-8 = OFF
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 3(2.863)・OFF n 5(3.023)・ON − OFF -0.16・使ってよい・False []・{"abort_resume_excluded": ["20261103-133500@14.73(off・中止 11.533 秒・人側 1.03 秒・起点まで 2.040 秒)"]}
+      発進 20261103-133500@1.00 off 起点まで 2.973・launch_stall None・after_abort None
+      発進 20261103-133500@14.73 off 起点まで 2.04・launch_stall None・after_abort abort
+      行:   ON − OFF: 起点まで -0.160 秒(≤ −0.15)・失う -0.160 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      行:   リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 3(2.863)・OFF n 5(3.023)・ON − OFF -0.16・使ってよい・False []・{"abort_resume_excluded": ["20261103-133500@14.73(off・中止 11.533 秒・人側 1.03 秒・起点まで 2.040 秒)"]}
+      発進 20261103-133500@1.00 off 起点まで 2.973・launch_stall None・after_abort None
+      発進 20261103-133500@14.73 off 起点まで 2.04・launch_stall {'gap_s': 0.933, 'at_s': 15.3}・after_abort abort
+      行:   ON − OFF: 起点まで -0.160 秒(≤ −0.15)・失う -0.160 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      行:   リカバリー中止のあとの走り直し 1 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも
+
+# c ON の 4 本が全部カメラの止まり(1.6〜2.5 秒)
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.903)・OFF n 4(3.038)・ON − OFF -0.135・満たさない・False ['to_r1']・{}
+      行:   ON − OFF: 起点まで -0.135 秒(≤ −0.15)・失う -0.135 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n None(None)・OFF n 4(3.038)・ON − OFF None・満たさない・False ['lh_speed', 'on_no_stall', 'slip', 'to_r1']・{"launch_stall_excluded": ["20261103-130500@1.00(on・フレームの間 0.93 秒(1.57 秒から)・起点まで 2.813 秒・空転の比 1.02)", "20261103-131500@1.00(on・フレームの間 0.93 秒(1.57 秒から)・起点まで 2.863 秒・空転の比 1.02)", "20261103-132500@1.00(on・フレームの間 0.93 秒(1.57 秒から)・起点まで 2.943 秒・空転の比 1.02)", "20261103-133500@1.00(on・フレームの間 0.93 秒(1.57 秒から)・起点まで 2.973 秒・空転の比 1.02)"], "launch_stall_on": 4}
+      行:   ON − OFF: 起点まで — 秒(≤ −0.15)・失う — 秒・LH — m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': False, 'lh_speed': False, 'on_no_stall': False}
+      行:   発進から R1 の起点までにカメラが止まった発進 4 本(AI 側の処理したフレーム(中立止めの行を除く)の間が 0.22 秒より長い。drive はフレームが 0.1 秒来ないと中立を書くので、止まった間は惰性で起点まで・LH が変わる = 比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進の最初の周の衝突・空転・最初の周の記録の欠けは比べの
+      行:   → ON の発進で、発進から R1 までにカメラが止まった本がある = 満たさない(checks の on_no_stall。止まった間はモデルが走らせていないので、その発進で発進の前進の起点まで・LH の速さを確かめられない)。当たっていない・車のせいでない(カメラの途切れ)と動画・記録で確かめたら、main session が --skip 記録名@T で外して読み直せる(外した名前が出る
+
+# d OFF の 4 本が全部カメラの止まり・ON の 4 本は全部 3.0 秒に人側(R1 に届かない。2.5 秒に 6G)
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n None(None)・OFF n 4(3.038)・ON − OFF None・満たさない・False ['first_lap_collisions_0', 'lh_speed', 'on_all_reached_r1', 'slip', 'to_r1']・{"not_reached": {"on": {"n": 4, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"], "collisions": 4, "after_abort": null}}}
+      行:   ON − OFF: 起点まで — 秒(≤ −0.15)・失う — 秒・LH — m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': False, 'slip': False, 'lh_speed': False, 'on_all_reached_r1': False}
+      行:   R1 に届かなかった発進(on)4 本(比べの数に入れない): 20261103-130500@1.00・20261103-131500@1.00・20261103-132500@1.00・20261103-133500@1.00。理由 AI の区間が短い。その衝突 4(130500 2.50 秒 6.0G ?・131500 2.50 秒 6.0G ?・132500 2.50 秒 6.0G ?
+      行:   → ON の発進が R1 の前で終わった本がある = 満たさない(最初の周を確かめられない)。当たった・人が危なくて止めた → 回 4 は OFF(手順書 7 章)。車のせいでない理由(人・物がコースに入った・試し)で止めた本だけ、--skip 記録名 で外して読み直せる(外した名前が出る)
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n None(None)・OFF n None(None)・ON − OFF None・比べなし・False []・{"not_reached": {"on": {"n": 4, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"], "collisions": 4, "after_abort": null}}, "launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.93 秒(1.57 秒から)・起点まで 3.013 秒)", "20261103-131000@1.00(off・フレームの間 0.93 秒(1.57 秒から)・起点まで 3.043 秒)", "20261103-132000@1.00(off・フレームの間 0.93 秒(1.57 秒から)・起点まで 3.033 秒)", "20261103-133000@1.00(off・フレームの間 0.93 秒(1.57 秒から)・起点まで 3.253 秒)"]}
+      行:   R1 に届かなかった発進(on)4 本(比べの数に入れない): 20261103-130500@1.00・20261103-131500@1.00・20261103-132500@1.00・20261103-133500@1.00。理由 AI の区間が短い。その衝突 4(130500 2.50 秒 6.0G ?・131500 2.50 秒 6.0G ?・132500 2.50 秒 6.0G ?
+      行:   → ON の発進が R1 の前で終わった本がある = 満たさない(最初の周を確かめられない)。当たった・人が危なくて止めた → 回 4 は OFF(手順書 7 章)。車のせいでない理由(人・物がコースに入った・試し)で止めた本だけ、--skip 記録名 で外して読み直せる(外した名前が出る)
+      行:   発進から R1 の起点までにカメラが止まった発進 4 本(AI 側の処理したフレーム(中立止めの行を除く)の間が 0.22 秒より長い。drive はフレームが 0.1 秒来ないと中立を書くので、止まった間は惰性で起点まで・LH が変わる = 比べ(起点まで・失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進の最初の周の衝突・空転・最初の周の記録の欠けは比べの
+
+# e OFF の本のカメラの止まり(フレーム 69 = 2.30 秒のあと 8 枚が無い = 間 0.300 秒)。本数を変える
+ 止まった OFF の本: なし
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.038)・ON − OFF -0.1・満たさない・False ['to_r1']・{}
+      行:   ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.100 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.038)・ON − OFF -0.1・満たさない・False ['to_r1']・{}
+      行:   ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.100 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.013, 3.033, 3.043, 3.253]
+      r1new: OFF の本の起点まで [3.013, 3.033, 3.043, 3.253]
+ 止まった OFF の本: 3-1
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.038)・ON − OFF -0.1・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.100 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 3(3.043)・ON − OFF -0.105・満たさない・False ['to_r1']・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.023 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      行:   ON − OFF: 起点まで -0.105 秒(≤ −0.15)・失う -0.105 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.023, 3.033, 3.043, 3.253]
+      r1new: OFF の本の起点まで [3.023, 3.033, 3.043, 3.253]
+ 止まった OFF の本: 3-1, 3-3
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.043)・ON − OFF -0.105・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall None・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.105 秒(≤ −0.15)・失う -0.105 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.143)・ON − OFF -0.205・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.023 秒)", "20261103-131000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.053 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      行:   ON − OFF: 起点まで -0.205 秒(≤ −0.15)・失う -0.205 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.023, 3.033, 3.053, 3.253]
+      r1new: OFF の本の起点まで [3.023, 3.033, 3.053, 3.253]
+ 止まった OFF の本: 3-1, 3-3, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.048)・ON − OFF -0.11・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall None・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.110 秒(≤ −0.15)・失う -0.110 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 1(3.253)・ON − OFF -0.315・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.023 秒)", "20261103-131000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.053 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.043 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      行:   ON − OFF: 起点まで -0.315 秒(≤ −0.15)・失う -0.315 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.023, 3.043, 3.053, 3.253]
+      r1new: OFF の本の起点まで [3.023, 3.043, 3.053, 3.253]
+ 止まった OFF の本: 3-3, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.048)・ON − OFF -0.11・満たさない・False ['to_r1']・{}
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.110 秒(≤ −0.15)・失う -0.110 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.133)・ON − OFF -0.195・使ってよい・False []・{"launch_stall_excluded": ["20261103-131000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.053 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.043 秒)"]}
+      発進 20261103-131000@1.00 off 起点まで 3.053・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      行:   ON − OFF: 起点まで -0.195 秒(≤ −0.15)・失う -0.195 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.013, 3.043, 3.053, 3.253]
+      r1new: OFF の本の起点まで [3.013, 3.043, 3.053, 3.253]
+ 止まった OFF の本: 3-1, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.043)・ON − OFF -0.105・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.105 秒(≤ −0.15)・失う -0.105 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.148)・ON − OFF -0.21・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.023 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(2.30 秒から)・起点まで 3.043 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.023・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.043・launch_stall {'gap_s': 0.3, 'at_s': 2.3}・after_abort None
+      行:   ON − OFF: 起点まで -0.210 秒(≤ −0.15)・失う -0.210 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.023, 3.043, 3.043, 3.253]
+      r1new: OFF の本の起点まで [3.023, 3.043, 3.043, 3.253]
+
+# e2 OFF の本のカメラの止まり(フレーム 48 = 1.60 秒のあと 8 枚が無い = 間 0.300 秒)。本数を変える
+ 止まった OFF の本: なし
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.038)・ON − OFF -0.1・満たさない・False ['to_r1']・{}
+      行:   ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.100 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.038)・ON − OFF -0.1・満たさない・False ['to_r1']・{}
+      行:   ON − OFF: 起点まで -0.100 秒(≤ −0.15)・失う -0.100 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.013, 3.033, 3.043, 3.253]
+      r1new: OFF の本の起点まで [3.013, 3.033, 3.043, 3.253]
+ 止まった OFF の本: 3-1
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.053)・ON − OFF -0.115・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.115 秒(≤ −0.15)・失う -0.115 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 3(3.043)・ON − OFF -0.105・満たさない・False ['to_r1']・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.063 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      行:   ON − OFF: 起点まで -0.105 秒(≤ −0.15)・失う -0.105 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.033, 3.043, 3.063, 3.253]
+      r1new: OFF の本の起点まで [3.033, 3.043, 3.063, 3.253]
+ 止まった OFF の本: 3-1, 3-3
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.088)・ON − OFF -0.15・使ってよい・False []・{}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall None・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.150 秒(≤ −0.15)・失う -0.150 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.143)・ON − OFF -0.205・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.063 秒)", "20261103-131000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.113 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      行:   ON − OFF: 起点まで -0.205 秒(≤ −0.15)・失う -0.205 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.033, 3.063, 3.113, 3.253]
+      r1new: OFF の本の起点まで [3.033, 3.063, 3.113, 3.253]
+ 止まった OFF の本: 3-1, 3-3, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.103)・ON − OFF -0.165・使ってよい・False []・{}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall None・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 1(3.253)・ON − OFF -0.315・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.063 秒)", "20261103-131000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.113 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.093 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      行:   ON − OFF: 起点まで -0.315 秒(≤ −0.15)・失う -0.315 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.063, 3.093, 3.113, 3.253]
+      r1new: OFF の本の起点まで [3.063, 3.093, 3.113, 3.253]
+ 止まった OFF の本: 3-3, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.103)・ON − OFF -0.165・使ってよい・False []・{}
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.133)・ON − OFF -0.195・使ってよい・False []・{"launch_stall_excluded": ["20261103-131000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.113 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.093 秒)"]}
+      発進 20261103-131000@1.00 off 起点まで 3.113・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      行:   ON − OFF: 起点まで -0.195 秒(≤ −0.15)・失う -0.195 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.013, 3.093, 3.113, 3.253]
+      r1new: OFF の本の起点まで [3.013, 3.093, 3.113, 3.253]
+ 止まった OFF の本: 3-1, 3-5
+  直す前 [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 4(3.078)・ON − OFF -0.14・満たさない・False ['to_r1']・{}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall None・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall None・after_abort None
+      行:   ON − OFF: 起点まで -0.140 秒(≤ −0.15)・失う -0.140 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+  今     [11/03 回3・g None・天井 0(None)・自動 0(None)] ON n 4(2.938)・OFF n 2(3.148)・ON − OFF -0.21・使ってよい・False []・{"launch_stall_excluded": ["20261103-130000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.063 秒)", "20261103-132000@1.00(off・フレームの間 0.30 秒(1.60 秒から)・起点まで 3.093 秒)"]}
+      発進 20261103-130000@1.00 off 起点まで 3.063・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      発進 20261103-132000@1.00 off 起点まで 3.093・launch_stall {'gap_s': 0.3, 'at_s': 1.6}・after_abort None
+      行:   ON − OFF: 起点まで -0.210 秒(≤ −0.15)・失う -0.210 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+      r1old: OFF の本の起点まで [3.043, 3.063, 3.093, 3.253]
+      r1new: OFF の本の起点まで [3.043, 3.063, 3.093, 3.253]
+

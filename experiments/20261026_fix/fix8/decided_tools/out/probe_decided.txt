@@ -1,0 +1,34 @@
+① stop 0.5 old ⑤ ["ON n 5・起点まで 2.943・ON − OFF -0.085・満たさない・checks {'to_r1': False}・{}"] 印 [None, None] / ③ counted [False, True] / ④ 止まってから 3 周 None 数えない 0
+① stop 0.5 new ⑤ ["ON n 4・起点まで 2.903・ON − OFF -0.125・満たさない・checks {'to_r1': False}・{'abort_resume_excluded': ['20261103-133500@16.23(on・リカバリーの途中 13.033 秒から 2.17 秒・人側 1.03 秒・起点まで 9.540 秒・空転の比 1.02)']}"] 印 [None, {'kind': 'recovery', 'abort_s': 13.033, 'rec_s': 2.17, 'ai_end_s': 15.2, 'human_s': 1.03}] / ③ counted [False, False] / ④ 止まってから 3 周 None 数えない 1
+① stop 1.5 old ⑤ ["ON n 5・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip_all_measured': False}・{}"] 印 [None, None] / ③ counted [False, True] / ④ 止まってから 3 周 [27.121] 数えない 0
+① stop 1.5 new ⑤ ["ON n 4・起点まで 2.903・ON − OFF -0.125・満たさない・checks {'to_r1': False, 'slip_all_measured': False}・{'abort_resume_excluded': ['20261103-133500@15.73(on・リカバリーの途中 12.533 秒から 2.17 秒・人側 1.03 秒・起点まで 1.040 秒・空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた))']}"] 印 [None, {'kind': 'recovery', 'abort_s': 12.533, 'rec_s': 2.17, 'ai_end_s': 14.7, 'human_s': 1.03}] / ③ counted [False, False] / ④ 止まってから 3 周 None 数えない 1
+① stop 2.5 old ⑤ ["ON n 5・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip_all_measured': False}・{}"] 印 [None, None] / ③ counted [False, True] / ④ 止まってから 3 周 [27.122] 数えない 0
+① stop 2.5 new ⑤ ["ON n 4・起点まで 2.903・ON − OFF -0.125・満たさない・checks {'to_r1': False, 'slip_all_measured': False}・{'abort_resume_excluded': ['20261103-133500@15.23(on・リカバリーの途中 12.033 秒から 2.17 秒・人側 1.03 秒・起点まで 1.540 秒・空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた))']}"] 印 [None, {'kind': 'recovery', 'abort_s': 12.033, 'rec_s': 2.17, 'ai_end_s': 14.2, 'human_s': 1.03}] / ③ counted [False, False] / ④ 止まってから 3 周 None 数えない 1
+① stop 3.5 old ⑤ ['ON n 5・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{}'] 印 [None, None] / ③ counted [False, True] / ④ 止まってから 3 周 [27.122] 数えない 0
+① stop 3.5 new ⑤ ["ON n 4・起点まで 2.903・ON − OFF -0.125・満たさない・checks {'to_r1': False}・{'abort_resume_excluded': ['20261103-133500@14.73(on・リカバリーの途中 11.533 秒から 2.17 秒・人側 1.03 秒・起点まで 2.040 秒・空転の比 1.02)']}"] 印 [None, {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'human_s': 1.03}] / ③ counted [False, False] / ④ 止まってから 3 周 None 数えない 1
+① stop 4.5 old ⑤ ['ON n 5・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{}'] 印 [None, None] / ③ counted [False, True] / ④ 止まってから 3 周 [27.122] 数えない 0
+① stop 4.5 new ⑤ ["ON n 4・起点まで 2.903・ON − OFF -0.125・満たさない・checks {'to_r1': False}・{'abort_resume_excluded': ['20261103-133500@14.23(on・リカバリーの途中 11.033 秒から 2.17 秒・人側 1.03 秒・起点まで 2.540 秒・空転の比 1.02)']}"] 印 [None, {'kind': 'recovery', 'abort_s': 11.033, 'rec_s': 2.17, 'ai_end_s': 13.2, 'human_s': 1.03}] / ③ counted [False, False] / ④ 止まってから 3 周 None 数えない 1
+② trial spin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial spin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip': False}・{'trial_slip': ['20261103-133500@1.00(空転の比 1.85 > 1.3)'], 'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial nospin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial nospin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial gap old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@14.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial gap new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'on_all_readable': False}・{'first_lap_gap_on': ['20261103-133500@14.00(IMU が最初の周の間で抜けている(シーンが欠けている)。試し)'], 'trial_excluded': ['20261103-133500@14.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial extreme old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial extreme new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip': False}・{'trial_slip': ['20261103-133500@1.00(空転の比が出ない(車輪 +1.80・IMU +0.09 m/s = いちばんひどい空転とみなす > 1.3))'], 'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial unk old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial unk new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip_all_measured': False}・{'trial_slip_unmeasured': ['20261103-133500@1.00(空転の比が出ない(車輪 +0.40・IMU +0.12 m/s。どちらもほとんど増えない))'], 'trial_excluded': ['20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))']}"]
+② trial off_spin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(off・試し(ゲイン 1.02 で走った))']}"]
+② trial off_spin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'trial_excluded': ['20261103-133500@1.00(off・試し(ゲイン 1.02 で走った))']}"]
+② midrun spin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun spin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip': False}・{'midrun_slip': ['20261103-133500@1.00(空転の比 1.85 > 1.3)'], 'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun nospin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun nospin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun gap old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@14.00(ステア 1→1.1)']}"]
+② midrun gap new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'on_all_readable': False}・{'first_lap_gap_on': ['20261103-133500@14.00(IMU が最初の周の間で抜けている(シーンが欠けている)。途中で変えた)'], 'midrun_excluded': ['20261103-133500@14.00(ステア 1→1.1)']}"]
+② midrun extreme old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun extreme new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip': False}・{'midrun_slip': ['20261103-133500@1.00(空転の比が出ない(車輪 +1.80・IMU +0.09 m/s = いちばんひどい空転とみなす > 1.3))'], 'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun unk old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun unk new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・満たさない・checks {'slip_all_measured': False}・{'midrun_slip_unmeasured': ['20261103-133500@1.00(空転の比が出ない(車輪 +0.40・IMU +0.12 m/s。どちらもほとんど増えない))'], 'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun off_spin old: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]
+② midrun off_spin new: ["ON n 3・起点まで 2.863・ON − OFF -0.165・使ってよい・checks {}・{'midrun_excluded': ['20261103-133500@1.00(ステア 1→1.1)']}"]

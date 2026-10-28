@@ -1,0 +1,97 @@
+OK   car_out = drive.apply_gains(ゲイン 0.90・ブレーキ側はそのまま・1000〜2000 に切る)
+OK   car_out = drive.apply_gains(ゲイン 1.00・ブレーキ側はそのまま・1000〜2000 に切る)
+OK   car_out = drive.apply_gains(ゲイン 1.10・ブレーキ側はそのまま・1000〜2000 に切る)
+OK   car_out(フレームごとのゲイン・trim)= apply_gains
+OK   TOP_FRACTION = train_data.TOP_FRACTION
+OK   top_ramp(224) = train_data.top_ramp
+OK   top_ramp(225) = train_data.top_ramp
+OK   top_ramp(6) = train_data.top_ramp
+OK   top_ramp: 一番上 1・上 1/3 の境(行 75〜)で 0・単調に減る  [0.06249994 0.04910713 0.03571427 0.0223214  0.00892854 0.        ]
+OK   perturb(img_up3) = policy_zoo.perturb
+OK   perturb(img_down3) = policy_zoo.perturb
+OK   perturb(bright_0.8) = policy_zoo.perturb
+OK   perturb(bright_1.2) = policy_zoo.perturb
+OK   perturb(tof_down1) = policy_zoo.perturb
+OK   perturb(top_0.85): 一番上 ×0.85・境から下はそのまま・ToF はそのまま  [ 85  92 100 100]
+OK   perturb(top_1.15): 一番上 ×1.15・境から下はそのまま・ToF はそのまま  [115 108 100 100]
+OK   perturb(top_1.15): 255 で切る
+OK   ずれの試しは protocol の 7 つ(画像 3 行上・3 行下・明るさ ×0.8・×1.2・ToF 1 行下・上 1/3 ×0.85・×1.15)  H1 に 7 つ: 画像 3 行上・3 行下、明るさ ×0.8・×1.2、ToF 1 行下、上 1/3 ×0.85・×1.15
+OK   window_mask [tc − 1, tc)
+OK   run_starts(DE の入り)
+OK   lap_of [a, b)
+OK   lap_unused・lap_straight(きれいでない・B の 9.5 秒以上・ほかのモデル)
+OK   thr_vs_b: 1500 + 0.9·(−80) − (1496 + 0.9·(−96)) = +18.4(+ = 緩める)  18.40000000000009
+OK   fwd_vs_b = −thr_vs_b(+ = 強く踏む)
+OK   fwd_vs_b: ゲイン 1.00 対 0.90 = −(1420 − 1409.6)
+OK   thr_vs_b: ブレーキ側はゲインを掛けない
+OK   steer_vs_b: 行 0 の予測ステアの差
+OK   空の集合は None
+OK   go_frac: 行 0 の車に出るスロットル < 中立 − 30 の割合 = 0.75
+OK   gf_limit = 0.10 × B の生の前進の量の平均(後ろ向きは 0)  10.0
+OK   robust_dl1: 7 つの L1 の増えの平均 = 4.0  {'img_up3': 1.0, 'img_down3': 2.0, 'bright_0.8': 3.0, 'bright_1.2': 4.0, 'tof_down1': 5.0, 'top_0.85': 6.0, 'top_1.15': 7.0}
+OK   lap_est: −0.02696 × 10 = −0.2696・25.75 + 3 × それ
+OK   lap_est(None)
+OK   stage0_2_diffs: 記録と同じ式なら差 0(先読み・フレームごとのゲイン)
+OK   stage0_2_summary: 中央値 3・4 µs → 合格
+OK   stage0_2_summary: 12 µs → 外れ
+OK   stage0_2_summary: 合わせた中央値と片方ずつで分かれたら「決まりで決まらない」  (7.987360454541331, 13.98775225748031)
+OK   推論の速さ: engine_check と同じ 100 回の空回し + 600 回
+OK   trt_times: 中央値・99% 点
+OK   ai_pre_r1: [4, 5) の AI 30 フレーム
+OK   ai_pre_de: [26, 27) 30 フレーム・人の衝突は数えない
+OK   ai_pre_sw: loc_detail SW の衝突 [17, 18)
+OK   de_pass: 2 つの周の DE の入りから 0.5 秒(15 + 15)
+OK   straight: きれいな周(B 19 秒)の直線だけ(きれいでない周の直線は入れない)
+OK   stand_pre: |eRPM| < 400・AI・衝突の前後でない
+OK   gb: AI・衝突の前後でない(衝突の前後 [4, 7] を除く)
+OK   gb_de・sw・hs(loc_detail)
+OK   gb_r1pre: 起点 1・20 の手前 1 秒(起点 1 の手前 [0, 1)・20 の手前 [19, 20))
+OK   gb_deline: DE の入りから [0.5, 0.7)(26.5〜26.7 の 6 フレーム。6.5〜6.7 は衝突の前後 [4, 7] なので外す)
+OK   gbref: 手本の外・AI・衝突の前後でない
+OK   gbref: 手本のフレームを外す・gb は 3 本の記録だけ
+OK   s0_2: B の記録・model_out が数値・hold でない
+OK   s0_2: B 以外の記録は入れない
+OK   B のきれいな 9.5 秒未満の周は de_pass・straight に入れない
+OK   label_index・vehicle_valid の無いフレームは入れない
+OK   row_fields: de_pre_thr_vs_b = −17.6・straight_fwd = +17.6・G-b(fwd) = +17.6
+OK   row_fields: 1.00 対 0.90 = 1409.6 − 1380 = 29.6・DE の線 = +5
+OK   row_fields: lap_delta = −0.02696 × 17.6
+OK   row_fields: standstill_go_frac = 1(前へ 108 µs)
+OK   row_fields: v2 には bfast_* を出さない・g9 も出さない
+OK   row_fields: g9_minus_g5 = 1370 − 1392 = −22(− = ジャンル 9 が強く踏む)
+OK   FIELDS_C3 は eval_v2.C3_FIELDS をすべて含む(+ trt_p99_ms)  []
+OK   protocol fields_added の欄をすべて出す(H1 の欄は eval_v2.run_row で)  []
+OK   protocol fields_desk_bench_same(gates_pass を除く)を出す  ['gates_pass']
+OK   GAINS = protocol sign_rules.gains  B 0.90・候補のジャンル 5 0.90・B-FAST 0.90(B と同じ表)・ジャンル 9 1.00(正解がゲインの後のため)
+OK   止まった場面: |eRPM| < 400・x_free > 1.0 m
+OK   止まった場面: 中立 − 30 µs
+OK   DE の通過 0.5 秒・DE の線 0.5〜0.7 秒
+OK   B の 9.5 秒以上
+OK   速さの見込みの係数 −0.02696・25.75
+OK   gb_main の 3 本
+OK   門「推論」1.3 倍・止まった場面 300
+OK   standstill_gate_kind
+OK   封の記録を読もうとしたら止まる
+OK   学習の回の記録は通す
+OK   学習の回の 46 本に封の記録が無い
+OK   eval_v2.gates_v2 が desk_v2 の欄で全部決まる  {'engine_ok': True, 'sanity_ok': True, 'inference': True, 'amp': True, 'l1_vs_b': True, 'brake': True, 'standstill': True, 'human_throttle': True, 'straight': True}
+OK   eval_v2.gates_bfast が desk_v2 の欄で全部決まる(G-a〜G-f・安全)  {'G-a': True, 'G-b': True, 'G-c': True, 'G-d': True, 'G-e': True, 'G-f': True, 'sanity_ok': True, 'inference': True, 'amp': True, 'brake': True}
+OK   G-b: +10 µs 未満なら不合格
+OK   止まった場面が 300 未満なら「参考」(合否に数えない)
+02:56:47 書きました: /home/jetson/jetformer/experiments/20261025_train_v2/c3/logs/c3_test_8o57p8xg/out/desk_v2.json(学習 5 本・1 秒)
+02:56:47 段 0: 2 False / 4 0.6816143497757847(1115 フレーム・門) / 8 2.5 ms
+OK   report: 動く・4 本 + 2 本の平均の行
+OK   report: 2 本の平均の行 = 予測の平均(−5 と −1 → −3 µs を 0.9 倍)・門は推論を除く  {'engine_ok': True, 'sanity_ok': True, 'amp': True, 'l1_vs_b': True, 'brake': True, 'standstill': True, 'human_throttle': True, 'straight': True}
+OK   report: v2 の _thr_vs_b = 0.9 × (−5)(前進側)・straight_fwd = +4.5  (-4.14028, 4.14393)
+OK   report: robust_dl1_us = 7 つの L1(H1)− そのまま の平均(別に数えた値と同じ)  (0.1418, 0.14180302631311495)
+OK   report: B-FAST の G-b の欄がある・v2 には無い
+OK   report: B の _vs_b は 0
+OK   report: 同じ日の B の p99・推論の可否(速さを sanity の流れで測った v1 の仕事は使わない)
+OK   report: sanity_ok・低速のブレーキ(作り物は 0)
+OK   report: 門(eval_v2 の関数)が決まる  ({'engine_ok': True, 'sanity_ok': True, 'inference': True, 'amp': True, 'l1_vs_b': True, 'brake': True, 'standstill': True, 'human_throttle': True, 'straight': True}, {'G-a': True, 'G-b': True, 'G-c': False, 'G-d': True, 'G-e': True, 'G-f': False, 'sanity_ok': True, 'inference': True, 'amp': True, '
+OK   report: H1 の欄(eval_v2.run_row)
+OK   report: 段 0 の 2・4・8 の形
+OK   report: eval_v2 が読む上の欄
+
+92 個中 92 個 OK
+exit 0

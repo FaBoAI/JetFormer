@@ -1,0 +1,41 @@
+normal18 cl 24 25s
+normal18 fit 48 59s
+normal18 fit_A2.0 72 87s
+normal18 fit_A4.5 96 117s
+normal18 fit_Vmax2.5 120 155s
+normal18 fit_Vmax3.5 144 190s
+normal18 fit_coast0.0 168 218s
+normal18 fit_coast1.5 192 253s
+normal18 fit_coast3.0 216 281s
+normal18 fit_const 240 316s
+normal18 fit_lag0.05 264 343s
+normal18 fit_lag0.1 288 369s
+normal18 fit_lag0.15 312 395s
+normal18 fit_rdelay0.05 336 436s
+normal18 fit_rdelay0.1 360 460s
+normal18 fit_rdelay20.05 384 486s
+normal18 fit_rdelay20.1 408 510s
+normal18 human 432 534s
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/fix_docs_r2/out/first_rec_r2_normal18.json
+gapslow cl_neu0.2 24 24s
+gapslow cl_neu0.25 48 50s
+gapslow fit_neu0.2 72 72s
+gapslow fit_neu0.25 96 94s
+gapslow human_neu0.2 120 115s
+gapslow human_neu0.25 144 137s
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/fix_docs_r2/out/first_rec_r2_gapslow.json
+k1_noback cl_neu0.35 24 44s
+k1_noback cl_neu99.0 48 88s
+k1_noback fit_neu0.35 72 136s
+k1_noback fit_neu99.0 96 180s
+k1_noback human_neu0.35 120 223s
+k1_noback human_neu99.0 144 266s
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/fix_docs_r2/out/first_rec_r2_k1_noback.json
+k2_runaway cl_erpm0back 24 22s
+k2_runaway fit_erpm0back 48 44s
+k2_runaway human_erpm0back 72 67s
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/fix_docs_r2/out/first_rec_r2_k2_runaway.json
+k3_limits cl_rev1.2_500 24 23s
+k3_limits fit_rev1.2_500 48 45s
+k3_limits human_rev1.2_500 72 68s
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/fix_docs_r2/out/first_rec_r2_k3_limits.json

@@ -1,0 +1,268 @@
+{
+ "steps": [
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。画面の値はすでに同じでした。"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 13(B モデルB(基準))</b>を画面に入れました。変えた所: 収集 OFF → ON、説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.90"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 250 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.9",
+   "text": "0.90"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo= battery=#A V_before=8.31 check=合格"
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.9,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.90\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\n説明欄の電池の番号がまだ空欄です(走ったあと、シーンの説明でも直せます)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.90\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\n説明欄の電池の番号がまだ空欄です(走ったあと、シーンの説明でも直せます)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo= battery=#A V_before=8.31 check=合格",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.9,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 0,
+    "rec_hold_keep": 0,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.9",
+   "text": "0.90"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 0.9,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 0,
+    "rec_hold_keep": 0,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "poll",
+   "gain": "0.9",
+   "text": "0.90"
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": false
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.9,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.90\n\n説明欄の電池の番号がまだ空欄です(走ったあと、シーンの説明でも直せます)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.90\n\n説明欄の電池の番号がまだ空欄です(走ったあと、シーンの説明でも直せます)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 13(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 15(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました"
+ ]
+}

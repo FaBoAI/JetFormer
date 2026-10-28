@@ -1,0 +1,18 @@
+# わざと壊す(tests/test_ui_fix8_r2.py。JF_UI82_CSS・JF_UI_FIREFOX=1)。数えるのは宣言の試験(decl)と Firefox の試験(ff)
+# 列: 壊し方 | decl | ff | 形の試験(差分。どの壊し方でも落ちるはず) | ほかの試験
+M00 壊さない(今の style.css) | decl passed | ff failed | 形 passed | ほか ['passed']
+M01 直す前の style.css(dbc8b79a) | decl failed | ff failed | 形 failed | ほか ['passed']
+M02 .float-stop に width: max-content なし(max-width 90% だけ) | decl failed | ff failed | 形 failed | ほか ['passed']
+M03 .float-stop に max-width: 90% なし | decl failed | ff failed | 形 failed | ほか ['passed']
+M04 走行中のトーストを上げる @media なし | decl failed | ff failed | 形 failed | ほか ['passed']
+M05 @media の bottom 100 px(2 行の ■ に 6 px 重なる) | decl failed | ff failed | 形 failed | ほか ['passed']
+M06 @media で囲まない(どの幅でも 126 px) | decl failed | ff failed | 形 failed | ほか ['passed']
+M07 @media が止まっているときの .toast も上げる | decl failed | ff failed | 形 failed | ほか ['passed']
+M08 .float-stop の max-width 50% | decl failed | ff failed | 形 failed | ほか ['passed']
+M09 @media の幅 400 px まで | decl failed | ff failed | 形 failed | ほか ['passed']
+M10 .float-stop を画面いっぱいの帯(left/right 5%・transform なし) | decl failed | ff failed | 形 failed | ほか ['passed']
+M11 .float-stop を 1 行に固定(white-space: nowrap) | decl failed | ff failed | 形 failed | ほか ['passed']
+M12 @media の bottom 112 px(間 6 px。指摘の案の下の値) | decl failed | ff failed | 形 failed | ほか ['passed']
+M13 .float-stop の幅を 300 px に固定 | decl failed | ff failed | 形 failed | ほか ['passed']
+M14 .toast の z-index を ■ より下に(■ がトーストを隠す) | decl failed | ff failed | 形 failed | ほか ['passed']
+見逃し(decl も ff も落ちない壊し方): 0 / 14

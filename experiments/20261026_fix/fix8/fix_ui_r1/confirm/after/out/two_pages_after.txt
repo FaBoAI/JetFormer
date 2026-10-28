@@ -1,0 +1,23 @@
+## 1 A が見張りを OFF(3 章で止めて OFF)→ B が走行タブに戻ってすぐ ▶(一覧の GET を待っている間)
+  B の ▶ の確認の文(抜き出し): 
+  送った body の params(抜き出し): {"throttle_gain": null, "speed_ceiling": null, "launch_boost": null}
+  サーバーが走った値: 見張り None・残す None・左 None・launch_us None・天井 None(返事 None・running False)
+  そのあとの B のスイッチ(見張り): [False]
+## 2 比べ: 同じ流れで一覧がすぐ返る
+  B の ▶ の確認の文(抜き出し): モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00
+  送った body の params(抜き出し): {"throttle_gain": 1, "speed_ceiling": 0, "launch_boost": 0}
+  サーバーが走った値: 見張り 0・残す 0・左 4.1・launch_us 250・天井 0(返事 200・running True)
+  そのあとの B のスイッチ(見張り): [False]
+## 3 curl で左 4.2(手順書 5 章)→ B が戻ってすぐ ▶
+  B の ▶ の確認の文(抜き出し): 
+  送った body の params(抜き出し): {"throttle_gain": null, "speed_ceiling": null, "launch_boost": null}
+  サーバーが走った値: 見張り None・残す None・左 None・launch_us None・天井 None(返事 None・running False)
+  そのあとの B のスイッチ(見張り): [True]
+## 4 1 つの画面: ライブのタブの間に curl で見張り OFF(手順書 3 章の API)→ 走行タブに戻ってすぐブロック 1-2 → ▶
+  A の ▶ の確認の文(抜き出し): 
+  サーバーが走った値: 見張り None・残す None(返事 None・running False)。説明欄 
+  そのあとの A のスイッチ(見張り): [False]
+## 5 比べ: 同じ流れで一覧がすぐ返る
+  A の ▶ の確認の文(抜き出し): モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90
+  サーバーが走った値: 見張り 0・残す 0(返事 200・running True)。説明欄 bench=real_bench_20261023 day=2026-11-03 block=2 cand=B mode
+  そのあとの A のスイッチ(見張り): [False]

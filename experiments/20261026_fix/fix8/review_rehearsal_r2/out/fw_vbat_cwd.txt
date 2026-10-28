@@ -1,0 +1,8 @@
+手順書 3 章の文: cd ~/jetformer && python3 tools/fw_vbat_check.py --meter <LiPo チェッカーの値>
+$ (~ = /home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_rehearsal_r2/normal/home) cd ~/jetformer && python3 tools/fw_vbat_check.py --meter 8.25
+ファームの電圧の確かめ: 読めない・足りない(終わりの番号 3)
+  [足りない] S1 センサーと基板: センサーが止まっている(sensors_running False)か、基板とつながっていない(VEHICLE connected False)。管理画面のライブのタブでセンサーを開始してから、もう一度(この道具は開始しない)
+終了コード 3
+--- 前の形(cd なし)
+python3: can't open file '/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_rehearsal_r2/normal/home/tools/fw_vbat_check.py': [Errno 2] No such file or directory
+終了コード 2

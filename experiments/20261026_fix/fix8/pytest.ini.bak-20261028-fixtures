@@ -1,0 +1,4 @@
+[pytest]
+# data/ は実行時のデータ(git 管理外)。シミュレーター本体の写し data/sim/releases/ にはユーザーのテストも入っているので、
+# テスト一式に集めない(集めると import の時点でユーザーのコードが動くため)。ほかは pytest の既定と同じ
+norecursedirs = data .* *.egg _darcs build CVS dist node_modules venv {arch}

@@ -1,0 +1,106 @@
+## V1 読み直し → 走行タブ → 基準の設定 → 見張り → 残す → ブロック 1 → ▶(一覧はすぐ返る)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V2 同じ流れで、走行タブを開いたときの一覧の GET が遅い(基準の設定の 1 回目のあとに返る)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V3 走行タブ(版の印)→ ライブ(センサー)→ 戻ってすぐ基準の設定(一覧が遅い 1 回)→ …
+  A baseline 押した 4 回(断られた 4)・最後のトースト ['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V4 dry run(ON → ▶ → ■ → 外す)→ 見張り → 残す → ブロック 1 → ▶
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['推論の確認を開始しました(出力は中立)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V5 見張り・残すのあと起き直し → 知らせ → 入れ直す → ブロック 1 → ▶
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V5b(比べ)起き直しのあと入れ直さずにブロック 1 → ▶(確認の文に 2 行が無いのが正しい)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 0・残す 0・左 4.1 → 期待どおり(見張り・残す OFF で走り、確認の文にも 2 行が無い = 4 章 6 で気づける)
+## V6 ライブの間に curl で見張り・残す(手順書 3 章の API)→ 戻ってすぐブロック 1 → ▶
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V7 ブロック 1 のあとライブ → 戻ってすぐ ▶(一覧が遅い 1 回)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 4 回(断られた 4)・最後のトースト ['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V8 2 画面(PC は走行タブ・スマホ A で朝の流れ。途中で PC がライブ → 戻る)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  A hcheck   押した 1 回(断られた 0)
+  A hcheck   押した 1 回(断られた 0)
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+## V9 2 画面(PC B で見張り・残す、スマホ A はライブ → 戻ってすぐブロック 1 → ▶。一覧が遅い 1 回)
+  A baseline 押した 1 回(断られた 0)・最後のトースト ['基準の設定を画面に入れました(走行は始めていません)']
+  B hcheck   押した 1 回(断られた 0)
+  B hcheck   押した 1 回(断られた 0)
+  A pick     押した 2 回(断られた 1)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A pick     押した 1 回(断られた 0)・最後のトースト ['ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)']
+  A hstart   押した 1 回(断られた 0)・最後のトースト ['AI走行 No.1 を開始しました']
+  ▶ 返事 200・確認の文: モデル: clean_driving_20261011-nocmd- / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後 / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 
+  送った値: {"throttle_gain": 0.9, "steer_gain": 1, "lookahead": 3, "tof_guard": 1, "start_kick": 1, "speed_ceiling": 0, "speed_auto": 0, "launch_boost": 0, "steer_trim_us": 0}
+  説明欄: bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd
+  サーバーが走った値: 見張り 1・残す 1・左 4.1 → 通った(両方 ON・確認の文と同じ・ブロック 1)
+
+通った 10 / 10

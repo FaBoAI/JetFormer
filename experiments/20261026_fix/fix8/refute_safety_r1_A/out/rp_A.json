@@ -1,0 +1,674 @@
+{
+ "scene_cam": {
+  "logs": 60,
+  "units": 235,
+  "frames": 122767,
+  "rec_starts": 16,
+  "diff_frames": 0,
+  "diff_units": [],
+  "backing_in_bwg_now": 1,
+  "backing_units": {
+   "20261023-205458-0002": 1
+  },
+  "skipped": [
+   [
+    "20261010-163247-0021",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261010-163247-0022",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261023-204825-0001",
+    "EOFError('No data left in file')"
+   ]
+  ]
+ },
+ "concat_cam": {
+  "logs": 60,
+  "units": 58,
+  "frames": 118586,
+  "rec_starts": 15,
+  "diff_frames": 10,
+  "diff_units": [
+   {
+    "unit": "20261024-160847",
+    "n": 10,
+    "frames": [
+     {
+      "t_us": 1792825767521710,
+      "phase_bef": [
+       "brake",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 582,
+      "esc_rev": false,
+      "ev_now": "back_no_esc",
+      "ev_bef": "back_early",
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.07
+     },
+     {
+      "t_us": 1792825767555017,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 211,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.103
+     },
+     {
+      "t_us": 1792825767588328,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 503,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.136
+     },
+     {
+      "t_us": 1792825767621640,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 520,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.17
+     },
+     {
+      "t_us": 1792825767654947,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 475,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.203
+     },
+     {
+      "t_us": 1792825767688254,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "gap"
+      ],
+      "erpm": 753,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.236
+     },
+     {
+      "t_us": 1792825767721567,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 522,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.27
+     },
+     {
+      "t_us": 1792825767754873,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 791,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.303
+     },
+     {
+      "t_us": 1792825767788180,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 690,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.336
+     },
+     {
+      "t_us": 1792825767821487,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 721,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.369
+     }
+    ]
+   }
+  ],
+  "backing_in_bwg_now": 11,
+  "backing_units": {
+   "20261023-205458": 1,
+   "20261024-160847": 10
+  },
+  "skipped": [
+   [
+    "20261010-163247-0001",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261023-204825-0001",
+    "EOFError('No data left in file')"
+   ]
+  ]
+ },
+ "scene_proc": {
+  "logs": 60,
+  "units": 235,
+  "frames": 122767,
+  "rec_starts": 16,
+  "diff_frames": 0,
+  "diff_units": [],
+  "backing_in_bwg_now": 1,
+  "backing_units": {
+   "20261023-205458-0002": 1
+  },
+  "skipped": [
+   [
+    "20261010-163247-0021",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261010-163247-0022",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261023-204825-0001",
+    "EOFError('No data left in file')"
+   ]
+  ]
+ },
+ "concat_proc": {
+  "logs": 60,
+  "units": 58,
+  "frames": 118586,
+  "rec_starts": 15,
+  "diff_frames": 10,
+  "diff_units": [
+   {
+    "unit": "20261024-160847",
+    "n": 10,
+    "frames": [
+     {
+      "t_us": 1792825767488403,
+      "phase_bef": [
+       "brake",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 582,
+      "esc_rev": false,
+      "ev_now": "back_no_esc",
+      "ev_bef": "back_early",
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.036
+     },
+     {
+      "t_us": 1792825767521710,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 211,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.07
+     },
+     {
+      "t_us": 1792825767555017,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 503,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.103
+     },
+     {
+      "t_us": 1792825767588328,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 520,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.136
+     },
+     {
+      "t_us": 1792825767621640,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "brake"
+      ],
+      "erpm": 475,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1441.0,
+       1796.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.17
+     },
+     {
+      "t_us": 1792825767654947,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "brake",
+       "gap"
+      ],
+      "erpm": 780,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.203
+     },
+     {
+      "t_us": 1792825767688254,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 522,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.236
+     },
+     {
+      "t_us": 1792825767721567,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 791,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.27
+     },
+     {
+      "t_us": 1792825767754873,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 690,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.303
+     },
+     {
+      "t_us": 1792825767788180,
+      "phase_bef": [
+       "reverse",
+       "reverse"
+      ],
+      "phase_now": [
+       "gap",
+       "gap"
+      ],
+      "erpm": 721,
+      "esc_rev": false,
+      "ev_now": null,
+      "ev_bef": null,
+      "out_bef": [
+       1291.0,
+       1796.0
+      ],
+      "out_now": [
+       1291.0,
+       1506.0
+      ],
+      "kind": [
+       2,
+       2
+      ],
+      "t_log_s": 40.336
+     }
+    ]
+   }
+  ],
+  "backing_in_bwg_now": 11,
+  "backing_units": {
+   "20261023-205458": 1,
+   "20261024-160847": 10
+  },
+  "skipped": [
+   [
+    "20261010-163247-0001",
+    "EOFError('No data left in file')"
+   ],
+   [
+    "20261023-204825-0001",
+    "EOFError('No data left in file')"
+   ]
+  ]
+ }
+}

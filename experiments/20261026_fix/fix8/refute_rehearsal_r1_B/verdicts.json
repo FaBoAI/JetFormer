@@ -1,0 +1,12 @@
+{"verdicts": [
+ {"id": "rehearsal-auto-vsrc", "real": false, "severity": "none",
+  "evidence": "4 章 6 で読み上げる「速さのゲインの自動合わせ: ON」の行に「電圧の源 …」がそのまま入っている(app.js speedStartLines・vbatSourceText)。V_before は 4 章 5 で毎本書く手順で、ブロックの文も「battery・V_before・check を書き足してください」と出し、2 章 8・9 に「必須」とある。説明欄をまるごと書かなければ ▶ に電池の空欄の文が出る(稽古の [30] にも出ている)。書き忘れても、走ったすぐあとの car_check の「電圧の源 なし」と 4 章 10 の表で次の本の前に気づく。失うのは 2-3 の 1 本を「+ 自動合わせ ON」に数えないことだけで、安全の側に倒れる。判定と安全には届かない"},
+ {"id": "rehearsal-after-memo", "real": true, "severity": "minor",
+  "evidence": "app.js renderAfter は、bench= のある最新の record_log で、走っておらず、afterDone でないときだけパネルを出す(1817-1819 行)。このため 7 章「起こし直した」の「入れ直す前に走った本のメモに試し」は、気づくのが次の本の ▶ や休みの ⑤ なので、書いてあるとおりにはできない。手順書・todo にはシーンの説明から書く道が無い(画面の文で触れているのは電池の空欄の文だけ)。害は小さい: 書けなくても ⑤ は「N 組に分かれた」→ 満たさない(安全の側)。7 章「走った値が計画と違った」には main session の --skip の道がある。3 章 5 の朝の確かめは block が無いので ⑤ では回「?」になり回 3 に入らない(collect.py)= 書けなくても害なし"},
+ {"id": "rehearsal-v1-count", "real": false, "severity": "none",
+  "evidence": "この確かめの目的は日付。日付が違えば選ぶ欄は「今日…のベンチマークはありません」の 1 行で選べず、見た目がまったく違う。24〜27 を足した日は 11/03 の 27 本と「今日」の印が出るので、日付は正しいと読める。24〜27 は 2 章の表に行があり、足すのはユーザーの了承(approvals 7)のあとに main session がする = ユーザーは足したことを知っている。1〜23 の番号と中身は変わらない(out/v1_bench_blocks.txt)。止まる・まちがえる道が無い"},
+ {"id": "rehearsal-fw-cwd", "real": true, "severity": "minor",
+  "evidence": "3 章でその前に使うコマンド(date・timedatectl・hostname・3.1 の絶対パス)には cd が無いので、朝の端末は ~ のまま。そこで相対パスの tools/fw_vbat_check.py を流すと「can't open file」・終了コード 2(稽古 out/fw_vbat_cwd.txt)。台本は cwd を使わないので、~/jetformer なら動く。todo 1 章「ファームが来たら」も同じ文。届くのはファームが来たときだけ(README 5: ファーム待ち)。エラーの文にパスが出るので cd で直り、同じ行に LiPo チェッカーの道もある = 数十秒の手間で、判定・安全には届かない"},
+ {"id": "rehearsal-s3-silent", "real": false, "severity": "none",
+  "evidence": "③ は --md のとき標準出力に何も出さない(standing_3lap.py main)のは本当。ただし、すぐ次の ④ が画面に「## 3. 止まってから 3 周(… tools/standing_3lap.py と同じ表)」を出す。中身は s3.standing_table(only_r1=True) で ③ と同じ行(動いてから 3 周・AI 側から・確かの欄の印「数えない(試し)」など)(稽古 out/night_normal_8.1.txt の 122〜147 行・night_scene_trial_8.1.txt)。床・25 秒の判定に要る、R1 まで行った発進は全部そこにある。8.1 の表の出力の欄にも standing_3lap.md と書いてある。止まる・まちがえる道が無い"}
+]}

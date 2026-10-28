@@ -5,6 +5,8 @@
 
 出すもの: 今の空き・学習 v3 の段 1 の残り・11/3 の朝と夜の見込み・候補ごとの大きさ・v2/B-FAST の last.pth の予測が
 保存してあるか(gpu_queue_v2.py prune-last と同じ条件)。報告: jetformer_reports/fix_20261026/fix3/disk.md
+2026-10-28 fix8 tools-decided: pytest 一式の作業場所 PYTEST_GB を 10/28 の実測 0.6 GB に(-o tmp_path_retention_policy=failed を付けたとき。
+付けないと 10/27 の実測 7.1 GB = PYTEST_GB_KEEP。「pytest 一式の最中」の行に両方を出す)。
 """
 import json
 import os
@@ -22,7 +24,12 @@ STAGE1 = ['v3_20261026-%s-aug2-e60-s%d' % (a, s) for s in range(4) for a in ('v3
 # 見積もりの数(disk.md 2 章。測った値)
 RUN_GB = 0.312        # 1 本の学習の場所(best 56.5 + last 169.4 + ONNX 56.5 + エンジン 29.2 MB。v2・v3d-s0 で測った)
 PRED_GB = 0.010       # 1 本の机上の予測(v2 の eval/pred・desk/pred・desk/trt から)
-PYTEST_GB = 3.9       # pytest 一式 1 回の作業場所(verify.md)
+# pytest 一式 1 回の作業場所(2026-10-28 fix8 tools-decided で 3.9 → 0.6)。-o tmp_path_retention_policy=failed(通った試験の一時ファイルを
+# すぐ消す)を付けたときの実測: 10/28 00:09〜00:52 の一式(fix7/pytest_full_20261028.txt の頭のコマンド)で空き 10493M → いちばん少なくて
+# 9913M(00:44)= 約 0.6 GB(580 MiB)、終わりの作業場所 55M。**このオプションが要る**: 付けない形の 10/27 の一式は約 7.1 GB(空き 11 GB →
+# 終わり 3.4 GB。fix6/pytest_full_20261027.txt)= PYTEST_GB_KEEP。前の 3.9 は 10/26 の小さい一式(verify.md)
+PYTEST_GB = 0.6
+PYTEST_GB_KEEP = 7.1  # 上のオプションを付けないとき(10/27 の実測)
 OTHER_GB = (0.7, 1.0, 2.0)    # 10/27〜11/2 のほかの増え(会話の記録・報告・動画など。少なめ・中・多め)
 E5_GB = (0.1, 0.15, 0.2)      # 11/1 の封を開ける(集合と予測)
 DAY_GB = (0.5, 1.0, 1.25)     # 11/3 の記録(10/24: 20 本 0.836 GB → 1 本 41.8 MB × 23 本。時間で数えると 0.5)
@@ -81,7 +88,8 @@ def main():
     print('段 1: 済み %d 本・途中 %d 本(%.2f GB)・残りで使う見込み %.2f GB(予測込み)' % (len(done), len(part), part_gb, left))
     after1 = free - left
     print('段 1 のあと: %.2f GB(途中でやめる決まりで 1 つの腕の種 2・3 を飛ばすと +%.2f GB)' % (after1, 2 * RUN_GB))
-    print('pytest 一式の最中: %.2f GB(作業場所 %.1f GB)。終わって消せば %.2f GB に戻る' % (after1 - PYTEST_GB, PYTEST_GB, after1))
+    print('pytest 一式の最中: %.2f GB(作業場所 %.1f GB。-o tmp_path_retention_policy=failed を付けたとき。付けないと作業場所 %.1f GB で '
+          '%.2f GB)。終わって消せば %.2f GB に戻る' % (after1 - PYTEST_GB, PYTEST_GB, PYTEST_GB_KEEP, after1 - PYTEST_GB_KEEP, after1))
     for label, k in (('少なめ', 0), ('中', 1), ('多め', 2)):
         m = after1 - OTHER_GB[k] - E5_GB[k]
         n = m - DAY_GB[k] - NIGHT_GB[k]

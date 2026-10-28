@@ -1,0 +1,593 @@
+{
+ "steps": [
+  {
+   "page": "A",
+   "op": "tab",
+   "tab": "drive"
+  },
+  {
+   "page": "A",
+   "op": "tick",
+   "fired": [
+    1000,
+    300,
+    1000
+   ]
+  },
+  {
+   "page": "A",
+   "op": "tab",
+   "tab": "scenes"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-summary",
+   "prop": "text",
+   "value": "全 46 シーン / 11.9 分 (表示 46)"
+  },
+  {
+   "page": "A",
+   "op": "set"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": 1
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-grid",
+   "prop": "html",
+   "value": "\n    <div class=\"scene \" data-name=\"20261103-083000-0001\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-083000-0001/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-083000-0001</div>\n        <div class=\"muted\">01/15 17:00:00 ・ カメラ 209 / ToF 209 / IMU 696 / 車両 697</div>\n        <div>ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge warn\">6.96秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-summary",
+   "prop": "text",
+   "value": "全 46 シーン / 11.9 分 (表示 1)"
+  },
+  {
+   "op": "aeval",
+   "value": null
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-name",
+   "prop": "text",
+   "value": "20261103-083000-0001"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-desc",
+   "prop": "value",
+   "value": "ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "value",
+   "value": "5"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "html",
+   "value": "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-tags",
+   "prop": "value",
+   "value": "ai-drive"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": "ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626 memo=試し(朝の確かめ)"
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "op": "patched",
+   "value": [
+    [
+     "20261103-083000-0001",
+     {
+      "description": "ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626 memo=試し(朝の確かめ)",
+      "tags": [
+       "ai-drive"
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "page": "A",
+   "op": "toasts",
+   "value": [
+    "保存しました"
+   ]
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "page": "A",
+   "op": "set"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": 1
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-grid",
+   "prop": "html",
+   "value": "\n    <div class=\"scene \" data-name=\"20261103-084600-0003\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-084600-0003/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-084600-0003</div>\n        <div class=\"muted\">01/15 17:00:40 ・ カメラ 216 / ToF 216 / IMU 719 / 車両 719</div>\n        <div>ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge warn\">7.19秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>\n    <div class=\"scene \" data-name=\"20261103-084600-0002\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-084600-0002/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-084600-0002</div>\n        <div class=\"muted\">01/15 17:00:20 ・ カメラ 600 / ToF 600 / IMU 2000 / 車両 2000</div>\n        <div>ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge ok\">20秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>\n    <div class=\"scene \" data-name=\"20261103-084600-0001\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-084600-0001/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-084600-0001</div>\n        <div class=\"muted\">01/15 17:00:00 ・ カメラ 600 / ToF 600 / IMU 2000 / 車両 2000</div>\n        <div>ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge ok\">20秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-summary",
+   "prop": "text",
+   "value": "全 46 シーン / 11.9 分 (表示 3)"
+  },
+  {
+   "op": "aeval",
+   "value": null
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-name",
+   "prop": "text",
+   "value": "20261103-084600-0002"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-desc",
+   "prop": "value",
+   "value": "ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "value",
+   "value": "5"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "html",
+   "value": "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-tags",
+   "prop": "value",
+   "value": "ai-drive"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": "ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=試し(ゲインを間違えた)。240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "op": "patched",
+   "value": [
+    [
+     "20261103-084600-0002",
+     {
+      "description": "ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=試し(ゲインを間違えた)。240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)",
+      "tags": [
+       "ai-drive"
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "page": "A",
+   "op": "toasts",
+   "value": [
+    "保存しました",
+    "保存しました"
+   ]
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "page": "A",
+   "op": "set"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": 1
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-grid",
+   "prop": "html",
+   "value": "\n    <div class=\"scene \" data-name=\"20261103-093800-0001\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-093800-0001/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-093800-0001</div>\n        <div class=\"muted\">01/15 17:00:00 ・ カメラ 449 / ToF 449 / IMU 1496 / 車両 1497</div>\n        <div>ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge warn\">14.96秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-summary",
+   "prop": "text",
+   "value": "全 46 シーン / 11.9 分 (表示 1)"
+  },
+  {
+   "op": "aeval",
+   "value": null
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-name",
+   "prop": "text",
+   "value": "20261103-093800-0001"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-desc",
+   "prop": "value",
+   "value": "ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "value",
+   "value": "5"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "html",
+   "value": "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-tags",
+   "prop": "value",
+   "value": "ai-drive"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": "ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(左 4.2 のまま)。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "op": "patched",
+   "value": [
+    [
+     "20261103-093800-0001",
+     {
+      "description": "ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(左 4.2 のまま)。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)",
+      "tags": [
+       "ai-drive"
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "page": "A",
+   "op": "toasts",
+   "value": [
+    "保存しました",
+    "保存しました",
+    "保存しました"
+   ]
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "page": "A",
+   "op": "set"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": 1
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-grid",
+   "prop": "html",
+   "value": "\n    <div class=\"scene \" data-name=\"20261103-094600-0001\">\n      <div class=\"check\" data-check=\"1\"></div>\n      <img loading=\"lazy\" src=\"/api/scenes/20261103-094600-0001/thumb.jpg\" alt=\"\">\n      <div class=\"body\">\n        <div class=\"name\">20261103-094600-0001</div>\n        <div class=\"muted\">01/15 17:00:00 ・ カメラ 449 / ToF 449 / IMU 1496 / 車両 1497</div>\n        <div>ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)</div>\n        <div><span class=\"badge mode\" style=\"background:#16a34a\">5: 低速走行</span><span class=\"badge warn\">14.96秒</span><span class=\"badge ok\">PWM:v2</span><span class=\"badge ai\">AIモデル</span><span class=\"badge tag\">ai-drive</span></div>\n      </div>\n    </div>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#scene-summary",
+   "prop": "text",
+   "value": "全 46 シーン / 11.9 分 (表示 1)"
+  },
+  {
+   "op": "aeval",
+   "value": null
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-name",
+   "prop": "text",
+   "value": "20261103-094600-0001"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-desc",
+   "prop": "value",
+   "value": "ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "value",
+   "value": "5"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-mode",
+   "prop": "html",
+   "value": "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#m-tags",
+   "prop": "value",
+   "value": "ai-drive"
+  },
+  {
+   "page": "A",
+   "op": "eval",
+   "value": "ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(天井を入れ忘れた)。B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "op": "patched",
+   "value": [
+    [
+     "20261103-094600-0001",
+     {
+      "description": "ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(天井を入れ忘れた)。B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)",
+      "tags": [
+       "ai-drive"
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "page": "A",
+   "op": "toasts",
+   "value": [
+    "保存しました",
+    "保存しました",
+    "保存しました",
+    "保存しました"
+   ]
+  },
+  {
+   "page": "A",
+   "op": "click",
+   "value": "1"
+  },
+  {
+   "page": "A",
+   "op": "el",
+   "sel": "#modal",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "page": "A",
+   "op": "tab",
+   "tab": "drive"
+  },
+  {
+   "page": "A",
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: 低速走行 / 速度ゲイン 1.00\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: 低速走行 / 速度ゲイン 1.00\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "desc": "AI走行 clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1793144454.003,
+   "status": 200,
+   "server_at_start": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 0,
+    "rec_hold_keep": 0,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "page": "A",
+   "op": "toasts",
+   "value": [
+    "保存しました",
+    "保存しました",
+    "保存しました",
+    "保存しました",
+    "AI走行 No.1 を開始しました"
+   ]
+  },
+  {
+   "page": "A",
+   "op": "tick",
+   "fired": [
+    300,
+    1000,
+    3000,
+    250
+   ]
+  },
+  {
+   "page": "A",
+   "op": "tick",
+   "fired": [
+    300,
+    1000,
+    250
+   ]
+  }
+ ],
+ "toasts": {
+  "A": [
+   "保存しました",
+   "保存しました",
+   "保存しました",
+   "保存しました",
+   "AI走行 No.1 を開始しました"
+  ]
+ }
+}

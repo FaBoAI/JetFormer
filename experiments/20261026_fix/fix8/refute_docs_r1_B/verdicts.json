@@ -1,0 +1,46 @@
+{
+  "verdicts": [
+    {
+      "id": "f8r1-docs-residual2-reversed",
+      "real": true,
+      "severity": "minor",
+      "evidence": "approvals.md 202 行は今も「やり直して最大 0.2 秒ぶん多く下がる・起きるのは後ろに当たる・引っかかるとき」で、ユーザーが「14 はこのまま」と答えるときに読む安全の知らせの向きが逆。rerun/out/exp10_dip_skip.json を自分で読み直した: 決めが変わった 88 組はどれも clean より短く下がり、rd=0.27 の 6 組は 0.22 m 下がって escape が前の壁を 0.16 秒押す(clean は 1.044 m・0 秒)。proposal_safety_after1103.md 31 行と ctx 15 行(「文書の直しが要る」)も同じことを言う。ただし当日の動きは手順書 3 章(最初のリカバリーを人が見る・おかしな動き → 人側 → OFF)が決めていて、本物の 235 本では 0、起きても軽く当たり直すだけで、おすすめ(このまま)も変わらない → 止めるほどではなく minor"
+    },
+    {
+      "id": "f8r1-docs-readme-commit-filecount",
+      "real": false,
+      "severity": "none",
+      "evidence": "git show --stat で fce5d47 = 1635・9da6d0d = 802 を確かめた。README 6.1 の 5 の並びで読み違えることはあるが、commit のファイル数をもとに決めることや 11/3 にすることは何も無く、0 章 7 には正しく「fce5d47 … 1635」とある。安全にも手順にも届かない"
+    },
+    {
+      "id": "f8r1-docs-readme-proposal-running",
+      "real": false,
+      "severity": "none",
+      "evidence": "README 192 行の「案の係はまだ動いている」は古い。ただし同じ README の 6.2 の 32(220 行)に fix8/proposal_safety_after1103.md のパスがあり、user_decisions.md にも記録がある。案は 11/3 のあと用で、11/3 に入れない(approvals 14 は『このまま』)ので、当日にすることも決めも変わらない。README は「反証 8 回目の途中」と書かれた途中の記録で、反証 8 回目のあとにまた今に合わせる"
+    },
+    {
+      "id": "f8r1-docs-fix7readme-ud-rows",
+      "real": false,
+      "severity": "none",
+      "evidence": "fix7/README 7 章 4 の「誰」は main session で、ユーザーがすることではない(ユーザーの行は 5〜7)。user_decisions.md(03:46)にはもう 2 行とも入っていて、残っているのは記録の印が古いことだけ。ユーザーが 11/3 にすること・決めに届かない"
+    },
+    {
+      "id": "f8r1-docs-approvals3-old-row",
+      "real": false,
+      "severity": "none",
+      "evidence": "approvals 3 では「(a) に決まった」が 4 か所に出る: 同じ表の最初の行『決まり』(…⑤ の読み方は (a)。下の行)、すぐ下の 72 行(決まりの行)、上の 12 行の「今」、0 章 20 行。なので 71 行だけを見て「まだ決まっていない」と思い違えるとは考えにくい。45,844 と 45,918 は数え方の違い(fix3 r3-1 と、AI 側の処理したフレームの間)で、「0.5 秒より長いのは 1」は同じ。この数でユーザーが何かを決めることはない"
+    },
+    {
+      "id": "f8r1-docs-todo-trial-wording",
+      "real": false,
+      "severity": "none",
+      "evidence": "todo 72 行は「衝突・空転・記録の欠けは ⑤ が数える = 満たさない」で、そういうことがあれば数える、と読むのがふつう。回 3 を満たすかは、休みのときに ⑤ collect.py が出す「→ 使ってよい / 満たさない」と理由で決める(手順書 6 章・8.1、todo 73 行)。ユーザーが文から自分で決めることはない(review の demo でも、何も無い試しの ON は「使ってよい」)。仮に読み違えても、思い違いの向きは「満たさない」= 回 4 は発進の前進 OFF の、安全な側。「計画と違う本は『試し』と書く」という指示も、どちらに読んでも同じ"
+    },
+    {
+      "id": "f8r1-docs-stale-headers",
+      "real": false,
+      "severity": "none",
+      "evidence": "古いのは題・表の頭の時刻だけで、中身(1 章 27 行・手順書 362 行・approvals 12 行の太字の「今(10/28 03:3x)」)は 10/28 に合っている。approvals の「今」は 3 つが時刻の順に並ぶ。サーバーの今の状態は、11/3 の朝に手順書 3.1(systemctl・GET・起動より新しいコード)で確かめるので、見出しの時刻で動きを間違えることはない。反証 8 回目のあとの再起動で、またどれも今に合わせる"
+    }
+  ]
+}

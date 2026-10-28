@@ -45,6 +45,14 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / 'jetformer' / 'web' / 'static'
 APP = Path(os.environ.get('JF_UI6R2_APP') or STATIC / 'app.js')
 BEFORE = ROOT / 'tests' / 'fixtures' / 'fix6_ui_r2_before'
+# 2026-10-28 fix8 tools-decided のあとの版の sha256(このあとの直しはその係がここに足す)
+LATER_FIX8_TOOLS_DECIDED = {'experiments/20261026_fix/plan/runs_1103.py': '33bc7fca99216cc2d4704e8fa5de9741626231fd4a0d165cb981183801acba00'}
+# 2026-10-28 fix8 画面の係 直す 8-1 回目(tests/test_ui_fix8_r1.py)のあとの版の sha256。その版なら直す前の写し tests/fixtures/fix8_ui_r1_before/
+# (= 上の版)へたどる(中身の違いは tests/test_ui_fix8_r1.py)
+FIX8_UI_R1_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix8_ui_r1_before'
+LATER_FIX8_UI_R1 = {'experiments/20261026_fix/plan/runs_1103.py': 'c2d616c2f72b00935868691236f94e4733c3185a24d200c524b6049d615fd9fc',
+                    'jetformer/web/static/style.css': 'dbc8b79ad935ed914c7b8a2cc02f8c4ddaf0c453af33ca3fb85fa0ea1103df56',
+                    'jetformer/web/static/app.js': 'aa275bb5da0bbd740f38c217dd0ae9ee19240f061dafd8ca70f6916448837285'}
 # この組(6-2 回目)のあとの版の写し(908934c6…)。そのあと 7-1 回目(w1-ui-r7-ui-1。tests/test_ui_fix7.py)が app.js を直したので、
 # 「違いは 5 か所だけ」はこの写しで見る(今の app.js との違いは test_ui_fix7.py が見る)。JF_UI6R2_APP を付けたときはその写し
 R2_AFTER = ROOT / 'tests' / 'fixtures' / 'fix7_ui_before'
@@ -96,7 +104,14 @@ def test_before_copy_and_only_the_loop_places_changed():
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
     assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
-    assert _sha(ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py').startswith('302296586af9')
+    # 2026-10-28 fix8 tools-decided が runs_1103.py を変えた(試験の選択肢の印の後ろの文と説明だけ)。その版なら直す前の写し
+    # (tests/fixtures/fix8_tools_decided_before/runs_1103.py.orig)がこの組の版と同じかを見る(中身の違いは tests/test_fix8_tools_decided.py)
+    rp = ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py'
+    if _sha(rp) == LATER_FIX8_UI_R1['experiments/20261026_fix/plan/runs_1103.py']:      # fix8 ui r1 の版 → その直す前の写し(33bc7fca…)
+        rp = FIX8_UI_R1_BEFORE / 'runs_1103.py'
+    if _sha(rp) == LATER_FIX8_TOOLS_DECIDED['experiments/20261026_fix/plan/runs_1103.py']:
+        rp = ROOT / 'tests' / 'fixtures' / 'fix8_tools_decided_before' / 'runs_1103.py.orig'
+    assert _sha(rp).startswith('302296586af9')
 
 
 # ------------------------------------------------------------------ 画面を node で流す

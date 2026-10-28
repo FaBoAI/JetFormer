@@ -1,0 +1,12 @@
+== 手順書 3.1 の朝のコマンド: systemctl is-active jetformer-web; systemctl show -p NRestarts --value jetformer-web; journalctl -u jetformer-web -b --no-pager | grep -n "Traceback\|Error" || echo "エラーの行なし"
+active
+0
+エラーの行なし
+-- (journal に Traceback がある形)
+active
+0
+1:Nov 03 08:01:02 jetson python[901]: Traceback (most recent call last):
+2:Nov 03 08:01:02 jetson python[901]: RuntimeError: x
+== 手順書 3.1 の「起動のあとに直したコード」: S=$(date -d "$(systemctl show -p ActiveEnterTimestamp --value jetformer-web)" +%s); python3 -I -c "import pathlib,sys; s=int(sys.argv[1]); n=[str(p) for p in sorted(pathlib.Path('/home/jetson/jetformer/jetformer').rglob('*.py')) if p.stat().st_mtime > s]; print(chr(10).join('起動より新しい: ' + x for x in n) or '起動より新しいコードなし')" "$S"
+-- ActiveEnterTimestamp='Wed 2026-10-28 00:53:23 JST'
+起動より新しい: /home/jetson/jetformer/jetformer/drive.py

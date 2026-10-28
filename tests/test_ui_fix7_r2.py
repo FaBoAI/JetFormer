@@ -52,6 +52,18 @@ APP = Path(os.environ.get('JF_UI72_APP') or STATIC / 'app.js')
 SIM = FIXT / 'app_sim_fix7_r2.js'
 REVIEW_SIM = ROOT / 'experiments' / '20261026_fix' / 'fix7' / 'review_ui_r2' / 'sim_r2.js'
 BEFORE = FIXT / 'fix7_ui_r2_before'                    # 直す前の app.js(7-1 回目のあとの版 3cf098d9…)
+# 2026-10-28 fix8 tools-decided のあとの版の sha256(このあとの直しはその係がここに足す)
+LATER_FIX8_TOOLS_DECIDED = {'experiments/20261026_fix/plan/runs_1103.py': '33bc7fca99216cc2d4704e8fa5de9741626231fd4a0d165cb981183801acba00'}
+# 2026-10-28 fix8 画面の係 直す 8-1 回目(tests/test_ui_fix8_r1.py)のあとの版の sha256。その版なら直す前の写し tests/fixtures/fix8_ui_r1_before/
+# (= 上の版)へたどる(中身の違いは tests/test_ui_fix8_r1.py)
+FIX8_UI_R1_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix8_ui_r1_before'
+LATER_FIX8_UI_R1 = {'experiments/20261026_fix/plan/runs_1103.py': 'c2d616c2f72b00935868691236f94e4733c3185a24d200c524b6049d615fd9fc',
+                    'jetformer/web/static/style.css': 'dbc8b79ad935ed914c7b8a2cc02f8c4ddaf0c453af33ca3fb85fa0ea1103df56',
+                    'jetformer/web/static/app.js': 'aa275bb5da0bbd740f38c217dd0ae9ee19240f061dafd8ca70f6916448837285'}
+# 2026-10-28 fix8 画面の係 直す 8-2 回目(tests/test_ui_fix8_r2.py。浮いている ■ の幅と走行中のトーストの位置)のあとの style.css の sha256。
+# その版なら直す前の写し tests/fixtures/fix8_ui_r2_before/(= 上の LATER_FIX8_UI_R1 の版)へたどる(中身の違いは tests/test_ui_fix8_r2.py)
+FIX8_UI_R2_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix8_ui_r2_before'
+LATER_FIX8_UI_R2 = {'jetformer/web/static/style.css': 'b1e900656e2463c3c2292fba885bb415298a286aa131db25f481f5ecbce1924a'}
 NODE = shutil.which('node')
 needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
 RESET = {k: drive.DEFAULT_PARAMS[k] for k in drive.RESET_ON_BOOT}
@@ -92,8 +104,14 @@ def _sums(d):
 
 
 def _diff():
+    # 2026-10-28 fix8 画面の係 直す 8-1 回目(tests/test_ui_fix8_r1.py)が app.js に行を足したので、「消えた行は 9 行だけ・足した行」は
+    # この組(7-2 回目)のあとの版の写し(tests/fixtures/fix8_ui_r1_before/app.js = 2b211259…。sha256 を照らす)で見る(今の app.js との
+    # 違いは test_ui_fix8_r1.py が見る)。JF_UI72_APP を付けたとき(わざと壊す台本)はその写し。動きの試験は今の app.js で流す
     a = (BEFORE / 'app.js').read_text(encoding='utf-8').splitlines()
-    b = APP.read_text(encoding='utf-8').splitlines()
+    after = APP if os.environ.get('JF_UI72_APP') else FIX8_UI_R1_BEFORE / 'app.js'
+    if not os.environ.get('JF_UI72_APP'):
+        assert _sums(FIX8_UI_R1_BEFORE)['app.js'] == _sha(after) and _sha(after).startswith('2b211259db71')
+    b = after.read_text(encoding='utf-8').splitlines()
     ops = [o for o in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes() if o[0] != 'equal']
     return a, b, ops
 
@@ -121,9 +139,21 @@ def test_before_copy_and_only_these_places_changed():
     assert js.count('toast(msg, true);') == 1 and js.count('bootRefusal = /^管理画面のサーバーが .*に起動し直しました\\(/.test(m)') == 1
     assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
     assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
-    assert _sha(STATIC / 'style.css').startswith('5842642f6e85')
+    css = STATIC / 'style.css'                    # fix8 ui r1(.toast の幅)の版なら、その直す前の写しを見る
+    if _sha(css) == LATER_FIX8_UI_R2['jetformer/web/static/style.css']:     # fix8 ui r2(■ の幅)の版 → その直す前の写し(dbc8b79a…)
+        css = FIX8_UI_R2_BEFORE / 'style.css'
+    if _sha(css) == LATER_FIX8_UI_R1['jetformer/web/static/style.css']:
+        css = FIX8_UI_R1_BEFORE / 'style.css'
+    assert _sha(css).startswith('5842642f6e85')
     assert _sha(ROOT / 'jetformer' / 'web' / 'bench.py').startswith('a633bec341a3')
-    assert _sha(ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py').startswith('302296586af9')
+    # 2026-10-28 fix8 tools-decided が runs_1103.py を変えた(試験の選択肢の印の後ろの文と説明だけ)。その版なら直す前の写し
+    # (tests/fixtures/fix8_tools_decided_before/runs_1103.py.orig)がこの組の版と同じかを見る(中身の違いは tests/test_fix8_tools_decided.py)
+    rp = ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py'
+    if _sha(rp) == LATER_FIX8_UI_R1['experiments/20261026_fix/plan/runs_1103.py']:      # fix8 ui r1 の版 → その直す前の写し(33bc7fca…)
+        rp = FIX8_UI_R1_BEFORE / 'runs_1103.py'
+    if _sha(rp) == LATER_FIX8_TOOLS_DECIDED['experiments/20261026_fix/plan/runs_1103.py']:
+        rp = ROOT / 'tests' / 'fixtures' / 'fix8_tools_decided_before' / 'runs_1103.py.orig'
+    assert _sha(rp).startswith('302296586af9')
 
 
 def test_fill_is_the_old_loaddrive_body_and_texts_match():

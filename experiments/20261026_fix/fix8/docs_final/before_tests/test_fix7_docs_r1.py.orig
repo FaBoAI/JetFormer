@@ -1,0 +1,601 @@
+"""fix7 係 docs 直す 7-1 回目(2026-10-27 18:4x): 反証 7-1 回目の docs の指摘 5 件の文書の直しを読む試験(文書だけ。コードは変えて
+いない)。直しの台本は experiments/20261026_fix/fix7/docs_r1/docs_fix7_r1.py、直す前の文書の写しは tests/fixtures/fix7_docs_before/。
+
+- w1-docs-r71-docs-1(major): 手順書 3 章の「最初のリカバリーがおかしければ止めて OFF」(決め (c) の枝)のあと、4 章 6・4 章 10・7 章・
+  8.1 の ②④⑤ が「行が無い = 起こし直し → 入れ直す」「計画と違う = 数えない」とだけ読ませた → 紙の本 X から先の読み方を足した。
+  ② runs_1103・car_check の本当の出力(印・区切り・行が無い)と、手順書が引く言葉が合うかも見る。
+- w1-docs-r71-docs-2: todo 4 章 3 の journal の確かめ(-n 60)が 10/10 の古い Traceback を出した → 今の起動のあとだけを見る形。
+  偽物の systemctl・journalctl で、文書のコマンドそのものを流して確かめる(前の形は古い行を出し、今の形は出さない・新しい行は出す)。
+- w1-docs-r71-docs-3: 手順書 7 章「中立で停止中」・approvals 3「ON の形」の中止の文が fix5 s1 と違った → 本物の assist.Recovery で
+  文書の言うとおりに動くかを見る(明けたとき前へ 0.5 m/s 以上なら衝撃があっても中止しない、など)。
+- w1-docs-r71-docs-4: approvals 6(候補が 0 のとき封を開けるか)は要らなくなった → 「答えがまだ」から外したか。decisions_v3.json と
+  e5_open_seal.py plan(読むだけ)が今も「開ける」かも見る(候補が 0 に戻ったら、この試験が落ちて 6 がまた要ると知らせる)。
+- w1-docs-r71-docs-5: pytest 一式の作業場所 3.9 GB → 10/27 の実測 7.1 GB(fix6/pytest_full_20261027.txt の数と照らす)。
+- わざと壊す: 直しの台本の 44 個の直しのうち意味のある 41 個を 1 つずつ元に戻すと、その指摘の確かめが落ちる。直す前の写しでは
+  5 つとも落ちる。
+- 2026-10-28 fix8 docs-decided(experiments/20261026_fix/fix8/docs_decided/docs_fix8_decided.py): main session の決め(approvals 3
+  「途中で OFF にした日」= (a))と PYTEST_GB 0.6 で、この組の文のうち 3 つ(手順書 3 章・8.1 ⑤ の「… main session が決める」・README 3.2 の
+  4 の「`PYTEST_GB` は 3.9 のまま …」)と fix6/README 7 章 1 の終わりを意図して書き換えた(SUPERSEDE)。f1 はその 2 つを決まった文で見る。
+  台本の直しが「済」かは書き換えを戻した文書(fix8.revert)で、わざと壊すは書き換えたあとの new(fix8.effective)で照らす(弱めていない:
+  書き換えた文がちょうど 1 回あることも見る)。
+- 2026-10-28 fix8 docs 直す 8-2 回目(experiments/20261026_fix/fix8/fix_docs_r2/docs_fix8_r2.py): 反証 8-2 回目の指摘(その日を OFF にする
+  「おかしな動き」の決め・approvals 3 の知らせ・--skip しない本)で、この組の文のうち 4 つ(todo 1 章「11/2 まで」の「3 は決まり」・2 章 10 の
+  「おかしければ止めて OFF(」・3 章の「(1 m 以上下がる … → 止めて OFF。」・approvals 3 の「決まり」の「おかしければ止めて OFF(」)を意図して
+  書き換えた(SUPERSEDE)。「済」は fix8 docs r2 → fix8 docs-decided の順に書き換えを戻した文書(fix8.revert(r82.revert(…)))で、わざと壊すは
+  両方の書き換えのあとの new(r82.effective(…, fix8.effective(…)))で照らす(弱めていない: 同じ 44 個・41 個)。
+"""
+import hashlib
+import importlib.util
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+JF = Path('/home/jetson/jetformer')
+REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
+BEFORE = JF / 'tests' / 'fixtures' / 'fix7_docs_before'
+SCRIPT = JF / 'experiments' / '20261026_fix' / 'fix7' / 'docs_r1' / 'docs_fix7_r1.py'
+FIX8 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_decided' / 'docs_fix8_decided.py'     # 2026-10-28 fix8 docs-decided
+R82 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r2' / 'docs_fix8_r2.py'           # 2026-10-28 fix8 docs 直す 8-2 回目
+RB, TODO, RD, AP, F6 = 'runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md', 'fix6/README.md'
+FILES = (RB, TODO, RD, AP, F6)
+
+
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def read(root):
+    return {f: (Path(root) / f).read_text(encoding='utf-8') for f in FILES}
+
+
+@pytest.fixture(scope='module')
+def live():
+    if not all((REPORTS / f).exists() for f in FILES):
+        pytest.skip('~/jetformer_reports の文書がありません')
+    return read(REPORTS)
+
+
+@pytest.fixture(scope='module')
+def before():
+    sums = dict(reversed(x.split(None, 1)) for x in (BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    assert set(sums) == set(FILES)
+    for f, h in sums.items():
+        assert _sha(BEFORE / f) == h, f
+    return read(BEFORE)
+
+
+@pytest.fixture(scope='module')
+def script():
+    return _load('docs_fix7_r1_t', SCRIPT)
+
+
+@pytest.fixture(scope='module')
+def fix8():
+    """fix8 docs-decided が意図して書き換えた所(SUPERSEDE)・revert・effective"""
+    return _load('docs_fix8_decided_from_t1', FIX8)
+
+
+@pytest.fixture(scope='module')
+def r82():
+    """fix8 docs 直す 8-2 回目が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r2_from_t1', R82)
+
+
+def chapter(t, head, nxt):
+    i = t.index(head)
+    return t[i:t.index(nxt, i + len(head))]
+
+
+def rows(text, prefix, need=''):
+    return [x for x in text.splitlines() if x.startswith(prefix) and need in x]
+
+
+def one(text, prefix, need=''):
+    r = rows(text, prefix, need)
+    return r[0] if len(r) == 1 else ''
+
+
+def _miss(probs, where, text, *words):
+    for w in words:
+        if w not in text:
+            probs.append('%s: 「%s」が無い' % (where, w[:50]))
+
+
+# ================================================================== 確かめ(どれも問題の一覧。空なら OK)
+def f1_problems(d):
+    """w1-docs-r71-docs-1: わざと OFF にした日の読み方が、3 章の本体と、起こし直しと読ませる所の全部にある"""
+    p = []
+    rb = d[RB]
+    ch3 = chapter(rb, '## 3. 朝の準備', '### 3.1')
+    ch4 = chapter(rb, '## 4. 1 本の手順', '## 5. ')
+    ch5 = chapter(rb, '## 5. 入れ方', '## 6. ')
+    ch7 = chapter(rb, '## 7. 止める条件', '## 8. ')
+    ch81 = chapter(rb, '### 8.1', '### 8.2')
+    ch9 = chapter(rb, '## 9. まだ無いもの', '\n| 発進の前進の値')
+    _miss(p, '3 章 4', one(ch3, '  4. **入れたもの'), '下の「最初のリカバリー」で見張り・残すを OFF にしたときは')
+    first = one(ch3, '  - 見張り・残すが ON の日(11/3)は、**その日の最初のリカバリーを人が見る**')
+    _miss(p, '3 章 最初のリカバリー', first, '止めて OFF にし、その本から先は OFF', '紙に「見張り・残す OFF: 本 X(No.Y)から・理由」と書く',
+          '7 章の「起こし直した」でも見張り・残すは入れ直さない')
+    off_day = one(ch3, '  - **わざと OFF にした日の、本 X から先の読み方**')
+    _miss(p, '3 章 わざと OFF にした日', off_day, '4 章 6 の確認の文に見張り・残すの 2 行が無い', '4 章 10 の car_check に「試験の選択肢」の行が無いのが正しい',
+          '「回 N の試験の選択肢が … と違う(再起動で OFF に戻った? …)」', '「→ X(No.Y)から なし(前の本と違う)」', '「計画と違う N 本」',
+          '④ の「後ろの見張り」「リカバリーを残す」の付かない組', '⑤ の「注意: 試験の選択肢の ON/OFF が混ざっている」',
+          'その本は計画どおり = 数える。「試し」と書かない', '紙の本 X より前に OFF の本があれば、それは起こし直し',
+          # 2026-10-28 fix8 docs-decided: 「… main session が決める(`fix3/approvals.md` 3 の「途中で OFF にした日」)」は、main session が
+          # (a) に決めた(user_decisions.md 10/28 00:5x)ので決まった読み方の文に書き換えた。前の文は消えたことも見る
+          '回 3 の途中で OFF にしたときも、⑤ の「ON − OFF」はそのまま ⑤ の行で読む(**10/28 main session の決め (a)**',
+          '「使ってよい」の側には動かない。`fix3/approvals.md` 3 の「途中で OFF にした日」)')
+    if 'の読み方は main session が決める(`fix3/approvals.md` 3 の「途中で OFF にした日」)' in off_day:
+        p.append('3 章 わざと OFF にした日: 決まる前の文(main session が決める)が残っている')
+    l6 = [x for x in ch4.splitlines() if '11/3 に見張り・残すの行が無い → 次の行(起こし直し)' in x]
+    _miss(p, '4 章 6 の読み上げ', l6[0] if len(l6) == 1 else '', '紙に書いた本 X から先は 2 行とも無いのが正しい(起こし直しではない。入れ直さない)')
+    l6b = [x for x in ch4.splitlines() if 'の行が**消えている**' in x]
+    _miss(p, '4 章 6 の消えている', l6b[0] if len(l6b) == 1 else '', '(3 章で OFF にした本 X から先の見張り・残すは除く)')
+    _miss(p, '4 章 10 の表', one(ch4, '| 試験の選択肢(11/3 は全部の本) |'), '紙の本 X から先は行が無いのが正しい(起こし直しではない。数える)')
+    _miss(p, '5 章の表', one(ch5, '| `rec_back_guard`・`rec_hold_keep`・`launch_no_kick`(試験の選択肢) |'),
+          '3 章で止めて OFF にした日は、紙の本 X から先は OFF')
+    _miss(p, '7 章 起こし直した', one(ch7, '| **jetformer-web か Jetson が起こし直した**'),
+          '3 章で止めて OFF にした日は、紙の本 X から先は入れ直さない', '紙の本 X から先の印・「混ざっている」は起こし直しではない')
+    _miss(p, '7 章 計画と違った', one(ch7, '| 走った値が計画と違った |'), '紙の本 X から先の OFF は計画どおり(この行に当たらない。数える)')
+    _miss(p, '8.1 ②', one(ch81, '| ② |'), '紙の本 X から「なし」の区切り', '「計画と違う N 本」に入った分は起こし直しではない = 数える')
+    _miss(p, '8.1 ④ の読み方', one(ch81, '| ④ |', '2 章「実際の設定ごと」'), '紙の本 X から先は付いていない組が正しい', '`--ignore trim`')
+    _miss(p, '8.1 ⑤ の読み方', one(ch81, '| ⑤ |', '「記録が欠けている本 …」='),
+          # 2026-10-28 fix8 docs-decided: 決まった (a) の文に書き換えた(上の 3 章と同じ理由)
+          '紙の本 X から先の OFF は起こし直しではない', '回 3 の途中で OFF にしたときも ⑤ の行のまま読む = 10/28 main session の決め (a)')
+    if '回 3 の途中で OFF にしたときの読み方は main session が決める' in one(ch81, '| ⑤ |', '「記録が欠けている本 …」='):
+        p.append('8.1 ⑤ の読み方: 決まる前の文(main session が決める)が残っている')
+    _miss(p, '9 章 試験の選択肢', one(ch9, '| 試験の選択肢のスイッチ'), 'おかしければ止めて OFF・その本から先は OFF・紙に本の番号')
+    # 起こし直しで OFF に戻ったと読ませる文(頭の記録の行は除く)は、どれも同じ行に本 X の例外がある
+    body = rb[rb.index('## 1. 時間割'):]
+    for x in body.splitlines():
+        if re.search(r'OFF に戻(った|っていた)', x) and '本 X' not in x:
+            p.append('手順書: 「OFF に戻った」と読ませる行に本 X の例外が無い: %s' % x[:60])
+    ap3 = chapter(d[AP], '## 3. 新しい安全のスイッチ', '## 4. ')
+    _miss(p, 'approvals 3 決まり', one(ap3, '| 決まり |'), 'その本から先は OFF のまま・紙に本の番号。起こし直しでも入れ直さない')
+    _miss(p, 'approvals 3 途中で OFF', one(ap3, '| 途中で OFF にした日'), '**読み方は main session が決める**', '回 3 の途中で OFF にしたときの ⑤',
+          '案 (a)', '/ (b)', '/ (c)', '決めたら main session がこの行に書く')
+    td = d[TODO]
+    _miss(p, 'todo 2 章 10', one(td, '| 10 |'), 'その本から先は OFF のまま・紙に「本 X から OFF」。起こし直しでも入れ直さない')
+    t3 = chapter(td, '## 3. 11/3 の当日', '## 4. ')
+    _miss(p, 'todo 3 章 最初のリカバリー', t3, 'その本から先は OFF で、紙に「見張り・残す OFF: 本 X から」')
+    _miss(p, 'todo 3 章 紙に書く', one(t3, '- 朝に入れた設定'), '最初のリカバリーで見張り・残すを OFF にした日は、その 2 つは入れ直さない')
+    return p
+
+
+def _todo_block(td):
+    t4 = chapter(td, '## 4. jetformer-web の再起動の手順と確かめ', '\n- 4 で `launch_boost`')
+    return t4[t4.index('```bash'):]
+
+
+def _cmd_after(block, head):
+    """コードの中で、head で始まるコメントのあとの最初のコマンドの行(無ければ '')"""
+    lines = block.splitlines()
+    for i, x in enumerate(lines):
+        if x.startswith(head):
+            for y in lines[i + 1:]:
+                if y.strip() and not y.startswith('#'):
+                    return y
+    return ''
+
+
+def restart_cmd(d):
+    return _cmd_after(_todo_block(d[TODO]), '# 3. ')
+
+
+def boot_cmds(d):
+    """11/3 の朝の journal のコマンド: todo 4 章の 3' と手順書 3.1 の頭(どちらも無ければ '')"""
+    t31 = chapter(d[RB], '### 3.1', '## 4. ')
+    m = re.search(r'`(systemctl is-active jetformer-web;[^`]*)`', t31)
+    return _cmd_after(_todo_block(d[TODO]), "# 3'. "), (m.group(1) if m else '')
+
+
+def f2_problems(d):
+    """w1-docs-r71-docs-2: journal は今の起動のあとだけ(古い -n 60 が無い)"""
+    p = []
+    rc = restart_cmd(d)
+    for w in ('systemctl is-active jetformer-web', 'NRestarts', '--since "$(systemctl show -p ActiveEnterTimestamp --value jetformer-web)"',
+              'grep -n "Traceback\\|Error"', 'echo "エラーの行なし"'):
+        if w not in rc:
+            p.append('todo 4 章 3 のコマンドに「%s」が無い' % w)
+    for c, where in zip(boot_cmds(d), ("todo 4 章 3'", '手順書 3.1')):
+        for w in ('systemctl is-active jetformer-web', 'NRestarts', 'journalctl -u jetformer-web -b', 'echo "エラーの行なし"'):
+            if w not in c:
+                p.append('%s の 11/3 の朝のコマンドに「%s」が無い' % (where, w))
+    for f, t in ((TODO, _todo_block(d[TODO])), (RB, chapter(d[RB], '### 3.1', '## 4. '))):
+        for x in t.splitlines():
+            if not x.lstrip().startswith('#') and re.search(r'journalctl[^`|]* -n \d', x):
+                p.append('%s: journalctl -n の行が残っている: %s' % (f, x[:60]))
+    _miss(p, '手順書 3.1 の 17:16 の記録', chapter(d[RB], '### 3.1', '## 4. '), 'journal にエラーなし(17:16:28 の起動から')
+    _miss(p, 'todo 4 章の 17:16 の記録', d[TODO], '3 の journal にエラーなし(17:16:28 の起動から')
+    _miss(p, 'fix6/README 6 章', d[F6], 'journal にエラーなし(17:16:28 の起動から)')
+    return p
+
+
+def f3_problems(d):
+    """w1-docs-r71-docs-3: 中止の形が fix5 s1 の形(前へ 0.5 m/s 以上で走っていれば、衝撃があっても中止しない)"""
+    p = []
+    ch7 = chapter(d[RB], '## 7. 止める条件', '## 8. ')
+    hold = one(ch7, '| 走行タブに「CH3: AI側 ・ 中立で停止中」')
+    _miss(p, '7 章 中立で停止中', hold, '**車に近づく前に CH3 を人側**', '0.5 秒より長く止まった',
+          '**リカバリーの後ろ側の途中**(ブレーキ・後退・惰性。止まっている間に 2.5G 以上の衝撃があったときは中止でなく、後ろに当たったとしてすぐ前へ)',
+          '**明けたときに止まっている車**', '**止まっている間に 2.5G 以上の衝撃があり、明けたとき前へ 0.5 m/s より遅いか後ろへ動いている車**',
+          '**明けたとき前へ 0.5 m/s 以上で走っている車は、衝撃があっても・リカバリーの前進(escape)の途中でも中止しない**', '130 µs・最大 0.3 秒')
+    if '止まっている間に 2.5G 以上の衝撃があった車**は「リカバリー中止」' in hold:
+        p.append('7 章 中立で停止中: fix5 の前の文(衝撃だけで中止)が残っている')
+    ap3 = chapter(d[AP], '## 3. 新しい安全のスイッチ', '## 4. ')
+    form = one(ap3, '| ON の形 |')
+    _miss(p, 'approvals 3 ON の形', form, '止まっている間に 2.5G 以上で明けたとき前へ 0.5 m/s より遅い',
+          '**明けたとき前へ 0.5 m/s 以上で走っている車は、衝撃があっても・リカバリーの前進(escape)の途中でも中止しない**', 'fix5 s1')
+    if '止まっている間に 2.5G 以上の車は「中止」' in form.split('(10/27 fix7 docs r1:')[0]:
+        p.append('approvals 3 ON の形: fix5 の前の文(衝撃だけで中止)が残っている')
+    _miss(p, '9 章 rec_hold_keep', chapter(d[RB], '## 9. まだ無いもの', '\n| 安全の理由で'), '走っている車(明けたとき前へ 0.5 m/s 以上)を衝撃だけで中止しない')
+    _miss(p, 'todo 2 章 8', one(d[TODO], '| 8 |'), '10/27 fix5 s1 で、明けたとき前へ 0.5 m/s 以上で走っている車は衝撃だけでは中止しない')
+    return p
+
+
+def f4_problems(d):
+    """w1-docs-r71-docs-4: approvals 6 は要らなくなった(答えがまだの数えから外した)"""
+    p = []
+    ap = d[AP]
+    _miss(p, 'approvals 0 章の 6', one(chapter(ap, '## 0. 一覧', '## 1. '), '| 6 |'), '**要らなくなった**')
+    _miss(p, 'approvals 今の行', ap, '**答えがまだなのは 4・7〜11 と、新しい 13**(6 は要らなくなった')
+    _miss(p, 'approvals 6 章', chapter(ap, '## 6. 11/1 の E5 で候補が 0 のとき', '## 7. '), '| 今 | **要らなくなった**')
+    for f, t in d.items():
+        for x in t.splitlines():
+            if '4・6〜11' in x and '6 は要らなくなった' not in x:
+                p.append('%s: 「4・6〜11」を答えがまだの数えに残している: %s' % (f, x[:60]))
+            if '`fix3/approvals.md` 6・7' in x:
+                p.append('%s: 「approvals 6・7」を残している: %s' % (f, x[:60]))
+    td = d[TODO]
+    r11 = one(td, '| 11/1 |')
+    _miss(p, 'todo 11/1', r11, '「候補が 0 のとき封を開けるか」(6)は要らなくなった', '`fix3/approvals.md` 7')
+    if 'おすすめ: 0 なら開けない' in r11:
+        p.append('todo 11/1: 「0 なら開けない」をまだ答えさせている')
+    _miss(p, 'todo 11/2 まで', one(td, '| **11/2 まで** |'), '**4・7〜11・13**', '6(E5 で候補が 0 のとき封を開けるか)は要らなくなった')
+    _miss(p, 'README 6.2 の 9', one(chapter(d[RD], '### 6.2', '### 6.3'), '| 9 |'), '`fix3/approvals.md` 4・7〜11・13(11/2。6 は要らなくなった)')
+    _miss(p, 'README 0 章 1', one(d[RD], '| 1 | v2 の 22 本'), '`fix3/approvals.md` 7。V1・V2 があるので台本は「開ける」')
+    _miss(p, '手順書 9 章 V1', d[RB], '`fix3/approvals.md` 7。6 = 候補が 0 のときは要らなくなった')
+    _miss(p, 'fix6/README 7 章 2', one(chapter(d[F6], '## 7. 次に', '### 今のファイル'), '| 2 |'), '4・7〜11(6 は要らなくなった')
+    return p
+
+
+def pytest_full_numbers():
+    t = (REPORTS / 'fix6' / 'pytest_full_20261027.txt').read_text(encoding='utf-8')
+    du = re.findall(r'^(\d+(?:\.\d+)?)G\texperiments/20261026_fix/tmp_pytest_full_20261027$', t, re.M)
+    df = re.findall(r'^/dev/\S+\s+\S+\s+\S+\s+(\d+(?:\.\d+)?)G\s', t, re.M)
+    return du[-1], df[0], df[-1]
+
+
+def f5_problems(d):
+    """w1-docs-r71-docs-5: pytest 一式の作業場所は 10/27 の実測(fix6/pytest_full_20261027.txt と同じ数)"""
+    p = []
+    du, start, end = pytest_full_numbers()
+    r4 = one(chapter(d[RD], '### 3.2', '### 3.3'), '| 4 | pytest 一式 |')
+    _miss(p, 'README 3.2 の 4', r4, '約 %s GB' % du, '空き %s GB → 終わり %s GB' % (start, end))
+    # disk_check.py の PYTEST_GB(担当の外。直すかは tools の係か main session)が実測と違うあいだは、そのことを README に書く
+    dsrc = (JF / 'experiments' / '20261026_fix' / 'fix3' / 'disk' / 'disk_check.py').read_text(encoding='utf-8')
+    gb = re.search(r'^PYTEST_GB = (\d+(?:\.\d+)?)', dsrc, re.M).group(1)
+    if gb != du and 'tmp_path_retention_policy=failed' in dsrc:
+        # 2026-10-28 fix8 tools-decided: PYTEST_GB を 10/28 の実測(-o tmp_path_retention_policy=failed を付けた一式。
+        # fix7/pytest_full_20261028.txt)にした。そのときは README に、その値とオプションが要ることを書く(前の「のまま」は消す)
+        _miss(p, 'README 3.2 の 4', r4, '`PYTEST_GB` は %s' % gb, 'tmp_path_retention_policy=failed')
+        if 'のまま' in r4.split('PYTEST_GB')[-1][:12]:
+            p.append('README 3.2 の 4: disk_check.py の PYTEST_GB は %s になったのに「のまま」と書いている' % gb)
+    elif gb != du:
+        _miss(p, 'README 3.2 の 4', r4, '`PYTEST_GB` は %s のまま' % gb)
+    elif 'のまま' in r4.split('PYTEST_GB')[-1][:12]:
+        p.append('README 3.2 の 4: disk_check.py の PYTEST_GB は %s になったのに「のまま」と書いている' % gb)
+    if '(一式 1 回で約 3.9 GB)' in r4:
+        p.append('README 3.2 の 4: 3.9 GB のまま')
+    _miss(p, 'approvals 1 なぜ', one(chapter(d[AP], '## 1. ディスクの片付け', '## 2. '), '| なぜ |'),
+          '10/27 の一式の実測は約 %s GB' % du, '11 GB → 終わり %s GB' % end)
+    _miss(p, 'fix6/README 7 章 1', one(chapter(d[F6], '## 7. 次に', '### 今のファイル'), '| 1 |'), '作業場所に約 %s GB 要る' % du)
+    return p
+
+
+CHECKS = {'f1': f1_problems, 'f2': f2_problems, 'f3': f3_problems, 'f4': f4_problems, 'f5': f5_problems}
+
+
+# ================================================================== 文書
+@pytest.mark.parametrize('name', sorted(CHECKS))
+def test_live_documents(live, name):
+    assert CHECKS[name](live) == []
+
+
+@pytest.mark.parametrize('name', sorted(CHECKS))
+def test_before_copies_fail(before, name):
+    """直す前の写し(10/27 17:4x の fix7 docs のあと)では、5 つの指摘がどれも出る"""
+    assert CHECKS[name](before) != []
+
+
+def test_script_edits_all_done(live, script, fix8, r82):
+    """直しの台本の直しは、今の文書でどれも「済」(もう一度流しても何もしない)。画面の版 9 の直しも済のまま。
+    2026-10-28 fix8 docs-decided: fix8 が意図して書き換えた所(SUPERSEDE)は書き換えを戻した文書で照らす。書き換えた文は今の文書に
+    ちょうど 1 回(消した文は 0 回)。
+    2026-10-28 fix8 docs r2: その書き換え(fix8 docs-decided の書き換えの中も 1 か所)は先に戻してから照らす。fix8 docs r2 の書き換えが今の
+    文書に入っていることも見る"""
+    assert r82.superseded_present(live) == []
+    assert fix8.superseded_present(r82.revert(live)) == []
+    _, rep = script.apply_text(fix8.revert(r82.revert(live)))
+    assert len(rep) == 44 and [s for _, _, s in rep] == ['done'] * 44, [(f, o[:30], s) for f, o, s in rep if s != 'done']
+    m = script.ban9()
+    b9 = {f: (REPORTS / f).read_text(encoding='utf-8') for f in m.FILES}
+    _, rep9 = m.apply_text(b9)
+    assert all(s == 'done' for _, _, s in rep9) and m.stale(b9, m.versions()[0]) == []
+
+
+# 直しの台本の (文書, 何番目) → それを元に戻すと落ちる確かめ。書いていない 3 つは頭の記録の行だけ(「済」の試験が見る)
+CATCH = {(RB, 1): 'f1', (RB, 2): 'f1', (RB, 3): 'f2', (RB, 4): 'f2', (RB, 5): 'f1', (RB, 6): 'f1', (RB, 7): 'f1', (RB, 8): 'f1',
+         (RB, 9): 'f3', (RB, 10): 'f1', (RB, 11): 'f1', (RB, 12): 'f1', (RB, 13): 'f1', (RB, 14): 'f1', (RB, 15): 'f1',
+         (RB, 16): 'f1', (RB, 17): 'f3', (RB, 18): 'f4',
+         (TODO, 0): 'f4', (TODO, 1): 'f4', (TODO, 2): 'f4', (TODO, 3): 'f4', (TODO, 4): 'f3', (TODO, 5): 'f1', (TODO, 6): 'f1',
+         (TODO, 7): 'f1', (TODO, 8): 'f2', (TODO, 9): 'f2',
+         (RD, 1): 'f4', (RD, 2): 'f5', (RD, 3): 'f4',
+         (AP, 0): 'f4', (AP, 1): 'f4', (AP, 2): 'f5', (AP, 3): 'f1', (AP, 4): 'f3', (AP, 5): 'f1', (AP, 6): 'f4',
+         (F6, 1): 'f2', (F6, 2): 'f5', (F6, 3): 'f4'}
+
+
+def test_reverting_each_edit_is_caught(live, script, fix8, r82):
+    """わざと壊す: 台本の直しを 1 つずつ元の文に戻すと、その指摘の確かめが落ちる(41 個)。戻さなければ通る。
+    2026-10-28 fix8 docs-decided: fix8 が書き換えた直しは、書き換えたあとの形の new(fix8.effective)を元の文に戻す。
+    2026-10-28 fix8 docs r2: その上の書き換え(r82.effective)のあとの形"""
+    n = 0
+    for f, edits in script.ALL:
+        for i, (old, new) in enumerate(edits):
+            key = (f, i)
+            if key not in CATCH:
+                assert i == 0 and f in (RB, RD, F6), key          # 頭の記録の行だけ
+                continue
+            new = r82.effective('r1', f, i, fix8.effective('r1', f, i, new))
+            assert live[f].count(new) == 1, key
+            broken = dict(live, **{f: live[f].replace(new, old, 1)})
+            assert CHECKS[CATCH[key]](broken) != [], key
+            n += 1
+    assert n == len(CATCH) == 41
+
+
+def test_more_breakages_are_caught(live, script):
+    """わざと壊す(台本の直しと別の形): 手順書に起こし直しと読ませる行を本 X の例外なしで足す・journal を -n に戻す・7 章を fix5 の前の
+    形に戻す・答えがまだに 6 を戻す・一式の数を 3.9 GB に戻す"""
+    ch7_end = live[RB].index('| いつでも |')
+    cases = [
+        ('f1', RB, live[RB][:ch7_end] + '| 新しい行 | 出たら OFF に戻った本がある |\n' + live[RB][ch7_end:]),
+        ('f1', AP, live[AP].replace(script.AP_OFF_ROW, '')),
+        ('f2', TODO, live[TODO].replace(script.CMD_RESTART, 'systemctl is-active jetformer-web; journalctl -u jetformer-web -n 60 '
+                                                           '--no-pager | grep -n "Traceback\\|Error" || echo "エラーの行なし"')),
+        ('f2', RB, live[RB].replace('journalctl -u jetformer-web -b --no-pager', 'journalctl -u jetformer-web -n 60 --no-pager')),
+        ('f2', TODO, live[TODO].replace('systemctl show -p NRestarts --value jetformer-web; journalctl -u jetformer-web --since',
+                                        'journalctl -u jetformer-web --since')),
+        ('f3', RB, live[RB].replace(script.RB_HOLD_NEW, script.RB_HOLD_OLD)),
+        ('f3', AP, live[AP].replace('止まっている間に 2.5G 以上で明けたとき前へ 0.5 m/s より遅い(か後ろへ動いている)車は「中止」',
+                                    '止まっている間に 2.5G 以上の車は「中止」')),
+        ('f4', TODO, live[TODO].replace('**4・7〜11・13**', '**4・6〜11・13**')),
+        ('f4', F6, live[F6].replace('4・7〜11(6 は要らなくなった。10/27 fix7 docs r1)', '4・6〜11')),
+        ('f5', RD, live[RD].replace('**約 7.1 GB**', '約 3.9 GB')),
+        ('f5', AP, live[AP].replace('10/27 の一式の実測は約 7.1 GB', '10/27 の一式の実測は約 3.9 GB')),
+    ]
+    for name, f, t in cases:
+        assert t != live[f], (name, f)
+        assert CHECKS[name](dict(live, **{f: t})) != [], (name, f)
+
+
+# ================================================================== 文書の言葉と道具・コードの本当の出力
+def test_f1_tools_print_what_the_runbook_quotes(live):
+    """わざと OFF にした日(1-3 から OFF)に、② runs_1103 は手順書が引く印・区切りを出し、car_check は試験の選択肢の行を出さない
+    (OFF の本に行が無いのが正しい = 4 章 10)。本物の関数に作り物の行だけを通す(data/raw は読まない)"""
+    R = _load('runs_1103_fix7_docs', JF / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py')
+    on = {'rec_back_guard': 1, 'rec_hold_keep': 1, 'launch_no_kick': 0}
+    off = {'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0}
+    plan = [('1-1', 2, on), ('1-2', 3, on), ('1-3', 4, off), ('1-4', 5, off), ('1-5', 6, off), ('2-1', 7, off)]
+    rs = [{'log': '20261103-1%05d' % i, 'run_id': rid, 'ai_no': str(no), 'options': dict(o), 'diffs': []}
+          for i, (rid, no, o) in enumerate(plan)]
+    R.round_options(rs)
+    assert [bool(r['diffs']) for r in rs] == [False, False, True, True, True, False]       # 回 1 の 3 本だけ
+    mark = rs[2]['diffs'][0]
+    # 2026-10-28 fix8 tools-decided: 印の後ろの文に「わざと OFF にした日」(3 章)の読み方を足した(頭の「(再起動で OFF に戻った? 」は同じ)
+    assert mark.startswith('回 1 の試験の選択肢が 1-1(No.2)と違う: ') and mark.endswith(
+        '(再起動で OFF に戻った? 3 章で止めて OFF にした本 X から先なら数える。手順書 3・7 章)')
+    line = R.options_line(rs)
+    assert line.endswith('1-1(No.2)から 後ろの見張り・リカバリーを残す → 1-3(No.4)から なし(前の本と違う)')
+    rb = live[RB]
+    ch3 = chapter(rb, '## 3. 朝の準備', '### 3.1')
+    quoted = re.search(r'「→ X\(No\.Y\)から なし\(前の本と違う\)」', ch3)
+    assert quoted and ('→ 1-3(No.4)から なし(前の本と違う)' == '→ X(No.Y)から なし(前の本と違う)'.replace('X', '1-3').replace('Y', '4'))
+    assert '「回 N の試験の選択肢が … と違う(再起動で OFF に戻った? …)」' in ch3
+    assert re.sub(r'回 \d', '回 N', mark.split('と違う')[0]).startswith('回 N の試験の選択肢が')
+    C = _load('car_check_fix7_docs', JF / 'tools' / 'car_check.py')
+    assert C.options_on(off) == [] and C.options_on({}) == []
+    names = C.options_on(on)
+    tool_line = '試験の選択肢(log.json の走行開始の値): %s が ON' % '・'.join(names)
+    assert '「%s」の行がある' % tool_line in one(chapter(rb, '## 4. 1 本の手順', '## 5. '), '| 試験の選択肢(11/3 は全部の本) |')
+    QE = _load('qe_by_params_fix7_docs', JF / 'tools' / 'quick_eval_by_params.py')
+    assert 'trim' in QE.PARTS                                                # 8.1 ④ の --ignore trim
+
+
+# ---------------------------------------------------------------- w1-docs-r71-docs-2: 偽物の systemctl・journalctl で文書のコマンドを流す
+FAKE_JOURNALCTL = r'''
+import json, os, re, sys
+from datetime import datetime
+E = json.load(open(os.environ['FAKE_JOURNAL'], encoding='utf-8'))
+a, since, n, boot, i = sys.argv[1:], None, None, False, 0
+while i < len(a):
+    x = a[i]
+    if x == '-u':
+        i += 2
+    elif x == '-n':
+        n, i = int(a[i + 1]), i + 2
+    elif x == '--since':
+        since, i = a[i + 1], i + 2
+    elif x == '-b':
+        boot, i = True, i + 1
+    elif x == '--no-pager':
+        i += 1
+    else:
+        sys.exit('fake journalctl: %s' % x)
+rows = E
+if boot:
+    rows = [e for e in rows if e['boot'] == max(r['boot'] for r in E)]
+if since is not None:
+    m = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', since)
+    if not m:
+        sys.exit('Failed to parse timestamp: %s' % since)
+    rows = [e for e in rows if e['t'] >= m.group(0)]
+if n is not None:
+    rows = rows[-n:]
+for e in rows:
+    print('%s jetson %s' % (datetime.strptime(e['t'], '%Y-%m-%d %H:%M:%S').strftime('%b %d %H:%M:%S'), e['text']))
+'''
+FAKE_SYSTEMCTL = r'''
+import os, sys
+a = sys.argv[1:]
+if a[:1] == ['is-active']:
+    print(os.environ.get('FAKE_ACTIVE', 'active'))
+    sys.exit(0)
+if a[:1] == ['show'] and '--value' in a:
+    print(os.environ.get('FAKE_' + a[a.index('-p') + 1], ''))
+    sys.exit(0)
+sys.exit('fake systemctl: %s' % a)
+'''
+
+OLD = [{'t': '2026-10-10 09:23:20', 'boot': 0, 'text': 'run_web.sh[12783]: Traceback (most recent call last):'},
+       {'t': '2026-10-10 09:23:27', 'boot': 0, 'text': "run_web.sh[12783]: AttributeError: 'AudioSensor' object has no attribute 'channel'"},
+       {'t': '2026-10-26 07:41:40', 'boot': 1, 'text': 'systemd[1]: Started jetformer-web.service'},
+       {'t': '2026-10-27 17:16:24', 'boot': 1, 'text': 'systemd[1]: Stopping jetformer-web.service'},
+       {'t': '2026-10-27 17:16:28', 'boot': 1, 'text': 'systemd[1]: Started jetformer-web.service'}]
+START = 'Tue 2026-10-27 17:16:28 JST'
+
+
+@pytest.fixture()
+def fake(tmp_path):
+    b = tmp_path / 'bin'
+    b.mkdir()
+    for name, body in (('journalctl', FAKE_JOURNALCTL), ('systemctl', FAKE_SYSTEMCTL)):
+        (b / name).write_text('#!%s\n%s' % (sys.executable, body), encoding='utf-8')
+        (b / name).chmod(0o755)
+    (b / 'sleep').write_text('#!/bin/sh\nexit 0\n', encoding='utf-8')
+    (b / 'sleep').chmod(0o755)
+
+    def run(cmd, journal, nrestarts='0', start=START):
+        j = tmp_path / 'journal.json'
+        j.write_text(json.dumps(journal, ensure_ascii=False), encoding='utf-8')
+        env = {'PATH': '%s:/usr/bin:/bin' % b, 'FAKE_JOURNAL': str(j), 'FAKE_NRestarts': nrestarts,
+               'FAKE_ActiveEnterTimestamp': start, 'LANG': 'C.UTF-8'}
+        r = subprocess.run(['bash', '-c', cmd], env=env, capture_output=True, text=True, timeout=30)
+        assert r.returncode == 0 and r.stderr == '', (cmd, r.stderr)
+        return r.stdout.splitlines()
+    return run
+
+
+def test_f2_restart_command_shows_only_this_start(live, before, fake):
+    """再起動した日の 3: 今の起動にエラーが無ければ「エラーの行なし」(前の -n 60 の形は 10/10 の古い Traceback を出した)。
+    起動のあとの Traceback は出す。落ちて自動で起こし直したら NRestarts が 0 でない(その前の行は --since に入らないので、数で知らせる)"""
+    cmd, old_cmd = restart_cmd(live), restart_cmd(before)
+    assert '-n 60' in old_cmd and old_cmd != cmd
+    assert fake(cmd, OLD) == ['active', '0', 'エラーの行なし']
+    assert any('AttributeError' in x for x in fake(old_cmd, OLD))                     # 指摘の形(前のコマンド)
+    new_err = OLD + [{'t': '2026-10-27 17:16:31', 'boot': 1, 'text': 'run_web.sh[529689]: Traceback (most recent call last):'},
+                     {'t': '2026-10-27 17:16:31', 'boot': 1, 'text': 'run_web.sh[529689]: NameError: x'}]
+    out = fake(cmd, new_err)
+    assert out[:2] == ['active', '0'] and 'エラーの行なし' not in out and any('NameError' in x for x in out)
+    crash = new_err + [{'t': '2026-10-27 17:16:34', 'boot': 1, 'text': 'systemd[1]: Started jetformer-web.service'}]
+    out = fake(cmd, crash, nrestarts='1', start='Tue 2026-10-27 17:16:34 JST')
+    assert out[:2] == ['active', '1']                                                  # 0 でない → 3' の -b で全部を見る
+    todo3b, _ = boot_cmds(live)
+    assert any('NameError' in x for x in fake(todo3b, crash, nrestarts='1'))
+
+
+def test_f2_morning_command_shows_only_this_boot(live, fake):
+    """11/3 の朝(Jetson を入れたあと。手順書 3.1 と todo 4 章の 3'): 前の起動の Traceback は出さず、今の起動の Traceback は出す"""
+    todo3b, rb31 = boot_cmds(live)
+    assert todo3b == rb31
+    prev = OLD + [{'t': '2026-11-02 21:00:00', 'boot': 1, 'text': 'run_web.sh[999]: Traceback (most recent call last):'}]
+    morning = prev + [{'t': '2026-11-03 07:30:05', 'boot': 2, 'text': 'systemd[1]: Started jetformer-web.service'}]
+    assert fake(rb31, morning, start='Tue 2026-11-03 07:30:05 JST') == ['active', '0', 'エラーの行なし']
+    bad = morning + [{'t': '2026-11-03 07:30:09', 'boot': 2, 'text': 'run_web.sh[1200]: Traceback (most recent call last):'}]
+    out = fake(rb31, bad)
+    assert 'エラーの行なし' not in out and any('Nov 03 07:30:09' in x for x in out)
+
+
+# ---------------------------------------------------------------- w1-docs-r71-docs-3: 本物の assist.Recovery
+def _recovery():
+    from jetformer import assist as A
+    return A
+
+
+def _wake(A, phase, erpm, g, hold):
+    C = N = 1500.0
+    model = (C, N - 120.0)
+    r = A.Recovery((C, N))
+    t = 100.0
+    for _ in range(40):                       # 前へ 3 m/s で走っている(armed・段なし)
+        r.step(model, -6000.0, t, 0.2, back_guard=True)
+        t += 1 / 30.0
+    last = t - 1 / 30.0
+    if phase:
+        r._go(phase, last)
+    out, kind = r.step(model, erpm, last + hold, 0.0, back_guard=True, hold_g=g, hold_since=last + 0.05, hold_back_s=0.0)
+    return r.phase, out, kind
+
+
+def test_f3_hold_text_matches_recovery():
+    """手順書 7 章「中立で停止中」・approvals 3「ON の形」の文のとおりに本物の Recovery が動く(数も同じ)。前へ = eRPM が負"""
+    A = _recovery()
+    R = A.Recovery
+    assert (R.HOLD_KEEP_MAX_S, R.IMPACT_G, R.HOLD_IMPACT_FWD_ERPM, R.ESCAPE_US, R.HOLD_HALT_MAX_S) == (0.5, 2.5, 1000, 130.0, 0.3)
+    assert '1000 eRPM = 0.5 m/s' in A.__doc__                     # 文書の「0.5 m/s」
+    GIVE, HALT, ESC = 'giveup', 'halt', 'escape'
+    fwd = (-6000.0, -2000.0, -1001.0)                           # 明けたとき前へ 0.5 m/s 以上(3・1・0.5 m/s)
+    for phase in (None, 'escape'):
+        for e in fwd:
+            for g in (0.0, 3.0):                                  # 衝撃があっても・escape の途中でも中止しない
+                p, out, _ = _wake(A, phase, e, g, 1.0)
+                assert p not in (GIVE, HALT), (phase, e, g, p)
+        assert _wake(A, phase, -999.0, 3.0, 1.0)[0] == GIVE       # 衝撃 + 前へ 0.5 m/s より遅い → 中止
+        assert _wake(A, phase, 0.0, 0.0, 1.0)[0] == GIVE          # 明けたとき止まっている → 中止
+        p, out, _ = _wake(A, phase, 500.0, 3.0, 1.0)               # 衝撃 + 後ろへ動いている → 先に前進(130 µs)で止めてから中止
+        assert p == HALT and out == (1500.0, 1500.0 - R.ESCAPE_US)
+    for phase in ('brake', 'wait', 'gap', 'reverse', 'coast'):   # リカバリーの後ろ側の途中
+        for e in fwd + (-999.0, 0.0):
+            assert _wake(A, phase, e, 0.0, 1.0)[0] == GIVE, (phase, e)
+            p, out, _ = _wake(A, phase, e, 3.0, 1.0)              # 衝撃 → 中止でなく、すぐ前へ
+            assert p == ESC and out == (1500.0, 1500.0 - R.ESCAPE_US), (phase, e)
+        assert _wake(A, phase, 500.0, 0.0, 1.0)[0] == HALT       # 後ろへ動いていれば先に前進で止める
+    for phase in (None, 'escape', 'brake', 'reverse', 'coast'):  # 0.5 秒までの中立止めは中止しない
+        for e in (-6000.0, 0.0):
+            assert _wake(A, phase, e, 0.0, 0.4)[0] not in (GIVE, HALT), (phase, e)
+
+
+# ---------------------------------------------------------------- w1-docs-r71-docs-4: 候補が 0 にならない
+def test_f4_candidates_still_there():
+    """decisions_v3.json の E3 は決まり(V1・V2)で、e5_open_seal.py plan(読むだけ)の答えは「開ける」。これが崩れたら approvals 6 が
+    また要る(文書を戻す)"""
+    d = json.loads((REPORTS / 'decisions_v3.json').read_text(encoding='utf-8'))
+    e3 = d['E3']
+    assert e3.get('final') is True and e3.get('V1') and e3.get('V2')
+    r = subprocess.run([sys.executable, '-I', str(JF / 'experiments' / '20261026_fix' / 'fix3' / 'e5_open_seal.py'), 'plan'],
+                       capture_output=True, text=True, timeout=120, cwd=str(JF))
+    assert r.returncode == 0, r.stderr
+    j = json.loads(r.stdout[:r.stdout.index('\n答え')])
+    assert j['plan']['open'] is True and j['plan']['n_candidates'] >= 1 and j['candidates']['final'] is True
+    assert '答え: 開ける(11/1 朝・1 回だけ)' in r.stdout
+
+
+# ---------------------------------------------------------------- 既定値(文書が言う「既定 OFF・起動で OFF」)
+def test_defaults_the_documents_state():
+    """文書が言う既定(試験の選択肢 3 つは既定 0・起動で 0)が drive.py の今の値と同じ。この組はコードを変えていない"""
+    from jetformer import drive
+    for k in ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick', 'launch_boost'):
+        assert drive.DEFAULT_PARAMS[k] == 0 and k in drive.RESET_ON_BOOT, k
+    assert drive.PARAM_LIMITS['rec_back_guard'] == (0, 1) and drive.PARAM_LIMITS['rec_hold_keep'] == (0, 1)

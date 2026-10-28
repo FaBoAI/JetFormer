@@ -1,0 +1,1493 @@
+{
+ "fz": {
+  "n": 900,
+  "now_on_worse_than_off_scenes": 443,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 56,
+    "flags": {
+     "front_faster": 54,
+     "giveup_only_on": 1,
+     "front_push_more": 3,
+     "rear_faster": 2
+    }
+   },
+   "qC": {
+    "n": 5,
+    "flags": {
+     "rear_faster": 2,
+     "front_faster": 3
+    }
+   }
+  },
+  "qA": {
+   "same_as_now_on": 771,
+   "differs": 129,
+   "differs_with_back_early_now": 129,
+   "worse_than_off": 93,
+   "worse_than_off_flags": {
+    "giveup_only_on": 69,
+    "front_faster": 59,
+    "front_push_more": 3,
+    "rear_faster": 7,
+    "rear_more": 2
+   },
+   "worse_than_now_on": 64,
+   "worse_than_now_on_flags": {
+    "front_faster": 59,
+    "giveup_only_on": 1,
+    "rear_faster": 6,
+    "front_push_more": 5,
+    "rear_more": 2
+   },
+   "now_on_worse": 71,
+   "now_on_worse_flags": {
+    "rear_more": 64,
+    "rear_faster": 63,
+    "front_faster": 4,
+    "giveup_only_on": 2
+   },
+   "fixed_vs_off": 7,
+   "dback_min": -1.185,
+   "dback_max": 0.0,
+   "dback_med": -0.679,
+   "examples_worse_than_off": [
+    {
+     "sd": {
+      "form": "kai1_ceil",
+      "xf": 1.3,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.7
+      },
+      "esc": "n002r",
+      "rear": null,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 0
+     },
+     "flags": [
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai3_lb_ceil",
+      "xf": 4.0,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.3
+      },
+      "esc": "n002",
+      "rear": 1.1,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": 20
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.14,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 1.76,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1_ceil",
+      "xf": 1.6,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.7
+      },
+      "esc": "human",
+      "rear": 1.6,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 32
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.95,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 1.25,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.3,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.3
+      },
+      "esc": "n020",
+      "rear": 1.1,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 40
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.01,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.93,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.19,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai4_lb",
+      "xf": 1.6,
+      "model": {
+       "kind": "brakewall",
+       "m": 220.0,
+       "db": 0.3
+      },
+      "esc": "n002r",
+      "rear": 1.1,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 68
+     },
+     "flags": [
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.75,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 1.7,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai3_lb_ceil",
+      "xf": 1.3,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.7
+      },
+      "esc": "orig",
+      "rear": 1.1,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 140
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.05,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.19,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    }
+   ],
+   "new_worse_than_off": {
+    "n": 56,
+    "flags": {
+     "front_faster": 54,
+     "giveup_only_on": 1,
+     "front_push_more": 3,
+     "rear_faster": 2
+    }
+   }
+  },
+  "qC": {
+   "same_as_now_on": 771,
+   "differs": 129,
+   "differs_with_back_early_now": 129,
+   "worse_than_off": 72,
+   "worse_than_off_flags": {
+    "giveup_only_on": 67,
+    "rear_more": 4,
+    "rear_faster": 6,
+    "front_faster": 4
+   },
+   "worse_than_now_on": 7,
+   "worse_than_now_on_flags": {
+    "rear_faster": 3,
+    "front_faster": 3,
+    "front_push_more": 1,
+    "rear_more": 1
+   },
+   "now_on_worse": 72,
+   "now_on_worse_flags": {
+    "rear_faster": 66,
+    "rear_more": 41,
+    "front_faster": 10,
+    "front_push_more": 2,
+    "giveup_only_on": 2
+   },
+   "fixed_vs_off": 12,
+   "dback_min": -0.848,
+   "dback_max": 0.0,
+   "dback_med": -0.232,
+   "examples_worse_than_off": [
+    {
+     "sd": {
+      "form": "kai1_ceil",
+      "xf": 1.3,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.7
+      },
+      "esc": "n002r",
+      "rear": null,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 0
+     },
+     "flags": [
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai4_lb",
+      "xf": 1.6,
+      "model": {
+       "kind": "brakewall",
+       "m": 220.0,
+       "db": 0.3
+      },
+      "esc": "n002r",
+      "rear": 1.1,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 68
+     },
+     "flags": [
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 0.72,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.75,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 1.7,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai3_lb_ceil",
+      "xf": 1.3,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.7
+      },
+      "esc": "orig",
+      "rear": 1.1,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 140
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 1.36,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.05,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.19,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai3_lb_ceil",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "n002",
+      "rear": 0.9,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": 144
+     },
+     "flags": [
+      "giveup_only_on:hold_long"
+     ],
+     "q": {
+      "rear_max_v": 1.11,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 2.22,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 1.94,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.6,
+      "model": {
+       "kind": "brakewall",
+       "m": 80.0,
+       "db": 0.3
+      },
+      "esc": "n030",
+      "rear": null,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 168
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai3_lb_ceil",
+      "xf": 2.5,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.3
+      },
+      "esc": "orig",
+      "rear": null,
+      "veh_dt": 0.02,
+      "coast": null,
+      "lag": null,
+      "i": 196
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    }
+   ],
+   "new_worse_than_off": {
+    "n": 5,
+    "flags": {
+     "rear_faster": 2,
+     "front_faster": 3
+    }
+   }
+  }
+ },
+ "hm": {
+  "n": 240,
+  "now_on_worse_than_off_scenes": 48,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 0,
+    "flags": {}
+   },
+   "qC": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qA": {
+   "same_as_now_on": 240,
+   "differs": 0,
+   "differs_with_back_early_now": 0,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 0,
+   "now_on_worse_flags": {},
+   "fixed_vs_off": 0,
+   "dback_min": null,
+   "dback_max": null,
+   "dback_med": null,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qC": {
+   "same_as_now_on": 240,
+   "differs": 0,
+   "differs_with_back_early_now": 0,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 0,
+   "now_on_worse_flags": {},
+   "fixed_vs_off": 0,
+   "dback_min": null,
+   "dback_max": null,
+   "dback_med": null,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  }
+ },
+ "lw": {
+  "n": 2160,
+  "now_on_worse_than_off_scenes": 241,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 245,
+    "flags": {
+     "front_faster": 237,
+     "giveup_only_on": 24,
+     "rear_faster": 8
+    }
+   },
+   "qC": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qA": {
+   "same_as_now_on": 1680,
+   "differs": 480,
+   "differs_with_back_early_now": 480,
+   "worse_than_off": 308,
+   "worse_than_off_flags": {
+    "front_faster": 240,
+    "giveup_only_on": 172,
+    "rear_faster": 10,
+    "rear_more": 2
+   },
+   "worse_than_now_on": 281,
+   "worse_than_now_on_flags": {
+    "front_faster": 240,
+    "giveup_only_on": 24,
+    "rear_more": 40,
+    "rear_faster": 51
+   },
+   "now_on_worse": 242,
+   "now_on_worse_flags": {
+    "front_faster": 12,
+    "giveup_only_on": 68,
+    "rear_more": 161,
+    "rear_faster": 167
+   },
+   "fixed_vs_off": 43,
+   "dback_min": -1.074,
+   "dback_max": -0.4,
+   "dback_med": -0.773,
+   "examples_worse_than_off": [
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0
+      },
+      "esc": "human",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.09,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0
+      },
+      "esc": "n005",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.04,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0
+      },
+      "esc": "n030",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.04,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0
+      },
+      "esc": "n002r",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "orig",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.06,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "n002",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster",
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.06,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    }
+   ],
+   "new_worse_than_off": {
+    "n": 245,
+    "flags": {
+     "front_faster": 237,
+     "giveup_only_on": 24,
+     "rear_faster": 8
+    }
+   }
+  },
+  "qC": {
+   "same_as_now_on": 1680,
+   "differs": 480,
+   "differs_with_back_early_now": 480,
+   "worse_than_off": 36,
+   "worse_than_off_flags": {
+    "giveup_only_on": 36
+   },
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 315,
+   "now_on_worse_flags": {
+    "giveup_only_on": 186,
+    "front_faster": 17,
+    "rear_more": 176,
+    "rear_faster": 180
+   },
+   "fixed_vs_off": 197,
+   "dback_min": -0.669,
+   "dback_max": 0.0,
+   "dback_med": -0.319,
+   "examples_worse_than_off": [
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.0,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1_ceil",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1_ceil",
+      "xf": 2.0,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai2_auto42",
+      "xf": 1.1,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai2_auto42",
+      "xf": 2.0,
+      "model": {
+       "kind": "brakewall",
+       "m": 200.0
+      },
+      "esc": "humanr",
+      "rear": null,
+      "veh_dt": 0.01,
+      "coast": null,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "giveup_only_on:"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    }
+   ],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  }
+ },
+ "rd": {
+  "n": 630,
+  "now_on_worse_than_off_scenes": 103,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 263,
+    "flags": {
+     "front_faster": 263
+    }
+   },
+   "qC": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qA": {
+   "same_as_now_on": 0,
+   "differs": 630,
+   "differs_with_back_early_now": 630,
+   "worse_than_off": 263,
+   "worse_than_off_flags": {
+    "front_faster": 263
+   },
+   "worse_than_now_on": 263,
+   "worse_than_now_on_flags": {
+    "front_faster": 263
+   },
+   "now_on_worse": 242,
+   "now_on_worse_flags": {
+    "rear_faster": 242,
+    "rear_more": 220,
+    "front_faster": 8
+   },
+   "fixed_vs_off": 68,
+   "dback_min": -0.919,
+   "dback_max": 0.0,
+   "dback_med": -0.713,
+   "examples_worse_than_off": [
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "human",
+      "rear": 0.7,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.65,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.15,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "orig",
+      "rear": 0.8,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.85,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.01,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "human",
+      "rear": 0.8,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.88,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.07,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "n002",
+      "rear": 0.8,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.85,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.01,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "n005",
+      "rear": 0.8,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.85,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.01,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    },
+    {
+     "sd": {
+      "form": "kai1",
+      "xf": 2.4,
+      "model": {
+       "kind": "brakewall",
+       "m": 120.0,
+       "db": 0.45
+      },
+      "esc": "n020",
+      "rear": 0.8,
+      "veh_dt": 0.01,
+      "coast": 1.5,
+      "lag": null,
+      "i": null
+     },
+     "flags": [
+      "front_faster"
+     ],
+     "q": {
+      "rear_max_v": 0.0,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "off": {
+      "rear_max_v": 1.85,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     },
+     "now_on": {
+      "rear_max_v": 2.01,
+      "front_push_s": 0.0,
+      "zero_push": 0
+     }
+    }
+   ],
+   "new_worse_than_off": {
+    "n": 263,
+    "flags": {
+     "front_faster": 263
+    }
+   }
+  },
+  "qC": {
+   "same_as_now_on": 0,
+   "differs": 630,
+   "differs_with_back_early_now": 630,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 242,
+   "now_on_worse_flags": {
+    "rear_faster": 242,
+    "rear_more": 113,
+    "front_faster": 1
+   },
+   "fixed_vs_off": 103,
+   "dback_min": -0.571,
+   "dback_max": 0.0,
+   "dback_med": -0.279,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  }
+ },
+ "rd2": {
+  "n": 180,
+  "now_on_worse_than_off_scenes": 68,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 0,
+    "flags": {}
+   },
+   "qC": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qA": {
+   "same_as_now_on": 0,
+   "differs": 180,
+   "differs_with_back_early_now": 180,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 156,
+   "now_on_worse_flags": {
+    "rear_faster": 156,
+    "rear_more": 96,
+    "rear_push_more": 4
+   },
+   "fixed_vs_off": 68,
+   "dback_min": -1.034,
+   "dback_max": 0.0,
+   "dback_med": -0.257,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qC": {
+   "same_as_now_on": 0,
+   "differs": 180,
+   "differs_with_back_early_now": 180,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 152,
+   "now_on_worse_flags": {
+    "rear_faster": 152,
+    "rear_more": 14
+   },
+   "fixed_vs_off": 68,
+   "dback_min": -0.272,
+   "dback_max": 0.0,
+   "dback_med": 0.0,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  }
+ },
+ "sl": {
+  "n": 432,
+  "now_on_worse_than_off_scenes": 400,
+  "new_worse_than_off": {
+   "qA": {
+    "n": 0,
+    "flags": {}
+   },
+   "qC": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qA": {
+   "same_as_now_on": 432,
+   "differs": 0,
+   "differs_with_back_early_now": 0,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 0,
+   "now_on_worse_flags": {},
+   "fixed_vs_off": 0,
+   "dback_min": null,
+   "dback_max": null,
+   "dback_med": null,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  },
+  "qC": {
+   "same_as_now_on": 432,
+   "differs": 0,
+   "differs_with_back_early_now": 0,
+   "worse_than_off": 0,
+   "worse_than_off_flags": {},
+   "worse_than_now_on": 0,
+   "worse_than_now_on_flags": {},
+   "now_on_worse": 0,
+   "now_on_worse_flags": {},
+   "fixed_vs_off": 0,
+   "dback_min": null,
+   "dback_max": null,
+   "dback_med": null,
+   "examples_worse_than_off": [],
+   "new_worse_than_off": {
+    "n": 0,
+    "flags": {}
+   }
+  }
+ },
+ "total": {
+  "qA_differs": 1419,
+  "qA_worse_than_off": 664,
+  "qA_worse_than_now_on": 608,
+  "qA_now_on_worse": 711,
+  "qA_fixed_vs_off": 186,
+  "qA_new_worse_than_off": 564,
+  "qC_differs": 1419,
+  "qC_worse_than_off": 108,
+  "qC_worse_than_now_on": 7,
+  "qC_now_on_worse": 781,
+  "qC_fixed_vs_off": 380,
+  "qC_new_worse_than_off": 5,
+  "n": 4542,
+  "now_on_worse_than_off_scenes": 1303
+ }
+}

@@ -17,6 +17,24 @@ tests/fixtures/fix7_docs_r2_before/(7-1 回目の写し tests/fixtures/fix7_docs
   (中立で停止中のまま人側にしたあとの走り直し・ON の走り直しの空転と欠け)は g1・g5 に入れた。言葉が本物のコードにあるかも見る。
 - わざと壊す: 直す前の写しでは 6 つの確かめが全部落ちる。台本の 45 個の直しのうち頭の記録の 5 個を除く 40 個を 1 つずつ元に戻すと、
   その指摘の確かめが落ちる。ほかの形の壊しも落ちる。7-1 回目の 44 個の直しと画面の版 9 の直しは、どれも「済」のまま。
+- 2026-10-28 fix8 docs-decided(experiments/20261026_fix/fix8/docs_decided/docs_fix8_decided.py): 10/28 00:53:23 のもう一度の再起動の
+  記録などを、この組の文の終わり(「 |」の前)に足した(SUPERSEDE。g1〜g6 が引く言葉は消していない)。台本の直しが「済」かは書き換えを
+  戻した文書(fix8.revert)で、わざと壊すは書き換えたあとの new(fix8.effective)で照らす。書き換えた文がちょうど 1 回あることも見る。
+- 2026-10-28 fix8 docs 同期 1(experiments/20261026_fix/fix8/docs_sync1/docs_fix8_sync1.py): 反証 8-1 回目の夜の道具の直し(OFF の本の
+  カメラの止まり)を、この組の 3 章「わざと OFF にした日」の文の終わりに足した(SUPERSEDE 1 か所。g1〜g6 が引く言葉は消していない)。
+  台本の直しが「済」かは 同期 1 → fix8 docs-decided の順に書き換えを戻した文書(fix8.revert(s1.revert(…)))で、わざと壊すは両方の
+  書き換えのあとの形の new(fix8.effective → s1.effective)で照らす(弱めていない: 同じ 45・40 個と 7-1 回目の 44 個)。
+- 2026-10-28 fix8 docs 直す 8-2 回目(experiments/20261026_fix/fix8/fix_docs_r2/docs_fix8_r2.py): 反証 8-2 回目の指摘で、この組の文のうち
+  4 つ(手順書 3 章「最初のリカバリー」の「1 m 以上下がる・後ろの物に近づく・おかしな動き(…」・7 章 中立止めの「(印が無ければ … --skip」・
+  8.1 ⑤ の「印の無い走り直し … で外す」・todo 3 章の「戻したら紙に「走り直し: 本・時刻」。」)と approvals 0 章の 2 を意図して書き換えた
+  (SUPERSEDE)。「済」は fix8 docs r2 → 同期 1 → fix8 docs-decided の順に戻した文書(fix8.revert(s1.revert(r82.revert(…))))で、わざと
+  壊すは 3 つの書き換えのあとの形(r82.effective(…, s1.effective(…, fix8.effective(…))))で照らす(弱めていない: 同じ 45・40 個と
+  7-1 回目の 44 個)。g2 の「approvals 今の行」は、その行の頭を「前の今(10/27 17:3x。…」にした(f8r2-docs-approvals-restart-stale)ので、
+  前の頭か今の頭の行を引く(中身の確かめは同じ)。
+- 2026-10-28 fix8 docs 仕上げ(experiments/20261026_fix/fix8/docs_final/docs_fix8_final.py): 反証 8 回目の終わりに、この組の文のうち 1 つ
+  (手順書 3 章「わざと OFF にした日」の終わり)を意図して書き換えた(SUPERSEDE。足しただけ)。「済」は仕上げ → fix8 docs r2 → 同期 1 →
+  fix8 docs-decided の順に戻した文書(fix8.revert(s1.revert(r82.revert(fin.revert(…)))))で、わざと壊すは 4 つの書き換えのあとの形
+  (fin.effective(…, r82.effective(…, s1.effective(…, fix8.effective(…)))))で照らす(弱めていない: 同じ 45・40 個と 7-1 回目の 44 個)。
 """
 import ast
 import contextlib
@@ -40,6 +58,10 @@ SCRIPT = JF / 'experiments' / '20261026_fix' / 'fix7' / 'docs_r2' / 'docs_fix7_r
 GEN = JF / 'experiments' / '20261026_fix' / 'fix7' / 'tools_r1' / 'probes' / 'gen_course.py'
 COLLECT = JF / 'experiments' / '20261026_fix' / 'diag_launch' / 'collect.py'
 RUNS = JF / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py'
+FIX8 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_decided' / 'docs_fix8_decided.py'     # 2026-10-28 fix8 docs-decided
+S1 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_sync1' / 'docs_fix8_sync1.py'          # 2026-10-28 fix8 docs 同期 1
+R82 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r2' / 'docs_fix8_r2.py'           # 2026-10-28 fix8 docs 直す 8-2 回目
+FIN = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_final' / 'docs_fix8_final.py'         # 2026-10-28 fix8 docs 仕上げ
 RB, TODO, RD, AP, F6 = 'runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md', 'fix6/README.md'
 FILES = (RB, TODO, RD, AP, F6)
 
@@ -78,6 +100,30 @@ def before():
 @pytest.fixture(scope='module')
 def script():
     return _load('docs_fix7_r2_t', SCRIPT)
+
+
+@pytest.fixture(scope='module')
+def fix8():
+    """fix8 docs-decided が意図して書き換えた所(SUPERSEDE)・revert・effective"""
+    return _load('docs_fix8_decided_from_t2', FIX8)
+
+
+@pytest.fixture(scope='module')
+def s1():
+    """fix8 docs 同期 1 が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_sync1_from_t2', S1)
+
+
+@pytest.fixture(scope='module')
+def r82():
+    """fix8 docs 直す 8-2 回目が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r2_from_t2', R82)
+
+
+@pytest.fixture(scope='module')
+def fin():
+    """fix8 docs 仕上げが意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_final_from_t2', FIN)
 
 
 def chapter(t, head, nxt):
@@ -186,7 +232,9 @@ def g2_problems(d, tmp=None):
         ('README 6.2 の 8', one(chapter(rd, '### 6.2', '### 6.3'), '| 8 |')),
         ('README 6.2 の 26', one(chapter(rd, '### 6.2', '### 6.3'), '| 26 |')),
         ('README 6.4', one(rd, '| 再起動で 10/26〜10/27 のサーバーの直しが動く')),
-        ('approvals 今の行', one(ap, '- **今(10/27 17:3x。')),
+        # 2026-10-28 fix8 docs r2(f8r2-docs-approvals-restart-stale): この行は「前の今(10/27 17:3x。…)」に名前を変えた(中身の文は同じ。
+        # 下の「**2 は済み**(10/27 17:16:28 …」も同じ行で見る)
+        ('approvals 今の行', one(ap, '- **今(10/27 17:3x。') or one(ap, '- 前の今(10/27 17:3x。')),
         ('approvals 0 章 2', one(chapter(ap, '## 0. 一覧', '## 1. '), '| 2 |')),
         ('approvals 2 今', one(chapter(ap, '## 2. jetformer-web の再起動の日', '## 3. '), '| 今 |')),
         ('fix6/README 7 章 1', one(chapter(f6, '## 7. 次に', '### 今のファイル'), '| 1 |')),
@@ -360,12 +408,24 @@ def test_g4_block_survives_each_failure(live, before, tmp_path):
     assert run_block(old, tmp_path / 'old0', '0', '0') == []          # 落ちなければ前の塊も回る(落ちたときだけの指摘)
 
 
-def test_script_edits_all_done(live, script):
+def test_script_edits_all_done(live, script, fix8, s1, r82, fin):
     """直しの台本の 43 個の直しは、今の文書でどれも「済」(もう一度流しても何もしない)。7-1 回目の 44 個と画面の版 9 の直しも済のまま
-    (7-1 回目の new の文は、どれも今の文書にちょうど 1 回ある)"""
-    _, rep = script.apply_text(live)
+    (7-1 回目の new の文は、どれも今の文書にちょうど 1 回ある)。
+    2026-10-28 fix8 docs-decided: fix8 が意図して書き換えた所(SUPERSEDE)は書き換えを戻した文書で照らす。書き換えた文は今の文書に
+    ちょうど 1 回(消した文は 0 回)。
+    2026-10-28 fix8 docs 同期 1: 戻すのは 同期 1 → fix8 docs-decided の順(同期 1 の書き換えも今の文書にちょうど 1 回)。
+    2026-10-28 fix8 docs r2: その前に fix8 docs r2 の書き換えを戻す(fix8 docs r2 の書き換えは今の文書にちょうど 1 回。fix8 docs-decided・
+    同期 1 の書き換えは、fix8 docs r2 を戻した文書で照らす = fix8 docs r2 が approvals 0 章の 2 の中を書き換えたため)。
+    2026-10-28 fix8 docs 仕上げ: さらにその前に仕上げの書き換えを戻す(仕上げの書き換えは今の文書にちょうど 1 回。前の 3 つの書き換えは
+    仕上げを戻した文書で照らす = 仕上げが前の係の文の中も書き換えたため)"""
+    assert fin.superseded_present(live) == []
+    livef = fin.revert(live)
+    assert r82.superseded_present(livef) == []
+    assert fix8.superseded_present(r82.revert(livef)) == [] and s1.superseded_present(r82.revert(livef)) == []
+    old = fix8.revert(s1.revert(r82.revert(livef)))
+    _, rep = script.apply_text(old)
     assert len(rep) == 45 and [s for _, _, s in rep] == ['done'] * 45, [(f, o[:30], s) for f, o, s in rep if s != 'done']
-    assert script.r1_intact(live) == []
+    assert script.r1_intact(old) == []
 
 
 # 台本の (文書, 何番目) → それを元に戻すと落ちる確かめ。書いていない 5 つは頭の記録の行だけ(「済」の試験が見る)
@@ -379,8 +439,11 @@ CATCH = {(RB, 1): 'g2', (RB, 2): 'g3', (RB, 3): 'g6', (RB, 4): 'g3', (RB, 5): 'g
 LOG_ONLY = {(RB, 0), (TODO, 0), (RD, 0), (AP, 1), (F6, 0)}
 
 
-def test_reverting_each_edit_is_caught(live, script, tmp_path):
-    """わざと壊す: 台本の直しを 1 つずつ元の文に戻すと、その指摘の確かめが落ちる(40 個)。戻さなければ通る"""
+def test_reverting_each_edit_is_caught(live, script, tmp_path, fix8, s1, r82, fin):
+    """わざと壊す: 台本の直しを 1 つずつ元の文に戻すと、その指摘の確かめが落ちる(40 個)。戻さなければ通る。
+    2026-10-28 fix8 docs-decided: fix8 が書き換えた直しは、書き換えたあとの形の new(fix8.effective)を元の文に戻す。
+    2026-10-28 fix8 docs 同期 1: 同期 1 が書き換えた直し(3 章「わざと OFF にした日」)は、その書き換えのあとの形(s1.effective)。
+    2026-10-28 fix8 docs r2: その上の書き換え(r82.effective)のあとの形"""
     n = 0
     for f, edits in script.ALL:
         for i, (old, new) in enumerate(edits):
@@ -388,6 +451,7 @@ def test_reverting_each_edit_is_caught(live, script, tmp_path):
             if key not in CATCH:
                 assert key in LOG_ONLY, key
                 continue
+            new = fin.effective('r2', f, i, r82.effective('r2', f, i, s1.effective('r2', f, i, fix8.effective('r2', f, i, new))))   # + 仕上げ
             assert live[f].count(new) == 1, key
             broken = dict(live, **{f: live[f].replace(new, old, 1)})
             assert CHECKS[CATCH[key]](broken, tmp_path / ('r%s_%d' % (f.replace('/', '_'), i))) != [], key

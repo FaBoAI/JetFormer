@@ -205,6 +205,12 @@ FIREFOX = os.environ.get('JF_UI_FIREFOX') == '1'
 GECKO = shutil.which('geckodriver') or ('/snap/bin/geckodriver' if os.path.exists('/snap/bin/geckodriver') else None)
 
 
+def _to_fixed1(x):
+    """JavaScript の Number.prototype.toFixed(1) と同じ文字(2 進の値そのものを丸める・ちょうど半分なら大きい側)"""
+    from decimal import ROUND_HALF_UP, Decimal
+    return str(Decimal(float(x)).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP))
+
+
 def _free_port():
     s = socket.socket()
     s.bind(('127.0.0.1', 0))
@@ -380,7 +386,13 @@ def test_firefox_drive_tab_vbat_and_switches():
         wd.js("document.querySelector('#dr-speed-ceiling').click()")
         assert _wait(lambda: wd.js('return window._confirms.length') == 1)
         msg = wd.js('return window._confirms[0]')
-        assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+        # 確認の文の数は今の既定から作る(偽のサーバーの state['params'] = drive.DEFAULT_PARAMS の写し。2026-10-28 fix8 ui r2: 前は固定の
+        # 「全体 4.5・左旋回中 4.0 m/s」で、既定の ceil_left_mps が 4.1 になってから落ちていた)。app.js の ceilSpecText は toFixed(1)
+        ceil_keys = ('ceil_all_mps', 'ceil_left_mps')
+        assert {k: state['params'][k] for k in ceil_keys} == {k: drive.DEFAULT_PARAMS[k] for k in ceil_keys}
+        assert (spec['ceiling']['all_mps'], spec['ceiling']['left_mps']) == tuple(state['params'][k] for k in ceil_keys)
+        ceil_text = '全体 %s・左旋回中 %s m/s' % tuple(_to_fixed1(state['params'][k]) for k in ceil_keys)
+        assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and ceil_text in msg
         assert q('#dr-speed-ceiling', 'checked') is False and not state['calls']
         # 了承 → 送る → 自動合わせが押せる → 自動合わせの確認の文
         wd.js('window._answer = true;')

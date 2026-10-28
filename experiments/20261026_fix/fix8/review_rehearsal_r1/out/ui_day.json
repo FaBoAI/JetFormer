@@ -1,0 +1,3730 @@
+{
+ "steps": [
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "check",
+   "checked": false,
+   "confirm": ""
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 250 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 1.00\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 1.00\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "AI走行 clean_driving_20261011-nocmd-s3-20261011-024626",
+   "record": false,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "リカバリーの後ろの見張りを ON にします。\n\nリカバリーの「ブレーキ」「待つ」「中立」の段でも、後ろへ動いていたら下がった時間として数え、下がる時間に届いたら惰性にします。後ろへ動いている(直前まで動いていた)ときの衝撃(2.5G 以上)は、後ろに当たったとしてすぐ前へ出します。模型と記録の再生でしか確かめていません(実車の ESC ではまだ)。使う日は最初のリカバリーを人が見て、1 m 以上下がる・後ろの物に近づくときはすぐ CH3 を人側へ。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "中立止めのあともリカバリーを残すを ON にします。\n\n後ろの見張りが ON のときだけ使えます(後ろの見張りを OFF にすると、これも OFF)。AI 側のままの中立止め(カメラの遅れ・I2C の失敗など。1 フレームでも)で、リカバリーの中止・途中の段・ぶつかった印を消しません。OFF(今まで)は中立止め 1 回で全部消え、中止が解けるとモデルの弱い前進が壁を押し続けることがあります。戻すのは CH3 を人側にしたとき・人側の中立止め・走行の開始。机上の試験だけで、実車ではまだです。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 発進の前進 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 1(B モデルB(基準))</b>を画面に入れました。変えた所: 収集 OFF → ON、説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 1・official=1)を消した、速度 0.92 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 2(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=2 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-2・P1・床1本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=2 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-2・P1・床1本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=2 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-2・P1・床1本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=2 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-2・P1・床1本目・止まって3周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 2・official=1)を消した、速度 0.92 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 3(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 3・official=1)を消した、速度 0.92 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 4(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=4 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=4 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=4 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=4 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 4・official=1)を消した、速度 0.92 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 5(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=5 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-5・P1・天井OFF・4〜6周(A/B/AのA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=5 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-5・P1・天井OFF・4〜6周(A/B/AのA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=5 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-5・P1・天井OFF・4〜6周(A/B/AのA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=5 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-5・P1・天井OFF・4〜6周(A/B/AのA) throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 5・official=1)を消した、速度 0.92 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 6(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=6 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-1・天井4.1・目安ゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=6 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-1・天井4.1・目安ゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=6 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-1・天井4.1・目安ゲイン・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=6 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-1・天井4.1・目安ゲイン・4〜6周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 6・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 7(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=7 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-2・P1・天井OFF・4〜6周(A) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.92"
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=7 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-2・P1・天井OFF・4〜6周(A) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=7 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-2・P1・天井OFF・4〜6周(A) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.92\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=7 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-2・P1・天井OFF・4〜6周(A) throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.92,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.92",
+   "text": "0.92"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 7・official=1)を消した、速度 0.92 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 8(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=8 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-3・天井4.1+自動8.12・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さのゲインの自動合わせを ON にします(目標 1 周 8.12 秒(周の速さ p90 4.27 m/s 相当))。\n\n電圧の源: なし(1.00 倍。周ごとの直しだけ)\n範囲: 速度ゲインの 0.85〜1.20 倍(上げるのは 1.10 まで)。\n速さのゲインに 0.85〜1.20 倍を掛けます(上げるのは 1.10 まで)。天井が ON のときだけ。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=8 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-3・天井4.1+自動8.12・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=8 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-3・天井4.1+自動8.12・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 1,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=8 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-3・天井4.1+自動8.12・4〜6周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 1,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 8・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF、速さのゲインの自動合わせ ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 9(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=9 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-4・天井4.1+自動8.12・くり返し throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さのゲインの自動合わせを ON にします(目標 1 周 8.12 秒(周の速さ p90 4.27 m/s 相当))。\n\n電圧の源: なし(1.00 倍。周ごとの直しだけ)\n範囲: 速度ゲインの 0.85〜1.20 倍(上げるのは 1.10 まで)。\n速さのゲインに 0.85〜1.20 倍を掛けます(上げるのは 1.10 まで)。天井が ON のときだけ。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=9 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-4・天井4.1+自動8.12・くり返し throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=9 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-4・天井4.1+自動8.12・くり返し throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 1,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=9 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-4・天井4.1+自動8.12・くり返し throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 1,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 9・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF、速さのゲインの自動合わせ ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 10(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=10 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-5・天井4.2(条件つき)・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.2,
+    "speed_auto": 1,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.2 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=10 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-5・天井4.2(条件つき)・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=10 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-5・天井4.2(条件つき)・4〜6周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.2 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=10 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-5・天井4.2(条件つき)・4〜6周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.2,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 10・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 11(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=11 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-6・天井4.1に戻す・4〜6周(4.2のA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=11 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=2-6・天井4.1に戻す・4〜6周(4.2のA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=11 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-6・天井4.1に戻す・4〜6周(4.2のA) throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=11 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=2-6・天井4.1に戻す・4〜6周(4.2のA) throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 11・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 12(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=12 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-1・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=12 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-1・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=12 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-1・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=12 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-1・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 12・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 13(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 250 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=13 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 13・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF、発進の前進 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 14(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=14 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-3・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=14 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-3・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=14 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-3・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=14 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-3・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 14・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 15(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 200 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "reboot"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "tick",
+   "fired": [
+    1000,
+    300,
+    250,
+    6000
+   ]
+  },
+  {
+   "op": "realpoll"
+  },
+  {
+   "op": "el",
+   "sel": "#toast",
+   "prop": "text",
+   "value": "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-message",
+   "prop": "html",
+   "value": "<div class=\"warn-text\">管理画面のサーバーが 09:33 に起動し直しました。起動のたびに既定に戻るもの: リカバリーの後ろの見張り・中立止めのあともリカバリーを残す・発進の前進を出さない区間は発進の補助も出さないは OFF、天井の左旋回中 4.1 m/s、発進の前進の強さ 250 µs など。朝に入れた値は、止まっているときに入れ直し、スイッチと走行開始の確認の文で読む(手順書 7 章)。画面を読み直すとこの文は消えます</div>"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">リカバリーの後ろの見張りが OFF のあいだは押せません</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.95
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "リカバリーの後ろの見張りを ON にします。\n\nリカバリーの「ブレーキ」「待つ」「中立」の段でも、後ろへ動いていたら下がった時間として数え、下がる時間に届いたら惰性にします。後ろへ動いている(直前まで動いていた)ときの衝撃(2.5G 以上)は、後ろに当たったとしてすぐ前へ出します。模型と記録の再生でしか確かめていません(実車の ESC ではまだ)。使う日は最初のリカバリーを人が見て、1 m 以上下がる・後ろの物に近づくときはすぐ CH3 を人側へ。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "中立止めのあともリカバリーを残すを ON にします。\n\n後ろの見張りが ON のときだけ使えます(後ろの見張りを OFF にすると、これも OFF)。AI 側のままの中立止め(カメラの遅れ・I2C の失敗など。1 フレームでも)で、リカバリーの中止・途中の段・ぶつかった印を消しません。OFF(今まで)は中立止め 1 回で全部消え、中止が解けるとモデルの弱い前進が壁を押し続けることがあります。戻すのは CH3 を人側にしたとき・人側の中立止め・走行の開始。机上の試験だけで、実車ではまだです。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "realpoll"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-message",
+   "prop": "html",
+   "value": "<div class=\"warn-text\">管理画面のサーバーが 09:33 に起動し直しました。起動のたびに既定に戻るもの: リカバリーの後ろの見張り・中立止めのあともリカバリーを残すは ON(起動のあとに入れ直し済み)、発進の前進を出さない区間は発進の補助も出さないは OFF、天井の左旋回中 4.1 m/s、発進の前進の強さ 今 200 µs(既定 250) など。朝に入れた値は、止まっているときに入れ直し、スイッチと走行開始の確認の文で読む(手順書 7 章)。画面を読み直すとこの文は消えます</div>"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<b class=\"warn-text\">ON: AI 側のままの中立止めではリカバリーを戻しません(中止は CH3 を人側にするまで解けない)</b>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.95
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=15 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 15・official=1)を消した、速度 0.95 → 1.00。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 16(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=16 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-5・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=16 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-5・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=16 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-5・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=16 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-5・発進OFF・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 2000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 16・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 17(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=17 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 200 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=17 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=17 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=17 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 2000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 17・official=1)を消した、速度 0.95 → 1.00、速さの天井 ON → OFF、発進の前進 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 20(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">リカバリーの後ろの見張りは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div><div class=\"warn-text\">中立止めのあともリカバリーを残すは ON のままです(基準の設定・ブロックでは変えません。OFF にするときはスイッチで)</div>"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=20 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=4-1・本番の形・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": true
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 0.9
+  },
+  {
+   "op": "click",
+   "value": "0.91"
+  },
+  {
+   "op": "click",
+   "value": "0.92"
+  },
+  {
+   "op": "click",
+   "value": "0.93"
+  },
+  {
+   "op": "click",
+   "value": "0.94"
+  },
+  {
+   "op": "click",
+   "value": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "0.95"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "速さの天井を ON にします(全体 4.5・左旋回中 4.1 m/s)。\n\n左旋回 = 車に出す舵 +100 µs 以上 か ヨー +45 deg/s 以上(どちらも切れてから 0.25 秒は左旋回のまま)。\n前進を弱めるだけ。ブレーキなし・舵は変えない。天井 + 0.2 m/s を超えたら中立(惰性)。当たりを 0 にはしない(DE の当たりには効かない)。OFF にするまで続く(管理画面の再起動で OFF)。\n走行中は ON にできません(OFF にはできます)。ON は次の走行にも残ります(OFF にするか、管理画面を起動し直すと OFF)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 200 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=20 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=4-1・本番の形・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "eval",
+   "value": "bench=real_bench_20261023 day=2026-11-03 block=20 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=4-1・本番の形・止まって3周 throttle_gain=0.9 official=1 memo="
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 1,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 0.95\nリカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ)\n中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない)\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n発進の前進: ON(前進 200 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "bench=real_bench_20261023 day=2026-11-03 block=20 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=4-1・本番の形・止まって3周 throttle_gain=0.9 official=1 memo=",
+   "record": true,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 2000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 0.95,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 1,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 200,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "0.95",
+   "text": "0.95"
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "リカバリーの後ろの見張りを ON にしました",
+  "中立止めのあともリカバリーを残すを ON にしました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 2(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 3(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 4(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 5(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 6(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 7(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 8(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "速さのゲインの自動合わせを ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 9(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "速さのゲインの自動合わせを ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 10(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 11(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 12(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 13(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 14(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 15(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前進の強さなど)は既定に戻っています",
+  "リカバリーの後ろの見張りを ON にしました",
+  "中立止めのあともリカバリーを残すを ON にしました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 16(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 17(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 20(B モデルB(基準))を画面に入れました(走行は始めていません)",
+  "速さの天井を ON にしました",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました"
+ ]
+}

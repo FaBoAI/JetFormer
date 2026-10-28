@@ -1,0 +1,40 @@
+| # | ファイル | 壊し | 結果 | 落ちた最初の試験 |
+|---|---|---|---|---|
+| 00 | S | ① ③ リカバリーの途中の形を見ない | 落ちる | test_abort_resumes_recovery_unit |
+| 01 | S | ① ③ 区間の最後のフレームを中立止め・人側を除かずに見る | 落ちる | test_abort_resumes_recovery_unit |
+| 02 | S | ① ③ 区間の中にリカバリーがあれば印(最後でなくても) | 落ちる | test_abort_resumes_recovery_unit |
+| 03 | S | ① ③ リカバリーを中立止め・途切れより先に見る(fix7 の印が変わる) | 落ちる | test_abort_resumes_recovery_unit |
+| 04 | S | ① ③ abort_s を区間の最初のリカバリーのフレームに | 落ちる | test_abort_resumes_recovery_unit |
+| 05 | S | ① ③ rec_s を最後のリカバリーのフレームまで | 落ちる | test_abort_resumes_recovery_unit |
+| 06 | S | ① ③ verpm の無い呼び方ではリカバリーを見ない(早い戻り) | 落ちる | test_abort_resumes_recovery_unit |
+| 07 | S | ① ③ 走り直しの区間が短くても続けない(carried) | 落ちる | test_abort_resumes_recovery_unit |
+| 08 | S | ① ③ リカバリーの印でも counted を False にしない | 落ちる | test_s3_recovery_resume_not_counted[3.5] |
+| 09 | S | ① ③ 注 RECOVERY_NOTE を出さない | 落ちる | test_s3_recovery_resume_not_counted[3.5] |
+| 10 | S | ① ③ 注 RECOVERY_NOTE をいつも出す | 落ちる | test_s3_qp_no_recovery_same_as_before[N] |
+| 11 | S | ① ③ 表の形の文: リカバリーを中止の文で | 落ちる | test_abort_text_recovery |
+| 12 | S | ① ③ 形の文の頭を変える | 落ちる | test_abort_text_recovery |
+| 13 | C | ① ⑤ 組の行の説明にリカバリーの 1 文を足さない | 落ちる | test_c5_recovery_resume_is_excluded[0.5] |
+| 14 | C | ① ⑤ 組の行の説明にリカバリーの 1 文をいつも足す | 落ちる | test_c5_fix7_marks_come_first[hold] |
+| 15 | C | ① ⑤ 形の文: リカバリーを中止の文で | 落ちる | test_abort_text_recovery |
+| 16 | C | ② 途中で変えた・試しの本の空転を見ない | 落ちる | test_c5_trial_midrun_on_spin_counts[trial] |
+| 17 | C | ② 試しの本の空転を見ない(途中で変えた本だけ) | 落ちる | test_c5_trial_midrun_on_spin_counts[trial] |
+| 18 | C | ② 空転を checks の slip に入れない | 落ちる | test_c5_trial_midrun_on_spin_counts[trial] |
+| 19 | C | ② 比が出ないを slip_all_measured に入れない | 落ちる | test_c5_trial_midrun_slip_unmeasured[trial] |
+| 20 | C | ② いちばんひどい空転を数えない | 落ちる | test_c5_trial_midrun_extreme_spin[trial] |
+| 21 | C | ② OFF の本の空転も数える | 落ちる | test_c5_trial_midrun_not_counted_shapes_same[off_spin-trial] |
+| 22 | C | ② R1 に届かなかった ON(空転の比を出さない)も数える | 落ちる | test_c5_trial_midrun_not_counted_shapes_same[noreach-trial] |
+| 23 | C | ② launch_us が混ざっても全部の強さの空転を数える | 落ちる | test_c5_trial_spin_mixed_launch_us[250.0-False] |
+| 24 | C | ② 最初の周の欠けを数えない | 落ちる | test_c5_trial_midrun_first_lap_gap[trial] |
+| 25 | C | ② 欠けた発進の名前の後ろに「。試し」「。途中で変えた」を付けない | 落ちる | test_c5_trial_midrun_first_lap_gap[trial] |
+| 26 | C | ② 空転の行を出さない | 落ちる | test_c5_trial_midrun_on_spin_counts[trial] |
+| 27 | C | ② 比が出ないの行を出さない | 落ちる | test_c5_trial_midrun_slip_unmeasured[trial] |
+| 28 | C | ③ ⑤ 混ざった注意の行の後ろの文を足さない | 落ちる | test_c5_mixed_options_line_tells_deliberate_off |
+| 29 | R | ③ ② 印の後ろの文を前の文に戻す | 落ちる | test_runs_mark_text_tells_deliberate_off |
+| 30 | R | ③ ② options_line で本「—」を区切りから外す | 落ちる | test_runs_options_line_unchanged |
+| 31 | Q | ① ④ 2 章の下の行にリカバリーの 1 文を足さない | 落ちる | test_s3_recovery_resume_not_counted[3.5] |
+| 32 | Q | ① ④ 2 章の下の行にリカバリーの 1 文をいつも足す | 落ちる | test_s3_qp_no_recovery_same_as_before[abort] |
+| 33 | D | ④ PYTEST_GB を 3.9 に戻す | 落ちる | test_disk_pytest_gb_matches_the_measurement |
+| 34 | D | ④ PYTEST_GB_KEEP を 3.9 に | 落ちる | test_disk_pytest_gb_matches_the_measurement |
+| 35 | D | ④ 行に付けないときの数を出さない | 落ちる | test_disk_print_line |
+| 36 | D | ④ 説明の文からオプションの名前を消す | 通る(見逃し) | — |
+| 37 | C | 対照: CRIT の起点の差 0.15 → 0.10 | 落ちる | test_c5_mixed_options_line_tells_deliberate_off |

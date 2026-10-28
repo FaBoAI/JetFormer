@@ -1,0 +1,73 @@
+pre-recovery differs: []  front hits in rec: 296
+guard-only differs from ON: []
+== mine all: {"n": 11232, "counts": {"same": 1860, "on_faster": 2956, "off_faster": 2642, "off_only": 3226, "neither": 540, "on_only": 8}, "sign_test_on_vs_off_faster": [2956, 2642, 0.0], "on_minus_off_when_on_faster": {"n": 2956, "mean": 0.383, "median": 0.366, "max": 1.255}, "off_minus_on_when_off_faster": {"n": 2642, "mean": 0.654, "median": 0.42, "max": 2.449}, "on_only_speed": {"n": 8, "mean": 1.165, "median": 1.385, "max": 1.625}, "off_only_speed": {"n": 3226, "mean": 2.208, "median": 2.357, "max": 2.997}, "hits_on": 7466, "hits_off": 10684, "mean_hit_speed_on": 1.224, "mean_hit_speed_off": 1.91, "mean_v2_on": 2.383, "mean_v2_off": 4.061}
+== mine near (<1.0 m from stop): {"n": 5184, "counts": {"same": 1640, "on_faster": 2922, "off_faster": 622}, "sign_test_on_vs_off_faster": [2922, 622, 0.0], "on_minus_off_when_on_faster": {"n": 2922, "mean": 0.384, "median": 0.366, "max": 1.005}, "off_minus_on_when_off_faster": {"n": 622, "mean": 0.279, "median": 0.221, "max": 1.027}, "on_only_speed": null, "off_only_speed": null, "hits_on": 5184, "hits_off": 5184, "mean_hit_speed_on": 1.898, "mean_hit_speed_off": 1.713, "mean_v2_on": 3.718, "mean_v2_off": 3.067}
+  band 0.0-0.5 {'same': 992, 'on_faster': 1312} sign [1312, 0, 0.0] ON+ {'n': 1312, 'mean': 0.41, 'median': 0.366, 'max': 1.005} OFF+ None v2 on/off 2.881 2.125
+  band 0.5-1.0 {'on_faster': 1610, 'same': 648, 'off_faster': 622} sign [1610, 622, 0.0] ON+ {'n': 1610, 'mean': 0.362, 'median': 0.365, 'max': 0.926} OFF+ {'n': 622, 'mean': 0.279, 'median': 0.221, 'max': 1.027} v2 on/off 4.387 3.82
+  band 1.0-1.5 {'off_faster': 1710, 'off_only': 868, 'neither': 46, 'same': 214, 'on_faster': 34, 'on_only': 8} sign [34, 1710, 0.0] ON+ {'n': 34, 'mean': 0.317, 'median': 0.195, 'max': 1.255} OFF+ {'n': 1710, 'mean': 0.69, 'median': 0.562, 'max': 1.981} v2 on/off 2.355 5.357
+  band 1.5-2.0 {'off_only': 2168, 'neither': 396, 'off_faster': 310, 'same': 6} sign [0, 310, 0.0] ON+ None OFF+ {'n': 310, 'mean': 1.209, 'median': 1.263, 'max': 2.449} v2 on/off 0.246 4.623
+  band 2.0-2.5 {'neither': 98, 'off_only': 190} sign [0, 0, 1.0] ON+ None OFF+ None v2 on/off 0.0 3.363
+== by esc (all d):
+  cl               all {'same': 48, 'on_faster': 156, 'off_faster': 160, 'off_only': 98, 'neither': 162} sign [156, 160, 0.866] | v2 on 1.84 off 2.18 | near<1m {'same': 48, 'on_faster': 156, 'off_faster': 84} | back on 1.211 off 1.521 (on>off 0 off>on 16)
+  fit              all {'same': 112, 'on_faster': 134, 'off_faster': 146, 'off_only': 232} sign [134, 146, 0.511] | v2 on 2.10 off 4.77 | near<1m {'same': 112, 'on_faster': 134, 'off_faster': 42} | back on 1.306 off 2.395 (on>off 0 off>on 16)
+  fit_A2.0         all {'same': 84, 'on_faster': 118, 'off_faster': 122, 'off_only': 248, 'neither': 52} sign [118, 122, 0.8465] | v2 on 1.24 off 2.84 | near<1m {'same': 84, 'on_faster': 118, 'off_faster': 86} | back on 1.097 off 1.864 (on>off 0 off>on 16)
+  fit_A4.5         all {'same': 148, 'on_faster': 176, 'off_faster': 184, 'off_only': 116} sign [176, 184, 0.7122] | v2 on 3.92 off 5.95 | near<1m {'same': 112, 'on_faster': 176} | back on 1.676 off 2.869 (on>off 0 off>on 16)
+  fit_Vmax2.5      all {'same': 92, 'on_faster': 138, 'off_faster': 126, 'off_only': 234, 'neither': 34} sign [138, 126, 0.4985] | v2 on 1.48 off 2.98 | near<1m {'same': 92, 'on_faster': 138, 'off_faster': 58} | back on 1.182 off 1.932 (on>off 0 off>on 16)
+  fit_Vmax3.5      all {'same': 126, 'on_faster': 166, 'off_faster': 184, 'off_only': 148} sign [166, 184, 0.3635] | v2 on 3.45 off 6.18 | near<1m {'same': 120, 'on_faster': 166, 'off_faster': 2} | back on 1.580 off 2.881 (on>off 0 off>on 16)
+  fit_coast0.0     all {'same': 114, 'on_faster': 146, 'off_faster': 148, 'off_only': 216} sign [146, 148, 0.9535] | v2 on 2.26 off 4.96 | near<1m {'same': 114, 'on_faster': 146, 'off_faster': 28} | back on 1.348 off 2.476 (on>off 0 off>on 16)
+  fit_coast1.5     all {'same': 96, 'on_faster': 134, 'off_faster': 130, 'off_only': 264} sign [134, 130, 0.8536] | v2 on 1.76 off 4.17 | near<1m {'same': 96, 'on_faster': 134, 'off_faster': 58} | back on 1.198 off 2.184 (on>off 0 off>on 16)
+  fit_coast3.0     all {'same': 80, 'on_faster': 132, 'off_faster': 102, 'off_only': 274, 'neither': 36} sign [132, 102, 0.0578] | v2 on 1.42 off 3.20 | near<1m {'same': 80, 'on_faster': 132, 'off_faster': 76} | back on 1.069 off 1.920 (on>off 0 off>on 16)
+  fit_const        all {'same': 102, 'on_faster': 112, 'off_faster': 160, 'off_only': 216, 'neither': 34} sign [112, 160, 0.0043] | v2 on 1.85 off 3.05 | near<1m {'same': 102, 'on_faster': 112, 'off_faster': 74} | back on 1.250 off 1.929 (on>off 0 off>on 16)
+  fit_lag0.05      all {'same': 120, 'on_faster': 184, 'off_faster': 176, 'off_only': 144} sign [184, 176, 0.7122] | v2 on 2.98 off 4.72 | near<1m {'same': 104, 'on_faster': 184} | back on 1.565 off 2.354 (on>off 0 off>on 16)
+  fit_lag0.1       all {'same': 132, 'on_faster': 202, 'off_faster': 182, 'off_only': 108} sign [202, 182, 0.3323] | v2 on 3.42 off 4.71 | near<1m {'same': 86, 'on_faster': 202} | back on 1.691 off 2.346 (on>off 0 off>on 16)
+  fit_lag0.15      all {'same': 146, 'on_faster': 238, 'off_faster': 192, 'off_only': 48} sign [238, 192, 0.0299] | v2 on 4.08 off 4.63 | near<1m {'same': 64, 'on_faster': 224} | back on 1.871 off 2.302 (on>off 0 off>on 16)
+  fit_rdelay0.05   all {'same': 96, 'on_faster': 168, 'off_faster': 168, 'off_only': 192} sign [168, 168, 1.0] | v2 on 2.52 off 4.53 | near<1m {'same': 96, 'on_faster': 168, 'off_faster': 24} | back on 1.437 off 2.231 (on>off 0 off>on 16)
+  fit_rdelay0.1    all {'same': 64, 'on_faster': 172, 'off_faster': 180, 'off_only': 204, 'neither': 4} sign [172, 180, 0.7091] | v2 on 2.32 off 3.97 | near<1m {'same': 64, 'on_faster': 172, 'off_faster': 52} | back on 1.370 off 2.018 (on>off 0 off>on 16)
+  fit_rdelay20.05  all {'same': 100, 'on_faster': 162, 'off_faster': 130, 'off_only': 232} sign [162, 130, 0.0695] | v2 on 2.10 off 4.51 | near<1m {'same': 100, 'on_faster': 162, 'off_faster': 26} | back on 1.306 off 2.324 (on>off 0 off>on 16)
+  fit_rdelay20.1   all {'same': 100, 'on_faster': 180, 'off_faster': 112, 'off_only': 232} sign [180, 112, 0.0001] | v2 on 2.10 off 4.17 | near<1m {'same': 96, 'on_faster': 180, 'off_faster': 12} | back on 1.306 off 2.234 (on>off 0 off>on 16)
+  human            all {'on_faster': 238, 'same': 100, 'off_faster': 40, 'off_only': 20, 'neither': 218, 'on_only': 8} sign [238, 40, 0.0] | v2 on 2.04 off 1.55 | near<1m {'on_faster': 218, 'same': 70} | back on 1.266 off 1.319 (on>off 2 off>on 10)
+== example_human x0 2.1711 back on/off 1.21 1.334 peak on/off 2.2 2.095
+   phases on  [[2.75, 'brake'], [2.92, 'reverse'], [3.29, 'coast'], [3.55, 'escape'], [4.05, None]]
+   phases off [[2.75, 'brake'], [3.02, 'gap'], [3.19, 'reverse'], [3.59, 'coast'], [3.85, 'escape'], [4.35, None]]
+    0.1:1.0/0.805 0.15:1.25/0.7 0.2:1.4/0.595 0.25:1.6/0.595 0.3:1.75/0.895 0.35:1.85/1.145 0.4:2.0/1.345 0.45:2.1/1.495 0.5:2.185/1.695 0.55:2.155/1.795 0.6:2.125/1.945 0.65:2.08/2.095 0.7:2.05/2.065 0.75:2.005/2.035 0.8:1.975/1.99 0.85:1.93/1.96 0.9:1.9/1.915 0.95:1.855/1.87 1.0:1.81/1.84 1.05:1.57/1.795 1.1:1.33/1.75 1.15:1.01/1.705 1.2:0.37/1.465 1.25:None/1.145 1.3:None/0.745 1.35:None/None 1.4:None/None 1.45:None/None 1.5:None/None 1.55:None/None 1.6:None/None
+== example_fit x0 2.1711 back on/off 1.278 2.406 peak on/off 2.085 2.565
+   phases on  [[2.75, 'brake'], [2.79, 'reverse'], [3.15, 'coast'], [3.42, 'escape'], [3.92, None]]
+   phases off [[2.75, 'brake'], [3.02, 'gap'], [3.19, 'reverse'], [3.59, 'coast'], [3.85, 'escape'], [4.35, None]]
+    0.1:1.157/1.157 0.15:1.369/1.369 0.2:1.511/1.511 0.25:1.682/1.637 0.3:1.76/1.625 0.35:1.868/1.613 0.4:1.967/1.601 0.45:2.028/1.589 0.5:2.081/1.577 0.55:2.073/1.616 0.6:2.061/1.737 0.65:2.053/1.847 0.7:2.045/1.948 0.75:2.033/2.01 0.8:2.025/2.096 0.85:2.013/2.15 0.9:2.005/2.2 0.95:1.993/2.27 1.0:1.985/2.313 1.05:1.897/2.354 1.1:1.657/2.392 1.15:1.417/2.428 1.2:1.097/2.462 1.25:0.697/2.493 1.3:None/2.523 1.35:None/2.552 1.4:None/2.561 1.45:None/2.553 1.5:None/2.545 1.55:None/2.537 1.6:None/2.529
+== theirs rd all: {"n": 600, "counts": {"on_faster": 98, "same": 49, "off_faster": 90, "off_only": 61, "neither": 297, "on_only": 5}, "sign_test_on_vs_off_faster": [98, 90, 0.6098], "on_minus_off_when_on_faster": {"n": 98, "mean": 0.464, "median": 0.44, "max": 0.95}, "off_minus_on_when_off_faster": {"n": 90, "mean": 0.51, "median": 0.3, "max": 1.4}, "on_only_speed": {"n": 5, "mean": 1.026, "median": 1.1, "max": 1.46}, "off_only_speed": {"n": 61, "mean": 1.534, "median": 1.63, "max": 2.29}, "hits_on": 242, "hits_off": 298, "mean_hit_speed_on": 0.696, "mean_hit_speed_off": 0.844, "mean_v2_on": 1.276, "mean_v2_off": 1.55}
+   by rear (from wall):
+     0.5 {'on_faster': 30}
+     0.6 {'on_faster': 21, 'same': 9}
+     0.7 {'off_faster': 4, 'on_faster': 16, 'same': 10}
+     0.8 {'on_faster': 12, 'same': 10, 'off_faster': 8}
+     0.9 {'on_faster': 6, 'off_faster': 12, 'same': 11, 'on_only': 1}
+     1.0 {'off_faster': 20, 'on_faster': 6, 'same': 3, 'on_only': 1}
+     1.1 {'off_faster': 18, 'on_faster': 5, 'neither': 5, 'same': 1, 'on_only': 1}
+     1.2 {'on_faster': 1, 'off_only': 5, 'off_faster': 13, 'same': 5, 'on_only': 1, 'neither': 5}
+     1.3 {'off_only': 9, 'off_faster': 9, 'neither': 11, 'on_faster': 1}
+     1.4 {'off_only': 13, 'neither': 11, 'off_faster': 5, 'on_only': 1}
+     1.5 {'neither': 16, 'off_only': 13, 'off_faster': 1}
+     1.6 {'neither': 21, 'off_only': 9}
+     1.7 {'neither': 22, 'off_only': 8}
+     1.8 {'neither': 26, 'off_only': 4}
+     1.9 {'neither': 30}
+     2.0 {'neither': 30}
+     2.1 {'neither': 30}
+     2.2 {'neither': 30}
+     2.3 {'neither': 30}
+     2.4 {'neither': 30}
+    human_coast0.3 {'on_faster': 6, 'same': 8, 'off_faster': 5, 'off_only': 4, 'neither': 17} v2 on/off 1.768 1.924
+    human_coast1.5 {'on_faster': 10, 'same': 5, 'off_faster': 1, 'neither': 22, 'off_only': 1, 'on_only': 1} v2 on/off 1.375 1.067
+    human_coast3.0 {'on_faster': 10, 'neither': 26, 'on_only': 4} v2 on/off 1.033 0.435
+    n002_coast0.3 {'on_faster': 6, 'off_faster': 10, 'off_only': 9, 'neither': 13, 'same': 2} v2 on/off 1.601 2.657
+    n002_coast1.5 {'same': 1, 'on_faster': 5, 'off_faster': 10, 'off_only': 5, 'neither': 19} v2 on/off 1.234 1.561
+    n002_coast3.0 {'same': 6, 'on_faster': 7, 'neither': 26, 'off_faster': 1} v2 on/off 0.907 0.74
+    n005_coast0.3 {'on_faster': 6, 'same': 2, 'off_faster': 10, 'off_only': 9, 'neither': 13} v2 on/off 1.601 2.657
+    n005_coast1.5 {'on_faster': 5, 'off_faster': 10, 'off_only': 5, 'neither': 19, 'same': 1} v2 on/off 1.234 1.561
+    n005_coast3.0 {'on_faster': 7, 'same': 6, 'off_faster': 1, 'neither': 26} v2 on/off 0.907 0.74
+    n020_coast0.3 {'on_faster': 6, 'off_faster': 10, 'same': 2, 'off_only': 9, 'neither': 13} v2 on/off 1.601 2.657
+    n020_coast1.5 {'on_faster': 5, 'off_faster': 10, 'off_only': 5, 'neither': 19, 'same': 1} v2 on/off 1.234 1.561
+    n020_coast3.0 {'on_faster': 7, 'same': 6, 'neither': 26, 'off_faster': 1} v2 on/off 0.907 0.74
+    orig_coast0.3 {'on_faster': 6, 'same': 2, 'off_faster': 10, 'off_only': 9, 'neither': 13} v2 on/off 1.601 2.657
+    orig_coast1.5 {'on_faster': 5, 'off_faster': 10, 'off_only': 5, 'neither': 19, 'same': 1} v2 on/off 1.234 1.561
+    orig_coast3.0 {'on_faster': 7, 'same': 6, 'off_faster': 1, 'neither': 26} v2 on/off 0.907 0.74

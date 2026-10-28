@@ -1,0 +1,32 @@
+{
+  "summary": "反証 8-1 回目・係 ui(見方: 状態と設定の受け渡し)。直していない(コード・文書は変えていない)。本物の app.js・index.html を node の vm で(sim.js = tests/fixtures/app_sim_fix7_r2.js の写し、sim2.js = その写しに 2 つの画面・タブの行き来・一覧の GET を止めるを足したもの)、11/3 の朝の流れ(読み直し → 基準の設定 → 見張り → 残す → ブロック → ▶)の各すき間の起き直し 6 通り・古い画面(18:45 の版)・でたらめな朝 40 本(1 画面と 2 画面。起き直し・Wi-Fi の切れ・status だけ途切れ・curl・タブの行き来・スイッチ・ブロック・▶・■。走り出した ▶ 89 回で確認の文の見張り・残す・天井と左・発進の前進と強さ・ゲインがサーバーの走った値と全部同じ = fix7 の直し 4 つは崩れていない)を流した。ベンチマークの候補・モデルの一覧・params は本物の jetformer-web の GET の答え(10/28 00:53 の起動。GET だけ)。スマホの幅 420 px は作り物のサーバー(fake_server.py。127.0.0.1:18771・POST しない)と headless の Firefox(iframe の幅 420)で測った(横のはみ出し 0、▶ と状態のバッジ・走行タブの文は 170 px で同じ画面に入る)。runs_1103.py(33bc7fca)は作り物の log.json に通した(本「—」のあとの「回の本は X から」は 4 形とも正しい)。指摘 3 件(どれも minor): ② の印が回の最初の本が OFF の日に ON の本へ付く・走行タブに戻った直後(一覧の GET を待つ間)の ▶ が古い status の確認の文で走る・スマホでトーストが画面の半分の幅になる。",
+  "findings": [
+    {
+      "id": "runs-opt-mark-on-the-on-runs",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer/experiments/20261026_fix/plan/runs_1103.py",
+      "line": 198,
+      "title": "回の最初の本が OFF(起き直し・入れ忘れのまま 1 本走り、2 本目の前に入れ直した)の日、② の印「回 N の試験の選択肢が … と違う…(再起動で OFF に戻った? 3 章で止めて OFF にした本 X から先なら数える…)」と「計画と違う N 本」が ON の本に付き、本当に OFF で走った本には付かない(8 回目の「回の本は X から」の行とも食い違う)",
+      "scenario": "台本 experiments/20261026_fix/fix8/review_ui_r1/p_runs_first_off.py(作り物の log.json。試験の選択肢のほかは 11/3 のブロックの expect どおり)→ out/runs_first_off.txt。E: 1-1・1-2 ON → 回 2 の前に起き直して 2-1 を OFF のまま走り、2-2 の前に気づいて入れ直す(2-2・2-3 ON)→ 印は 2-2・2-3 に「回 2 の試験の選択肢が 2-1(No.7)と違う: 後ろの見張り ON(2-1 は OFF)・リカバリーを残す ON(2-1 は OFF)(再起動で OFF に戻った? …)」、OFF の 2-1 は印なし、「5 本・計画と違う 2 本」= ON の 2 本。K: 朝の確かめ(本「—」)のあと選択肢を入れる前に 1-1 を走り 1-2 から ON → 表の下の行は「20261103-081500(No.1)から なし(回の本は 1-1(No.2)から) → 1-2(No.3)から 後ろの見張り・リカバリーを残す」(1-1 が OFF と正しく言う)のに、印と「計画と違う 2 本」は ON の 1-2・1-3。round_options が回の最初の本を正としているため(比べ: 1-3 から OFF になる形 C は OFF の 1-3 に印 = 正しい)。手順書 8.1 ② は「「回 N の試験の選択肢が … と違う」の印は、起こし直しで OFF に戻った本 → 7 章」、7 章は「気づいたら、入れ直す前に走った本の走り終わりのメモに「試し」」と読ませるので、ON で走った正しい本(2-2・2-3)を起こし直しの本と読み、試し・--skip にして、OFF の 2-1 を数えうる。",
+      "fix": "round_options で、同じ回の中で ON/OFF が混ざったら OFF の側(その回のほかの本より ON の選択肢が少ない本)に印を付ける(比べる相手はその回で選択肢がいちばん多い最初の本。RESET_ON_BOOT も 3 章のわざと OFF も ON → OFF の向きなので、OFF の本が「計画と違う」側)。C・B(途中から OFF)の出力は今と同じ。試験 test_fix3_r1_2::test_rec3_5_runs_1103_marks_round_option_change に E・K の形を足す。runs_1103.py の sha256 のたどり(LATER_FIX8_*)も。"
+    },
+    {
+      "id": "stale-status-after-drive-tab-return",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer/jetformer/web/static/app.js",
+      "line": 1200,
+      "title": "走行タブを離れていた画面(ライブのタブでセンサーの点検・もう 1 つの画面)が走行タブに戻った直後は、モデルの一覧の GET(約 102 KB)を待つ間 pollDrive を出さず paramsLoaded も true のままなので、▶・ブロックが離れたときの古い status で動き、確認の文が「見張り: ON」「左旋回中 4.1」などサーバーが走る値と違う行を出す",
+      "scenario": "台本 experiments/20261026_fix/fix8/review_ui_r1/p_two_pages.py(sim2.js。一覧の GET を止めて遅い Wi-Fi を真似る)→ out/two_pages.txt。4(1 つの画面): 見張り・残す ON → ライブのタブ → 手順書 3 章の API(curl の 1 を 0)で見張り OFF → 走行タブに戻ってすぐブロック 1-2 → ▶ = 確認の文に「リカバリーの後ろの見張り: ON」「中立止めのあともリカバリーを残す: ON」、サーバーは見張り 0・残す 0 で走り出した(200・running)。1(2 つの画面): A が 3 章の「止めて OFF」をした間に走行タブを離れていた B が戻ってすぐ ▶ = 同じ(ON の 2 行・走った値 0・0)。3: curl で左 4.2・launch_us 200(手順書 5 章)のあと B が戻ってすぐ天井 ON の ▶ = 確認の文「左旋回中 4.1 m/s」、走ったのは 4.2。比べ 2・5: 一覧がすぐ返れば確認の文に行が無く、走った値と同じ。古さはタブを離れていた間ずっと(起き直しだけは boot_at の 409 で断る。curl・別の画面の変更は断らない)。窓は一覧の GET の間だけ(本物の GET は 0.18 秒。Wi-Fi が弱いと最大 5 秒 = DR_IDLE_WAIT_MS のあと drLost)なので、起きるのは戻ってすぐ ▶ を押したときだけ。手順書 4 章 6 は確認の文の行を読んで決めるので、その行が違う。",
+      "fix": "loadDrive の頭で、止まっていれば(drIdle)state.drive.paramsLoaded = false にする(次の renderDrive まで drNotSynced が ▶・基準の設定・ブロックを「サーバーの設定を読み込んでいます」で断る)か、一覧の GET の前に pollDrive() を出す。送る物・版は変わらない(表示と断る時だけ)。試験は sim2.js の 2 画面・タブの行き来の形(p_two_pages.py の 1・3・4)を足す。"
+    },
+    {
+      "id": "toast-half-width-on-phone",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer/jetformer/web/static/style.css",
+      "line": 107,
+      "title": "スマホの幅(420 px)では .toast(left: 50%・translateX(-50%))の使える幅が画面の半分の 210 px になり(max-width 90% は効かない)、▶ の断りの出し直し(207 字)が高さ 313 px(見える高さの 36%)の細い列で 6 秒出て、手順書が「見落としたら」で見る状態のバッジ「停止中」と走行タブの文に重なる",
+      "scenario": "台本 experiments/20261026_fix/fix8/review_ui_r1/p_toast420.py(作り物のサーバー fake_server.py に本物の index.html・app.js・style.css。headless の Firefox・iframe の幅 420 と 980。本物の toast() に本物の server._boot_refusal の文を渡す)→ out/toast_width.txt・toast_420.png。420 px: 断りの出し直し 207 字 = 幅 210・高さ 313・バッジ「停止中」と走行タブの文に重なる、起き直しの知らせ(入れ直し済み)140 字 = 幅 210・高さ 215・走行タブの文に重なる、DR_MODELS_MISS 115 字 = 幅 210・高さ 196。980 px は幅 490・高さ 137・重なりなし。iframe の中だけで「.toast { left: 5%; right: 5%; transform: none; max-width: none; }」を足すと 420 px でも幅 378・高さ 176・重なりなし。p_layout.py(out/layout_420.txt)では横のはみ出し 0、▶ と状態のバッジ・走行タブの文は同じ画面に入る(このトーストのほかは 420 px で問題なし)。fix6・fix7 で ▶ の断り・起き直しの知らせを長いトーストで出すようになったので、スマホではこの 6 秒が読めない。",
+      "fix": "style.css の .toast を「left: 5%; right: 5%; transform: none; max-width: none;(text-align はそのまま)」か「width: max-content; max-width: 90vw;」に。style.css だけなら再起動は要らず、app.js の時刻も変わらない(読み直した画面から効く)。style.css の sha256 を固定している試験(tests/test_ui_fix7.py・tests/test_ui_fix7_r2.py の「変えていない」の照らし)は、直す前の写しで見る形に替える。"
+    }
+  ]
+}

@@ -1194,6 +1194,14 @@ async function loadDrive() {
   // 続ける)。一覧が通るときは前とまったく同じ(期限のタイマーは返事で消す)
   // 一覧を読めなかった・遅れた印(modelsMiss)と、輪の 2 回目の同期で 1 回だけ読み直す数(modelsRetry)も付ける(2026-10-27 fix7 反証
   // w2-ui-w2-ui-r72-ui-2。下の retryDriveModels)。印は一覧が通ったら消す。一覧が通るときは前とまったく同じ
+  // 走行タブを開いた・戻ったとき、止まっていれば(drIdle)、このあとに出した表示の問い合わせが通るまで paramsLoaded を下ろす(▶・基準の
+  // 設定・ブロックは drNotSynced が「サーバーの設定を読み込んでいます」で断る = 画面を開いた直後と同じ)。2026-10-28 fix8 反証 8-1 回目
+  // stale-status-after-drive-tab-return: 走行タブを離れている間は表示の問い合わせの輪が止まる(pollDrive は走行タブか走行中のときしか
+  // 次を掛けない)のに paramsLoaded は true のままで、戻った直後(下の一覧の GET を待つ間。Wi-Fi が弱いと最大 5 秒)の ▶ が離れたときの
+  // 古い status の確認の文(見張り ON・左 4.1)を出し、車は離れている間に curl・別の画面で変えたサーバーの値(見張り OFF・左 4.2)で
+  // 走った。drTabGen は戻る前に出した問い合わせの返事を「読み直した」に数えないための番号(pollDrive)。問い合わせ・送る物・版は前と
+  // 同じ。走行中・token のある画面は輪が走行タブの外でも回っているので前と同じ
+  if (drIdle()) { state.drive.paramsLoaded = false; state.drive.drTabGen = (state.drive.drTabGen || 0) + 1; }
   const lost = () => { state.drive.modelsMiss = true; state.drive.modelsRetry = 2; if (drIdle()) { drLost(); pollDrive(); } };
   const late = setTimeout(lost, DR_IDLE_WAIT_MS);
   state.drive.modelsBusy = (state.drive.modelsBusy || 0) + 1;       // 一覧の GET を待っている数(待っている間は読み直さない)
@@ -1595,6 +1603,7 @@ async function pollDrive() {
   // 生存確認: 走行を始めたこの画面から token を送り続ける(タブが裏に回っても、ブラウザが動かしている間は送る)
   const tok = state.drive.token ? `?token=${encodeURIComponent(state.drive.token)}` : '';
   const since = drSync.clock;         // この問い合わせのあとに返事が来た送信の項目は、この返事で戻さない(r1-state3-1)
+  const gen = state.drive.drTabGen;   // 走行タブに戻った番号(loadDrive。fix8)。返事までに変わったら、戻る前に出した問い合わせ
   // 止まっているとき(drIdle)だけ、返事を DR_IDLE_WAIT_MS で打ち切って失敗にする(drLost と次の問い合わせ。2026-10-27 fix6
   // w2-ui-w1-ui-r62-1)。前は返事が来ないまま止まると輪も止まり、drLost も呼ばれず、表示は前のまま ▶ も押せた。本文を読む途中で
   // 打ち切ったとき(api は本文なしの null を返す)も失敗にする。走行中・token のある画面は打ち切らない(生存確認の問い合わせは前と同じ)
@@ -1607,6 +1616,9 @@ async function pollDrive() {
   if (ac) clearTimeout(cut);
   if (st && !st.running && state.drive.token) setDriveToken(null);
   if (st) renderDrive(st, since);
+  // 走行タブに戻る前に出した問い合わせの返事(戻った直後に届いた)は、表示はするが「読み直した」に数えない(次の問い合わせまで ▶・
+  // 基準の設定・ブロックは断ったまま。2026-10-28 fix8 stale-status-after-drive-tab-return)
+  if (st && gen !== state.drive.drTabGen && drIdle()) state.drive.paramsLoaded = false;
   if (st) retryDriveModels();         // 走行タブを開いたときにモデルの一覧を読めなかったら、2 回目の同期で 1 回読み直す(fix7)
   const running = st ? st.running : (state.drive.st && state.drive.st.running);
   if (running || state.tab === 'drive') driveTimer = setTimeout(pollDrive, running ? 250 : 1000);
@@ -2388,7 +2400,45 @@ const autoLapText = (sp) => `目標 1 周 ${sp.lapTarget.toFixed(2)} 秒(周の�
 function vbatSourceText(st) {
   const vb = st && st.vbat;
   if (vb && vb.supported) return '基板の電圧(走り始めから)';
-  return /(^|\s)V_before=\d/.test($('#dr-desc').value || '') ? '説明欄の V_before(走行のあいだ一定)' : 'なし(1.00 倍。周ごとの直しだけ)';
+  // 説明欄の V_before の読み方はサーバー(jetformer/speed_auto.py の v_before_of)と同じ(2026-10-28 fix8 ui r2
+  // rehearsal-r2-vbefore-screen-vs-server。前は「V_before= のあとが数字で始まるか」だけを見たので、831・8,31・0.83・9.5 でも「説明欄」と
+  // 出て、サーバーは使わず電圧の源「なし」で走った。全角の ８.３１ は逆): Python の str.split() と同じ空白で区切った「V_before=」(使えなければ
+  // 「Vb_before=」)の後ろを、末尾の V・v を除いて Python の float() と同じ決まりで数にし、6.0〜9.0 V のときだけ使う
+  const PY_SPACE = /[\t-\r\x1c-\x20\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/;
+  const VDESC = [6.0, 9.0];                                      // speed_auto.AutoParams の vdesc_lo・vdesc_hi
+  const pyFloat = (s) => {                                       // Python の float(s) の値(読めない = null)
+    let t = '';
+    for (const ch of s) {
+      if (PY_SPACE.test(ch)) {                                   // 空白の字は ' ' にして、あとで前後だけ除く(Python と同じ)
+        t += ' ';
+      } else if (/\p{Nd}/u.test(ch)) {                           // Unicode の 10 進の字(全角の ８ など)は 0〜9 に(Python と同じ)
+        const c = ch.codePointAt(0);
+        let z = c;
+        while (z > 0 && /\p{Nd}/u.test(String.fromCodePoint(z - 1))) z -= 1;
+        t += String((c - z) % 10);
+      } else if (ch.codePointAt(0) > 127) {
+        return null;
+      } else {
+        t += ch;
+      }
+    }
+    t = t.replace(/^ +| +$/g, '');
+    if (/^[+-]?(inf|infinity)$/i.test(t)) return t[0] === '-' ? -Infinity : Infinity;
+    if (/^[+-]?nan$/i.test(t)) return NaN;
+    if (!/^[+-]?(\d(_?\d)*(\.(\d(_?\d)*)?)?|\.\d(_?\d)*)([eE][+-]?\d(_?\d)*)?$/.test(t)) return null;
+    return Number(t.replace(/_/g, ''));
+  };
+  const vals = {};
+  for (const tok of ($('#dr-desc').value || '').split(PY_SPACE)) {
+    for (const key of ['V_before', 'Vb_before']) {
+      if (tok.startsWith(key + '=') && !(key in vals)) {
+        const x = pyFloat(tok.slice(key.length + 1).replace(/[Vv]+$/, ''));
+        if (x !== null) vals[key] = x;
+      }
+    }
+  }
+  const ok = ['V_before', 'Vb_before'].some((k) => k in vals && Number.isFinite(vals[k]) && vals[k] >= VDESC[0] && vals[k] <= VDESC[1]);
+  return ok ? '説明欄の V_before(走行のあいだ一定)' : 'なし(1.00 倍。周ごとの直しだけ)';
 }
 function ceilConfirmText(sp) {
   const rule = sp.ceilRule || `左旋回 = 車に出す舵 +${sp.steer} µs 以上 か ヨー +${sp.gz} deg/s 以上(どちらも切れてから ${sp.hold} 秒は左旋回のまま)`;

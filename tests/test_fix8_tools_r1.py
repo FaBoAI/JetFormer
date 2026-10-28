@@ -1,0 +1,633 @@
+"""fix8 係 tools 直す 8-1 回目(2026-10-28。反証 8-1 回目 係 tools の指摘のうち、打ち消しの票のあとに残った 2 件)の試験。
+夜の道具 ⑤ experiments/20261026_fix/diag_launch/collect.py だけを直した(③ standing_3lap・④ quick_eval_by_params・car_check は
+変えていない)。走行の動き(PCA9685 に書く値)・既定値は変えていない。
+
+  w1-tools-r8-1-trial-form       計画と違う形(天井・左・自動合わせ・目標)やゲインで「試し」「途中で変えた」にした本(と走り直し)は
+                                 base(r) の鍵で別の組に入り、その組には比べが無いので、その ON の発進の最初の周の衝突・空転・欠けが
+                                 回 3 の判定(計画の組の「ON − OFF」の行)に入らず「使ってよい」のままだった。今は、同じ回・同じモデルの
+                                 比べのある組の全部の条件に数える(other_group_on。注意の行)
+  w1-tools-r8-1-stall-inflates-off  発進 → R1 の起点の間のカメラの止まり(AI 側の処理したフレームの間。中立止めの行も止まりに数える)を
+                                 見ていなかった。OFF の本で起きると OFF の中央値が上がり「満たさない」→「使ってよい」に動いた(途中で OFF に
+                                 した日・止まらない形)。今は、その間が LAUNCH_STALL_S(0.22 秒)より長い発進を ON・OFF とも比べから外して
+                                 名前を出し(launch_stall)、ON の発進があれば「満たさない」(checks の on_no_stall)。それより短い
+                                 LAUNCH_GAP_NOTE_S(0.15 秒)〜0.22 秒の止まりの比べに入れた発進は、比べを変えずに注意の行
+                                 (launch_gap_short)
+
+どの試験も「直す前の写し(tests/fixtures/fix8_tools_r1_before/*.orig。sha256 を照らす)で起きる / 前と同じ」か「今の形」を見る。
+作り物の記録だけ(tmp。作り方は tests/test_fix7_tools.py・test_fix7_tools_r2.py・test_fix8_tools_decided.py と同じ)。本物の
+10/10〜10/24 の記録(data/raw・data/labels。読むだけ)を読む試験は、無ければ飛ばす。
+環境変数 JF_FIX8R1_COLLECT で、試す ⑤ を差し替えられる(わざと壊した写しで試験が落ちるかを見るとき。
+experiments/20261026_fix/fix8/fix_tools_r1/mutate_r1.py)。
+
+    cd ~/jetformer && PYTHONDONTWRITEBYTECODE=1 /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \\
+        /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q -p no:cacheprovider -o tmp_path_retention_policy=failed \\
+        --basetemp=<消せる場所> tests/test_fix8_tools_r1.py
+"""
+import hashlib
+import json
+import os
+import sys
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+JF = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(JF))
+sys.path.insert(0, str(JF / 'tools'))
+sys.path.insert(0, str(JF / 'tests'))
+import test_fix7_tools as t7  # noqa: E402  作り物のコース・回 3 の日(同じ作り方)
+import test_fix7_tools_r2 as t72  # noqa: E402  空転(scale_imu)
+import test_fix8_tools_decided as t8  # noqa: E402  ⑤ の流し方(runc)・試し / 途中で変えた本(make_kind)
+
+FIX = JF / 'tests' / 'fixtures' / 'fix8_tools_r1_before'
+NEW_C = Path(os.environ.get('JF_FIX8R1_COLLECT') or (JF / 'experiments' / '20261026_fix' / 'diag_launch' / 'collect.py'))
+# t8.runc の版の表に「直す前(この直しの前 = fix8 tools-decided のあと)」と「今」を足す(③④ は変えていないので今の ③ を読ませる)
+t8.VER['r1old'] = (FIX / 'collect.py.orig', FIX / 'standing_3lap.py.orig', FIX / 'quick_eval_by_params.py.orig')
+t8.VER['r1new'] = (NEW_C, JF / 'tools' / 'standing_3lap.py', JF / 'tools' / 'quick_eval_by_params.py')
+IG = ['--ignore-gain']
+IGF = ['--ignore-gain', '--first-only']
+PRM, ON = t7.PRM, t7.ON
+ON200 = dict(ON, launch_us=200.0)
+g0, rows_of, no_path = t7.g0, t7.rows_of, t7.no_path
+
+
+def runc(D, ver, args=(), tag=''):
+    """⑤ を流す(ver = 'r1new' 今 / 'r1old' 直す前)。(JSON, 標準出力, JSON の文)"""
+    return t8.runc(D, ver, args, tag)
+
+
+def same_outputs(D, args=(), tag=''):
+    """⑤ の JSON・標準出力(出力の場所の行のほか)が直す前と今でバイト単位で同じか"""
+    jn, on, tn = runc(D, 'r1new', args, 'n' + tag)
+    jo, oo, to = runc(D, 'r1old', args, 'o' + tag)
+    return tn == to and no_path(on) == no_path(oo)
+
+
+# ================================================================== 作り物の記録
+# 形の違う試しの日(w1-tools-r8-1-trial-form)。form: 3-8 の走りの形
+#   'same'   計画どおり(説明欄の memo だけ「試し」)
+#   'ceil'   3-8 だけ天井 ON(計画は OFF。走った値が計画と違った)
+#   'left'   回 3 の全部が天井 ON・左 4.1 で、3-8 だけ左 4.2(2-5 のあと 4.1 に戻し忘れた)
+#   'auto'   3-8 だけ自動合わせ ON
+#   'target' 回 3 の全部が自動合わせ ON・目標 4.27 で、3-8 だけ目標 4.4
+#   'gain'   3-8 だけスライダーのゲイン 0.92(計画 0.90。--ignore-gain を付けずに読むと組が分かれる)
+FORMS = ('same', 'ceil', 'left', 'auto', 'target', 'gain')
+
+
+def form_prm(form):
+    """(回 3 の計画の形の OFF の値, 3-8 の値の足し)"""
+    base = dict(PRM)
+    if form == 'left':
+        base.update(speed_ceiling=1, ceil_left_mps=4.1)
+    elif form == 'target':
+        base.update(speed_auto=1, auto_target_mps=4.27)
+    extra = {'same': {}, 'ceil': {'speed_ceiling': 1}, 'left': {'ceil_left_mps': 4.2}, 'auto': {'speed_auto': 1},
+             'target': {'auto_target_mps': 4.4}, 'gain': {'throttle_gain': 0.92}}[form]
+    return base, extra
+
+
+def tfday(tmp, kind='trial', shape='spin', form='ceil', b38_on=True, us=None, **kw):
+    """回 3: OFF 4 本と ON 3 本(launch_us 200。tests/test_fix8_tools_decided.mtday と同じ。ON の中央値 = OFF − 0.165 秒 → 使ってよい)+
+    3-8 = kind(trial / midrun)の本の 1 回目の発進(形は form)。shape: 'spin' 空転(比 ≈ 1.85)/ 'extreme'(いちばんひどい空転)/
+    'unk'(比が出ない)/ 'hit'(最初の周の 3.0 秒に 6G)/ 'gap'(14 秒に AI 側・最初の周の途中のシーン 0002 の IMU.npz が無い)/
+    'nospin'(何も無い)/ 'noreach_hit'(3 秒で人側 = R1 に届かない・2.5 秒に 6G)。b38_on = False なら 3-8 は発進の前進 OFF。
+    us = {block: launch_us}(ON の本の強さ)。kw は 3-8 の write_log(run など)"""
+    us = us or {}
+    base, extra = form_prm(form)
+    on_prm = dict(base, launch_boost=1, launch_us=200.0)
+    D = t7.Day(tmp)
+    for blk, prm, dm, ramp in ((12, base, 0.20, 0.6), (13, on_prm, 0.15, 0.3), (14, base, 0.21, 0.6), (15, on_prm, 0.20, 0.3),
+                               (16, base, 0.22, 0.6), (17, on_prm, 0.28, 0.3), (18, base, 0.23, 0.6)):
+        D.add(blk, dict(prm, launch_us=us[blk]) if blk in us else prm, dm, ramp)
+    p38 = dict(on_prm if b38_on else base, **extra)
+    if 19 in us:
+        p38['launch_us'] = us[19]
+    if shape == 'gap':
+        log = D.add(19, p38, 0.15, 0.3, dur=45.0, vk=t7.launch_keys(14.0, 0.15, 0.3, until=45.0), ai=[(14.0, 43.0)],
+                    launch=[(14.0, 0.5)] if b38_on else [], **kw)
+        (D.raw / log / ('%s-0002' % log) / 'IMU.npz').unlink()
+    elif shape == 'unk':
+        log = D.add(19, p38, 0.15, 3.0, **kw)
+        t72.scale_imu(D.raw, log, 1.0, 2.5, 0.3)
+    elif shape == 'noreach_hit':
+        log = D.add(19, p38, 0.15, 0.3, dur=8.0, vk=t7.launch_keys(1.0, 0.15, 0.3) + [(3.0, 2.0), (4.0, 0.0), (8.0, 0.0)],
+                    ai=[(1.0, 3.0)], hits=[(2.5, 6.0)], **kw)
+    else:
+        if shape == 'hit':
+            kw = dict(kw, hits=[(3.0, 6.0)])
+        log = D.add(19, p38, 0.15, 0.3, **kw)
+        if shape == 'spin':
+            t72.scale_imu(D.raw, log, 1.0, 2.2, 0.55)
+        elif shape == 'extreme':
+            t72.scale_imu(D.raw, log, 1.0, 2.2, 0.05)
+    t8.make_kind(D.raw, log, kind)
+    return D, log
+
+
+def plan_group(j):
+    """計画の形の組(OFF の本のある組)"""
+    gs = [g for g in j['summary'] if (g.get('by_launch') or {}).get('off')]
+    assert len(gs) == 1, [(g['speed_ceiling'], g['ceil_left_mps'], g['gain']) for g in j['summary']]
+    return gs[0]
+
+
+def verdict(g):
+    c = g.get('compare') or {}
+    if not c:
+        return '比べなし'
+    return '使ってよい' if c.get('all_ok') else '満たさない'
+
+
+# 発進 → R1 のカメラの止まりの日(w1-tools-r8-1-stall-inflates-off。反証の台本 review_tools_r1/probe_t2_off_day_hold_long.py と同じ形)
+#   回 3 の 8 本: 3-1 OFF 3.013 秒・3-2 ON 2.813・3-3 OFF 3.043・3-4 ON 2.863・3-5(この本で形が起きる)・3-6 ON 2.943・3-7 OFF 3.253・
+#   3-8 ON 2.973。止まりが無ければ 3-5 は 3.033 秒前後(ON − OFF −0.135 秒「満たさない」)
+#   3-5: 発進(1.0 秒)→ stall(既定 1.6〜2.5 秒)にカメラが止まる(AI_CMD・カメラのフレームが無い)
+#     'N' 止まりなし / 'A' 両方 ON の日・止まりの間に止まる → 明けて中止(hold_long)→ 5.5 秒に人側 /
+#     'B' 3-5 から先をわざと OFF にした日(見張り・残す OFF)・止まりの間に止まる → 明けて走り続ける /
+#     'C' 両方 ON の日・止まりの間に 0.7 m/s まで落ちるが止まらない(中止しない)/
+#     'H' 'C' と同じ速さで、止まりの代わりに中立止めの行(フレームはあり hold = True)/
+#     'S' 止まりの間もふつうに走る(フレームだけ無い)/
+#     'R' 両方 ON の日・本物に近い速さ: 止まりの 0.1 秒あとから(drive はフレームが 0.1 秒来ないと中立を書く)明けるまで中立の惰性
+#         (−0.9 m/s²。本物の 10/23・10/24 の人側・スティック中立の 20 区間の中央値 −0.87・重み付き −0.94)、明けたら 3.33 m/s² で 2 m/s へ
+OFFOPT = {'rec_back_guard': 0, 'rec_hold_keep': 0}
+
+
+def sday(tmp, case='B', boost35=False, stall=(1.6, 2.5)):
+    D = t7.Day(tmp)
+    off_from = 16 if case == 'B' else 99           # 3-5 = block 16
+    p = lambda blk, prm: dict(prm, **OFFOPT) if blk >= off_from else prm      # noqa: E731
+    D.add(12, p(12, PRM), 0.20, 0.6)
+    D.add(13, p(13, ON), 0.15, 0.3)
+    D.add(14, p(14, PRM), 0.23, 0.6)
+    D.add(15, p(15, ON), 0.20, 0.3)
+    prm35 = p(16, ON if boost35 else PRM)
+    s0, s1 = stall
+    v_s0 = 2.0 * (s0 - 1.22) / 0.6               # 1.22 秒に動き出し、0.6 秒で 2 m/s に向かう途中
+    base = [(0.0, 0.0), (1.22, 0.0), (s0, v_s0), (s1 - 0.1, 0.0)]
+    if case == 'N':
+        log35 = D.add(16, prm35, 0.22, 0.6)
+    elif case == 'S':
+        log35 = D.add(16, prm35, 0.22, 0.6, stall=[stall])
+    elif case == 'A':
+        dur = 8.0
+        log35 = D.add(16, prm35, 0.22, 0.6, dur=dur, vk=base + [(dur, 0.0)], ai=[(1.0, 5.5)], stall=[stall],
+                      giveup=[(s1, 5.5)],
+                      events=[{'kind': 'recovery_guard', 'what': 'hold_long', 'phase': None, 'backed_s': 0.0,
+                               'hold_s': round(s1 - s0, 2), 'run': 'runB', 'cam_epoch_us': int(t7.T0_US + s1 * 1e6),
+                               't_us': int(t7.T0_US + s1 * 1e6)}])
+    elif case == 'B':
+        dur = 30.0
+        log35 = D.add(16, prm35, 0.22, 0.6, dur=dur, vk=base + [(s1 + 0.1, 0.0), (s1 + 0.7, 2.0), (dur, 2.0)],
+                      ai=[(1.0, dur - 2.0)], stall=[stall])
+    elif case == 'R':
+        dur = 30.0
+        acc, dec = 2.0 / 0.6, 0.9
+        tn = min(s0 + 0.1, s1)                     # 中立を書き始める時刻
+        v1 = min(2.0, acc * max(0.0, tn - 1.22))
+        v2 = max(0.0, v1 - dec * (s1 - tn))
+        vk = [(0.0, 0.0), (1.22, 0.0)]
+        if v1 >= 2.0:
+            vk.append((1.22 + 2.0 / acc, 2.0))
+        vk += [(tn, v1), (s1, v2), (s1 + (2.0 - v2) / acc, 2.0), (dur, 2.0)]
+        log35 = D.add(16, prm35, 0.22, 0.6, dur=dur, vk=vk, ai=[(1.0, dur - 2.0)], stall=[stall])
+    else:                                          # C・H: 止まらない(0.7 m/s まで落ちる)
+        dur = 30.0
+        vk = [(0.0, 0.0), (1.22, 0.0), (s0, v_s0), (s1, 0.7), (s1 + 0.6, 2.0), (dur, 2.0)]
+        if case == 'C':
+            log35 = D.add(16, prm35, 0.22, 0.6, dur=dur, vk=vk, ai=[(1.0, dur - 2.0)], stall=[stall])
+        else:
+            log35 = D.add(16, prm35, 0.22, 0.6, dur=dur, vk=vk, ai=[(1.0, dur - 2.0)], hold=[stall])
+    D.add(17, p(17, ON), 0.28, 0.3)
+    D.add(18, p(18, PRM), 0.44, 0.6)
+    D.add(19, p(19, ON), 0.31, 0.3)
+    return D, log35
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+KIND_TAG = {'trial': '試し', 'midrun': '途中で変えた'}
+OTHER_HEAD = '  注意: 同じ回・同じモデルの別の組('
+SRC_HEAD = '  → この組の比べから外した本の ON の発進の不具合(衝突・空転・欠け)は、同じ回・同じモデルの比べのある組('
+STALL_HEAD = '  発進から R1 の起点までにカメラが止まった発進 '
+GAPNOTE_HEAD = '  注意: 発進から R1 の起点までにフレームの間が 0.15〜0.22 秒の発進 '
+STALL_ON_HEAD = '  → ON の発進で、発進から R1 までにカメラが止まった本がある = 満たさない(checks の on_no_stall。'
+SHAPE_CHECK = {'spin': 'slip', 'extreme': 'slip', 'unk': 'slip_all_measured', 'hit': 'first_lap_collisions_0',
+               'gap': 'on_all_readable', 'noreach_hit': 'first_lap_collisions_0'}
+
+
+def _lines(out, head):
+    return [x for x in out.splitlines() if x.startswith(head)]
+
+
+# ================================================================== 写し
+def test_fixture_is_the_version_before():
+    """直す前の写し(この直しの前 = fix8 tools-decided のあとの版)の sha256 と中身。③ standing_3lap・④ quick_eval_by_params・
+    car_check はこの直しで変えていない(写しと今が同じ)"""
+    sums = dict(reversed(x.split()) for x in (FIX / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    assert sorted(sums) == ['car_check.py.orig', 'collect.py.orig', 'quick_eval_by_params.py.orig', 'standing_3lap.py.orig']
+    for name, h in sums.items():
+        assert _sha(FIX / name) == h, name
+    assert sums['collect.py.orig'].startswith('26dfb087') and sums['standing_3lap.py.orig'].startswith('4ddbdc4e')
+    co = (FIX / 'collect.py.orig').read_text(encoding='utf-8')
+    assert 'trial_slip' in co and 'other_group_on' not in co and 'launch_stall' not in co and 'LAUNCH_STALL_S' not in co
+    for name, cur in (('standing_3lap.py.orig', JF / 'tools' / 'standing_3lap.py'),
+                      ('quick_eval_by_params.py.orig', JF / 'tools' / 'quick_eval_by_params.py'),
+                      ('car_check.py.orig', JF / 'tools' / 'car_check.py')):
+        assert _sha(cur) == sums[name], name
+
+
+# ================================================================== w1-tools-r8-1-trial-form
+@pytest.mark.parametrize('kind', ['trial', 'midrun'])
+@pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+def test_old_other_form_trial_stays_use_ok(tmp_path, kind, form):
+    """直す前: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の最初の周の衝突(6G)は別の組に入り、計画の組は −0.165 秒「使ってよい」"""
+    D, log = tfday(tmp_path, kind, 'hit', form)
+    args = [] if form == 'gain' else IG
+    j, o, _ = runc(D, 'r1old', args, 'oh' + kind + form)
+    g = plan_group(j)
+    assert g['compare']['d_to_r1_s'] == -0.165 and g['compare']['all_ok'] is True
+    src = [x for x in j['summary'] if x is not g]
+    assert len(src) == 1 and 'compare' not in src[0] and src[0].get('%s_on_collisions' % kind) == 1
+
+
+@pytest.mark.parametrize('kind', ['trial', 'midrun'])
+@pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+@pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+    """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+    同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+    −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+    D, log = tfday(tmp_path, kind, shape, form)
+    args = [] if form == 'gain' else IG
+    jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+    jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+    gn, go = plan_group(jn), plan_group(jo)
+    assert go['compare']['all_ok'] is True
+    assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+    ck = SHAPE_CHECK[shape]
+    assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+    falses = sorted(k for k, v in gn['compare']['checks'].items() if v is False)
+    assert falses == [ck], falses
+    o_ = gn['other_group_on']
+    r = rows_of(jn, log)[0]
+    name = '%s@%.2f' % (log, r['t_ai'])
+    assert len(o_['logs']) == 1 and o_['logs'][0].startswith('%s(%s・' % (name, KIND_TAG[kind])) and o_['checks'] == [ck]
+    assert o_['collisions'] == (1 if ck == 'first_lap_collisions_0' else 0)
+    assert o_['slip'] == ([name] if ck == 'slip' else []) and o_['slip_unmeasured'] == ([name] if ck == 'slip_all_measured' else [])
+    assert o_['first_lap_gap'] == ([name] if ck == 'on_all_readable' else [])
+    src = [x for x in jn['summary'] if x is not gn]
+    assert len(src) == 1 and 'compare' not in src[0] and len(src[0]['on_faults_counted_in']) == 1
+    assert len(o_['groups']) == 1 and (form != 'gain' or (o_['groups'][0].startswith('g0.92・')
+                                                          and src[0]['on_faults_counted_in'][0].startswith('g0.90・')))
+    ln = _lines(on, OTHER_HEAD)
+    assert len(ln) == 1 and name in ln[0] and '= 満たさない(checks の %s)' % ck in ln[0] and '手順書 7 章「走った値が計画と違った」' in ln[0]
+    assert len(_lines(on, SRC_HEAD)) == 1
+    assert '→ 使ってよい' not in on and '→ 使ってよい' in oo
+    # JSON の組は、計画の組の other_group_on・checks・all_ok と 3-8 の組の on_faults_counted_in のほかは直す前と同じ
+    strip = lambda g: {k: (dict(v, checks={c: x for c, x in v['checks'].items() if c != ck}, all_ok=None) if k == 'compare' else v)   # noqa: E731
+                       for k, v in g.items() if k not in ('other_group_on', 'on_faults_counted_in')}
+    assert [strip(g) for g in jn['summary']] == [strip(g) for g in jo['summary']]
+    assert jn['launches'] == jo['launches']
+
+
+@pytest.mark.parametrize('kind', ['trial', 'midrun'])
+@pytest.mark.parametrize('form', ['same', 'ceil', 'gain'])
+def test_c5_other_form_nothing_wrong_is_bit_identical(tmp_path, kind, form):
+    """形の違う試し・途中で変えた本に不具合が無い(空転なし)なら、⑤ の JSON・標準出力は直す前とバイト単位で同じ(3 通りの引数)"""
+    D, log = tfday(tmp_path, kind, 'nospin', form)
+    for args in ([], IG, IGF):
+        assert same_outputs(D, args, '%s%s%d' % (kind[:2], form, len(args))), args
+
+
+@pytest.mark.parametrize('shape', ['spin', 'hit', 'gap'])
+def test_c5_same_form_trial_unchanged(tmp_path, shape):
+    """計画どおりの形の試し(同じ組)は前から自分の組で数えている = 直す前とバイト単位で同じ(other_group_on は出ない)"""
+    D, log = tfday(tmp_path, 'trial', shape, 'same')
+    assert same_outputs(D, IG, 'same' + shape)
+    jn, _, _ = runc(D, 'r1new', IG, 'samej' + shape)
+    assert all('other_group_on' not in g and 'on_faults_counted_in' not in g for g in jn['summary'])
+    assert plan_group(jn)['compare']['all_ok'] is False
+
+
+@pytest.mark.parametrize('shape', ['spin', 'hit'])
+def test_c5_other_form_off_trial_not_counted(tmp_path, shape):
+    """形の違う試しの本が発進の前進 OFF なら数えない(条件は ON だけ。前と同じ)= 直す前とバイト単位で同じ"""
+    D, log = tfday(tmp_path, 'trial', shape, 'ceil', b38_on=False)
+    assert same_outputs(D, IG, 'off' + shape)
+
+
+@pytest.mark.parametrize('trial_us, counted', [(200.0, True), (250.0, False)])
+def test_c5_other_form_spin_uses_the_compared_strength(tmp_path, trial_us, counted):
+    """計画の組の ON に launch_us が混ざる(3-2・3-4 は 250、3-6 は 200 = 比べは 200)とき、形の違う試しの ON の空転も、その強さの本
+    だけを数える(自分の組の数え方と同じ)。衝突は強さによらず数える"""
+    D, log = tfday(tmp_path, 'trial', 'spin', 'ceil', us={13: 250.0, 15: 250.0, 17: 200.0, 19: trial_us})
+    jn, _, _ = runc(D, 'r1new', IG, 'us%d' % int(trial_us))
+    g = plan_group(jn)
+    assert g.get('launch_us_used') == 200.0
+    assert ('other_group_on' in g) is counted and g['compare']['checks']['slip'] is (not counted)
+    if not counted:
+        assert same_outputs(D, IG, 'us%d' % int(trial_us))
+    D2, _ = tfday(tmp_path / 'hit', 'trial', 'hit', 'ceil', us={13: 250.0, 15: 250.0, 17: 200.0, 19: 250.0})
+    g2 = plan_group(runc(D2, 'r1new', IG, 'ushit')[0])
+    assert g2['other_group_on']['collisions'] == 1 and g2['compare']['checks']['first_lap_collisions_0'] is False
+
+
+def test_c5_other_model_trial_not_counted(tmp_path):
+    """数えるのは同じ回・同じモデル(鍵の頭 2 つ)の組だけ。ほかのモデルで走った試しの本は別の回の扱い(直す前とバイト単位で同じ)"""
+    D, log = tfday(tmp_path, 'trial', 'hit', 'ceil', run='runX')
+    assert same_outputs(D, IG, 'model')
+
+
+def test_c5_other_gain_abort_resume_counts(tmp_path):
+    """走り直し(リカバリーの途中で人側 → その場で AI 側)の ON の最初の周の衝突も、ゲインが違って別の組(--ignore-gain なし)なら
+    計画の組の条件に数える(試し・途中で変えた本と同じ)"""
+    D, log, tt = t8.rday(tmp_path, 3.5, b38=dict(ON, throttle_gain=0.92), hits=lambda tt: [(tt['t_res'] + 2.0, 6.0)])
+    jn, on, _ = runc(D, 'r1new', [], 'abg')
+    jo, _, _ = runc(D, 'r1old', [], 'abg')
+    gn = [g for g in jn['summary'] if g['gain'] == 0.9][0]
+    go = [g for g in jo['summary'] if g['gain'] == 0.9][0]
+    assert 'other_group_on' not in go and go['compare']['checks']['first_lap_collisions_0'] is True
+    assert gn['other_group_on']['collisions'] == 1 and gn['compare']['checks']['first_lap_collisions_0'] is False
+    assert gn['compare']['all_ok'] is False and 'リカバリー中止のあとの走り直し・g0.92・' in gn['other_group_on']['logs'][0]
+    assert len(_lines(on, OTHER_HEAD)) == 1
+
+
+# ================================================================== w1-tools-r8-1-stall-inflates-off
+def test_launch_stall_unit():
+    """launch_stall: 発進 → R1 の起点の間の、中立止めの行でないフレームどうしの間(端も入れる)が LAUNCH_STALL_S より長いときだけ"""
+    m = t8.load_mod('c8r1_unit', NEW_C)
+    assert m.LAUNCH_STALL_S == 0.22
+    t = np.round(np.arange(0.0, 6.0, 1 / 30.0), 6)
+
+    def z(drop=(), hold=()):
+        keep = np.ones(len(t), bool)
+        for a, b in drop:
+            keep &= ~((t >= a) & (t < b))
+        h = np.zeros(len(t), bool)
+        for a, b in hold:
+            h |= (t >= a) & (t < b)
+        return {'t_s': t[keep], 'hold': h[keep]}
+    zz = z()
+    i1 = len(zz['t_s']) - 1
+    assert m.launch_stall(zz, 0, i1, 1.0, 4.0) is None
+    for (a, b), gap in (((2.01, 2.14), 0.167), ((2.01, 2.2), 0.2)):         # 間 0.167・0.2 秒(30 fps の 5・6 フレーム分)は数えない
+        zz = z([(a, b)])
+        assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) is None, gap
+    for (a, b), gap in (((2.01, 2.21), 0.233), ((2.01, 2.24), 0.267)):        # 間 0.233・0.267 秒 > 0.22
+        zz = z([(a, b)])
+        assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) == {'gap_s': gap, 'at_s': 2.0}, gap
+    zz = z(hold=[(2.01, 2.6)])                                                # 中立止めの行もフレームに数えない
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) == {'gap_s': 0.6, 'at_s': 2.0}
+    zz = z(hold=[(0.9, 1.5)])                                                 # 発進(1.0 秒)の始めの中立止め: 端の 1.0 秒から
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) == {'gap_s': 0.5, 'at_s': 1.0}
+    zz = z([(3.85, 4.6)])                                                     # 起点(4.0 秒)をまたぐ止まり: 起点までの分だけ(0.167 秒)
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) is None
+    zz = z([(3.7, 4.6)])                                                      # 起点までに 0.333 秒
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) == {'gap_s': 0.333, 'at_s': 3.667}
+    zz = z([(4.1, 5.0)])                                                      # 起点のあとの止まりは見ない
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0) is None
+    zz = z([(2.01, 2.6)])
+    zz.pop('hold')                                                            # hold の欄の無いラベル
+    assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0)['gap_s'] == 0.6
+    assert m.LAUNCH_GAP_NOTE_S == 0.15                                        # 注意だけのしきい(over)
+    for (a, b), want in (((2.01, 2.11), None), ((2.01, 2.14), {'gap_s': 0.167, 'at_s': 2.0})):
+        zz = z([(a, b)])
+        assert m.launch_stall(zz, 0, len(zz['t_s']) - 1, 1.0, 4.0, over=m.LAUNCH_GAP_NOTE_S) == want, (a, b)
+
+
+@pytest.mark.parametrize('case', ['B', 'C', 'H'])
+def test_old_stall_off_turns_use_ok(tmp_path, case):
+    """直す前: 発進の前進 OFF の 3-5 の発進の 1.6〜2.5 秒にカメラが止まる(B 3-5 から OFF にした日・C 両方 ON で止まらない・H 中立止めの
+    行)と、伸びた起点まで(B 4.043・C/H 3.643 秒)が OFF の組に入り、OFF の中央値 3.148 → −0.245 秒「使ってよい」(止まりが無ければ
+    −0.135「満たさない」)"""
+    D, log35 = sday(tmp_path, case)
+    j, o, _ = runc(D, 'r1old', IG, 'os' + case)
+    g = g0(j)
+    assert g['by_launch']['off']['n'] == 4 and g['by_launch']['off']['to_r1_median_s'] == 3.148
+    assert g['compare']['d_to_r1_s'] == -0.245 and g['compare']['all_ok'] is True and '→ 使ってよい' in o
+
+
+@pytest.mark.parametrize('case', ['B', 'C', 'H'])
+def test_c5_stall_off_is_excluded(tmp_path, case):
+    """今: その発進に launch_stall(フレームの間 0.933 秒・1.567 秒から)、OFF の組から外して OFF n 3・−0.14 秒「満たさない」(両方 ON の
+    日の中止(A)と同じ数)。組に launch_stall_excluded と行、発進の行の後ろに「カメラの止まり(…。比べに入れない)」。ON の組・試験の
+    選択肢の数は直す前と同じ"""
+    D, log35 = sday(tmp_path, case)
+    jn, on, _ = runc(D, 'r1new', IG, 'ns' + case)
+    jo, _, _ = runc(D, 'r1old', IG, 'ns' + case)
+    gn, go = g0(jn), g0(jo)
+    r = rows_of(jn, log35)[0]
+    assert r['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567} and r['launch_state'] == 'off'
+    assert {k: v for k, v in r.items() if k != 'launch_stall'} == rows_of(jo, log35)[0]
+    assert gn['by_launch']['off']['n'] == 3 and gn['by_launch']['off']['to_r1_median_s'] == 3.043
+    assert gn['by_launch']['on'] == go['by_launch']['on']
+    assert gn['compare']['d_to_r1_s'] == -0.14 and gn['compare']['all_ok'] is False and gn['compare']['checks']['to_r1'] is False
+    assert 'on_no_stall' not in gn['compare']['checks'] and 'launch_stall_on' not in gn
+    assert gn['launch_stall_excluded'] == ['%s@%.2f(off・フレームの間 0.93 秒(1.57 秒から)・起点まで %.3f 秒)' % (log35, r['t_ai'],
+                                                                                                    r['to_r1_s'])]
+    assert gn.get('mixed_options') == go.get('mixed_options') and gn.get('form_split') == go.get('form_split')
+    ln = _lines(on, STALL_HEAD)
+    assert len(ln) == 1 and ln[0].startswith(STALL_HEAD + '1 本(') and '0.22 秒より長い' in ln[0] and log35 in ln[0]
+    assert not _lines(on, STALL_ON_HEAD) and '→ 使ってよい' not in on
+    assert any(x.startswith(log35) and x.endswith(' カメラの止まり(フレームの間 0.93 秒・1.57 秒から。比べに入れない)')
+               for x in on.splitlines())
+    ja = g0(runc(sday(tmp_path / 'a', 'A')[0], 'r1new', IG, 'nsA')[0])
+    assert ja['compare']['d_to_r1_s'] == gn['compare']['d_to_r1_s'] and ja['by_launch']['off']['n'] == 3
+
+
+@pytest.mark.parametrize('case', ['B', 'C', 'H'])
+def test_c5_stall_on_is_not_use_ok(tmp_path, case):
+    """発進の前進 ON の発進でカメラが止まったら、比べから外し(ON n 4)、checks の on_no_stall = False で「満たさない」(外すだけだと
+    遅い ON が抜けて「使ってよい」の側に動きうる)。行「→ ON の発進で、…」"""
+    D, log35 = sday(tmp_path, case, boost35=True)
+    jn, on, _ = runc(D, 'r1new', IG, 'nso' + case)
+    gn = g0(jn)
+    assert gn['launch_stall_on'] == 1 and gn['by_launch']['on']['n'] == 4
+    assert gn['compare']['checks']['on_no_stall'] is False and gn['compare']['all_ok'] is False
+    assert gn['launch_stall_excluded'][0].startswith('%s@1.00(on・フレームの間 0.93 秒(1.57 秒から)・起点まで ' % log35)
+    assert '・空転の比 ' in gn['launch_stall_excluded'][0]
+    assert len(_lines(on, STALL_ON_HEAD)) == 1
+
+
+def test_c5_stall_on_collision_counts(tmp_path):
+    """カメラが止まった ON の発進の最初の周の衝突は「最初の周の衝突 0」にも数える(launch_stall_on_collisions)"""
+    D = t7.Day(tmp_path)
+    for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+        D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+    log = D.add(16, ON, 0.22, 0.3, stall=[(1.6, 2.2)], hits=[(3.5, 6.0)])
+    jn, on, _ = runc(D, 'r1new', IG, 'stc')
+    gn = g0(jn)
+    assert rows_of(jn, log)[0]['launch_stall']['gap_s'] > 0.22
+    assert gn['launch_stall_on_collisions'] == 1 and gn['compare']['checks']['first_lap_collisions_0'] is False
+    assert gn['compare']['checks']['on_no_stall'] is False and '・最初の周の衝突 ' in gn['launch_stall_excluded'][0]
+
+
+def test_c5_stall_on_spin_counts(tmp_path):
+    """カメラが止まった ON の発進の空転(比 ≈ 1.85)も空転の条件に数える(launch_stall_slip・checks の slip = False・行)"""
+    D = t7.Day(tmp_path)
+    for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+        D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+    log = D.add(16, ON, 0.15, 0.3, stall=[(2.3, 2.8)])
+    t72.scale_imu(D.raw, log, 1.0, 2.2, 0.55)
+    jn, on, _ = runc(D, 'r1new', IG, 'stspin')
+    gn = g0(jn)
+    r = rows_of(jn, log)[0]
+    assert r.get('launch_stall') and r['slip']['ratio'] > 1.3
+    assert gn['launch_stall_slip'] == ['%s@%.2f(空転の比 %.2f > 1.3)' % (log, r['t_ai'], r['slip']['ratio'])]
+    assert gn['compare']['checks']['slip'] is False and gn['compare']['checks']['on_no_stall'] is False
+    assert len(_lines(on, '  → カメラが止まった ON の発進が空転した 1 本')) == 1
+
+
+def test_c5_stall_on_first_lap_gap_counts(tmp_path):
+    """カメラが止まった ON の発進の最初の周の記録の欠け(シーン 0002 の IMU.npz が無い)も数える(first_lap_gap_on に「。カメラの止まり」・
+    on_all_readable = False)"""
+    D = t7.Day(tmp_path)
+    for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+        D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+    log = D.add(16, ON, 0.15, 0.3, dur=45.0, vk=t7.launch_keys(14.0, 0.15, 0.3, until=45.0), ai=[(14.0, 43.0)],
+                launch=[(14.0, 0.5)], stall=[(14.6, 15.5)])
+    (D.raw / log / ('%s-0002' % log) / 'IMU.npz').unlink()
+    jn, _, _ = runc(D, 'r1new', IG, 'stgap')
+    gn = g0(jn)
+    r = rows_of(jn, log)[0]
+    assert r.get('launch_stall') and r.get('first_lap_gap')
+    assert gn['first_lap_gap_on'] == ['%s@%.2f(%s。カメラの止まり)' % (log, r['t_ai'], r['first_lap_gap'])]
+    assert gn['compare']['checks']['on_all_readable'] is False and gn['compare']['checks']['on_no_stall'] is False
+
+
+def test_c5_all_off_stalled_is_not_use_ok(tmp_path):
+    """OFF の発進が全部カメラの止まりで外れたら、比べられない = 満たさない(checks の off_no_stall。前は伸びた OFF と比べた)"""
+    D = t7.Day(tmp_path)
+    D.add(12, PRM, 0.20, 0.6, stall=[(1.6, 2.5)])
+    D.add(13, ON, 0.15, 0.3)
+    D.add(14, PRM, 0.23, 0.6, stall=[(1.6, 2.5)])
+    D.add(15, ON, 0.20, 0.3)
+    jn, on, _ = runc(D, 'r1new', IG, 'alloff')
+    jo, oo, _ = runc(D, 'r1old', IG, 'alloff')
+    gn, go = g0(jn), g0(jo)
+    assert go['by_launch']['off']['n'] == 2 and 'compare' in go
+    assert 'off' not in gn['by_launch'] and gn['compare']['all_ok'] is False
+    assert gn['compare']['checks']['off_no_stall'] is False and gn['compare']['checks']['to_r1'] is False
+    assert len(gn['launch_stall_excluded']) == 2
+    assert any(x.startswith('  → OFF の発進が全部カメラの止まりで比べから外れた') for x in on.splitlines())
+
+
+@pytest.mark.parametrize('case', ['N', 'A'])
+def test_c5_no_stall_in_launch_is_bit_identical(tmp_path, case):
+    """発進 → R1 の間にカメラの止まりが無い日(止まりなし・止まって中止 = R1 に届かない)は、⑤ の JSON・標準出力が直す前とバイト単位で
+    同じ(3 通りの引数)。
+    2026-10-28 fix8 tools r2(反証 8-2 回目 w2-tools-r8-2-off-few-left の決め): 'A'(3-5 の OFF の本の発進が R1 に届かず、その本の発進が
+    比べに 1 本も残らない)は、8-2 で足した「外れた OFF」(組の off_dropped・checks の off_all_compared・「→ OFF の発進が比べから外れた
+    …」の行)のほかがバイト単位で同じ(答えは前から「満たさない」。tests/test_fix8_tools_r2.py)"""
+    D, log35 = sday(tmp_path, case)
+    for args in ([], IG, IGF):
+        if case == 'N':
+            assert same_outputs(D, args, case + str(len(args))), args
+            continue
+        jn, on, _ = runc(D, 'r1new', args, 'n' + case + str(len(args)))
+        jo, oo, _ = runc(D, 'r1old', args, 'o' + case + str(len(args)))
+        g = g0(jn)
+        assert g['off_dropped'] == ['%s@1.00(R1 に届かなかった・15 秒以内に起点なし)' % log35], args
+        assert g['compare']['checks'].pop('off_all_compared') is False and g['compare']['all_ok'] is False
+        g.pop('off_dropped')
+        drop = '  → OFF の発進が比べから外れた '
+        assert sum(1 for x in on.splitlines() if x.startswith(drop)) == 1
+        on2 = '\n'.join(x.replace(", 'off_all_compared': False", '') for x in no_path(on).splitlines() if not x.startswith(drop))
+        assert jn == jo and on2 == no_path(oo), args
+
+
+def test_c5_stall_after_r1_is_not_marked(tmp_path):
+    """止まりが R1 の起点のあと(最初の周の途中)なら launch_stall は付かない = 直す前とバイト単位で同じ"""
+    D, log35 = sday(tmp_path, 'S', stall=(4.5, 5.4))
+    jn, _, _ = runc(D, 'r1new', IG, 'after')
+    r = rows_of(jn, log35)[0]
+    assert 'launch_stall' not in r and r['t_ai'] + r['to_r1_s'] < 4.5
+    assert same_outputs(D, IG, 'after')
+    Dm, logm = sday(tmp_path / 'm', 'S')                    # 同じ止まりが発進 → R1 の間なら(速さは変わらなくても)外す
+    assert rows_of(runc(Dm, 'r1new', IG, 'mid')[0], logm)[0]['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567}
+
+
+@pytest.mark.parametrize('ln, gap', [(0.05, 0.067), (0.1, 0.133), (0.15, 0.167), (0.2, 0.233), (0.25, 0.267), (0.3, 0.333)])
+def test_c5_stall_threshold_on_the_realistic_shape(tmp_path, ln, gap):
+    """本物に近い速さ(止まりの 0.1 秒あとから中立の惰性 −0.9 m/s²)で、フレームの無い間 ln 秒(1.61 秒から。フレームの間は gap 秒):
+    間が 0.22 秒より長いときだけ外す。外さない長さは直す前とバイト単位で同じ"""
+    flagged, noted = gap > 0.22, 0.15 < gap <= 0.22
+    D, log35 = sday(tmp_path, 'R', stall=(1.61, 1.61 + ln))
+    jn, on, _ = runc(D, 'r1new', IG, 'thr%d' % int(ln * 100))
+    r = rows_of(jn, log35)[0]
+    assert ('launch_stall' in r) is flagged and ('launch_gap_short' in g0(jn)) is noted
+    if flagged:
+        assert r['launch_stall'] == {'gap_s': gap, 'at_s': 1.6} and g0(jn)['by_launch']['off']['n'] == 3
+    elif noted:
+        assert g0(jn)['launch_gap_short'] == ['%s@%.2f(off・フレームの間 %.2f 秒(1.60 秒から))' % (log35, r['t_ai'], gap)]
+        assert len(_lines(on, GAPNOTE_HEAD)) == 1
+    else:
+        assert same_outputs(D, IG, 'thr%d' % int(ln * 100))
+
+
+@pytest.mark.parametrize('s0', [1.401, 1.601])
+def test_c5_short_gap_is_only_noted(tmp_path, s0):
+    """間 0.200 秒(6 フレーム分。中立約 0.1 秒)の止まりは外さない(比べ・判定・JSON の launches は直す前と同じ)が、境目の日の答えを変えうる
+    (作り物: 1.40 秒からなら 3-5 が 0.07 秒遅れ −0.17 秒「使ってよい」、1.60 秒からなら 0.03 秒遅れ −0.15 秒「使ってよい」。直す前も同じ答え)
+    ので、組に launch_gap_short と注意の行を出す"""
+    D, log35 = sday(tmp_path, 'R', stall=(s0, s0 + 0.198))
+    jn, on, _ = runc(D, 'r1new', IG, 'sg%d' % int(s0 * 1000))
+    jo, oo, _ = runc(D, 'r1old', IG, 'sg%d' % int(s0 * 1000))
+    gn, go = g0(jn), g0(jo)
+    r = rows_of(jn, log35)[0]
+    assert 'launch_stall' not in r and jn['launches'] == jo['launches']
+    assert gn['launch_gap_short'] == ['%s@%.2f(off・フレームの間 0.20 秒(%.2f 秒から))' % (log35, r['t_ai'], s0 - 0.001)]
+    assert {k: v for k, v in gn.items() if k != 'launch_gap_short'} == go
+    assert go['compare']['all_ok'] is True and gn['compare'] == go['compare']
+    ln = _lines(on, GAPNOTE_HEAD)
+    assert len(ln) == 1 and ln[0].startswith(GAPNOTE_HEAD + '1 本(比べには入れた。') and log35 in ln[0]
+    assert '\n'.join(x for x in no_path(on).splitlines() if not x.startswith(GAPNOTE_HEAD)) == no_path(oo)
+
+
+def test_c5_short_gap_not_noted_outside_the_comparison(tmp_path):
+    """比べに入らない本(試し)の短い止まりは注意の行に出さない = 直す前とバイト単位で同じ"""
+    D, log35 = sday(tmp_path, 'R', stall=(1.401, 1.599))
+    t8.make_kind(D.raw, log35, 'trial')
+    assert same_outputs(D, IG, 'sgtr')
+
+
+def test_c5_stall_trial_or_abort_keep_their_bucket(tmp_path):
+    """試しの本の発進にカメラの止まりがあっても、試し(比べの外)のまま(launch_stall の印は行に付くが、組の launch_stall_excluded には
+    入れない)"""
+    D, log35 = sday(tmp_path, 'C')
+    t8.make_kind(D.raw, log35, 'trial')
+    jn, _, _ = runc(D, 'r1new', IG, 'sttr')
+    gn = g0(jn)
+    assert rows_of(jn, log35)[0].get('launch_stall') and rows_of(jn, log35)[0].get('trial')
+    assert 'launch_stall_excluded' not in gn and len(gn['trial_excluded']) == 1
+
+
+# ================================================================== 本物の記録(読むだけ。無ければ飛ばす)
+REAL_DAYS = ('20261010', '20261023', '20261024')
+need_real = pytest.mark.skipif(not all(any((JF / 'data' / 'raw').glob(d + '-*')) for d in REAL_DAYS),
+                               reason='本物の 10/10・10/23・10/24 の記録が無い')
+
+
+@need_real
+@pytest.mark.parametrize('day', REAL_DAYS)
+def test_real_days_unchanged(tmp_path, day):
+    """本物(読むだけ): 10/10・10/23・10/24 の ⑤(--ignore-gain)は直す前とバイト単位で同じ(R1 に届いた発進の、発進 → R1 の
+    フレームの間はいちばん長くて 0.200 秒 = launch_stall は付かない。形・ゲインの違う試しの組も無い)"""
+    import contextlib
+    import io
+    outs = []
+    for ver, p in (('n', NEW_C), ('o', FIX / 'collect.py.orig')):
+        m = t8.load_mod('c8r1_real_%s_%s' % (ver, day), p)
+        out = tmp_path / ('%s.json' % ver)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            m.main(['--day', day, '--out', str(out), '--ignore-gain'])
+        outs.append((out.read_text(encoding='utf-8'), no_path(buf.getvalue())))
+    (tn, on), (to, oo) = outs
+    assert tn == to and on == oo
+    j = json.loads(tn)
+    assert not any(r.get('launch_stall') for r in j['launches'])
+    assert not any(g.get('other_group_on') or g.get('on_faults_counted_in') for g in j['summary'])

@@ -1,0 +1,6 @@
+## todo 4 章 1(本物の GET): curl -s http://127.0.0.1:8080/api/status | python3 -c "import json,sys; s=json.load(sys.stdin); print('走行', s['driving'], '学習', s['training'], '収集', (s.get('session') or {}).get('active'), '録画', (s.get('recorder') or {}).get('recording'))"
+走行 False 学習 False 収集 False 録画 False
+## todo 4 章 4(本物の GET)
+{'launch_boost': 0, 'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0, 'speed_ceiling': 0, 'speed_auto': 0, 'zone_caps': 0, 'ceil_left_mps': 4.1, 'launch_us': 250.0} boot_at 1793116404.711
+## todo 4 章のあとの文の boot_at(本物の GET)
+boot_at 1793116404.711

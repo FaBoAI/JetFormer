@@ -1,0 +1,22 @@
+{
+  "verdicts": [
+    {
+      "id": "runs-opt-mark-on-the-on-runs",
+      "real": true,
+      "severity": "minor",
+      "evidence": "a1_runs_first_off.py(本物の runs_1103.py 33bc7fca を import し RAW だけ作り物 → out/a1_runs_first_off.txt)。E(2-1 OFF・2-2/2-3 ON): 印は 2-2・2-3 に「…後ろの見張り ON(2-1 は OFF)…(再起動で OFF に戻った? …)」、OFF の 2-1 に印なし、「5 本・計画と違う 2 本」= ON の 2 本。K(本「—」→ 1-1 OFF → 1-2/1-3 ON): 表の下の行は「…(回の本は 1-1(No.2)から) → 1-2(No.3)から 後ろの見張り…」と 1-1 が OFF と言うのに、印と「計画と違う 2 本」は ON の 1-2・1-3。比べ C(1-3 から OFF)は OFF の 1-3 に印 = 正しい。round_options が回の最初の本を正とするため。手順書 8.1 ② は「「回 N の試験の選択肢が … と違う」の印は、起こし直しで OFF に戻った本 → 7 章」と読ませるので逆の本を指す。知られている残り(fix7 README 3 章・fix8 decided_tools 9 章)に無い。ただし印の文自体に「(2-1 は OFF)」が出る・表の下の行と car_check の本ごとの行・⑤ の「混ざっている」は正しいので、夜に読む人の取り違えだけ = minor。付記: 回 2 が全部 OFF(F)なら回の中の印は 0 本・計画と違う 0 本(表の下の行だけが言う。前からの形で、指摘の直し案でも変わらない)"
+    },
+    {
+      "id": "stale-status-after-drive-tab-return",
+      "real": true,
+      "severity": "minor",
+      "evidence": "a2_tab_return.py(本物の app.js 2b211259・index.html を sim_copy.js = app_sim_fix7_r2.js の写しで。初めに本物の showTab('drive') → out/a2_tab_return.txt)。A: 見張り・残す ON → ライブのタブ(走行タブの輪のタイマー 0 個)→ curl で見張り 0 → 一覧の GET を止めて走行タブ → paramsLoaded=true・st の見張り 1・スイッチ ON のまま、ブロック 1-2 が入り、▶ の確認の文に「後ろの見張り: ON」「残す: ON」の 2 行、▶ の前の通信は一覧の GET(返事なし)だけ、走行開始 200 でサーバーは見張り 0・残す 0。B: curl 左 4.2・launch_us 200 → 止めたまま戻ってブロック 2-5 → 天井 ON → ▶ = 確認の文「左旋回中 4.1」、走ったのは 4.2・200。比べ: 一覧がすぐ返る(A0・B0)・返事のあと ▶(A1)・止めたまま 5 秒(A5 = drLost → 同期)・走行タブのまま(C)はどれも走った値と同じ文。窓は一覧の GET の間だけで、本物の GET(102,023 B)はこの Jetson の上で 0.067〜0.100 秒(GET だけ 3 回)なので、戻ってすぐ ▶ を押したとき・Wi-Fi が遅いときだけ。走る値は人か別の画面が入れたサーバーの値で、多くの形では食い違いに気づいてキャンセルする側(4.1 と 4.2)= minor。知られている残り(fix7 README 3 章の画面の行・fix6 fix_ui_r2 3 章)とは別の形"
+    },
+    {
+      "id": "toast-half-width-on-phone",
+      "real": true,
+      "severity": "minor",
+      "evidence": "a3_toast_width.py(本物の index.html の写しに本物の style.css 5842642f を file:// で。app.js なし・通信なし。headless の Firefox は窓が 500 px より狭くならないので iframe の幅で測る → out/a3_toast_width.txt・a3_toast_420.png)。.toast は left:50%・translateX(-50%)・width auto なので、使える幅が left から右端まで = 画面の半分になり max-width 90% は効かない(CSS の shrink-to-fit)。server._boot_refusal の書式で作った断りの出し直し 207 字: 幅 420 = 204×332 px、幅 390 = 189×352 px、幅 980 = 484×137 px(短い文 6 字はどれも 114×40)。▶ を画面の真ん中にすると、420・390 では箱が「停止中」のバッジと走行タブの文に重なる(980 は重ならない)。README 6.2 の 11「スマホで起動し直しの文が読める」はまだ確かめていない項目で、この形は書かれていない。トーストは 6 秒で消え、文の頭に「走行は始まっていません(停止中)」があり、消えればバッジは見えるので、読みにくさだけ = minor"
+    }
+  ]
+}

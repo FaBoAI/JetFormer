@@ -131,6 +131,27 @@ FIX7_SAFETY_R2_BEFORE = JF / 'tests' / 'fixtures' / 'fix7_safety_r2_before'
 LATER_FIX7_SAFETY_R2 = {
     'jetformer/assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f',
 }
+# そのあと 10/28 fix8 の安全の係(safety-decided)が drive.py のモジュールの説明の文(docstring)の見張りの段に 1 文を足した
+# (コメントだけ。docstring を除いた AST は同じ = 走行の動きは同じ)。直す前の写しは tests/fixtures/fix8_safety_doc_before/(= 上の
+# LATER_FIX7_SAFETY の drive.py の版。SHA256SUMS)から同じようにたどる。fix8 のあとの版の sha256 はここ
+FIX8_SAFETY_DOC_BEFORE = JF / 'tests' / 'fixtures' / 'fix8_safety_doc_before'
+LATER_FIX8_SAFETY_DOC = {
+    'jetformer/drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e',
+}
+# そのあと 10/28 fix8 の画面の係の直す 8-1 回目(反証 8-1 回目 stale-status-after-drive-tab-return。走行タブに戻った直後は表示の問い合わせを
+# 読み直すまで ▶・基準の設定・ブロックを断る。表示と断る時だけ。送る物・版は同じ)が web/static/app.js を変えた。直す前の写しは
+# tests/fixtures/fix8_ui_r1_before/(上の LATER_FIX7_UI_R2 の版。SHA256SUMS)。中身の違いは tests/test_ui_fix8_r1.py が見る。8-1 回目のあとの版の sha256 はここ
+FIX8_UI_R1_BEFORE = JF / 'tests' / 'fixtures' / 'fix8_ui_r1_before'
+LATER_FIX8_UI_R1 = {
+    'jetformer/web/static/app.js': 'aa275bb5da0bbd740f38c217dd0ae9ee19240f061dafd8ca70f6916448837285',
+}
+# そのあと 10/28 fix8 の画面の係の直す 8-2 回目(反証 8-2 回目 rehearsal-r2-vbefore-screen-vs-server。走行開始・スイッチの確認の文の
+# 「電圧の源」の説明欄の V_before の読み方をサーバーの speed_auto.v_before_of と同じにした。表示だけ。送る物・版は同じ)が web/static/app.js を
+# 変えた。直す前の写しは tests/fixtures/fix8_ui_r2_before/(上の LATER_FIX8_UI_R1 の版。SHA256SUMS)。中身の違いは tests/test_ui_fix8_r2.py
+FIX8_UI_R2_BEFORE = JF / 'tests' / 'fixtures' / 'fix8_ui_r2_before'
+LATER_FIX8_UI_R2 = {
+    'jetformer/web/static/app.js': 'e61dfac905cb8bc86ac76e07ff104c85df1c9433d5a5b889ac80a0af1190ce73',
+}
 
 
 def _sha(p):
@@ -148,9 +169,14 @@ def test_untouched_files():
     app.js は 10/27 fix7 画面の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = 6-2 回目の版へたどる)。
     app.js は 10/27 fix7 画面の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)。
     drive.py・assist.py は 10/27 fix7 安全の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = fix6 の版へたどる)。
-    assist.py は 10/27 fix7 安全の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)"""
+    assist.py は 10/27 fix7 安全の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)。
+    drive.py は 10/28 fix8 安全の係の説明の文だけの版でもよい(その直す前の写し = 7-1 回目の版へたどる)。
+    app.js は 10/28 fix8 画面の係の直す 8-1 回目の版でもよい(8-1 回目の直す前の写し = 7-2 回目の版へたどる)。
+    app.js は 10/28 fix8 画面の係の直す 8-2 回目の版でもよい(8-2 回目の直す前の写し = 8-1 回目の版へたどる)"""
     for rel, h in UNTOUCHED.items():
         cur = _sha(JF / rel)
+        if rel in LATER_FIX8_SAFETY_DOC and cur == LATER_FIX8_SAFETY_DOC[rel]:
+            cur = _sha(FIX8_SAFETY_DOC_BEFORE / Path(rel).name)  # fix8 安全の係の説明の文の直す前の写し(LATER_FIX7_SAFETY の版)
         if rel in LATER_FIX7_SAFETY_R2 and cur == LATER_FIX7_SAFETY_R2[rel]:
             cur = _sha(FIX7_SAFETY_R2_BEFORE / Path(rel).name)   # fix7 安全の係 7-2 回目の直す前の写し(LATER_FIX7_SAFETY の版)
         if rel in LATER_FIX7_SAFETY and cur == LATER_FIX7_SAFETY[rel]:
@@ -159,6 +185,10 @@ def test_untouched_files():
             cur = _sha(FIX6_SAFETY_R2_BEFORE / Path(rel).name)   # fix6 安全の係 6-2 回目の直す前の写し(LATER_FIX6 の版)
         if rel in LATER_FIX6 and cur == LATER_FIX6[rel]:
             cur = _sha(FIX6_BEFORE / Path(rel).name)          # fix6 安全の係の直す前の写し(LATER_FIX5 の版)
+        if rel in LATER_FIX8_UI_R2 and cur == LATER_FIX8_UI_R2[rel]:
+            cur = _sha(FIX8_UI_R2_BEFORE / Path(rel).name)    # fix8 画面の係 8-2 回目の直す前の写し(LATER_FIX8_UI_R1 の版)
+        if rel in LATER_FIX8_UI_R1 and cur == LATER_FIX8_UI_R1[rel]:
+            cur = _sha(FIX8_UI_R1_BEFORE / Path(rel).name)    # fix8 画面の係 8-1 回目の直す前の写し(LATER_FIX7_UI_R2 の版)
         if rel in LATER_FIX7_UI_R2 and cur == LATER_FIX7_UI_R2[rel]:
             cur = _sha(FIX7_UI_R2_BEFORE / Path(rel).name)    # fix7 画面の係 7-2 回目の直す前の写し(LATER_FIX7_UI の版)
         if rel in LATER_FIX7_UI and cur == LATER_FIX7_UI[rel]:

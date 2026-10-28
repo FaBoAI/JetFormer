@@ -1,0 +1,29 @@
+{
+ "summary": "打ち消しの票 A(反証 8-2・係 docs の 4 件)。直していない(コード・文書は変えていない。jetformer-web の API は呼んでいない。systemctl show を読むだけ)。照らした版: 手順書 1325465f88ec・todo aacc5e8b5943・README 143b41f873da・approvals d35465402338・fix7/README 5a58cd8ab315(指摘と同じ)、drive.py 3f2e31a2・assist.py ad6db15b、collect.py 8a9a63d4(今の版。snap/ に写して sha256 を照らして流した)。台本と出力は全部この場所: sweep_first_rec.py・ana_first_rec.py(閉じたループ。cl_mine.py = fix8/refute_safety_r1_A/cl_A.py の写しで TMP だけ自分の場所)・real_back.py・real_back_detail.py(本物の記録を読むだけ)・p_skip_trial.py(本物の ⑤ を作り物の回 3 で)・p_doc_lines.py(文書の行)→ out/。作り物の日・閉じたループの一時の場所 fix8/tmp_refute_docs_r2_A は消した。",
+ "verdicts": [
+  {
+   "id": "f8r2-docs-paper-trial-skip-drops-faults",
+   "real": true,
+   "severity": "minor",
+   "evidence": "今の collect.py(8a9a63d4)を tests/test_fix8_tools_decided.mtday の作り物の回 3(OFF 4・ON 3・3-8 = ON)で流した(p_skip_trial.py → out/p_skip_trial.txt): 3-8 の最初の周に 6G・空転(比 ≈ 1.8)・最初の周の IMU.npz が無い、のどれも、メモに「試し」= 満たさない(first_lap_collisions_0 / slip / on_all_readable = False)、何も書かずに数える = 満たさない、紙の「試し」→ `--skip 3-8 の記録名` = 使ってよい(起点まで −0.165 秒)。値が計画と同じ本・ゲイン 0.92 で走った本の両方で 6/6。不具合の無い本はどの道も使ってよい。--skip は rows を summarize の前に捨てる(collect.py 2064〜2067 行)。文書: 7 章 274 行「⑤ の行に名前が無ければ、main session が `--skip 記録名` で外す」・276 行「紙に「試し」→ main session が `--skip`(本ごと外す)」・todo 75 行「できなければ紙 → main session の `--skip`」・6 章 241 行「車のせいでない理由(…・試し)で止めた本だけ --skip」は不具合の有無で分けない。分けるのは 8.1 ⑤(327 行)の「当たった本は `--skip` しない」だけで、空転・記録の欠けは書いていない。和らげるもの: 7 章「発進の前進 ON の最初の周で LH・R1 に当たる → ON をやめる」(人の守り。LH・R1 の当たりだけ)。起きるのは、走り終わりのメモの欄もシーンのタブも使えず紙だけになった ON の本に不具合があったときだけ = minor。「何もしないで数える」でも安全側(満たさない)なので、直しは「紙の試しは --skip でなくシーンの説明に試し、できなければ外さずに数える」でよい"
+  },
+  {
+   "id": "f8r2-docs-1023-first-recovery-off",
+   "real": true,
+   "severity": "minor",
+   "evidence": "文書(p_doc_lines.py): 手順書 127 行の最初のリカバリーの行は「1 m 以上下がる・後ろの物に近づく・おかしな動き → すぐ CH3 を人側 → 止めて OFF にし、その本から先は OFF(紙に書く)」= 人側にするだけでなく、止めてその日の残りを OFF にさせる(todo 67 行も同じ)。125 行・254 行の「先に人側にしただけなら OFF にしない(最初のリカバリーの行で決める)」もそのとおり。この行に ON のふつうの下がる距離の数は無く、approvals 3 の「なぜ」は「後退をやめた時点で 0.75 m」とだけ書く。閉じたループ(本物の drive._loop・ESC の模型 18 通り。sweep_first_rec.py → out/ana_first_rec.txt): 10/23 の形・後ろの物なしで ON は 288/288 場面で 1.021〜1.968 m(中央 1.313。fit 1.278〜1.399)下がり、始めから 0.55〜0.83 秒で 1.0 m を越える。OFF は 1.174〜2.906 m(中央 2.246)。後ろ 1.0〜2.0 m の物では ON 2,282・OFF 5,500 / 6,048 組が当たり、悪いほうは OFF 5,246・ON 42(fit は ON 104・OFF 336 / 336。1.5・1.8 m は ON 0・OFF 16/16 で 2.55・2.50 m/s)= 指摘の数と同じ。手順書どおりなら、ON が良い距離の 10/23 の形で、その日が OFF になるのは本当。ただし 10/23 の形に限らない: 同じ模型で、ふつうの形(前進のまま前の壁に当たって止まる)の最初のリカバリーも 144/144 場面で 1.021〜1.968 m 下がる(ON と OFF がどの場面も同じ距離)。ON は 'brake' の中で下がった分も rev_s に数えるので、10/23 の形の ON の下がりはふつうの形と同じ(fit でどちらも 1.278 m)。本物の記録(real_back.py・real_back_detail.py)でも、ふつうのリカバリーは 20261023-211828 の 127.13 秒(AI 側のまま終わった)で 0.94 m、146.22 秒(途中で人側)で 1.06 m = 1 m の境のあたり。つまり「1 m 以上下がる → 止めて OFF」は、どの形でもふつうの 0.4 秒・300 µs のリカバリーの下がる量のあたりにあり、10/23 の形の行が原因ではない(fix4 からある文)。直すなら、10/23 の形だけの例外(人は 0.6 秒の中で形を見分けられない)ではなく、最初のリカバリーの「1 m 以上下がる」を OFF の理由にするかを形によらず main session・ユーザーが決める。OFF は 10/10〜10/24 の既定の形で、人の守り(7 章)は残るので minor。数は偽物の ESC の模型で、実車の ESC では確かめていない"
+  },
+  {
+   "id": "f8r2-docs-todo-no-approvals3-notice",
+   "real": true,
+   "severity": "minor",
+   "evidence": "p_doc_lines.py の C: todo 23 行(1 章「11/2 まで」)は「3 は決まり((c) 両方 ON)」で、同じ行に 14 の知らせ(「返事が無ければこのまま」)はあるが、approvals 3 の 10/28 知らせは無い(「10/23」「困ること」「知らせ」「変えたい」どれも無い)。2 章 10(48 行)も「決まり」だけ。todo で 10/23 の形が出るのは 3 章 71 行(当日の守り「人側にしてよい」と approvals 3 への案内)と頭の記録 11 行だけで、「(c) を変えたいときは一言・返事が無ければ (c) のまま」はどこにも無い。approvals 22 行(0 章 3)と README 224 行(6.2 の 33。main session → ユーザー・11/2・返事が無ければ (c) のまま)にはある。README 33 で main session が伝えることになっているので、害は「todo だけを読むと一言できることが分からない」に留まる = minor"
+  },
+  {
+   "id": "f8r2-docs-approvals-restart-stale",
+   "real": true,
+   "severity": "minor",
+   "evidence": "p_doc_lines.py の D: approvals 21 行(0 章の 2)は「反証 8 回目のあとにもう一度 | …説明の文のぶんは反証 8 回目のあと」で 08:40 の印が無い。10 行の「今(10/27 17:3x…)」は「もう一度の再起動が要る」のままで「前の今」の印も 00:53・08:40 も無い(9 行だけが「前の今」)。今の状態を読むだけで見た: systemctl show jetformer-web は ActiveEnterTimestamp 10/28 08:40:33・NRestarts 0・active、jetformer/ の .py で 08:40:33 より新しいものは無い(drive.py 02:33・assist.py 10/27 22:02・server.py 10/27 08:05・bench.py 10/27 06:40。10:15 の style.css は静的なファイル)= 今は再起動は要らない。ほかの文書の今の行(手順書 23 行・README 11・195 行・approvals 12・14 行)には印がある。2 章の「今(10/28 08:40)」(53 行)は「0 章の 2 … は要らなくなった」と書くので、ファイル全部を読めば分かる(同期 1 がわざと 0 章の 2 を変えなかった = docs_sync_r1.md 2 章)が、0 章(一覧・急ぐ順)だけを読むと再起動が残って見える。害は要らない再起動か、ユーザーの読み違い = minor。8-2 の直しで assist.py・drive.py・server.py・bench.py が変わったら、また再起動が要る(そのときは別の理由)"
+  }
+ ]
+}

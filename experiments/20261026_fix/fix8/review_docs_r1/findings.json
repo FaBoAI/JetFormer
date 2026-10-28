@@ -1,0 +1,68 @@
+{
+  "summary": "反証 8-1 回目・係 docs(直していない。コード・文書は変えていない)。照らしたもの: (1) 今の状態 = systemctl show(ActiveEnterTimestamp 10/28 00:53:23・NRestarts 0・active)・GET /api/drive/status(boot_at 00:53:24.711・新しい項目は全部既定 0・4.1・250・走行していない)・journal(起動から「エラーの行なし」)・手順書 3.1 のコマンド(「起動より新しい: /home/jetson/jetformer/jetformer/drive.py」だけ。drive.py 02:33:40・assist.py 22:02・app.js 21:58・server.py 08:05・bench.py 06:40)→ 文書の再起動の記録・「画面の版 9(app.js 10/27 21:58)」・drive.py の名前が出ることと同じ。(2) 数 = fix7/pytest_full_20261028.txt(2 failed・3415 passed・4 skipped・9913M・55M)・disk_check.py を流した行(作業場所 0.6 GB・付けないと 7.1 GB の形が fix3/disk.md の引用と同じ)・decided_safety の数(1,438・2,970・92・106・自分で流した scan_gaps10 で 45,918 = 19,865 + 26,053)・assist の定数(ARM_ERPM 1000・STOP_ERPM 300・HOLD_KEEP_MAX_S 0.5・CHECK_S 0.35・SURE_BACK_S 0.2・ESCAPE_US 130・HOLD_HALT_MAX_S 0.3)・git(9da6d0d 00:56:02 = origin/main)。(3) 引用 = fix7 の quotes.py を広げた quotes8.py(今の文書 × 今のコードと、控えの文書 × HEAD のコード)で fix8 で増えた外れ 13 は全部、組み立ての文(%s)か文書の中の言葉・記録の文で、道具の文と違う引用は 0。fix8 tools が変えた道具の文を本物の 10/23・10/24 で流した出力(⑤ の「 中止のあとの走り直し(リカバリーの途中 15.988 秒から 0.1 秒・人側 11.26 秒。R1 に届かなかった発進に数える)」・③ の表の「数えない(リカバリー中止のあとの走り直し。リカバリーの途中 146.19 秒から 0.8 秒・人側 7.4 秒)」と注・④ の 2 章の下の 1 文)が手順書 8.1 の引用どおり。(4) docs-decided の 68 か所 = 控えとの行ごとの差(insdiff.py)を全部読み、元(decided_tools 11 章・decided_safety 6 章・user_decisions.md)と照らした。(5) 案の係の知らせ(残り 2 の言い方が逆)= 閉じたループ(fix8/proposal の exp10 の写し)と本物の後退の eRPM の並び(unit_real10 の (b2) の写し)を今のコードで自分で流して確かめた = 逆(やり直した組はどれも短く下がる)。指摘 7 件(どれも minor。止める級・major は 0)。答えがまだの数(4・7〜11・13。14 は知らせ)・(c) 両方 ON・(a)・①② 変えた / ③ 今のまま・再起動済みの書き方は、文書どうしで食い違いなし。",
+  "findings": [
+    {
+      "id": "f8r1-docs-residual2-reversed",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/fix3/approvals.md",
+      "line": 202,
+      "title": "approvals 14 の 2 行目(と fix7/README 3 章 58 行)の s4-c の残りが「やり直して最大 0.2 秒の後退ぶん多く下がる」「起きるのは後ろに当たる・引っかかるときなど」のまま。今のコードでは逆(やり直すと短く下がり、ESC 0.27 秒で 0.22 m・escape が前の壁を 0.16 秒押す)で、ふつうの本物の後退の並びでも起きる",
+      "scenario": "ユーザーが approvals 14 を読んで「14 はこのまま」を決める → 2 行目は「多く下がる・守りは手順書 7 章『1 m 以上下がる → すぐ人側』」と読める。自分で今のコード(assist.py ad6db15b・drive.py 3f2e31a2 と同じ動き)で流した: ① 閉じたループ dip_skip(fix8/proposal/exp10.py の写し rerun/exp10.py dip_skip on。336 組 + clean 8)で、やり直し・early_none の数が clean と変わった 88 組はどれも clean より短く下がった(−0.111〜−0.949 m・中央 −0.501・長く 0・後ろの当たりが増えた組 0)。ESC の下がり始め 0.27 秒(本物の最大)の 28 組では 0.220 m まで短くなり、6 組で escape が前の壁を 0.16 秒押した(clean は 1.044 m・0 秒)。② 本物の後退の eRPM の並び 132 を今の assist.py の 'gap' を飛ばした後退に置く(rerun/unit_real10_b2.py b2): 3,168 置き方のうち 51(並び 9。20261010-192141-0005@15.18 の 300 のまわりで始まるゆっくりした後退・20261010-181504-0005@1.39 の始めに 0 が入る後退)で、下がり始めたあとに early_none = 当たり・引っかかりの無いふつうの後退でも起きる。③ 長く下がるのは、決めが変わらない途切れそのもの(dip_skip 110 組 +0.134〜+0.463 m。ふつうの後退 dip_norm でも ON・OFF とも 238/336 組 +0.159〜+0.504 m = 前からある形)で、やり直しのせいではない。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/demo_residual2.py → out/demo_residual2.txt(元 rerun/out/exp10_dip_skip.json・exp10_dip_norm.json・unit_real10_b2.json・stats_*.txt)",
+      "fix": "approvals 14 の 2 行目の中身を「'gap' を飛ばして入った後退で本当に下がり始めたのに、0.2 秒続く前に一度でも車輪の値が 300 以下になり、それが 0.35 秒のあとだと、やり直して('gap' から)下がった時間を捨てる。閉じたループでは、やり直した組はどれも跳ね・途切れの無い同じ場面より短く下がった(−0.11〜−0.95 m。ESC の下がり始めが 0.27 秒の組では 0.22 m しか下がらず、escape が前の壁を 0.16 秒押した組がある)。後ろの当たりは増えない。ゆっくり下がり始める・始めに 0 が入る本物の後退の並びでも起きうる(132 並びのうち 9)。本物の記録 235 本の流し直しでは起きていない。(途切れそのもので下がる時間がのびる形は、ふつうの後退でも ON・OFF とも同じ = 前から)」に、おすすめの欄を「このまま(手順書 7 章『当たって止まった車が前へ押し続けたらすぐ人側』・3 章『最初のリカバリーを人が見る』。11/3 のあとの直し方の案は fix8/proposal_safety_after1103.md の pB)」に。fix7/README 3 章の同じ行は記録なので、行の後ろに「→ 10/28 fix8: 逆(短く下がる)。approvals 14」の印を足す"
+    },
+    {
+      "id": "f8r1-docs-readme-commit-filecount",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/README.md",
+      "line": 202,
+      "title": "README 6.1 の 5 で fix8 の足しが fce5d47 の「1635 ファイル」の前に入り、9da6d0d が 1635 ファイルに読める(本当は 802)。0 章 7 の「fce5d47 … 1635 ファイル」と食い違う",
+      "scenario": "README 6.1 の 5 =「(fce5d47 を 10/27 17:19 に push。反証 7 回目の直しは **9da6d0d** を 10/28 00:56 に push。1635 ファイル。`tmp_*`… は入れていない…)」(控え .bak-20261028-fix8-decided では「fce5d47 を 10/27 17:19 に push。1635 ファイル。」)→ git show --stat: fce5d47 = 1635 files changed・9da6d0d = 802 files changed。0 章 7 は「fce5d47(… 1635 ファイル)」。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/doc_checks.py → out/doc_checks.txt の A 節(差は insdiff.py → out/insdiff_readmes.txt の 16 行)",
+      "fix": "「(fce5d47(1635 ファイル)を 10/27 17:19 に push。反証 7 回目の直しは **9da6d0d**(802 ファイル)を 10/28 00:56 に push。どちらも `tmp_*`・`__pycache__`・`zero.npz` は入れていない。…)」の順に"
+    },
+    {
+      "id": "f8r1-docs-readme-proposal-running",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/README.md",
+      "line": 192,
+      "title": "README 6 章の頭が「11/3 のあとに向けた安全の案の係はまだ動いている」のまま。案の報告は README を書く前(03:25)にでき、user_decisions.md も済(おすすめ pB)と書くのに、README 7 章の報告の一覧に無い",
+      "scenario": "ユーザーが README 6 章で反証 8 回目の今を読む →「案の係はまだ動いている」= 結果がまだと読む。実際: fix8/proposal_safety_after1103.md の更新 10/28 03:25:43(README.md は 03:34:44)・中に「おすすめ: pB を見張り ON の日だけ」・user_decisions.md(03:46:09)の 10/28 03:4x の行に「safety-proposal(11/3 のあとの案。おすすめ pB を見張り ON の日だけ)」。README 7 章(報告の一覧)に proposal_safety_after1103 の行は無い(6.2 の 32 に名前だけ)。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/doc_checks.py → out/doc_checks.txt の B 節",
+      "fix": "192 行の「11/3 のあとに向けた安全の案の係はまだ動いている」を「11/3 のあとに向けた安全の案は `fix8/proposal_safety_after1103.md`(10/28 03:2x。おすすめ pB を見張り ON の日だけ・入れるのは 11/3 のあと。approvals 14 の 1・2 行目の直し方)」に。7 章の fix8 の行に proposal_safety_after1103.md を足す"
+    },
+    {
+      "id": "f8r1-docs-fix7readme-ud-rows",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/fix7/README.md",
+      "line": 114,
+      "title": "fix7/README 7 章 4 の印が「approvals 6・「ON の形」の注の行はまだ」のまま。user_decisions.md には 10/28 03:4x に 2 行とも入った(fix8/decided_docs.md 6 章 3 も「まだ無い」)",
+      "scenario": "fix7/README 114 行(更新 03:34:44)=「⑤ は再起動の行だけ(approvals 6・「ON の形」の注の行はまだ)」→ user_decisions.md(更新 03:46:09)に「| 10/28 03:4x | (記録)approvals 6(E5 で候補が 0 のとき封を開けるか) | 要らなくなった…」と「| 10/28 03:4x | (注)approvals 3 の (c) を決めたときの「ON の形」の文 | 決めは変えない…」がある = 済んだのに「まだ」。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/doc_checks.py → out/doc_checks.txt の C 節",
+      "fix": "114 行の「(approvals 6・「ON の形」の注の行はまだ)」を「(approvals 6・「ON の形」の注の行も 10/28 03:4x に main session が書いた)」に。fix8/decided_docs.md 6 章 3 にも「→ 10/28 03:4x に済」"
+    },
+    {
+      "id": "f8r1-docs-approvals3-old-row",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/fix3/approvals.md",
+      "line": 71,
+      "title": "approvals 3 の表の「途中で OFF にした日」の行が「読み方は main session が決める」「決まっていないのは …」「決めたら main session がこの行に書く」のまま(決まりはすぐ下の新しい行)。同じ表の 10/23・10/24 のフレームの間の数も 45,844(67 行)と 45,918(72 行)で違う",
+      "scenario": "ユーザーが approvals 3 を上から読む → 71 行の見出しの欄「**読み方は main session が決める**」と太字の「**決まっていないのは、回 3 の途中で OFF にしたときの ⑤ の「ON − OFF」**」で止まり、行の終わりは「決めたら main session がこの行に書く」(この行には決まりが無い)。72 行が「決まり(10/28 00:5x main session): (a)」。また 67 行「10/23・10/24 の 45,844 回のフレームの間で、0.5 秒より長いのは 1 回」(元 fix3/fix_r3_1.md の数え方)と 72 行「10/23・10/24 の AI 側の処理したフレームの間 45,918 のうち…(0.5 秒より長いのは 1 つ」が同じことの 2 つの数。自分で流した scan_gaps10.py(decided_safety の写し)は 10/23 19,865 + 10/24 26,053 = 45,918・0.5 秒より長いのは 10/24 の 1。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/doc_checks.py → out/doc_checks.txt の D 節(rerun/scan_gaps10.py → rerun/out/scan_gaps10.txt)",
+      "fix": "71 行の見出しの欄を「途中で OFF にした日(10/27 fix7 docs r1。→ 10/28 決まり (a) = 下の行)」に、行の終わりの「決めたら main session がこの行に書く」の後ろに「→ 10/28 00:5x に (a)。下の「「途中で OFF にした日」の決まり」の行」を足す。67 行の 45,844 の後ろに「(fix3 r3-1 の数え方。AI 側の処理したフレームの間で数えると 45,918。10/28 fix8)」"
+    },
+    {
+      "id": "f8r1-docs-todo-trial-wording",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/todo_user_1026.md",
+      "line": 72,
+      "title": "todo 3 章(当日の抜き書き)の「試し」の行の fix8 の足しに「あれば」が無く、ON の本に「試し」と書くと回 3 が「満たさない」になると読める(手順書 7 章は「どれかがあれば」)",
+      "scenario": "11/3 に計画と違って走った ON の本(当たり・空転・記録の欠けなし)のメモに「試し」と書くか迷う → todo 72 行「⑤ ③ ④ がその本を数えない(ただし ON の発進の最初の周の衝突・空転・記録の欠けは ⑤ が数える = 回 3 は「満たさない」になる。…)」は「試しの ON = 満たさない」と読める(手順書 268 行は「空転(比 > 1.3・比が出ない)・最初の周の記録の欠けも数える(どれかがあれば回 3 は「満たさない」…)」)。今の ⑤ collect.py で作り物の回 3(tests/test_fix8_tools_decided.py の mtday・runc。3-8 が試しの ON)を流すと、空転なし・当たりなし・欠けなしの試しの ON では「ON − OFF: 起点まで -0.165 秒 … → 使ってよい」(all_ok True)、同じ本が空転(比 1.85)なら「→ 満たさない」と「→ 試しの本の ON の発進が空転した 1 本」。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/demo_trial_nospin.py → out/demo_trial_nospin.txt(文の照らしは doc_checks.py の E 節)",
+      "fix": "todo 72 行の括弧を「(ただし ON の発進の最初の周の衝突・空転(比 > 1.3・比が出ない。R1 に届いた発進)・記録の欠けがあれば ⑤ が数える = 回 3 は「満たさない」になる。無ければ比べから外れるだけ。10/28 main session の決め・fix8 tools)」に"
+    },
+    {
+      "id": "f8r1-docs-stale-headers",
+      "severity": "minor",
+      "file": "/home/jetson/jetformer_reports/fix_20261026/todo_user_1026.md",
+      "line": 1,
+      "title": "古い時刻の題・表の頭: todo の題「(10/27 17:3x 現在)」・手順書 9 章の表の頭「今(10/27 17:3x…)」・approvals の最初の「今(10/27 05:3x)…jetformer-web は 10/26 07:41 に起動した古い版のまま」が、10/28 の中身(もう一度の再起動など)の上に残る",
+      "scenario": "11/3 の朝にユーザーが todo を開く → 題が「10/27 17:3x 現在」(中の 1 章 27 行は「もう一度 10/28 00:53:23」)。手順書 347 行の 9 章の表の頭は「今(10/27 17:3x。前の版は 10/27 05:4x)」で、同じ表の 362 行は「→ 10/28 00:53:23 のもう一度の再起動で入った」。approvals 9 行(上から最初の「今」)は「今(10/27 05:3x): … jetformer-web は 10/26 07:41 に起動した古い版のまま(新しい項目は GET で None)。空きディスク 7.8 GB」で、今の「今」は 12 行(10/28 03:3x)。台本と出力: /home/jetson/jetformer/experiments/20261026_fix/fix8/review_docs_r1/doc_checks.py → out/doc_checks.txt の F 節",
+      "fix": "todo の題を「(10/28 03:3x 現在。反証 8 回目のあとに直す)」に、手順書 9 章の表の頭を「今(10/28 03:3x。前の版は 10/27 17:3x)」に。approvals 9 行の「今(10/27 05:3x)」を「前の今(10/27 05:3x。今は下の 10/28 03:3x の行)」に(行の中身は記録のまま)"
+    }
+  ]
+}

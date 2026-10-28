@@ -1,0 +1,100 @@
+## C1 一覧の GET が返らないまま(戻ってすぐ → 1 秒 × 3 → 5 秒の期限)
+  [戻ってすぐ] 状態: loaded=False gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [3 秒] 状態: loaded=False gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [5 秒の期限のあと(tick)] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  ■: 押した
+  [+1 秒] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  [一覧が返った] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200), ('A', '/api/drive/stop', 200)]
+## C2 一覧の GET がすぐ失敗(models_fail)
+  [戻ってすぐ] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  [+1 秒] 状態: loaded=True gen=2 lost=False ▶disabled=True tab=drive running=True msg=<div class="warn-text">別の画面(またはこの画面の以前の表
+  ▶: 押せない(disabled)
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C3 戻ったあとの表示の問い合わせが返らず 5 秒で打ち切り → 次で通る
+  [戻ってすぐ(status 待ち)] 状態: loaded=False gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [5 秒の打ち切りのあと] 状態: loaded=False gen=2 lost=True ▶disabled=True tab=drive running=False msg=<div class="warn-text">サーバーにつながっていません(表示
+  ▶: 押せない(disabled)
+  [+1 秒(通った)] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C4a 素早い行き来(走行→ライブ→走行 × 3。一覧の GET 3 本を古い順に返す)
+  [3 回戻った直後] 状態: loaded=False gen=4 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [一覧が返った] 状態: loaded=True gen=4 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  ■: 押した
+  タイマー: [['', 3000], ['pollValues', 300], ['pollStatus', 1000], ['pollDrive', 1000]]
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200), ('A', '/api/drive/stop', 200)]
+## C4b 素早い行き来(走行→ライブ→走行 × 3。一覧の GET 3 本を新しい順に返す)
+  [3 回戻った直後] 状態: loaded=False gen=4 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [一覧が返った] 状態: loaded=True gen=4 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  ■: 押した
+  タイマー: [['', 3000], ['pollValues', 300], ['pollStatus', 1000], ['pollDrive', 1000]]
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200), ('A', '/api/drive/stop', 200)]
+## C5 離れる前の問い合わせ(古い値)が、戻ったあとの問い合わせより後に返る
+  [新しい方が返った] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  [古い方が後から返った] 状態: loaded=False gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [+1 秒] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 0・残す 0・左 4.1
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('curl', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C6 この画面が走行中 → ライブ → 戻ってすぐ ■(一覧の GET を止めたまま)→ ▶
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  [戻ってすぐ(走行中)] 状態: loaded=True gen=1 lost=False ▶disabled=True tab=drive running=True msg=<div class="warn-text">別の画面(またはこの画面の以前の表
+  ■: 押した
+  [■ のあと] 状態: loaded=True gen=1 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  [一覧が返った] 状態: loaded=True gen=1 lost=False ▶disabled=True tab=drive running=True msg=<div class="warn-text">別の画面(またはこの画面の以前の表
+  ▶: 押せない(disabled)
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200), ('A', '/api/drive/stop', 200), ('A', '/api/drive/start', 200)]
+## C7 B が走っている間に A がライブへ・B が止めた → A が戻ってすぐ ▶(一覧を止めたまま)→ 一覧が返って ▶
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  ■: 押した
+  [A 戻ってすぐ] 状態: loaded=False gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=False 返事=None 確認の文=(出ない) 新しいトースト=['サーバーの設定を読み込んでいます。少し待ってから押してください']
+  [A 一覧が返った] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 0・残す 0・左 4.1
+  届いた POST: [('B', '/api/drive/params', 200), ('B', '/api/drive/params', 200), ('B', '/api/drive/start', 200), ('B', '/api/drive/stop', 200), ('B', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C8 ライブの間に起き直し → 戻ってすぐ ▶ → 一覧が返る → 入れ直す → ▶
+  [戻ってすぐ] 状態: loaded=False gen=2 lost=True ▶disabled=True tab=drive running=False msg=<div class="warn-text">サーバーにつながっていません(表示
+  ▶: 押せない(disabled)
+  [一覧が返った] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=<div class="warn-text">管理画面のサーバーが 09:33 
+  トースト(最後の 3): ['リカバリーの後ろの見張りを ON にしました', '中立止めのあともリカバリーを残すを ON にしました', '管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前']
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C9 起き直しの途中に戻る(全部通らない)→ 起き上がる → ▶
+  [戻ってすぐ(落ちている)] 状態: loaded=False gen=2 lost=True ▶disabled=True tab=drive running=False msg=<div class="warn-text">サーバーにつながっていません(表示
+  ▶: 押せない(disabled)
+  [起き上がった +1 秒] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=<div class="warn-text">管理画面のサーバーが 09:33 
+  トースト(最後の 3): ['中立止めのあともリカバリーを残すを ON にしました', 'Failed to fetch (sim8: サーバーが落ちている。GET も全部)', '管理画面のサーバーが 09:33 に起動し直しました。朝に入れた設定(後ろの見張り・左の値・発進の前']
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 0・残す 0・左 4.1
+  [+2 秒] 状態: loaded=True gen=2 lost=False ▶disabled=True tab=drive running=True msg=<div class="warn-text">別の画面(またはこの画面の以前の表
+  ▶: 押せない(disabled)
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]
+## C10 戻った直後の表示の問い合わせだけ途切れる(1 本)→ 次で通る
+  [戻ってすぐ] 状態: loaded=False gen=2 lost=True ▶disabled=True tab=drive running=False msg=<div class="warn-text">サーバーにつながっていません(表示
+  ▶: 押せない(disabled)
+  [+1 秒] 状態: loaded=True gen=2 lost=False ▶disabled=False tab=drive running=False msg=
+  ▶: 送った=True 返事=200 確認の文=モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 1.00 / リカバリーの後ろの見張り: ON(下がった時間をどの段でも数える・後ろに当たったらすぐ前へ) / 中立止めのあともリカバリーを残す: ON(リカバリー中止は CH3 を人側にするまで解けない) 新しいトースト=['AI走行 No.1 を開始しました']
+      サーバーが走った値: 見張り 1・残す 1・左 4.1
+  届いた POST: [('A', '/api/drive/params', 200), ('A', '/api/drive/params', 200), ('A', '/api/drive/start', 200)]

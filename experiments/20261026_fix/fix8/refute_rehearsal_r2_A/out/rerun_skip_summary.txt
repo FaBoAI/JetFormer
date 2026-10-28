@@ -1,0 +1,26 @@
+===== base 20261103-130500 None
+ ③: [{"t_ai": 1.0, "start_no": 1, "after_abort": null, "counted": false, "note": "3 周に届かない(続いた起点 3・線 2 回)"}]
+ ⑤ rows: [{"t_ai": 1.0, "start_no": 1, "launch_state": "on", "after_abort": null, "to_r1_s": 2.813, "collisions_first_lap": []}]
+ ⑤ ig: {"session": "11/03 回3", "all_ok": true, "false_checks": [], "d_to_r1_s": -0.225, "on": {"n": 4, "restarts": 0, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+    abort_excl: None
+===== rear 20261103-130500 {'t_stop': 10.25, 's_stop_m': 17.5, 't_human': 10.75, 't_res': 16.75, 'hit': [], 'assist2': None}
+ ③: [{"t_ai": 1.0, "start_no": 1, "after_abort": null, "counted": false, "note": "線 → 線の周が 5〜16 秒でない・3 周目の終わりの前に人側"}, {"t_ai": 16.767, "start_no": 2, "after_abort": null, "counted": true, "note": null}]
+ ⑤ rows: [{"t_ai": 1.0, "start_no": 1, "launch_state": "on", "after_abort": null, "to_r1_s": 2.813, "collisions_first_lap": []}, {"t_ai": 16.767, "start_no": 2, "launch_state": "on", "after_abort": null, "to_r1_s": 3.046, "collisions_first_lap": []}]
+ ⑤ ig: {"session": "11/03 回3", "all_ok": true, "false_checks": [], "d_to_r1_s": -0.185, "on": {"n": 5, "restarts": 1, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-130500@16.77", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+    abort_excl: None
+ skip 20261103-130500@16.77
+ ⑤ ig+skip: {"session": "11/03 回3", "all_ok": true, "false_checks": [], "d_to_r1_s": -0.225, "on": {"n": 4, "restarts": 0, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+===== rear_hit 20261103-130500 {'t_stop': 10.25, 's_stop_m': 17.5, 't_human': 10.75, 't_res': 16.75, 'hit': [[19.05, 4.5]], 'assist2': None}
+ ③: [{"t_ai": 1.0, "start_no": 1, "after_abort": null, "counted": false, "note": "線 → 線の周が 5〜16 秒でない・3 周目の終わりの前に人側"}, {"t_ai": 16.767, "start_no": 2, "after_abort": null, "counted": true, "note": null}]
+ ⑤ rows: [{"t_ai": 1.0, "start_no": 1, "launch_state": "on", "after_abort": null, "to_r1_s": 2.813, "collisions_first_lap": []}, {"t_ai": 16.767, "start_no": 2, "launch_state": "on", "after_abort": null, "to_r1_s": 3.046, "collisions_first_lap": [[19.063, 4.499999976971741, "LH"]]}]
+ ⑤ ig: {"session": "11/03 回3", "all_ok": false, "false_checks": ["first_lap_collisions_0"], "d_to_r1_s": -0.185, "on": {"n": 5, "restarts": 1, "collisions_to_r1": 1, "collisions_first_lap": 1, "logs": ["20261103-130500@1.00", "20261103-130500@16.77", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+    abort_excl: None
+ skip 20261103-130500@16.77
+ ⑤ ig+skip: {"session": "11/03 回3", "all_ok": true, "false_checks": [], "d_to_r1_s": -0.225, "on": {"n": 4, "restarts": 0, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+===== late_hit 20261103-130500 {'t_stop': 10.25, 's_stop_m': 17.5, 't_human': 11.2, 't_res': 17.2, 'hit': [[19.5, 4.5]], 'assist2': [11.05, 11.2]}
+ ③: [{"t_ai": 1.0, "start_no": 1, "after_abort": null, "counted": false, "note": "3 周に届かない(続いた起点 1・線 0 回)"}, {"t_ai": 17.2, "start_no": 2, "after_abort": {"kind": "recovery", "abort_s": 11.067, "rec_s": 0.1, "ai_end_s": 11.167, "human_s": 6.03}, "counted": false, "note": null}]
+ ⑤ rows: [{"t_ai": 1.0, "start_no": 1, "launch_state": "on", "after_abort": null, "to_r1_s": 2.813, "collisions_first_lap": []}, {"t_ai": 17.2, "start_no": 2, "launch_state": "on", "after_abort": {"kind": "recovery", "abort_s": 11.067, "rec_s": 0.1, "ai_end_s": 11.167, "human_s": 6.03}, "to_r1_s": 3.063, "collisions_first_lap": [[19.513, 4.499999976971741, "LH"]]}]
+ ⑤ ig: {"session": "11/03 回3", "all_ok": false, "false_checks": ["first_lap_collisions_0"], "d_to_r1_s": -0.225, "on": {"n": 4, "restarts": 0, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}
+    abort_excl: ['20261103-130500@17.20(on・リカバリーの途中 11.067 秒から 0.1 秒・人側 6.03 秒・起点まで 3.063 秒・空転の比 1.02・最初の周の衝突 19.51 秒 4.5G LH)']
+ skip 20261103-130500@17.20
+ ⑤ ig+skip: {"session": "11/03 回3", "all_ok": true, "false_checks": [], "d_to_r1_s": -0.225, "on": {"n": 4, "restarts": 0, "collisions_to_r1": 0, "collisions_first_lap": 0, "logs": ["20261103-130500@1.00", "20261103-131500@1.00", "20261103-132500@1.00", "20261103-133500@1.00"]}, "off_n": 4}

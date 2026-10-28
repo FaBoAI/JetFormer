@@ -1,0 +1,56 @@
+# 画面 = tests/fixtures/fix8_ui_r2_before/app.js の vbatSourceText(基板の電圧なし)・サーバー = speed_auto.v_before_of と drive._SpeedAuto(ai_no= を頭に)
+# 列: 説明欄 | 画面 | サーバーの v_before_of・電圧の源・使う電圧 | 合う
+"battery=#A V_before=8.31 check=合格 memo="        | 説明欄 | 8.31 説明欄 8.31 | 合う
+"battery=#A V_before=831 check=合格"               | 説明欄 | nan なし nan | **違う**
+"battery=#A V_before=8,31 check=合格"              | 説明欄 | nan なし nan | **違う**
+"battery=#A V_before=0.83 check=合格"              | 説明欄 | nan なし nan | **違う**
+"battery=#A V_before=8.31V"                      | 説明欄 | 8.31 説明欄 8.31 | 合う
+"battery=#A V_before=8.31v"                      | 説明欄 | 8.31 説明欄 8.31 | 合う
+"battery=#A V_before=8.31VV"                     | 説明欄 | 8.31 説明欄 8.31 | 合う
+"battery=#A V_before=__ V_after=__"              | なし | nan なし nan | 合う
+"battery=#A V_before=８.３１"                       | なし | 8.31 説明欄 8.31 | **違う**
+"battery=#A V_before=８．３１"                       | なし | nan なし nan | 合う
+"battery=#A V_before=9.5"                        | 説明欄 | nan なし nan | **違う**
+"battery=#A V_before=8.31, check=合格"             | 説明欄 | nan なし nan | **違う**
+"battery=#A V_before=4.15"                       | 説明欄 | nan なし nan | **違う**
+"V_before=6.0"                                   | 説明欄 | 6.0 説明欄 6.0 | 合う
+"V_before=9.0"                                   | 説明欄 | 9.0 説明欄 9.0 | 合う
+"V_before=5.999"                                 | 説明欄 | nan なし nan | **違う**
+"V_before=9.001"                                 | 説明欄 | nan なし nan | **違う**
+"V_before=6"                                     | 説明欄 | 6.0 説明欄 6.0 | 合う
+"V_before=8."                                    | 説明欄 | 8.0 説明欄 8.0 | 合う
+"V_before=.831e1"                                | なし | 8.31 説明欄 8.31 | **違う**
+"V_before=8.31e0"                                | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8_31"                                  | 説明欄 | nan なし nan | **違う**
+"V_before=8.3_1"                                 | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8__3"                                  | 説明欄 | nan なし nan | **違う**
+"V_before=+8.31"                                 | なし | 8.31 説明欄 8.31 | **違う**
+"V_before=-8.31"                                 | なし | nan なし nan | 合う
+"V_before=nan V_before=8.31"                     | 説明欄 | nan なし nan | **違う**
+"V_before=x V_before=8.31"                       | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8.31 V_before=9.9"                     | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=inf"                                   | なし | nan なし nan | 合う
+"V_before=Infinity"                              | なし | nan なし nan | 合う
+"Vb_before=8.27"                                 | なし | 8.27 説明欄 8.27 | **違う**
+"V_before=__ Vb_before=8.27"                     | なし | 8.27 説明欄 8.27 | **違う**
+"V_before=9.5 Vb_before=8.27"                    | 説明欄 | 8.27 説明欄 8.27 | 合う
+"V_before=8.31 Vb_before=8.27"                   | 説明欄 | 8.31 説明欄 8.31 | 合う
+"v_before=8.31"                                  | なし | nan なし nan | 合う
+"V_before =8.31"                                 | なし | nan なし nan | 合う
+"V_before= 8.31"                                 | なし | nan なし nan | 合う
+"V_before=8.31　check=合格"                         | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8.31 check=合格"                         | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8.31\u001ccheck"                       | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=8.31﻿"                                 | 説明欄 | nan なし nan | **違う**
+"memo=V_before=8.31"                             | なし | nan なし nan | 合う
+"xV_before=8.31"                                 | なし | nan なし nan | 合う
+"V_before=8.31memo"                              | 説明欄 | nan なし nan | **違う**
+"V_before=٨.٣١"                                  | なし | 8.31 説明欄 8.31 | **違う**
+"V_before=8.31 V"                                | 説明欄 | 8.31 説明欄 8.31 | 合う
+""                                               | なし | nan なし nan | 合う
+"V_before="                                      | なし | nan なし nan | 合う
+"battery=#A V_before=8.31\ncheck=合格"             | 説明欄 | 8.31 説明欄 8.31 | 合う
+"V_before=0x8"                                   | 説明欄 | nan なし nan | **違う**
+"V_before=8.31e"                                 | 説明欄 | nan なし nan | **違う**
+"V_before=1e0_0"                                 | 説明欄 | nan なし nan | **違う**
+違う: 22 / 53

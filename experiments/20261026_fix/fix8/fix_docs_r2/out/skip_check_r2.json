@@ -1,0 +1,499 @@
+{
+ "collect_sha256": "702abf54475d054288d8aacecefa31926e9b88abf74bcf6b1403b3f0debafacb",
+ "trial": [
+  {
+   "shape": "hit",
+   "log": "20261103-133500",
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": true,
+    "slip": false,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 1 回・最大 6.00G・8G 以上 0・場所 LH 1(強い: 3.0 秒 LH 6.00G)",
+     "発進の空転の比(発進の前進 ON・前進 200 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)"
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "first_lap_collisions_0"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-133500",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.165
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "first_lap_collisions_0"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "spin",
+   "log": "20261103-133500",
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": false,
+    "slip": true,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 0 回",
+     "! 発進の空転の比(発進の前進 ON・前進 200 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.85 > 1.3"
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "slip"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-133500",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.165
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "slip"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "gap",
+   "log": "20261103-133500",
+   "car_check_rc": 2,
+   "car_check": {
+    "collision": false,
+    "slip": false,
+    "missing": true,
+    "lines": [
+     "! 衝突(AI・立て直し中とリカバリー中も): 0 回。記録が欠けている(シーン 0002)ので、欠けた区間の衝突・8G 以上は入っていない → 動画・紙で",
+     "発進の空転の比(発進の前進 ON・前進 200 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 14.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)",
+     "! 記録が欠けている(シーン 0002: IMU が無い。電源断・jetformer-web の落ちで書けなかったシーン)。この本の衝突・8G 以上は記録で確かめられない → 動画・紙で(手順書 7 章「いつでも」: 8G を記録で確かめられない前提で後輪・舵のリンクを見る)"
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "on_all_readable"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-133500",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.165
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "on_all_readable"
+      ],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "clean",
+   "log": "20261103-133500",
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": false,
+    "slip": false,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 0 回",
+     "発進の空転の比(発進の前進 ON・前進 200 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)"
+    ]
+   },
+   "faulty_by_car_check": false,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.19
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "old": {
+    "skip": "20261103-133500",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.165
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": "20261103-133500",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.165
+     }
+    ],
+    "word": "使ってよい"
+   }
+  }
+ ],
+ "rerun": [
+  {
+   "shape": "hit",
+   "log": "20261103-130500",
+   "info": {
+    "t_stop": 10.25,
+    "t_human": 10.75,
+    "t_res": 16.75
+   },
+   "skip_arg": "20261103-130500@16.77",
+   "after_abort": null,
+   "rerun_row": {
+    "t_ai": 16.767,
+    "launch_state": "on",
+    "collisions_first_lap": [
+     [
+      19.063,
+      4.499999976971741,
+      "LH"
+     ]
+    ],
+    "slip": {
+     "t_a": 16.93,
+     "t_b": 17.53,
+     "dv_wheel": 1.8,
+     "dv_imu": 1.767,
+     "ratio": 1.019
+    },
+    "first_lap_gap": null
+   },
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": true,
+    "slip": false,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 1 回・最大 4.50G・8G 以上 0・場所 LH 1(強い: 19.1 秒 LH 4.50G)",
+     "発進の空転の比(発進の前進 ON・前進 250 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)・発進 2(AI 側 16.77 秒・発進の前進 0.50"
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "first_lap_collisions_0"
+      ],
+      "d_to_r1_s": -0.185
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-130500@16.77",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "first_lap_collisions_0"
+      ],
+      "d_to_r1_s": -0.185
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "spin",
+   "log": "20261103-130500",
+   "info": {
+    "t_stop": 10.25,
+    "t_human": 10.75,
+    "t_res": 16.75
+   },
+   "skip_arg": "20261103-130500@16.77",
+   "after_abort": null,
+   "rerun_row": {
+    "t_ai": 16.767,
+    "launch_state": "on",
+    "collisions_first_lap": [],
+    "slip": {
+     "t_a": 16.93,
+     "t_b": 17.53,
+     "dv_wheel": 1.8,
+     "dv_imu": 0.972,
+     "ratio": 1.852
+    },
+    "first_lap_gap": null
+   },
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": false,
+    "slip": true,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 0 回",
+     "! 発進の空転の比(発進の前進 ON・前進 250 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)・発進 2(AI 側 16.77 秒・発進の前進 0."
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "slip"
+      ],
+      "d_to_r1_s": -0.185
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-130500@16.77",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "slip"
+      ],
+      "d_to_r1_s": -0.185
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "gap",
+   "log": "20261103-130500",
+   "info": {
+    "t_stop": 10.25,
+    "t_human": 10.75,
+    "t_res": 16.75
+   },
+   "skip_arg": "20261103-130500@16.77",
+   "after_abort": null,
+   "rerun_row": {
+    "t_ai": 16.767,
+    "launch_state": "on",
+    "collisions_first_lap": [],
+    "slip": null,
+    "first_lap_gap": "IMU が最初の周の間で抜けている(シーンが欠けている)"
+   },
+   "car_check_rc": 2,
+   "car_check": {
+    "collision": false,
+    "slip": false,
+    "missing": true,
+    "lines": [
+     "! 衝突(AI・立て直し中とリカバリー中も): 0 回。記録が欠けている(シーン 0002)ので、欠けた区間の衝突・8G 以上は入っていない → 動画・紙で",
+     "発進の空転の比(発進の前進 ON・前進 250 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)・発進 2(AI 側 16.77 秒・発進の前進 0.50",
+     "! 記録が欠けている(シーン 0002: IMU が無い。電源断・jetformer-web の落ちで書けなかったシーン)。この本の衝突・8G 以上は記録で確かめられない → 動画・紙で(手順書 7 章「いつでも」: 8G を記録で確かめられない前提で後輪・舵のリンクを見る)"
+    ]
+   },
+   "faulty_by_car_check": true,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "on_all_reached_r1",
+       "on_all_readable"
+      ],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "満たさない"
+   },
+   "old": {
+    "skip": "20261103-130500@16.77",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": false,
+      "false_checks": [
+       "on_all_reached_r1",
+       "on_all_readable"
+      ],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "満たさない"
+   }
+  },
+  {
+   "shape": "clean",
+   "log": "20261103-130500",
+   "info": {
+    "t_stop": 10.25,
+    "t_human": 10.75,
+    "t_res": 16.75
+   },
+   "skip_arg": "20261103-130500@16.77",
+   "after_abort": null,
+   "rerun_row": {
+    "t_ai": 16.767,
+    "launch_state": "on",
+    "collisions_first_lap": [],
+    "slip": {
+     "t_a": 16.93,
+     "t_b": 17.53,
+     "dv_wheel": 1.8,
+     "dv_imu": 1.767,
+     "ratio": 1.019
+    },
+    "first_lap_gap": null
+   },
+   "car_check_rc": 0,
+   "car_check": {
+    "collision": false,
+    "slip": false,
+    "missing": false,
+    "lines": [
+     "衝突(AI・立て直し中とリカバリー中も): 0 回",
+     "発進の空転の比(発進の前進 ON・前進 250 µs。③ standing_3lap と同じ。手順書 7 章「空転の比 > 1.3」。判定の番号には入れない): 発進 1(AI 側 1.00 秒・発進の前進 0.50 秒・速さに届いた): 1.02(≤ 1.3)・発進 2(AI 側 16.77 秒・発進の前進 0.50"
+    ]
+   },
+   "faulty_by_car_check": false,
+   "plain": {
+    "skip": null,
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.185
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "old": {
+    "skip": "20261103-130500@16.77",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "使ってよい"
+   },
+   "doc": {
+    "skip": "20261103-130500@16.77",
+    "verdict": [
+     {
+      "all_ok": true,
+      "false_checks": [],
+      "d_to_r1_s": -0.225
+     }
+    ],
+    "word": "使ってよい"
+   }
+  }
+ ]
+}

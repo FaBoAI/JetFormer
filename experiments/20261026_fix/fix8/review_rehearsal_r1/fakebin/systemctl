@@ -1,0 +1,8 @@
+#!/bin/bash
+# 作り物の systemctl(反証 8-1 rehearsal)。本物の systemd には触れない。値は環境変数から
+case "$*" in
+  "is-active jetformer-web") echo "${FAKE_ACTIVE:-active}";;
+  "show -p NRestarts --value jetformer-web") echo "${FAKE_NRESTARTS:-0}";;
+  "show -p ActiveEnterTimestamp --value jetformer-web") echo "${FAKE_AET-Wed 2026-10-28 00:53:23 JST}";;
+  *) echo "fake systemctl: 知らない引数: $*" >&2; exit 9;;
+esac

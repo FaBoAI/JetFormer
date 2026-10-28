@@ -1,0 +1,16 @@
+plain     場面   96  ON/OFF の組  192  A 192/192 同じ
+drop      場面 1024  ON/OFF の組 2048  A 8/8 同じ  B 1959/1959 同じ  C 0/81 同じ
+vskip     場面  256  ON/OFF の組  512  A 152/152 同じ  B 360/360 同じ
+glitch    場面  268  ON/OFF の組  536  A 536/536 同じ
+burst     場面  136  ON/OFF の組  272  A 272/272 同じ
+tof       場面  170  ON/OFF の組  340  A 208/208 同じ  B 132/132 同じ
+fuzz8101  場面  150  ON/OFF の組  300  A 30/30 同じ  B 263/263 同じ  C 0/7 同じ
+fuzz8102  場面  150  ON/OFF の組  300  A 40/40 同じ  B 256/256 同じ  C 0/4 同じ
+合計 A 1438/1438 同じ  B 2970/2970 同じ  C 0/92 同じ
+当たりの無い走りの ON の見張りの出来事: {('drop', 'C', 'hold_long'): 81, ('fuzz8101', 'C', 'hold_long'): 7, ('fuzz8102', 'C', 'hold_long'): 4}
+違った組 92
+    38  ('drop', 'C', ('giveup_frames', 'to_r1', 'v_lh'), ('hold_long',))
+    36  ('drop', 'C', ('giveup_frames', 'to_r1'), ('hold_long',))
+     7  ('drop', 'C', ('giveup_frames',), ('hold_long',))
+     7  ('fuzz8101', 'C', ('giveup_frames', 'to_r1', 'v_lh'), ('hold_long',))
+     4  ('fuzz8102', 'C', ('giveup_frames', 'to_r1', 'v_lh'), ('hold_long',))

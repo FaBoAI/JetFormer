@@ -1,0 +1,19 @@
+== A) fix8 で増えた外れ(今の文書 × 今のコード で無く、控えの文書 × HEAD のコード では無かった引用)
+runbook_20261103.md:131 「画面の版 9(app.js 10/27 21:58)」 無い切れ端: 9(app.js | 21:58)
+runbook_20261103.md:131 「起動より新しい: /home/jetson/jetformer/jetformer/drive.py」 無い切れ端: 起動より新しい: | /home/jetson/jetformer/jetformer/drive.py
+runbook_20261103.md:131 「違ったら」 無い切れ端: 違ったら
+runbook_20261103.md:287 「(… 回の本は X(No.Y)から)」 無い切れ端: )から)
+runbook_20261103.md:319 「 中止のあとの走り直し(リカバリーの途中 X 秒から Y 秒・人側 Z 秒。比べに入れない / R1 に届かなかった発進に数える)」 無い切れ端: 中止のあとの走り直し(リカバリーの途中 | 秒。比べに入れない | に届かなかった発進に数える)
+runbook_20261103.md:319 「  → 途中で変えた本の ON の発進が …」 無い切れ端: 途中で変えた本の
+todo_user_1026.md:84 「画面の版 9(app.js 10/27 21:58)」 無い切れ端: 9(app.js | 21:58)
+todo_user_1026.md:84 「起動より新しい: /home/jetson/jetformer/jetformer/drive.py」 無い切れ端: 起動より新しい: | /home/jetson/jetformer/jetformer/drive.py
+README.md:210,245 「起動より新しいコードなし」 無い切れ端: 起動より新しいコードなし
+fix3/approvals.md:50 「起動より新しいコードなし」 無い切れ端: 起動より新しいコードなし
+fix3/approvals.md:50 「画面の版 9(app.js 10/27 21:58)」 無い切れ端: 9(app.js | 21:58)
+fix3/approvals.md:132 「  → 試しの本 / 途中で変えた本の ON の発進が空転した N 本 …」 無い切れ端: 途中で変えた本の
+fix6/README.md:7 「10/28 00:53:23 のもう一度の再起動で fix7 の直しが入った・一式は `-o tmp_path_retention_policy=failed` で約 0.6 GB」 無い切れ端: 00:53:23 | のもう一度の再起動で | の直しが入った・一式は | tmp_path_retention_policy=failed`
+件数 A 13
+
+== B) HEAD のコードにはあったが今のコードには無い切れ端を引く引用(fix8 tools の文の変えで古くなった)
+fix8/decided_tools.md:307 「…のまま人側にして止まって終わった区間のあとも同じ。止まった所から…」 HEAD にあり今は無い: のまま人側にして止まって終わった区間のあとも同じ。止まった所から
+件数 B 1

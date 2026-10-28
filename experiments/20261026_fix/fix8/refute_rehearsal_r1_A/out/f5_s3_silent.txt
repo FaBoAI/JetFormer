@@ -1,0 +1,24 @@
+手順書 8.1 の ③: 302:python3 -I tools/standing_3lap.py --day 20261103 --md $R/standing_3lap.md --json $R/standing_3lap.json
+手順書 8.1 の ④: 304:python3 -I tools/quick_eval_by_params.py 0000 --day=20261103 --out $R/by_params
+流す ③: python3 -I tools/standing_3lap.py --day 20261024 --since 1830 --md $R/standing_3lap.md --json $R/standing_3lap.json
+流す ④: python3 -I tools/quick_eval_by_params.py 0000 --day=20261024 --since 1830 --out $R/by_params
+③ の終了コード 0 ・ 標準出力 0 行 0 バイト ・ 標準エラー 0 行
+③ の md: 36 行。見出し:
+1:# 止まってから 3 周(tools/standing_3lap.py)
+7:## 1. 止まってから 3 周(発進ごと)
+23:## 2. 走りながらの 3 周の窓(記録ごと)
+③ の md の「動いてから」の字: 1 行
+④ の終了コード 0 ・ 標準出力 49 行。見出し:
+1:# 実際の設定で分けた早い集計(tools/quick_eval_by_params.py)
+6:## 1. 本ごと
+21:## 2. 実際の設定ごと
+34:## 3. 止まってから 3 周(最初の R1 の起点まで行った発進。tools/standing_3lap.py と同じ表)
+--- ④ の画面の 3 章の表 と ③ の md の止まってから 3 周の表(R1 まで行った発進)の行を比べる
+④ 3 章の表の行 11・そのうち ③ の md にそのままある行 11
+④ 3 章の表の頭:
+| No. | 記録 | 設定 | AI 側 [秒] | 動くまで | 動く → A1 | 動いてから 3 周 | AI 側から | 線から線の周 | 距離の 3 周(AI 側から) | 衝突(強) | 発進の前進 | 確か |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+--- 手順書で standing_3lap.md を開く・見るコマンド(cat・sed・less・head)
+(無い)
+--- 手順書 8.1 の表の ③ の「出力」の欄
+  出力の欄: `standing_3lap.md`・`.json` 

@@ -1,0 +1,19 @@
+== case 0: 3-8 = 試しの ON・shape=nospin kw={} (20261103-133500)
+   row: trial='試し(ゲイン 1.02 で走った)' launch_state='on' slip_ratio=1.019
+   n_on_in_compare=None d_to_r1_s=-0.165
+   all_ok=True  failed_checks=[]
+   |   ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 使ってよい {'to_r1': True, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+   |   試しの 1 本(説明欄の memo に「試し」。比べに入れない。ON の組にも OFF の組にも入れない。手順書 7 章): 20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))
+== case 1: 3-8 = 試しの ON・shape=spin kw={} (20261103-133500)
+   row: trial='試し(ゲイン 1.02 で走った)' launch_state='on' slip_ratio=1.852
+   n_on_in_compare=None d_to_r1_s=-0.165
+   all_ok=False  failed_checks=['slip']
+   |   ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': True, 'slip': False, 'lh_speed': True}
+   |   試しの 1 本(説明欄の memo に「試し」。比べに入れない。ON の組にも OFF の組にも入れない。手順書 7 章): 20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))
+   |   → 試しの本の ON の発進が空転した 1 本(比 > 1.3 か、比が出ないのに車輪が増えた = いちばんひどい空転): 20261103-133500@1.00(空転の比 1.85 > 1.3) → 空転の条件は満たさない(checks の slip。比べ(起点まで・失う・動く・LH)には入れないが、空転は衝突と同じに数える。car_check の「発進の空転の比」と同じ)
+== case 2: 3-8 = 試しの ON・shape=nospin kw={'hits': [(3.0, 6.0)]} (20261103-133500)
+   row: trial='試し(ゲイン 1.02 で走った)' launch_state='on' slip_ratio=1.019
+   n_on_in_compare=None d_to_r1_s=-0.165
+   all_ok=False  failed_checks=['first_lap_collisions_0']
+   |   ON − OFF: 起点まで -0.165 秒(≤ −0.15)・失う -0.165 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': True, 'first_lap_collisions_0': False, 'slip': True, 'lh_speed': True}
+   |   試しの 1 本(説明欄の memo に「試し」。比べに入れない。ON の組にも OFF の組にも入れない。手順書 7 章): 20261103-133500@1.00(on・試し(ゲイン 1.02 で走った))。うち ON の発進の最初の周の衝突 1(比べの「最初の周の衝突 0」には数える)

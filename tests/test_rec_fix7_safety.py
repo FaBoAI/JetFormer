@@ -53,11 +53,16 @@ SHA_BEFORE = {'assist.py': '951a4c122c954a12ecc5056d823729ab9934112977f30645f92b
 FIX7_R1_AFTER = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f',
                  'drive.py': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}
 LATER_FIX7_SAFETY_R2 = {'assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f'}
+# さらに 10/28 fix8 safety が drive.py の説明の文だけを変えた(AST は同じ)。その直す前の写し tests/fixtures/fix8_safety_doc_before/
+# (= この組のあとの drive.py)から同じようにたどる(tests/test_fix3_r3_2_tools.py の LATER_FIX8_SAFETY_DOC と同じ値)
+LATER_FIX8_SAFETY_DOC = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
 
 
 def _fix7r1_version(name):
     """この組のあとの版(jetformer/ の今の版。7-2 回目が変えたあとは、その直す前の写し = この組のあとの版)"""
     p = ROOT / 'jetformer' / name
+    if name in LATER_FIX8_SAFETY_DOC and sha(p) == LATER_FIX8_SAFETY_DOC[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / name
     if name in LATER_FIX7_SAFETY_R2 and sha(p) == LATER_FIX7_SAFETY_R2[name]:
         p = ROOT / 'tests' / 'fixtures' / 'fix7_safety_r2_before' / name
     assert sha(p) == FIX7_R1_AFTER[name], name

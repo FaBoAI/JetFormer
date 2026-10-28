@@ -1,0 +1,20 @@
+# わざと壊す(tests/test_ui_fix8_r2.py。JF_UI82_APP。Firefox なし)。数えるのは電圧の源の試験 5 つ(確認の文は 5 本)
+# 列: 壊し方 | 落ちた電圧の源の試験(本)| 形の試験 test_app_js_only_vbat_source_text_changed | ほかの試験
+A00 壊さない(今の app.js) | 0 本 [] | 形 passed | ほか ['passed', 'skipped']
+A01 直す前の app.js(aa275bb5。V_before= のあとが数字で始まるかだけ) | 7 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace', 'test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8,31]', 'test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=831 check=\\u5408\\u683c]', 'test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=\\uff18.\\uff13\\uff11]', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table', 'test_vdesc_range_is_the_server_range'] | 形 failed | ほか ['passed', 'skipped']
+A02 6.0〜9.0 V の範囲を見ない | 3 本 ['test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=831 check=\\u5408\\u683c]', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A03 Vb_before= を見ない | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A04 字を NFKC でそろえる(全角の点も点に) | 3 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A05 JavaScript の空白(/\s+/)で区切る | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A06 parseFloat で読む(後ろのごみを捨てる) | 4 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace', 'test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8,31]', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A07 範囲の端を入れない(6.0・9.0 は使わない) | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A08 読めない最初の V_before= で決める | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A09 末尾の V を除かない | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A10 鍵の大文字・小文字を見ない | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A11 最後の V_before= を使う | 2 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A12 下線を読まない | 3 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A13 inf・nan を読めない字にする | 3 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace', 'test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table'] | 形 passed | ほか ['passed', 'skipped']
+A14 範囲を 6.5〜9.0 V に | 3 本 ['test_vbefore_random_descriptions_match_server', 'test_vbefore_screen_matches_server_table', 'test_vdesc_range_is_the_server_range'] | 形 passed | ほか ['passed', 'skipped']
+A15 pyFloat で前後の空白を除かない | 1 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace'] | 形 passed | ほか ['passed', 'skipped']
+A16 Unicode の数字の値を 10 で割った余りにしない | 1 本 ['test_pyfloat_is_python_float_and_py_space_is_python_isspace'] | 形 passed | ほか ['passed', 'skipped']
+見逃し(電圧の源の試験が 1 本も落ちない壊し方): 0 / 16

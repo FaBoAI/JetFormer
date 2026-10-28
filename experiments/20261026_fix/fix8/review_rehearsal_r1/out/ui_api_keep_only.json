@@ -1,0 +1,123 @@
+{
+ "steps": [
+  {
+   "op": "api",
+   "status": 400,
+   "body": {
+    "detail": "中立止めのあとも残すは、後ろの見張りが ON のときだけ"
+   }
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "api",
+   "status": 200,
+   "body": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 0,
+    "rec_hold_keep": 0,
+    "launch_no_kick": 0
+   }
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 0,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 0,
+    "rec_hold_keep": 0,
+    "launch_no_kick": 0
+   }
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes"
+ ]
+}

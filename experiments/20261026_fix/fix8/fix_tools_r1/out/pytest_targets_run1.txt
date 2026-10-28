@@ -1,0 +1,88 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 36%]
+.....................F.................................................. [ 46%]
+........................................................................ [ 55%]
+........................................................................ [ 64%]
+........................................................................ [ 73%]
+.........................F.............................................. [ 82%]
+........................................................................ [ 92%]
+.............................................................            [100%]
+=================================== FAILURES ===================================
+_____________________________ test_untouched_files _____________________________
+
+    def test_untouched_files():
+        """走行の動き・既定値(DEFAULT_PARAMS・RESET_ON_BOOT は drive.py)・画面・計画のファイルは直す前と同じ。
+        drive.py・bench.py は 10/27 fix4 の版でもよい(そのときは、この組のときの版の写しが上の sha256 と同じか見る)。
+        drive.py・assist.py は 10/27 fix5 safety の版でもよい(そのときは fix5 の直す前の写しから同じようにたどる)。
+        server.py・app.js は 10/27 fix5 画面の係の版でもよい(同じ)。app.js は 10/27 fix6 画面の係の版でもよい(fix5 の版へたどる)。
+        drive.py・assist.py は 10/27 fix6 安全の係の版でもよい(fix6 の直す前の写し = fix5 の版へたどる)。assist.py は 10/27 fix6
+        安全の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix6 画面の係の直す 6-2 回目の版でもよい(6-2 回目の直す前の写し = 6-1 回目の版へたどる)。
+        app.js は 10/27 fix7 画面の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = 6-2 回目の版へたどる)。
+        app.js は 10/27 fix7 画面の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)。
+        drive.py・assist.py は 10/27 fix7 安全の係の直す 7-1 回目の版でもよい(7-1 回目の直す前の写し = fix6 の版へたどる)。
+        assist.py は 10/27 fix7 安全の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)。
+        drive.py は 10/28 fix8 安全の係の説明の文だけの版でもよい(その直す前の写し = 7-1 回目の版へたどる)"""
+        for rel, h in UNTOUCHED.items():
+            cur = _sha(JF / rel)
+            if rel in LATER_FIX8_SAFETY_DOC and cur == LATER_FIX8_SAFETY_DOC[rel]:
+                cur = _sha(FIX8_SAFETY_DOC_BEFORE / Path(rel).name)  # fix8 安全の係の説明の文の直す前の写し(LATER_FIX7_SAFETY の版)
+            if rel in LATER_FIX7_SAFETY_R2 and cur == LATER_FIX7_SAFETY_R2[rel]:
+                cur = _sha(FIX7_SAFETY_R2_BEFORE / Path(rel).name)   # fix7 安全の係 7-2 回目の直す前の写し(LATER_FIX7_SAFETY の版)
+            if rel in LATER_FIX7_SAFETY and cur == LATER_FIX7_SAFETY[rel]:
+                cur = _sha(FIX7_SAFETY_BEFORE / Path(rel).name)      # fix7 安全の係 7-1 回目の直す前の写し(LATER_FIX6_SAFETY_R2・LATER_FIX6 の版)
+            if rel in LATER_FIX6_SAFETY_R2 and cur == LATER_FIX6_SAFETY_R2[rel]:
+                cur = _sha(FIX6_SAFETY_R2_BEFORE / Path(rel).name)   # fix6 安全の係 6-2 回目の直す前の写し(LATER_FIX6 の版)
+            if rel in LATER_FIX6 and cur == LATER_FIX6[rel]:
+                cur = _sha(FIX6_BEFORE / Path(rel).name)          # fix6 安全の係の直す前の写し(LATER_FIX5 の版)
+            if rel in LATER_FIX7_UI_R2 and cur == LATER_FIX7_UI_R2[rel]:
+                cur = _sha(FIX7_UI_R2_BEFORE / Path(rel).name)    # fix7 画面の係 7-2 回目の直す前の写し(LATER_FIX7_UI の版)
+            if rel in LATER_FIX7_UI and cur == LATER_FIX7_UI[rel]:
+                cur = _sha(FIX7_UI_BEFORE / Path(rel).name)       # fix7 画面の係 7-1 回目の直す前の写し(LATER_FIX6_UI_R2 の版)
+            if rel in LATER_FIX6_UI_R2 and cur == LATER_FIX6_UI_R2[rel]:
+                cur = _sha(FIX6_UI_R2_BEFORE / Path(rel).name)    # fix6 画面の係 6-2 回目の直す前の写し(LATER_FIX6_UI の版)
+            if rel in LATER_FIX6_UI and cur == LATER_FIX6_UI[rel]:
+                cur = _sha(FIX6_UI_BEFORE / Path(rel).name)       # fix6 画面の係の直す前の写し(LATER_FIX5_UI の版)
+            if rel in LATER_FIX5_UI and cur == LATER_FIX5_UI[rel]:
+                cur = _sha(FIX5_UI_BEFORE / Path(rel).name)       # fix5 画面の係の直す前の写し(UNTOUCHED の版)
+            if rel in LATER_FIX5 and cur == LATER_FIX5[rel]:
+                cur = _sha(FIX5_BEFORE / Path(rel).name)          # fix5 の直す前の写し(fix4 の版かこの組の版)
+            if rel in LATER_FIX4 and cur == LATER_FIX4[rel]:
+                assert _sha(FIX4_BEFORE / Path(rel).name) == h, rel
+                continue
+>           assert cur == h, rel
+E           AssertionError: jetformer/web/static/app.js
+E           assert 'aa275bb5da0b...6916448837285' == '2294bfd96ea8...6298c65babee0'
+E             
+E             - 2294bfd96ea812cc392566db729ef82d7fc60dac2c1bb4a9db86298c65babee0
+E             + aa275bb5da0bbd740f38c217dd0ae9ee19240f061dafd8ca70f6916448837285
+
+tests/test_fix3_r3_2_tools.py:187: AssertionError
+________________________ test_tool_words_match_the_code ________________________
+
+    def test_tool_words_match_the_code():
+        """手順書・approvals・todo が引く fix8 tools-decided の言葉は、本物の道具の文字列から作れる"""
+        co = (JF / 'experiments' / '20261026_fix' / 'diag_launch' / 'collect.py').read_text(encoding='utf-8')
+        st = (JF / 'tools' / 'standing_3lap.py').read_text(encoding='utf-8')
+        qp = (JF / 'tools' / 'quick_eval_by_params.py').read_text(encoding='utf-8')
+        rn = (JF / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py').read_text(encoding='utf-8')
+        rb = (REPORTS / RB).read_text(encoding='utf-8')
+        assert "STOP_KIND_TEXT['recovery'] = 'リカバリーの途中'" in st and "RECOVERY_TEXT = 'リカバリーの途中'" in co
+        assert "'%s %s 秒から %s 秒' % (STOP_KIND_TEXT['recovery']" in st and "'%s %s 秒から %s 秒' % (RECOVERY_TEXT" in co
+        assert "ok += '・数えない(%s。%s・人側 %s 秒)'" in st and "RESUME_NAME = 'リカバリー中止のあとの走り直し'" in st
+        assert "RECOVERY_NOTE = ('- 「リカバリーの途中 X 秒から Y 秒」のリカバリー中止のあとの走り直し = " in st
+        assert "' 中止のあとの走り直し(%s・人側 %s 秒。%s)'" in co and "'比べに入れない' if r.get('to_r1_s') is not None else 'R1 に届かなかった発進に数える'" in co
+        assert "('リカバリー(当たった・止まったあとのブレーキ・後退・前進など)の途中で人が CH3 を人側にした区間のあとも同じ'" in co
+        assert "(('midrun', '途中で変えた本'), ('trial', '試しの本'))" in co
+        assert "lines.append('  → %sの ON の発進が空転した %d 本(比 > %.1f か、比が出ないのに車輪が増えた = いちばんひどい空転): %s → 空転の'" in co
+        assert "lines.append('  → %sの ON の発進で空転の比が出ない %d 本: %s → 空転を確かめられない = 満たさない(checks の '" in co
+>       assert "(('途中で変えた', mids), ('試し', trials))" in co and "'。' + gap_tag[id(r)]" in co
+E       assert ("(('途中で変えた', mids), ('試し', trials))" in '"""原因 C の診断(1): 止まってから AI で走り出した場面を全部集める(10/23・10/24 の AI 走行 50 本)。2026-10-26\n\n読むだけ。data/raw・data/labels は変えない。\n\n...'・\'.join(skipped) or \'(当たる記録なし)\'))\n        print(\'出力\', out_path)\n\n\nif __name__ == \'__main__\':\n    main()\n')
+
+tests/test_fix8_docs_decided.py:429: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r3_2_tools.py::test_untouched_files - AssertionError: ...
+FAILED tests/test_fix8_docs_decided.py::test_tool_words_match_the_code - asse...
+2 failed, 779 passed in 457.25s (0:07:37)

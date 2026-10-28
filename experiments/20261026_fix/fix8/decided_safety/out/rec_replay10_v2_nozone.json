@@ -1,0 +1,6516 @@
+{
+"sha256": {
+"drive.py": "6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f",
+"assist.py": "ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e0bad9629d78c56328c138f"
+},
+"floor_ref": "/home/jetson/jetformer/data/tof_floor_ref.npy",
+"logs": {
+"20261023-204755": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 0,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 228,
+"launches": [
+{
+"t_ai": 0.233,
+"first_lap_end_s": 1.632,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.025,
+"move_0p4_s": 0.025,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 0.9,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 4.696,
+"first_lap_end_s": 7.295,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.042,
+"move_0p4_s": 0.042,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 2.1,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 228,
+"rows_same": 225,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1384.4,
+1400.4,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1384.3,
+1399.4,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1393.4,
+1407.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 230,
+"rows": 228,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 230,
+"rows": 228,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+}
+},
+"20261023-205309": {
+"problems": [],
+"params": {
+"steer_gain": 1.2,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 0,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1369,
+"launches": [
+{
+"t_ai": 2.565,
+"first_lap_end_s": 14.088,
+"first_lap_end": "line",
+"to_r1_s": 3.109,
+"loss_s": 0.491,
+"move_0p2_s": 0.167,
+"move_0p4_s": 0.177,
+"slip": {
+"t_a": 2.732,
+"t_b": 3.332,
+"dv_wheel": 2.329,
+"dv_imu": 2.207,
+"ratio": 1.055
+},
+"v_launch_at_lh": 3.53,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [
+[
+12.454,
+8.448786049152357,
+"HS"
+]
+],
+"ai_seg_s": 12.26,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 31.881,
+"first_lap_end_s": 41.075,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.884,
+"loss_s": 0.171,
+"move_0p2_s": 0.061,
+"move_0p4_s": 0.101,
+"slip": {
+"t_a": 31.942,
+"t_b": 32.542,
+"dv_wheel": 3.137,
+"dv_imu": 2.856,
+"ratio": 1.098
+},
+"v_launch_at_lh": 4.21,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [
+[
+40.844,
+3.7508107616894613,
+"SW"
+]
+],
+"ai_seg_s": 8.69,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1369,
+"rows_same": 1366,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1531.4,
+1396.2,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1515.9,
+1397.6,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1550.0,
+1395.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1371,
+"rows": 1369,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1371,
+"rows": 1369,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 29
+}
+},
+"20261023-205418": {
+"problems": [],
+"params": {
+"steer_gain": 1.2,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 0,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 429,
+"launches": [
+{
+"t_ai": 3.631,
+"first_lap_end_s": 6.596,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 2.46,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 6.562,
+"first_lap_end_s": 10.926,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 3.86,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 11.259,
+"first_lap_end_s": 14.757,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 3.0,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 429,
+"rows_same": 426,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1430.4,
+1480.1,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1426.1,
+1481.7,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1432.3,
+1480.7,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 431,
+"rows": 429,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 431,
+"rows": 429,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 110
+}
+},
+"20261023-205458": {
+"problems": [],
+"params": {
+"steer_gain": 1.2,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 0,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2519,
+"launches": [
+{
+"t_ai": 0.0,
+"first_lap_end_s": 12.153,
+"first_lap_end": "line",
+"to_r1_s": 5.089,
+"loss_s": 2.405,
+"move_0p2_s": 1.946,
+"move_0p4_s": 2.127,
+"slip": {
+"t_a": 1.946,
+"t_b": 2.546,
+"dv_wheel": 1.81,
+"dv_imu": 2.06,
+"ratio": 0.879
+},
+"v_launch_at_lh": 3.14,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [
+[
+12.079,
+8.468204899502751,
+"HS"
+]
+],
+"ai_seg_s": 24.32,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+0.0,
+0.033,
+0.067
+],
+"ai_cam_timeouts": [
+0.0
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+0.0,
+0.033,
+0.067
+],
+"ai_cam_timeouts": [
+0.0
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2519,
+"rows_same": 2512,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1432.7,
+1485.6,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1433.1,
+1493.9,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1431.3,
+1492.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": false,
+"first_diff_all": {
+"what": "pca",
+"t_ns": 1792756522406113000,
+"on": [
+1792756522406113000,
+1441.0,
+1796.0
+],
+"off": [
+1792756522406113000,
+1441.0,
+1506.0
+]
+},
+"first_diff_event_s": null,
+"first_diff_s": 23.755,
+"pca_writes": 2522,
+"rows": 2519,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 3,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 2,
+"guards_on": [
+"back_early"
+],
+"rec_frames_on": 26,
+"rec_frames_off": 26,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": false,
+"first_diff_all": {
+"what": "pca",
+"t_ns": 1792756522406113000,
+"on": [
+1792756522406113000,
+1441.0,
+1796.0
+],
+"off": [
+1792756522406113000,
+1441.0,
+1506.0
+]
+},
+"first_diff_event_s": null,
+"first_diff_s": 23.755,
+"pca_writes": 2522,
+"rows": 2519,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 3,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 2,
+"guards_on": [
+"back_early"
+],
+"rec_frames_on": 26,
+"rec_frames_off": 26,
+"launch_frames_on": 0
+}
+},
+"20261023-210109": {
+"problems": [],
+"params": {
+"steer_gain": 1.3,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 0,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 943,
+"launches": [
+{
+"t_ai": 7.361,
+"first_lap_end_s": 9.493,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 1.63,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 9.893,
+"first_lap_end_s": 24.716,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 14.32,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 943,
+"rows_same": 940,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1142.9,
+1399.0,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1072.7,
+1425.3,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1147.3,
+1458.6,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 945,
+"rows": 943,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 945,
+"rows": 943,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 74
+}
+},
+"20261023-210840": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2576,
+"launches": [
+{
+"t_ai": 4.262,
+"first_lap_end_s": 5.328,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.029,
+"move_0p4_s": 0.029,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 0.57,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 24.908,
+"first_lap_end_s": 34.489,
+"first_lap_end": "line",
+"to_r1_s": 2.671,
+"loss_s": 0.574,
+"move_0p2_s": 0.139,
+"move_0p4_s": 0.189,
+"slip": {
+"t_a": 25.047,
+"t_b": 25.647,
+"dv_wheel": 1.883,
+"dv_imu": 1.714,
+"ratio": 1.099
+},
+"v_launch_at_lh": 2.95,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+31.012,
+2.604372357919379,
+"DE"
+]
+],
+"ai_seg_s": 56.58,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2576,
+"rows_same": 2573,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1397.5,
+1373.9,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1389.7,
+1387.7,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1396.8,
+1380.4,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2583,
+"rows": 2576,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2583,
+"rows": 2576,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 23
+}
+},
+"20261023-211020": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1288,
+"launches": [
+{
+"t_ai": 3.83,
+"first_lap_end_s": 15.453,
+"first_lap_end": "ai_end",
+"to_r1_s": 3.5,
+"loss_s": 0.754,
+"move_0p2_s": 0.148,
+"move_0p4_s": 0.177,
+"slip": {
+"t_a": 3.977,
+"t_b": 4.577,
+"dv_wheel": 2.01,
+"dv_imu": 1.971,
+"ratio": 1.02
+},
+"v_launch_at_lh": 2.95,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+14.25,
+8.40536646331906,
+"HS"
+]
+],
+"ai_seg_s": 11.12,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.924
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.924
+],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 17.218,
+"first_lap_end_s": 27.466,
+"first_lap_end": "line",
+"to_r1_s": 3.572,
+"loss_s": 0.667,
+"move_0p2_s": 0.079,
+"move_0p4_s": 0.1,
+"slip": {
+"t_a": 17.297,
+"t_b": 17.897,
+"dv_wheel": 2.022,
+"dv_imu": 1.928,
+"ratio": 1.048
+},
+"v_launch_at_lh": 3.79,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 20.35,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+22.412
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+22.412
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1288,
+"rows_same": 1285,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1447.1,
+1444.1,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1452.4,
+1446.5,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1440.3,
+1463.6,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1293,
+"rows": 1288,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1293,
+"rows": 1288,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 48
+}
+},
+"20261023-211118": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1164,
+"launches": [
+{
+"t_ai": 4.563,
+"first_lap_end_s": 16.243,
+"first_lap_end": "line",
+"to_r1_s": 3.903,
+"loss_s": 1.555,
+"move_0p2_s": 0.204,
+"move_0p4_s": 0.23,
+"slip": {
+"t_a": 4.767,
+"t_b": 5.367,
+"dv_wheel": 1.81,
+"dv_imu": 1.731,
+"ratio": 1.046
+},
+"v_launch_at_lh": 1.94,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+11.925,
+7.900878077134456,
+"DE"
+],
+[
+13.275,
+6.785341324203957,
+"SW"
+]
+],
+"ai_seg_s": 29.18,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1164,
+"rows_same": 1161,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1530.9,
+1524.3,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1569.4,
+1525.9,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1571.8,
+1519.2,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1167,
+"rows": 1164,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 1,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1167,
+"rows": 1164,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 1,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 36
+}
+},
+"20261023-211209": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1440,
+"launches": [
+{
+"t_ai": 4.363,
+"first_lap_end_s": 14.334,
+"first_lap_end": "line",
+"to_r1_s": 3.221,
+"loss_s": 0.62,
+"move_0p2_s": 0.15,
+"move_0p4_s": 0.22,
+"slip": {
+"t_a": 4.513,
+"t_b": 5.113,
+"dv_wheel": 2.101,
+"dv_imu": 2.087,
+"ratio": 1.007
+},
+"v_launch_at_lh": 3.15,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 38.6,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+9.091
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+9.091
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1440,
+"rows_same": 1437,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1509.0,
+1516.9,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1494.6,
+1509.7,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1495.9,
+1512.7,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1444,
+"rows": 1440,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1444,
+"rows": 1440,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 10
+}
+},
+"20261023-211308": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1073,
+"launches": [
+{
+"t_ai": 2.198,
+"first_lap_end_s": 12.445,
+"first_lap_end": "line",
+"to_r1_s": 3.747,
+"loss_s": 0.591,
+"move_0p2_s": 0.095,
+"move_0p4_s": 0.125,
+"slip": {
+"t_a": 2.294,
+"t_b": 2.894,
+"dv_wheel": 2.433,
+"dv_imu": 2.331,
+"ratio": 1.044
+},
+"v_launch_at_lh": 2.94,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 29.81,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.325
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.325
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1073,
+"rows_same": 1070,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1455.1,
+1399.0,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1450.5,
+1402.5,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1451.5,
+1400.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1078,
+"rows": 1073,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1078,
+"rows": 1073,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 14
+}
+},
+"20261023-211357": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1134,
+"launches": [
+{
+"t_ai": 2.831,
+"first_lap_end_s": 13.462,
+"first_lap_end": "line",
+"to_r1_s": 3.376,
+"loss_s": -0.061,
+"move_0p2_s": 0.159,
+"move_0p4_s": 0.188,
+"slip": {
+"t_a": 2.99,
+"t_b": 3.59,
+"dv_wheel": 2.249,
+"dv_imu": 2.042,
+"ratio": 1.101
+},
+"v_launch_at_lh": 3.04,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 32.21,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.492
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.492
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1134,
+"rows_same": 1131,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1428.6,
+1433.0,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1420.3,
+1431.8,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1420.3,
+1433.6,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1138,
+"rows": 1134,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1138,
+"rows": 1134,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 21
+}
+},
+"20261023-211448": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1416,
+"launches": [
+{
+"t_ai": 3.264,
+"first_lap_end_s": 13.966,
+"first_lap_end": "line",
+"to_r1_s": 3.271,
+"loss_s": 0.512,
+"move_0p2_s": 0.159,
+"move_0p4_s": 0.209,
+"slip": {
+"t_a": 3.423,
+"t_b": 4.023,
+"dv_wheel": 2.231,
+"dv_imu": 2.128,
+"ratio": 1.048
+},
+"v_launch_at_lh": 3.31,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+13.296,
+11.11316665846409,
+"HS"
+]
+],
+"ai_seg_s": 40.9,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.925
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+7.925
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1416,
+"rows_same": 1413,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1496.9,
+1484.7,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1484.9,
+1479.3,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1488.2,
+1495.5,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1421,
+"rows": 1416,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1421,
+"rows": 1416,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 22
+}
+},
+"20261023-211547": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1520,
+"launches": [
+{
+"t_ai": 3.897,
+"first_lap_end_s": 14.312,
+"first_lap_end": "line",
+"to_r1_s": 3.345,
+"loss_s": 0.434,
+"move_0p2_s": 0.138,
+"move_0p4_s": 0.198,
+"slip": {
+"t_a": 4.034,
+"t_b": 4.634,
+"dv_wheel": 2.306,
+"dv_imu": 2.299,
+"ratio": 1.003
+},
+"v_launch_at_lh": 2.68,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+10.991,
+6.113676388836218,
+"DE"
+]
+],
+"ai_seg_s": 39.37,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.562,
+8.662
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.562,
+8.662
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1520,
+"rows_same": 1517,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1429.2,
+1481.6,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1428.7,
+1485.2,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1437.6,
+1487.3,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1527,
+"rows": 1520,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1527,
+"rows": 1520,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 18
+}
+},
+"20261023-211737": {
+"problems": [],
+"params": {
+"steer_gain": 1.4,
+"throttle_gain": 1.4,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 663,
+"launches": [
+{
+"t_ai": 5.363,
+"first_lap_end_s": 15.089,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.621,
+"loss_s": null,
+"move_0p2_s": 0.184,
+"move_0p4_s": 0.198,
+"slip": {
+"t_a": 5.547,
+"t_b": 6.147,
+"dv_wheel": 2.121,
+"dv_imu": 1.987,
+"ratio": 1.067
+},
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+12.674,
+8.240614753608622,
+"SW"
+]
+],
+"ai_seg_s": 9.23,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 663,
+"rows_same": 408,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1531.2,
+1500.9,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1549.0,
+1506.1,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1539.4,
+1510.0,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 665,
+"rows": 663,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 665,
+"rows": 663,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 23
+}
+},
+"20261023-211828": {
+"problems": [],
+"params": {
+"steer_gain": 1.3,
+"throttle_gain": 1.25,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 5787,
+"launches": [
+{
+"t_ai": 40.237,
+"first_lap_end_s": 41.903,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.229,
+"move_0p4_s": 0.249,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [
+[
+41.753,
+8.591945756941033,
+"HS"
+]
+],
+"ai_seg_s": 1.17,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 154.351,
+"first_lap_end_s": 160.567,
+"first_lap_end": "line",
+"to_r1_s": 3.07,
+"loss_s": 1.012,
+"move_0p2_s": 0.176,
+"move_0p4_s": 0.206,
+"slip": {
+"t_a": 154.527,
+"t_b": 155.127,
+"dv_wheel": 2.528,
+"dv_imu": 2.277,
+"ratio": 1.11
+},
+"v_launch_at_lh": 2.07,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 32.74,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 5787,
+"rows_same": 5779,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1404.2,
+1453.3,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1407.3,
+1455.6,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1409.8,
+1457.9,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": false,
+"first_diff_all": {
+"what": "pca",
+"t_ns": 1792758036624893880,
+"on": [
+1792758036624893880,
+1016.0,
+1366.0
+],
+"off": [
+1792758036624893880,
+1591.0,
+1496.0
+]
+},
+"first_diff_event_s": null,
+"first_diff_s": 128.181,
+"pca_writes": 5795,
+"rows": 5787,
+"ai_hold_rows_record": 1,
+"ai_hold_rows_replay": 1,
+"cam_timeouts": 8,
+"ai_cam_timeouts": 4,
+"guards_on": [
+"rear_impact"
+],
+"rec_frames_on": 71,
+"rec_frames_off": 72,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": false,
+"first_diff_all": {
+"what": "pca",
+"t_ns": 1792758036624893880,
+"on": [
+1792758036624893880,
+1016.0,
+1366.0
+],
+"off": [
+1792758036624893880,
+1591.0,
+1496.0
+]
+},
+"first_diff_event_s": null,
+"first_diff_s": 128.181,
+"pca_writes": 5795,
+"rows": 5787,
+"ai_hold_rows_record": 1,
+"ai_hold_rows_replay": 1,
+"cam_timeouts": 8,
+"ai_cam_timeouts": 4,
+"guards_on": [
+"rear_impact"
+],
+"rec_frames_on": 71,
+"rec_frames_off": 72,
+"launch_frames_on": 0
+}
+},
+"20261023-212202": {
+"problems": [],
+"params": {
+"steer_gain": 1.3,
+"throttle_gain": 1.3,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 853,
+"launches": [
+{
+"t_ai": 6.195,
+"first_lap_end_s": 10.726,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.732,
+"loss_s": null,
+"move_0p2_s": 0.136,
+"move_0p4_s": 0.191,
+"slip": {
+"t_a": 6.331,
+"t_b": 6.931,
+"dv_wheel": 3.06,
+"dv_imu": 3.049,
+"ratio": 1.004
+},
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+9.558,
+7.973311222544082,
+"R1"
+]
+],
+"ai_seg_s": 4.03,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 853,
+"rows_same": 850,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1648.1,
+1356.5,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1630.0,
+1376.5,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1548.3,
+1400.7,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 855,
+"rows": 853,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 855,
+"rows": 853,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 15
+}
+},
+"20261023-212242": {
+"problems": [],
+"params": {
+"steer_gain": 1.3,
+"throttle_gain": 1.2,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1025,
+"launches": [
+{
+"t_ai": 6.062,
+"first_lap_end_s": 17.021,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.434,
+"loss_s": null,
+"move_0p2_s": 0.16,
+"move_0p4_s": 0.177,
+"slip": {
+"t_a": 6.222,
+"t_b": 6.822,
+"dv_wheel": 2.959,
+"dv_imu": 2.736,
+"ratio": 1.082
+},
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+11.666,
+3.9611625495993494,
+"DE"
+],
+[
+15.026,
+11.291784391311353,
+"HS"
+]
+],
+"ai_seg_s": 10.46,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1025,
+"rows_same": 1022,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1383.4,
+1456.0,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1381.1,
+1457.2,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1374.2,
+1458.5,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1027,
+"rows": 1025,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1027,
+"rows": 1025,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 15
+}
+},
+"20261023-212934": {
+"problems": [],
+"params": {
+"steer_gain": 1.2,
+"throttle_gain": 1.2,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 0,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2040,
+"launches": [
+{
+"t_ai": 9.093,
+"first_lap_end_s": 13.39,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.749,
+"loss_s": 0.683,
+"move_0p2_s": 0.187,
+"move_0p4_s": 0.208,
+"slip": {
+"t_a": 9.28,
+"t_b": 9.88,
+"dv_wheel": 2.907,
+"dv_imu": 2.777,
+"ratio": 1.047
+},
+"v_launch_at_lh": 4.42,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+12.438,
+7.580391384083845,
+"R1"
+]
+],
+"ai_seg_s": 3.8,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 22.549,
+"first_lap_end_s": 28.673,
+"first_lap_end": "line",
+"to_r1_s": 6.613,
+"loss_s": null,
+"move_0p2_s": 0.181,
+"move_0p4_s": 0.201,
+"slip": {
+"t_a": 22.731,
+"t_b": 23.331,
+"dv_wheel": 2.722,
+"dv_imu": 2.451,
+"ratio": 1.11
+},
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+24.932,
+4.363927476169397,
+"GM_out"
+],
+[
+26.132,
+2.9172746811410786,
+"DE"
+]
+],
+"ai_seg_s": 6.76,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+24.244
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+24.244
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2040,
+"rows_same": 2037,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1442.4,
+1486.4,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1441.7,
+1489.9,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1445.9,
+1488.7,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2045,
+"rows": 2040,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2045,
+"rows": 2040,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+}
+},
+"20261023-213559": {
+"problems": [],
+"params": {
+"steer_gain": 1.2,
+"throttle_gain": 1.2,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1311,
+"launches": [
+{
+"t_ai": 12.291,
+"first_lap_end_s": 14.923,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.171,
+"move_0p4_s": 0.191,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 2.13,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 28.913,
+"first_lap_end_s": 31.245,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.22,
+"move_0p4_s": 0.23,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [
+[
+30.147,
+7.993960649923983,
+"DE"
+]
+],
+"ai_seg_s": 1.83,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1311,
+"rows_same": 1309,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1159.7,
+1350.1,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1288.7,
+1373.9,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1313,
+"rows": 1311,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1313,
+"rows": 1311,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 23
+}
+},
+"20261024-134607": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2514,
+"launches": [
+{
+"t_ai": 27.88,
+"first_lap_end_s": 29.146,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.082,
+"move_0p4_s": 0.082,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [
+[
+28.898,
+4.693674928693424,
+"?"
+]
+],
+"ai_seg_s": 0.77,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2514,
+"rows_same": 2512,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1467.4,
+1503.9,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1443.1,
+1498.9,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2516,
+"rows": 2514,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2516,
+"rows": 2514,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 6
+}
+},
+"20261024-135608": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1028,
+"launches": [
+{
+"t_ai": 13.556,
+"first_lap_end_s": 16.588,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.209,
+"move_0p4_s": 0.237,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 2.53,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 4
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 4
+}
+},
+{
+"t_ai": 27.346,
+"first_lap_end_s": 28.845,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.229,
+"move_0p4_s": 0.229,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 1.0,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1028,
+"rows_same": 1025,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1535.4,
+1493.2,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1529.8,
+1496.0,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1530.9,
+1494.4,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1030,
+"rows": 1028,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 4,
+"rec_frames_off": 4,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1030,
+"rows": 1028,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 4,
+"rec_frames_off": 4,
+"launch_frames_on": 49
+}
+},
+"20261024-135656": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 3956,
+"launches": [
+{
+"t_ai": 48.23,
+"first_lap_end_s": 50.761,
+"first_lap_end": "ai_end",
+"to_r1_s": 1.332,
+"loss_s": 0.309,
+"move_0p2_s": 0.168,
+"move_0p4_s": 0.288,
+"slip": null,
+"v_launch_at_lh": 0.21,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+49.92,
+6.056051098627566,
+"R1"
+]
+],
+"ai_seg_s": 2.03,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 51.028,
+"first_lap_end_s": 53.16,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.19,
+"move_0p4_s": 0.21,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [
+[
+51.974,
+5.7897931919235655,
+"GM_in"
+]
+],
+"ai_seg_s": 1.63,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 83.303,
+"first_lap_end_s": 93.451,
+"first_lap_end": "line",
+"to_r1_s": 9.407,
+"loss_s": -0.018,
+"move_0p2_s": 0.045,
+"move_0p4_s": 0.13,
+"slip": {
+"t_a": 83.347,
+"t_b": 83.947,
+"dv_wheel": 2.495,
+"dv_imu": 2.548,
+"ratio": 0.979
+},
+"v_launch_at_lh": 3.18,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 28.08,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 3956,
+"rows_same": 3953,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1535.9,
+1556.8,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1537.8,
+1571.9,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1542.6,
+1559.5,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3961,
+"rows": 3956,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3961,
+"rows": 3956,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 5,
+"ai_cam_timeouts": 3,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 36
+}
+},
+"20261024-160847": {
+"problems": [],
+"params": {
+"steer_gain": 1.1,
+"throttle_gain": 1.1,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2796,
+"launches": [
+{
+"t_ai": 5.729,
+"first_lap_end_s": 16.788,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.801,
+"loss_s": 0.738,
+"move_0p2_s": 0.134,
+"move_0p4_s": 0.154,
+"slip": {
+"t_a": 5.863,
+"t_b": 6.463,
+"dv_wheel": 1.579,
+"dv_imu": 1.295,
+"ratio": 1.219
+},
+"v_launch_at_lh": 3.42,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+13.494,
+5.038468539258551,
+"SW"
+],
+[
+14.76,
+10.584618388939042,
+"HS"
+]
+],
+"ai_seg_s": 10.56,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 22.816,
+"first_lap_end_s": 32.271,
+"first_lap_end": "line",
+"to_r1_s": 3.0,
+"loss_s": 0.615,
+"move_0p2_s": 0.057,
+"move_0p4_s": 0.118,
+"slip": {
+"t_a": 22.873,
+"t_b": 23.473,
+"dv_wheel": 2.049,
+"dv_imu": 2.072,
+"ratio": 0.989
+},
+"v_launch_at_lh": 3.79,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [
+[
+29.244,
+11.21400791233126,
+"DE"
+]
+],
+"ai_seg_s": 17.62,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 46.498,
+"first_lap_end_s": 47.798,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 0.8,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2796,
+"rows_same": 2792,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1894.2,
+1486.7,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1893.4,
+1483.8,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1902.0,
+1484.5,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": false,
+"first_diff_all": {
+"what": "event",
+"on": [
+[
+"recovery_guard",
+{
+"what": "back_no_esc",
+"phase": "brake",
+"backed_s": 0.0,
+"run": null,
+"cam_epoch_us": 3585797463774394
+}
+]
+],
+"off": []
+},
+"first_diff_event_s": 40.07,
+"first_diff_s": null,
+"pca_writes": 2798,
+"rows": 2796,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [
+"back_no_esc"
+],
+"rec_frames_on": 15,
+"rec_frames_off": 15,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": false,
+"first_diff_all": {
+"what": "event",
+"on": [
+[
+"recovery_guard",
+{
+"what": "back_no_esc",
+"phase": "brake",
+"backed_s": 0.0,
+"run": null,
+"cam_epoch_us": 3585797463774394
+}
+],
+[
+"launch_boost",
+{
+"why": "near",
+"reason": "前が近い(TTC の中央値 < 3.3 秒)",
+"event": "skip",
+"run": null,
+"cam_t_us": 1792825773950170,
+"cam_epoch_us": 3585797470202854
+}
+]
+],
+"off": [
+[
+"launch_boost",
+{
+"why": "near",
+"reason": "前が近い(TTC の中央値 < 3.3 秒)",
+"event": "skip",
+"run": null,
+"cam_t_us": 1792825773950170,
+"cam_epoch_us": 3585797470202854
+}
+],
+[
+"launch_boost",
+{
+"why": "moving",
+"reason": "止まっていない(|eRPM| ≥ 400)",
+"event": "skip",
+"run": null,
+"cam_t_us": 1792825793302178,
+"cam_epoch_us": 3585797489554862
+}
+]
+]
+},
+"first_diff_event_s": 40.07,
+"first_diff_s": null,
+"pca_writes": 2798,
+"rows": 2796,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [
+"back_no_esc"
+],
+"rec_frames_on": 15,
+"rec_frames_off": 15,
+"launch_frames_on": 0
+}
+},
+"20261024-162033": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 4026,
+"launches": [
+{
+"t_ai": 20.118,
+"first_lap_end_s": 29.228,
+"first_lap_end": "line",
+"to_r1_s": 2.344,
+"loss_s": 0.842,
+"move_0p2_s": 0.129,
+"move_0p4_s": 0.129,
+"slip": {
+"t_a": 20.247,
+"t_b": 20.847,
+"dv_wheel": 1.551,
+"dv_imu": 1.8,
+"ratio": 0.861
+},
+"v_launch_at_lh": 2.61,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 103.69,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+22.583,
+22.616
+],
+"ai_cam_timeouts": [
+23.679
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+22.583,
+22.616
+],
+"ai_cam_timeouts": [
+23.679
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 4026,
+"rows_same": 4023,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1500.9,
+1516.3,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1526.0,
+1521.6,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1519.3,
+1520.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 4036,
+"rows": 4026,
+"ai_hold_rows_record": 13,
+"ai_hold_rows_replay": 13,
+"cam_timeouts": 10,
+"ai_cam_timeouts": 8,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 4036,
+"rows": 4026,
+"ai_hold_rows_record": 13,
+"ai_hold_rows_replay": 13,
+"cam_timeouts": 10,
+"ai_cam_timeouts": 8,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 25
+}
+},
+"20261024-162305": {
+"problems": [
+"20261024-162305-0005/VEHICLE なし",
+"20261024-162305-0006/VEHICLE なし",
+"20261024-162305-0007/AI_CMD なし",
+"20261024-162305-0007/VEHICLE なし",
+"20261024-162305-0007/IMU なし",
+"20261024-162305-0007/TOF_FRONT なし",
+"20261024-162305-0008/AI_CMD なし",
+"20261024-162305-0008/VEHICLE なし",
+"20261024-162305-0008/IMU なし",
+"20261024-162305-0008/TOF_FRONT なし",
+"20261024-162305-0009/AI_CMD なし",
+"20261024-162305-0009/VEHICLE なし",
+"20261024-162305-0009/IMU なし",
+"20261024-162305-0009/TOF_FRONT なし"
+],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 3579,
+"launches": [
+{
+"t_ai": 4.763,
+"first_lap_end_s": 13.959,
+"first_lap_end": "line",
+"to_r1_s": 2.691,
+"loss_s": 0.598,
+"move_0p2_s": 0.129,
+"move_0p4_s": 0.198,
+"slip": {
+"t_a": 4.892,
+"t_b": 5.492,
+"dv_wheel": 2.598,
+"dv_imu": 2.475,
+"ratio": 1.05
+},
+"v_launch_at_lh": 4.3,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 19.55,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.799
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+8.799
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 3579,
+"rows_same": 3576,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1469.2,
+1474.3,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1488.0,
+1476.8,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1461.7,
+1472.2,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3582,
+"rows": 3579,
+"ai_hold_rows_record": 3,
+"ai_hold_rows_replay": 3,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 1,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3582,
+"rows": 3579,
+"ai_hold_rows_record": 3,
+"ai_hold_rows_replay": 3,
+"cam_timeouts": 3,
+"ai_cam_timeouts": 1,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 16
+}
+},
+"20261024-183123": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 5225,
+"launches": [
+{
+"t_ai": 28.676,
+"first_lap_end_s": 29.41,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.188,
+"move_0p4_s": 0.2,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 0.23,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 38.502,
+"first_lap_end_s": 40.201,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 1.2,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+38.835,
+38.868,
+38.901,
+38.935,
+38.968,
+39.001,
+39.035,
+39.068,
+39.101,
+39.135,
+39.168,
+39.201,
+39.234,
+39.268,
+39.301,
+39.334,
+39.368,
+39.401,
+39.434
+],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+38.835,
+38.868,
+38.901,
+38.935,
+38.968,
+39.001,
+39.035,
+39.068,
+39.101,
+39.135,
+39.168,
+39.201,
+39.234,
+39.268,
+39.301,
+39.334,
+39.368,
+39.401,
+39.434
+],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 40.1,
+"first_lap_end_s": 43.864,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": null,
+"move_0p4_s": null,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": false,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 3.26,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+40.433,
+40.467,
+40.5,
+40.533,
+40.567,
+40.6,
+40.633,
+40.667,
+40.7,
+41.066,
+41.1,
+41.133,
+41.166,
+41.2,
+41.233,
+41.266,
+41.299,
+41.333,
+41.366,
+41.399,
+41.433,
+41.466,
+41.499,
+41.533,
+41.566,
+41.599,
+41.632,
+41.666,
+41.699,
+41.732,
+41.766,
+41.799,
+41.832,
+41.866,
+41.899,
+41.932,
+41.966,
+41.999,
+42.032,
+42.065,
+42.099,
+42.132,
+42.165,
+42.199,
+42.232,
+42.265,
+42.299,
+42.332,
+42.365,
+42.398,
+42.432,
+42.465,
+42.498,
+42.532,
+42.565,
+42.598,
+42.632,
+42.665,
+42.698,
+42.732,
+42.765,
+42.798,
+42.831,
+42.865,
+42.898,
+42.931,
+42.965,
+42.998,
+43.031,
+43.065,
+43.098,
+43.131,
+43.165,
+43.198,
+43.231,
+43.264,
+43.298,
+43.331,
+43.364
+],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [
+40.433,
+40.467,
+40.5,
+40.533,
+40.567,
+40.6,
+40.633,
+40.667,
+40.7,
+41.066,
+41.1,
+41.133,
+41.166,
+41.2,
+41.233,
+41.266,
+41.299,
+41.333,
+41.366,
+41.399,
+41.433,
+41.466,
+41.499,
+41.533,
+41.566,
+41.599,
+41.632,
+41.666,
+41.699,
+41.732,
+41.766,
+41.799,
+41.832,
+41.866,
+41.899,
+41.932,
+41.966,
+41.999,
+42.032,
+42.065,
+42.099,
+42.132,
+42.165,
+42.199,
+42.232,
+42.265,
+42.299,
+42.332,
+42.365,
+42.398,
+42.432,
+42.465,
+42.498,
+42.532,
+42.565,
+42.598,
+42.632,
+42.665,
+42.698,
+42.732,
+42.765,
+42.798,
+42.831,
+42.865,
+42.898,
+42.931,
+42.965,
+42.998,
+43.031,
+43.065,
+43.098,
+43.131,
+43.165,
+43.198,
+43.231,
+43.264,
+43.298,
+43.331,
+43.364
+],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 58.619,
+"first_lap_end_s": 62.816,
+"first_lap_end": "no_r1",
+"to_r1_s": null,
+"loss_s": null,
+"move_0p2_s": 0.449,
+"move_0p4_s": 0.449,
+"slip": null,
+"v_launch_at_lh": null,
+"kick": true,
+"recovery": null,
+"collisions_first_lap": [],
+"ai_seg_s": 3.7,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+},
+{
+"t_ai": 70.209,
+"first_lap_end_s": 80.025,
+"first_lap_end": "line",
+"to_r1_s": 2.865,
+"loss_s": 0.69,
+"move_0p2_s": 0.17,
+"move_0p4_s": 0.2,
+"slip": {
+"t_a": 70.379,
+"t_b": 70.979,
+"dv_wheel": 1.933,
+"dv_imu": 1.85,
+"ratio": 1.045
+},
+"v_launch_at_lh": 3.43,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+73.484,
+2.916512758034601,
+"R1"
+],
+[
+76.265,
+10.773373896757368,
+"DE"
+]
+],
+"ai_seg_s": 84.93,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 5225,
+"rows_same": 5223,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1600.1,
+1452.8,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1539.7,
+1423.0,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 5234,
+"rows": 5225,
+"ai_hold_rows_record": 112,
+"ai_hold_rows_replay": 112,
+"cam_timeouts": 9,
+"ai_cam_timeouts": 7,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 5234,
+"rows": 5225,
+"ai_hold_rows_record": 112,
+"ai_hold_rows_replay": 112,
+"cam_timeouts": 9,
+"ai_cam_timeouts": 7,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 52
+}
+},
+"20261024-183437": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2879,
+"launches": [
+{
+"t_ai": 18.086,
+"first_lap_end_s": 27.883,
+"first_lap_end": "line",
+"to_r1_s": 2.533,
+"loss_s": 0.632,
+"move_0p2_s": 0.27,
+"move_0p4_s": 0.29,
+"slip": {
+"t_a": 18.356,
+"t_b": 18.956,
+"dv_wheel": 2.164,
+"dv_imu": 2.153,
+"ratio": 1.005
+},
+"v_launch_at_lh": 3.37,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+23.838,
+11.297844152022764,
+"DE"
+]
+],
+"ai_seg_s": 65.62,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+21.847
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+21.847
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2879,
+"rows_same": 2875,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1421.3,
+1509.7,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1428.4,
+1508.5,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1428.3,
+1510.3,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2889,
+"rows": 2879,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 10,
+"ai_cam_timeouts": 8,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2889,
+"rows": 2879,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 10,
+"ai_cam_timeouts": 8,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 23
+}
+},
+"20261024-183656": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2058,
+"launches": [
+{
+"t_ai": 12.69,
+"first_lap_end_s": 22.594,
+"first_lap_end": "line",
+"to_r1_s": 2.366,
+"loss_s": 0.72,
+"move_0p2_s": 0.115,
+"move_0p4_s": 0.124,
+"slip": {
+"t_a": 12.805,
+"t_b": 13.405,
+"dv_wheel": 1.59,
+"dv_imu": 1.471,
+"ratio": 1.081
+},
+"v_launch_at_lh": 2.59,
+"kick": false,
+"recovery": false,
+"collisions_first_lap": [
+[
+18.526,
+5.918050021729526,
+"DE"
+]
+],
+"ai_seg_s": 46.73,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2058,
+"rows_same": 2055,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1798.8,
+1494.9,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1782.7,
+1488.4,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1803.5,
+1490.0,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2060,
+"rows": 2058,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2060,
+"rows": 2058,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 30
+}
+},
+"20261024-183826": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.85,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 3468,
+"launches": [
+{
+"t_ai": 48.897,
+"first_lap_end_s": 59.41,
+"first_lap_end": "line",
+"to_r1_s": 2.439,
+"loss_s": 0.551,
+"move_0p2_s": 0.168,
+"move_0p4_s": 0.195,
+"slip": {
+"t_a": 49.065,
+"t_b": 49.665,
+"dv_wheel": 1.975,
+"dv_imu": 1.851,
+"ratio": 1.067
+},
+"v_launch_at_lh": 2.89,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 60.52,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+52.657
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+52.657
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 3468,
+"rows_same": 3465,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1495.8,
+1512.2,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1467.5,
+1511.6,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1477.1,
+1508.5,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3475,
+"rows": 3468,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 3475,
+"rows": 3468,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 31
+}
+},
+"20261024-184043": {
+"problems": [],
+"params": {
+"steer_gain": 1.1,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2051,
+"launches": [
+{
+"t_ai": 9.659,
+"first_lap_end_s": 20.156,
+"first_lap_end": "line",
+"to_r1_s": 2.662,
+"loss_s": 0.805,
+"move_0p2_s": 0.175,
+"move_0p4_s": 0.195,
+"slip": {
+"t_a": 9.835,
+"t_b": 10.435,
+"dv_wheel": 1.455,
+"dv_imu": 1.305,
+"ratio": 1.115
+},
+"v_launch_at_lh": 2.8,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+15.313,
+2.987312762663112,
+"DE"
+]
+],
+"ai_seg_s": 49.73,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+13.587
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+13.587
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2051,
+"rows_same": 2048,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1420.0,
+1503.0,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1411.5,
+1505.7,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1424.2,
+1502.4,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2058,
+"rows": 2051,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2058,
+"rows": 2051,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 7,
+"ai_cam_timeouts": 5,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 37
+}
+},
+"20261024-184400": {
+"problems": [],
+"params": {
+"steer_gain": 1.1,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2360,
+"launches": [
+{
+"t_ai": 7.828,
+"first_lap_end_s": 17.788,
+"first_lap_end": "line",
+"to_r1_s": 2.588,
+"loss_s": 0.528,
+"move_0p2_s": 0.161,
+"move_0p4_s": 0.181,
+"slip": {
+"t_a": 7.988,
+"t_b": 8.588,
+"dv_wheel": 1.612,
+"dv_imu": 1.451,
+"ratio": 1.111
+},
+"v_launch_at_lh": 2.69,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 21.82,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2360,
+"rows_same": 2352,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1564.6,
+1479.7,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1547.0,
+1483.4,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1543.6,
+1486.1,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2364,
+"rows": 2360,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 17,
+"rec_frames_off": 17,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2364,
+"rows": 2360,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 4,
+"ai_cam_timeouts": 2,
+"guards_on": [],
+"rec_frames_on": 17,
+"rec_frames_off": 17,
+"launch_frames_on": 37
+}
+},
+"20261024-184549": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.95,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 2797,
+"launches": [
+{
+"t_ai": 9.127,
+"first_lap_end_s": 18.543,
+"first_lap_end": "line",
+"to_r1_s": 2.55,
+"loss_s": 0.657,
+"move_0p2_s": 0.167,
+"move_0p4_s": 0.187,
+"slip": {
+"t_a": 9.294,
+"t_b": 9.894,
+"dv_wheel": 1.687,
+"dv_imu": 1.556,
+"ratio": 1.084
+},
+"v_launch_at_lh": 3.21,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 73.78,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 2797,
+"rows_same": 2794,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1701.7,
+1508.4,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1663.5,
+1514.1,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1703.5,
+1513.4,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2805,
+"rows": 2797,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 8,
+"ai_cam_timeouts": 6,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 2805,
+"rows": 2797,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 8,
+"ai_cam_timeouts": 6,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 31
+}
+},
+"20261024-185703": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 0.9,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1621,
+"launches": [
+{
+"t_ai": 23.516,
+"first_lap_end_s": 33.414,
+"first_lap_end": "line",
+"to_r1_s": 2.537,
+"loss_s": 0.085,
+"move_0p2_s": 0.14,
+"move_0p4_s": 0.19,
+"slip": {
+"t_a": 23.655,
+"t_b": 24.255,
+"dv_wheel": 2.341,
+"dv_imu": 2.227,
+"ratio": 1.051
+},
+"v_launch_at_lh": 3.34,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [],
+"ai_seg_s": 29.74,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+27.373,
+27.473
+],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [
+27.373,
+27.473
+],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1621,
+"rows_same": 1618,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1441.7,
+1470.6,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1446.1,
+1476.4,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1433.2,
+1473.8,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1627,
+"rows": 1621,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 6,
+"ai_cam_timeouts": 4,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1627,
+"rows": 1621,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 6,
+"ai_cam_timeouts": 4,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 19
+}
+},
+"20261024-185926": {
+"problems": [],
+"params": {
+"steer_gain": 1.0,
+"throttle_gain": 1.0,
+"steer_trim_us": 0.0,
+"lookahead": 3,
+"osc_percent": 0.0,
+"esc_reverse": 1,
+"recovery": 1,
+"rev_us": 300.0,
+"rev_s": 0.4,
+"tof_guard": 1,
+"speed_cap": 0.0,
+"speed_scale": 1.0,
+"tcp_mode": 0,
+"ensemble_j": 0,
+"ensemble_m": 0.5,
+"zone_caps": 0,
+"start_kick": 1,
+"speed_ceiling": 0,
+"ceil_all_mps": 4.5,
+"ceil_left_mps": 4.1,
+"speed_auto": 0,
+"auto_target_mps": 4.27,
+"auto_vref_v": 8.35,
+"launch_boost": 0,
+"launch_us": 250.0,
+"launch_mps": 2.5,
+"launch_max_s": 1.2,
+"rec_back_guard": 0,
+"rec_hold_keep": 0,
+"launch_no_kick": 0
+},
+"n_frames": 1198,
+"launches": [
+{
+"t_ai": 18.22,
+"first_lap_end_s": 27.013,
+"first_lap_end": "ai_end",
+"to_r1_s": 2.755,
+"loss_s": 0.495,
+"move_0p2_s": 0.181,
+"move_0p4_s": 0.201,
+"slip": {
+"t_a": 18.401,
+"t_b": 19.001,
+"dv_wheel": 2.088,
+"dv_imu": 1.916,
+"ratio": 1.09
+},
+"v_launch_at_lh": 3.75,
+"kick": true,
+"recovery": false,
+"collisions_first_lap": [
+[
+23.043,
+2.7123829028943227,
+"GM_out"
+],
+[
+25.953,
+2.718524527762395,
+"SW"
+]
+],
+"ai_seg_s": 8.29,
+"lb0": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+},
+"lb1": {
+"same": true,
+"diff": null,
+"diff_s": null,
+"ai_holds_rows": [],
+"ai_cam_timeouts": [],
+"rec_frames_off": 0
+}
+}
+],
+"fidelity_off": {
+"rows_matched": 1198,
+"rows_same": 1195,
+"first_bad": [
+{
+"i": 0,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1649.0,
+1516.5,
+0,
+false
+]
+},
+{
+"i": 1,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1592.4,
+1510.5,
+0,
+false
+]
+},
+{
+"i": 2,
+"replay": [
+1441.0,
+1496.0,
+0,
+true
+],
+"record": [
+1632.3,
+1505.8,
+0,
+false
+]
+}
+]
+},
+"lb0": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1200,
+"rows": 1198,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 0
+},
+"lb1": {
+"same_all": true,
+"first_diff_all": null,
+"first_diff_event_s": null,
+"first_diff_s": null,
+"pca_writes": 1200,
+"rows": 1198,
+"ai_hold_rows_record": 0,
+"ai_hold_rows_replay": 0,
+"cam_timeouts": 2,
+"ai_cam_timeouts": 0,
+"guards_on": [],
+"rec_frames_on": 0,
+"rec_frames_off": 0,
+"launch_frames_on": 23
+}
+}
+},
+"started": "2026-10-28 01:50:17",
+"elapsed_s": 663.3
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="1" tests="20" time="3.977" timestamp="2026-10-28T11:05:30.853059+09:00" hostname="jetson"><testcase classname="tests.test_ui_fix8_r2" name="test_before_copies_are_the_versions_before_this_fix" time="0.002" /><testcase classname="tests.test_ui_fix8_r2" name="test_style_css_only_the_float_stop_rule_and_one_media_rule" time="0.003" /><testcase classname="tests.test_ui_fix8_r2" name="test_float_stop_takes_its_text_width_and_driving_toast_goes_above_it_on_phones" time="0.004" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_only_the_ceiling_expectation_changed" time="0.003" /><testcase classname="tests.test_ui_fix8_r2" name="test_to_fixed1_is_javascript_to_fixed" time="0.056" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[None]" time="0.074" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.2]" time="0.084" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[3.9]" time="0.079" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.25]" time="0.084" /><testcase classname="tests.test_ui_fix8_r2" name="test_firefox_float_stop_and_driving_toast_on_phone" time="0.000"><skipped type="pytest.skip" message="JF_UI_FIREFOX=1 と geckodriver のときだけ(jf-heavy --lock big --mem 3000M)">/home/jetson/jetformer/tests/test_ui_fix8_r2.py:302: JF_UI_FIREFOX=1 と geckodriver のときだけ(jf-heavy --lock big --mem 3000M)</skipped></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_screen_matches_server_table" time="0.069"><failure message="AssertionError: assert ['説明欄', '説明欄'...', '説明欄', ...] == ['説明欄', 'なし',...', '説明欄', ...]&#10;  &#10;  At index 1 diff: '説明欄' != 'なし'&#10;  Use -v to get more diff">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut_app/A02/test_vbefore_screen_matches_se0')
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    def test_vbefore_screen_matches_server_table(tmp_path):
+        """入力の表(56 行)の全部で、画面の電圧の源(本物の app.js の vbatSourceText。基板の電圧なし)= サーバーの電圧の源(本物の
+        drive._SpeedAuto・speed_auto.v_before_of)。基板の電圧があれば前と同じ「基板の電圧(走り始めから)」。
+        直す前の app.js(写し)では指摘の形が出る: 831・8,31・0.83・9.5・「8.31,」・4.15 で画面「説明欄」・サーバー「なし」、全角は逆"""
+        server = [_server_src(d) for d in VSRC_TABLE]
+        now = _node_vsrc(tmp_path, APP, VSRC_TABLE)
+&gt;       assert [_short(x) for x in now['src']] == server
+E       AssertionError: assert ['説明欄', '説明欄'...', '説明欄', ...] == ['説明欄', 'なし',...', '説明欄', ...]
+E         
+E         At index 1 diff: '説明欄' != 'なし'
+E         Use -v to get more diff
+
+tests/test_ui_fix8_r2.py:454: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_random_descriptions_match_server" time="0.180"><failure message="AssertionError: [('V_before=８7.1V\tV_before=５.７９６V\x1cai_no=3\tV_before =V ', '説明欄', 'なし'), ('cand=B V_before=9.3\t', '説明欄', 'なし'), ('..., 'なし'), ('Vb_before=9.21V V_before=.na٣nVV ', '説明欄', 'なし'), ('__\u3000Vb_before=９.１６V v_before=inf\xa0', '説明欄', 'なし')]&#10;assert not [('V_before=８7.1V\tV_before=５.７９６V\x1cai_no=3\tV_before =V ', '説明欄', 'なし'), ('cand=B V_before=9.3\t', '説明欄', 'なし'), ('... v_before=inf\xa0', '説明欄', 'なし'), ('v_before=__ Vb_before=60v  xV_before=nan V_before=８6\ufeff.7v ', '説明欄', 'なし'), ...]">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut_app/A02/test_vbefore_random_descriptio0')
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    def test_vbefore_random_descriptions_match_server(tmp_path):
+        """でたらめな説明欄 3000 本(種 82)で、画面の電圧の源 = サーバーの speed_auto.v_before_of が数か(基板の電圧なし)。1 本は 1〜4 個の欄
+        (V_before=・Vb_before=・v_before=・「V_before =」などの鍵 + 5.5〜9.5 V あたりの数に、下線・コンマ・V・e・点・符号・空白・全角・
+        アラビアの数字・全角の点を 0〜2 個まぜた値、か battery=・check=・memo= などのかけら)を、いろいろな空白の字でつないだもの"""
+        import random
+        from jetformer import speed_auto
+        rnd = random.Random(82)
+        marks = ['_', ',', 'V', 'v', 'e', '0', '.', '+', '-', ' ', _fw('8'), _ar('3'), chr(0xff0e), BOM]
+    
+        def num():
+            x = rnd.choice(['%.2f' % rnd.uniform(5.5, 9.5), '%.1f' % rnd.uniform(5.5, 9.5), '%d' % rnd.randint(5, 10), '%.3f' % rnd.uniform(0, 12),
+                            'nan', 'inf', '__', ''])
+            for _ in range(rnd.choice([0, 0, 1, 2])):
+                i = rnd.randrange(len(x) + 1)
+                x = x[:i] + rnd.choice(marks) + x[i:]
+            if rnd.random() &lt; 0.1:
+                x = _fw(x)
+            return x + rnd.choice(['', '', '', 'V', 'v', 'VV'])
+    
+        def field():
+            if rnd.random() &lt; 0.3:
+                return rnd.choice(['battery=#A', 'check=合格', 'memo=', 'V_after=8.05', 'cand=B', '__', 'ai_no=3', 'memo=V_before=8.31'])
+            return rnd.choice(['V_before=', 'V_before=', 'V_before=', 'Vb_before=', 'v_before=', 'V_before =', 'xV_before=', 'Vb_before=']) + num()
+    
+        seps = [' ', ' ', ' ', IDEO, NBSP, FSEP, '\t', '\n', BOM + ' ', '  ']
+        descs = [''.join(field() + rnd.choice(seps) for _ in range(rnd.randint(1, 4))) for _ in range(3000)]
+        got = _node_vsrc(tmp_path, APP, descs)
+        want = ['説明欄' if speed_auto.v_before_of(d) == speed_auto.v_before_of(d) else 'なし' for d in descs]
+        bad = [(d, a, b) for d, a, b in zip(descs, (_short(x) for x in got['src']), want) if a != b]
+&gt;       assert not bad, bad[:5]
+E       AssertionError: [('V_before=８7.1V\tV_before=５.７９６V\x1cai_no=3\tV_before =V ', '説明欄', 'なし'), ('cand=B V_before=9.3\t', '説明欄', 'なし'), ('..., 'なし'), ('Vb_before=9.21V V_before=.na٣nVV ', '説明欄', 'なし'), ('__\u3000Vb_before=９.１６V v_before=inf\xa0', '説明欄', 'なし')]
+E       assert not [('V_before=８7.1V\tV_before=５.７９６V\x1cai_no=3\tV_before =V ', '説明欄', 'なし'), ('cand=B V_before=9.3\t', '説明欄', 'なし'), ('... v_before=inf\xa0', '説明欄', 'なし'), ('v_before=__ Vb_before=60v  xV_before=nan V_before=８6\ufeff.7v ', '説明欄', 'なし'), ...]
+
+tests/test_ui_fix8_r2.py:496: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_pyfloat_is_python_float_and_py_space_is_python_isspace" time="1.820" /><testcase classname="tests.test_ui_fix8_r2" name="test_vdesc_range_is_the_server_range" time="0.005" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8.31 check=\u5408\u683c memo=]" time="0.074" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=831 check=\u5408\u683c]" time="0.072"><failure message="AssertionError: assert (('・電圧の源 %s)' % 'なし(1.00 倍。周ごとの直しだけ)') in '\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))')">desc = 'battery=#A V_before=831 check=合格'
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    @pytest.mark.parametrize('desc', ['battery=#A V_before=8.31 check=合格 memo=', 'battery=#A V_before=831 check=合格',
+                                      'battery=#A V_before=8,31', 'battery=#A V_before=' + _fw('8.31'), 'battery=#A V_before=__ memo='])
+    def test_start_and_switch_confirm_texts_say_what_the_server_uses(desc):
+        """▶ の確認の文(speedStartLines の「速さのゲインの自動合わせ: ON(… 電圧の源 X)」)と、自動合わせのスイッチの確認の文
+        (autoConfirmText の「電圧の源: X」)の X は、同じ説明欄でサーバーが使う電圧の源(基板の電圧なし)。本物の app.js の関数を node で"""
+        js = APP.read_text(encoding='utf-8')
+        names = ('SPEED_FALLBACK', 'speedSpec', 'ceilSpecText', 'autoLapText', 'vbatSourceText', 'autoConfirmText', 'speedStartLines')
+        params = dict(drive.DEFAULT_PARAMS, speed_ceiling=1, speed_auto=1)
+        st = {'speed_ctrl_spec': drive.speed_ctrl_spec(params), 'params': params, 'vbat': {'supported': False}}
+        code = (V.STUBS + ''.join(V._extract(js, n) for n in names)
+                + "$('#dr-desc').value = %s; $('#dr-speed-ceiling').checked = true; $('#dr-speed-auto').checked = true;\n"
+                  "const st = %s; process.stdout.write(JSON.stringify([speedStartLines(st), autoConfirmText(speedSpec(st), st)]));"
+                % (json.dumps(desc, ensure_ascii=False), json.dumps(st, ensure_ascii=False)))
+        r = subprocess.run([NODE, '-e', code], capture_output=True, text=True, timeout=30)
+        assert r.returncode == 0, r.stderr
+        start, sw = json.loads(r.stdout)
+        want = VSRC[_server_src(desc)]
+&gt;       assert '・電圧の源 %s)' % want in start and '電圧の源: %s\n' % want in sw
+E       AssertionError: assert (('・電圧の源 %s)' % 'なし(1.00 倍。周ごとの直しだけ)') in '\n速さの天井: ON(全体 4.5・左旋回中 4.1 m/s。前進を弱めるだけ)\n速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))')
+
+tests/test_ui_fix8_r2.py:557: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8,31]" time="0.071" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=\uff18.\uff13\uff11]" time="0.072" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=__ memo=]" time="0.071" /><testcase classname="tests.test_ui_fix8_r2" name="test_app_js_only_vbat_source_text_changed" time="0.028" /></testsuite></testsuites>

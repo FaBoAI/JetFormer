@@ -104,7 +104,11 @@ canvas { width: 100%; display: block; }
 .modal-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; }
 #m-frame { width: 100%; background: #222; border-radius: 6px; display: block; aspect-ratio: 2.02 / 1; object-fit: contain; }
 .player input[type=range] { flex: 1; }
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 18px; border-radius: 8px; z-index: 50; font-size: 13px; max-width: 90%; pointer-events: none; }
+/* トーストの幅(2026-10-28 fix8 反証 8-1 回目 toast-half-width-on-phone): 幅を決めない(auto)と left: 50% のため使える幅が画面の半分になり
+   (max-width 90% は効かない)、スマホ(420 px)では ▶ の断りの出し直し(約 200 字)が幅 210・高さ 313 px の細い列で「停止中」のバッジと
+   走行タブの文に重なった。文の長さの幅(max-content)を画面の 90%(大きな画面は 960 px = 1920 px の画面の前の幅)までにする。短い文・
+   1920 px 以上の画面の見え方は前と同じ(min() の読めない古いブラウザは 90%) */
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 10px 18px; border-radius: 8px; z-index: 50; font-size: 13px; width: max-content; max-width: 90%; max-width: min(90%, 960px); pointer-events: none; }
 body.driving .toast { bottom: 96px; }
 .toast.error { background: var(--danger); }
 .hidden { display: none; }
@@ -138,9 +142,15 @@ details.adv summary { cursor: pointer; color: var(--muted); }
 .key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 3px 0 8px; vertical-align: -1px; }
 .key.raw { background: #93c5fd; } .key.out { background: var(--accent); } .key.ref { background: #9ca3af; }
 #drive-video { max-width: 640px; }
+/* 浮いている ■ の幅と走行中のトーストの位置(2026-10-28 fix8 反証 8-2 回目 float-stop-half-width-under-toast): .toast の 8-1 の直しと
+   同じく、幅を決めないと left: 50% のため使える幅が画面の半分になり、スマホ(幅 360〜430)では ■ が 3〜4 行・高さ 120〜150 px になって、
+   走行開始のトースト(下 96 px)が ■ の上の行「■ AI走行を」を 3〜6 秒隠した。■ を文の長さの幅(画面の 90% まで)にして 1〜2 行
+   (高さ 60・90 px)にし、幅 600 px 以下の画面では走行中のトーストを 2 行の ■ の上 + 20 px(16 + 90 + 20 = 126 px。広い画面の
+   1 行の ■ の上 + 20 px = 96 px と同じ間)に出す。幅 768 px 以上の見え方と止まっているときのトーストは前と同じ */
 .float-stop { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 40; padding: 14px 40px; font-size: 20px;
-  font-weight: 700; background: var(--danger); border-color: var(--danger); color: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+  font-weight: 700; background: var(--danger); border-color: var(--danger); color: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.3); width: max-content; max-width: 90%; }
 body.driving main { padding-bottom: 96px; }
+@media (max-width: 600px) { body.driving .toast { bottom: 126px; } }
 
 /* 走行ごとの収集 */
 .row.tight { margin-top: 4px; }

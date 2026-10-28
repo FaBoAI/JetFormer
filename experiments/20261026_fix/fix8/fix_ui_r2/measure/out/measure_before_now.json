@@ -1,0 +1,11791 @@
+{
+ "files": {
+  "index.html": "ef81bb6017d6",
+  "app.js": "aa275bb5da0b",
+  "style.css": "b1e900656e24"
+ },
+ "css": {
+  "before": "dbc8b79ad935",
+  "now": "b1e900656e24"
+ },
+ "cases": [
+  {
+   "W": 360,
+   "H": 660,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    660,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 0,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": null,
+   "float_rect": null,
+   "float_lines": null,
+   "float_rects_all": [],
+   "chars_out": [],
+   "toasts": [],
+   "both_samples": 0,
+   "toast_rects_with_float": [],
+   "min_gap": null,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": null,
+   "scroll_end": {
+    "scrollY": 4602,
+    "maxY": 4602,
+    "f_top": 0,
+    "last_bottom": 606,
+    "hidden_px": 606,
+    "driving": false,
+    "float_visible": false
+   }
+  },
+  {
+   "W": 360,
+   "H": 660,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    660,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 145,
+   "float_rect": [
+    18,
+    554,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     554,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.12 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      145,
+      3035
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     494.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4961,
+    "maxY": 4961,
+    "f_top": 554,
+    "last_bottom": 550,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 879,
+   "float_rect": [
+    90,
+    534,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     534,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.13 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      879,
+      3799
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     564.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    879,
+    3799
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    77.1,
+    564.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_360x700_before_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4921,
+    "maxY": 4921,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 940,
+   "float_rect": [
+    18,
+    594,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     594,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.14 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      940,
+      3895
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     534.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_360x700_now_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4921,
+    "maxY": 4921,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 93,
+   "float_rect": [
+    90,
+    534,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     534,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      93,
+      6004
+     ]
+    }
+   ],
+   "both_samples": 115,
+   "toast_rects_with_float": [
+    [
+     18,
+     545,
+     324,
+     59
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    93,
+    6004
+   ],
+   "overlap_samples": 115,
+   "overlap_max": [
+    180,
+    59,
+    10620
+   ],
+   "toast_rect_at_overlap": [
+    18,
+    545,
+    324,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_360x700_before_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6570,
+    "maxY": 6570,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 142,
+   "float_rect": [
+    18,
+    594,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     594,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      73,
+      6020
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     18,
+     515,
+     324,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_360x700_now_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6570,
+    "maxY": 6570,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 110,
+   "float_rect": [
+    90,
+    534,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     534,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      110,
+      3046
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     47.1,
+     564.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    110,
+    3046
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    47.1,
+    564.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4921,
+    "maxY": 4921,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 700,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    360,
+    700,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 107,
+   "float_rect": [
+    18,
+    594,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     594,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      56,
+      2994
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     47.1,
+     534.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4921,
+    "maxY": 4921,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 760,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    760,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    90,
+    594,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     594,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.19 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3025
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     624.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    109,
+    3025
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    77.1,
+    624.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4861,
+    "maxY": 4861,
+    "f_top": 594,
+    "last_bottom": 650,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 760,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    760,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    18,
+    654,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     654,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.20 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3037
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     594.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4861,
+    "maxY": 4861,
+    "f_top": 654,
+    "last_bottom": 650,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    800,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    90,
+    634,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     634,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.21 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      51,
+      3025
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     664.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    108,
+    3025
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    77.1,
+    664.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4821,
+    "maxY": 4821,
+    "f_top": 634,
+    "last_bottom": 690,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    800,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 116,
+   "float_rect": [
+    18,
+    694,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     694,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.22 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      63,
+      3023
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     634.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4821,
+    "maxY": 4821,
+    "f_top": 694,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 844,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    844,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 140,
+   "float_rect": [
+    90,
+    678,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     678,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.23 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      140,
+      3019
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     708.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    140,
+    3019
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    77.1,
+    708.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4777,
+    "maxY": 4777,
+    "f_top": 678,
+    "last_bottom": 734,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 844,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    844,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 144,
+   "float_rect": [
+    18,
+    738,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     738,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.24 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      2997
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     678.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4777,
+    "maxY": 4777,
+    "f_top": 738,
+    "last_bottom": 734,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 123,
+   "float_rect": [
+    90,
+    734,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     734,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.25 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      53,
+      3016
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     764.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    123,
+    3016
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    77.1,
+    764.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4721,
+    "maxY": 4721,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 133,
+   "float_rect": [
+    18,
+    794,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     794,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.26 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      64,
+      3034
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     77.1,
+     734.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4721,
+    "maxY": 4721,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 131,
+   "float_rect": [
+    90,
+    734,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     734,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      60,
+      6011
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     18,
+     745,
+     324,
+     59
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    131,
+    6011
+   ],
+   "overlap_samples": 112,
+   "overlap_max": [
+    180,
+    59,
+    10620
+   ],
+   "toast_rect_at_overlap": [
+    18,
+    745,
+    324,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6370,
+    "maxY": 6370,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 127,
+   "float_rect": [
+    18,
+    794,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     794,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      58,
+      6019
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     18,
+     715,
+     324,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6370,
+    "maxY": 6370,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 128,
+   "float_rect": [
+    90,
+    734,
+    180,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行",
+    "を停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     90,
+     734,
+     180,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      70,
+      3048
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     47.1,
+     764.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    128,
+    3048
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    180,
+    39.5,
+    7110
+   ],
+   "toast_rect_at_overlap": [
+    47.1,
+    764.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4721,
+    "maxY": 4721,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 360,
+   "H": 900,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    360,
+    900,
+    360
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    18,
+    794,
+    324,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18,
+     794,
+     324,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      54,
+      3018
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     47.1,
+     734.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4721,
+    "maxY": 4721,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 660,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    660,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 114,
+   "float_rect": [
+    93.8,
+    494,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     494,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.31 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      57,
+      3038
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     524.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    114,
+    3038
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    524.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4820,
+    "maxY": 4820,
+    "f_top": 494,
+    "last_bottom": 550,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 660,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    660,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 52,
+   "float_rect": [
+    18.8,
+    554,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     554,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.32 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      2973
+     ]
+    }
+   ],
+   "both_samples": 58,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     494.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4820,
+    "maxY": 4820,
+    "f_top": 554,
+    "last_bottom": 550,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 149,
+   "float_rect": [
+    93.8,
+    534,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     534,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.33 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      64,
+      3004
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     564.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    149,
+    3004
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    564.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4780,
+    "maxY": 4780,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 92,
+   "float_rect": [
+    18.8,
+    594,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     594,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.34 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      92,
+      3013
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     534.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4780,
+    "maxY": 4780,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 147,
+   "float_rect": [
+    93.8,
+    534,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     534,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      53,
+      6029
+     ]
+    }
+   ],
+   "both_samples": 111,
+   "toast_rects_with_float": [
+    [
+     18.8,
+     545,
+     337.5,
+     59
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    147,
+    6029
+   ],
+   "overlap_samples": 111,
+   "overlap_max": [
+    187.5,
+    59,
+    11063
+   ],
+   "toast_rect_at_overlap": [
+    18.8,
+    545,
+    337.5,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6310,
+    "maxY": 6310,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 114,
+   "float_rect": [
+    18.8,
+    594,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     594,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      53,
+      5998
+     ]
+    }
+   ],
+   "both_samples": 110,
+   "toast_rects_with_float": [
+    [
+     18.8,
+     515,
+     337.5,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6310,
+    "maxY": 6310,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 102,
+   "float_rect": [
+    93.8,
+    534,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     534,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      53,
+      3020
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     54.6,
+     564.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    102,
+    3020
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    54.6,
+    564.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4780,
+    "maxY": 4780,
+    "f_top": 534,
+    "last_bottom": 590,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 700,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    375,
+    700,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 110,
+   "float_rect": [
+    18.8,
+    594,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     594,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      60,
+      3024
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     54.6,
+     534.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4780,
+    "maxY": 4780,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 760,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    760,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 116,
+   "float_rect": [
+    93.8,
+    594,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     594,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.39 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      56,
+      3029
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     624.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    116,
+    3029
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    624.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4720,
+    "maxY": 4720,
+    "f_top": 594,
+    "last_bottom": 650,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 760,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    760,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 118,
+   "float_rect": [
+    18.8,
+    654,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     654,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.40 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      118,
+      3008
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     594.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4720,
+    "maxY": 4720,
+    "f_top": 654,
+    "last_bottom": 650,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    800,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 110,
+   "float_rect": [
+    93.8,
+    634,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     634,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.41 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      2988
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     664.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    110,
+    2988
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    664.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4680,
+    "maxY": 4680,
+    "f_top": 634,
+    "last_bottom": 690,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    800,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 161,
+   "float_rect": [
+    18.8,
+    694,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     694,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.42 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      161,
+      3071
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     634.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4680,
+    "maxY": 4680,
+    "f_top": 694,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 844,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    844,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 119,
+   "float_rect": [
+    93.8,
+    678,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     678,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.43 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      63,
+      3016
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     708.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    119,
+    3016
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    708.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4636,
+    "maxY": 4636,
+    "f_top": 678,
+    "last_bottom": 734,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 844,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    844,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    18.8,
+    738,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     738,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.44 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      60,
+      3046
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     678.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4636,
+    "maxY": 4636,
+    "f_top": 738,
+    "last_bottom": 734,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 152,
+   "float_rect": [
+    93.8,
+    734,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     734,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.45 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      152,
+      3027
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     764.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    152,
+    3027
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    84.6,
+    764.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4580,
+    "maxY": 4580,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    18.8,
+    794,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     794,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.46 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      57,
+      3006
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     84.6,
+     734.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4580,
+    "maxY": 4580,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 121,
+   "float_rect": [
+    93.8,
+    734,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     734,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      56,
+      6044
+     ]
+    }
+   ],
+   "both_samples": 111,
+   "toast_rects_with_float": [
+    [
+     18.8,
+     745,
+     337.5,
+     59
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    121,
+    6044
+   ],
+   "overlap_samples": 111,
+   "overlap_max": [
+    187.5,
+    59,
+    11063
+   ],
+   "toast_rect_at_overlap": [
+    18.8,
+    745,
+    337.5,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6110,
+    "maxY": 6110,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 149,
+   "float_rect": [
+    18.8,
+    794,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     794,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      149,
+      6024
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     18.8,
+     715,
+     337.5,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6110,
+    "maxY": 6110,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 102,
+   "float_rect": [
+    93.8,
+    734,
+    187.5,
+    150
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(ス",
+    "ペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     93.8,
+     734,
+     187.5,
+     150
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      51,
+      3029
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     54.6,
+     764.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -70,
+   "overlap_ms": [
+    102,
+    3029
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    187.5,
+    39.5,
+    7406
+   ],
+   "toast_rect_at_overlap": [
+    54.6,
+    764.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停止(ス"
+   ],
+   "half_hidden_chars": [
+    "停止(ス"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4580,
+    "maxY": 4580,
+    "f_top": 734,
+    "last_bottom": 790,
+    "hidden_px": 56,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 375,
+   "H": 900,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    375,
+    900,
+    375
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    18.8,
+    794,
+    337.5,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     18.8,
+     794,
+     337.5,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      3008
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     54.6,
+     734.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4580,
+    "maxY": 4580,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 660,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    660,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 127,
+   "float_rect": [
+    97.5,
+    524,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     524,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.51 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      63,
+      3045
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     524.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    127,
+    3045
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    524.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_390x660_before_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4639,
+    "maxY": 4639,
+    "f_top": 524,
+    "last_bottom": 550,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 660,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    660,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 106,
+   "float_rect": [
+    19.5,
+    554,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     554,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.52 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3042
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     494.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_390x660_now_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4639,
+    "maxY": 4639,
+    "f_top": 554,
+    "last_bottom": 550,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 85,
+   "float_rect": [
+    97.5,
+    564,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     564,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.53 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      85,
+      3021
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     564.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    85,
+    3021
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    564.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4599,
+    "maxY": 4599,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 127,
+   "float_rect": [
+    19.5,
+    594,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     594,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.54 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      58,
+      3005
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     534.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4599,
+    "maxY": 4599,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 64,
+   "float_rect": [
+    97.5,
+    564,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     564,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      64,
+      6005
+     ]
+    }
+   ],
+   "both_samples": 115,
+   "toast_rects_with_float": [
+    [
+     19.5,
+     545,
+     351,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    64,
+    6005
+   ],
+   "overlap_samples": 115,
+   "overlap_max": [
+    195,
+    40,
+    7800
+   ],
+   "toast_rect_at_overlap": [
+    19.5,
+    545,
+    351,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6093,
+    "maxY": 6093,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 127,
+   "float_rect": [
+    19.5,
+    594,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     594,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      53,
+      6029
+     ]
+    }
+   ],
+   "both_samples": 114,
+   "toast_rects_with_float": [
+    [
+     19.5,
+     515,
+     351,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 6093,
+    "maxY": 6093,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 52,
+   "float_rect": [
+    97.5,
+    564,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     564,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3012
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     62.1,
+     564.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    52,
+    3012
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    62.1,
+    564.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4599,
+    "maxY": 4599,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    390,
+    700,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 118,
+   "float_rect": [
+    19.5,
+    594,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     594,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      58,
+      3009
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     62.1,
+     534.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4599,
+    "maxY": 4599,
+    "f_top": 594,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 760,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    760,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 52,
+   "float_rect": [
+    97.5,
+    624,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     624,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.59 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      2986
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     624.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    52,
+    2986
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    624.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4539,
+    "maxY": 4539,
+    "f_top": 624,
+    "last_bottom": 650,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 760,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    760,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 56,
+   "float_rect": [
+    19.5,
+    654,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     654,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.60 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      56,
+      3014
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     594.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4539,
+    "maxY": 4539,
+    "f_top": 654,
+    "last_bottom": 650,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    800,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 145,
+   "float_rect": [
+    97.5,
+    664,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     664,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.61 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      145,
+      3065
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     664.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    145,
+    3065
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    664.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4499,
+    "maxY": 4499,
+    "f_top": 664,
+    "last_bottom": 690,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    800,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 116,
+   "float_rect": [
+    19.5,
+    694,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     694,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.62 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      116,
+      3027
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     634.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4499,
+    "maxY": 4499,
+    "f_top": 694,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 844,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    844,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    97.5,
+    708,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     708,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.63 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      2997
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     708.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    109,
+    2997
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    708.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4455,
+    "maxY": 4455,
+    "f_top": 708,
+    "last_bottom": 734,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 844,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    844,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 111,
+   "float_rect": [
+    19.5,
+    738,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     738,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.64 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      55,
+      2989
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     678.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4455,
+    "maxY": 4455,
+    "f_top": 738,
+    "last_bottom": 734,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 78,
+   "float_rect": [
+    97.5,
+    764,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     764,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.65 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      78,
+      3039
+     ]
+    }
+   ],
+   "both_samples": 59,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     764.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    78,
+    3039
+   ],
+   "overlap_samples": 59,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    92.1,
+    764.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4399,
+    "maxY": 4399,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 98,
+   "float_rect": [
+    19.5,
+    794,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     794,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.66 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      98,
+      2987
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     92.1,
+     734.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4399,
+    "maxY": 4399,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 165,
+   "float_rect": [
+    97.5,
+    764,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     764,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      165,
+      6017
+     ]
+    }
+   ],
+   "both_samples": 111,
+   "toast_rects_with_float": [
+    [
+     19.5,
+     745,
+     351,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    165,
+    6017
+   ],
+   "overlap_samples": 111,
+   "overlap_max": [
+    195,
+    40,
+    7800
+   ],
+   "toast_rect_at_overlap": [
+    19.5,
+    745,
+    351,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5893,
+    "maxY": 5893,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 76,
+   "float_rect": [
+    19.5,
+    794,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     794,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      76,
+      6019
+     ]
+    }
+   ],
+   "both_samples": 111,
+   "toast_rects_with_float": [
+    [
+     19.5,
+     715,
+     351,
+     59
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5893,
+    "maxY": 5893,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    97.5,
+    764,
+    195,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を",
+    "停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     97.5,
+     764,
+     195,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      57,
+      3018
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     62.1,
+     764.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    108,
+    3018
+   ],
+   "overlap_samples": 54,
+   "overlap_max": [
+    195,
+    39.5,
+    7703
+   ],
+   "toast_rect_at_overlap": [
+    62.1,
+    764.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4399,
+    "maxY": 4399,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 390,
+   "H": 900,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    390,
+    900,
+    390
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 65,
+   "float_rect": [
+    19.5,
+    794,
+    351,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     19.5,
+     794,
+     351,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      65,
+      3009
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     62.1,
+     734.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4399,
+    "maxY": 4399,
+    "f_top": 794,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 660,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    660,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 141,
+   "float_rect": [
+    103,
+    524,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     524,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.71 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      141,
+      3034
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     524.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    141,
+    3034
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    524.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4467,
+    "maxY": 4467,
+    "f_top": 524,
+    "last_bottom": 550,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 660,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    660,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 54,
+   "float_rect": [
+    25.4,
+    584,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     584,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.72 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      54,
+      2978
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     494.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4467,
+    "maxY": 4467,
+    "f_top": 584,
+    "last_bottom": 550,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 103,
+   "float_rect": [
+    103,
+    564,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     564,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.73 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3022
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     564.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    103,
+    3022
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    564.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4427,
+    "maxY": 4427,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 113,
+   "float_rect": [
+    25.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.74 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      60,
+      3035
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     534.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4427,
+    "maxY": 4427,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 78,
+   "float_rect": [
+    103,
+    564,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     564,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      78,
+      6002
+     ]
+    }
+   ],
+   "both_samples": 113,
+   "toast_rects_with_float": [
+    [
+     20.6,
+     545,
+     370.8,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    78,
+    6002
+   ],
+   "overlap_samples": 113,
+   "overlap_max": [
+    206,
+    40,
+    8240
+   ],
+   "toast_rect_at_overlap": [
+    20.6,
+    545,
+    370.8,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5871,
+    "maxY": 5871,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 111,
+   "float_rect": [
+    25.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      61,
+      6012
+     ]
+    }
+   ],
+   "both_samples": 114,
+   "toast_rects_with_float": [
+    [
+     20.6,
+     515,
+     370.8,
+     59
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5871,
+    "maxY": 5871,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 110,
+   "float_rect": [
+    103,
+    564,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     564,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      3045
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     73.1,
+     564.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    110,
+    3045
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    206,
+    39.5,
+    8137
+   ],
+   "toast_rect_at_overlap": [
+    73.1,
+    564.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4427,
+    "maxY": 4427,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 700,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    412,
+    700,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 127,
+   "float_rect": [
+    25.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      62,
+      3031
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     73.1,
+     534.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4427,
+    "maxY": 4427,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 760,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    760,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    103,
+    624,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     624,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.79 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      55,
+      2991
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     624.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    109,
+    2991
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    624.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4367,
+    "maxY": 4367,
+    "f_top": 624,
+    "last_bottom": 650,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 760,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    760,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 102,
+   "float_rect": [
+    25.4,
+    684,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     684,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.80 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      51,
+      3003
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     594.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4367,
+    "maxY": 4367,
+    "f_top": 684,
+    "last_bottom": 650,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    800,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 128,
+   "float_rect": [
+    103,
+    664,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     664,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.81 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      56,
+      3017
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     664.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    128,
+    3017
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    664.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4327,
+    "maxY": 4327,
+    "f_top": 664,
+    "last_bottom": 690,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    800,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    25.4,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.82 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3017
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     634.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4327,
+    "maxY": 4327,
+    "f_top": 724,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 844,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    844,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    103,
+    708,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     708,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.83 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      55,
+      3016
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     708.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    109,
+    3016
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    708.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4283,
+    "maxY": 4283,
+    "f_top": 708,
+    "last_bottom": 734,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 844,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    844,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 113,
+   "float_rect": [
+    25.4,
+    768,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     768,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.84 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      55,
+      3015
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     678.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4283,
+    "maxY": 4283,
+    "f_top": 768,
+    "last_bottom": 734,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    103,
+    764,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     764,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.85 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      58,
+      3006
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     764.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    109,
+    3006
+   ],
+   "overlap_samples": 54,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    103.1,
+    764.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4227,
+    "maxY": 4227,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 113,
+   "float_rect": [
+    25.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.86 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3023
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     103.1,
+     734.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4227,
+    "maxY": 4227,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 121,
+   "float_rect": [
+    103,
+    764,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     764,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      67,
+      5997
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     20.6,
+     745,
+     370.8,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    121,
+    5997
+   ],
+   "overlap_samples": 112,
+   "overlap_max": [
+    206,
+    40,
+    8240
+   ],
+   "toast_rect_at_overlap": [
+    20.6,
+    745,
+    370.8,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5671,
+    "maxY": 5671,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 112,
+   "float_rect": [
+    25.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      57,
+      5996
+     ]
+    }
+   ],
+   "both_samples": 115,
+   "toast_rects_with_float": [
+    [
+     20.6,
+     715,
+     370.8,
+     59
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5671,
+    "maxY": 5671,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 160,
+   "float_rect": [
+    103,
+    764,
+    206,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     103,
+     764,
+     206,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      109,
+      3070
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     73.1,
+     764.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    160,
+    3070
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    206,
+    39.5,
+    8137
+   ],
+   "toast_rect_at_overlap": [
+    73.1,
+    764.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4227,
+    "maxY": 4227,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 412,
+   "H": 900,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    412,
+    900,
+    412
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 115,
+   "float_rect": [
+    25.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     25.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      64,
+      3031
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     73.1,
+     734.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4227,
+    "maxY": 4227,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 660,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    660,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    107.5,
+    524,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     524,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.91 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3032
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     112.1,
+     524.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    108,
+    3032
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    112.1,
+    524.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4421,
+    "maxY": 4421,
+    "f_top": 524,
+    "last_bottom": 550,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 660,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    660,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 119,
+   "float_rect": [
+    34.4,
+    584,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     584,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.92 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      2997
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     112.1,
+     494.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4421,
+    "maxY": 4421,
+    "f_top": 584,
+    "last_bottom": 550,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 162,
+   "float_rect": [
+    107.5,
+    564,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     564,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.93 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      162,
+      3028
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     112.1,
+     564.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    162,
+    3028
+   ],
+   "overlap_samples": 54,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    112.1,
+    564.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4381,
+    "maxY": 4381,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 112,
+   "float_rect": [
+    34.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.94 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      54,
+      3029
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     112.1,
+     534.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4381,
+    "maxY": 4381,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 119,
+   "float_rect": [
+    107.5,
+    564,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     564,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      53,
+      6023
+     ]
+    }
+   ],
+   "both_samples": 116,
+   "toast_rects_with_float": [
+    [
+     21.5,
+     545,
+     387,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    119,
+    6023
+   ],
+   "overlap_samples": 116,
+   "overlap_max": [
+    215,
+    40,
+    8600
+   ],
+   "toast_rect_at_overlap": [
+    21.5,
+    545,
+    387,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5754,
+    "maxY": 5754,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 134,
+   "float_rect": [
+    34.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      134,
+      6032
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     21.5,
+     515,
+     387,
+     59
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5754,
+    "maxY": 5754,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 132,
+   "float_rect": [
+    107.5,
+    564,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     564,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      3001
+     ]
+    }
+   ],
+   "both_samples": 54,
+   "toast_rects_with_float": [
+    [
+     82.1,
+     564.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    132,
+    3001
+   ],
+   "overlap_samples": 54,
+   "overlap_max": [
+    215,
+    39.5,
+    8493
+   ],
+   "toast_rect_at_overlap": [
+    82.1,
+    564.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4381,
+    "maxY": 4381,
+    "f_top": 564,
+    "last_bottom": 590,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 700,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    430,
+    700,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 111,
+   "float_rect": [
+    34.4,
+    624,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     624,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      53,
+      3017
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     82.1,
+     534.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4381,
+    "maxY": 4381,
+    "f_top": 624,
+    "last_bottom": 590,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 760,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    760,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 124,
+   "float_rect": [
+    107.5,
+    624,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     624,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.99 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      55,
+      3017
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     112.1,
+     624.5,
+     205.7,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    124,
+    3017
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    205.7,
+    39.5,
+    8126
+   ],
+   "toast_rect_at_overlap": [
+    112.1,
+    624.5,
+    205.7,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4321,
+    "maxY": 4321,
+    "f_top": 624,
+    "last_bottom": 650,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 760,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    760,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    34.4,
+    684,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     684,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.100 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      53,
+      3031
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     594.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4321,
+    "maxY": 4321,
+    "f_top": 684,
+    "last_bottom": 650,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    800,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 67,
+   "float_rect": [
+    107.5,
+    664,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     664,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.101 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      67,
+      3022
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     664.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    67,
+    3022
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    212.9,
+    39.5,
+    8412
+   ],
+   "toast_rect_at_overlap": [
+    108.5,
+    664.5,
+    212.9,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4281,
+    "maxY": 4281,
+    "f_top": 664,
+    "last_bottom": 690,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    800,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 118,
+   "float_rect": [
+    34.4,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.102 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      2991
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     634.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4281,
+    "maxY": 4281,
+    "f_top": 724,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 844,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    844,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 72,
+   "float_rect": [
+    107.5,
+    708,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     708,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.103 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      72,
+      2984
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     708.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    72,
+    2984
+   ],
+   "overlap_samples": 56,
+   "overlap_max": [
+    212.9,
+    39.5,
+    8412
+   ],
+   "toast_rect_at_overlap": [
+    108.5,
+    708.5,
+    212.9,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4237,
+    "maxY": 4237,
+    "f_top": 708,
+    "last_bottom": 734,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 844,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    844,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 70,
+   "float_rect": [
+    34.4,
+    768,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     768,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.104 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      70,
+      3014
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     678.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4237,
+    "maxY": 4237,
+    "f_top": 768,
+    "last_bottom": 734,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 112,
+   "float_rect": [
+    107.5,
+    764,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     764,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.105 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      59,
+      3041
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     764.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    112,
+    3041
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    212.9,
+    39.5,
+    8412
+   ],
+   "toast_rect_at_overlap": [
+    108.5,
+    764.5,
+    212.9,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_430x900_before_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4181,
+    "maxY": 4181,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    34.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.106 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3010
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     108.5,
+     734.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_430x900_now_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4181,
+    "maxY": 4181,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 123,
+   "float_rect": [
+    107.5,
+    764,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     764,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      56,
+      6024
+     ]
+    }
+   ],
+   "both_samples": 113,
+   "toast_rects_with_float": [
+    [
+     21.5,
+     745,
+     387,
+     59
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    123,
+    6024
+   ],
+   "overlap_samples": 113,
+   "overlap_max": [
+    215,
+    40,
+    8600
+   ],
+   "toast_rect_at_overlap": [
+    21.5,
+    745,
+    387,
+    59
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_430x900_before_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5554,
+    "maxY": 5554,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 131,
+   "float_rect": [
+    34.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      53,
+      6011
+     ]
+    }
+   ],
+   "both_samples": 110,
+   "toast_rects_with_float": [
+    [
+     21.5,
+     715,
+     387,
+     59
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_430x900_now_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 5554,
+    "maxY": 5554,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 109,
+   "float_rect": [
+    107.5,
+    764,
+    215,
+    120
+   ],
+   "float_lines": [
+    "■ AI走行を停",
+    "止(スペース",
+    "キー)"
+   ],
+   "float_rects_all": [
+    [
+     107.5,
+     764,
+     215,
+     120
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3013
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     82.1,
+     764.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": -40,
+   "overlap_ms": [
+    109,
+    3013
+   ],
+   "overlap_samples": 57,
+   "overlap_max": [
+    215,
+    39.5,
+    8493
+   ],
+   "toast_rect_at_overlap": [
+    82.1,
+    764.5,
+    265.8,
+    39.5
+   ],
+   "hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "half_hidden_chars": [
+    "■ AI走行を停"
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4181,
+    "maxY": 4181,
+    "f_top": 764,
+    "last_bottom": 790,
+    "hidden_px": 26,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    430,
+    900,
+    430
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 119,
+   "float_rect": [
+    34.4,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     34.4,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      61,
+      3012
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     82.1,
+     734.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 4181,
+    "maxY": 4181,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    600,
+    800,
+    600
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 113,
+   "float_rect": [
+    150,
+    694,
+    300,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     150,
+     694,
+     300,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.111 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3012
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     193.5,
+     664.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": -10,
+   "overlap_ms": [
+    113,
+    3012
+   ],
+   "overlap_samples": 55,
+   "overlap_max": [
+    212.9,
+    10,
+    2129
+   ],
+   "toast_rect_at_overlap": [
+    193.5,
+    664.5,
+    212.9,
+    39.5
+   ],
+   "hidden_chars": [
+    ""
+   ],
+   "half_hidden_chars": [
+    ""
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3592,
+    "maxY": 3592,
+    "f_top": 694,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    600,
+    800,
+    600
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 108,
+   "float_rect": [
+    119.4,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     119.4,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.112 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      57,
+      3032
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     193.5,
+     634.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3592,
+    "maxY": 3592,
+    "f_top": 724,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    600,
+    800,
+    600
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 81,
+   "float_rect": [
+    150,
+    694,
+    300,
+    90
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペー",
+    "スキー)"
+   ],
+   "float_rects_all": [
+    [
+     150,
+     694,
+     300,
+     90
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      81,
+      5986
+     ]
+    }
+   ],
+   "both_samples": 112,
+   "toast_rects_with_float": [
+    [
+     30,
+     645,
+     540,
+     59
+    ]
+   ],
+   "min_gap": -10,
+   "overlap_ms": [
+    81,
+    5986
+   ],
+   "overlap_samples": 112,
+   "overlap_max": [
+    300,
+    10,
+    3000
+   ],
+   "toast_rect_at_overlap": [
+    30,
+    645,
+    540,
+    59
+   ],
+   "hidden_chars": [
+    ""
+   ],
+   "half_hidden_chars": [
+    ""
+   ],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4756,
+    "maxY": 4756,
+    "f_top": 694,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    600,
+    800,
+    600
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 157,
+   "float_rect": [
+    119.4,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     119.4,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      157,
+      6025
+     ]
+    }
+   ],
+   "both_samples": 114,
+   "toast_rects_with_float": [
+    [
+     30,
+     615,
+     540,
+     59
+    ]
+   ],
+   "min_gap": 50,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4756,
+    "maxY": 4756,
+    "f_top": 724,
+    "last_bottom": 690,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    768,
+    900,
+    768
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 117,
+   "float_rect": [
+    203.5,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     203.5,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.115 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      62,
+      3042
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     277.5,
+     764.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_768x900_before_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3197,
+    "maxY": 3197,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    768,
+    900,
+    768
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 133,
+   "float_rect": [
+    203.5,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     203.5,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.116 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      133,
+      3044
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     277.5,
+     764.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_normal_768x900_now_t1s.png"
+   ],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3197,
+    "maxY": 3197,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    768,
+    900,
+    768
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 129,
+   "float_rect": [
+    203.5,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     203.5,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      59,
+      6043
+     ]
+    }
+   ],
+   "both_samples": 110,
+   "toast_rects_with_float": [
+    [
+     94.3,
+     764.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_768x900_before_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4207,
+    "maxY": 4207,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    768,
+    900,
+    768
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 114,
+   "float_rect": [
+    203.5,
+    824,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     203.5,
+     824,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      114,
+      6027
+     ]
+    }
+   ],
+   "both_samples": 117,
+   "toast_rects_with_float": [
+    [
+     94.3,
+     764.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [
+    "/home/jetson/jetformer/experiments/20261026_fix/fix8/fix_ui_r2/measure/out/shot_b1103_768x900_now_t1s.png"
+   ],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4207,
+    "maxY": 4207,
+    "f_top": 824,
+    "last_bottom": 790,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 61,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.119 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      61,
+      3008
+     ]
+    }
+   ],
+   "both_samples": 57,
+   "toast_rects_with_float": [
+    [
+     315.5,
+     254.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3554,
+    "maxY": 3554,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 112,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.120 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      54,
+      3016
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     315.5,
+     254.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3554,
+    "maxY": 3554,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 65,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      65,
+      5999
+     ]
+    }
+   ],
+   "both_samples": 115,
+   "toast_rects_with_float": [
+    [
+     132.3,
+     254.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4492,
+    "maxY": 4492,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 102,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      52,
+      6029
+     ]
+    }
+   ],
+   "both_samples": 115,
+   "toast_rects_with_float": [
+    [
+     132.3,
+     254.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4492,
+    "maxY": 4492,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "dry",
+   "css": "before",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 124,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      124,
+      3019
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     289.1,
+     254.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3554,
+    "maxY": 3554,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 844,
+   "H": 390,
+   "case": "dry",
+   "css": "now",
+   "inner": [
+    844,
+    390,
+    844
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 0,
+   "errs": [],
+   "float_shown_at_ms": 102,
+   "float_rect": [
+    241.5,
+    314,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     241.5,
+     314,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "推論の確認を開始しました(出力は中立)",
+     "cls": "toast",
+     "seen_ms": [
+      52,
+      3022
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     289.1,
+     254.5,
+     265.8,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3554,
+    "maxY": 3554,
+    "f_top": 314,
+    "last_bottom": 280,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "case": "normal",
+   "css": "before",
+   "inner": [
+    1280,
+    800,
+    1280
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 104,
+   "float_rect": [
+    459.5,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     459.5,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.125 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      51,
+      3035
+     ]
+    }
+   ],
+   "both_samples": 56,
+   "toast_rects_with_float": [
+    [
+     533.5,
+     664.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3011,
+    "maxY": 3011,
+    "f_top": 724,
+    "last_bottom": -1855.4,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "case": "normal",
+   "css": "now",
+   "inner": [
+    1280,
+    800,
+    1280
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 107,
+   "float_rect": [
+    459.5,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     459.5,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "AI走行 No.126 を開始しました",
+     "cls": "toast",
+     "seen_ms": [
+      54,
+      2995
+     ]
+    }
+   ],
+   "both_samples": 55,
+   "toast_rects_with_float": [
+    [
+     533.5,
+     664.5,
+     212.9,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": null,
+   "server_plan_diffs": [],
+   "scroll_end": {
+    "scrollY": 3011,
+    "maxY": 3011,
+    "f_top": 724,
+    "last_bottom": -1855.4,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "case": "b1103",
+   "css": "before",
+   "inner": [
+    1280,
+    800,
+    1280
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 98,
+   "float_rect": [
+    459.5,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     459.5,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      98,
+      5981
+     ]
+    }
+   ],
+   "both_samples": 113,
+   "toast_rects_with_float": [
+    [
+     350.3,
+     664.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4456,
+    "maxY": 4456,
+    "f_top": 724,
+    "last_bottom": -3299.7,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "case": "b1103",
+   "css": "now",
+   "inner": [
+    1280,
+    800,
+    1280
+   ],
+   "idle_float_hidden": true,
+   "start_posts": 1,
+   "confirms": 1,
+   "errs": [],
+   "float_shown_at_ms": 133,
+   "float_rect": [
+    459.5,
+    724,
+    361.1,
+    60
+   ],
+   "float_lines": [
+    "■ AI走行を停止(スペースキー)"
+   ],
+   "float_rects_all": [
+    [
+     459.5,
+     724,
+     361.1,
+     60
+    ]
+   ],
+   "chars_out": [
+    ""
+   ],
+   "toasts": [
+    {
+     "text": "ブロックの計画と違うので「試し」(cand=EXP)として記録します: throttle_gain 0.9(基準 1.0",
+     "cls": "toast error",
+     "seen_ms": [
+      56,
+      6019
+     ]
+    }
+   ],
+   "both_samples": 113,
+   "toast_rects_with_float": [
+    [
+     350.3,
+     664.5,
+     579.3,
+     39.5
+    ]
+   ],
+   "min_gap": 20,
+   "overlap_ms": null,
+   "overlap_samples": 0,
+   "overlap_max": null,
+   "toast_rect_at_overlap": null,
+   "hidden_chars": [],
+   "half_hidden_chars": [],
+   "toast_out_top": false,
+   "z": [
+    "50",
+    "40"
+   ],
+   "toast_pe": "none",
+   "shots": [],
+   "picked": [
+    "bench=real_bench_20261023 day=2026-11-03 block=1 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-1・P1確認・天井OFF・4〜6周 throttle_gain=0.9 official=1 memo=",
+    "0.9",
+    "clean_driving_20261011-nocmd-s3-20261011-024626"
+   ],
+   "server_plan_diffs": [
+    "throttle_gain 0.9(基準 1.0)"
+   ],
+   "scroll_end": {
+    "scrollY": 4456,
+    "maxY": 4456,
+    "f_top": 724,
+    "last_bottom": -3299.7,
+    "hidden_px": 0,
+    "driving": true,
+    "float_visible": true
+   }
+  }
+ ],
+ "idle": [
+  {
+   "W": 360,
+   "H": 660,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      18,
+      444.5,
+      324,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      123,
+      600.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      77.1,
+      600.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      47.1,
+      600.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      18,
+      542,
+      324,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 360,
+   "H": 660,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      18,
+      444.5,
+      324,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      123,
+      600.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      77.1,
+      600.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      47.1,
+      600.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      18,
+      542,
+      324,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 482.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 360,
+   "H": 760,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      18,
+      544.5,
+      324,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      123,
+      700.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      77.1,
+      700.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      47.1,
+      700.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      18,
+      642,
+      324,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 360,
+   "H": 760,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      18,
+      544.5,
+      324,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      123,
+      700.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      77.1,
+      700.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      47.1,
+      700.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      18,
+      642,
+      324,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 532.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      19.5,
+      484.5,
+      351,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      138,
+      640.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      92.1,
+      640.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      62.1,
+      640.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      19.5,
+      601.5,
+      351,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 390,
+   "H": 700,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      19.5,
+      484.5,
+      351,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      138,
+      640.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      92.1,
+      640.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      62.1,
+      640.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      19.5,
+      601.5,
+      351,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 502.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 390,
+   "H": 844,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      19.5,
+      628.5,
+      351,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      138,
+      784.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      92.1,
+      784.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      62.1,
+      784.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      19.5,
+      745.5,
+      351,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 390,
+   "H": 844,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      19.5,
+      628.5,
+      351,
+      195.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      138,
+      784.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      92.1,
+      784.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      62.1,
+      784.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      19.5,
+      745.5,
+      351,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 574.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 412,
+   "H": 800,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      20.6,
+      604,
+      370.8,
+      176
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      149,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      103.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      73.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      20.6,
+      701.5,
+      370.8,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 412,
+   "H": 800,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      20.6,
+      604,
+      370.8,
+      176
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      149,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      103.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      73.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      20.6,
+      701.5,
+      370.8,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      21.5,
+      704,
+      387,
+      176
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      158,
+      840.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      112.1,
+      840.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      82.1,
+      840.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      21.5,
+      801.5,
+      387,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 430,
+   "H": 900,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      21.5,
+      704,
+      387,
+      176
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      158,
+      840.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      112.1,
+      840.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      82.1,
+      840.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      21.5,
+      801.5,
+      387,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      30,
+      662.5,
+      540,
+      117.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      243,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      197.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      167.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      30,
+      721,
+      540,
+      59
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 600,
+   "H": 800,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      30,
+      662.5,
+      540,
+      117.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      243,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      197.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      167.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      30,
+      721,
+      540,
+      59
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 552.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      38.4,
+      782,
+      691.2,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      327,
+      840.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      281.1,
+      840.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      251.1,
+      840.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      38.4,
+      821,
+      691.2,
+      59
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 768,
+   "H": 900,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      38.4,
+      782,
+      691.2,
+      98
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      327,
+      840.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      281.1,
+      840.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      251.1,
+      840.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      38.4,
+      821,
+      691.2,
+      59
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": 602.3,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "css": "before",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      160,
+      701.5,
+      960,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      583,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      537.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      507.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      188.9,
+      740.5,
+      902.2,
+      39.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    }
+   }
+  },
+  {
+   "W": 1280,
+   "H": 800,
+   "css": "now",
+   "toasts": {
+    "refusal": {
+     "toast": [
+      160,
+      701.5,
+      960,
+      78.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "stopped": {
+     "toast": [
+      583,
+      740.5,
+      114,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "start": {
+     "toast": [
+      537.1,
+      740.5,
+      205.7,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "dry": {
+     "toast": [
+      507.1,
+      740.5,
+      265.8,
+      39.5
+     ],
+     "cls": "toast",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    },
+    "trial3": {
+     "toast": [
+      188.9,
+      740.5,
+      902.2,
+      39.5
+     ],
+     "cls": "toast error",
+     "driving": false,
+     "phase_top": -2820.5,
+     "float_hidden": true
+    }
+   }
+  }
+ ],
+ "ua": "Mozilla/5.0 (X11; Linux x86_64; rv:158.0) Gecko/20100101 Firefox/158.0"
+}

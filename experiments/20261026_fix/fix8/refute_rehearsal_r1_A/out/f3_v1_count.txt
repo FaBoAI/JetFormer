@@ -1,0 +1,21 @@
+本物の sha256(前): 353ec3063be41889
+1 枠: V1 = v3_20261026-v3d-aug2-e60-s1(名前を手で渡した)
+走れるか: はい(drive.model_info: 走れる(ジャンル 5・TransFuser軽量型(JetFormer v0・今の標準)))
+足すブロック(2026-11-03):
+書きました: /home/jetson/jetformer/experiments/20261026_fix/fix8/refute_rehearsal_r1_A/tmp_f3/bench_candidates.json(sha256 50df790601656e0634a0bc493760eaa4236eb2ed0263e70603d1c4ae17d986e7)。控え /home/jetson/jetformer/experiments/20261026_fix/fix8/refute_rehearsal_r1_A/tmp_f3/bench_candidates.json.bak-20261028-e5(sha256 353ec3063be418892c5d5b07ba05a14b238ca5dbe47604c2e7c0cfdc19ec5961)
+--- 写しの 2026-11-03 の blocks の数
+27
+--- 本物の app.js の renderBenchPick に写しの日を渡した選ぶ欄
+選ぶ欄のベンチマークの行: 27
+  ベンチマーク23: B  ・ 4-4・本番の形・止まって3周・予備
+  ベンチマーク24: V3  ・ 5-1・v3の1枠(V1)・表のゲイン−0.05・4〜6周(安全の確かめ)
+  ベンチマーク25: V3  ・ 5-2・v3の1枠(V1)・表どおり・4〜6周
+  ベンチマーク26: B  ・ 5-3・B・表どおり・4〜6周(A/B/AのB)
+  ベンチマーク27: V3  ・ 5-4・v3の1枠(V1)・表どおり・4〜6周(A/B/Aの2本目のA)
+本物の sha256(後): 353ec3063be41889
+--- 手順書・todo の「1〜23」
+/home/jetson/jetformer_reports/fix_20261026/runbook_20261103.md:4:- 並びは `fix_plan.md` 5 章。画面の「ベンチマーク」に **2026-11-03 の 1〜23** が入っている(`data/bench_candidates.json`。控え 
+/home/jetson/jetformer_reports/fix_20261026/runbook_20261103.md:92:- [ ] **Jetson の日付と時刻**(10/27 r3-r3-state-1): 端末で `date` が **2026-11-03** で、時刻がスマホと 1〜2 分以内か。管理画�
+/home/jetson/jetformer_reports/fix_20261026/todo_user_1026.md:56:- **朝に Jetson の日付を見る**(端末で `date` が 2026-11-03・ベンチマークのカードの 11/03 の段に「今日」の印・選ぶ欄に
+--- README 6.2 の 10
+| 10 | E5(11/1 朝): `e5_open_seal.py` の plan → open → predict(GPU)→ judge → `add_v1_block.py --dry-run`。1 枠があれば了承のあと `--write` と、23 本の前提の確かめ 2 つ(`fix/test_fix_launch_procedure.py::test_bench_day_1103_procedure_text`・`plan/check_bench_day.py`)を直す。24〜27 を走る時間を手順書に | main session(・ユーザー) | 11/1〜11/2 |

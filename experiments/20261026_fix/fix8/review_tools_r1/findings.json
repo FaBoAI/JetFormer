@@ -1,0 +1,32 @@
+{
+ "summary": "反証 8-1 回目・係 tools(読むだけ。コード・文書は変えていない)。fix7 と 8 回目の決め(① kind 'recovery' の走り直しの印、② 試し・途中で変えた本の ON の空転・最初の周の欠け、③ 印の文・options_line、④ PYTEST_GB)を入れた collect.py・standing_3lap.py・quick_eval_by_params.py・runs_1103.py・disk_check.py(car_check.py は変わっていない)を、作り物の記録と本物の 10/10・10/23・10/24 で突いた。指摘 3 件(major 1・minor 2): (1) 計画と違う形で試しにした本の ON の衝突・空転・欠けが回 3 の判定に入らず「使ってよい」、(2) 発進の窓のカメラの止まりで OFF の起点までが伸びると「使ってよい」の側に動く(途中で OFF にした日の hold_long も)、(3) リカバリーが人側の 1 フレーム前に終わると印なしで「使ってよい」。決めどおりだったもの: 本物 3 日の ⑤(--day・--ignore-gain・--first-only)・③・④・② を直す前の写しと比べ、判定に効く値(組・by_launch・compare・not_reached・外した本、③ の数える発進と 3 周、④ の止まってから 3 周)は ④ の 10/23 の 1 組の「動く → A1」2.89 → — のほかは同じ、印は 10/23 1・10/24 2 の発進だけ(fix8/decided_tools.md 6 章と同じ。out/real_cmp.txt)。1 本に 2 回の走り直し(R1 の後・前で当たる)・走り直しの直後の中止・0.5 m 未満の続き(out/probe_t4_two_resumes.txt)、assist の段の変わり目(2→3 は中止、2→0・2→1 は印なし)・中立止め 0.4/0.5/0.6 秒・後ろへ動いたままの中立止め・0.45/0.55 m(out/probe_t5_unit.txt)は決めどおり。台本は /home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r1。",
+ "findings": [
+  {
+   "id": "w1-tools-r8-1-trial-form",
+   "severity": "major",
+   "file": "/home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py",
+   "line": 1105,
+   "title": "「計画と違う形」で試しにした本の ON の最初の周の衝突・空転・欠けが、回 3 の判定(ON − OFF の行)に入らない(試しが別の組になり、その組には比べが無い)",
+   "scenario": "入力: 回 3 の作り物(tests/test_fix8_tools_decided.mtday と同じ OFF 4 本・ON 3 本 launch_us 200 = ON − OFF −0.165 秒)の 3-8 を試し(memo に「試し」)の ON の発進にし、最初の周に 空転(比 1.85)/ 6G の衝突 / IMU の欠け を入れる。⑤ は手順書どおり --ignore-gain。3-8 が計画どおりの形なら、どれも「満たさない」(checks の slip / first_lap_collisions_0 / on_all_readable)= 決めどおり。まちがった出力: 3-8 だけ天井 ON(計画は OFF)、または回 3 が天井 ON・左 4.1 で 3-8 だけ左 4.2 にすると、summarize が試しを base(r) の鍵(1105 行。天井・左を含む)で別の組に入れ、その組には ON/OFF の比べが無いので、回 3 の組の行は「ON − OFF: 起点まで -0.165 秒 … → 使ってよい」(9 形のうち形を変えた 6 形とも)。別の組の行には「→ 試しの本の ON の発進が空転した 1 本 … → 空転の条件は満たさない(checks の slip…)」「うち ON の発進の最初の周の衝突 1(比べの「最初の周の衝突 0」には数える)」と出るが、どの組の checks も変わらない(同じ出力に「満たさない」の文と「使ってよい」が並ぶ)。衝突の分(trial_on_collisions。fix3 r3 から)も fix8 ② の空転・欠けも同じ穴。手順書 7 章「起こし直した」の行と8.1 ⑤ は、左などを入れ直し忘れて形が分かれたら「入れ直す前に走った本の memo に「試し」」「計画と違う形の本を「試し」か --skip で外すと 1 つの形に戻る」と書いており、その手順どおりにするとこの形になる。手順書 7 章「走った値が計画と違った」の行・approvals 8 の表の「試しの ON の最初の周の衝突・空転・欠けは数える(どれかがあれば回 3 は満たさない)」と食い違う。台本 /home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r1/probe_t1_trial_form.py → out/probe_t1_trial_form.txt(標準出力の全部 out/probe_t1_stdout_spin_ceil.txt・out/probe_t1_stdout_hit_left42.txt)",
+   "fix": "summarize で、試し・途中で変えた本の ON の衝突・空転・欠け(trial_on_collisions・trial_slip・trial_slip_unmeasured・first_lap_gap_on。midrun も同じ)を、自分の鍵の組だけでなく、同じ回・同じモデル(k[:2]。読めない記録 unreadable を「ゲインのほかが同じ組の全部」に入れるのと同じ考え)で比べのある組の全部の checks に数える。少なくとも、試しの組と比べの組が別になったら比べの組に「注意: 形の違う試しの ON の発進に衝突・空転・欠け …」を出して満たさないにする。試験: 3-8 の形(天井・左・自動合わせ・目標)× 空転・衝突・欠け、と計画どおりの形は前と同じ。手順書 8.1 ⑤ の「試しの N 本」の説明も合わせる"
+  },
+  {
+   "id": "w1-tools-r8-1-stall-inflates-off",
+   "severity": "minor",
+   "file": "/home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py",
+   "line": 907,
+   "title": "発進 → R1 の間の長いカメラの止まり(AI 側のフレームの途切れ)を ⑤ が見ない。発進の前進 OFF の本で起きると OFF の中央値が上がり「使ってよい」の側に動く。途中で OFF にした日(approvals 3 (a))は hold_long の形もこれになり、決めの「使ってよい の側には動かない」が OFF の組では成り立たない",
+   "scenario": "入力: 回 3 の作り物(OFF 3-1 3.013・3-3 3.043・3-5・3-7 3.253 秒、ON 2.813・2.863・2.943・2.973 秒。3-5 は発進の前進 OFF で、止まりが無ければ 3.033 秒 → ON − OFF −0.135「満たさない」)。3-5 の発進の 0.6 秒あとから 0.9 秒カメラが止まる(AI_CMD・カメラのフレームが無い)。A 両方 ON の日・止まりの間に車が止まる → 明けて中止(assist 3。hold_long)→ 3-5 は「R1 に届かなかった発進(off)」で比べの外 → −0.14「満たさない」。B 同じ止まりで、3-5 から先をわざと OFF にした日(手順書 3 章・approvals 3 (a))→ 中止にならず走り続け、3-5 の起点まで 4.043 秒が OFF の組に入り OFF の中央値 3.148 → −0.245「使ってよい」(出るのは「注意: 試験の選択肢の ON/OFF が混ざっている …(… 数える)」だけ。(a) なのでこの行で決まる)。C 両方 ON の日でも、止まりの間に 0.7 m/s まで落ちて止まらない形(明けて 0.5 m/s 以上 = 中止しない)なら 3-5 は 3.643 秒で入り −0.245「使ってよい」。3-5 が発進の前進 ON なら B・C とも「満たさない」(main session の言う向き)。= approvals 3「途中で OFF にした日」の決まりの行・手順書 3 章の「⑤ は…「使ってよい」の側には動かない」は、発進の前進 OFF の本では成り立たない(根は ⑤ が発進の窓のフレームの途切れを見ないこと。③ standing_3lap は 3 周の中の 0.2 秒を超える途切れで発進を数えないが、⑤ の比べに同じ見方が無い)。本物で 0.5 秒を超える AI 側のフレームの間は 10/10 に 4・10/24 に 1、0.3 秒超は 10/10 14・10/24 3(fix8/decided_safety.md 1.5 節)。台本 /home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r1/probe_t2_off_day_hold_long.py → out/probe_t2_off_day_hold_long.txt",
+   "fix": "launch_rows で発進 → R1(と最初の周の終わり)までの AI 側の処理したフレームの間の最大を行に出し、le.GAP_S(か 0.3 秒)を超えた発進は比べ(起点まで・失う・LH の中央値)から外して名前を出す(ON は「R1 に届かなかった発進」と同じく満たさない、OFF は外すだけ)。少なくとも「注意: 発進から R1 までにカメラが X 秒止まった発進 …」の行。文書: approvals 3 の決まりの行・手順書 3 章の「使ってよい の側には動かない」に、発進の前進 OFF の本で起きたときの例外(OFF の起点までが長い本は動画で確かめて --skip)を足す。直すまでは、途中で OFF にした日に OFF の本の長いカメラの止まりがあれば (c) に戻すのが決めの条件に合う"
+  },
+  {
+   "id": "w1-tools-r8-1-recovery-just-ended",
+   "severity": "minor",
+   "file": "/home/jetson/jetformer/tools/standing_3lap.py",
+   "line": 727,
+   "title": "リカバリーが人側にする 1 フレーム前に終わっていると印(kind 'recovery')が付かず、その場からの走り直しが ⑤ の比べ・③ の止まってから 3 周に入る(33 ms の差で「満たさない」→「使ってよい」)",
+   "scenario": "入力: tests/test_fix8_tools_decided.rday(回 3 + 3-8: 2 周目に R1 の 3.5 m / 4.5 m 手前で止まり、リカバリー(assist 2)→ 人側 1 秒 → その場で AI 側)の、リカバリーの終わりだけを人側にする k フレーム前にした(そのあと assist 0 のまま止まっている = リカバリーの前進(escape 0.5 秒)が前の物で止まり、assist.Recovery の COOLDOWN_S 1.0 秒 + STUCK_S 0.8 秒の間モデルが押している形。手順書 7 章「当たって止まった車が、AI 側のまま前へ押し続けている(1 秒以上・動かない)→ すぐ CH3 を人側」の場面)。k = 0: 印 recovery・⑤ ON n 4・−0.125「満たさない」・③ 数えない・④ 0 本(決めどおり)。k = 1・2・9・30: 印なし・⑤ ON n 5・−0.165「使ってよい」・③ counted・④ 発進 250 の組の止まってから 3 周 [27.12](3.5 m・4.5 m とも)。決めの理由(HS からの発進か記録から分からない)は k ≥ 1 でも同じで、知られている残り(0.5 秒より短い中立止め・止まっていなかった区間・assist 1)のどれでもない(止まっていて、中立止めも assist 1 も無い)。本物 10/10〜10/24 の 72 本では、リカバリーのあと 5 秒以内に assist 0 で終わった区間は 1 つ(次は走りながら AI 側 = 発進でない)= 今までは起きていない。台本 /home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r1/probe_t3_recovery_edge.py → out/probe_t3_recovery_edge.txt、/home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r1/scan_real_resolved.py → out/scan_real_resolved.json・scan_real_resolved_5_any.json",
+   "fix": "abort_resumes の 'recovery' を、区間の最後(中立止め・人側を除く)の前 Recovery.COOLDOWN_S + STUCK_S(1.8 秒)以内にリカバリー(assist 2)があり、区間の終わりで止まっている(|eRPM| < STOP_ERPM。verpm のある呼び方)区間にも広げる(形の文は同じか「リカバリーのあと X 秒から Y 秒」)。広げないなら、手順書 7 章「押し続けている → 人側」の行・approvals 8 ① に「リカバリーが終わってから人側にした(押していた)あとに戻した発進には印が付かない → 紙に「走り直し」→ main session が --skip 記録名@AI側にした秒」を書く"
+  }
+ ]
+}

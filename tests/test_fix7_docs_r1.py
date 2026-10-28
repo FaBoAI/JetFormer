@@ -13,6 +13,20 @@
 - w1-docs-r71-docs-5: pytest 一式の作業場所 3.9 GB → 10/27 の実測 7.1 GB(fix6/pytest_full_20261027.txt の数と照らす)。
 - わざと壊す: 直しの台本の 44 個の直しのうち意味のある 41 個を 1 つずつ元に戻すと、その指摘の確かめが落ちる。直す前の写しでは
   5 つとも落ちる。
+- 2026-10-28 fix8 docs-decided(experiments/20261026_fix/fix8/docs_decided/docs_fix8_decided.py): main session の決め(approvals 3
+  「途中で OFF にした日」= (a))と PYTEST_GB 0.6 で、この組の文のうち 3 つ(手順書 3 章・8.1 ⑤ の「… main session が決める」・README 3.2 の
+  4 の「`PYTEST_GB` は 3.9 のまま …」)と fix6/README 7 章 1 の終わりを意図して書き換えた(SUPERSEDE)。f1 はその 2 つを決まった文で見る。
+  台本の直しが「済」かは書き換えを戻した文書(fix8.revert)で、わざと壊すは書き換えたあとの new(fix8.effective)で照らす(弱めていない:
+  書き換えた文がちょうど 1 回あることも見る)。
+- 2026-10-28 fix8 docs 直す 8-2 回目(experiments/20261026_fix/fix8/fix_docs_r2/docs_fix8_r2.py): 反証 8-2 回目の指摘(その日を OFF にする
+  「おかしな動き」の決め・approvals 3 の知らせ・--skip しない本)で、この組の文のうち 4 つ(todo 1 章「11/2 まで」の「3 は決まり」・2 章 10 の
+  「おかしければ止めて OFF(」・3 章の「(1 m 以上下がる … → 止めて OFF。」・approvals 3 の「決まり」の「おかしければ止めて OFF(」)を意図して
+  書き換えた(SUPERSEDE)。「済」は fix8 docs r2 → fix8 docs-decided の順に書き換えを戻した文書(fix8.revert(r82.revert(…)))で、わざと壊すは
+  両方の書き換えのあとの new(r82.effective(…, fix8.effective(…)))で照らす(弱めていない: 同じ 44 個・41 個)。
+- 2026-10-28 fix8 docs 仕上げ(experiments/20261026_fix/fix8/docs_final/docs_fix8_final.py): 反証 8 回目の終わりに、この組の文のうち 2 つ
+  (手順書 3 章「わざと OFF にした日」の (a) の文・todo 1 章「11/2 まで」の知らせのあと)を意図して書き換えた(SUPERSEDE)。「済」は仕上げ →
+  fix8 docs r2 → fix8 docs-decided の順に戻した文書(fix8.revert(r82.revert(fin.revert(…))))で、わざと壊すは 3 つの書き換えのあとの new
+  (fin.effective(…, r82.effective(…, fix8.effective(…))))で照らす(弱めていない: 同じ 44 個・41 個)。
 """
 import hashlib
 import importlib.util
@@ -29,6 +43,9 @@ JF = Path('/home/jetson/jetformer')
 REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
 BEFORE = JF / 'tests' / 'fixtures' / 'fix7_docs_before'
 SCRIPT = JF / 'experiments' / '20261026_fix' / 'fix7' / 'docs_r1' / 'docs_fix7_r1.py'
+FIX8 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_decided' / 'docs_fix8_decided.py'     # 2026-10-28 fix8 docs-decided
+R82 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r2' / 'docs_fix8_r2.py'           # 2026-10-28 fix8 docs 直す 8-2 回目
+FIN = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_final' / 'docs_fix8_final.py'         # 2026-10-28 fix8 docs 仕上げ
 RB, TODO, RD, AP, F6 = 'runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md', 'fix6/README.md'
 FILES = (RB, TODO, RD, AP, F6)
 
@@ -67,6 +84,24 @@ def before():
 @pytest.fixture(scope='module')
 def script():
     return _load('docs_fix7_r1_t', SCRIPT)
+
+
+@pytest.fixture(scope='module')
+def fix8():
+    """fix8 docs-decided が意図して書き換えた所(SUPERSEDE)・revert・effective"""
+    return _load('docs_fix8_decided_from_t1', FIX8)
+
+
+@pytest.fixture(scope='module')
+def r82():
+    """fix8 docs 直す 8-2 回目が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r2_from_t1', R82)
+
+
+@pytest.fixture(scope='module')
+def fin():
+    """fix8 docs 仕上げが意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_final_from_t1', FIN)
 
 
 def chapter(t, head, nxt):
@@ -109,7 +144,12 @@ def f1_problems(d):
           '「回 N の試験の選択肢が … と違う(再起動で OFF に戻った? …)」', '「→ X(No.Y)から なし(前の本と違う)」', '「計画と違う N 本」',
           '④ の「後ろの見張り」「リカバリーを残す」の付かない組', '⑤ の「注意: 試験の選択肢の ON/OFF が混ざっている」',
           'その本は計画どおり = 数える。「試し」と書かない', '紙の本 X より前に OFF の本があれば、それは起こし直し',
-          'main session が決める(`fix3/approvals.md` 3 の「途中で OFF にした日」)')
+          # 2026-10-28 fix8 docs-decided: 「… main session が決める(`fix3/approvals.md` 3 の「途中で OFF にした日」)」は、main session が
+          # (a) に決めた(user_decisions.md 10/28 00:5x)ので決まった読み方の文に書き換えた。前の文は消えたことも見る
+          '回 3 の途中で OFF にしたときも、⑤ の「ON − OFF」はそのまま ⑤ の行で読む(**10/28 main session の決め (a)**',
+          '「使ってよい」の側には動かない。`fix3/approvals.md` 3 の「途中で OFF にした日」)')
+    if 'の読み方は main session が決める(`fix3/approvals.md` 3 の「途中で OFF にした日」)' in off_day:
+        p.append('3 章 わざと OFF にした日: 決まる前の文(main session が決める)が残っている')
     l6 = [x for x in ch4.splitlines() if '11/3 に見張り・残すの行が無い → 次の行(起こし直し)' in x]
     _miss(p, '4 章 6 の読み上げ', l6[0] if len(l6) == 1 else '', '紙に書いた本 X から先は 2 行とも無いのが正しい(起こし直しではない。入れ直さない)')
     l6b = [x for x in ch4.splitlines() if 'の行が**消えている**' in x]
@@ -123,7 +163,10 @@ def f1_problems(d):
     _miss(p, '8.1 ②', one(ch81, '| ② |'), '紙の本 X から「なし」の区切り', '「計画と違う N 本」に入った分は起こし直しではない = 数える')
     _miss(p, '8.1 ④ の読み方', one(ch81, '| ④ |', '2 章「実際の設定ごと」'), '紙の本 X から先は付いていない組が正しい', '`--ignore trim`')
     _miss(p, '8.1 ⑤ の読み方', one(ch81, '| ⑤ |', '「記録が欠けている本 …」='),
-          '紙の本 X から先の OFF は起こし直しではない', '回 3 の途中で OFF にしたときの読み方は main session が決める')
+          # 2026-10-28 fix8 docs-decided: 決まった (a) の文に書き換えた(上の 3 章と同じ理由)
+          '紙の本 X から先の OFF は起こし直しではない', '回 3 の途中で OFF にしたときも ⑤ の行のまま読む = 10/28 main session の決め (a)')
+    if '回 3 の途中で OFF にしたときの読み方は main session が決める' in one(ch81, '| ⑤ |', '「記録が欠けている本 …」='):
+        p.append('8.1 ⑤ の読み方: 決まる前の文(main session が決める)が残っている')
     _miss(p, '9 章 試験の選択肢', one(ch9, '| 試験の選択肢のスイッチ'), 'おかしければ止めて OFF・その本から先は OFF・紙に本の番号')
     # 起こし直しで OFF に戻ったと読ませる文(頭の記録の行は除く)は、どれも同じ行に本 X の例外がある
     body = rb[rb.index('## 1. 時間割'):]
@@ -253,9 +296,15 @@ def f5_problems(d):
     r4 = one(chapter(d[RD], '### 3.2', '### 3.3'), '| 4 | pytest 一式 |')
     _miss(p, 'README 3.2 の 4', r4, '約 %s GB' % du, '空き %s GB → 終わり %s GB' % (start, end))
     # disk_check.py の PYTEST_GB(担当の外。直すかは tools の係か main session)が実測と違うあいだは、そのことを README に書く
-    gb = re.search(r'^PYTEST_GB = (\d+(?:\.\d+)?)', (JF / 'experiments' / '20261026_fix' / 'fix3' / 'disk' / 'disk_check.py').read_text(
-        encoding='utf-8'), re.M).group(1)
-    if gb != du:
+    dsrc = (JF / 'experiments' / '20261026_fix' / 'fix3' / 'disk' / 'disk_check.py').read_text(encoding='utf-8')
+    gb = re.search(r'^PYTEST_GB = (\d+(?:\.\d+)?)', dsrc, re.M).group(1)
+    if gb != du and 'tmp_path_retention_policy=failed' in dsrc:
+        # 2026-10-28 fix8 tools-decided: PYTEST_GB を 10/28 の実測(-o tmp_path_retention_policy=failed を付けた一式。
+        # fix7/pytest_full_20261028.txt)にした。そのときは README に、その値とオプションが要ることを書く(前の「のまま」は消す)
+        _miss(p, 'README 3.2 の 4', r4, '`PYTEST_GB` は %s' % gb, 'tmp_path_retention_policy=failed')
+        if 'のまま' in r4.split('PYTEST_GB')[-1][:12]:
+            p.append('README 3.2 の 4: disk_check.py の PYTEST_GB は %s になったのに「のまま」と書いている' % gb)
+    elif gb != du:
         _miss(p, 'README 3.2 の 4', r4, '`PYTEST_GB` は %s のまま' % gb)
     elif 'のまま' in r4.split('PYTEST_GB')[-1][:12]:
         p.append('README 3.2 の 4: disk_check.py の PYTEST_GB は %s になったのに「のまま」と書いている' % gb)
@@ -282,9 +331,19 @@ def test_before_copies_fail(before, name):
     assert CHECKS[name](before) != []
 
 
-def test_script_edits_all_done(live, script):
-    """直しの台本の直しは、今の文書でどれも「済」(もう一度流しても何もしない)。画面の版 9 の直しも済のまま"""
-    _, rep = script.apply_text(live)
+def test_script_edits_all_done(live, script, fix8, r82, fin):
+    """直しの台本の直しは、今の文書でどれも「済」(もう一度流しても何もしない)。画面の版 9 の直しも済のまま。
+    2026-10-28 fix8 docs-decided: fix8 が意図して書き換えた所(SUPERSEDE)は書き換えを戻した文書で照らす。書き換えた文は今の文書に
+    ちょうど 1 回(消した文は 0 回)。
+    2026-10-28 fix8 docs r2: その書き換え(fix8 docs-decided の書き換えの中も 1 か所)は先に戻してから照らす。fix8 docs r2 の書き換えが今の
+    文書に入っていることも見る。
+    2026-10-28 fix8 docs 仕上げ: さらにその前に仕上げの書き換えを戻す(仕上げの書き換えは今の文書にちょうど 1 回。fix8 docs r2 の書き換えは
+    仕上げを戻した文書で見る = 仕上げが fix8 docs r2 の文の中も書き換えたため)"""
+    assert fin.superseded_present(live) == []
+    livef = fin.revert(live)
+    assert r82.superseded_present(livef) == []
+    assert fix8.superseded_present(r82.revert(livef)) == []
+    _, rep = script.apply_text(fix8.revert(r82.revert(livef)))
     assert len(rep) == 44 and [s for _, _, s in rep] == ['done'] * 44, [(f, o[:30], s) for f, o, s in rep if s != 'done']
     m = script.ban9()
     b9 = {f: (REPORTS / f).read_text(encoding='utf-8') for f in m.FILES}
@@ -303,8 +362,11 @@ CATCH = {(RB, 1): 'f1', (RB, 2): 'f1', (RB, 3): 'f2', (RB, 4): 'f2', (RB, 5): 'f
          (F6, 1): 'f2', (F6, 2): 'f5', (F6, 3): 'f4'}
 
 
-def test_reverting_each_edit_is_caught(live, script):
-    """わざと壊す: 台本の直しを 1 つずつ元の文に戻すと、その指摘の確かめが落ちる(41 個)。戻さなければ通る"""
+def test_reverting_each_edit_is_caught(live, script, fix8, r82, fin):
+    """わざと壊す: 台本の直しを 1 つずつ元の文に戻すと、その指摘の確かめが落ちる(41 個)。戻さなければ通る。
+    2026-10-28 fix8 docs-decided: fix8 が書き換えた直しは、書き換えたあとの形の new(fix8.effective)を元の文に戻す。
+    2026-10-28 fix8 docs r2: その上の書き換え(r82.effective)のあとの形。
+    2026-10-28 fix8 docs 仕上げ: さらにその上の書き換え(fin.effective)のあとの形"""
     n = 0
     for f, edits in script.ALL:
         for i, (old, new) in enumerate(edits):
@@ -312,6 +374,7 @@ def test_reverting_each_edit_is_caught(live, script):
             if key not in CATCH:
                 assert i == 0 and f in (RB, RD, F6), key          # 頭の記録の行だけ
                 continue
+            new = fin.effective('r1', f, i, r82.effective('r1', f, i, fix8.effective('r1', f, i, new)))
             assert live[f].count(new) == 1, key
             broken = dict(live, **{f: live[f].replace(new, old, 1)})
             assert CHECKS[CATCH[key]](broken) != [], key
@@ -357,7 +420,9 @@ def test_f1_tools_print_what_the_runbook_quotes(live):
     R.round_options(rs)
     assert [bool(r['diffs']) for r in rs] == [False, False, True, True, True, False]       # 回 1 の 3 本だけ
     mark = rs[2]['diffs'][0]
-    assert mark.startswith('回 1 の試験の選択肢が 1-1(No.2)と違う: ') and '(再起動で OFF に戻った? 手順書 7 章)' in mark
+    # 2026-10-28 fix8 tools-decided: 印の後ろの文に「わざと OFF にした日」(3 章)の読み方を足した(頭の「(再起動で OFF に戻った? 」は同じ)
+    assert mark.startswith('回 1 の試験の選択肢が 1-1(No.2)と違う: ') and mark.endswith(
+        '(再起動で OFF に戻った? 3 章で止めて OFF にした本 X から先なら数える。手順書 3・7 章)')
     line = R.options_line(rs)
     assert line.endswith('1-1(No.2)から 後ろの見張り・リカバリーを残す → 1-3(No.4)から なし(前の本と違う)')
     rb = live[RB]

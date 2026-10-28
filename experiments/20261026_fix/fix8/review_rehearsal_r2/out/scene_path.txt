@@ -1,0 +1,76 @@
+# 作り物の家 /home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_rehearsal_r2/scene_memo/home
+## 1. 走り終わりのメモ(欄が出ていた本)
+走り終わりのメモ「記録に書く」(本物の bench.api_bench_after): 20261103-084600 シーン 3 → 4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)
+走り終わりのメモ「記録に書く」(本物の bench.api_bench_after): 20261103-094600 シーン 1 → よい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+3-6(20261103-093800)は「書かずに閉じる」(欄の afterDone だけ。シーンは書かない)
+シーン: 1-4 ['20261103-084600-0001', '20261103-084600-0002', '20261103-084600-0003'] / 3-6 ['20261103-093800-0001'] / 3-8 ['20261103-094600-0001'] / 朝の確かめ ['20261103-083000-0001']
+  直す前の scene.json の説明(20261103-083000-0001): ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626
+  直す前の scene.json の説明(20261103-084600-0002): ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)
+  直す前の scene.json の説明(20261103-093800-0001): ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+  直す前の scene.json の説明(20261103-094600-0001): ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+## 2. 画面の「シーン」のタブ(本物の app.js)
+  [3] #scene-summary text = "全 46 シーン / 11.9 分 (表示 46)"
+  [6] 絞り込みのあとのカード 1 枚: ['20261103-083000-0001']
+  [7] #scene-summary text = "全 46 シーン / 11.9 分 (表示 1)"
+  [8] openScene → None
+  [9] #modal hidden = false
+  [10] #m-name text = "20261103-083000-0001"
+  [11] #m-desc value = "ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626"
+  [12] #m-mode value = "5"
+  [13] #m-mode html = "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  [14] #m-tags value = "ai-drive"
+  [15] 手で直した説明: ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626 memo=試し(朝の確かめ)
+  [17] 画面が送った PATCH /api/scenes/20261103-083000-0001: {"description": "ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626 memo=試し(朝の確かめ)", "tags": ["ai-drive"]}
+  [18] トースト: ['保存しました']
+  [20] #modal hidden = true
+  [23] 絞り込みのあとのカード 3 枚: ['20261103-084600-0003', '20261103-084600-0002', '20261103-084600-0001']
+  [24] #scene-summary text = "全 46 シーン / 11.9 分 (表示 3)"
+  [25] openScene → None
+  [26] #modal hidden = false
+  [27] #m-name text = "20261103-084600-0002"
+  [28] #m-desc value = "ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)"
+  [29] #m-mode value = "5"
+  [30] #m-mode html = "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  [31] #m-tags value = "ai-drive"
+  [32] 手で直した説明: ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=試し(ゲインを間違えた)。240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)
+  [34] 画面が送った PATCH /api/scenes/20261103-084600-0002: {"description": "ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=試し(ゲインを間違えた)。240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)", "tags": ["ai-drive"]}
+  [35] トースト: ['保存しました', '保存しました']
+  [37] #modal hidden = true
+  [40] 絞り込みのあとのカード 1 枚: ['20261103-093800-0001']
+  [41] #scene-summary text = "全 46 シーン / 11.9 分 (表示 1)"
+  [42] openScene → None
+  [43] #modal hidden = false
+  [44] #m-name text = "20261103-093800-0001"
+  [45] #m-desc value = "ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  [46] #m-mode value = "5"
+  [47] #m-mode html = "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  [48] #m-tags value = "ai-drive"
+  [49] 手で直した説明: ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(左 4.2 のまま)。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+  [51] 画面が送った PATCH /api/scenes/20261103-093800-0001: {"description": "ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(左 4.2 のまま)。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)", "tags": ["ai-drive"]}
+  [52] トースト: ['保存しました', '保存しました', '保存しました']
+  [54] #modal hidden = true
+  [57] 絞り込みのあとのカード 1 枚: ['20261103-094600-0001']
+  [58] #scene-summary text = "全 46 シーン / 11.9 分 (表示 1)"
+  [59] openScene → None
+  [60] #modal hidden = false
+  [61] #m-name text = "20261103-094600-0001"
+  [62] #m-desc value = "ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)"
+  [63] #m-mode value = "5"
+  [64] #m-mode html = "<option value=\"0\">0: 未設定</option><option value=\"1\">1: 駐車(1)</option><option value=\"2\">2: 駐車(2)</option><option value=\"3\">3: 駐車(3)</option><option value=\"4\">4: 高速走行</option><option value=\"5\">5: 低速走行</option><option value=\"6\">6: 低速走行・良</option><option value=\"7\">7: 高速走行・良</option><option value=\"8\">8: シミュレーター</option><option value=\"9\">9: AI・きれいな速い周</option>"
+  [65] #m-tags value = "ai-drive"
+  [66] 手で直した説明: ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(天井を入れ忘れた)。B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+  [68] 画面が送った PATCH /api/scenes/20261103-094600-0001: {"description": "ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(天井を入れ忘れた)。B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)", "tags": ["ai-drive"]}
+  [69] トースト: ['保存しました', '保存しました', '保存しました']
+  [71] #modal hidden = true
+  [73] シーンのタブから走行タブに戻ってすぐ ▶: status=200 confirms=['AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: 低速走行 / 速度']
+  [74] トースト: ['保存しました', '保存しました', 'AI走行 No.1 を開始しました']
+## 3. PATCH の体を本物の dataset.update_scene(server.py api_scene_update と同じ呼び方)で書く
+  20261103-083000-0001 → mode_id 5・tags ['ai-drive']・説明 ai_no=1 AI走行 clean_driving_20261011-nocmd-s3-20261011-024626 memo=試し(朝の確かめ)
+  20261103-084600-0002 → mode_id 5・tags ['ai-drive']・説明 ai_no=5 bench=real_bench_20261023 day=2026-11-03 block=4 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=1-4・天井4.1・同じゲイン・4〜6周 throttle_gain=0.9 official=0 memo=試し(ゲインを間違えた)。240秒走った・手 —。計画と違うので試し(元 cand=B): throttle_gain 0.92(基準 1.0)・speed_ceiling 1(基準 0)
+  20261103-093800-0001 → mode_id 5・tags ['ai-drive']・説明 ai_no=18 bench=real_bench_20261023 day=2026-11-03 block=17 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(左 4.2 のまま)。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+  20261103-094600-0001 → mode_id 5・tags ['ai-drive']・説明 ai_no=20 bench=real_bench_20261023 day=2026-11-03 block=19 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=7.95 check=合格 tune=3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周 throttle_gain=0.9 official=0 memo=試し(天井を入れ忘れた)。B止め。計画と違うので試し(元 cand=B): throttle_gain 0.95(基準 1.0)・speed_ceiling 1(基準 0)
+## 4. 夜の道具の読み方(本物の section_scorecard.effective_description → standing_3lap.trial_memo)
+  20261103-083000: trial_memo = '試し(朝の確かめ)。AI走行 clean_driving_20261011-nocmd-s3-20261011-024626'(直したシーン ['20261103-083000-0001']・conflicts [])
+  20261103-084600: trial_memo = '240秒走った・手 —。試し(ゲインを間違えた)。240秒走った・手 —'(直したシーン ['20261103-084600-0001', '20261103-084600-0002', '20261103-084600-0003']・conflicts [])
+  20261103-093800: trial_memo = '試し(左 4.2 のまま)'(直したシーン ['20261103-093800-0001']・conflicts [])
+  20261103-094600: trial_memo = '試し(天井を入れ忘れた)。B止め'(直したシーン ['20261103-094600-0001']・conflicts [])

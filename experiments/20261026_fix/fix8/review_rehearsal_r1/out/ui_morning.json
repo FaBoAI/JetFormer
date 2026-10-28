@@ -1,0 +1,733 @@
+{
+ "steps": [
+  {
+   "op": "el",
+   "sel": "#dr-bench-pick",
+   "prop": "html",
+   "value": "<option value=\"\">— ベンチマークを選ぶ —</option><option value=\"2:0\">ベンチマーク1: B モデルB(基準) ・ 1-1・P1確認・天井OFF・4〜6周</option><option value=\"2:1\">ベンチマーク2: B モデルB(基準) ・ 1-2・P1・床1本目・止まって3周</option><option value=\"2:2\">ベンチマーク3: B モデルB(基準) ・ 1-3・P1・床2本目・止まって3周</option><option value=\"2:3\">ベンチマーク4: B モデルB(基準) ・ 1-4・天井4.1・同じゲイン・4〜6周</option><option value=\"2:4\">ベンチマーク5: B モデルB(基準) ・ 1-5・P1・天井OFF・4〜6周(A/B/AのA)</option><option value=\"2:5\">ベンチマーク6: B モデルB(基準) ・ 2-1・天井4.1・目安ゲイン・4〜6周</option><option value=\"2:6\">ベンチマーク7: B モデルB(基準) ・ 2-2・P1・天井OFF・4〜6周(A)</option><option value=\"2:7\">ベンチマーク8: B モデルB(基準) ・ 2-3・天井4.1+自動8.12・4〜6周</option><option value=\"2:8\">ベンチマーク9: B モデルB(基準) ・ 2-4・天井4.1+自動8.12・くり返し</option><option value=\"2:9\">ベンチマーク10: B モデルB(基準) ・ 2-5・天井4.2(条件つき)・4〜6周</option><option value=\"2:10\">ベンチマーク11: B モデルB(基準) ・ 2-6・天井4.1に戻す・4〜6周(4.2のA)</option><option value=\"2:11\">ベンチマーク12: B モデルB(基準) ・ 3-1・発進OFF・回2のよい形・止まって1〜2周</option><option value=\"2:12\">ベンチマーク13: B モデルB(基準) ・ 3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周</option><option value=\"2:13\">ベンチマーク14: B モデルB(基準) ・ 3-3・発進OFF・回2のよい形・止まって1〜2周</option><option value=\"2:14\">ベンチマーク15: B モデルB(基準) ・ 3-4・発進ON(250・2.5)・回2のよい形・止まって1〜2周</option><option value=\"2:15\">ベンチマーク16: B モデルB(基準) ・ 3-5・発進OFF・回2のよい形・止まって1〜2周</option><option value=\"2:16\">ベンチマーク17: B モデルB(基準) ・ 3-6・発進ON(250・2.5)・回2のよい形・止まって1〜2周</option><option value=\"2:17\">ベンチマーク18: B モデルB(基準) ・ 3-7・発進OFF・回2のよい形・止まって1〜2周</option><option value=\"2:18\">ベンチマーク19: B モデルB(基準) ・ 3-8・発進ON(250・2.5)・回2のよい形・止まって1〜2周</option><option value=\"2:19\">ベンチマーク20: B モデルB(基準) ・ 4-1・本番の形・止まって3周</option><option value=\"2:20\">ベンチマーク21: B モデルB(基準) ・ 4-2・本番の形・止まって3周</option><option value=\"2:21\">ベンチマーク22: B モデルB(基準) ・ 4-3・本番の形・止まって3周</option><option value=\"2:22\">ベンチマーク23: B モデルB(基準) ・ 4-4・本番の形・止まって3周・予備</option>"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">リカバリーの後ろの見張りが OFF のあいだは押せません</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 1
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": ""
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "read",
+   "what": "check_base",
+   "value": "<span class=\"ok-text\">画面の値は基準と同じ</span> <span class=\"muted\">(モデルはブロックごとに替わる)</span>"
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>基準の設定</b>を画面に入れました。画面の値はすでに同じでした。"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">リカバリーの後ろの見張りが OFF のあいだは押せません</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 1
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": ""
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": ""
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "",
+   "confirms": [],
+   "refused": false,
+   "desc": "AI走行 clean_driving_20261011-nocmd-s3-20261011-024626",
+   "record": false,
+   "dry": true,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "read",
+   "what": "toasts",
+   "value": [
+    "sim: /api/modes",
+    "sim: /api/scenes",
+    "基準の設定を画面に入れました(走行は始めていません)",
+    "推論の確認を開始しました(出力は中立)"
+   ]
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "check",
+   "checked": false,
+   "confirm": ""
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "check",
+   "checked": false,
+   "confirm": ""
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": ""
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "発進の前進を ON にします(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 250 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたびに OFF。\n\n試験の選択肢です。LH の入口に少し速く入ります。コースで ON にするのは、ユーザーの了承と、車輪を浮かせた確かめのあとです。\nToF ガードが OFF のときは始めません。走行中は ON にできません(OFF にはできます)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": false,
+   "confirm": ""
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 1
+   },
+   "client": 9,
+   "confirm": "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 1.00\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。",
+   "confirms": [
+    "AI走行を開始します。\nモデル: clean_driving_20261011-nocmd-s3-20261011-024626\nジャンル: ID 5 / 速度ゲイン 1.00\n発進の前進: ON(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒。AI 側にした最初のフレームから強い前進)\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\nこの画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。"
+   ],
+   "refused": false,
+   "desc": "AI走行 clean_driving_20261011-nocmd-s3-20261011-024626",
+   "record": false,
+   "dry": false,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<b class=\"warn-text\">ON: AI 側にした最初のフレームから強い前進を出します</b>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<span class=\"muted\">リカバリーの後ろの見張りが OFF のあいだは押せません</span>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 1
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": ""
+  },
+  {
+   "op": "check",
+   "checked": false,
+   "confirm": ""
+  },
+  {
+   "op": "read",
+   "what": "toasts",
+   "value": [
+    "sim: /api/modes",
+    "sim: /api/scenes",
+    "基準の設定を画面に入れました(走行は始めていません)",
+    "推論の確認を開始しました(出力は中立)",
+    "基準の設定を画面に入れました(走行は始めていません)",
+    "発進の前進を ON にしました",
+    "AI走行 No.1 を開始しました",
+    "中立止めのあともリカバリーを残すは、リカバリーの後ろの見張りが ON のときだけ使えます(先にリカバリーの後ろの見張りを ON に)"
+   ]
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "リカバリーの後ろの見張りを ON にします。\n\nリカバリーの「ブレーキ」「待つ」「中立」の段でも、後ろへ動いていたら下がった時間として数え、下がる時間に届いたら惰性にします。後ろへ動いている(直前まで動いていた)ときの衝撃(2.5G 以上)は、後ろに当たったとしてすぐ前へ出します。模型と記録の再生でしか確かめていません(実車の ESC ではまだ)。使う日は最初のリカバリーを人が見て、1 m 以上下がる・後ろの物に近づくときはすぐ CH3 を人側へ。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": "中立止めのあともリカバリーを残すを ON にします。\n\n後ろの見張りが ON のときだけ使えます(後ろの見張りを OFF にすると、これも OFF)。AI 側のままの中立止め(カメラの遅れ・I2C の失敗など。1 フレームでも)で、リカバリーの中止・途中の段・ぶつかった印を消しません。OFF(今まで)は中立止め 1 回で全部消え、中止が解けるとモデルの弱い前進が壁を押し続けることがあります。戻すのは CH3 を人側にしたとき・人側の中立止め・走行の開始。机上の試験だけで、実車ではまだです。\n\n試験の選択肢です。既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にできません(OFF にはできます)。基準の設定・ブロックでは変わりません(ON は OFF にするまで次の走行にも残ります)。\n\nユーザーの了承は出ていますか?"
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "client_ver",
+   "value": "画面の版 9(app.js 10/27 21:58)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-ceil-spec",
+   "prop": "text",
+   "value": "(全体 4.5・左旋回中 4.1 m/s)"
+  },
+  {
+   "op": "read",
+   "what": "ceil",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "auto",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "launch",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-boost",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-note",
+   "prop": "html",
+   "value": "<b class=\"warn-text\">ON: AI 側にした最初のフレームから強い前進を出します</b>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-spec",
+   "prop": "text",
+   "value": "(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "checked",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-back-guard",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "checked",
+   "value": true
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep",
+   "prop": "disabled",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-rec-hold-keep-note",
+   "prop": "html",
+   "value": "<b class=\"warn-text\">ON: AI 側のままの中立止めではリカバリーを戻しません(中止は CH3 を人側にするまで解けない)</b>"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-launch-no-kick",
+   "prop": "checked",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-rec-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "el",
+   "sel": "#dr-opt-launch-missing",
+   "prop": "text",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "gain",
+   "value": 1
+  },
+  {
+   "op": "read",
+   "what": "gain_text",
+   "value": "1.00"
+  },
+  {
+   "op": "read",
+   "what": "trim",
+   "value": 0
+  },
+  {
+   "op": "read",
+   "what": "record",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "read",
+   "what": "desc",
+   "value": ""
+  },
+  {
+   "op": "read",
+   "what": "check_base",
+   "value": "<span class=\"warn-text\">基準と違う: 発進の前進 ON(基準 OFF)</span> <span class=\"muted\">・リカバリーの後ろの見張り・中立止めのあともリカバリーを残す: ON(基準の設定・ブロックでは変えない)</span>"
+  },
+  {
+   "op": "read",
+   "what": "server",
+   "value": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "tof_guard": 1,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "tcp_mode": 0,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "zone_caps": 0,
+    "start_kick": 1,
+    "speed_ceiling": 0,
+    "ceil_all_mps": 4.5,
+    "ceil_left_mps": 4.1,
+    "speed_auto": 0,
+    "auto_target_mps": 4.27,
+    "auto_vref_v": 8.35,
+    "launch_boost": 1,
+    "launch_us": 250,
+    "launch_mps": 2.5,
+    "launch_max_s": 1.2,
+    "rec_back_guard": 1,
+    "rec_hold_keep": 1,
+    "launch_no_kick": 0
+   }
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "推論の確認を開始しました(出力は中立)",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "発進の前進を ON にしました",
+  "AI走行 No.1 を開始しました",
+  "中立止めのあともリカバリーを残すは、リカバリーの後ろの見張りが ON のときだけ使えます(先にリカバリーの後ろの見張りを ON に)",
+  "リカバリーの後ろの見張りを ON にしました",
+  "中立止めのあともリカバリーを残すを ON にしました"
+ ]
+}

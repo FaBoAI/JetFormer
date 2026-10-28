@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="1" tests="20" time="2.484" timestamp="2026-10-28T11:06:21.501987+09:00" hostname="jetson"><testcase classname="tests.test_ui_fix8_r2" name="test_before_copies_are_the_versions_before_this_fix" time="0.002" /><testcase classname="tests.test_ui_fix8_r2" name="test_style_css_only_the_float_stop_rule_and_one_media_rule" time="0.003" /><testcase classname="tests.test_ui_fix8_r2" name="test_float_stop_takes_its_text_width_and_driving_toast_goes_above_it_on_phones" time="0.004" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_only_the_ceiling_expectation_changed" time="0.003" /><testcase classname="tests.test_ui_fix8_r2" name="test_to_fixed1_is_javascript_to_fixed" time="0.057" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[None]" time="0.076" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.2]" time="0.072" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[3.9]" time="0.073" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.25]" time="0.070" /><testcase classname="tests.test_ui_fix8_r2" name="test_firefox_float_stop_and_driving_toast_on_phone" time="0.000"><skipped type="pytest.skip" message="JF_UI_FIREFOX=1 と geckodriver のときだけ(jf-heavy --lock big --mem 3000M)">/home/jetson/jetformer/tests/test_ui_fix8_r2.py:302: JF_UI_FIREFOX=1 と geckodriver のときだけ(jf-heavy --lock big --mem 3000M)</skipped></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_screen_matches_server_table" time="0.061"><failure message="AssertionError: assert ['説明欄', 'なし',...', '説明欄', ...] == ['説明欄', 'なし',...', '説明欄', ...]&#10;  &#10;  At index 26 diff: '説明欄' != 'なし'&#10;  Use -v to get more diff">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut_app/A13/test_vbefore_screen_matches_se0')
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    def test_vbefore_screen_matches_server_table(tmp_path):
+        """入力の表(56 行)の全部で、画面の電圧の源(本物の app.js の vbatSourceText。基板の電圧なし)= サーバーの電圧の源(本物の
+        drive._SpeedAuto・speed_auto.v_before_of)。基板の電圧があれば前と同じ「基板の電圧(走り始めから)」。
+        直す前の app.js(写し)では指摘の形が出る: 831・8,31・0.83・9.5・「8.31,」・4.15 で画面「説明欄」・サーバー「なし」、全角は逆"""
+        server = [_server_src(d) for d in VSRC_TABLE]
+        now = _node_vsrc(tmp_path, APP, VSRC_TABLE)
+&gt;       assert [_short(x) for x in now['src']] == server
+E       AssertionError: assert ['説明欄', 'なし',...', '説明欄', ...] == ['説明欄', 'なし',...', '説明欄', ...]
+E         
+E         At index 26 diff: '説明欄' != 'なし'
+E         Use -v to get more diff
+
+tests/test_ui_fix8_r2.py:454: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_random_descriptions_match_server" time="0.170"><failure message="AssertionError: [('Vb_before=nan\tVb_before=8.6\x1c', '説明欄', 'なし'), ('V_before=nan V_before=7.17 ', '説明欄', 'なし'), ('V_after=8.05 Vb_be...=1V0 V_before=nan V_before =2.370 V_before=7.5VV ', '説明欄', 'なし'), ('V_before=inf V_before=7 v_before=V ', '説明欄', 'なし')]&#10;assert not [('Vb_before=nan\tVb_before=8.6\x1c', '説明欄', 'なし'), ('V_before=nan V_before=7.17 ', '説明欄', 'なし'), ('V_after=8.05 Vb_be...re=7 v_before=V ', '説明欄', 'なし'), ('Vb_before=nan  Vb_before=７.９\xa0check=合格  Vb_before=infv\ufeff ', '説明欄', 'なし'), ...]">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut_app/A13/test_vbefore_random_descriptio0')
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    def test_vbefore_random_descriptions_match_server(tmp_path):
+        """でたらめな説明欄 3000 本(種 82)で、画面の電圧の源 = サーバーの speed_auto.v_before_of が数か(基板の電圧なし)。1 本は 1〜4 個の欄
+        (V_before=・Vb_before=・v_before=・「V_before =」などの鍵 + 5.5〜9.5 V あたりの数に、下線・コンマ・V・e・点・符号・空白・全角・
+        アラビアの数字・全角の点を 0〜2 個まぜた値、か battery=・check=・memo= などのかけら)を、いろいろな空白の字でつないだもの"""
+        import random
+        from jetformer import speed_auto
+        rnd = random.Random(82)
+        marks = ['_', ',', 'V', 'v', 'e', '0', '.', '+', '-', ' ', _fw('8'), _ar('3'), chr(0xff0e), BOM]
+    
+        def num():
+            x = rnd.choice(['%.2f' % rnd.uniform(5.5, 9.5), '%.1f' % rnd.uniform(5.5, 9.5), '%d' % rnd.randint(5, 10), '%.3f' % rnd.uniform(0, 12),
+                            'nan', 'inf', '__', ''])
+            for _ in range(rnd.choice([0, 0, 1, 2])):
+                i = rnd.randrange(len(x) + 1)
+                x = x[:i] + rnd.choice(marks) + x[i:]
+            if rnd.random() &lt; 0.1:
+                x = _fw(x)
+            return x + rnd.choice(['', '', '', 'V', 'v', 'VV'])
+    
+        def field():
+            if rnd.random() &lt; 0.3:
+                return rnd.choice(['battery=#A', 'check=合格', 'memo=', 'V_after=8.05', 'cand=B', '__', 'ai_no=3', 'memo=V_before=8.31'])
+            return rnd.choice(['V_before=', 'V_before=', 'V_before=', 'Vb_before=', 'v_before=', 'V_before =', 'xV_before=', 'Vb_before=']) + num()
+    
+        seps = [' ', ' ', ' ', IDEO, NBSP, FSEP, '\t', '\n', BOM + ' ', '  ']
+        descs = [''.join(field() + rnd.choice(seps) for _ in range(rnd.randint(1, 4))) for _ in range(3000)]
+        got = _node_vsrc(tmp_path, APP, descs)
+        want = ['説明欄' if speed_auto.v_before_of(d) == speed_auto.v_before_of(d) else 'なし' for d in descs]
+        bad = [(d, a, b) for d, a, b in zip(descs, (_short(x) for x in got['src']), want) if a != b]
+&gt;       assert not bad, bad[:5]
+E       AssertionError: [('Vb_before=nan\tVb_before=8.6\x1c', '説明欄', 'なし'), ('V_before=nan V_before=7.17 ', '説明欄', 'なし'), ('V_after=8.05 Vb_be...=1V0 V_before=nan V_before =2.370 V_before=7.5VV ', '説明欄', 'なし'), ('V_before=inf V_before=7 v_before=V ', '説明欄', 'なし')]
+E       assert not [('Vb_before=nan\tVb_before=8.6\x1c', '説明欄', 'なし'), ('V_before=nan V_before=7.17 ', '説明欄', 'なし'), ('V_after=8.05 Vb_be...re=7 v_before=V ', '説明欄', 'なし'), ('Vb_before=nan  Vb_before=７.９\xa0check=合格  Vb_before=infv\ufeff ', '説明欄', 'なし'), ...]
+
+tests/test_ui_fix8_r2.py:496: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_pyfloat_is_python_float_and_py_space_is_python_isspace" time="0.335"><failure message="AssertionError: assert [8.31, 831, N..., 0.5, 5, ...] == [8.31, 831.0,...0.5, 5.0, ...]&#10;  &#10;  At index 25 diff: None != 'inf'&#10;  Use -v to get more diff">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut_app/A13/test_pyfloat_is_python_float_a0')
+
+    @pytest.mark.skipif(NODE is None, reason='node がありません')
+    def test_pyfloat_is_python_float_and_py_space_is_python_isspace(tmp_path):
+        """app.js の pyFloat(s) は Python の float(s) と同じ値(読めない = null ⇔ ValueError)。手で書いた形と、でたらめな 5000 本(種 83)と、
+        1 字の文の全部の字(サロゲートを除く。数になるのは Unicode の 10 進の字だけ。違ってよいのは Python 3.13 の Unicode 15.1 に無い新しい
+        数字だけ)。PY_SPACE に入る字 = Python の str.isspace() の字(全部の字)"""
+        import random
+        import sys
+        import unicodedata
+        rnd = random.Random(83)
+        alpha = list('0123456789._eE+-VvnaifINFty, x#') + [_fw('8'), chr(0xff0e), _ar('3'), IDEO, chr(0x2212)]
+        floats = ['8.31', '831', '8,31', '0.83', '.5', '5.', '.', '', '_', '8_3', '8__3', '_8', '8_', '8._3', '8_.3', '1e5', '1e', 'e5', '1e+5',
+                  '1E-5', '1e_5', '1e5_0', '+8', '-8', '+-8', 'inf', '-Infinity', 'INF', 'nan', '+NaN', 'infinit', 'nann', '0x8', '1_000.000_1',
+                  _fw('8.31'), _ar('8.31'), _fw('8') + chr(0xff0e) + _fw('3'), '8.31' + chr(0x2212), '00008.3100', '8.31e0', '9' * 400]
+        floats += [''.join(rnd.choice(alpha) for _ in range(rnd.randint(1, 8))) for _ in range(5000)]
+        got = _node_vsrc(tmp_path, APP, [], floats=floats, allcp=True)
+&gt;       assert got['flt'] == [_py_float(s) for s in floats]
+E       AssertionError: assert [8.31, 831, N..., 0.5, 5, ...] == [8.31, 831.0,...0.5, 5.0, ...]
+E         
+E         At index 25 diff: None != 'inf'
+E         Use -v to get more diff
+
+tests/test_ui_fix8_r2.py:515: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vdesc_range_is_the_server_range" time="0.004" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8.31 check=\u5408\u683c memo=]" time="0.069" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=831 check=\u5408\u683c]" time="0.069" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8,31]" time="0.072" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=\uff18.\uff13\uff11]" time="0.072" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=__ memo=]" time="0.068" /><testcase classname="tests.test_ui_fix8_r2" name="test_app_js_only_vbat_source_text_changed" time="0.027" /></testsuite></testsuites>

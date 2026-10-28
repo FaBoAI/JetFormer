@@ -1,0 +1,23 @@
+{
+ "voter": "打ち消しの票 A(見方 A: コードを読み、自分で作った作り物の記録で流した。指摘の台本 review_tools_r1/*.py は読まず・使わず)。試した版 collect.py sha256 26dfb087bf92d5d3… (02:21)・standing_3lap.py 4ddbdc4eed27ca33… (01:39)。台本 t1_trial_form.py・t2_stall_off.py・t3_recovery_edge.py(共通 rcommon.py。記録の書き方は tests/test_fix7_tools.write_log)、出力 out/。",
+ "verdicts": [
+  {
+   "id": "w1-tools-r8-1-trial-form",
+   "real": true,
+   "severity": "minor",
+   "evidence": "再現した(out/t1_trial_form.txt・.json)。計画の形 天井1・左4.2 で OFF 4 本・ON 3 本(ON − OFF −0.165)、3-8 = ON の試し。3-8 が計画どおりの形なら 衝突 6G → first_lap_collisions_0 False・空転(比 1.85)→ slip False・最初の周の IMU 欠け → on_all_readable False で「満たさない」。3-8 を左4.1・天井0・自動1 にすると、試しは base(r) の鍵で別の組(by_launch も compare も無い組)に入り、計画の組の行は 12 通りとも「−0.165 → 使ってよい」(checks 全部 True)。試しの組には「うち ON の発進の最初の周の衝突 1(…数える)」「→ 空転の条件は満たさない」が出るが、手順書 6 章の「この行で決める」の行ではない。試しにしなければ form_split で「満たさない」(fix5 c3)なので、手順書 7 章「起こし直した」の「入れ直す前に走った本の memo に「試し」」どおりにすると、同じ 7 章「走った値が計画と違った」の「試しの ON の衝突・空転・欠けは数える(どれかがあれば回 3 は満たさない)」と食い違う。知られている残りにも無い。重さは minor とみた: 起こし直し + 入れ直し忘れ + その本が ON で最初の周に当たる/空転/欠け が全部要る(元の c3 も minor)。LH・R1 の当たりは 7 章「ON の最初の周で LH・R1 に当たる → ON をやめる」、空転は car_check の行と「200 µs に」が現場で受ける"
+  },
+  {
+   "id": "w1-tools-r8-1-stall-inflates-off",
+   "real": true,
+   "severity": "minor",
+   "evidence": "再現した(out/t2_stall_off.txt・.json)。自分の回 3(止まり無し ON − OFF −0.125「満たさない」)で 3-5(発進の前進 OFF)の発進 0.6 秒後から 0.9 秒カメラが止まる(フレーム無し): B 3-5 から先をわざと OFF → 止まって走り直し起点まで 3.973 秒が OFF に入り OFF 中央値 3.028 → 3.118、−0.215「使ってよい」。A 両方 ON → 中止(assist 3)で「R1 に届かなかった発進(off)」・OFF n 3・−0.12「満たさない」。同じ出来事で途中で OFF にした日だけ「使ってよい」になり、approvals 3・手順書 3 章の「「使ってよい」の側には動かない」は OFF の本では成り立たない(decided_safety.md 0 章の括弧に「両方 OFF … ON に甘い側」とは書いてあるが、ユーザーが読む文と残すことには無い)。C 両方 ON の日でも止まらない形(2.0→0.65 m/s)で 3.543 秒が入り −0.215「使ってよい」= ⑤ が発進の窓のフレームの途切れを見ないことが根(③ は 0.2 秒を超える途切れで数えない)。⑤ の出力に止まり・途切れの言葉は 0。E 発進の前進 ON の本の止まりは −0.11「満たさない」(厳しい側)。起きる見込みは小さい(10/23・10/24 の AI 側のフレームの間 45,918 のうち 0.3 秒超 3・0.5 秒超 1 = decided_safety 1.5)うえ、OFF の本どうしの散らばりと答えの境が近いときだけ答えが変わるので minor"
+  },
+  {
+   "id": "w1-tools-r8-1-recovery-just-ended",
+   "real": false,
+   "severity": "none",
+   "evidence": "コードの動きは指摘どおり(out/t3_recovery_edge.json): abort_resumes は区間の最後(中立止め・人側を除く)が assist 2 のときだけ 'recovery'。自分の配列で k=0 は印、k=1〜54(1.8 秒)は印なし。作り物の回 3 で印が無いと ⑤ ON n 4 → 5・−0.125「満たさない」→ −0.165「使ってよい」、③ counted True(--first-only なら除かれる)。ただしこの形は知られていて文書に書いてある: 手順書 7 章の中立止めの行に「リカバリーの途中 … で CH3 を人側にした AI の区間のあとの発進にも、同じ走り直しの印が付く(… リカバリーが終わってから人側にしたときは出ない …)」、同じ行に「走り直したら紙に「走り直し: 本・時刻」と書く(印が無ければ、⑤ は main session が --skip 記録名@AI側にした秒 で外す。③④ のその発進の止まってから 3 周は使わない)」、「当たって止まったあと、その場で AI 側に戻したくなった」の行は「どの回でも戻さない … HS に戻してから」。fix8/decided_tools.md 11 章 1 も同じ文を出し、tests/test_fix8_tools_decided.py::test_c5_recovery_resolved_is_not_marked がわざと印を付けない形として持つ。指摘の言う「知られている残り(短い中立止め・止まっていない・assist 1)のどれでもない」は当たらず、より悪い形・別の形でもない"
+  }
+ ]
+}

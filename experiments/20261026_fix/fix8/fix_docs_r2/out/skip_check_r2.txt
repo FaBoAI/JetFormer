@@ -1,0 +1,9 @@
+trial hit   car_check {'collision': True, 'slip': False, 'missing': False} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+trial spin  car_check {'collision': False, 'slip': True, 'missing': False} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+trial gap   car_check {'collision': False, 'slip': False, 'missing': True} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+trial clean car_check {'collision': False, 'slip': False, 'missing': False} → doc 使ってよい(skip True)・old 使ってよい・plain 使ってよい
+rerun hit   印 None car_check {'collision': True, 'slip': False, 'missing': False} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+rerun spin  印 None car_check {'collision': False, 'slip': True, 'missing': False} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+rerun gap   印 None car_check {'collision': False, 'slip': False, 'missing': True} → doc 満たさない(skip False)・old 使ってよい・plain 満たさない
+rerun clean 印 None car_check {'collision': False, 'slip': False, 'missing': False} → doc 使ってよい(skip True)・old 使ってよい・plain 使ってよい
+collect.py sha256 702abf54475d

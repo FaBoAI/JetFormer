@@ -1,0 +1,74 @@
+{
+ "steps": [
+  {
+   "op": "eval",
+   "value": "ok"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "op": "eval",
+   "value": "ok"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after-log",
+   "prop": "text",
+   "value": "20261103-083000"
+  },
+  {
+   "op": "eval",
+   "value": "saved"
+  },
+  {
+   "op": "eval",
+   "value": "ok"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after",
+   "prop": "hidden",
+   "value": true
+  },
+  {
+   "op": "eval",
+   "value": "ok"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after",
+   "prop": "hidden",
+   "value": false
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after-log",
+   "prop": "text",
+   "value": "20261103-083400"
+  },
+  {
+   "op": "eval",
+   "value": "rebooted"
+  },
+  {
+   "op": "el",
+   "sel": "#dr-after",
+   "prop": "hidden",
+   "value": true
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes"
+ ]
+}

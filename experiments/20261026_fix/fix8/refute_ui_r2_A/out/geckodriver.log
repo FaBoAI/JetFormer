@@ -1,0 +1,20 @@
+1793146935533	geckodriver	INFO	Listening on 127.0.0.1:53693
+1793146935721	mozrunner::runner	INFO	Running command: MOZ_CRASHREPORTER="1" MOZ_CRASHREPORTER_NO_REPORT="1" MOZ_CRASHREPORTER_SHUTDOWN="1" "/snap/firefox/current/ ... ox/firefox" "--marionette" "-headless" "-profile" "/home/jetson/snap/firefox/common/refA-ui-r2-profile-qyvcv8oz" "-no-remote"
+*** You are running in headless mode.
+1793146936495	Marionette	INFO	Marionette enabled
+1793146936731	Marionette	INFO	Listening on port 39443
+Read port: 39443
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: "Experiment desktop-release-rollout-show-relay-to-all-browsers-next-sign-up-modal-cta has unknown featureId: email-autocomplete-relay"
+console.error: "Experiment visual-card-updates has unknown featureId: newtabRefinedCardsLayout"
+console.error: "Experiment enable-nimbus-unenrollment-synchronization has unknown featureId: nimbusStore"
+console.error: "Experiment private-window-visual-refresh-design-change-only has unknown featureId: feltPrivacy"
+console.error: "Experiment desktop-release-rollout-show-relay-to-all-browsers-next-sign-up-modal-cta has unknown featureId: email-autocomplete-relay"
+console.error: "Experiment visual-card-updates has unknown featureId: newtabRefinedCardsLayout"
+console.error: "Experiment enable-nimbus-unenrollment-synchronization has unknown featureId: nimbusStore"
+console.error: "Experiment private-window-visual-refresh-design-change-only has unknown featureId: feltPrivacy"
+[WARN  glean_core::core] failed to clear internal client info storage: An Rkv error occurred: key/value pair not found
+[WARN  glean_core::core] failed to clear internal client info storage: An Rkv error occurred: key/value pair not found
+1793147201385	Marionette	INFO	Stopped listening on port 39443
+JavaScript error: resource://gre/modules/PrivateBrowsingUtils.sys.mjs, line 50: TypeError: can't access property "QueryInterface", aWindow.docShell is null
+1793147202700	webdriver::server	INFO	Shutting down

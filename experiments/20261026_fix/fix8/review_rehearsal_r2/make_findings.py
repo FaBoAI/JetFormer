@@ -1,0 +1,69 @@
+"""反証 8-2 回目・係 rehearsal: findings.json を書く(ctx_review8.md の形)。数と文は out/ の台本の出力から写した。"""
+import json
+from pathlib import Path
+
+RB = '/home/jetson/jetformer_reports/fix_20261026/runbook_20261103.md'
+APP = '/home/jetson/jetformer/jetformer/web/static/app.js'
+D = '/home/jetson/jetformer/experiments/20261026_fix/fix8/review_rehearsal_r2'
+SUMMARY = (
+    "反証 8-2 回目・係 rehearsal(通し稽古。直していない。コード・文書は変えていない)。8-1 のあとに入った手順書の直し(fix8/fix_docs_r1.md・docs_sync_r1.md。"
+    "手順書 sha256 1325465f88ec = 同期 1 の「後」)と 8-1 で変わったコード(app.js aa275bb5 10/28 04:54・runs_1103.py c2d616c2・collect.py d2b210cc)を、11/3 の 1 日の流れで"
+    "たどった 23 手順: 3.1(本物の systemctl・journalctl を読むだけ = active・0・エラーの行なし・08:40:33 から「起動より新しいコードなし」)/ 3 章の電圧(作り物の家の ~ から "
+    "`cd ~/jetformer && python3 tools/fw_vbat_check.py --meter 8.25` = GET だけで動き「読めない・足りない(終わりの番号 3)」、cd なしは「can't open file」)/ 3 章 5 の朝の確かめを"
+    "収集したまま走った本(② の 2 区切り・「シーン」のタブで memo=試し(朝の確かめ)→ ⑤ は「回 ?」の試し)/ 4 章 6 の自動合わせの「電圧の源」(2-3・2-4 を 4 章の順。キャンセル → "
+    "V_before → もう一度 ▶ は手順書どおり)/ 4 章 9・7 章「起こし直した」の「シーン」のタブの道(本物の app.js を node の vm = sim_r2.js で: タブ → 絞り込み → 開く → memo= の後ろに "
+    "試し(理由)。→ 保存 → 画面の PATCH を本物の dataset.update_scene で書く。走り終わりのメモを書いた本・閉じた本・朝の確かめ、シーンの最初・真ん中・最後のどれでも ③④⑤ が試し。"
+    "ジャンル 5・タグはそのまま。ラベルができたあとの直しも読む)/ 7 章「走った値が計画と違った」の形の違う試し(左 4.2 の ON・1 周目の R1 4.5G → 計画の組に注意・満たさない)/ "
+    "8.1 の塊(作り物の家でそのまま 9 形。form_trial は ② と ⑤)= ③ は画面に何も出さず ④ の「## 3.」が ③ の 1 章と同じ行(R1 に届かなかった発進だけ ③ に)/ 3・7 章の後ろ約 1 m → リカバリーの前に人側 → "
+    "HS に置き直して走り直し(回 3・回 4。印なし・③「2 回目の発進」)と、人側が 0.15 秒遅れた形(印「リカバリーの途中 10.20 秒から 0.1 秒」③④⑤)/ 中止 → ■ → HS で同じ 20 を"
+    "もう 1 本 / 起き直しで 3-1 だけ OFF(② の印は 3-1)/ ② の形の印 / 引用の照らし(新しく外れた 9 は文書の中の言葉か組み立ての文)。下の 2 つのほかは手順書のとおりだった。"
+    "前の巡(review_rehearsal_r1・review_docs_r1)と同じもの、夜の道具の係の 2 件(review_tools_r2)は出していない。指摘 2 件(どちらも minor)。台本と出力は " + D +
+    "(out/)。作り物の家 tmp_rehearsal_r2/ は消した。")
+
+F = [
+    {'id': 'rehearsal-r2-unmarked-rerun-skip-drops-hit', 'severity': 'minor', 'file': RB, 'line': 255,
+     'title': "後ろ約 1 m で「リカバリーを待たずに人側」(3・7 章の新しい行)にしたあと HS から走り直した ON の発進には印が付かず、手順書 7 章・8.1 ⑤ の"
+              "「印が無ければ main session が --skip 記録名@AI側にした秒 で外す」のとおりにすると、走り直しの最初の周の当たりが消えて回 3 が「満たさない」→「使ってよい」になる",
+     'scenario': (
+         "作り物の家(build_fake.py rear1m_hit。記録は gen_course_r8.py)の回 3 の 3-2(20261103-091800・ON): 1 周目の SW のあと 17.5 m で前の物の手前に止まり(9.37 秒。10/23 の形)、"
+         "0.5 秒で人側(9.87 秒 = リカバリーの 0.8 秒の前。assist 2 なし)→ 人が HS(18 m)に置き直す → 16.40 秒に AI 側(発進の前進がもう一度出る)→ 走り直しの最初の周の LH で 4.5G。"
+         "手順書 8.1 の塊をそのまま流すと(night_rehearsal.sh rear1m_hit 8.1 → out/night_rear1m_hit_8.1.txt): ③ は走り直しを「16.40 … 2 回目の発進」とだけ書き(数えないの印なし)、"
+         "⑤ は回 3 の on n=5(2 回目以降の発進 1)・衝突(起点まで 1・最初の周 1)→「満たさない」{'first_lap_collisions_0': False}(car_check も「発進 2(AI 側 16.40 秒…)」"
+         "「強い: 18.2 秒 LH 4.50G」= out/cc_rear1m_hit.txt)。紙の「走り直し: 3-2」から手順書 7 章の中立止めの行(255 行)・8.1 ⑤(327 行)のとおり "
+         "`collect.py --day 20261103 --ignore-gain --skip 20261103-091800@16.40` → on n=4・衝突 0 →「使ってよい」(out/skip_rerun.txt)= 回 4 は発進の前進 ON。"
+         "同じ当たりでも人側が 0.15 秒遅れてリカバリーの 'brake' が出た形(rear1m_late_hit)は印「リカバリーの途中 10.20 秒から 0.1 秒」で比べから外れ、当たりは数えて"
+         "「満たさない」のまま(out/night_rear1m_late_hit_8.1.txt)。手順書は同じ行で「ON の走り直しの最初の周の衝突・空転・記録の欠けは ⑤ が比べの条件に数える(走り直しが当たった…"
+         "ら回 3 は「満たさない」)」と書き、collect.py の --skip の説明も「当たった本は外さない」だが、「当たった本は --skip しない」は 8.1 ⑤ の試し・形の違いの所にしか無い。"
+         "254 行(1 m の行)と todo 71 行は「そのあとは「当たって止まったあと」と同じ = … 紙に「走り直し: 本・時刻」」で、この形は前からの「0.5 秒より短い中立止め・止まって"
+         "いなかった区間」(approvals 8 ③)と違い、止まっていて中立止めもリカバリーも無い = 8-1 の新しい手順でいつも印の無い走り直しになる。"
+         "(当日は car_check の強い衝突の行と 7 章「発進の前進 ON の最初の周で LH・R1 に当たる → ON をやめる」でも気づける。当たりの無い走り直し rear1m は --skip しても"
+         "「使ってよい」のまま = 外してよい)"),
+     'fix': (
+         "手順書 7 章の中立止めの行(255 行)の「印が無ければ、⑤ は main session が `--skip 記録名@AI側にした秒` で外す」と 8.1 ⑤(327 行)の「印の無い走り直し…は main session が "
+         "`--skip 記録名@AI側にした秒` で外す」に「ただし ON の走り直しが最初の周に当たった・空転した(car_check の「!」)・記録が欠けたなら --skip しない(当たりは数える = 回 3 は"
+         "「満たさない」= 回 4 は発進の前進 OFF。--skip は当たりも消す。collect.py の --skip の説明「当たった本は外さない」)」を足し、254 行と todo 71 行の「同じ」にも同じ注を。"
+         "道具で直すなら standing_3lap.abort_resumes に「区間の終わりで止まっていて(|eRPM| < STOP_ERPM)RESUME_MOVE_M 以上進んだ区間」の形を足して印を付ける"
+         "(approvals 8 ③ を変えることになるので main session が決める)")},
+    {'id': 'rehearsal-r2-vbefore-screen-vs-server', 'severity': 'minor', 'file': APP, 'line': 2403,
+     'title': "4 章 6 の新しい読み方「▶ の確認の文の電圧の源が「説明欄の V_before」なら OK」が、V_before=831(点の打ち忘れ)・8,31・0.83 でも OK と出る。"
+              "サーバー(speed_auto.v_before_of = 6.0〜9.0 V の数)は使わず電圧の源は「なし」で走り、6 章の「+ 自動合わせ ON」に使えない",
+     'scenario': (
+         "ui_auto_vsrc.py(本物の app.js・index.html を sim_r2.js = tests/fixtures/app_sim_fix8.js の写しで。偽のサーバーの params は本物の GET の値・ファームなし)で 2-4 を"
+         "4 章の順(基準 → ベンチマーク 9 → +0.01 × 5 → 天井・自動合わせのスイッチ → 説明欄 → ▶): 説明欄の V_before=831 / 8,31 / 0.83 → ▶ の確認の文は"
+         "「速さのゲインの自動合わせ: ON(目標 1 周 8.12 秒・電圧の源 説明欄の V_before(走行のあいだ一定))」(app.js vbatSourceText は /(^|\\s)V_before=\\d/ だけを見る)。"
+         "同じ説明欄を本物の jetformer/drive._SpeedAuto(…, 説明欄).v_desc に渡すと nan(speed_auto.v_before_of は 6.0〜9.0 V の数だけ)= 走行の電圧の源は 0「なし(1.00)」"
+         "→ car_check の天井・自動合わせの行の「電圧の源 なし」= 手順書 4 章 10 の表「なし: 6 章の「+ 自動合わせ ON」に入れない」(回 2 の 2-3・2-4 の 1 本が比べに使えない)。"
+         "手順書 4 章 6(167 行。8-1 の rehearsal-auto-vsrc の直し)は「説明欄の V_before(走行のあいだ一定)」なら OK と読ませるので、確認の文で気づけない(走っている間の走行タブの"
+         "自動合わせの行には「電圧 -(なし(1.00))」と出る)。逆に全角の V_before=８.３１ は確認の文が「なし」でサーバーは 8.31 を使う。V_before=8.31 は画面もサーバーも"
+         "「説明欄」で、キャンセル → V_before → もう一度 ▶ の道は手順書どおり(out/ui_auto_vsrc.txt・ui_auto_vsrc.json)"),
+     'fix': (
+         "app.js の vbatSourceText を speed_auto.v_before_of と同じ決め(空白で区切った V_before= か Vb_before= の後ろを、末尾の V を除いて数にし 6.0〜9.0 のときだけ"
+         "「説明欄の V_before(… V。走行のあいだ一定)」。全角は NFKC でそろえる)にし、範囲の外・数でないときは「なし(説明欄の V_before=… は 6.0〜9.0 V の数でないので使わない)」"
+         "と出す(静的なファイルなので再起動は要らない。app.js の sha256 のたどりの試験を合わせる)。直さないなら手順書 4 章 6 の行に「値も読む(8.31 のように点のある 6.0〜9.0 の数。"
+         "831・8,31 は使われず「なし」で走る)」を足す")},
+]
+
+out = {'summary': SUMMARY, 'findings': F}
+p = Path(D) / 'findings.json'
+p.write_text(json.dumps(out, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+print(p, len(F))

@@ -1,0 +1,153 @@
+[
+ {
+  "case": "none",
+  "d_to_r1": -0.125,
+  "all_ok": false,
+  "checks_false": {
+   "to_r1": false
+  },
+  "off_median": 3.028,
+  "on_median": 2.903,
+  "off_n": 4,
+  "not_reached": [],
+  "target_rows": [
+   {
+    "t_ai": 1.0,
+    "to_r1_s": 3.033,
+    "why_no_r1": null,
+    "after_abort": null,
+    "launch_state": "off",
+    "move_0p2_s": 0.28,
+    "first_lap_gap": null,
+    "midrun": null,
+    "trial": null
+   }
+  ],
+  "mixed_options": null,
+  "stall_words_in_stdout": []
+ },
+ {
+  "case": "B_off",
+  "d_to_r1": -0.215,
+  "all_ok": true,
+  "checks_false": {},
+  "off_median": 3.118,
+  "on_median": 2.903,
+  "off_n": 4,
+  "not_reached": [],
+  "target_rows": [
+   {
+    "t_ai": 1.0,
+    "to_r1_s": 3.973,
+    "why_no_r1": null,
+    "after_abort": null,
+    "launch_state": "off",
+    "move_0p2_s": 0.28,
+    "first_lap_gap": null,
+    "midrun": null,
+    "trial": null
+   }
+  ],
+  "mixed_options": {
+   "後ろの見張り": {
+    "on": 4,
+    "off": 4
+   },
+   "リカバリーを残す": {
+    "on": 4,
+    "off": 4
+   }
+  },
+  "stall_words_in_stdout": []
+ },
+ {
+  "case": "A_on",
+  "d_to_r1": -0.12,
+  "all_ok": false,
+  "checks_false": {
+   "to_r1": false
+  },
+  "off_median": 3.023,
+  "on_median": 2.903,
+  "off_n": 3,
+  "not_reached": [
+   "off"
+  ],
+  "target_rows": [
+   {
+    "t_ai": 1.0,
+    "to_r1_s": null,
+    "why_no_r1": "15 秒以内に起点なし",
+    "after_abort": null,
+    "launch_state": "off",
+    "move_0p2_s": 0.28,
+    "first_lap_gap": null,
+    "midrun": null,
+    "trial": null
+   }
+  ],
+  "mixed_options": null,
+  "stall_words_in_stdout": []
+ },
+ {
+  "case": "C_on",
+  "d_to_r1": -0.215,
+  "all_ok": true,
+  "checks_false": {},
+  "off_median": 3.118,
+  "on_median": 2.903,
+  "off_n": 4,
+  "not_reached": [],
+  "target_rows": [
+   {
+    "t_ai": 1.0,
+    "to_r1_s": 3.543,
+    "why_no_r1": null,
+    "after_abort": null,
+    "launch_state": "off",
+    "move_0p2_s": 0.28,
+    "first_lap_gap": null,
+    "midrun": null,
+    "trial": null
+   }
+  ],
+  "mixed_options": null,
+  "stall_words_in_stdout": []
+ },
+ {
+  "case": "E_off",
+  "d_to_r1": -0.11,
+  "all_ok": false,
+  "checks_false": {
+   "to_r1": false
+  },
+  "off_median": 3.028,
+  "on_median": 2.918,
+  "off_n": 4,
+  "not_reached": [],
+  "target_rows": [
+   {
+    "t_ai": 1.0,
+    "to_r1_s": 3.743,
+    "why_no_r1": null,
+    "after_abort": null,
+    "launch_state": "on",
+    "move_0p2_s": 0.31,
+    "first_lap_gap": null,
+    "midrun": null,
+    "trial": null
+   }
+  ],
+  "mixed_options": {
+   "後ろの見張り": {
+    "on": 4,
+    "off": 4
+   },
+   "リカバリーを残す": {
+    "on": 4,
+    "off": 4
+   }
+  },
+  "stall_words_in_stdout": []
+ }
+]

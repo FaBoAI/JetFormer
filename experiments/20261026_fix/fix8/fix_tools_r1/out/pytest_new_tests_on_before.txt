@@ -1,0 +1,1956 @@
+...........FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF. [ 62%]
+..........FF.FF...FFFFFFFFFF..F..FFFFFF.F...                             [100%]
+=================================== FAILURES ===================================
+_______________ test_c5_other_form_trial_counts[spin-ceil-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count0')
+kind = 'trial', form = 'ceil', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[spin-ceil-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count1')
+kind = 'midrun', form = 'ceil', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[spin-left-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count2')
+kind = 'trial', form = 'left', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[spin-left-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count3')
+kind = 'midrun', form = 'left', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[spin-auto-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count4')
+kind = 'trial', form = 'auto', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[spin-auto-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count5')
+kind = 'midrun', form = 'auto', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[spin-target-trial] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count6')
+kind = 'trial', form = 'target', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[spin-target-midrun] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count7')
+kind = 'midrun', form = 'target', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[spin-gain-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count8')
+kind = 'trial', form = 'gain', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[spin-gain-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count9')
+kind = 'midrun', form = 'gain', shape = 'spin'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-ceil-trial] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count10')
+kind = 'trial', form = 'ceil', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-ceil-midrun] _____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count11')
+kind = 'midrun', form = 'ceil', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-left-trial] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count12')
+kind = 'trial', form = 'left', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-left-midrun] _____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count13')
+kind = 'midrun', form = 'left', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-auto-trial] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count14')
+kind = 'trial', form = 'auto', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-auto-midrun] _____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count15')
+kind = 'midrun', form = 'auto', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+____________ test_c5_other_form_trial_counts[extreme-target-trial] _____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count16')
+kind = 'trial', form = 'target', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+____________ test_c5_other_form_trial_counts[extreme-target-midrun] ____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count17')
+kind = 'midrun', form = 'target', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-gain-trial] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count18')
+kind = 'trial', form = 'gain', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_____________ test_c5_other_form_trial_counts[extreme-gain-midrun] _____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count19')
+kind = 'midrun', form = 'gain', shape = 'extreme'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[unk-ceil-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count20')
+kind = 'trial', form = 'ceil', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-ceil-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count21')
+kind = 'midrun', form = 'ceil', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-left-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count22')
+kind = 'trial', form = 'left', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-left-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count23')
+kind = 'midrun', form = 'left', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-auto-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count24')
+kind = 'trial', form = 'auto', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-auto-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count25')
+kind = 'midrun', form = 'auto', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+______________ test_c5_other_form_trial_counts[unk-target-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count26')
+kind = 'trial', form = 'target', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+______________ test_c5_other_form_trial_counts[unk-target-midrun] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count27')
+kind = 'midrun', form = 'target', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-gain-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count28')
+kind = 'trial', form = 'gain', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[unk-gain-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count29')
+kind = 'midrun', form = 'gain', shape = 'unk'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'slip_all_measured'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[hit-ceil-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count30')
+kind = 'trial', form = 'ceil', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-ceil-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count31')
+kind = 'midrun', form = 'ceil', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-left-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count32')
+kind = 'trial', form = 'left', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-left-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count33')
+kind = 'midrun', form = 'left', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-auto-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count34')
+kind = 'trial', form = 'auto', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-auto-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count35')
+kind = 'midrun', form = 'auto', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[hit-target-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count36')
+kind = 'trial', form = 'target', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+______________ test_c5_other_form_trial_counts[hit-target-midrun] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count37')
+kind = 'midrun', form = 'target', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-gain-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count38')
+kind = 'trial', form = 'gain', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[hit-gain-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count39')
+kind = 'midrun', form = 'gain', shape = 'hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+_______________ test_c5_other_form_trial_counts[gap-ceil-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count40')
+kind = 'trial', form = 'ceil', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-ceil-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count41')
+kind = 'midrun', form = 'ceil', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-left-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count42')
+kind = 'trial', form = 'left', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-left-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count43')
+kind = 'midrun', form = 'left', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-auto-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count44')
+kind = 'trial', form = 'auto', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-auto-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count45')
+kind = 'midrun', form = 'auto', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+______________ test_c5_other_form_trial_counts[gap-target-trial] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count46')
+kind = 'trial', form = 'target', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+______________ test_c5_other_form_trial_counts[gap-target-midrun] ______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count47')
+kind = 'midrun', form = 'target', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-gain-trial] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count48')
+kind = 'trial', form = 'gain', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+_______________ test_c5_other_form_trial_counts[gap-gain-midrun] _______________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count49')
+kind = 'midrun', form = 'gain', shape = 'gap'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'on_all_readable'
+
+tests/test_fix8_tools_r1.py:269: KeyError
+___________ test_c5_other_form_trial_counts[noreach_hit-ceil-trial] ____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count50')
+kind = 'trial', form = 'ceil', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-ceil-midrun] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count51')
+kind = 'midrun', form = 'ceil', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-left-trial] ____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count52')
+kind = 'trial', form = 'left', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-left-midrun] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count53')
+kind = 'midrun', form = 'left', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-auto-trial] ____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count54')
+kind = 'trial', form = 'auto', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-auto-midrun] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count55')
+kind = 'midrun', form = 'auto', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+__________ test_c5_other_form_trial_counts[noreach_hit-target-trial] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count56')
+kind = 'trial', form = 'target', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+__________ test_c5_other_form_trial_counts[noreach_hit-target-midrun] __________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count57')
+kind = 'midrun', form = 'target', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-gain-trial] ____________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count58')
+kind = 'trial', form = 'gain', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+___________ test_c5_other_form_trial_counts[noreach_hit-gain-midrun] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_trial_count59')
+kind = 'midrun', form = 'gain', shape = 'noreach_hit'
+
+    @pytest.mark.parametrize('kind', ['trial', 'midrun'])
+    @pytest.mark.parametrize('form', ['ceil', 'left', 'auto', 'target', 'gain'])
+    @pytest.mark.parametrize('shape', ['spin', 'extreme', 'unk', 'hit', 'gap', 'noreach_hit'])
+    def test_c5_other_form_trial_counts(tmp_path, kind, form, shape):
+        """今: 形・ゲインの違う試し・途中で変えた本(3-8)の ON の発進の最初の周の衝突・空転・比が出ない・欠け・R1 に届かない ON の衝突は、
+        同じ回・同じモデルの比べのある組(計画の組)の条件に数える(other_group_on)→「満たさない」。比べの数(ON 3 本・OFF 4 本・
+        −0.165 秒)は直す前と同じ。計画の組に注意の行、3-8 の組に「→ この組の比べから外した本の …」の行"""
+        D, log = tfday(tmp_path, kind, shape, form)
+        args = [] if form == 'gain' else IG
+        jn, on, _ = runc(D, 'r1new', args, 'n%s%s%s' % (kind[:2], form, shape))
+        jo, oo, _ = runc(D, 'r1old', args, 'o%s%s%s' % (kind[:2], form, shape))
+        gn, go = plan_group(jn), plan_group(jo)
+        assert go['compare']['all_ok'] is True
+        assert gn['by_launch'] == go['by_launch'] and gn['compare']['d_to_r1_s'] == go['compare']['d_to_r1_s'] == -0.165
+        ck = SHAPE_CHECK[shape]
+>       assert gn['compare']['checks'][ck] is False and gn['compare']['all_ok'] is False
+E       assert (True is False)
+
+tests/test_fix8_tools_r1.py:269: AssertionError
+________ test_c5_other_form_spin_uses_the_compared_strength[200.0-True] ________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_spin_uses_t0')
+trial_us = 200.0, counted = True
+
+    @pytest.mark.parametrize('trial_us, counted', [(200.0, True), (250.0, False)])
+    def test_c5_other_form_spin_uses_the_compared_strength(tmp_path, trial_us, counted):
+        """計画の組の ON に launch_us が混ざる(3-2・3-4 は 250、3-6 は 200 = 比べは 200)とき、形の違う試しの ON の空転も、その強さの本
+        だけを数える(自分の組の数え方と同じ)。衝突は強さによらず数える"""
+        D, log = tfday(tmp_path, 'trial', 'spin', 'ceil', us={13: 250.0, 15: 250.0, 17: 200.0, 19: trial_us})
+        jn, _, _ = runc(D, 'r1new', IG, 'us%d' % int(trial_us))
+        g = plan_group(jn)
+        assert g.get('launch_us_used') == 200.0
+>       assert ('other_group_on' in g) is counted and g['compare']['checks']['slip'] is (not counted)
+E       AssertionError: assert (('other_group_on' in {'session': '11/03 回3', 'model': 'B', 'gain': None, 'speed_ceiling': 0, ...}) is True)
+
+tests/test_fix8_tools_r1.py:328: AssertionError
+_______ test_c5_other_form_spin_uses_the_compared_strength[250.0-False] ________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_form_spin_uses_t1')
+trial_us = 250.0, counted = False
+
+    @pytest.mark.parametrize('trial_us, counted', [(200.0, True), (250.0, False)])
+    def test_c5_other_form_spin_uses_the_compared_strength(tmp_path, trial_us, counted):
+        """計画の組の ON に launch_us が混ざる(3-2・3-4 は 250、3-6 は 200 = 比べは 200)とき、形の違う試しの ON の空転も、その強さの本
+        だけを数える(自分の組の数え方と同じ)。衝突は強さによらず数える"""
+        D, log = tfday(tmp_path, 'trial', 'spin', 'ceil', us={13: 250.0, 15: 250.0, 17: 200.0, 19: trial_us})
+        jn, _, _ = runc(D, 'r1new', IG, 'us%d' % int(trial_us))
+        g = plan_group(jn)
+        assert g.get('launch_us_used') == 200.0
+        assert ('other_group_on' in g) is counted and g['compare']['checks']['slip'] is (not counted)
+        if not counted:
+            assert same_outputs(D, IG, 'us%d' % int(trial_us))
+        D2, _ = tfday(tmp_path / 'hit', 'trial', 'hit', 'ceil', us={13: 250.0, 15: 250.0, 17: 200.0, 19: 250.0})
+        g2 = plan_group(runc(D2, 'r1new', IG, 'ushit')[0])
+>       assert g2['other_group_on']['collisions'] == 1 and g2['compare']['checks']['first_lap_collisions_0'] is False
+               ^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'other_group_on'
+
+tests/test_fix8_tools_r1.py:333: KeyError
+____________________ test_c5_other_gain_abort_resume_counts ____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_other_gain_abort_resum0')
+
+    def test_c5_other_gain_abort_resume_counts(tmp_path):
+        """走り直し(リカバリーの途中で人側 → その場で AI 側)の ON の最初の周の衝突も、ゲインが違って別の組(--ignore-gain なし)なら
+        計画の組の条件に数える(試し・途中で変えた本と同じ)"""
+        D, log, tt = t8.rday(tmp_path, 3.5, b38=dict(ON, throttle_gain=0.92), hits=lambda tt: [(tt['t_res'] + 2.0, 6.0)])
+        jn, on, _ = runc(D, 'r1new', [], 'abg')
+        jo, _, _ = runc(D, 'r1old', [], 'abg')
+        gn = [g for g in jn['summary'] if g['gain'] == 0.9][0]
+        go = [g for g in jo['summary'] if g['gain'] == 0.9][0]
+        assert 'other_group_on' not in go and go['compare']['checks']['first_lap_collisions_0'] is True
+>       assert gn['other_group_on']['collisions'] == 1 and gn['compare']['checks']['first_lap_collisions_0'] is False
+               ^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'other_group_on'
+
+tests/test_fix8_tools_r1.py:351: KeyError
+____________________________ test_launch_stall_unit ____________________________
+
+    def test_launch_stall_unit():
+        """launch_stall: 発進 → R1 の起点の間の、中立止めの行でないフレームどうしの間(端も入れる)が LAUNCH_STALL_S より長いときだけ"""
+        m = t8.load_mod('c8r1_unit', NEW_C)
+>       assert m.LAUNCH_STALL_S == 0.22
+               ^^^^^^^^^^^^^^^^
+E       AttributeError: module 'c8r1_unit' has no attribute 'LAUNCH_STALL_S'
+
+tests/test_fix8_tools_r1.py:360: AttributeError
+_______________________ test_c5_stall_off_is_excluded[B] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_off_is_excluded_0')
+case = 'B'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_off_is_excluded(tmp_path, case):
+        """今: その発進に launch_stall(フレームの間 0.933 秒・1.567 秒から)、OFF の組から外して OFF n 3・−0.14 秒「満たさない」(両方 ON の
+        日の中止(A)と同じ数)。組に launch_stall_excluded と行、発進の行の後ろに「カメラの止まり(…。比べに入れない)」。ON の組・試験の
+        選択肢の数は直す前と同じ"""
+        D, log35 = sday(tmp_path, case)
+        jn, on, _ = runc(D, 'r1new', IG, 'ns' + case)
+        jo, _, _ = runc(D, 'r1old', IG, 'ns' + case)
+        gn, go = g0(jn), g0(jo)
+        r = rows_of(jn, log35)[0]
+>       assert r['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567} and r['launch_state'] == 'off'
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall'
+
+tests/test_fix8_tools_r1.py:421: KeyError
+_______________________ test_c5_stall_off_is_excluded[C] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_off_is_excluded_1')
+case = 'C'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_off_is_excluded(tmp_path, case):
+        """今: その発進に launch_stall(フレームの間 0.933 秒・1.567 秒から)、OFF の組から外して OFF n 3・−0.14 秒「満たさない」(両方 ON の
+        日の中止(A)と同じ数)。組に launch_stall_excluded と行、発進の行の後ろに「カメラの止まり(…。比べに入れない)」。ON の組・試験の
+        選択肢の数は直す前と同じ"""
+        D, log35 = sday(tmp_path, case)
+        jn, on, _ = runc(D, 'r1new', IG, 'ns' + case)
+        jo, _, _ = runc(D, 'r1old', IG, 'ns' + case)
+        gn, go = g0(jn), g0(jo)
+        r = rows_of(jn, log35)[0]
+>       assert r['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567} and r['launch_state'] == 'off'
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall'
+
+tests/test_fix8_tools_r1.py:421: KeyError
+_______________________ test_c5_stall_off_is_excluded[H] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_off_is_excluded_2')
+case = 'H'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_off_is_excluded(tmp_path, case):
+        """今: その発進に launch_stall(フレームの間 0.933 秒・1.567 秒から)、OFF の組から外して OFF n 3・−0.14 秒「満たさない」(両方 ON の
+        日の中止(A)と同じ数)。組に launch_stall_excluded と行、発進の行の後ろに「カメラの止まり(…。比べに入れない)」。ON の組・試験の
+        選択肢の数は直す前と同じ"""
+        D, log35 = sday(tmp_path, case)
+        jn, on, _ = runc(D, 'r1new', IG, 'ns' + case)
+        jo, _, _ = runc(D, 'r1old', IG, 'ns' + case)
+        gn, go = g0(jn), g0(jo)
+        r = rows_of(jn, log35)[0]
+>       assert r['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567} and r['launch_state'] == 'off'
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall'
+
+tests/test_fix8_tools_r1.py:421: KeyError
+______________________ test_c5_stall_on_is_not_use_ok[B] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_is_not_use_ok0')
+case = 'B'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_on_is_not_use_ok(tmp_path, case):
+        """発進の前進 ON の発進でカメラが止まったら、比べから外し(ON n 4)、checks の on_no_stall = False で「満たさない」(外すだけだと
+        遅い ON が抜けて「使ってよい」の側に動きうる)。行「→ ON の発進で、…」"""
+        D, log35 = sday(tmp_path, case, boost35=True)
+        jn, on, _ = runc(D, 'r1new', IG, 'nso' + case)
+        gn = g0(jn)
+>       assert gn['launch_stall_on'] == 1 and gn['by_launch']['on']['n'] == 4
+               ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall_on'
+
+tests/test_fix8_tools_r1.py:446: KeyError
+______________________ test_c5_stall_on_is_not_use_ok[C] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_is_not_use_ok1')
+case = 'C'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_on_is_not_use_ok(tmp_path, case):
+        """発進の前進 ON の発進でカメラが止まったら、比べから外し(ON n 4)、checks の on_no_stall = False で「満たさない」(外すだけだと
+        遅い ON が抜けて「使ってよい」の側に動きうる)。行「→ ON の発進で、…」"""
+        D, log35 = sday(tmp_path, case, boost35=True)
+        jn, on, _ = runc(D, 'r1new', IG, 'nso' + case)
+        gn = g0(jn)
+>       assert gn['launch_stall_on'] == 1 and gn['by_launch']['on']['n'] == 4
+               ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall_on'
+
+tests/test_fix8_tools_r1.py:446: KeyError
+______________________ test_c5_stall_on_is_not_use_ok[H] _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_is_not_use_ok2')
+case = 'H'
+
+    @pytest.mark.parametrize('case', ['B', 'C', 'H'])
+    def test_c5_stall_on_is_not_use_ok(tmp_path, case):
+        """発進の前進 ON の発進でカメラが止まったら、比べから外し(ON n 4)、checks の on_no_stall = False で「満たさない」(外すだけだと
+        遅い ON が抜けて「使ってよい」の側に動きうる)。行「→ ON の発進で、…」"""
+        D, log35 = sday(tmp_path, case, boost35=True)
+        jn, on, _ = runc(D, 'r1new', IG, 'nso' + case)
+        gn = g0(jn)
+>       assert gn['launch_stall_on'] == 1 and gn['by_launch']['on']['n'] == 4
+               ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall_on'
+
+tests/test_fix8_tools_r1.py:446: KeyError
+______________________ test_c5_stall_on_collision_counts _______________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_collision_cou0')
+
+    def test_c5_stall_on_collision_counts(tmp_path):
+        """カメラが止まった ON の発進の最初の周の衝突は「最初の周の衝突 0」にも数える(launch_stall_on_collisions)"""
+        D = t7.Day(tmp_path)
+        for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+            D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+        log = D.add(16, ON, 0.22, 0.3, stall=[(1.6, 2.2)], hits=[(3.5, 6.0)])
+        jn, on, _ = runc(D, 'r1new', IG, 'stc')
+        gn = g0(jn)
+>       assert rows_of(jn, log)[0]['launch_stall']['gap_s'] > 0.22
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall'
+
+tests/test_fix8_tools_r1.py:461: KeyError
+_________________________ test_c5_stall_on_spin_counts _________________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_spin_counts0')
+
+    def test_c5_stall_on_spin_counts(tmp_path):
+        """カメラが止まった ON の発進の空転(比 ≈ 1.85)も空転の条件に数える(launch_stall_slip・checks の slip = False・行)"""
+        D = t7.Day(tmp_path)
+        for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+            D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+        log = D.add(16, ON, 0.15, 0.3, stall=[(2.3, 2.8)])
+        t72.scale_imu(D.raw, log, 1.0, 2.2, 0.55)
+        jn, on, _ = runc(D, 'r1new', IG, 'stspin')
+        gn = g0(jn)
+        r = rows_of(jn, log)[0]
+>       assert r.get('launch_stall') and r['slip']['ratio'] > 1.3
+E       AssertionError: assert (None)
+E        +  where None = <built-in method get of dict object at 0xffff7e143280>('launch_stall')
+E        +    where <built-in method get of dict object at 0xffff7e143280> = {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}.get
+
+tests/test_fix8_tools_r1.py:476: AssertionError
+____________________ test_c5_stall_on_first_lap_gap_counts _____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_on_first_lap_gap0')
+
+    def test_c5_stall_on_first_lap_gap_counts(tmp_path):
+        """カメラが止まった ON の発進の最初の周の記録の欠け(シーン 0002 の IMU.npz が無い)も数える(first_lap_gap_on に「。カメラの止まり」・
+        on_all_readable = False)"""
+        D = t7.Day(tmp_path)
+        for blk, prm, dm in ((12, PRM, 0.20), (13, ON, 0.15), (14, PRM, 0.23), (15, ON, 0.20)):
+            D.add(blk, prm, dm, 0.6 if prm is PRM else 0.3)
+        log = D.add(16, ON, 0.15, 0.3, dur=45.0, vk=t7.launch_keys(14.0, 0.15, 0.3, until=45.0), ai=[(14.0, 43.0)],
+                    launch=[(14.0, 0.5)], stall=[(14.6, 15.5)])
+        (D.raw / log / ('%s-0002' % log) / 'IMU.npz').unlink()
+        jn, _, _ = runc(D, 'r1new', IG, 'stgap')
+        gn = g0(jn)
+        r = rows_of(jn, log)[0]
+>       assert r.get('launch_stall') and r.get('first_lap_gap')
+E       AssertionError: assert (None)
+E        +  where None = <built-in method get of dict object at 0xffff8f3a12c0>('launch_stall')
+E        +    where <built-in method get of dict object at 0xffff8f3a12c0> = {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}.get
+
+tests/test_fix8_tools_r1.py:494: AssertionError
+____________________ test_c5_all_off_stalled_is_not_use_ok _____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_all_off_stalled_is_not0')
+
+    def test_c5_all_off_stalled_is_not_use_ok(tmp_path):
+        """OFF の発進が全部カメラの止まりで外れたら、比べられない = 満たさない(checks の off_no_stall。前は伸びた OFF と比べた)"""
+        D = t7.Day(tmp_path)
+        D.add(12, PRM, 0.20, 0.6, stall=[(1.6, 2.5)])
+        D.add(13, ON, 0.15, 0.3)
+        D.add(14, PRM, 0.23, 0.6, stall=[(1.6, 2.5)])
+        D.add(15, ON, 0.20, 0.3)
+        jn, on, _ = runc(D, 'r1new', IG, 'alloff')
+        jo, oo, _ = runc(D, 'r1old', IG, 'alloff')
+        gn, go = g0(jn), g0(jo)
+        assert go['by_launch']['off']['n'] == 2 and 'compare' in go
+>       assert 'off' not in gn['by_launch'] and gn['compare']['all_ok'] is False
+E       AssertionError: assert ('off' not in {'off': {'n': 2, 'logs': ['20261103-130000@1.00', '20261103-131000@1.00'], 'no': [1, 3], 'to_r1_median_s': 3.028, ...}, 'on': {'n': 2, 'logs': ['20261103-130500@1.00', '20261103-131500@1.00'], 'no': [2, 4], 'to_r1_median_s': 2.838, ...}})
+
+tests/test_fix8_tools_r1.py:510: AssertionError
+_____________________ test_c5_stall_after_r1_is_not_marked _____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_after_r1_is_not_0')
+
+    def test_c5_stall_after_r1_is_not_marked(tmp_path):
+        """止まりが R1 の起点のあと(最初の周の途中)なら launch_stall は付かない = 直す前とバイト単位で同じ"""
+        D, log35 = sday(tmp_path, 'S', stall=(4.5, 5.4))
+        jn, _, _ = runc(D, 'r1new', IG, 'after')
+        r = rows_of(jn, log35)[0]
+        assert 'launch_stall' not in r and r['t_ai'] + r['to_r1_s'] < 4.5
+        assert same_outputs(D, IG, 'after')
+        Dm, logm = sday(tmp_path / 'm', 'S')                    # 同じ止まりが発進 → R1 の間なら(速さは変わらなくても)外す
+>       assert rows_of(runc(Dm, 'r1new', IG, 'mid')[0], logm)[0]['launch_stall'] == {'gap_s': 0.933, 'at_s': 1.567}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_stall'
+
+tests/test_fix8_tools_r1.py:533: KeyError
+__________ test_c5_stall_threshold_on_the_realistic_shape[0.15-0.167] __________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_threshold_on_the0')
+ln = 0.15, gap = 0.167
+
+    @pytest.mark.parametrize('ln, gap', [(0.05, 0.067), (0.1, 0.133), (0.15, 0.167), (0.2, 0.233), (0.25, 0.267), (0.3, 0.333)])
+    def test_c5_stall_threshold_on_the_realistic_shape(tmp_path, ln, gap):
+        """本物に近い速さ(止まりの 0.1 秒あとから中立の惰性 −0.9 m/s²)で、フレームの無い間 ln 秒(1.61 秒から。フレームの間は gap 秒):
+        間が 0.22 秒より長いときだけ外す。外さない長さは直す前とバイト単位で同じ"""
+        flagged, noted = gap > 0.22, 0.15 < gap <= 0.22
+        D, log35 = sday(tmp_path, 'R', stall=(1.61, 1.61 + ln))
+        jn, on, _ = runc(D, 'r1new', IG, 'thr%d' % int(ln * 100))
+        r = rows_of(jn, log35)[0]
+>       assert ('launch_stall' in r) is flagged and ('launch_gap_short' in g0(jn)) is noted
+E       AssertionError: assert (('launch_stall' in {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}) is False and ('launch_gap_short' in {'session': '11/03 回3', 'model': 'B', 'gain': None, 'speed_ceiling': 0, ...}) is True)
+E        +  where {'session': '11/03 回3', 'model': 'B', 'gain': None, 'speed_ceiling': 0, ...} = g0({'created_by': 'experiments/20261026_fix/diag_launch/collect.py', 'launches': [{'log': '20261103-130000', 'no': 1, 'se... 'a': 4.043, 'b': 13.043, 'lap_s': 9.0}, {'log': '20261103-131000', 'a': 13.043, 'b': 22.043, 'lap_s': 9.0}, ...], ...})
+
+tests/test_fix8_tools_r1.py:544: AssertionError
+__________ test_c5_stall_threshold_on_the_realistic_shape[0.2-0.233] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_threshold_on_the1')
+ln = 0.2, gap = 0.233
+
+    @pytest.mark.parametrize('ln, gap', [(0.05, 0.067), (0.1, 0.133), (0.15, 0.167), (0.2, 0.233), (0.25, 0.267), (0.3, 0.333)])
+    def test_c5_stall_threshold_on_the_realistic_shape(tmp_path, ln, gap):
+        """本物に近い速さ(止まりの 0.1 秒あとから中立の惰性 −0.9 m/s²)で、フレームの無い間 ln 秒(1.61 秒から。フレームの間は gap 秒):
+        間が 0.22 秒より長いときだけ外す。外さない長さは直す前とバイト単位で同じ"""
+        flagged, noted = gap > 0.22, 0.15 < gap <= 0.22
+        D, log35 = sday(tmp_path, 'R', stall=(1.61, 1.61 + ln))
+        jn, on, _ = runc(D, 'r1new', IG, 'thr%d' % int(ln * 100))
+        r = rows_of(jn, log35)[0]
+>       assert ('launch_stall' in r) is flagged and ('launch_gap_short' in g0(jn)) is noted
+E       AssertionError: assert (('launch_stall' in {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}) is True)
+
+tests/test_fix8_tools_r1.py:544: AssertionError
+__________ test_c5_stall_threshold_on_the_realistic_shape[0.25-0.267] __________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_threshold_on_the2')
+ln = 0.25, gap = 0.267
+
+    @pytest.mark.parametrize('ln, gap', [(0.05, 0.067), (0.1, 0.133), (0.15, 0.167), (0.2, 0.233), (0.25, 0.267), (0.3, 0.333)])
+    def test_c5_stall_threshold_on_the_realistic_shape(tmp_path, ln, gap):
+        """本物に近い速さ(止まりの 0.1 秒あとから中立の惰性 −0.9 m/s²)で、フレームの無い間 ln 秒(1.61 秒から。フレームの間は gap 秒):
+        間が 0.22 秒より長いときだけ外す。外さない長さは直す前とバイト単位で同じ"""
+        flagged, noted = gap > 0.22, 0.15 < gap <= 0.22
+        D, log35 = sday(tmp_path, 'R', stall=(1.61, 1.61 + ln))
+        jn, on, _ = runc(D, 'r1new', IG, 'thr%d' % int(ln * 100))
+        r = rows_of(jn, log35)[0]
+>       assert ('launch_stall' in r) is flagged and ('launch_gap_short' in g0(jn)) is noted
+E       AssertionError: assert (('launch_stall' in {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}) is True)
+
+tests/test_fix8_tools_r1.py:544: AssertionError
+__________ test_c5_stall_threshold_on_the_realistic_shape[0.3-0.333] ___________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_threshold_on_the3')
+ln = 0.3, gap = 0.333
+
+    @pytest.mark.parametrize('ln, gap', [(0.05, 0.067), (0.1, 0.133), (0.15, 0.167), (0.2, 0.233), (0.25, 0.267), (0.3, 0.333)])
+    def test_c5_stall_threshold_on_the_realistic_shape(tmp_path, ln, gap):
+        """本物に近い速さ(止まりの 0.1 秒あとから中立の惰性 −0.9 m/s²)で、フレームの無い間 ln 秒(1.61 秒から。フレームの間は gap 秒):
+        間が 0.22 秒より長いときだけ外す。外さない長さは直す前とバイト単位で同じ"""
+        flagged, noted = gap > 0.22, 0.15 < gap <= 0.22
+        D, log35 = sday(tmp_path, 'R', stall=(1.61, 1.61 + ln))
+        jn, on, _ = runc(D, 'r1new', IG, 'thr%d' % int(ln * 100))
+        r = rows_of(jn, log35)[0]
+>       assert ('launch_stall' in r) is flagged and ('launch_gap_short' in g0(jn)) is noted
+E       AssertionError: assert (('launch_stall' in {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}) is True)
+
+tests/test_fix8_tools_r1.py:544: AssertionError
+____________________ test_c5_short_gap_is_only_noted[1.401] ____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_short_gap_is_only_note0')
+s0 = 1.401
+
+    @pytest.mark.parametrize('s0', [1.401, 1.601])
+    def test_c5_short_gap_is_only_noted(tmp_path, s0):
+        """間 0.200 秒(6 フレーム分。中立約 0.1 秒)の止まりは外さない(比べ・判定・JSON の launches は直す前と同じ)が、境目の日の答えを変えうる
+        (作り物: 1.40 秒からなら 3-5 が 0.07 秒遅れ −0.17 秒「使ってよい」、1.60 秒からなら 0.03 秒遅れ −0.15 秒「使ってよい」。直す前も同じ答え)
+        ので、組に launch_gap_short と注意の行を出す"""
+        D, log35 = sday(tmp_path, 'R', stall=(s0, s0 + 0.198))
+        jn, on, _ = runc(D, 'r1new', IG, 'sg%d' % int(s0 * 1000))
+        jo, oo, _ = runc(D, 'r1old', IG, 'sg%d' % int(s0 * 1000))
+        gn, go = g0(jn), g0(jo)
+        r = rows_of(jn, log35)[0]
+        assert 'launch_stall' not in r and jn['launches'] == jo['launches']
+>       assert gn['launch_gap_short'] == ['%s@%.2f(off・フレームの間 0.20 秒(%.2f 秒から))' % (log35, r['t_ai'], s0 - 0.001)]
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_gap_short'
+
+tests/test_fix8_tools_r1.py:565: KeyError
+____________________ test_c5_short_gap_is_only_noted[1.601] ____________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_short_gap_is_only_note1')
+s0 = 1.601
+
+    @pytest.mark.parametrize('s0', [1.401, 1.601])
+    def test_c5_short_gap_is_only_noted(tmp_path, s0):
+        """間 0.200 秒(6 フレーム分。中立約 0.1 秒)の止まりは外さない(比べ・判定・JSON の launches は直す前と同じ)が、境目の日の答えを変えうる
+        (作り物: 1.40 秒からなら 3-5 が 0.07 秒遅れ −0.17 秒「使ってよい」、1.60 秒からなら 0.03 秒遅れ −0.15 秒「使ってよい」。直す前も同じ答え)
+        ので、組に launch_gap_short と注意の行を出す"""
+        D, log35 = sday(tmp_path, 'R', stall=(s0, s0 + 0.198))
+        jn, on, _ = runc(D, 'r1new', IG, 'sg%d' % int(s0 * 1000))
+        jo, oo, _ = runc(D, 'r1old', IG, 'sg%d' % int(s0 * 1000))
+        gn, go = g0(jn), g0(jo)
+        r = rows_of(jn, log35)[0]
+        assert 'launch_stall' not in r and jn['launches'] == jo['launches']
+>       assert gn['launch_gap_short'] == ['%s@%.2f(off・フレームの間 0.20 秒(%.2f 秒から))' % (log35, r['t_ai'], s0 - 0.001)]
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'launch_gap_short'
+
+tests/test_fix8_tools_r1.py:565: KeyError
+________________ test_c5_stall_trial_or_abort_keep_their_bucket ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r1/pt_before3/test_c5_stall_trial_or_abort_k0')
+
+    def test_c5_stall_trial_or_abort_keep_their_bucket(tmp_path):
+        """試しの本の発進にカメラの止まりがあっても、試し(比べの外)のまま(launch_stall の印は行に付くが、組の launch_stall_excluded には
+        入れない)"""
+        D, log35 = sday(tmp_path, 'C')
+        t8.make_kind(D.raw, log35, 'trial')
+        jn, _, _ = runc(D, 'r1new', IG, 'sttr')
+        gn = g0(jn)
+>       assert rows_of(jn, log35)[0].get('launch_stall') and rows_of(jn, log35)[0].get('trial')
+E       AssertionError: assert (None)
+E        +  where None = <built-in method get of dict object at 0xffff7e5b1ec0>('launch_stall')
+E        +    where <built-in method get of dict object at 0xffff7e5b1ec0> = {'log': '20261103-132000', 'no': 5, 'session': '11/03 回3', 'model': 'B', ...}.get
+
+tests/test_fix8_tools_r1.py:587: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix8_tools_r1.py::test_real_days_unchanged[20261010]
+tests/test_fix8_tools_r1.py::test_real_days_unchanged[20261010]
+  /home/jetson/jetformer/tests/fixtures/fix8_tools_r1_before/collect.py.orig:880: RuntimeWarning: Mean of empty slice
+    row['f_model_mean_%.1fs' % w] = round(float(np.nanmean(fm[mm])), 1)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[spin-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[extreme-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[unk-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[hit-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[gap-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-ceil-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-ceil-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-left-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-left-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-auto-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-auto-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-target-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-target-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-gain-trial]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_trial_counts[noreach_hit-gain-midrun]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_spin_uses_the_compared_strength[200.0-True]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_form_spin_uses_the_compared_strength[250.0-False]
+FAILED tests/test_fix8_tools_r1.py::test_c5_other_gain_abort_resume_counts - ...
+FAILED tests/test_fix8_tools_r1.py::test_launch_stall_unit - AttributeError: ...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_off_is_excluded[B] - KeyErr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_off_is_excluded[C] - KeyErr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_off_is_excluded[H] - KeyErr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_is_not_use_ok[B] - KeyEr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_is_not_use_ok[C] - KeyEr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_is_not_use_ok[H] - KeyEr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_collision_counts - KeyEr...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_spin_counts - AssertionE...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_on_first_lap_gap_counts - A...
+FAILED tests/test_fix8_tools_r1.py::test_c5_all_off_stalled_is_not_use_ok - A...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_after_r1_is_not_marked - Ke...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_threshold_on_the_realistic_shape[0.15-0.167]
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_threshold_on_the_realistic_shape[0.2-0.233]
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_threshold_on_the_realistic_shape[0.25-0.267]
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_threshold_on_the_realistic_shape[0.3-0.333]
+FAILED tests/test_fix8_tools_r1.py::test_c5_short_gap_is_only_noted[1.401] - ...
+FAILED tests/test_fix8_tools_r1.py::test_c5_short_gap_is_only_noted[1.601] - ...
+FAILED tests/test_fix8_tools_r1.py::test_c5_stall_trial_or_abort_keep_their_bucket
+82 failed, 34 passed, 2 warnings in 140.61s (0:02:20)

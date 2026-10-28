@@ -1,0 +1,75 @@
+{
+ "per_scene": {
+  "units": 235,
+  "skipped": 3,
+  "frames": 122767,
+  "rec_starts": 16,
+  "diverged": [],
+  "backing_in_bwg": [
+   [
+    "20261023-205458-0002",
+    3.531,
+    "brake",
+    1455.0
+   ]
+  ],
+  "events_now": {
+   "back_early": 1,
+   "rear_impact": 2
+  },
+  "events_bef": {
+   "back_early": 1,
+   "rear_impact": 2
+  }
+ },
+ "concat": {
+  "units": 58,
+  "skipped": 2,
+  "frames": 117036,
+  "rec_starts": 15,
+  "diverged": [
+   {
+    "s": 40.07,
+    "phase0": "brake",
+    "phase_now": "brake",
+    "phase_bef": "reverse",
+    "erpm": 582.0,
+    "esc_rev": false,
+    "ev_now": "back_no_esc",
+    "ev_bef": "back_early",
+    "out_bef": [
+     1291.0,
+     1796.0
+    ],
+    "out_now": [
+     1441.0,
+     1796.0
+    ],
+    "unit": "20261024-160847"
+   }
+  ],
+  "backing_in_bwg": [
+   [
+    "20261023-205458",
+    23.55,
+    "brake",
+    1455.0
+   ],
+   [
+    "20261024-160847",
+    40.07,
+    "brake",
+    582.0
+   ]
+  ],
+  "events_now": {
+   "back_early": 1,
+   "rear_impact": 2,
+   "back_no_esc": 1
+  },
+  "events_bef": {
+   "back_early": 2,
+   "rear_impact": 2
+  }
+ }
+}

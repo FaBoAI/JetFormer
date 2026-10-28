@@ -1,0 +1,54 @@
+........................................................................ [  7%]
+....................................................................F... [ 14%]
+........................................................................ [ 22%]
+........................................................................ [ 29%]
+........................................................................ [ 37%]
+........................................................................ [ 44%]
+........................................................................ [ 52%]
+........................................................................ [ 59%]
+........................................................................ [ 66%]
+........................................................................ [ 74%]
+........................................................................ [ 81%]
+........................................................................ [ 89%]
+........................................................................ [ 96%]
+...............s......s.........s                                        [100%]
+=================================== FAILURES ===================================
+___________ test_rec3_1_off_unreached_is_listed_but_does_not_fail_on ___________
+
+    def test_rec3_1_off_unreached_is_listed_but_does_not_fail_on():
+        col = load_mod('collect_r12_off', COLLECT)
+        rows = [_row('20261103-133000', 'off', 3.0), _row('20261103-134000', 'off', None, hits=[(2.0, 5.0, 'HS')]),
+                _row('20261103-133500', 'on', 2.7), _row('20261103-134500', 'on', 2.7),
+                _row('20261103-135000', 'on_not_started', None)]
+        g = col.summarize(rows)[0]
+        assert g['not_reached']['off']['n'] == 1 and g['not_reached']['on_not_started']['n'] == 1
+>       assert g['compare']['all_ok'] is True and 'on_all_reached_r1' not in g['compare']['checks']
+E       assert (False is True)
+
+tests/test_fix3_r1_2.py:507: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix3_r1_2.py: 50 warnings
+tests/test_fix3_r3_2_tools.py: 226 warnings
+tests/test_fix7_docs_r2.py: 34 warnings
+tests/test_fix8_docs_sync1.py: 24 warnings
+tests/test_fix8_tools_decided.py: 552 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:891: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r1_2.py: 23 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r1_2_before/collect.py.orig:374: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix8_tools_decided.py: 449 warnings
+  /home/jetson/jetformer/tests/fixtures/fix8_tools_decided_before/collect.py.orig:760: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r1_2.py::test_rec3_1_off_unreached_is_listed_but_does_not_fail_on
+1 failed, 965 passed, 3 skipped, 1557 warnings in 674.76s (0:11:14)
+exit 1

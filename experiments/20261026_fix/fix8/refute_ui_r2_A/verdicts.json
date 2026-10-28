@@ -1,0 +1,11 @@
+{
+ "verdicts": [
+  {
+   "id": "float-stop-half-width-under-toast",
+   "real": true,
+   "severity": "minor",
+   "evidence": "measure_float_stop.py(headless の Firefox 158・作り物の FastAPI に本物の index.html ef81bb60・app.js aa275bb5・style.css dbc8b79a。画面 = 左上に置いた枠なしの iframe(Firefox の窓は幅 500 より狭くならないため。窓のまま測った 1 回目は幅 500 に丸められたので out/clamped500/ に分けて使わない)。toast() を直に呼ばず、本物の ▶(#btn-dr-start の click → 確認の文に true → POST /api/drive/start → 本物の toast() と pollDrive())で走らせ、押してから 7.5 秒を 50 ms ごとに測った。'b1103' は本物の data/bench_candidates.json の 11/03 のブロック 1 を選ぶ欄で選んでから ▶。作り物の start は本物の bench.plan_check を本物の計画で呼ぶ → plan_diffs は ['throttle_gain 0.9(基準 1.0)'] = 11/3 は全ブロックが 0.9 なので毎回付く)→ out/summary.txt・out/measure_float_stop.json・out/raw_*.json・out/shot_*.png。\n指摘どおり: 幅 390〜430 × 高さ 660〜900 で浮いている ■ は幅 195〜215・3 行・高さ 120(「■ AI走行を / 停止(スペー / スキー)」、412・430 は「■ AI走行を停 / 止(スペース / キー)」)。11/3 のブロックの ▶ は赤いトースト「ブロックの計画と違うので「試し」…throttle_gain 0.9(基準 1.0)」が約 70〜6000 ms 出て、■ の上の 40 px に重なり、1 行目の字はどれも半分より多く隠れる(1 行目の真ん中はトーストの下)。8-1 の前の style.css(5842642f)に替えても 390×700・430×900 で同じ 40 px・同じ字(前からの形)。覆われた点(トーストの箱の中・■ の 1 行目)を WebDriver の指(touch)で押すと elementFromPoint は #btn-float-stop で、本物の stopDrive が POST /api/drive/stop {reason: 停止ボタン} を送り止まった(390×700・430×900)= 押せる。幅 600 は 2 行・縦 10 px(余白だけ・字は隠れない)、768・1280・横向き 844×390 は 1 行で重ならない。\n指摘より広い所(打ち消しではない): (1) 6 秒の赤いトーストだけでなく、ふつうの ▶(「AI走行 No.N を開始しました」)と推論の確認(「推論の確認を開始しました(出力は中立)」)も 3 秒、同じ 39.5 px・同じ 1 行目を隠す = 11/3 に限らず毎回の走行開始。(2) 幅 360・375 は ■ が 4 行・高さ 150(360: 「■ AI走行 / を停止(ス / ペース / キー)」)。360 の 6 秒の赤いトーストは縦 59 px で 1・2 行目「■ AI走行」「を停止(ス」を隠し、見えるのは「ペース / キー)」だけ。3 秒のトーストは 2 行目(360「を停止(ス」・375「停止(ス」)を隠す。\nminor のまま: 隠れるのは走行開始の 3〜6 秒だけ・■ の赤い箱の下側は見える・押せば止まる。手順書の止め方は CH3 を人側 → ■(4 章 8・7 章の表)で、急ぐときはプロポの CH3 = 画面の ■ は走り終わりに押すもの。確かめていないこと: カードの ■(#btn-dr-stop)が見えるか(▶ の位置次第)・直しの案(width: max-content; max-width: 90%・bottom の上げ)の効き目・実機のスマホのフォント",
+   "mine": ["measure_float_stop.py", "summary.py", "out/summary.txt", "out/measure_float_stop.json"]
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "verdicts": [
+  {
+   "id": "rehearsal-auto-vsrc",
+   "real": true,
+   "severity": "minor",
+   "evidence": "f1_auto_vsrc.js(本物の app.js の関数・本物の GET の status。vbat.supported false): 雛形 V_before=__ のまま自動合わせのスイッチの確認の文は「電圧の源: なし(1.00 倍…)」、battery=#A を書いて V_before を書き忘れた ▶ は「…電圧の源 なし(…)」で prepStartLines の注意は空、V_before=8.31 なら「説明欄の V_before」。手順書 161 行(4 章 6 の読み上げ)に「電圧の源」は無く、4 章で出るのは 193 行(car_check の表 = 走ったあと)だけ。ブロックを押したときの文「battery・V_before・check を書き足して」と 4 章 5 の「必須」はあるが、書き忘れを ▶ の前に止める読み方が無い → 自動合わせの 1 本が 6 章の比べから落ちうる(out/f1_auto_vsrc.txt)"
+  },
+  {
+   "id": "rehearsal-after-memo",
+   "real": true,
+   "severity": "minor",
+   "evidence": "f2_after.js(本物の renderAfter): 説明欄に bench= の無い朝の確かめ・メモを書いたあと・次の本が止まったあとの前の本・走行中・起こし直したあと(本物の GET の status に record_log が無い)はパネルが出ない。データのタブのシーンの説明(scene.json)に memo=試し(…) を書けば effective_description→standing_3lap.trial_memo が試しと読む(f2_scene_memo.py)が、手順書・todo に「シーンの説明」「データのタブ」の道は 0 か所。ただし 3 章 5 の本は block が無く夜の道具がもとから数えない(書けなくても害なし)、7 章「計画と違った」と 8.1 ⑤ には main session の --skip の道がある → 害は 7 章「起こし直した」で後から気づいた本の ③④ と、⑤ が安全側の「満たさない」になる分(out/f2_after.txt・f2_scene_memo.txt)"
+  },
+  {
+   "id": "rehearsal-v1-count",
+   "real": false,
+   "severity": "none",
+   "evidence": "写しで add_v1_block.py --write → 11/03 は 27 本、本物の renderBenchPick も 27 行(本物の bench は sha256 353ec306… のまま。out/f3_v1_count.txt)。ただし手順書 92 行の確かめ「選ぶ欄に 11/03 の 1〜23 が並ぶか」は 27 行の中に 1〜23 が並ぶので通り(目的は日付の確かめ)、4 行目「1〜23 が入っている」も偽にならない。24〜27 は 2 章の表に「足したときだけ」と書いてあり、足すのはユーザーの了承のあと → 間違った手(時刻を合わせ直す等)に進む道が無い。文の網羅の細かさで、実害なし"
+  },
+  {
+   "id": "rehearsal-fw-cwd",
+   "real": true,
+   "severity": "minor",
+   "evidence": "f4_fw_cwd.sh: 手順書 99 行と todo 24 行の文 `python3 tools/fw_vbat_check.py --meter …` を作り物の家の ~ で流すと「python3: can't open file '<家>/tools/fw_vbat_check.py'」終了コード 2。3 章の頭からこの行までに cd を含むコマンドは無い。~/jetformer で流すと動く(GET だけ。センサー停止で終わりの番号 3)。8.2 の ⑦ は塊の頭の cd ~/jetformer で動く。ファームがある日だけの行で、エラーは見て分かる(害は小さい)(out/f4_fw_cwd.txt)"
+  },
+  {
+   "id": "rehearsal-s3-silent",
+   "real": true,
+   "severity": "minor",
+   "evidence": "f5_s3_silent.sh: 手順書 302 行の ③ を日付だけ 20261024 --since 1830 に替えて流すと、標準出力 0 バイト・標準エラー 0 行(表は $R/standing_3lap.md 36 行にだけ。standing_3lap.py は --md があると print しない)。手順書に standing_3lap.md を開く cat/sed などは無い。ただし 8.1 の表の ③ の出力の欄に standing_3lap.md と書いてあり、④ の画面の「## 3. 止まってから 3 周(…standing_3lap.py と同じ表)」の行 11 行は全部 ③ の md にそのままある(動いてから 3 周の列も)→ 値は画面でも読めるが、手順書はそれを言っていない(out/f5_s3_silent.txt)"
+  }
+ ]
+}

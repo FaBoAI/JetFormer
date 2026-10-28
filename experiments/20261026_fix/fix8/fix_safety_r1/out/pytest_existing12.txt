@@ -1,0 +1,52 @@
+......................................................................s. [  3%]
+s....................................................................... [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 56%]
+.................................................................s...... [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........s............................................................... [ 70%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+...........s....................                                         [100%]
+=============================== warnings summary ===============================
+tests/test_policy_ens.py::test_build_is_mean_of_members_with_loaded_weights
+tests/test_policy_ens.py::test_build_rejects_bad_members
+tests/test_policy_ens.py::test_keys_match_the_10_15_engine_module
+tests/test_policy_ens.py::test_export_passes_the_drive_contract
+  /home/jetson/jetformer/jetformer/model.py:69: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor is False because encoder_layer.norm_first was True
+    self.fusion = nn.TransformerEncoder(layer, layers)
+
+tests/test_policy_ens.py::test_export_passes_the_drive_contract
+  /home/jetson/miniconda/envs/jetracer/lib/python3.13/site-packages/torch/nn/functional.py:6407: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+    assert embed_dim == embed_dim_to_check, (
+
+tests/test_policy_ens.py::test_export_passes_the_drive_contract
+  /home/jetson/miniconda/envs/jetracer/lib/python3.13/site-packages/torch/nn/functional.py:6415: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+    assert head_dim * num_heads == embed_dim, (
+
+tests/test_policy_ens.py::test_export_passes_the_drive_contract
+  /home/jetson/miniconda/envs/jetracer/lib/python3.13/site-packages/torch/nn/functional.py:6424: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+    assert key.shape == value.shape, (
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+2043 passed, 5 skipped, 7 warnings in 1429.16s (0:23:49)
+exit 0

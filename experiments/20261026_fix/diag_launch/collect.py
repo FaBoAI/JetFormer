@@ -176,6 +176,58 @@
     slip_all_measured = False、最初の周の記録が欠けた走り直し(first_lap_gap)を first_lap_gap_on に足して on_all_readable = False
     (衝突の abort_resume_on_collisions と同じ考え)。起点まで・失う・動く・LH の中央値からは今まで通り外す。abort_resume_excluded の
     行に、ON の走り直しの空転の比と最初の周の欠けを出す
+  2026-10-28 fix8 係 tools-decided(main session の決め 10/28 00:5x = fix3/approvals.md 8 の「fix7 で残した読み方」①②。ほかの日だけ。
+  その場面が無ければ出力は前と同じ。10/23・10/24 を読むとき(引数なし)は今までとビット単位で同じ):
+  - ①  リカバリーの途中(assist 2。後退・gap・brake など)で人が CH3 を人側にした区間のあとの、同じ本の中の AI の区間の発進にも、
+    中止のあとの走り直しと同じ after_abort(standing_3lap.abort_resumes の kind = 'recovery'・abort_s = その区間の最後のリカバリーの
+    始め・rec_s = そこから区間の終わりまで)を付ける。扱いは fix7 と同じ(R1 に届いた走り直しは比べ(起点まで・失う・動く・LH・2 回目
+    以降の数)から外し、ON の最初の周の衝突・空転・最初の周の欠けは数える。届かなかった走り直しは「R1 に届かなかった発進」)。名前は
+    「リカバリー中止のあとの走り直し」のまま(手順書が引く言葉)、形の文が「リカバリーの途中 X 秒から Y 秒」、組の行の説明の文に、
+    そういう走り直しがあるときだけ「リカバリー(…)の途中で人が CH3 を人側にした区間のあとも同じ(…)。」
+  - ②  途中で変えた本・試しの本の ON(出た)の発進の空転と最初の周の記録の欠けも、比べの条件に数える(衝突の midrun_on_collisions・
+    trial_on_collisions と同じ。厳しい側)。空転は R1 に届いた発進(空転の比を出す発進)だけ・launch_us が混ざった組は比べに使う強さ
+    だけ(走り直しと同じ): 比 > 1.3・いちばんひどい空転 → 組の midrun_slip / trial_slip(checks の slip = False)、比が出ない →
+    midrun_slip_unmeasured / trial_slip_unmeasured(slip_all_measured = False)、標準出力に「  → 途中で変えた本 / 試しの本の ON の
+    発進が空転した N 本 …」「… 空転の比が出ない N 本 …」。最初の周の欠け(R1 に届いた・届かなかったのどちらも)→ first_lap_gap_on
+    (名前の後ろに「。途中で変えた」「。試し」)・on_all_readable = False。比べ(起点まで・失う・動く・LH の中央値)には今まで通り入れない
+  - 試験の選択肢の ON/OFF が混ざった注意の行の後ろに「(3 章で止めて OFF にした本 X から先の OFF なら起こし直しではない = 数える。
+    手順書 3・7 章)」(fix7/fix_docs_r1.md 4 章 3。わざと OFF にした日も分かる文に)
+  2026-10-28 fix8 tools r1(反証 8-1 回目 係 tools の残った 2 件。ほかの日だけ。その場面が無ければ出力は前と同じ。10/23・10/24 を読むとき
+  (引数なし)は今までとビット単位で同じ):
+  - w1-tools-r8-1-trial-form  比べから外した本(途中で変えた・試し・走り直し)は base(r) の鍵(ゲイン・天井・左・自動合わせ・目標)で
+    組に入るので、計画と違う形・ゲインで走った本を「試し」にすると別の組(比べの無い組)に入り、その ON の発進の最初の周の衝突・空転・
+    欠けが回 3 の判定(計画の組の「ON − OFF」の行)に入らなかった(手順書 7 章「起こし直した」の「入れ直す前に走った本の memo に
+    「試し」」どおりにすると「使ってよい」のまま)。今は、同じ回・同じモデルの比べのある組の全部の条件に数える(組の other_group_on・
+    「注意: 同じ回・同じモデルの別の組(…)の、比べから外した本 … の ON の発進に …」の行。不具合の出た組に on_faults_counted_in と
+    「→ この組の比べから外した本の ON の発進の不具合 … の条件にも数えた」の行)。数え方は自分の組と同じ(衝突は全部の強さ・R1 に
+    届かなかった発進も、空転は R1 に届いた発進で比べに使う強さ、欠けは全部。発進の前進 OFF の本・ほかのモデルの本は数えない)
+  - w1-tools-r8-1-stall-inflates-off  発進 → R1 の起点の間のカメラの止まりを見ていなかった(drive.py はフレームが 0.1 秒来ないと中立を
+    書くので、その間は惰性で起点までが伸びる。OFF の本で起きると OFF の中央値が上がり「使ってよい」の側に動いた。途中で OFF にした日の
+    hold_long の形・両方 ON でも止まらない形)。今は、その間の AI 側の処理したフレーム(中立止めの行でない)どうしの間が LAUNCH_STALL_S
+    (0.22 秒)より長い R1 に届いた発進に launch_stall(gap_s・at_s)を付け、ON・OFF とも比べ(起点まで・失う・動く・LH・2 回目以降の数)
+    から外して組に launch_stall_excluded と「発進から R1 の起点までにカメラが止まった発進 N 本 …」の行を出す。ON の発進があれば
+    「満たさない」(checks の on_no_stall。外すだけだと遅い ON が抜けて「使ってよい」の側に動きうる)、その最初の周の衝突・空転・欠けも
+    数える。OFF が全部外れたら比べられない = 満たさない(off_no_stall)。組の形(form_split)・試験の選択肢の数(mixed_options)には
+    今まで通り入れる。途中で変えた・試し・走り直しの印が先(その組のまま)。それより短い止まり(フレームの間 LAUNCH_GAP_NOTE_S 0.15 秒〜
+    0.22 秒 = drive が中立を約 0.05〜0.12 秒書いた)の比べに入れた発進は、比べを変えずに「注意: 発進から R1 の起点までにフレームの間が
+    0.15〜0.22 秒の発進 N 本 …」の行と組の launch_gap_short に名前を出す(境目の日の答えを変えうる。行の欄は中だけ = JSON の launches には
+    書かない)
+  2026-10-28 fix8 tools r2(反証 8-2 回目 係 tools の残った 2 件。ほかの日だけ。その場面が無ければ出力は前と同じ。10/23・10/24 を読むとき
+  (引数なし)は今までとビット単位で同じ):
+  - w2-tools-r8-2-off-few-left  カメラの止まり・R1 に届かない発進で OFF の本が比べから外れると、残りの OFF の中央値(2 本なら平均・1 本なら
+    その本)で比べたので、速い OFF が外れると OFF の中央値が上がり「満たさない」→「使ってよい」に動いた(速い OFF 1 本でも)。今は、
+    OFF の発進がカメラの止まり(launch_stall)で比べから外れた(発進ごと。ON の on_no_stall と同じ向き)か、OFF の本の発進が R1 に届かず
+    (と、その走り直しなど)その本の発進が比べに 1 本も残らない(本ごと。本 = 回の計画の 1 本 = 説明欄の block、無ければ記録。人側に戻した
+    0.5 秒の AI 側のような短い区間・2 回目の発進が R1 に届かないだけ・同じ block の別の記録でやり直した本が比べに入っているなら、その本は
+    比べに残るので数えない)なら「満たさない」(checks の off_all_compared。組に off_dropped と
+    「→ OFF の発進が比べから外れた N 本 …」の行)。OFF が全部 R1 に届かない日も「満たさない」の比べを出す(前は比べの行が出なかった)。
+    読めない OFF の記録・試し・途中で変えた本・走り直し・--skip は前と同じ(数えない)
+  - w2-tools-r8-2-short-gaps-add-up  launch_stall は発進 → R1 のいちばん長い 1 つの間しか見ないので、0.22 秒以下の止まりが続く発進
+    (カメラの落ちが続く・中立止めの行が続く)は、drive の中立の合計が外す 1 回の止まりより長くても比べに入った。今は、その間の drive が
+    中立を書いた時間の見積もりの合計(launch_neutral: 処理したフレームの間ごとに、前のフレームの 0.1 秒あとか間の最初の中立止めの行から
+    次のフレームまで)が LAUNCH_STALL_SUM_S(0.22 秒)より長い R1 に届いた発進も同じに外す(launch_stall に neutral_s・neutral_n。組に
+    launch_stall_sum と「→ うち短い止まりが続いた発進 N 本 …」の行。発進の行の後ろに「カメラの止まりが続いた(…)」)。それより短くても、
+    中立が 2 回以上で合計が LAUNCH_SUM_NOTE_S(0.05 秒)より長い比べに入れた発進は、比べを変えずに注意の行(組の launch_sum_short)
 """
 import argparse
 import json
@@ -217,6 +269,33 @@ NO_R1_TAIL_S = FLIP_TAIL_S
 LINE_TOL_S = 0.2             # 線が AI の区間の終わりのこれだけあとまでなら「線まで AI 側」('line'。前のまま)
 LOC_LH = 6                   # label_events.LOC_NAMES の LH(フレームの loc_code)
 GAP_MAX_S = 0.5              # 欠けた記録(シーンの npz が無い)で、最初の周の間に IMU がこれより長く抜けたら first_lap_gap(r2-rec2-5)
+# 2026-10-28 fix8 tools r1(反証 8-1 回目 w1-tools-r8-1-stall-inflates-off): 発進(AI 側にした時刻)→ R1 の起点の間の、AI 側の処理した
+# フレーム(中立止めの行でない)どうしの間がこれより長い発進は、比べ(起点まで・失う・動く・LH)から外す(launch_stall)。drive.py は
+# フレームが 0.1 秒来ないと中立を書き(カメラの止まり)、古いフレームも中立止めの行にするので、その間はモデルが走らせず惰性で起点までが
+# 伸びる(OFF の本なら OFF の中央値が上がって「使ってよい」の側に動いた)。しきいは本物の記録の分布から: 10/10・10/23・10/24 の発進 70
+# (R1 に届いた 38)で、届いた発進のいちばん長い間は 0.200 秒(比べに入る 33 は 0.133 秒)、これより長いのは止まったままの車
+# (20261024-183123。R1 に届かない)の 0.666・2.331 秒だけ(fix8/fix_tools_r1/out/scan_real_gaps.txt)。0.22 秒は 30 fps の 6 フレーム分
+# (0.200 秒 = 本物の届いた発進のいちばん長い間)と 7 フレーム分(0.233 秒)の間(フレームの間のちょうどの値を境にしない)。間 g の中立は約
+# g − 0.1 秒(drive は 0.1 秒待ってから中立)なので、外さない 0.2 秒以下の間の中立は約 0.1 秒まで(作り物の本物に近い速さで起点までの
+# 遅れ 0.03 秒まで。中立の惰性は本物の人側・スティック中立の −0.9 m/s²。fix8/fix_tools_r1.md)
+LAUNCH_STALL_S = 0.22
+# それより短い止まりでも、間がこれより長い(30 fps の 4 フレーム分 0.133 秒と 5 フレーム分 0.167 秒の間 = drive が中立を書いた)比べに入る
+# 発進は、比べには入れたまま注意の行に名前を出す(launch_gap_short。間 0.200 秒(中立約 0.1 秒)が発進の始めの加速の途中なら、作り物で起点まで
+# 0.03〜0.07 秒伸び、境目から 0.03 秒以内の日の答えを変えうる = fix8/fix_tools_r1/out/probe_gap02.txt。本物の比べに入る発進 33 は 0.133 秒まで)
+LAUNCH_GAP_NOTE_S = 0.15
+# 2026-10-28 fix8 tools r2(反証 8-2 回目 w2-tools-r8-2-short-gaps-add-up): 1 回の間は LAUNCH_STALL_S 以下でも、発進 → R1 の起点の間に
+# drive が中立を書いた時間の見積もりの合計(launch_neutral)がこれより長い発進も、カメラの止まり(launch_stall)と同じに比べから外す。
+# drive はフレームが NEUTRAL_AFTER_S 来ないと中立を書く(drive.py の cam_evt.wait(0.1) → hold('カメラの映像が来ていません'))ので、
+# 間 g の中立は約 g − 0.1 秒。古いフレームの行(中立止めの行)はその行から中立。しきいは本物の記録の分布から: 10/10・10/23・10/24 の
+# AI 側の 3 秒の窓 55,838(1 回の間が 0.22 秒以下の窓)で合計のいちばん大きいものが 0.200 秒(10/10。10/23 は 0.103・10/24 は 0.167)、
+# R1 に届いた発進 38 の発進 → R1 は 0.100 秒(比べに入る 33 は 0.033 秒)(fix8/fix_tools_r2/out/real_sum.txt)。合計は 1/30 秒刻みの
+# 値になるので、0.200(6/30)と 0.233(7/30)の間の 0.22 秒(本物の最大より上 = 本物の日の答えは変えない)
+LAUNCH_STALL_SUM_S = 0.22
+# それより短くても、中立が 2 回以上(短い止まりが続いた)で合計がこれより長い比べに入る発進は、比べには入れたまま注意の行に名前を出す
+# (launch_sum_short。LAUNCH_GAP_NOTE_S の 1 回の間 0.15 秒の中立 0.05 秒と同じ量。作り物の加速の途中で 0.133 秒の間 × 3 = 合計 0.10 秒が
+# 起点まで +0.07 秒 = fix8/fix_tools_r2/out/probe_r2_old.txt。本物の比べに入る発進は 1 回・0.033 秒まで)
+LAUNCH_SUM_NOTE_S = 0.05
+NEUTRAL_AFTER_S = 0.1                     # drive がフレームを待つ長さ(これを過ぎると中立)
 LOST_HEAD_S, LOST_TAIL_S = 0.1, 0.005    # 欠けたシーンの間の発進の前進の start の幅(in_lost。2026-10-27 fix6)
 CRIT = {'to_r1_gain_s': 0.15, 'slip_max': 1.3, 'lh_dv_max': 0.3}    # 発進の前進を使ってよいか(protocol_v3 14 章)
 SLIP_IMU_MIN = 0.2           # IMU の前の加速の積分がこれ以下なら比を出さない(前からの値。standing_3lap.launch_slip と同じ)
@@ -610,6 +689,59 @@ def first_lap_gap(d, a, b):
     return None
 
 
+def launch_stall(z, i0, i1, t0, t_end, over=None):
+    """発進(AI の区間 i0〜i1 の始め t0)から t_end(R1 の起点)までの、AI 側の処理したフレーム(中立止めの行でない)どうしの間の
+    いちばん長いもの(端の t0・t_end も入れる。standing_3lap._max_gap と同じ数え方で、中立止めの行はフレームに数えない)が
+    over(既定 LAUNCH_STALL_S)より長ければ {'gap_s': その長さ, 'at_s': その始めの時刻}、でなければ None(2026-10-28 fix8 tools r1。
+    ほかの日だけ。R1 に届いた発進だけ)"""
+    t = np.asarray(z['t_s'], np.float64)[i0:i1 + 1]
+    h = np.asarray(z['hold'], bool)[i0:i1 + 1] if 'hold' in z else np.zeros(len(t), bool)
+    tp = t[~h]
+    tp = tp[(tp > t0) & (tp < t_end)]
+    pts = np.concatenate([[t0], tp, [t_end]])
+    dd = np.diff(pts)
+    k = int(np.argmax(dd))
+    if float(dd[k]) <= (LAUNCH_STALL_S if over is None else over):
+        return None
+    return {'gap_s': round(float(dd[k]), 3), 'at_s': round(float(pts[k]), 3)}
+
+
+def launch_neutral(z, i0, i1, t0, t_end):
+    """発進(AI の区間 i0〜i1 の始め t0)から t_end(R1 の起点)までに drive が中立を書いた時間の見積もり(2026-10-28 fix8 tools r2。
+    反証 8-2 回目 w2-tools-r8-2-short-gaps-add-up。ほかの日だけ。R1 に届いた発進だけ)。launch_stall と同じ並び(AI 側の処理したフレーム =
+    中立止めの行でない行と、端の t0・t_end)の間 (a, b) ごとに、drive は前のフレームから NEUTRAL_AFTER_S(0.1 秒)フレームが来ないと中立を
+    書き(cam_evt.wait(0.1) → hold。行は書かない)、古いフレーム・古い ToF/IMU/車両の値のフレームはその行で中立を書く(中立止めの行)。
+    中立は次の処理したフレームまで続くので、その間の中立は min(a + 0.1, 間の最初の中立止めの行) から b まで。
+    {'neutral_s': 合計 [秒], 'n': 中立のあった間の数(1 ms より長いもの), 'gap_s': いちばん長い間, 'at_s': その始め}"""
+    t = np.asarray(z['t_s'], np.float64)[i0:i1 + 1]
+    h = np.asarray(z['hold'], bool)[i0:i1 + 1] if 'hold' in z else np.zeros(len(t), bool)
+    tp = t[~h]
+    tp = tp[(tp > t0) & (tp < t_end)]
+    pts = np.concatenate([[t0], tp, [t_end]])
+    th = t[h]
+    th = th[(th >= t0) & (th < t_end)]
+    s = pts[:-1] + NEUTRAL_AFTER_S
+    if len(th):                        # 間 (a, b) の中の最初の中立止めの行(a の行が中立止めの行なら a から = 端の t0 の行)
+        kk = np.searchsorted(th, pts[:-1], side='left')
+        first = th[np.minimum(kk, len(th) - 1)]
+        s = np.where((kk < len(th)) & (first < pts[1:]), np.minimum(s, first), s)
+    nz = np.clip(pts[1:] - s, 0.0, None)
+    dd = np.diff(pts)
+    k = int(np.argmax(dd))
+    return {'neutral_s': round(float(nz.sum()), 3), 'n': int((nz > 1e-3).sum()), 'gap_s': round(float(dd[k]), 3),
+            'at_s': round(float(pts[k]), 3)}
+
+
+def stall_text(st):
+    """launch_stall の形の文(2026-10-28 fix8 tools r2)。1 回の止まり: 「フレームの間 X 秒(Y 秒から)」(fix8 tools r1 の文のまま)/
+    短い止まりが続いた(neutral_s のある印): 「短い止まりが続いた: 中立の見積もりの合計 X 秒(中立 N 回・いちばん長いフレームの間 Y 秒
+    (Z 秒から))」"""
+    if 'neutral_s' in st:
+        return '短い止まりが続いた: 中立の見積もりの合計 %.2f 秒(中立 %d 回・いちばん長いフレームの間 %.2f 秒(%.2f 秒から))' % (
+            st['neutral_s'], st['neutral_n'], st['gap_s'], st['at_s'])
+    return 'フレームの間 %.2f 秒(%.2f 秒から)' % (st['gap_s'], st['at_s'])
+
+
 def midrun_of(log, L, lab, z, T0, lend):
     """走行中に変えた設定 [{key, from, to, t_s, src}](2026-10-26 fix3 直す 1 回目 r1-rec3-3)。tools/standing_3lap.midrun_changes を
     そのまま使う(③ standing_3lap・④ by_params と同じ見方): events.jsonl の params・log.json の drive.params_end・AI_CMD の
@@ -779,16 +911,21 @@ def slip_state(sl):
 
 # tools/standing_3lap.RESUME_NAME と同じ(fix7 r1 の名前のまま = 手順書 7 章・8.1 が引く言葉。r2 で中立止め・途切れのあとも入る)
 RESUME_NAME = 'リカバリー中止のあとの走り直し'
+# リカバリーの途中で人側にした区間のあとの走り直しの形の文の頭(standing_3lap.STOP_KIND_TEXT['recovery'] と同じ。2026-10-28 fix8)
+RECOVERY_TEXT = 'リカバリーの途中'
 
 
 def abort_text(ab):
     """after_abort の止まった形の文(2026-10-27 fix7 r2。standing_3lap.abort_text と同じ形。秒は印の値のまま):
-    「中止 X 秒」(fix7 r1 の文のまま)/「中立止め X 秒から Y 秒」/「カメラの途切れ X 秒から Y 秒」(kind の無い印は中止)"""
+    「中止 X 秒」(fix7 r1 の文のまま)/「中立止め X 秒から Y 秒」/「カメラの途切れ X 秒から Y 秒」/「リカバリーの途中 X 秒から Y 秒」
+    (2026-10-28 fix8 tools-decided)(kind の無い印は中止)"""
     kind = ab.get('kind') or 'abort'
     if kind == 'hold':
         return '中立止め %s 秒から %s 秒' % (ab.get('abort_s'), ab.get('hold_s'))
     if kind == 'stall':
         return 'カメラの途切れ %s 秒から %s 秒' % (ab.get('abort_s'), ab.get('gap_s'))
+    if kind == 'recovery':
+        return '%s %s 秒から %s 秒' % (RECOVERY_TEXT, ab.get('abort_s'), ab.get('rec_s'))
     return '中止 %s 秒' % ab.get('abort_s')
 
 
@@ -866,6 +1003,8 @@ def launch_rows(d, laps_ref, ref_kind):
                 row['trial'] = d['trial']
             if i0 in ab:               # 2026-10-27 fix7: リカバリー中止のあとの走り直し(まとめの比べに入れない。あるときだけ)
                 row['after_abort'] = ab[i0]
+            # 2026-10-28 fix8 tools r2: 回の計画の 1 本(説明欄の block。中だけの欄 = JSON には書かない。summarize の「外れた OFF」が使う)
+            row['_block'] = desc_kv(lab.get('description'), 'block')
         nxt = [a for a in d['anchors'] if t0 < a <= t1]
         if not nxt or nxt[0] - t0 > MAX_TO_R1_S:
             row['to_r1_s'] = None
@@ -916,6 +1055,21 @@ def launch_rows(d, laps_ref, ref_kind):
             gap = first_lap_gap(d, t0, te)              # r2-rec2-5(欠けた記録だけ。あるときだけ)
             if gap:
                 row['first_lap_gap'] = gap
+            # 2026-10-28 fix8 tools r1: 発進 → R1 の起点の間のカメラの止まり(あるときだけ。まとめの比べに入れない)
+            stl = launch_stall(z, i0, i1, t0, a1)
+            nzl = None if stl else launch_neutral(z, i0, i1, t0, a1)
+            if stl:
+                row['launch_stall'] = stl
+            elif nzl['neutral_s'] > LAUNCH_STALL_SUM_S:
+                # 2026-10-28 fix8 tools r2(w2-tools-r8-2-short-gaps-add-up): 1 回の間は 0.22 秒以下でも、短い止まりが続いて drive の中立の
+                # 合計が LAUNCH_STALL_SUM_S より長い発進も同じに外す(印に neutral_s・neutral_n)
+                row['launch_stall'] = {'gap_s': nzl['gap_s'], 'at_s': nzl['at_s'], 'neutral_s': nzl['neutral_s'], 'neutral_n': nzl['n']}
+            else:                      # 短い止まり(LAUNCH_GAP_NOTE_S〜LAUNCH_STALL_S。中だけの欄 = JSON には書かない。比べには入れて注意の行)
+                sg = launch_stall(z, i0, i1, t0, a1, over=LAUNCH_GAP_NOTE_S)
+                if sg:
+                    row['_launch_gap'] = sg
+                if nzl['n'] >= 2 and nzl['neutral_s'] > LAUNCH_SUM_NOTE_S:     # fix8 tools r2: 短い止まりが続いた(中だけの欄)
+                    row['_launch_sum'] = nzl
         # 発進の距離の格子(発進から x m)
         m = (vt >= t0) & (vt <= a1)
         tt, DD = vt[m], d['Df'][m] - D0
@@ -1074,6 +1228,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
                 S.get('ceil_left_mps') if _on(S.get('speed_ceiling')) else None,
                 int(_on(S.get('speed_auto'))), S.get('auto_target_mps') if _on(S.get('speed_auto')) else None)
     groups, nreach, mids, trials, aborts = {}, {}, {}, {}, {}
+    stalls = {}                        # 2026-10-28 fix8 tools r1: 発進 → R1 の間にカメラが止まった発進(launch_stall)
     for r in rows:
         if first_only and (r.get('start_no') or 1) != 1:
             continue
@@ -1087,6 +1242,12 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             # 2026-10-27 fix7: R1 に届いたリカバリー中止のあとの走り直しも比べに入れない(名前だけ出す)。届かなかった走り直しは前と
             # 同じに下の「R1 に届かなかった発進」(ON なら満たさない。比べの中央値にはもとから入らない)
             aborts.setdefault(base(r), []).append(r)
+            continue
+        if r.get('launch_stall') and r.get('to_r1_s') is not None:
+            # 2026-10-28 fix8 tools r1(w1-tools-r8-1-stall-inflates-off): 発進 → R1 の起点の間にカメラが LAUNCH_STALL_S より長く止まった
+            # 発進は、起点まで・失う・動く・LH が止まりで伸びる(OFF なら「使ってよい」の側)ので ON・OFF とも比べに入れない(名前だけ出す)。
+            # ON があれば満たさない(on_no_stall)。組の形・試験の選択肢の数(allr)には今まで通り入れる
+            stalls.setdefault(base(r), []).append(r)
             continue
         if r.get('to_r1_s') is None:
             if 'launch_state' in r:    # r1-rec3-1: ほかの日の R1 に届かなかった発進(前は黙って外した)
@@ -1140,7 +1301,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         return out_
     # r2-rec2-5: 読めなかった記録を組に入れる(鍵が同じ組 → ゲインのほかが同じ組の全部 → 自分の組)
     ur = {}
-    keys_all = set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts)
+    keys_all = set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts) | set(stalls)
     unk_all = [u for u in unreadable or [] if u.get('meta') is False]    # r3-r3-rec-1: log.json も読めない(回・ON/OFF 不明)
     for u in unreadable or []:
         if u.get('meta') is False:
@@ -1155,7 +1316,7 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
     if unk_all:
         def has_on(k):
             rs = ([r for rs_ in groups.get(k, {}).values() for r in rs_] + [r for rs_ in nreach.get(k, {}).values() for r in rs_]
-                  + list(mids.get(k, [])) + list(trials.get(k, [])) + list(aborts.get(k, [])))
+                  + list(mids.get(k, [])) + list(trials.get(k, [])) + list(aborts.get(k, [])) + list(stalls.get(k, [])))
             return (any(r.get('launch_state') in ('on', 'on_not_started') for r in rs)
                     or any(u['launch_state'] == 'on' for u in ur.get(k, [])))
         for u in unk_all:
@@ -1168,7 +1329,8 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         """発進のフレームの場所で決めた LH の入口の速さ(r2-rec2-2。無ければ None)"""
         return (r.get('_lh_self') or r.get('lh_self') or {}).get('v_mps')
     out, sib, forms = [], {}, {}
-    for k in sorted(set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts) | set(ur), key=str):     # 届かなかった・途中で変えた・試し・中止のあと・読めない本だけの組も出す
+    grp_of = {}                        # 2026-10-28 fix8 tools r1: {組の鍵: 組}(下の other_group_on が使う)
+    for k in sorted(set(groups) | set(nreach) | set(mids) | set(trials) | set(aborts) | set(stalls) | set(ur), key=str):     # 届かなかった・途中で変えた・試し・中止のあと・カメラが止まった・読めない本だけの組も出す
         g = {'session': k[0], 'model': k[1], 'gain': k[2], 'speed_ceiling': k[3], 'ceil_left_mps': k[4], 'speed_auto': k[5],
              'auto_target_mps': k[6], 'by_launch': {}}
         for st_, rs in sorted(groups.get(k, {}).items()):
@@ -1202,6 +1364,23 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             ac = sum(len(r.get('collisions_first_lap') or []) for r in aborts[k] if r.get('launch_state') == 'on')
             if ac:
                 g['abort_resume_on_collisions'] = ac
+        if k in stalls:                # 2026-10-28 fix8 tools r1: 発進 → R1 の間にカメラが止まった発進(名前・止まり・起点まで・衝突)
+            # fix8 tools r2: 止まりの文は stall_text(1 回の止まりは「フレームの間 X 秒(Y 秒から)」のまま。短い止まりが続いた発進は中立の合計)
+            g['launch_stall_excluded'] = ['%s@%.2f(%s・%s・起点まで %.3f 秒%s%s%s)' % (
+                r['log'], r['t_ai'], r.get('launch_state', 'off'), stall_text(r['launch_stall']),
+                r['to_r1_s'], '・' + slip_text(r.get('slip')) if r.get('launch_state') == 'on' else '',
+                '・最初の周の記録が欠けた(%s)' % r['first_lap_gap'] if r.get('launch_state') == 'on' and r.get('first_lap_gap') else '',
+                '・最初の周の衝突 %s' % '・'.join('%.2f 秒 %.1fG %s' % tuple(h) for h in r['collisions_first_lap'])
+                if r.get('collisions_first_lap') else '') for r in stalls[k]]
+            st_on = [r for r in stalls[k] if r.get('launch_state') == 'on']
+            if st_on:                  # ON の発進(出た)にカメラの止まり → 比べの条件 on_no_stall = False(確かめられない)
+                g['launch_stall_on'] = len(st_on)
+            sc = sum(len(r.get('collisions_first_lap') or []) for r in st_on)
+            if sc:                     # その最初の周の衝突も「最初の周の衝突 0」に数える(衝突は止める条件)
+                g['launch_stall_on_collisions'] = sc
+            sm = ['%s@%.2f' % (r['log'], r['t_ai']) for r in stalls[k] if 'neutral_s' in r['launch_stall']]
+            if sm:                     # fix8 tools r2: うち短い止まりが続いた発進(1 回の間は 0.22 秒以下。あるときだけ)
+                g['launch_stall_sum'] = sm
         if k in ur:                    # r2-rec2-5: 読めなかった記録(名前・理由・発進の前進の ON/OFF)
             us_ = ur[k]
             g['unreadable'] = {'n': len(us_), 'logs': [u['log'] for u in us_], 'no': [u.get('no') for u in us_],
@@ -1216,9 +1395,24 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
         # 2026-10-27 fix7 r2(w2-tools-r7-2-tools-2): R1 に届いた走り直しの ON(出た)の発進の最初の周の記録の欠けも数える(fix7 r1 は
         # 比べから外したときに一緒に落としていた。欠けた最初の周の衝突は記録で確かめられない = 衝突と同じく止める条件の側)
         gap_on += [r for r in aborts.get(k, []) if r.get('launch_state') == 'on' and r.get('first_lap_gap')]
+        # 2026-10-28 fix8 tools-decided(main session の決め = approvals 8「fix7 で残した読み方」②): 途中で変えた本・試しの本の ON(出た)の
+        # 発進の最初の周の記録の欠けも数える(衝突の midrun_on_collisions・trial_on_collisions と同じく、R1 に届いた・届かなかったの
+        # どちらも。比べの中央値には今まで通り入れない)。名前の後ろに「。途中で変えた」「。試し」
+        gap_tag = {}
+        for tag_, src_ in (('途中で変えた', mids), ('試し', trials)):
+            for r in src_.get(k, []):
+                if r.get('launch_state') == 'on' and r.get('first_lap_gap'):
+                    gap_on.append(r)
+                    gap_tag[id(r)] = tag_
+        # 2026-10-28 fix8 tools r1: 発進 → R1 の間にカメラが止まった ON の発進の最初の周の欠けも(名前の後ろに「。カメラの止まり」)
+        for r in stalls.get(k, []):
+            if r.get('launch_state') == 'on' and r.get('first_lap_gap'):
+                gap_on.append(r)
+                gap_tag[id(r)] = 'カメラの止まり'
         if gap_on:                     # r2-rec2-5: 最初の周の間で記録が欠けた ON の発進
             g['first_lap_gap_on'] = ['%s@%.2f(%s%s)' % (r['log'], r['t_ai'], r['first_lap_gap'],
-                                                        '。' + RESUME_NAME if r.get('after_abort') else '') for r in gap_on]
+                                                        '。' + gap_tag[id(r)] if id(r) in gap_tag
+                                                        else ('。' + RESUME_NAME if r.get('after_abort') else '')) for r in gap_on]
         # r2-rec2-3: 最初の周を AI の区間の終わり + 0.5 秒まで数えた ON(名前だけ。比べは変えない)。線の前に人側にした本と、A2 が
         # 無い(記録が A2 の前で終わった・当たって止まった・人側で R1 を通らなかった)ので線が分からない本
         ae = [r for r in groups.get(k, {}).get('on', []) if r.get('first_lap_end') == 'ai_end']
@@ -1229,7 +1423,8 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             g['unreadable_unknown'] = {'n': len(unk[k]), 'logs': [u['log'] for u in unk[k]], 'why': [u['why'] for u in unk[k]],
                                        'near': [u['near'] for u in unk[k]]}
         bad_read = bool((g.get('unreadable') or {}).get('on') or gap_on or k in unk)
-        allr = [r for rs in list(groups.get(k, {}).values()) + list(nreach.get(k, {}).values()) for r in rs]
+        # fix8 tools r1: カメラが止まった発進(比べから外した)も、組の形(form_split)・試験の選択肢の数(mixed_options)には今まで通り入れる
+        allr = [r for rs in list(groups.get(k, {}).values()) + list(nreach.get(k, {}).values()) for r in rs] + list(stalls.get(k, []))
         if len({opts_of(r) for r in allr}) > 1:          # r1-rec3-5: 試験の選択肢の ON/OFF が混ざった(再起動で戻ったなど)
             g['mixed_options'] = {OPT_NAMES[o]: {'on': sum(1 for r in allr if o in opts_of(r)),
                                                  'off': sum(1 for r in allr if o not in opts_of(r))}
@@ -1264,6 +1459,39 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
             if ab_un:                  # 比が出ない → checks の slip_all_measured = False
                 g['abort_resume_slip_unmeasured'] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], slip_text(r.get('slip')))
                                                      for r in ab_un]
+        # 2026-10-28 fix8 tools-decided(main session の決め = approvals 8「fix7 で残した読み方」②。厳しい側): 途中で変えた本・試しの本の
+        # ON(出た)の発進の空転も、走り直しの ON と同じに見る(R1 に届いた発進 = 空転の比を出す発進だけ。launch_us が混ざった組は比べに
+        # 使う強さだけ)。起点まで・失う・動く・LH の中央値には今まで通り入れない。比 > 1.3・いちばんひどい空転 → <midrun|trial>_slip
+        # (checks の slip = False)、比が出ない → <midrun|trial>_slip_unmeasured(slip_all_measured = False)
+        # 2026-10-28 fix8 tools r1: 発進 → R1 の間にカメラが止まった ON の発進も同じに見る(launch_stall_slip / launch_stall_slip_unmeasured)
+        for key_, src_ in (('midrun', mids), ('trial', trials), ('launch_stall', stalls)):
+            if k not in src_:
+                continue
+            mt_on = [r for r in src_[k] if r.get('launch_state') == 'on' and r.get('to_r1_s') is not None]
+            if g.get('launch_us_used') is not None:
+                mt_on = [r for r in mt_on if (r.get('settings') or {}).get('launch_us') is not None
+                         and float(r['settings']['launch_us']) == float(g['launch_us_used'])]
+            mt_hi = [r for r in mt_on if slip_state(r.get('slip')) in ('high', 'extreme')]
+            mt_un = [r for r in mt_on if slip_state(r.get('slip')) == 'unknown']
+            if mt_hi:
+                g['%s_slip' % key_] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], slip_text(r.get('slip'))) for r in mt_hi]
+            if mt_un:
+                g['%s_slip_unmeasured' % key_] = ['%s@%.2f(%s)' % (r['log'], r['t_ai'], slip_text(r.get('slip'))) for r in mt_un]
+        # 2026-10-28 fix8 tools r2(反証 8-2 回目 w2-tools-r8-2-off-few-left): 比べから外れた OFF。外すと残りの OFF の中央値(2 本なら平均・
+        # 1 本ならその本)で比べるので、速い OFF が外れると OFF の中央値が上がって「使ってよい」の側に動く(速い OFF 1 本でも)。
+        # - カメラの止まり(launch_stall)の OFF の発進: 発進ごと(ON の on_no_stall と同じ向き)
+        # - R1 に届かなかった OFF の発進: その本の発進が比べ(by_launch の off)に 1 本も残らないときだけ(本ごと。0.5 秒だけ AI 側に
+        #   した短い区間・走ったあとの 2 回目の発進が届かないだけなら、その本は比べに残る = 数えない。本物の 10/23・10/24 にふつうにある形)。
+        #   本 = 回の計画の 1 本(説明欄の block。同じ block で別の記録にやり直した本が比べに入っていれば数えない)。block が無ければ記録
+        # 読めない OFF の記録(「OFF なので比べは変えない」)・試し・途中で変えた本・走り直し・--skip は前と同じ(数えない)
+        def unit_(r):
+            return ('block', r['_block']) if r.get('_block') else ('log', r['log'])
+        off_units = {unit_(r) for r in groups.get(k, {}).get('off', [])}
+        off_drop = ['%s@%.2f(%s)' % x for x in sorted(
+            [(r['log'], r['t_ai'], 'カメラの止まり・起点まで %.3f 秒' % r['to_r1_s'])
+             for r in stalls.get(k, []) if r.get('launch_state', 'off') == 'off']
+            + [(r['log'], r['t_ai'], 'R1 に届かなかった・%s' % (r.get('why_no_r1') or '?'))
+               for r in nreach.get(k, {}).get('off', []) if unit_(r) not in off_units])]
         if on and off:
             d_to = None if on_use['to_r1_median_s'] is None or off['to_r1_median_s'] is None else round(on_use['to_r1_median_s'] - off['to_r1_median_s'], 3)
             d_loss = None if on_use['loss_median_s'] is None or off['loss_median_s'] is None else round(on_use['loss_median_s'] - off['loss_median_s'], 3)
@@ -1283,40 +1511,89 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
                    # 衝突は強さによらず全部の ON。R1 に届かなかった ON の発進の衝突も(r1-rec3-1)
                    'first_lap_collisions_0': (on['collisions_first_lap'] == 0 and not (on_nr and on_nr['collisions'])
                                               and not g.get('midrun_on_collisions') and not g.get('trial_on_collisions')
-                                              and not g.get('abort_resume_on_collisions')),
+                                              and not g.get('abort_resume_on_collisions')
+                                              and not g.get('launch_stall_on_collisions')),
                    # r3-r3-rec-4: いちばんひどい空転(比が出ない。> 1.3 とみなす)の ON があれば満たさない
-                   # fix7 r2: 走り直しの ON(比べに使う強さ)の空転も(abort_resume_slip)
+                   # fix7 r2: 走り直しの ON(比べに使う強さ)の空転も(abort_resume_slip)。fix8: 途中で変えた本・試しの本の ON も
+                   # fix8 tools r1: カメラが止まった ON の発進も(launch_stall_slip)
                    'slip': (on_use['slip_max'] is not None and on_use['slip_max'] <= CRIT['slip_max']
-                            and not on_use.get('slip_extreme') and not g.get('abort_resume_slip')),
+                            and not on_use.get('slip_extreme') and not g.get('abort_resume_slip')
+                            and not g.get('midrun_slip') and not g.get('trial_slip') and not g.get('launch_stall_slip')),
                    'lh_speed': d_v is not None and d_v <= CRIT['lh_dv_max']}
             if on_nr:                  # r1-rec3-1: 届かなかった ON があれば満たさない(最初の周を確かめられない。名前を出す)
                 chk['on_all_reached_r1'] = False
             if bad_read:               # r2-rec2-5: 読めない(欠けた)ON があれば満たさない(最初の周を確かめられない)
                 chk['on_all_readable'] = False
-            # r3-r3-rec-4: 空転の比が出ない ON があれば満たさない(確かめられない)。fix7 r2: 走り直しの ON も
-            if on_use.get('slip_unmeasured') or g.get('abort_resume_slip_unmeasured'):
+            # r3-r3-rec-4: 空転の比が出ない ON があれば満たさない(確かめられない)。fix7 r2: 走り直しの ON も。fix8: 途中で変えた本・試しも
+            if (on_use.get('slip_unmeasured') or g.get('abort_resume_slip_unmeasured') or g.get('midrun_slip_unmeasured')
+                    or g.get('trial_slip_unmeasured') or g.get('launch_stall_slip_unmeasured')):
                 chk['slip_all_measured'] = False
+            if g.get('launch_stall_on'):     # fix8 tools r1: 発進 → R1 の間にカメラが止まった ON があれば満たさない(確かめられない)
+                chk['on_no_stall'] = False
+            if off_drop:               # fix8 tools r2: 比べから外れた OFF がある = 満たさない(残りの OFF の中央値は、どの本が外れたかで動く)
+                chk['off_all_compared'] = False
+                g['off_dropped'] = off_drop
             g['compare'] = {'d_to_r1_s': d_to, 'd_loss_s': d_loss, 'd_v_lh_mps': d_v, 'checks': chk, 'all_ok': all(chk.values())}
             if on_use is not on:
                 g['compare'].update(launch_us_used=g['launch_us_used'], n_on_used=on_use['n'])
             if lh_src:                 # r2-rec2-2(あるときだけ)
                 g['compare']['lh_src'] = lh_src
-        elif (on_nr or bad_read) and off:   # r1-rec3-1・r2-rec2-5: 届いた・読めた ON が無い → 比べられない = 満たさない
+        elif (on_nr or bad_read or g.get('launch_stall_on')) and off:
+            # r1-rec3-1・r2-rec2-5: 届いた・読めた ON が無い → 比べられない = 満たさない。fix8 tools r1: ON が全部カメラの止まりで外れたときも
             ck = {'to_r1': False, 'first_lap_collisions_0': not ((on_nr or {}).get('collisions') or g.get('midrun_on_collisions')
                                                                  or g.get('trial_on_collisions')
-                                                                 or g.get('abort_resume_on_collisions')),
+                                                                 or g.get('abort_resume_on_collisions')
+                                                                 or g.get('launch_stall_on_collisions')),
                   'slip': False, 'lh_speed': False}
             if on_nr:
                 ck['on_all_reached_r1'] = False
             if bad_read:
                 ck['on_all_readable'] = False
+            if g.get('launch_stall_on'):
+                ck['on_no_stall'] = False
+            if off_drop:               # fix8 tools r2(あるときだけ)
+                ck['off_all_compared'] = False
+                g['off_dropped'] = off_drop
             g['compare'] = {'d_to_r1_s': None, 'd_loss_s': None, 'd_v_lh_mps': None, 'checks': ck, 'all_ok': False}
+        elif (on or g.get('launch_stall_on')) and not off and off_drop:
+            # fix8 tools r1: OFF の発進が全部カメラの止まりで比べから外れた → 比べられない = 満たさない(前は止まりで伸びた OFF と比べた)。
+            # fix8 tools r2: OFF の本が全部 R1 に届かない(とカメラの止まり)で比べから外れたときも同じ(前は比べの行が出なかった)
+            ck = {'to_r1': False, 'first_lap_collisions_0': ((not on or on['collisions_first_lap'] == 0) and not (on_nr and on_nr['collisions'])
+                                                             and not g.get('midrun_on_collisions') and not g.get('trial_on_collisions')
+                                                             and not g.get('abort_resume_on_collisions')
+                                                             and not g.get('launch_stall_on_collisions')),
+                  'slip': False, 'lh_speed': False}
+            if any(r.get('launch_state', 'off') == 'off' for r in stalls.get(k, [])):
+                ck['off_no_stall'] = False
+            if on_nr:
+                ck['on_all_reached_r1'] = False
+            if bad_read:
+                ck['on_all_readable'] = False
+            if g.get('launch_stall_on'):
+                ck['on_no_stall'] = False
+            ck['off_all_compared'] = False
+            g['off_dropped'] = off_drop
+            g['compare'] = {'d_to_r1_s': None, 'd_loss_s': None, 'd_v_lh_mps': None, 'checks': ck, 'all_ok': False}
+        # 2026-10-28 fix8 tools r1: 比べに入れた発進のうち、発進 → R1 の間に短い止まり(フレームの間 LAUNCH_GAP_NOTE_S〜LAUNCH_STALL_S)が
+        # あった発進(比べは変えない。注意の行に名前。あるときだけ)
+        sh = [r for _, rs in sorted(groups.get(k, {}).items()) for r in rs if r.get('_launch_gap')]
+        if sh:
+            g['launch_gap_short'] = ['%s@%.2f(%s・フレームの間 %.2f 秒(%.2f 秒から))' % (
+                r['log'], r['t_ai'], r.get('launch_state', 'off'), r['_launch_gap']['gap_s'], r['_launch_gap']['at_s']) for r in sh]
+        # 2026-10-28 fix8 tools r2: 比べに入れた発進のうち、短い止まりが続いた(中立 2 回以上・合計 LAUNCH_SUM_NOTE_S〜LAUNCH_STALL_SUM_S)
+        # 発進(比べは変えない。注意の行に名前。あるときだけ)
+        su = [r for _, rs in sorted(groups.get(k, {}).items()) for r in rs if r.get('_launch_sum')]
+        if su:
+            g['launch_sum_short'] = ['%s@%.2f(%s・中立の見積もりの合計 %.2f 秒(中立 %d 回・いちばん長いフレームの間 %.2f 秒))' % (
+                r['log'], r['t_ai'], r.get('launch_state', 'off'), r['_launch_sum']['neutral_s'], r['_launch_sum']['n'],
+                r['_launch_sum']['gap_s']) for r in su]
         rs_all = allr + list(mids.get(k, [])) + list(trials.get(k, [])) + list(aborts.get(k, []))
         if ignore_gain:                # r2-rec2-1: まとめたゲインの幅(組の鍵のゲイン。自動合わせ ON はスライダーの値)
             gk = [gain_key(r.get('settings') or {}, r['gain']) for r in rs_all]
             g['gain_ignored'] = True
             g['gain_range'] = [min(gk), max(gk)] if gk else None
         out.append(g)
+        grp_of[k] = g
         # ゲインのほかが同じ組(回・モデル・スイッチ)と、発進の前進 ON の本(出た・出ず。届かなかった・途中で変えた・読めないも)があるか
         sib.setdefault(k[:2] + k[3:], []).append((g, any(r.get('launch_state') in ('on', 'on_not_started') for r in rs_all)
                                                   or bool((g.get('unreadable') or {}).get('on'))))
@@ -1344,7 +1621,69 @@ def summarize(rows, first_only=False, ignore_gain=False, unreadable=None):
                 if 'compare' in g:
                     g['compare']['checks']['one_form'] = False
                     g['compare']['all_ok'] = False
+    # 2026-10-28 fix8 tools r1(反証 8-1 回目 w1-tools-r8-1-trial-form): 比べから外した本(途中で変えた・試し・走り直し)は base(r) の鍵
+    # (ゲイン・天井・左・自動合わせ・目標を含む)で組に入るので、計画と違う形・ゲインで走った試しの本は別の組(比べの無い組)に入り、その
+    # ON の発進の最初の周の衝突・空転・欠けが回 3 の判定(計画の組の「ON − OFF」の行)に入らなかった(手順書 7 章「起こし直した」の
+    # 「入れ直す前に走った本の memo に「試し」」どおりにすると「使ってよい」のまま)。今は、同じ回・同じモデル(鍵の頭 2 つ。読めない記録を
+    # 「ゲインのほかが同じ組の全部」に入れるのと同じ考え)の比べのある組の全部の条件に数える(厳しい側。自分の組の数え方と同じ: 衝突は
+    # 届いた・届かなかったとも全部の強さ、空転は R1 に届いた発進で比べに使う強さ、欠けは全部)。その場面が無ければ前と同じ
+    ex_on = {}
+    for tag_, src_ in (('途中で変えた', mids), ('試し', trials), (RESUME_NAME, aborts)):
+        for k_, rs_ in src_.items():
+            ex_on.setdefault(k_, []).extend((r, tag_) for r in rs_ if r.get('launch_state') == 'on')
+    for k, g in sorted(grp_of.items(), key=lambda x: str(x[0])):
+        if 'compare' not in g:
+            continue
+        us_used = g.get('launch_us_used')
+        found, col_n, hi, un, gp, src_keys = [], 0, [], [], [], []
+        for k2 in sorted(ex_on, key=str):
+            if k2 == k or k2[:2] != k[:2]:
+                continue
+            for r, tag_ in ex_on[k2]:
+                name = '%s@%.2f' % (r['log'], r['t_ai'])
+                why = []
+                cl = r.get('collisions_first_lap') or []
+                if cl:
+                    col_n += len(cl)
+                    why.append('最初の周の衝突 %s' % '・'.join('%.2f 秒 %.1fG %s' % tuple(h) for h in cl))
+                us_ok = us_used is None or ((r.get('settings') or {}).get('launch_us') is not None
+                                            and float(r['settings']['launch_us']) == float(us_used))
+                if r.get('to_r1_s') is not None and us_ok:
+                    sk = slip_state(r.get('slip'))
+                    if sk in ('high', 'extreme'):
+                        hi.append(name)
+                        why.append(slip_text(r.get('slip')))
+                    elif sk == 'unknown':
+                        un.append(name)
+                        why.append(slip_text(r.get('slip')))
+                if r.get('first_lap_gap'):
+                    gp.append(name)
+                    why.append('最初の周の記録が欠けた(%s)' % r['first_lap_gap'])
+                if why:
+                    found.append('%s(%s・%s・%s)' % (name, tag_, group_label(k2), '・'.join(why)))
+                    if k2 not in src_keys:
+                        src_keys.append(k2)
+        if not found:
+            continue
+        names = [c for c, x in (('first_lap_collisions_0', col_n), ('slip', hi), ('slip_all_measured', un),
+                                ('on_all_readable', gp)) if x]
+        g['other_group_on'] = {'logs': found, 'collisions': col_n, 'slip': hi, 'slip_unmeasured': un, 'first_lap_gap': gp,
+                               'groups': [group_label(x) for x in src_keys], 'checks': names}
+        chk = g['compare']['checks']
+        for c in names:
+            chk[c] = False
+        g['compare']['all_ok'] = all(chk.values())
+        for k2 in src_keys:            # 不具合の出た組の側にも、どの組の条件に数えたか(あるときだけ)
+            g2 = grp_of.get(k2)
+            if g2 is not None and group_label(k) not in g2.get('on_faults_counted_in', []):
+                g2.setdefault('on_faults_counted_in', []).append(group_label(k))
     return out
+
+
+def group_label(k):
+    """組の鍵(回・モデル・ゲイン・天井・左・自動・目標)の、回とモデルのほかの短い文(「g0.92・天井1(4.1) 自動0」。ゲインをまとめた
+    組(--ignore-gain)はゲインを出さない)(2026-10-28 fix8 tools r1)"""
+    return '%s%s' % ('g%.2f・' % k[2] if k[2] is not None else '', form_text(k[3:7]))
 
 
 def form_of(g):
@@ -1446,11 +1785,15 @@ def summary_lines(summary):
                 '。うち ON の発進の最初の周の衝突 %d(比べの「最初の周の衝突 0」には数える)' % g['trial_on_collisions']
                 if g.get('trial_on_collisions') else ''))
         if g.get('abort_resume_excluded'):     # 2026-10-27 fix7(あるときだけ)。r2: 中立止め・カメラの途切れのあとも・空転と欠けは数える
+            # 2026-10-28 fix8 tools-decided: リカバリーの途中で人側にした区間のあとの走り直しがあるときだけ、説明の文に 1 文(無ければ前と同じ)
+            rec_ = ('リカバリー(当たった・止まったあとのブレーキ・後退・前進など)の途中で人が CH3 を人側にした区間のあとも同じ'
+                    '(「%s X 秒から Y 秒」)。' % RECOVERY_TEXT
+                    if any('・%s ' % RECOVERY_TEXT in x for x in g['abort_resume_excluded']) else '')
             lines.append('  %s %d 本(同じ本の一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中立で停止中'
-                         '(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。止まった所から出たかもしれない'
+                         '(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとも同じ。%s止まった所から出たかもしれない'
                          '(置き直しても車輪の距離は 0 なので記録から分からない)ので、比べ(起点まで・失う・動く・LH)に入れない。ON の組にも'
                          ' OFF の組にも入れない。ON の発進の最初の周の衝突・空転・最初の周の記録の欠けは比べの条件に数える。手順書 7 章): %s%s' % (
-                             RESUME_NAME, len(g['abort_resume_excluded']), '・'.join(g['abort_resume_excluded']),
+                             RESUME_NAME, len(g['abort_resume_excluded']), rec_, '・'.join(g['abort_resume_excluded']),
                              '。うち ON の発進の最初の周の衝突 %d(比べの「最初の周の衝突 0」には数える)' % g['abort_resume_on_collisions']
                              if g.get('abort_resume_on_collisions') else ''))
         if g.get('abort_resume_slip'):         # 2026-10-27 fix7 r2(あるときだけ)
@@ -1461,6 +1804,78 @@ def summary_lines(summary):
             lines.append('  → %sの ON の発進で空転の比が出ない %d 本: %s → 空転を確かめられない = 満たさない(checks の slip_all_measured)。'
                          '動画で空転を見る' % (RESUME_NAME, len(g['abort_resume_slip_unmeasured']),
                                          '・'.join(g['abort_resume_slip_unmeasured'])))
+        for key_, name_ in (('midrun', '途中で変えた本'), ('trial', '試しの本')):     # 2026-10-28 fix8 tools-decided(あるときだけ)
+            if g.get('%s_slip' % key_):
+                lines.append('  → %sの ON の発進が空転した %d 本(比 > %.1f か、比が出ないのに車輪が増えた = いちばんひどい空転): %s → 空転の'
+                             '条件は満たさない(checks の slip。比べ(起点まで・失う・動く・LH)には入れないが、空転は衝突と同じに数える。'
+                             'car_check の「発進の空転の比」と同じ)'
+                             % (name_, len(g['%s_slip' % key_]), CRIT['slip_max'], '・'.join(g['%s_slip' % key_])))
+            if g.get('%s_slip_unmeasured' % key_):
+                lines.append('  → %sの ON の発進で空転の比が出ない %d 本: %s → 空転を確かめられない = 満たさない(checks の '
+                             'slip_all_measured)。動画で空転を見る' % (name_, len(g['%s_slip_unmeasured' % key_]),
+                                                                   '・'.join(g['%s_slip_unmeasured' % key_])))
+        if g.get('launch_stall_excluded'):     # 2026-10-28 fix8 tools r1(あるときだけ)
+            lines.append('  発進から R1 の起点までにカメラが止まった発進 %d 本(AI 側の処理したフレーム(中立止めの行を除く)の間が %.2f 秒より'
+                         '長い。drive はフレームが 0.1 秒来ないと中立を書くので、止まった間は惰性で起点まで・LH が変わる = 比べ(起点まで・'
+                         '失う・動く・LH)に入れない。ON の組にも OFF の組にも入れない。ON の発進の最初の周の衝突・空転・最初の周の記録の欠けは'
+                         '比べの条件に数える。10/28 fix8 tools r1): %s%s' % (
+                             len(g['launch_stall_excluded']), LAUNCH_STALL_S, '・'.join(g['launch_stall_excluded']),
+                             '。うち ON の発進の最初の周の衝突 %d(比べの「最初の周の衝突 0」には数える)' % g['launch_stall_on_collisions']
+                             if g.get('launch_stall_on_collisions') else ''))
+        if g.get('launch_stall_sum'):          # 2026-10-28 fix8 tools r2(あるときだけ)
+            lines.append('  → うち短い止まりが続いた発進 %d 本(1 回のフレームの間は %.2f 秒以下でも、drive が中立を書いた時間の見積もり'
+                         '(処理したフレームの間ごとに、前のフレームの 0.1 秒あとか間の最初の中立止めの行から次のフレームまで)の合計が %.2f 秒'
+                         'より長い = 1 回で外す止まり(フレームの間 %.2f 秒 = 中立約 0.12 秒)より長く中立を書いた → 同じに比べに入れない。'
+                         '10/28 fix8 tools r2): %s' % (len(g['launch_stall_sum']), LAUNCH_STALL_S, LAUNCH_STALL_SUM_S, LAUNCH_STALL_S,
+                                                     '・'.join(g['launch_stall_sum'])))
+        if g.get('launch_stall_on'):
+            lines.append('  → ON の発進で、発進から R1 までにカメラが止まった本がある = 満たさない(checks の on_no_stall。止まった間はモデルが'
+                         '走らせていないので、その発進で発進の前進の起点まで・LH の速さを確かめられない)。当たっていない・車のせいでない'
+                         '(カメラの途切れ)と動画・記録で確かめたら、main session が --skip 記録名@T で外して読み直せる(外した名前が出る)')
+        if ((g.get('compare') or {}).get('checks') or {}).get('off_no_stall') is False:
+            lines.append('  → OFF の発進が全部カメラの止まりで比べから外れた = 比べられない(満たさない。checks の off_no_stall)')
+        if g.get('off_dropped'):               # 2026-10-28 fix8 tools r2(あるときだけ)
+            lines.append('  → OFF の発進が比べから外れた %d 本(カメラの止まりの OFF の発進と、R1 に届かず、その本(回の計画の 1 本 = 説明欄の'
+                         ' block)の発進が比べに 1 本も残らない OFF の本): %s → 残りの OFF の中央値で比べると、どの本が外れたかで「使ってよい」の'
+                         '側にも動く(速い OFF が外れると OFF の中央値が上がる)= 満たさない(checks の off_all_compared。ON の on_no_stall・'
+                         'on_all_reached_r1 と同じ向き)。同じ本の中の走り直し・同じ block の別の記録のやり直しが比べに入っていれば数えない。'
+                         '車のせいでない理由(人・物がコースに入った・試し)で止めた本だけ、main session が --skip 記録名 で外して読み直せる'
+                         '(外すと残りの OFF で比べる。外した名前が出る。10/28 fix8 tools r2)' % (len(g['off_dropped']), '・'.join(g['off_dropped'])))
+        if g.get('launch_gap_short'):
+            lines.append('  注意: 発進から R1 の起点までにフレームの間が %.2f〜%.2f 秒の発進 %d 本(比べには入れた。drive はフレームが 0.1 秒来ないと'
+                         '中立を書くので中立は約 0.05〜0.12 秒 = 発進の始めの加速の途中なら起点までが約 0.1 秒まで伸びうる(OFF の本なら'
+                         '「使ってよい」の側)。ON − OFF が境目(−%.2f 秒)から 0.1 秒以内で「使ってよい」なら、main session が動画で確かめて決める'
+                         '(--skip 記録名@T で外して読み直せる)。10/28 fix8 tools r1): %s' % (
+                             LAUNCH_GAP_NOTE_S, LAUNCH_STALL_S, len(g['launch_gap_short']), CRIT['to_r1_gain_s'],
+                             '・'.join(g['launch_gap_short'])))
+        if g.get('launch_sum_short'):          # 2026-10-28 fix8 tools r2(あるときだけ)
+            lines.append('  注意: 発進から R1 の起点までに短い止まりが続いた発進 %d 本(比べには入れた。drive が中立を書いた時間の見積もり'
+                         '(処理したフレームの間ごとに、前のフレームの 0.1 秒あとか間の最初の中立止めの行から次のフレームまで)が 2 回以上で、'
+                         '合計が %.2f〜%.2f 秒 = 1 回ごとの間は短くても、発進の始めの加速の途中なら起点までが中立の合計くらいまで伸びうる'
+                         '(作り物の加速で 0.133 秒の間 × 3 = 合計 0.10 秒が +0.07 秒。OFF の本なら「使ってよい」の側)。OFF の本にこの行が'
+                         'あって ON − OFF が「使ってよい」なら、main session がその本の動画で確かめて決める(--skip 記録名@T で外して読み直せる)。'
+                         '10/28 fix8 tools r2): %s' % (len(g['launch_sum_short']), LAUNCH_SUM_NOTE_S, LAUNCH_STALL_SUM_S,
+                                                     '・'.join(g['launch_sum_short'])))
+        if g.get('launch_stall_slip'):
+            lines.append('  → カメラが止まった ON の発進が空転した %d 本(比 > %.1f か、比が出ないのに車輪が増えた = いちばんひどい空転): %s → '
+                         '空転の条件は満たさない(checks の slip)' % (len(g['launch_stall_slip']), CRIT['slip_max'],
+                                                                 '・'.join(g['launch_stall_slip'])))
+        if g.get('launch_stall_slip_unmeasured'):
+            lines.append('  → カメラが止まった ON の発進で空転の比が出ない %d 本: %s → 空転を確かめられない = 満たさない(checks の '
+                         'slip_all_measured)' % (len(g['launch_stall_slip_unmeasured']), '・'.join(g['launch_stall_slip_unmeasured'])))
+        if g.get('other_group_on'):    # 2026-10-28 fix8 tools r1(w1-tools-r8-1-trial-form。あるときだけ)
+            o_ = g['other_group_on']
+            what = [x for x, ok in (('最初の周の衝突 %d' % o_['collisions'], o_['collisions']),
+                                    ('空転 %d' % len(o_['slip']), o_['slip']),
+                                    ('空転の比が出ない %d' % len(o_['slip_unmeasured']), o_['slip_unmeasured']),
+                                    ('最初の周の記録の欠け %d' % len(o_['first_lap_gap']), o_['first_lap_gap'])) if ok]
+            lines.append('  注意: 同じ回・同じモデルの別の組(%s)の、比べから外した本(試し・途中で変えた・走り直し)の ON の発進に %s: %s → '
+                         'この組の比べの条件にも数える = 満たさない(checks の %s)。計画と違う形・ゲインで走った試しでも、回 3 の ON の発進の'
+                         '不具合は回 4 の発進の前進を止める条件(手順書 7 章「走った値が計画と違った」・8.1 ⑤。10/28 fix8 tools r1)' % (
+                             '・'.join(o_['groups']), '・'.join(what), '・'.join(o_['logs']), '・'.join(o_['checks'])))
+        if g.get('on_faults_counted_in'):
+            lines.append('  → この組の比べから外した本の ON の発進の不具合(衝突・空転・欠け)は、同じ回・同じモデルの比べのある組(%s)の'
+                         '条件にも数えた(10/28 fix8 tools r1)' % '・'.join(g['on_faults_counted_in']))
         sl_src = g.get('on_used') or g['by_launch'].get('on') or {}      # r3-r3-rec-4: 比べに使う ON(あるときだけ)
         if sl_src.get('slip_extreme'):
             lines.append('  空転がいちばんひどい ON の発進 %d 本(車輪が %.1f m/s より増えたのに IMU の積分が %.1f m/s 以下で比が出ない = '
@@ -1472,7 +1887,9 @@ def summary_lines(summary):
                          '動画で空転を見る。決めは main session(--skip 記録名 で外すと、起点までの時間の比べからも外れる)' % (
                              len(sl_src['slip_unmeasured']), '・'.join(sl_src['slip_unmeasured'])))
         if g.get('mixed_options'):
+            # 2026-10-28 fix8 tools-decided(fix7/fix_docs_r1.md 4 章 3): わざと OFF にした日(手順書 3 章「わざと OFF にした日」)も分かる文に
             lines.append('  注意: 試験の選択肢の ON/OFF が混ざっている(%s)。再起動で OFF に戻った本が無いか ② runs_1103 で見る'
+                         '(3 章で止めて OFF にした本 X から先の OFF なら起こし直しではない = 数える。手順書 3・7 章)'
                          % '・'.join('%s ON %d・OFF %d' % (k, v['on'], v['off']) for k, v in g['mixed_options'].items()))
         if g.get('form_split'):        # 2026-10-27 fix5 c3(あるときだけ)
             lines.append('  注意: 同じ回・同じモデルの本が、天井・左・自動合わせ・目標の違いで %d 組に分かれた(%s)。手順書 6 章の'
@@ -1680,7 +2097,14 @@ def main(argv=None):
             r.get('to_r1_s'), r.get('dist_m'), r.get('loss_s'), r.get('loss_parts'), r.get('fly_n'), r.get('fly_ref'),
             r.get('start_loc')) + (' 中止のあとの走り直し(%s・人側 %s 秒。%s)' % (      # 2026-10-27 fix7(あるときだけ)。r2: 止まった形の文
                 abort_text(r['after_abort']), r['after_abort'].get('human_s'),
-                '比べに入れない' if r.get('to_r1_s') is not None else 'R1 に届かなかった発進に数える') if r.get('after_abort') else ''))
+                '比べに入れない' if r.get('to_r1_s') is not None else 'R1 に届かなかった発進に数える') if r.get('after_abort') else '')
+              + (' カメラの止まり(フレームの間 %.2f 秒・%.2f 秒から。比べに入れない)' % (      # 2026-10-28 fix8 tools r1(あるときだけ)
+                  r['launch_stall']['gap_s'], r['launch_stall']['at_s'])
+                 if r.get('launch_stall') and 'neutral_s' not in r['launch_stall'] else '')
+              + (' カメラの止まりが続いた(中立の見積もりの合計 %.2f 秒・中立 %d 回・いちばん長いフレームの間 %.2f 秒・%.2f 秒から。'
+                 '比べに入れない)' % (r['launch_stall']['neutral_s'], r['launch_stall']['neutral_n'], r['launch_stall']['gap_s'],
+                                   r['launch_stall']['at_s'])     # 2026-10-28 fix8 tools r2(あるときだけ)
+                 if r.get('launch_stall') and 'neutral_s' in r['launch_stall'] else ''))
     if extended:
         print('\n'.join(summary_lines(res['summary'])))
         unk_sum = [u for u in ur_sum if u.get('meta') is False]

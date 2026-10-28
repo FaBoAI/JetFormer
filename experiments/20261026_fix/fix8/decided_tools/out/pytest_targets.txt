@@ -1,0 +1,55 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 25%]
+........................................................................ [ 33%]
+........................................................................ [ 42%]
+................................................F........F.............. [ 50%]
+........................................................................ [ 58%]
+........................................................................ [ 67%]
+........................................................................ [ 75%]
+........................................................................ [ 84%]
+........................................................................ [ 92%]
+................................................................         [100%]
+=================================== FAILURES ===================================
+________________ test_script_edits_all_done_and_earlier_intact _________________
+
+live = {'runbook_20261103.md': '# 11/3(火・祝)実車の手順書(1 枚)— 止まってから 3 周 25 秒の確かめ\n\n- 目標(ユーザー、10/25): **ぶつからずに、止まってから 3 周 25 秒**(1....05 秒で下がれる偽物の ESC の 3 組で当たりが増えた(最大 1.83 m/s。直す前の同じ場面の当たりの最大と同じ) | 10 のおすすめ (a)(11/3 は変えない。11/3 のリカバリーの記録で決め直す)のまま |\n'}
+script = <module 'docs_fix7_final_t' from '/home/jetson/jetformer/experiments/20261026_fix/fix7/docs_final/docs_fix7_final.py'>
+
+    def test_script_edits_all_done_and_earlier_intact(live, script):
+        """台本の 19 個の足しは今の文書でどれも「済」で new はちょうど 1 回。文書 7-1・7-2 回目の直し(new がちょうど 1 回)・画面の版 9 と、
+        その 2 つの試験の確かめ(f1〜f5・g1〜g6)も崩れていない"""
+        _, rep = script.apply_text(live)
+        assert len(rep) == 19 and [s for _, _, s in rep] == ['done'] * 19, [(f, o[:30], s) for f, o, s in rep if s != 'done']
+        for f, edits in script.ALL:
+            for _, new in edits:
+                assert live[f].count(new) == 1, (f, new[:40])
+>       assert script.earlier_intact(live) == []
+E       AssertionError: assert [('t1 f5', 'R...「のまま」と書いている')] == []
+E         
+E         Left contains 3 more items, first extra item: ('t1 f5', 'README 3.2 の 4: 「`PYTEST_GB` は 0.6」が無い')
+E         Use -v to get more diff
+
+tests/test_fix7_docs_final.py:217: AssertionError
+___________________________ test_live_documents[f5] ____________________________
+
+live = {'runbook_20261103.md': '# 11/3(火・祝)実車の手順書(1 枚)— 止まってから 3 周 25 秒の確かめ\n\n- 目標(ユーザー、10/25): **ぶつからずに、止まってから 3 周 25 秒**(1...で下がれる偽物の ESC の 3 組で当たりが増えた(最大 1.83 m/s。直す前の同じ場面の当たりの最大と同じ) | 10 のおすすめ (a)(11/3 は変えない。11/3 のリカバリーの記録で決め直す)のまま |\n', ...}
+name = 'f5'
+
+    @pytest.mark.parametrize('name', sorted(CHECKS))
+    def test_live_documents(live, name):
+>       assert CHECKS[name](live) == []
+E       AssertionError: assert ['README 3.2 ...に「のまま」と書いている'] == []
+E         
+E         Left contains 3 more items, first extra item: 'README 3.2 の 4: 「`PYTEST_GB` は 0.6」が無い'
+E         Use -v to get more diff
+
+tests/test_fix7_docs_r1.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix7_docs_final.py::test_script_edits_all_done_and_earlier_intact
+FAILED tests/test_fix7_docs_r1.py::test_live_documents[f5] - AssertionError: ...
+2 failed, 854 passed in 705.29s (0:11:45)
+
+real	11m47.590s
+user	8m26.201s
+sys	0m38.658s

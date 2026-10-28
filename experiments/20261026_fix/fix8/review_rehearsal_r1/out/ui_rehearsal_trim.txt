@@ -1,0 +1,20 @@
+## trim
+  [1] read trim  = 15
+  [3] read trim  = 15
+  [5] read trim  = 15
+  [7] read note  = "<b>基準の設定</b>を画面に入れました。変えた所: 説明欄のベンチマークの雛形(ブロック 2・official=1)を消した、速度 0.90 → 1.00。<div class=\"warn-text\">トリム +15 µs はそのままです(車の左右の直し。基準の設定・ブロックでは変えません。0 に戻すときはスライダーで)</div><div class=\"warn-text\">「走行中のデータを収集する」は ON のままです。試しの走行なら外してください(手順書 3 章)</div>"
+  [9] read note  = "<b>ブロック 3(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。<div class=\"warn-text\">トリム +15 µs はそのままです(車の左右の直し。基準の設定・ブロックでは変えません。0 に戻すときはスライダーで)</div>"
+  [10] read desc  = "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  [11] read record  = true
+  [12] read dry  = false
+  [13] el #dr-launch-note html = ""
+  [14] el #dr-ceil-note html = ""
+  [15] read gain  = 0.9
+  [16] read gain_text  = "0.90"
+  [18] read desc  = "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#__ V_before=__ V_after=__ check=__ tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  [19] eval   = "bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo="
+  [20] start sent={'throttle_gain': 0.9, 'speed_ceiling': 0, 'speed_auto': 0, 'launch_boost': 0, 'steer_trim_us': 15} refused=False status=200 dry=False record=True desc='bench=real_bench_20261023 day=2026-11-03 block=3 cand=B model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.31 V_after=__ check=合格 tune=1-3・P1・床2本目・止まって3周 throttle_gain=0.9 official=1 memo='
+      confirm: AI走行を開始します。 / モデル: clean_driving_20261011-nocmd-s3-20261011-024626 / ジャンル: ID 5 / 速度ゲイン 0.90 / トリム: +15 µs(車の左右の直し。基準の設定・ブロックでは変わりません) /  / プロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。 / この画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。
+  [21] read server  = {"steer_gain": 1, "throttle_gain": 0.9, "steer_trim_us": 15, "lookahead": 3, "osc_percent": 0, "esc_reverse": 1, "recovery": 1, "rev_us": 300, "rev_s": 0.4, "tof_guard": 1, "speed_cap": 0, "speed_scale": 1, "tcp_mode": 0, "ensemble_j": 0, "ensemble_m": 0.5, "zone_caps": 0, "start_kick": 1, "speed_ceiling": 0, "ceil_all_mps": 4.5, "ceil_left_mps": 4.1, "speed_auto": 0, "auto_target_mps": 4.27, "auto_vref_v": 8.35, "launch_boost": 0, "launch_us": 250, "launch_mps": 2.5, "launch_max_s": 1.2, "rec_back_guard": 0, "rec_hold_keep": 0, "launch_no_kick": 0}
+  [24] read trim  = 15
+  toasts: sim: /api/modes | sim: /api/scenes | 基準の設定を画面に入れました(走行は始めていません) | ブロック 2(B モデルB(基準))を画面に入れました(走行は始めていません) | 基準の設定を画面に入れました(走行は始めていません) | ブロック 3(B モデルB(基準))を画面に入れました(走行は始めていません) | AI走行 No.1 を開始しました

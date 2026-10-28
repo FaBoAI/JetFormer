@@ -1,0 +1,5 @@
+#!/bin/bash
+# 作り物の journalctl(反証 8-1 rehearsal)。FAKE_JOURNAL のファイルの中身を出す(引数は記録だけ)
+echo "$*" >> "${FAKE_JLOG:-/dev/null}"
+[ -n "${FAKE_JOURNAL:-}" ] && cat "$FAKE_JOURNAL"
+exit 0

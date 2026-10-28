@@ -1,0 +1,14 @@
+kind=hm 組 240
+OFF が f7b の OFF とビット単位で同じ: 240 / 240
+ON と OFF がビット単位で同じ: 192 / 240
+ON が悪い印(のべ): {'giveup_only_on:hold_long': 48, 'rear_more': 4, 'rear_faster': 4}
+ON が悪い印のある組: 4
+(参考)OFF が悪い印: {'off_front_push_more': 48, 'off_rear_more': 2, 'off_rear_faster': 2}
+くみごと(ON が悪い印のある くみ):
+  ('kai1', 'const', 'human') {'rear_more': 2, 'rear_faster': 2}
+  ('kai4_lb', 'const', 'human') {'rear_more': 2, 'rear_faster': 2}
+例(ON が悪い印。最大 60):
+  ['rear_more', 'rear_faster'] | on rear [(10.99, -0.53)] fp 2.55 zp 0 gu 4.083 | off rear [] fp 8.16 zp 0 gu None | {"form": "kai1", "xf": 2.0, "model": {"kind": "const", "m": 120.0}, "esc": "human", "rear": 1.3, "veh_dt": 0.01, "dur": 12.0, "human": [[4.6, 4.9, "back"]], "drops": [[3.35, 4.05]]}
+  ['rear_more', 'rear_faster'] | on rear [(11.99, -0.53)] fp 2.55 zp 0 gu 4.083 | off rear [] fp 8.16 zp 0 gu None | {"form": "kai1", "xf": 2.0, "model": {"kind": "const", "m": 120.0}, "esc": "human", "rear": 1.3, "veh_dt": 0.01, "dur": 12.0, "human": [[5.6, 5.9, "back"]], "drops": [[3.35, 4.05]]}
+  ['rear_more', 'rear_faster'] | on rear [(10.99, -0.53)] fp 2.86 zp 0 gu 4.083 | off rear [] fp 8.47 zp 0 gu None | {"form": "kai4_lb", "xf": 2.0, "model": {"kind": "const", "m": 120.0}, "esc": "human", "rear": 1.3, "veh_dt": 0.01, "dur": 12.0, "human": [[4.6, 4.9, "back"]], "drops": [[3.35, 4.05]]}
+  ['rear_more', 'rear_faster'] | on rear [(11.99, -0.53)] fp 2.86 zp 0 gu 4.083 | off rear [] fp 8.47 zp 0 gu None | {"form": "kai4_lb", "xf": 2.0, "model": {"kind": "const", "m": 120.0}, "esc": "human", "rear": 1.3, "veh_dt": 0.01, "dur": 12.0, "human": [[5.6, 5.9, "back"]], "drops": [[3.35, 4.05]]}

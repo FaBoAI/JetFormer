@@ -1,0 +1,158 @@
+1 2 kai4_lb 3.0 {'kind': 'react', 'm': 80.0, 'db': 0.7} n030 0.9 ['giveup_only_on:hold_long'] True
+13 13 kai2_auto42 1.6 {'kind': 'const', 'm': 160.0, 'db': 0.45} n030 1.6 ['giveup_only_on:hold_long'] True
+19 18 kai3_lb_ceil 1.3 {'kind': 'const', 'm': 80.0, 'db': 0.3} orig 1.6 ['giveup_only_on:'] True
+22 20 kai1_ceil 4.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.7} n020 1.3 ['giveup_only_on:hold_long'] True
+25 22 kai2_auto42 4.0 {'kind': 'react', 'm': 120.0, 'db': 0.3} human 2.2 ['giveup_only_on:'] True
+28 25 kai3_lb_ceil 1.6 {'kind': 'neutwall', 'm': 120.0, 'db': 0.45} n030 2.2 ['giveup_only_on:'] True
+34 28 kai1_ceil 4.0 {'kind': 'const', 'm': 80.0, 'db': 0.45} norev 2.2 ['zero_push'] True
+37 30 kai4_lb 2.0 {'kind': 'neutwall', 'm': 80.0, 'db': 0.45} human 1.1 ['giveup_only_on:hold_long'] True
+40 32 kai3_lb_ceil 3.0 {'kind': 'const', 'm': 120.0, 'db': 0.3} n005 2.2 ['giveup_only_on:hold_long'] True
+46 37 kai4_lb 2.0 {'kind': 'const', 'm': 220.0, 'db': 0.3} n020 1.6 ['giveup_only_on:'] True
+49 40 kai4_lb 3.0 {'kind': 'const', 'm': 40.0, 'db': 0.45} n030 1.3 ['giveup_only_on:hold_long'] True
+55 47 kai2_auto42 4.0 {'kind': 'neutwall', 'm': 220.0, 'db': 0.7} n020 None ['giveup_only_on:'] True
+67 59 kai2_auto42 1.3 {'kind': 'brakewall', 'm': 160.0, 'db': 0.7} n005 0.9 ['rear_more', 'rear_faster', 'front_faster', 'giveup_only_on:hold_long'] True
+70 61 kai2_auto42 2.0 {'kind': 'brakewall', 'm': 80.0, 'db': 0.3} orig 0.9 ['giveup_only_on:hold_long'] True
+73 63 kai2_auto42 3.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.7} norev None ['zero_push'] True
+76 65 kai4_lb 2.5 {'kind': 'neutwall', 'm': 80.0, 'db': 0.7} norev 2.2 ['front_push_more', 'zero_push'] True
+85 75 kai1_ceil 3.0 {'kind': 'brakewall', 'm': 220.0, 'db': 0.3} n005 1.3 ['giveup_only_on:'] True
+91 82 kai1_ceil 3.0 {'kind': 'neutwall', 'm': 40.0, 'db': 0.3} n005 2.2 ['giveup_only_on:'] True
+97 88 kai4_lb 1.6 {'kind': 'const', 'm': 220.0, 'db': 0.45} n002 None ['giveup_only_on:'] True
+100 91 kai1_ceil 1.1 {'kind': 'react', 'm': 80.0, 'db': 0.7} n030 1.1 ['giveup_only_on:'] True
+106 94 kai2_auto42 2.5 {'kind': 'neutwall', 'm': 120.0, 'db': 0.45} human 1.1 ['rear_more', 'rear_faster'] True
+112 98 kai2_auto42 4.0 {'kind': 'brakewall', 'm': 160.0, 'db': 0.3} n020 1.6 ['giveup_only_on:'] True
+115 100 kai3_lb_ceil 2.5 {'kind': 'react', 'm': 40.0, 'db': 0.7} human 1.3 ['giveup_only_on:'] True
+118 104 kai1_ceil 2.5 {'kind': 'const', 'm': 220.0, 'db': 0.3} n005 1.1 ['giveup_only_on:'] True
+121 105 kai1_ceil 1.6 {'kind': 'react', 'm': 120.0, 'db': 0.3} orig 2.2 ['rear_more', 'rear_faster'] True
+124 109 kai1 1.3 {'kind': 'const', 'm': 120.0, 'db': 0.3} n020 2.2 ['giveup_only_on:'] True
+127 110 kai4_lb 2.0 {'kind': 'brakewall', 'm': 160.0, 'db': 0.3} n005 0.9 ['rear_more', 'rear_faster'] True
+136 118 kai1_ceil 2.0 {'kind': 'const', 'm': 220.0, 'db': 0.7} orig 1.3 ['rear_more', 'rear_faster'] True
+139 121 kai4_lb 3.0 {'kind': 'const', 'm': 80.0, 'db': 0.45} orig None ['giveup_only_on:hold_long'] True
+142 124 kai4_lb 3.0 {'kind': 'react', 'm': 120.0, 'db': 0.45} n005 2.2 ['giveup_only_on:hold_long'] True
+145 127 kai3_lb_ceil 1.6 {'kind': 'const', 'm': 80.0, 'db': 0.45} n002 None ['giveup_only_on:hold_long'] True
+148 129 kai2_auto42 1.1 {'kind': 'react', 'm': 160.0, 'db': 0.3} norev 0.9 ['zero_push'] True
+151 132 kai2_auto42 1.6 {'kind': 'const', 'm': 160.0, 'db': 0.7} n030 1.1 ['giveup_only_on:hold_long'] True
+154 136 kai1 3.0 {'kind': 'const', 'm': 40.0, 'db': 0.45} orig 1.6 ['giveup_only_on:'] True
+166 143 kai1_ceil 1.3 {'kind': 'brakewall', 'm': 80.0, 'db': 0.7} n005 1.1 ['rear_more', 'rear_faster', 'giveup_only_on:'] True
+181 156 kai4_lb 1.6 {'kind': 'react', 'm': 80.0, 'db': 0.3} norev None ['zero_push'] True
+184 159 kai4_lb 3.0 {'kind': 'brakewall', 'm': 220.0, 'db': 0.3} n002 0.9 ['rear_more', 'giveup_only_on:'] True
+187 162 kai3_lb_ceil 3.0 {'kind': 'const', 'm': 220.0, 'db': 0.3} n005 None ['giveup_only_on:hold_long'] True
+196 168 kai3_lb_ceil 2.5 {'kind': 'brakewall', 'm': 120.0, 'db': 0.3} orig None ['giveup_only_on:'] True
+202 172 kai4_lb 2.5 {'kind': 'const', 'm': 40.0, 'db': 0.7} n002 None ['giveup_only_on:'] True
+205 173 kai1_ceil 1.3 {'kind': 'brakewall', 'm': 80.0, 'db': 0.3} human 1.6 ['front_faster'] True
+211 179 kai2_auto42 1.6 {'kind': 'react', 'm': 160.0, 'db': 0.45} n030 1.6 ['giveup_only_on:'] True
+214 182 kai1 2.5 {'kind': 'const', 'm': 160.0, 'db': 0.3} n002 1.6 ['giveup_only_on:'] True
+217 184 kai3_lb_ceil 2.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.3} n030 None ['giveup_only_on:'] True
+220 185 kai4_lb 4.0 {'kind': 'const', 'm': 220.0, 'db': 0.7} n030 1.1 ['rear_more', 'rear_faster'] True
+223 188 kai3_lb_ceil 1.3 {'kind': 'react', 'm': 40.0, 'db': 0.45} norev 1.6 ['giveup_only_on:hold_long'] True
+226 193 kai4_lb 2.5 {'kind': 'brakewall', 'm': 220.0, 'db': 0.45} n005 None ['front_push_more'] True
+232 198 kai1_ceil 2.0 {'kind': 'const', 'm': 160.0, 'db': 0.3} orig None ['giveup_only_on:hold_long'] True
+235 200 kai4_lb 1.1 {'kind': 'react', 'm': 120.0, 'db': 0.3} n005 None ['giveup_only_on:'] True
+241 206 kai3_lb_ceil 1.3 {'kind': 'const', 'm': 40.0, 'db': 0.3} n030 None ['giveup_only_on:'] True
+247 211 kai1 1.3 {'kind': 'react', 'm': 160.0, 'db': 0.3} n002 None ['giveup_only_on:hold_long'] True
+256 219 kai1 3.0 {'kind': 'neutwall', 'm': 120.0, 'db': 0.7} human 0.9 ['giveup_only_on:'] True
+262 224 kai1_ceil 1.6 {'kind': 'neutwall', 'm': 40.0, 'db': 0.7} human 2.2 ['giveup_only_on:'] True
+265 227 kai1 4.0 {'kind': 'const', 'm': 220.0, 'db': 0.45} n005 None ['giveup_only_on:hold_long'] True
+277 237 kai2_auto42 1.1 {'kind': 'const', 'm': 80.0, 'db': 0.7} human None ['giveup_only_on:'] True
+280 239 kai4_lb 2.0 {'kind': 'const', 'm': 80.0, 'db': 0.45} norev 2.2 ['zero_push'] True
+286 245 kai2_auto42 3.0 {'kind': 'const', 'm': 120.0, 'db': 0.3} n002 0.9 ['giveup_only_on:hold_long'] True
+289 247 kai1 2.5 {'kind': 'neutwall', 'm': 160.0, 'db': 0.45} n005 None ['giveup_only_on:hold_long'] True
+292 250 kai1 1.6 {'kind': 'const', 'm': 40.0, 'db': 0.7} norev None ['giveup_only_on:hold_long'] True
+295 252 kai2_auto42 1.3 {'kind': 'react', 'm': 220.0, 'db': 0.3} n030 None ['giveup_only_on:hold_long'] True
+298 253 kai3_lb_ceil 1.1 {'kind': 'neutwall', 'm': 80.0, 'db': 0.45} norev None [] True
+310 265 kai4_lb 3.0 {'kind': 'const', 'm': 80.0, 'db': 0.3} n030 1.6 ['giveup_only_on:'] True
+319 270 kai2_auto42 1.6 {'kind': 'react', 'm': 220.0, 'db': 0.7} n002 0.9 ['zero_push', 'giveup_only_on:'] True
+322 273 kai1_ceil 1.6 {'kind': 'neutwall', 'm': 220.0, 'db': 0.7} n002 2.2 ['giveup_only_on:hold_long'] True
+328 277 kai2_auto42 1.1 {'kind': 'brakewall', 'm': 160.0, 'db': 0.45} n020 2.2 ['rear_more', 'rear_faster', 'giveup_only_on:'] True
+331 280 kai4_lb 4.0 {'kind': 'const', 'm': 80.0, 'db': 0.7} n002 1.3 ['giveup_only_on:'] True
+334 283 kai2_auto42 4.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.7} norev 0.9 ['front_push_more', 'zero_push', 'giveup_only_on:'] True
+337 285 kai1_ceil 3.0 {'kind': 'brakewall', 'm': 80.0, 'db': 0.7} orig 1.6 ['giveup_only_on:'] True
+349 299 kai1 1.1 {'kind': 'neutwall', 'm': 220.0, 'db': 0.3} norev 0.9 ['front_push_more', 'zero_push'] True
+352 303 kai1 2.5 {'kind': 'neutwall', 'm': 40.0, 'db': 0.7} n030 None ['giveup_only_on:'] True
+361 310 kai4_lb 1.6 {'kind': 'brakewall', 'm': 160.0, 'db': 0.3} n030 None ['giveup_only_on:'] True
+364 312 kai1 1.1 {'kind': 'react', 'm': 40.0, 'db': 0.45} n005 0.9 ['giveup_only_on:hold_long'] True
+367 314 kai1_ceil 2.0 {'kind': 'brakewall', 'm': 220.0, 'db': 0.3} human 0.9 ['giveup_only_on:hold_long'] True
+376 322 kai1 1.1 {'kind': 'react', 'm': 220.0, 'db': 0.3} n002 None ['giveup_only_on:'] True
+379 325 kai3_lb_ceil 4.0 {'kind': 'const', 'm': 80.0, 'db': 0.3} human 2.2 ['giveup_only_on:'] True
+394 341 kai2_auto42 1.1 {'kind': 'react', 'm': 220.0, 'db': 0.45} n005 1.6 ['front_push_more'] True
+400 347 kai2_auto42 1.6 {'kind': 'const', 'm': 220.0, 'db': 0.7} n002 1.6 ['giveup_only_on:hold_long'] True
+406 350 kai2_auto42 1.1 {'kind': 'const', 'm': 120.0, 'db': 0.3} orig 2.2 ['giveup_only_on:'] True
+409 351 kai4_lb 1.6 {'kind': 'neutwall', 'm': 40.0, 'db': 0.3} human 1.3 ['rear_more', 'rear_faster', 'giveup_only_on:hold_long'] True
+415 354 kai1_ceil 1.3 {'kind': 'react', 'm': 80.0, 'db': 0.7} norev None ['giveup_only_on:hold_long'] True
+427 363 kai4_lb 2.0 {'kind': 'brakewall', 'm': 160.0, 'db': 0.3} norev None ['giveup_only_on:hold_long'] True
+430 366 kai2_auto42 2.5 {'kind': 'const', 'm': 80.0, 'db': 0.3} n020 2.2 ['giveup_only_on:'] True
+433 369 kai1 2.0 {'kind': 'neutwall', 'm': 40.0, 'db': 0.7} n020 2.2 ['giveup_only_on:hold_long'] True
+436 373 kai2_auto42 1.6 {'kind': 'react', 'm': 220.0, 'db': 0.7} orig None ['giveup_only_on:'] True
+439 375 kai1 3.0 {'kind': 'neutwall', 'm': 120.0, 'db': 0.45} n005 2.2 ['giveup_only_on:hold_long'] True
+448 384 kai2_auto42 1.3 {'kind': 'neutwall', 'm': 80.0, 'db': 0.3} n002 2.2 ['giveup_only_on:'] True
+451 386 kai3_lb_ceil 1.6 {'kind': 'const', 'm': 80.0, 'db': 0.45} human 1.6 ['giveup_only_on:hold_long'] True
+454 389 kai1_ceil 1.6 {'kind': 'const', 'm': 160.0, 'db': 0.3} n005 1.3 ['giveup_only_on:'] True
+466 400 kai1 4.0 {'kind': 'brakewall', 'm': 80.0, 'db': 0.45} n005 0.9 ['rear_faster'] True
+469 402 kai4_lb 2.5 {'kind': 'react', 'm': 160.0, 'db': 0.45} orig 1.1 ['giveup_only_on:'] True
+478 409 kai1 3.0 {'kind': 'const', 'm': 220.0, 'db': 0.3} n005 1.3 ['giveup_only_on:'] True
+496 426 kai1_ceil 3.0 {'kind': 'react', 'm': 120.0, 'db': 0.7} orig 1.1 ['giveup_only_on:'] True
+499 428 kai3_lb_ceil 1.1 {'kind': 'react', 'm': 40.0, 'db': 0.3} n020 1.6 ['giveup_only_on:hold_long'] True
+508 437 kai1_ceil 2.5 {'kind': 'brakewall', 'm': 120.0, 'db': 0.3} n002 2.2 ['giveup_only_on:hold_long'] True
+520 449 kai3_lb_ceil 4.0 {'kind': 'brakewall', 'm': 220.0, 'db': 0.3} norev 2.2 ['giveup_only_on:hold_long'] True
+523 453 kai4_lb 1.6 {'kind': 'const', 'm': 220.0, 'db': 0.45} orig 1.1 ['giveup_only_on:hold_long'] True
+541 468 kai1 4.0 {'kind': 'brakewall', 'm': 80.0, 'db': 0.7} n002 1.1 ['rear_faster'] True
+547 474 kai3_lb_ceil 1.3 {'kind': 'brakewall', 'm': 220.0, 'db': 0.3} n002 2.2 ['giveup_only_on:'] True
+553 478 kai4_lb 3.0 {'kind': 'react', 'm': 80.0, 'db': 0.7} n005 1.1 ['rear_faster', 'front_push_more'] True
+556 482 kai4_lb 3.0 {'kind': 'brakewall', 'm': 80.0, 'db': 0.45} orig None ['giveup_only_on:'] True
+568 490 kai4_lb 1.3 {'kind': 'const', 'm': 220.0, 'db': 0.7} n005 2.2 ['giveup_only_on:hold_long'] True
+571 493 kai1 2.0 {'kind': 'react', 'm': 80.0, 'db': 0.7} n020 1.6 ['giveup_only_on:'] True
+574 495 kai3_lb_ceil 1.1 {'kind': 'const', 'm': 80.0, 'db': 0.45} n002 2.2 ['giveup_only_on:'] True
+577 498 kai3_lb_ceil 4.0 {'kind': 'const', 'm': 160.0, 'db': 0.7} norev 1.6 ['giveup_only_on:hold_long'] True
+583 502 kai1_ceil 2.0 {'kind': 'react', 'm': 220.0, 'db': 0.45} n005 0.9 ['rear_more', 'rear_faster', 'giveup_only_on:hold_long'] True
+592 509 kai1 1.6 {'kind': 'const', 'm': 40.0, 'db': 0.3} orig 1.6 ['giveup_only_on:'] True
+595 512 kai1_ceil 2.5 {'kind': 'const', 'm': 220.0, 'db': 0.7} orig 2.2 ['giveup_only_on:hold_long'] True
+598 513 kai2_auto42 2.5 {'kind': 'react', 'm': 160.0, 'db': 0.7} norev None ['zero_push'] True
+601 516 kai3_lb_ceil 2.0 {'kind': 'react', 'm': 40.0, 'db': 0.3} n002 1.3 ['giveup_only_on:'] True
+604 518 kai3_lb_ceil 2.5 {'kind': 'react', 'm': 80.0, 'db': 0.45} human 1.3 ['giveup_only_on:hold_long'] True
+607 520 kai1 2.0 {'kind': 'const', 'm': 80.0, 'db': 0.3} human 0.9 ['rear_more', 'rear_faster', 'giveup_only_on:hold_long'] True
+613 527 kai1_ceil 2.5 {'kind': 'const', 'm': 80.0, 'db': 0.45} human 2.2 ['giveup_only_on:'] True
+625 535 kai1 1.1 {'kind': 'const', 'm': 80.0, 'db': 0.3} n030 1.1 ['rear_more', 'rear_faster'] True
+628 536 kai1_ceil 2.0 {'kind': 'const', 'm': 220.0, 'db': 0.45} n002 1.6 ['giveup_only_on:hold_long'] True
+634 541 kai3_lb_ceil 4.0 {'kind': 'const', 'm': 160.0, 'db': 0.45} human 1.6 ['giveup_only_on:'] True
+637 543 kai3_lb_ceil 3.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.3} norev 2.2 ['front_push_more', 'zero_push', 'giveup_only_on:'] True
+640 547 kai1 1.3 {'kind': 'const', 'm': 160.0, 'db': 0.3} norev 0.9 ['zero_push', 'giveup_only_on:'] True
+643 549 kai2_auto42 2.0 {'kind': 'neutwall', 'm': 160.0, 'db': 0.3} orig 1.1 ['giveup_only_on:'] True
+658 562 kai2_auto42 2.5 {'kind': 'brakewall', 'm': 80.0, 'db': 0.45} norev 0.9 ['front_push_more', 'zero_push', 'giveup_only_on:'] True
+661 565 kai2_auto42 1.1 {'kind': 'brakewall', 'm': 160.0, 'db': 0.3} human 2.2 ['front_faster', 'giveup_only_on:'] True
+667 571 kai2_auto42 3.0 {'kind': 'const', 'm': 120.0, 'db': 0.7} orig None ['giveup_only_on:'] True
+670 576 kai1 1.1 {'kind': 'const', 'm': 220.0, 'db': 0.3} n002 2.2 ['giveup_only_on:'] True
+673 580 kai2_auto42 1.6 {'kind': 'const', 'm': 120.0, 'db': 0.45} n002 1.3 ['giveup_only_on:'] True
+691 595 kai1_ceil 2.0 {'kind': 'const', 'm': 80.0, 'db': 0.45} n005 1.1 ['rear_more', 'rear_faster', 'giveup_only_on:'] True
+694 597 kai2_auto42 1.1 {'kind': 'neutwall', 'm': 160.0, 'db': 0.7} n020 1.3 ['giveup_only_on:'] True
+697 600 kai3_lb_ceil 1.6 {'kind': 'neutwall', 'm': 120.0, 'db': 0.45} n002 1.3 ['rear_more', 'rear_faster'] True
+700 601 kai1_ceil 2.5 {'kind': 'const', 'm': 220.0, 'db': 0.45} n030 1.3 ['rear_more', 'rear_faster'] True
+715 613 kai2_auto42 4.0 {'kind': 'brakewall', 'm': 120.0, 'db': 0.7} n030 0.9 ['rear_more', 'rear_faster'] True
+721 618 kai3_lb_ceil 3.0 {'kind': 'const', 'm': 120.0, 'db': 0.45} norev 1.6 ['zero_push', 'giveup_only_on:'] True
+724 621 kai3_lb_ceil 1.1 {'kind': 'const', 'm': 220.0, 'db': 0.7} orig 1.3 ['front_push_more'] True
+727 623 kai2_auto42 2.0 {'kind': 'const', 'm': 220.0, 'db': 0.3} n005 1.3 ['giveup_only_on:hold_long'] True
+733 630 kai1 2.0 {'kind': 'neutwall', 'm': 120.0, 'db': 0.3} human 1.6 ['giveup_only_on:'] True
+739 635 kai1_ceil 1.1 {'kind': 'const', 'm': 40.0, 'db': 0.7} n005 None ['front_faster', 'giveup_only_on:'] True
+742 637 kai2_auto42 1.3 {'kind': 'neutwall', 'm': 220.0, 'db': 0.3} n005 0.9 ['giveup_only_on:hold_long'] True
+748 643 kai4_lb 2.0 {'kind': 'react', 'm': 120.0, 'db': 0.45} n005 1.1 ['giveup_only_on:hold_long'] True
+754 651 kai2_auto42 2.5 {'kind': 'brakewall', 'm': 80.0, 'db': 0.7} n005 1.1 ['rear_faster'] True
+760 655 kai4_lb 1.6 {'kind': 'react', 'm': 160.0, 'db': 0.3} human 1.6 ['giveup_only_on:'] True
+763 658 kai1_ceil 1.3 {'kind': 'const', 'm': 120.0, 'db': 0.3} n020 None ['giveup_only_on:'] True
+766 659 kai1_ceil 1.1 {'kind': 'const', 'm': 120.0, 'db': 0.3} n002 2.2 ['giveup_only_on:'] True
+772 665 kai1_ceil 1.3 {'kind': 'react', 'm': 80.0, 'db': 0.7} human 1.3 ['giveup_only_on:'] True
+787 676 kai1 3.0 {'kind': 'react', 'm': 40.0, 'db': 0.7} n002 1.1 ['rear_more', 'rear_faster'] True
+790 678 kai2_auto42 4.0 {'kind': 'neutwall', 'm': 220.0, 'db': 0.45} norev 1.1 ['giveup_only_on:hold_long'] True
+796 682 kai2_auto42 3.0 {'kind': 'react', 'm': 220.0, 'db': 0.45} n002 0.9 ['rear_more', 'rear_faster'] True
+802 686 kai4_lb 1.1 {'kind': 'brakewall', 'm': 80.0, 'db': 0.45} n030 0.9 ['rear_more'] True
+805 687 kai1 1.1 {'kind': 'react', 'm': 160.0, 'db': 0.45} n005 None ['giveup_only_on:hold_long'] True
+808 689 kai2_auto42 1.6 {'kind': 'brakewall', 'm': 120.0, 'db': 0.7} n030 0.9 ['rear_faster', 'giveup_only_on:hold_long'] True
+823 704 kai4_lb 1.1 {'kind': 'const', 'm': 120.0, 'db': 0.7} norev 1.3 ['giveup_only_on:hold_long'] True
+829 710 kai1 4.0 {'kind': 'neutwall', 'm': 40.0, 'db': 0.7} n030 None ['giveup_only_on:hold_long'] True
+838 718 kai4_lb 1.6 {'kind': 'react', 'm': 160.0, 'db': 0.7} human 0.9 ['giveup_only_on:'] True
+847 724 kai1_ceil 1.1 {'kind': 'const', 'm': 220.0, 'db': 0.3} norev 0.9 ['front_faster'] True
+853 729 kai1_ceil 2.5 {'kind': 'neutwall', 'm': 220.0, 'db': 0.45} norev 0.9 ['front_push_more', 'zero_push', 'giveup_only_on:'] True
+862 737 kai2_auto42 3.0 {'kind': 'const', 'm': 120.0, 'db': 0.3} n030 None ['giveup_only_on:'] True
+868 744 kai1_ceil 1.3 {'kind': 'const', 'm': 120.0, 'db': 0.45} n030 1.1 ['rear_more', 'rear_faster'] True
+871 747 kai4_lb 4.0 {'kind': 'neutwall', 'm': 80.0, 'db': 0.7} human 1.6 ['rear_more', 'rear_faster'] True
+886 759 kai2_auto42 1.6 {'kind': 'brakewall', 'm': 80.0, 'db': 0.45} norev 1.3 ['front_push_more', 'zero_push', 'giveup_only_on:'] True
+892 764 kai3_lb_ceil 4.0 {'kind': 'react', 'm': 120.0, 'db': 0.45} human 0.9 ['front_push_more', 'giveup_only_on:'] True
+898 769 kai1 2.0 {'kind': 'react', 'm': 220.0, 'db': 0.7} n005 None ['giveup_only_on:'] True
+done fz 1/3 300 worse 156 off_neq_f7b 0 769 s

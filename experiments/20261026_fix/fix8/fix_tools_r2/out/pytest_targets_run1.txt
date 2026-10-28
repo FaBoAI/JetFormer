@@ -1,0 +1,50 @@
+.......................................................F................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 25%]
+........................................................................ [ 34%]
+........................................................................ [ 42%]
+........................................................................ [ 51%]
+........................................................................ [ 59%]
+........................................................................ [ 68%]
+........................................................................ [ 76%]
+........................................................................ [ 85%]
+........................................................................ [ 93%]
+.F....................................................                   [100%]
+=================================== FAILURES ===================================
+___________ test_rec3_1_off_unreached_is_listed_but_does_not_fail_on ___________
+
+    def test_rec3_1_off_unreached_is_listed_but_does_not_fail_on():
+        col = load_mod('collect_r12_off', COLLECT)
+        rows = [_row('20261103-133000', 'off', 3.0), _row('20261103-134000', 'off', None, hits=[(2.0, 5.0, 'HS')]),
+                _row('20261103-133500', 'on', 2.7), _row('20261103-134500', 'on', 2.7),
+                _row('20261103-135000', 'on_not_started', None)]
+        g = col.summarize(rows)[0]
+        assert g['not_reached']['off']['n'] == 1 and g['not_reached']['on_not_started']['n'] == 1
+>       assert g['compare']['all_ok'] is True and 'on_all_reached_r1' not in g['compare']['checks']
+E       assert (False is True)
+
+tests/test_fix3_r1_2.py:507: AssertionError
+________________ test_c5_no_stall_in_launch_is_bit_identical[A] ________________
+
+tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_tools_r2/bt3/test_c5_no_stall_in_launch_is_0')
+case = 'A'
+
+    @pytest.mark.parametrize('case', ['N', 'A'])
+    def test_c5_no_stall_in_launch_is_bit_identical(tmp_path, case):
+        """発進 → R1 の間にカメラの止まりが無い日(止まりなし・止まって中止 = R1 に届かない)は、⑤ の JSON・標準出力が直す前とバイト単位で
+        同じ(3 通りの引数)。
+        2026-10-28 fix8 tools r2(反証 8-2 回目 w2-tools-r8-2-off-few-left の決め): 'A'(3-5 の OFF の本の発進が R1 に届かず、その本の発進が
+        比べに 1 本も残らない)は、8-2 で足した「外れた OFF」(組の off_dropped・checks の off_all_compared・「→ OFF の発進が比べから外れた
+>       …」の行)のほかがバイト単位で同じ(答えは前から「満たさない」。tests/test_fix8_tools_r2.py)"""
+          ^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: []
+E       assert False
+E        +  where False = same_outputs(<test_fix7_tools.Day object at 0xffff31722430>, [], ('A' + '0'))
+E        +    where '0' = str(0)
+E        +      where 0 = len([])
+
+tests/test_fix8_tools_r1.py:524: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix3_r1_2.py::test_rec3_1_off_unreached_is_listed_but_does_not_fail_on
+FAILED tests/test_fix8_tools_r1.py::test_c5_no_stall_in_launch_is_bit_identical[A]
+2 failed, 844 passed in 966.81s (0:16:06)

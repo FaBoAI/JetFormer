@@ -1,0 +1,7 @@
+N0 そのまま | 今 passed  | 前 failed test_vbat_ui.py 行 383: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+V01 既定の左 4.2 | 今 passed  | 前 failed test_vbat_ui.py 行 383: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+V02 app.js 全体と左を入れ違える | 今 failed test_vbat_ui.py 行 395: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and ceil_text in msg | 前 failed test_vbat_ui.py 行 383: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+V03 app.js toFixed(2) | 今 failed test_vbat_ui.py 行 395: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and ceil_text in msg | 前 failed test_vbat_ui.py 行 383: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+V04 app.js 左は控えの 4.0 | 今 failed test_vbat_ui.py 行 395: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and ceil_text in msg | 前 passed 
+V05 既定の左 4.25 | 今 passed  | 前 failed test_vbat_ui.py 行 383: assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg
+exit 0

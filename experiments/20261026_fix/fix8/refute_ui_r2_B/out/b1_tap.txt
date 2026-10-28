@@ -1,0 +1,168 @@
+# b1_tap: 走行中・「試し」のトースト(error・6 秒)が出ている間に、浮いている ■ を本物のポインター(touch・mouse)で押す。スクロールバーは幅を取らない(スマホと同じ。review_ui_r2 の p4 と同じ)
+# 押す所: 重なり = トーストと浮いている ■ が重なる所の真ん中 / ■ の下 = 浮いている ■ のトーストに隠れていない所の真ん中 / 外 = トーストの左の端から 10 px(■ の外)。各 2 回
+390x660 ▶上 | 画面 390x660 | トースト [20, 486, 351, 79] | 浮いている ■ [98, 524, 195, 120] | 重なり [98, 524, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 202, 328, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+390x660 ▶真ん中 | 画面 390x660 | トースト [20, 486, 351, 79] | 浮いている ■ [98, 524, 195, 120] | 重なり [98, 524, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 400, 328, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-who', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-who', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-who', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-who', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+390x660 ▶下寄り | 画面 390x660 | トースト [20, 486, 351, 79] | 浮いている ■ [98, 524, 195, 120] | 重なり [98, 524, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 545, 328, 64](画面の中に全部 True・トーストと重なる True・浮いている ■ と重なる True・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,544) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,604) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,525) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+390x844 ▶上 | 画面 390x844 | トースト [20, 670, 351, 79] | 浮いている ■ [98, 708, 195, 120] | 重なり [98, 708, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 239, 328, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+390x844 ▶真ん中 | 画面 390x844 | トースト [20, 670, 351, 79] | 浮いている ■ [98, 708, 195, 120] | 重なり [98, 708, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 492, 328, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+390x844 ▶下寄り | 画面 390x844 | トースト [20, 670, 351, 79] | 浮いている ■ [98, 708, 195, 120] | 重なり [98, 708, 195, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 678, 328, 64](画面の中に全部 True・トーストと重なる True・浮いている ■ と重なる True・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (195,728) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (195,788) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (30,709) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+412x800 ▶上 | 画面 412x800 | トースト [21, 626, 371, 79] | 浮いている ■ [103, 664, 206, 120] | 重なり [103, 664, 206, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 230, 350, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (31,665) elementFromPoint div ['div', 'dr-stats', 'div'] | トースト 出ている | ok | イベント ['pointerdown:dr-stats', 'touchstart:dr-stats', 'click:dr-stats'] | POST なし
+    touch 外 (31,665) elementFromPoint div ['div', 'dr-stats', 'div'] | トースト 出ている | ok | イベント ['pointerdown:dr-stats', 'touchstart:dr-stats', 'click:dr-stats'] | POST なし
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (31,665) elementFromPoint div ['div', 'dr-stats', 'div'] | トースト 出ている | ok | イベント ['pointerdown:dr-stats'] | POST なし
+    mouse 外 (31,665) elementFromPoint div ['div', 'dr-stats', 'div'] | トースト 出ている | ok | イベント ['pointerdown:dr-stats'] | POST なし
+412x800 ▶真ん中 | 画面 412x800 | トースト [21, 626, 371, 79] | 浮いている ■ [103, 664, 206, 120] | 重なり [103, 664, 206, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 470, 350, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-g-thr-out', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-g-thr-out', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (31,665) elementFromPoint span ['span', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (31,665) elementFromPoint span ['span', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-g-thr-out', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'dr-g-thr-out', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (31,665) elementFromPoint span ['span', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (31,665) elementFromPoint span ['span', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+412x800 ▶下寄り | 画面 412x800 | トースト [21, 626, 371, 79] | 浮いている ■ [103, 664, 206, 120] | 重なり [103, 664, 206, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 646, 350, 64](画面の中に全部 True・トーストと重なる True・浮いている ■ と重なる True・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'tab-drive'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'tab-drive'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (31,665) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'touchstart:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    touch 外 (31,665) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'touchstart:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (206,684) elementFromPoint btn-float-stop ['btn-float-stop', 'btn-dr-stop', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'tab-drive'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (206,744) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'tab-drive'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (31,665) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    mouse 外 (31,665) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+430x900 ▶上 | 画面 430x900 | トースト [22, 726, 387, 79] | 浮いている ■ [108, 764, 215, 120] | 重なり [108, 764, 215, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 250, 368, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+430x900 ▶真ん中 | 画面 430x900 | トースト [22, 726, 387, 79] | 浮いている ■ [108, 764, 215, 120] | 重なり [108, 764, 215, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 520, 368, 64](画面の中に全部 True・トーストと重なる False・浮いている ■ と重なる False・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    touch 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'touchstart:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'dr-stats'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+    mouse 外 (32,765) elementFromPoint div ['div', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:tab-drive', 'click:tab-drive'] | POST なし
+430x900 ▶下寄り | 画面 430x900 | トースト [22, 726, 387, 79] | 浮いている ■ [108, 764, 215, 120] | 重なり [108, 764, 215, 41](■ の高さ 120 のうち縦 41) | カードの ■ [31, 718, 368, 64](画面の中に全部 True・トーストと重なる True・浮いている ■ と重なる True・disabled False) | トースト 5.5 秒 出ている・6.5 秒 無い(6.5 秒の重なり None) | pointer-events none・z 50/40
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'touchstart:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    touch 外 (32,765) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'touchstart:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    touch 外 (32,765) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'touchstart:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 重なり (215,784) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse ■ の下 (215,844) elementFromPoint btn-float-stop ['btn-float-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-float-stop', 'click:btn-float-stop'] | POST ['停止ボタン']
+    mouse 外 (32,765) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+    mouse 外 (32,765) elementFromPoint btn-dr-stop ['btn-dr-stop', 'div', 'div'] | トースト 出ている | ok | イベント ['pointerdown:btn-dr-stop', 'click:btn-dr-stop'] | POST ['停止ボタン']
+
+# まとめ: 12 通り(画面 4 × ▶ の位置 3)
+  touch 重なり: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 24 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  touch ■ の下: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 24 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  touch 外: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 4 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  mouse 重なり: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 24 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  mouse ■ の下: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 24 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  mouse 外: 24 回押して止まった(POST /api/drive/stop reason 停止ボタン) 4 | 押したときトーストが出ていた 24 | 押せなかった(WebDriver の誤り) 0
+  カードの ■: 画面の中に全部 12 / 12・トーストと重なる 4・浮いている ■ と重なる 4
+  トーストが 5.5 秒で出ていて 6.5 秒で消え、浮いている ■ との重なり 0: 12 / 12

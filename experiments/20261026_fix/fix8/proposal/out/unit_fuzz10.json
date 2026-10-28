@@ -1,0 +1,28 @@
+{
+ "off_identical": {
+  "pA": "12/12",
+  "pB": "12/12",
+  "pC": "12/12"
+ },
+ "on_div": {
+  "pA": 52,
+  "pB": 56,
+  "pC": 36
+ },
+ "on_div_kinds": {
+  "pA": {
+   "reverse→ base reverse / pA gap・skip_gap False・eRPM <= 300": 52
+  },
+  "pB": {
+   "reverse→ base reverse / pB gap・skip_gap False・eRPM <= 300": 45,
+   "reverse→ base gap(early_none) / pB reverse・skip_gap -・eRPM <= 300": 8,
+   "reverse→ base escape / pB gap・skip_gap -・eRPM <= 300": 2,
+   "reverse→ base gap(early_none) / pB escape・skip_gap -・eRPM <= 300": 1
+  },
+  "pC": {
+   "reverse→ base reverse / pC gap・skip_gap False・eRPM <= 300": 36
+  }
+ },
+ "frames": 48000,
+ "reverse_frames_base_on": 1879
+}

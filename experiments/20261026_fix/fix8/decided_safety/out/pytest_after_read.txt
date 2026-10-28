@@ -1,0 +1,56 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+.......................................................F................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+________________ test_script_edits_all_done_and_earlier_intact _________________
+
+live = {'runbook_20261103.md': '# 11/3(火・祝)実車の手順書(1 枚)— 止まってから 3 周 25 秒の確かめ\n\n- 目標(ユーザー、10/25): **ぶつからずに、止まってから 3 周 25 秒**(1....05 秒で下がれる偽物の ESC の 3 組で当たりが増えた(最大 1.83 m/s。直す前の同じ場面の当たりの最大と同じ) | 10 のおすすめ (a)(11/3 は変えない。11/3 のリカバリーの記録で決め直す)のまま |\n'}
+script = <module 'docs_fix7_final_t' from '/home/jetson/jetformer/experiments/20261026_fix/fix7/docs_final/docs_fix7_final.py'>
+
+    def test_script_edits_all_done_and_earlier_intact(live, script):
+        """台本の 19 個の足しは今の文書でどれも「済」で new はちょうど 1 回。文書 7-1・7-2 回目の直し(new がちょうど 1 回)・画面の版 9 と、
+        その 2 つの試験の確かめ(f1〜f5・g1〜g6)も崩れていない"""
+        _, rep = script.apply_text(live)
+        assert len(rep) == 19 and [s for _, _, s in rep] == ['done'] * 19, [(f, o[:30], s) for f, o, s in rep if s != 'done']
+        for f, edits in script.ALL:
+            for _, new in edits:
+                assert live[f].count(new) == 1, (f, new[:40])
+>       assert script.earlier_intact(live) == []
+E       AssertionError: assert [('t1 f5', 'R...「のまま」と書いている')] == []
+E         
+E         Left contains 3 more items, first extra item: ('t1 f5', 'README 3.2 の 4: 「`PYTEST_GB` は 0.6」が無い')
+E         Use -v to get more diff
+
+tests/test_fix7_docs_final.py:217: AssertionError
+=============================== warnings summary ===============================
+tests/test_fix3_r3_2_tools.py: 226 warnings
+tests/test_fix7_docs_r2.py: 34 warnings
+  /home/jetson/jetformer/experiments/20261026_fix/diag_launch/collect.py:776: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+tests/test_fix3_r3_2_tools.py: 199 warnings
+  /home/jetson/jetformer/tests/fixtures/fix3_r3_2_before/collect.py:571: DeprecationWarning: `trapz` is deprecated. Use `trapezoid` instead, or one of the numerical integration functions in `scipy.integrate`.
+    dv_i = float(np.trapz(d['ay'][m], it[m]))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_fix7_docs_final.py::test_script_edits_all_done_and_earlier_intact
+1 failed, 1443 passed, 459 warnings in 1055.34s (0:17:35)

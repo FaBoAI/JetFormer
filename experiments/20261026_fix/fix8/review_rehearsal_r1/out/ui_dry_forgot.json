@@ -1,0 +1,111 @@
+{
+ "steps": [
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": ""
+  },
+  {
+   "op": "start",
+   "sent": {
+    "steer_gain": 1,
+    "throttle_gain": 1,
+    "steer_trim_us": 0,
+    "lookahead": 3,
+    "osc_percent": 0,
+    "rev_us": 300,
+    "rev_s": 0.4,
+    "speed_cap": 0,
+    "speed_scale": 1,
+    "ensemble_j": 0,
+    "ensemble_m": 0.5,
+    "esc_reverse": 1,
+    "recovery": 1,
+    "start_kick": 1,
+    "tof_guard": 1,
+    "tcp_mode": 0,
+    "zone_caps": 0,
+    "speed_ceiling": 0,
+    "speed_auto": 0,
+    "launch_boost": 0
+   },
+   "client": 9,
+   "confirm": "",
+   "confirms": [],
+   "refused": false,
+   "desc": "AI走行 clean_driving_20261011-nocmd-s3-20261011-024626",
+   "record": false,
+   "dry": true,
+   "build": 1793105885,
+   "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+   "boot_at": 1000,
+   "status": 200
+  },
+  {
+   "op": "running",
+   "running": false
+  },
+  {
+   "op": "poll",
+   "gain": "1",
+   "text": "1.00"
+  },
+  {
+   "op": "baseline"
+  },
+  {
+   "op": "pick",
+   "fired": true
+  },
+  {
+   "op": "read",
+   "what": "note",
+   "value": "<b>ブロック 1(B モデルB(基準))</b>を画面に入れました。変えた所: 収集 OFF → ON、説明欄に雛形、「モーターに出力しない」ON → OFF(ブロックは本番の走行。推論の確認にするならもう一度入れる)、速度 1.00 → 0.90。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。"
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": false
+  },
+  {
+   "op": "check",
+   "checked": true,
+   "confirm": ""
+  },
+  {
+   "op": "confirm"
+  },
+  {
+   "op": "start",
+   "sent": null,
+   "client": null,
+   "confirm": "「モーターに出力しない」が ON です(推論の確認。出力は中立で、CH3 を AI 側にしても車は動きません)。\n説明欄はベンチマークのブロックの本です(block=1)。\n\nこのまま推論の確認で始めますか?(本番の走行なら キャンセル →「モーターに出力しない」を外してから ▶)",
+   "confirms": [
+    "「モーターに出力しない」が ON です(推論の確認。出力は中立で、CH3 を AI 側にしても車は動きません)。\n説明欄はベンチマークのブロックの本です(block=1)。\n\nこのまま推論の確認で始めますか?(本番の走行なら キャンセル →「モーターに出力しない」を外してから ▶)"
+   ],
+   "refused": null,
+   "desc": null,
+   "record": null,
+   "dry": null,
+   "build": null,
+   "run": null,
+   "boot_at": null,
+   "status": null
+  },
+  {
+   "op": "confirm"
+  },
+  {
+   "op": "read",
+   "what": "dry",
+   "value": true
+  }
+ ],
+ "toasts": [
+  "sim: /api/modes",
+  "sim: /api/scenes",
+  "推論の確認を開始しました(出力は中立)",
+  "基準の設定を画面に入れました(走行は始めていません)",
+  "ブロック 1(B モデルB(基準))を画面に入れました(走行は始めていません)"
+ ]
+}

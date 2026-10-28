@@ -1,0 +1,8 @@
+## repick
+  [1] read pick  = ""
+  [2] el #dr-bench-pick html = "<option value=\"\">— 今: ベンチマーク13: B ・ 3-2・発進ON(250・2.5)・回2のよい形・止まって1〜2周(同じ番号をもう一度選ぶと入れ直す)—</option><option value=\"2:0\">ベンチマーク1: B モデルB(基準) ・ 1-1・P1確認・天井OFF・4〜6周</option><option value=\"2:1\">ベンチマーク2: B モデルB(基準) ・ 1-2・P1・床1本目・止まって3周</option><option value=\"2:2\">ベンチマーク3: B モデルB(基準) ・ 1-3・P1・床2本目・止まって3周</option><option value=\"2:3\">ベンチマーク4: B モデルB(基準) ・ 1-4・天井4.1・同じゲイン・4〜6周</option><option value=\"2:4\">ベンチマーク5: B モデルB(基準) ・ 1-5・P1・天井OFF・4〜6周(A/B/AのA)</option><option value=\"2:5\">ベンチマーク6: B モデルB(基準) ・ 2-1・天井4.1・目安ゲイン・4〜6周</option><option value=\"2:6\">ベンチマーク7: B モデルB(基準) ・ 2-2・P1・天井OFF・4〜6周
+  [3] check   = {"checked": true, "confirm": "発進の前進を ON にします(前進 250 µs 以上・2.5 m/s まで・最大 1.2 秒)。\n\nCH3 を AI 側にした最初のフレームで、止まっていて前が 1 m 以上空いているときだけ、スロットルを 中立 − 250 µs より前に出します(前進だけ・舵はモデルのまま)。既定は OFF・管理画面を起動するたび"}
+  [5] read note  = "<b>ブロック 13(B モデルB(基準))</b>を画面に入れました。変えた所: 説明欄に雛形、発進の前進 ON → OFF。 まだサーバーへは送っていません。走行開始(推論の確認も)で送り、保存されます。 説明欄の battery・V_before・check を書き足してください。"
+  [6] read launch  = false
+  [7] el #dr-launch-note html = "<span class=\"muted\">基準の設定で OFF にしました(走行開始で送ります)</span>"
+  toasts: sim: /api/modes | sim: /api/scenes | ブロック 13(B モデルB(基準))を画面に入れました(走行は始めていません) | 発進の前進を ON にしました | ブロック 13(B モデルB(基準))を画面に入れました(走行は始めていません)

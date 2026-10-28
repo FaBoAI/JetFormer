@@ -1,0 +1,28 @@
+# 読むだけの確かめ(係 docs 同期 1。10/28 09:06:13)。手順書 3.1・todo 4 章の 3〜5 と同じコマンド(GET だけ)
+## 起動
+uptime -s: 2026-10-28 08:41:51
+reboot   system boot  6.8.12-1021-tegr Wed Oct 28 08:40   still running
+reboot   system boot  6.8.12-1021-tegr Mon Oct 26 07:41   still running
+## todo 4 章の 3
+active
+0
+Wed 2026-10-28 08:40:33 JST
+エラーの行なし
+## todo 4 章の 4(GET だけ)
+running False
+boot_at 1793144454.003 10/28 08:40:54
+launch_boost=0 rec_back_guard=0 rec_hold_keep=0 launch_no_kick=0 speed_ceiling=0 speed_auto=0 zone_caps=0 ceil_left_mps=4.1 launch_us=250.0
+## todo 4 章の 5(起動のあとに直したコード)
+起動より新しいコードなし
+## 更新時刻
+2026-10-28 02:33:40.807624827 +0900 /home/jetson/jetformer/jetformer/drive.py
+2026-10-27 22:02:15.167275442 +0900 /home/jetson/jetformer/jetformer/assist.py
+2026-10-27 08:05:38.958789862 +0900 /home/jetson/jetformer/jetformer/web/server.py
+2026-10-27 06:40:49.283812112 +0900 /home/jetson/jetformer/jetformer/web/bench.py
+2026-10-28 04:54:46.636398257 +0900 /home/jetson/jetformer/jetformer/web/static/app.js
+2026-10-28 04:59:46.799416121 +0900 /home/jetson/jetformer/jetformer/web/static/style.css
+## 前の起動の journal の終わり(読むだけ。参考)
+2026-10-28T08:40:57+09:00 jetson python[937735]:     ~~~~~~~~~~~~~~~~~~^^^^^^
+2026-10-28T08:40:57+09:00 jetson python[937735]: OSError: [Errno 121] Remote I/O error
+ -1 f5dd2e3fee8a47669dbb70802f193e7e Mon 2026-10-26 07:41:37 JST Wed 2026-10-28 08:40:57 JST
+  0 e0fd701f08bb42da9214c092395a9aa6 Wed 2026-10-28 08:40:27 JST Wed 2026-10-28 09:06:24 JST

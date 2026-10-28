@@ -1,0 +1,623 @@
+[
+ {
+  "form": "same",
+  "defect": "none",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [
+   "trial_excluded"
+  ],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": []
+ },
+ {
+  "form": "same",
+  "defect": "hit",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": false,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": false,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [
+   "trial_excluded",
+   "trial_on_collisions"
+  ],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [
+    [
+     2.503,
+     6.000000098959276,
+     "HS"
+    ]
+   ],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": []
+ },
+ {
+  "form": "same",
+  "defect": "spin",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": false,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": false,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [
+   "trial_excluded",
+   "trial_slip"
+  ],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.852,
+  "other_groups": []
+ },
+ {
+  "form": "same",
+  "defect": "gap",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": false,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "on_all_readable": false
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [
+   "trial_excluded"
+  ],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": "IMU が最初の周の間で抜けている(シーンが欠けている)"
+  },
+  "38_slip": 1.019,
+  "other_groups": []
+ },
+ {
+  "form": "left41",
+  "defect": "none",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "left41",
+  "defect": "hit",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [
+    [
+     2.503,
+     6.000000098959276,
+     "HS"
+    ]
+   ],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "trial_excluded",
+     "trial_on_collisions"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "left41",
+  "defect": "spin",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.852,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "trial_excluded",
+     "trial_slip"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "left41",
+  "defect": "gap",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": "IMU が最初の周の間で抜けている(シーンが欠けている)"
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "ceil_off",
+  "defect": "none",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井0(None) 自動0",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "ceil_off",
+  "defect": "hit",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [
+    [
+     2.503,
+     6.000000098959276,
+     "HS"
+    ]
+   ],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井0(None) 自動0",
+    "keys": [
+     "trial_excluded",
+     "trial_on_collisions"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "ceil_off",
+  "defect": "spin",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.852,
+  "other_groups": [
+   {
+    "form": "天井0(None) 自動0",
+    "keys": [
+     "trial_excluded",
+     "trial_slip"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "ceil_off",
+  "defect": "gap",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": "IMU が最初の周の間で抜けている(シーンが欠けている)"
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井0(None) 自動0",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "auto_on",
+  "defect": "none",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.2) 自動1",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "auto_on",
+  "defect": "hit",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [
+    [
+     2.503,
+     6.000000098959276,
+     "HS"
+    ]
+   ],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.2) 自動1",
+    "keys": [
+     "trial_excluded",
+     "trial_on_collisions"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "auto_on",
+  "defect": "spin",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.852,
+  "other_groups": [
+   {
+    "form": "天井1(4.2) 自動1",
+    "keys": [
+     "trial_excluded",
+     "trial_slip"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "auto_on",
+  "defect": "gap",
+  "trial": true,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": true,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true
+  },
+  "plan_form_split": null,
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": "試し(起こし直しで左を入れ直す前に走った)",
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": "IMU が最初の周の間で抜けている(シーンが欠けている)"
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.2) 自動1",
+    "keys": [
+     "trial_excluded"
+    ],
+    "by_launch": []
+   }
+  ]
+ },
+ {
+  "form": "left41",
+  "defect": "none",
+  "trial": false,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": false,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "one_form": false
+  },
+  "plan_form_split": [
+   "天井1(4.1) 自動0",
+   "天井1(4.2) 自動0"
+  ],
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": null,
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "form_split"
+    ],
+    "by_launch": [
+     "on"
+    ]
+   }
+  ]
+ },
+ {
+  "form": "left41",
+  "defect": "hit",
+  "trial": false,
+  "plan_n_on": 3,
+  "plan_n_off": 4,
+  "plan_d_to_r1": -0.165,
+  "plan_all_ok": false,
+  "plan_checks": {
+   "to_r1": true,
+   "first_lap_collisions_0": true,
+   "slip": true,
+   "lh_speed": true,
+   "one_form": false
+  },
+  "plan_form_split": [
+   "天井1(4.1) 自動0",
+   "天井1(4.2) 自動0"
+  ],
+  "plan_trial_keys": [],
+  "38_row": {
+   "trial": null,
+   "to_r1_s": 2.813,
+   "collisions_first_lap": [
+    [
+     2.503,
+     6.000000098959276,
+     "HS"
+    ]
+   ],
+   "first_lap_gap": null
+  },
+  "38_slip": 1.019,
+  "other_groups": [
+   {
+    "form": "天井1(4.1) 自動0",
+    "keys": [
+     "form_split"
+    ],
+    "by_launch": [
+     "on"
+    ]
+   }
+  ]
+ }
+]

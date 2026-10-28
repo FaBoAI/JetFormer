@@ -1,0 +1,38 @@
+        """PYTEST_GB = 10/28 の一式の実測(空き 10493M → いちばん少なくて 9913M = 580 MiB ≈ 0.6 GB。-o tmp_path_retention_policy=failed)、
+        assert '空きの一番少ないとき 9913M' in rep and 'tmp_path_retention_policy=failed' in rep
+        want = ('pytest 一式の最中: %.2f GB(作業場所 0.6 GB。-o tmp_path_retention_policy=failed を付けたとき。付けないと作業場所 7.1 GB で '
+E       AssertionError: assert 'pytest 一式の最中: 5.54 GB(作業場所 0.6 GB。-o tmp_path_retention_policy=failed を付けたとき。付けないと作業場所 7.1 GB で -0.96 GB)。終わって消せば 6.14 GB に戻る' in ['# 測った時刻 2026-10-28 02:42', '今の空き: 10.00 GB', '段 1: 済み 0 本・途中 0 本(0.00 GB)・残りで使う見込み 3.86 GB(予測込み)', '段 1 のあと: 6.14 GB...式の最中: 2.24 GB(作業場所 3.9 GB)。終わって消せば 6.14 GB に戻る', '11/3(増え 少なめ): 朝 5.3 GB・夜 4.7 GB / pytest の作業場所を残すと 朝 1.4・夜 0.8', ...]
+FAILED tests/test_fix8_tools_decided.py::test_abort_resumes_recovery_unit
+FAILED tests/test_fix8_tools_decided.py::test_abort_text_recovery
+FAILED tests/test_fix8_tools_decided.py::test_disk_pytest_gb_matches_the_measurement
+FAILED tests/test_fix8_tools_decided.py::test_disk_print_line
+FAILED tests/test_fix8_tools_decided.py::test_runs_mark_text_tells_deliberate_off
+FAILED tests/test_fix8_tools_decided.py::test_runs_options_line_unchanged
+FAILED tests/test_fix8_tools_decided.py::test_runs_options_line_names_the_round_run_after_dash
+FAILED tests/test_fix8_tools_decided.py::test_c5_mixed_options_line_tells_deliberate_off
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_is_excluded[0.5]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_is_excluded[1.5]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_is_excluded[2.5]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_is_excluded[3.5]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_is_excluded[4.5]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_same_numbers_as_abort
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_on_first_lap_collision_counts
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_resume_not_reached
+FAILED tests/test_fix8_tools_decided.py::test_c5_off_recovery_resume_is_excluded_from_off
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_tail_hold_or_human[hold]
+FAILED tests/test_fix8_tools_decided.py::test_c5_recovery_tail_hold_or_human[human]
+FAILED tests/test_fix8_tools_decided.py::test_s3_recovery_resume_not_counted[3.5]
+FAILED tests/test_fix8_tools_decided.py::test_s3_recovery_resume_not_counted[1.5]
+FAILED tests/test_fix8_tools_decided.py::test_s3_coll_before_takes_the_flag
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_on_spin_counts[trial]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_on_spin_counts[midrun]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_extreme_spin[trial]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_extreme_spin[midrun]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_slip_unmeasured[trial]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_slip_unmeasured[midrun]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_first_lap_gap[trial]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_midrun_first_lap_gap[midrun]
+FAILED tests/test_fix8_tools_decided.py::test_c5_trial_spin_mixed_launch_us[200.0-True]
+FAILED tests/test_fix8_tools_decided.py::test_real_recovery_marks
+FAILED tests/test_fix8_tools_decided.py::test_real_s3_counts_unchanged
+33 failed, 25 passed in 79.59s (0:01:19)

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="20" time="33.275" timestamp="2026-10-28T11:08:47.679218+09:00" hostname="jetson"><testcase classname="tests.test_ui_fix8_r2" name="test_before_copies_are_the_versions_before_this_fix" time="0.002" /><testcase classname="tests.test_ui_fix8_r2" name="test_style_css_only_the_float_stop_rule_and_one_media_rule" time="0.003"><failure message="assert (0 == 1)&#10; +  where 0 = len([])">def test_style_css_only_the_float_stop_rule_and_one_media_rule():
+        """style.css で変えたのは .float-stop の 2 行目の終わりに「width: max-content; max-width: 90%;」を足した 1 行と、注の行と、
+        「body.driving main { padding-bottom: 96px; }」のすぐ下の @media の 1 行だけ。.toast の行(8-1 の直し)・body.driving .toast の
+        96 px の行・ほかの規則は同じ。index.html・server.py・bench.py は変えていない(app.js は 3 件目。test_app_js_only_vbat_source_text)"""
+        removed, added, ops = _diff(BEFORE / 'style.css', CSS)
+&gt;       assert len(removed) == 1 and removed[0].startswith('  font-weight: 700; background: var(--danger);') and removed[0].endswith(' }')
+E       assert (0 == 1)
+E        +  where 0 = len([])
+
+tests/test_ui_fix8_r2.py:126: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_float_stop_takes_its_text_width_and_driving_toast_goes_above_it_on_phones" time="0.004"><failure message="AssertionError: assert ['position: f...px 40px', ...] == ['position: f...px 40px', ...]&#10;  &#10;  Right contains 2 more items, first extra item: 'width: max-content'&#10;  Use -v to get more diff">def test_float_stop_takes_its_text_width_and_driving_toast_goes_above_it_on_phones():
+        """.float-stop は前の宣言のまま(左 50%・下 16 px・translateX(-50%)・z 40・14px 40px・20 px)に width: max-content と
+        max-width: 90% を足しただけ。幅 600 px 以下の @media は走行中のトーストの bottom 126 px だけ(.float-stop・止まっているときの
+        .toast には触れない)。■ とトーストを扱う規則はほかに無い。トーストは ■ より上(z 50 &gt; 40)・押しても通る(pointer-events: none)"""
+        now, old = _rules(CSS.read_text(encoding='utf-8')), _rules((BEFORE / 'style.css').read_text(encoding='utf-8'))
+        top = {s: d for s, d in now if not s.startswith('@')}
+        otop = {s: d for s, d in old if not s.startswith('@')}
+&gt;       assert top['.float-stop'] == otop['.float-stop'] + ['width: max-content', 'max-width: 90%']
+E       AssertionError: assert ['position: f...px 40px', ...] == ['position: f...px 40px', ...]
+E         
+E         Right contains 2 more items, first extra item: 'width: max-content'
+E         Use -v to get more diff
+
+tests/test_ui_fix8_r2.py:150: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_only_the_ceiling_expectation_changed" time="0.003" /><testcase classname="tests.test_ui_fix8_r2" name="test_to_fixed1_is_javascript_to_fixed" time="0.052" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[None]" time="0.077" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.2]" time="0.079" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[3.9]" time="0.072" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbat_ui_expectation_is_what_app_js_writes[4.25]" time="0.073" /><testcase classname="tests.test_ui_fix8_r2" name="test_firefox_float_stop_and_driving_toast_on_phone" time="29.214"><failure message="AssertionError: (360, 660, 'start', {'vw': 360, 'vh': 660, 'f': [90, 494, 180, 150], 't': [77.1, 524.5, 205.7, 39.5], ...})&#10;assert (4 &lt;= 2)&#10; +  where 4 = len(['■ AI走行', 'を停止(ス', 'ペース', 'キー)'])">tmp_path = PosixPath('/home/jetson/jetformer/experiments/20261026_fix/fix8/tmp_ui_r2/mut/M01/test_firefox_float_stop_and_dr0')
+
+    @pytest.mark.skipif(not (FIREFOX and GECKO), reason='JF_UI_FIREFOX=1 と geckodriver のときだけ(jf-heavy --lock big --mem 3000M)')
+    def test_firefox_float_stop_and_driving_toast_on_phone(tmp_path):
+        """headless の Firefox(本物の index.html に style.css を file:// で。画面 = 枠なしの iframe。スクロールバーは幅を取らない)。
+        走行中の 5 つのトースト(ふつうの ▶・推論の確認・11/3 の「試し」1 つ/3 つ・走行中のスイッチの断り)と、止まっているときの
+        2 つ(▶ の断りの出し直し = 本物の server._boot_refusal の文・「停止しました」)を、幅 360・375・390・412・430 × 高さ 660〜900 と
+        600×800・700×800・768×900・1280×800・844×390 で測る。
+        直す前: スマホの全部で ■ の幅 = 画面の半分・3 行以上、走行中のトーストがどれも ■ に 39 px 以上重なる(指摘)。
+        今: スマホの全部で ■ は 2 行まで・画面の中(字も)・幅は画面の 90% まで、トーストは ■ に重ならず 10 px 以上上・画面の中。
+        600×800・700×800 は前の 2 行(重なる)が 1 行(重ならない)。768・1280・844×390 は走行中も止まっているときも ■ とトーストの箱が前と同じ。止まっているときのトーストは
+        どの大きさでも前と同じ(8-1 の直しのまま)"""
+        if str(tmp_path).startswith('/tmp') or '/.' in str(tmp_path):
+            pytest.skip('snap の Firefox が読めない場所(--basetemp を /tmp・隠しフォルダの外に)')
+        texts = {k: (txt, err, True) for k, (txt, err) in RUN_TOASTS.items()}
+        texts.update({'idle_refusal': (_refusal(), True, False), 'idle_stopped': ('停止しました', False, False)})
+        sizes = PHONES + MID + WIDE
+        res = _measure_all(tmp_path, {'before': BEFORE / 'style.css', 'now': CSS}, sizes, texts)
+        run = list(RUN_TOASTS)
+        for (w, h) in PHONES:
+            for name in run:
+                b, n = res[('before', w, h, name)], res[('now', w, h, name)]
+                assert b['vw'] == n['vw'] == w and n['vh'] == h
+                # 直す前(指摘): ■ は画面の半分の幅・3 行以上、トーストが上の行に重なる
+                assert abs(b['f'][2] - w / 2) &lt;= 1 and len(b['lines']) &gt;= 3 and _vov(b['t'], b['f']) &gt;= 39, (w, h, name, b)
+                # 今: 2 行まで・画面の中・90% まで、重ならない(10 px 以上上)・トーストも画面の中
+                f, t = n['f'], n['t']
+&gt;               assert 1 &lt;= len(n['lines']) &lt;= 2 and n['out'] == '' and f[0] &gt;= 0 and f[0] + f[2] &lt;= w + 0.5, (w, h, name, n)
+E               AssertionError: (360, 660, 'start', {'vw': 360, 'vh': 660, 'f': [90, 494, 180, 150], 't': [77.1, 524.5, 205.7, 39.5], ...})
+E               assert (4 &lt;= 2)
+E                +  where 4 = len(['■ AI走行', 'を停止(ス', 'ペース', 'キー)'])
+
+tests/test_ui_fix8_r2.py:327: AssertionError</failure></testcase><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_screen_matches_server_table" time="0.131" /><testcase classname="tests.test_ui_fix8_r2" name="test_vbefore_random_descriptions_match_server" time="0.169" /><testcase classname="tests.test_ui_fix8_r2" name="test_pyfloat_is_python_float_and_py_space_is_python_isspace" time="1.828" /><testcase classname="tests.test_ui_fix8_r2" name="test_vdesc_range_is_the_server_range" time="0.004" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8.31 check=\u5408\u683c memo=]" time="0.071" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=831 check=\u5408\u683c]" time="0.071" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=8,31]" time="0.070" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=\uff18.\uff13\uff11]" time="0.071" /><testcase classname="tests.test_ui_fix8_r2" name="test_start_and_switch_confirm_texts_say_what_the_server_uses[battery=#A V_before=__ memo=]" time="0.070" /><testcase classname="tests.test_ui_fix8_r2" name="test_app_js_only_vbat_source_text_changed" time="0.027" /></testsuite></testsuites>

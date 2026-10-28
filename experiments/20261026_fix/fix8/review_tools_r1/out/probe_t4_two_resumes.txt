@@ -1,0 +1,28 @@
+== 2rec(20261103-133500)
+  ⑤ 発進 1.00 秒(start_no 1): to_r1 2.973・最初の周の衝突 []・印 None
+  ⑤ 発進 14.73 秒(start_no 2): to_r1 2.04・最初の周の衝突 [[18.713, 6.67981103727485, 'GM_out']]・印 {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'human_s': 1.03}
+  ⑤ 発進 21.73 秒(start_no 3): to_r1 7.19・最初の周の衝突 []・印 {'kind': 'recovery', 'abort_s': 19.133, 'rec_s': 1.57, 'ai_end_s': 20.7, 'human_s': 1.03}
+  組 [回 11/03 回3・天井 0・左 None] ON n 4(中央値 2.903)・OFF n 4(中央値 3.028)・ON − OFF -0.125・満たさない・checks の False ['first_lap_collisions_0', 'to_r1']・{"abort_resume_excluded": ["20261103-133500@14.73(on・リカバリーの途中 11.533 秒から 2.17 秒・人側 1.03 秒・起点まで 2.040 秒・空転の比 1.02・最初の周の衝突 18.71 秒 6.7G GM_out)", "20261103-133500@21.73(on・リカバリーの途中 19.133 秒から 1.57 秒・人側 1.03 秒・起点まで 7.190 秒・空転の比 1.02)"], "abort_resume_on_collisions": 1}
+  ③ 3-8 の発進: [(1.0, False, None, 0), (14.733, False, 'recovery', 0), (21.733, False, 'recovery', 1)]
+  ④ 発進 250 の組: 止まってから 3 周 None・数えない 1
+== 2rec_pre(20261103-133500)
+  ⑤ 発進 1.00 秒(start_no 1): to_r1 2.973・最初の周の衝突 []・印 None
+  ⑤ 発進 14.73 秒(start_no 2): to_r1 None・最初の周の衝突 [[15.613, 6.67981103727485, 'LH']]・印 {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'human_s': 1.03}
+  ⑤ 発進 18.63 秒(start_no 3): to_r1 1.29・最初の周の衝突 []・印 {'kind': 'recovery', 'abort_s': 16.033, 'rec_s': 1.57, 'ai_end_s': 17.6, 'human_s': 1.03}
+  組 [回 11/03 回3・天井 0・左 None] ON n 4(中央値 2.903)・OFF n 4(中央値 3.028)・ON − OFF -0.125・満たさない・checks の False ['first_lap_collisions_0', 'on_all_reached_r1', 'slip_all_measured', 'to_r1']・{"abort_resume_excluded": ["20261103-133500@18.63(on・リカバリーの途中 16.033 秒から 1.57 秒・人側 1.03 秒・起点まで 1.290 秒・空転の比が出ない(窓が短い(LH・R1 が近い)か IMU が抜けた))"], "not_reached": {"on": {"n": 1, "logs": ["20261103-133500@14.73"], "after_abort": ["20261103-133500@14.73"]}}}
+  ③ 3-8 の発進: [(1.0, False, None, 0), (14.733, False, 'recovery', 0), (18.633, False, 'recovery', 1)]
+  ④ 発進 250 の組: 止まってから 3 周 None・数えない 1
+== abort_after(20261103-133500)
+  ⑤ 発進 1.00 秒(start_no 1): to_r1 2.973・最初の周の衝突 []・印 None
+  ⑤ 発進 14.73 秒(start_no 2): to_r1 None・最初の周の衝突 []・印 {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'human_s': 1.03}
+  ⑤ 発進 19.07 秒(start_no 3): to_r1 1.696・最初の周の衝突 []・印 {'kind': 'abort', 'abort_s': 16.067, 'ai_end_s': 18.033, 'human_s': 1.03}
+  組 [回 11/03 回3・天井 0・左 None] ON n 4(中央値 2.903)・OFF n 4(中央値 3.028)・ON − OFF -0.125・満たさない・checks の False ['on_all_reached_r1', 'to_r1']・{"abort_resume_excluded": ["20261103-133500@19.07(on・中止 16.067 秒・人側 1.03 秒・起点まで 1.696 秒・空転の比 1.02)"], "not_reached": {"on": {"n": 1, "logs": ["20261103-133500@14.73"], "after_abort": ["20261103-133500@14.73"]}}}
+  ③ 3-8 の発進: [(1.0, False, None, 0), (14.733, False, 'recovery', 0), (19.067, False, 'abort', 0)]
+  ④ 発進 250 の組: 止まってから 3 周 None・数えない 1
+== bounce_rec(20261103-133500)
+  ⑤ 発進 1.00 秒(start_no 1): to_r1 2.973・最初の周の衝突 []・印 None
+  ⑤ 発進 14.73 秒(start_no 2): to_r1 None・最初の周の衝突 []・印 {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'human_s': 1.03}
+  ⑤ 発進 16.03 秒(start_no 3): to_r1 1.94・最初の周の衝突 []・印 {'kind': 'recovery', 'abort_s': 11.533, 'rec_s': 2.17, 'ai_end_s': 13.7, 'carried': 1, 'human_s': 1.03}
+  組 [回 11/03 回3・天井 0・左 None] ON n 4(中央値 2.903)・OFF n 4(中央値 3.028)・ON − OFF -0.125・満たさない・checks の False ['on_all_reached_r1', 'to_r1']・{"abort_resume_excluded": ["20261103-133500@16.03(on・リカバリーの途中 11.533 秒から 2.17 秒・人側 1.03 秒・起点まで 1.940 秒・空転の比 1.02)"], "not_reached": {"on": {"n": 1, "logs": ["20261103-133500@14.73"], "after_abort": ["20261103-133500@14.73"]}}}
+  ③ 3-8 の発進: [(1.0, False, None, 0), (14.733, False, 'recovery', 0), (16.033, False, 'recovery', 0)]
+  ④ 発進 250 の組: 止まってから 3 周 None・数えない 1

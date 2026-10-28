@@ -1,0 +1,25 @@
+logs 11 launches 17 with R1 5 laps 29 flying accel windows 30
+20261010-160306 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.18   m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-160306 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.186  m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None 中止のあとの走り直し(中立止め 38.504 秒から 0.73 秒・人側 1.93 秒。R1 に届かなかった発進に数える)
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mvNone   m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.154  m80=None   toR1=2.616  d=4.84  loss=None   parts=None fly=0/none None
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.782  m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.182  m80=None   toR1=2.664  d=7.06  loss=None   parts=None fly=0/none None
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.039  m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-163247 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.692  m80=None   toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-173445 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.152  m80=None   toR1=2.157  d=4.62  loss=0.133  parts={'dead_s': 0.152, 'straight_s': 0.03, 'lh_to_r1_s': -0.049} fly=11/same_log HS
+20261010-181504 No.None first_trial_20261010-s3- g2.00 kick=0(  0fr) mv0.479  m80=0.433  toR1=None   d=None  loss=None   parts=None fly=None/None None 中止のあとの走り直し(中止 33.274 秒・人側 2.56 秒。R1 に届かなかった発進に数える)
+20261010-203924 No.None first_trial_20261010-s3- g1.35 kick=0(  0fr) mv0.117  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-203924 No.None first_trial_20261010-s3- g1.35 kick=0(  0fr) mv0.054  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-204208 No.None first_trial_20261010-s3- g1.40 kick=0(  0fr) mv0.158  m80=0.0    toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-204208 No.None first_trial_20261010-s3- g1.25 kick=0(  0fr) mv0.022  m80=0.067  toR1=4.035  d=7.37  loss=None   parts=None fly=0/none None
+20261010-204605 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mvNone   m80=0.999  toR1=None   d=None  loss=None   parts=None fly=None/None None
+20261010-204605 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.2    m80=0.167  toR1=9.503  d=28.82 loss=None   parts=None fly=0/none None
+20261010-204605 No.None first_trial_20261010-s3- g1.00 kick=0(  0fr) mv0.224  m80=0.133  toR1=None   d=None  loss=None   parts=None fly=None/None None
+
+発進の前進の比べ(設定ごと。ON = 出た・ON_not_started = launch_boost 1 なのに出ない → ON として数えない)
+10/10 ? first_trial_20261010-s3- g1.00〜2.00(ゲインをまとめた --ignore-gain) 天井0 自動0
+  R1 に届かなかった発進(off)5 本(比べの数に入れない): 20261010-160306@23.38・20261010-163247@0.00・20261010-181504@37.70・20261010-203924@8.36・20261010-204605@9.53。理由 15 秒以内に起点なし/AI の区間が短い。その衝突 3(160306 25.58 秒 5.9G LH・160306 26.69 秒 5.2G ?・181504 41.91 秒 4.2G LH)。うちリカバリー中止のあとの走り直し 1(20261010-181504@37.70)
+  途中で変えた 2 本(比べに入れない。ON の組にも OFF の組にも入れない。手順書 7 章): 20261010-173445@22.48(ステア 1.4→1.5 78.4 秒・速さ 2→1.7 229.2 秒)・20261010-204208@8.76(ステア 1.2→1.4 58.3 秒・速さ 1.4→1.25 58.3 秒)
+記録が欠けている本 20261010-163247(10/10 ?・発進の前進 OFF): シーン 0021・0022・0023 の npz が無い・読めない(11 件)。欠けた区間の衝突・8G 以上は記録に無い(最初の周に掛かれば「最初の周の記録が欠けた発進」で満たさない)→ 動画・紙で(手順書 7 章「いつでも」)
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix8/review_tools_r2/out/real/new/launches_20261010_ig-fo.json

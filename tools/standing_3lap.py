@@ -109,6 +109,17 @@ log.json が読めない(0 バイトなど)記録は飛ばす(skipped)。
            Y 秒・人側 Z 秒)」と注 HOLD_NOTE(名前と中止の文は fix7 r1 のまま = 手順書が引く言葉。中止だけの本は表が前と同じ)。本物の
            20261010-160306 の 41.17 秒の発進(中立止め 0.73 秒のまま人側 → 止まった所から AI 側)にこの印が付く(R1 に届かない OFF の発進で、
            前に衝突もあるので数は変わらない)。そういう区間の無い本は表・JSON とも前と同じ
+  リカバリーの途中で人側にしたあとの走り直し(2026-10-28 fix8 係 tools-decided。main session の決め 10/28 00:5x = fix3/approvals.md 8
+           の「fix7 で残した読み方」①)  一つ前の AI の区間が、リカバリーの途中(assist 2。当たった・止まったあとのブレーキ・中立・後退・
+           前進・'halt')で人が CH3 を人側にして終わった発進(区間の最後のフレームは中立止め・AI_CMD が人側のフレームを除いて見る)も、
+           中止のあとの走り直しと同じ印(after_abort。kind 'recovery'・abort_s = その区間の最後のリカバリーの始め・rec_s = そこから区間の
+           終わりまで)を付けて数えない(counted = False)。どちらも HS からの発進か記録から分からない(同じ理由)。表の「確か」は
+           「数えない(リカバリー中止のあとの走り直し。リカバリーの途中 X 秒から Y 秒・人側 Z 秒)」と注 RECOVERY_NOTE(名前は fix7 r1 の
+           まま = 手順書が引く言葉)。前に衝突のある発進はもとから数えない(「前に衝突」)。中止・中立止め・カメラの途切れの印が先(fix7 の
+           印は前と同じ)。本物の 10/10・10/23・10/24 では、リカバリーの途中で終わった区間 7 つのあとの AI の区間 8 つ(続き 2 を含む)に
+           印が付き、うち止まった状態からの発進は 3 つ(20261023-211828@154.35・20261024-135608@27.35・20261024-160847@46.50。どれも前から
+           数えない発進 = 前に衝突・途中で変えた / R1 に届かない)で、止まってから 3 周の数・最速は同じ(fix8/decided_tools.md)。そういう
+           区間の無い本は表・JSON とも前と同じ
   距離の 3 周と線の方法の違い  1 周の車輪の距離は同じ走行でも 24.0〜28.3 m とばらつく(10/24。衝突・線の違い)。
            距離の 3 周はそれを 3 周分そのまま受ける(10/24 No.11 で −0.57 秒・No.12 で +0.58 秒)。線の方法は起点ごとに
            合わせ直すので、ずれは最後の d_pre(5〜7 m)の分だけ。
@@ -139,6 +150,10 @@ try:
     from jetformer.assist import ASSIST_GIVEUP  # noqa: E402
 except Exception:       # noqa: BLE001
     ASSIST_GIVEUP = 3
+try:        # リカバリーの途中(ブレーキ・中立・後退・前進など。2026-10-28 fix8 tools-decided)
+    from jetformer.assist import ASSIST_RECOVERY  # noqa: E402
+except Exception:       # noqa: BLE001
+    ASSIST_RECOVERY = 2
 try:        # 残した中立止めのうち、続きから進めてよい長さ(drive の Recovery と同じ値。より長ければ明けて中止。2026-10-27 fix7 r2)
     from jetformer.assist import Recovery as _Recovery  # noqa: E402
     HOLD_KEEP_MAX_S = float(_Recovery.HOLD_KEEP_MAX_S)
@@ -147,6 +162,9 @@ except Exception:       # noqa: BLE001
 RESUME_MOVE_M = 0.5          # 中止のあとの走り直しの区間で、車輪の前進がこれより少なければ次の区間も中止の場所から(2026-10-27 fix7)
 # 走り直しの前の AI の区間が止まって終わった形(after_abort の kind。2026-10-27 fix7 r2): 文の頭(中止は fix7 r1 の文のまま)
 STOP_KIND_TEXT = {'abort': '中止', 'hold': '中立止め', 'stall': 'カメラの途切れ'}
+# 'recovery' = リカバリーの途中で人が CH3 を人側にして終わった区間(2026-10-28 fix8 tools-decided。main session の決め =
+# fix3/approvals.md 8 の「fix7 で残した読み方」①)。上の行は tests/test_fix7_docs_r2.py の g1 が文のまま引くので別の行で足す
+STOP_KIND_TEXT['recovery'] = 'リカバリーの途中'
 # ③ の表・④ の印・⑤ の行の名前。fix7 r2 で中立止め・カメラの途切れのあとも入れたが、名前は fix7 r1 のまま(手順書 7 章・8.1 と
 # tests/test_fix7_docs_r2.py が引く言葉。中立止め・途切れは形の文「中立止め X 秒から Y 秒」と注 HOLD_NOTE で分ける)
 RESUME_NAME = 'リカバリー中止のあとの走り直し'
@@ -639,16 +657,24 @@ def abort_resumes(t, ai, assist, hold=None, sel=None, vt=None, Df=None, verpm=No
       hold・stall は、終わりで止まっていて(hold: 区間の最後のフレームの時刻で |eRPM| < STOP_ERPM。stall: 途切れの間に一度でも
       |eRPM| < STOP_ERPM)、その区間で車輪の前進が RESUME_MOVE_M 以上あった区間だけ(置いた場所から一度も動かなかった区間 =
       本物の 20261024-183123 の 40.10〜43.36 秒を外す)。verpm・vt・Df が無ければ hold・stall は見ない(abort だけ = fix7 r1 と同じ)。
+      'recovery' (2026-10-28 fix8 tools-decided。main session の決め = fix3/approvals.md 8 の「fix7 で残した読み方」①)区間の最後の
+               フレームが、中立止め・AI_CMD が人側のフレームを除いて、リカバリーの途中(assist 2 = ASSIST_RECOVERY。当たった・止まった
+               あとのブレーキ・中立・後退・前進・惰性を止める 'halt')= 人がリカバリーの途中で CH3 を人側にした区間。中止と同じく、
+               止まった所・当たった所(コースの途中)から出たかもしれず、HS に置き直したかは記録から分からない(同じ理由)ので、
+               ほかの決まり(止まっている・進んだ距離)は付けない。abort・hold・stall のどれでもないときだけ(その印が先 = fix7 の印は
+               前と同じ)。abort_s = その区間の最後のリカバリー(続いた assist 2)の始め、rec_s = そこから区間の終わりまでの秒。
+               verpm が無い呼び方でも見る(assist だけで決まる)
     その次の AI の区間を走り直しとする(どこに置いたかは記録から分からない: 手で運ぶと車輪の距離は 0)。走り直しの区間で車輪の前進が
     RESUME_MOVE_M より少ないうちにまた人側にしたら、その次の区間も(まだ止まった場所の近く。vt・Df が無ければ続けない)。
-    assist 3 のフレームが無く verpm も無い呼び方は {}(呼び手は前と同じ)"""
+    assist 3・2 のフレームが無く verpm も無い呼び方は {}(呼び手は前と同じ)"""
     t = np.asarray(t, np.float64)
     ai = np.asarray(ai, bool)
     a = None if assist is None else np.asarray(assist)
     has_abort = a is not None and len(a) > 0 and bool((a == ASSIST_GIVEUP).any())
+    has_rec = a is not None and len(a) > 0 and bool((a == ASSIST_RECOVERY).any())     # fix8 tools-decided
     vt_ = None if vt is None else np.asarray(vt, np.float64)
     can_stop = verpm is not None and vt_ is not None and Df is not None and len(vt_) > 0
-    if not has_abort and not can_stop:
+    if not has_abort and not has_rec and not can_stop:
         return {}
     h = np.zeros(len(t), bool) if hold is None else np.asarray(hold, bool)
     s = np.ones(len(t), bool) if sel is None else np.asarray(sel, bool)
@@ -698,6 +724,14 @@ def abort_resumes(t, ai, assist, hold=None, sel=None, vt=None, Df=None, verpm=No
             se = stop_end(i0, i1)        # fix7 r2: 中立止め・カメラの途切れのまま止まって終わった区間
             if se is not None:
                 pend = dict(se, ai_end_s=_r(float(t[i1]), 3), carried=0)
+            elif has_rec and len(k) and int(a[k[-1]]) == ASSIST_RECOVERY:
+                # fix8 tools-decided: リカバリーの途中で人が CH3 を人側にした区間(中立止め・AI_CMD が人側のフレームを除いて最後が assist 2)
+                j = len(k) - 1
+                while j > 0 and int(a[k[j - 1]]) == ASSIST_RECOVERY:
+                    j -= 1
+                t_r = float(t[k[j]])
+                pend = {'kind': 'recovery', 'abort_s': _r(t_r, 3), 'rec_s': _r(float(t[i1]) - t_r, 2),
+                        'ai_end_s': _r(float(t[i1]), 3), 'carried': 0}
             elif pend is not None and moved(i0, i1) < RESUME_MOVE_M:
                 pend = dict(pend, carried=pend['carried'] + 1)
             else:
@@ -708,7 +742,7 @@ def abort_resumes(t, ai, assist, hold=None, sel=None, vt=None, Df=None, verpm=No
 
 def abort_text(ab, fmt='%.2f'):
     """after_abort の止まった形の文(③ の表。2026-10-27 fix7 r2): 「中止 X 秒」(fix7 r1 の文のまま)/「中立止め X 秒から Y 秒」/
-    「カメラの途切れ X 秒から Y 秒」(kind の無い古い印は中止)"""
+    「カメラの途切れ X 秒から Y 秒」/「リカバリーの途中 X 秒から Y 秒」(2026-10-28 fix8 tools-decided)(kind の無い古い印は中止)"""
     ab = ab or {}
     kind = ab.get('kind') or 'abort'
     x = (fmt % ab['abort_s']) if ab.get('abort_s') is not None else '?'
@@ -716,6 +750,8 @@ def abort_text(ab, fmt='%.2f'):
         return '%s %s 秒から %s 秒' % (STOP_KIND_TEXT['hold'], x, _f(ab.get('hold_s'), '%.1f'))
     if kind == 'stall':
         return '%s %s 秒から %s 秒' % (STOP_KIND_TEXT['stall'], x, _f(ab.get('gap_s'), '%.1f'))
+    if kind == 'recovery':
+        return '%s %s 秒から %s 秒' % (STOP_KIND_TEXT['recovery'], x, _f(ab.get('rec_s'), '%.1f'))
     return '%s %s 秒' % (STOP_KIND_TEXT['abort'], x)
 
 
@@ -894,7 +930,8 @@ def analyze_log(log, raw_dir=None, labels_dir=None, names=None, line_ahead_m=0.0
                                       L.get('AI_CMD'), info['t0_us'], launch_events(log, raw_dir), line_ahead_m, Lrun, ay)
     # 2026-10-27 fix7(反証 7-1 回目 w1-tools-r7-1-tools-1): リカバリー中止のあと CH3 を人側 → AI 側にした発進は数えない(あるときだけ。
     # 中止の無い本は前と同じ)。standing_starts と同じ t・ai の区間。2026-10-27 fix7 r2(反証 7-2 回目 w2-tools-r7-2-tools-1): 中立止め・
-    # カメラの途切れのまま人側にして止まって終わった区間のあとも(verpm で止まっているかを見る)
+    # カメラの途切れのまま人側にして止まって終わった区間のあとも(verpm で止まっているかを見る)。2026-10-28 fix8 tools-decided: リカバリー
+    # の途中(assist 2)で人が CH3 を人側にした区間のあとも(main session の決め = approvals 8「fix7 で残した読み方」①)
     ab = abort_resumes(t, ai, lab.get('assist'), lab.get('hold'), lab.get('ai_cmd_select'), ex['vt'], Df, ex['verpm'])
     if ab:
         by_t = {_r(float(t[i0]), 3): v for i0, v in ab.items()}
@@ -1059,6 +1096,10 @@ HOLD_NOTE = ('- 「中立止め X 秒から Y 秒」「カメラの途切れ X �
              '(中立止めが 0.5 秒以上・カメラの途切れ = フレームの無い中立止め)のまま人側にして止まって終わった発進(終わりで止まっていて、'
              'その区間で 0.5 m 以上進んだときだけ)。手順書 7 章「中立で停止中 → 車に近づく前に CH3 を人側」のとおりだと、中止が決まる前に'
              '人側になるので中止のフレームは書かれないが、止まった所から出たかもしれないのは同じ → 上と同じに数えない(2026-10-27 fix7 r2)。')
+RECOVERY_NOTE = ('- 「リカバリーの途中 X 秒から Y 秒」のリカバリー中止のあとの走り直し = 一つ前の AI の区間が、リカバリー(当たった・止まった'
+                 'あとのブレーキ・後退・前進など)の途中で人が CH3 を人側にして終わった発進(X = その区間の最後のリカバリーの始め・Y = 人側に'
+                 'するまでの秒)。当たった所・止まった所(コースの途中)から出たかもしれず、HS に置き直したかは記録から分からないので、上と同じに'
+                 '数えない(2026-10-28 fix8。main session の決め = approvals 8「fix7 で残した読み方」①)。')
 
 
 def after_ai_mark(C):
@@ -1095,6 +1136,8 @@ def to_markdown(results, line_ahead_m=0.0):
         out.append(ABORT_NOTE)
     if any((s.get('after_abort') or {}).get('kind') in ('hold', 'stall') for r in results for s in r.get('standing') or []):
         out.append(HOLD_NOTE)            # 2026-10-27 fix7 r2(中立止め・カメラの途切れのあとの走り直しがあるときだけ)
+    if any((s.get('after_abort') or {}).get('kind') == 'recovery' for r in results for s in r.get('standing') or []):
+        out.append(RECOVERY_NOTE)        # 2026-10-28 fix8 tools-decided(リカバリーの途中で人側にしたあとの走り直しがあるときだけ)
     if line_ahead_m > 0:
         out.append('- スタートの線 = 置いた場所の %.2f m 先(線から = 線を越えてから)。' % line_ahead_m)
     out += ['', '## 1. 止まってから 3 周(発進ごと)', ''] + standing_table(results)

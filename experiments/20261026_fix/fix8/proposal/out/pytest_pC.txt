@@ -1,0 +1,554 @@
+F....................................................................... [  5%]
+........................................................................ [ 11%]
+..FFFF..FFFF........FFFFFFFFF.FFs....................................... [ 17%]
+........................................................................ [ 22%]
+...........................................F............................ [ 28%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 45%]
+........................................................................ [ 51%]
+........................................................................ [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 79%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 96%]
+...........................................                              [100%]
+=================================== FAILURES ===================================
+___________________ test_r1_copy_defaults_and_changed_parts ____________________
+
+    def test_r1_copy_defaults_and_changed_parts():
+        """写しの sha256(= 7-1 回目のあとの版)。drive.py は写しと同じ(変えていない)。既定値・Recovery・EscTrack・EscMayReverse・
+        EscReverse・StartKick の定数・モジュールの定数は同じ。変えたのは assist.py の Recovery.reset・_start・step だけ、足したのは
+        モジュールの定数 SURE_BACK_S だけ(消した関数や文は無い。AST を名前で照らす。モジュールの説明は別)"""
+        amod, r1d = load_r1()
+        pd = ROOT / 'jetformer' / 'drive.py'
+        if sha(pd) == LATER_FIX8_SAFETY_DOC['drive.py']:         # 10/28 fix8 safety の説明の文だけの版 → 直す前の写し
+            pd = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / 'drive.py'
+        assert sha(pd) == SHA_R1['drive.py']
+        assert drive.DEFAULT_PARAMS == r1d.DEFAULT_PARAMS and drive.PARAM_LIMITS == r1d.PARAM_LIMITS
+        assert drive.RESET_ON_BOOT == r1d.RESET_ON_BOOT
+        for k in ('rec_back_guard', 'rec_hold_keep', 'launch_boost', 'launch_no_kick'):
+            assert drive.DEFAULT_PARAMS[k] == 0 and k in drive.RESET_ON_BOOT
+        for cls in ('Recovery', 'EscTrack', 'EscMayReverse', 'EscReverse', 'StartKick'):
+            assert {k: v for k, v in vars(getattr(A, cls)).items() if k.isupper()} == \
+                {k: v for k, v in vars(getattr(amod, cls)).items() if k.isupper()}, cls
+        assert A.EscMayReverse.READY_NEUTRAL_S == A.EscMayReverse.DELAY_S == 0.0      # drive の esc_rev は今まで通り
+        mod_consts = {k for k in vars(amod) if k.isupper() and not k.startswith('_')}
+        for k in mod_consts:
+            assert getattr(A, k) == getattr(amod, k), k
+>       assert {k for k in vars(A) if k.isupper() and not k.startswith('_')} - mod_consts == {'SURE_BACK_S'}
+E       AssertionError: assert {'P8_OFF_TOO', 'SURE_BACK_S'} == {'SURE_BACK_S'}
+E         
+E         Extra items in the left set:
+E         'P8_OFF_TOO'
+E         Use -v to get more diff
+
+tests/test_rec_fix7_safety_r2.py:107: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[313.0-0] ________________
+
+k = 0, e = 313.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[313.0-2] ________________
+
+k = 2, e = 313.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[313.0-5] ________________
+
+k = 5, e = 313.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[313.0-8] ________________
+
+k = 8, e = 313.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...2, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[1322.0-0] _______________
+
+k = 0, e = 1322.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[1322.0-2] _______________
+
+k = 2, e = 1322.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[1322.0-5] _______________
+
+k = 5, e = 1322.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...0, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+_______________ test_s4c_unit_normal_reverse_unchanged[1322.0-8] _______________
+
+k = 8, e = 1322.0
+
+    @pytest.mark.parametrize('k', [0, 2, 5, 8, 11, 14])
+    @pytest.mark.parametrize('e', [313.0, 1322.0])
+    def test_s4c_unit_normal_reverse_unchanged(k, e):
+        """'gap' を飛ばさずに入った 'reverse'(brake → wait → gap → reverse)の跳ね: 直す前の写しと出す値・状態が全部同じ
+        (やり直しの決めは今まで通り s4-b)"""
+        amod, _ = load_r1()
+        seq = [0.0] * 13 + [0.0] * k + [e] + [0.0] * 60
+        res = []
+        for mod in (A, amod):
+            r, t = F7._brake(mod)
+            rows, _ = F7._feed(r, seq, t)
+            assert 'reverse' in _ph(rows) and not any(ev == 'back_early' for ev in F7._events(rows))
+            res.append((F7._thr(rows), _ph(rows), F7._events(rows), tuple(getattr(r, x) for x in STATE)))
+>       assert res[0] == res[1]
+E       AssertionError: assert ([1796.0, 179...2, True, ...)) == ([1796.0, 179...2, True, ...))
+E         
+E         At index 0 diff: [1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1796.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1846.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1506.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1896.0, 1366.0, 1366.0, 1366.0, 1366.0, 1366.0...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_rec_fix7_safety_r2.py:320: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[0] ___________________
+
+seed = 0
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (124.14999999999863, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[1] ___________________
+
+seed = 1
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (118.39999999999895, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[2] ___________________
+
+seed = 2
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (142.29999999999777, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[3] ___________________
+
+seed = 3
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (107.43333333333291, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[4] ___________________
+
+seed = 4
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (165.1833333333301, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[5] ___________________
+
+seed = 5
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (142.79999999999768, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[6] ___________________
+
+seed = 6
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (135.29999999999808, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[7] ___________________
+
+seed = 7
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (229.79999999999401, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+___________________ test_recovery_on_diverges_only_by_s4c[8] ___________________
+
+seed = 8
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (166.61666666666346, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+__________________ test_recovery_on_diverges_only_by_s4c[10] ___________________
+
+seed = 10
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (113.28333333333258, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+__________________ test_recovery_on_diverges_only_by_s4c[11] ___________________
+
+seed = 11
+
+    @pytest.mark.parametrize('seed', range(12))
+    def test_recovery_on_diverges_only_by_s4c(seed):
+        """見張り ON の Recovery を直す前の写しと並べて回す(esc_rev はでたらめに None / True / False)。出す値・状態が初めて違うのは、
+        今が 'gap' を飛ばして入った 'reverse' で、本当に下がっているを見ておらず、このフレームで後ろへ動いておらず、early_none で
+        'gap' へ移ったフレームだけ(直す前はそこで見た後退があるとして 'reverse' を続けたか、'coast' へ)。違ったら作り直して続ける"""
+        amod, _ = load_r1()
+        r0, r1 = amod.Recovery((C, N)), A.Recovery((C, N))
+        for model, e, t, kw in _fuzz_stops(500 + seed):
+            p_before, sk_before, sure_before = r1.phase, r1.skip_gap, r1.back_sure
+            a = r0.step(model, e, t, back_guard=True, **kw)
+            b = r1.step(model, e, t, back_guard=True, **kw)
+            same = a == b and all(getattr(r0, k) == getattr(r1, k) for k in STATE)
+            if not same:
+>               assert p_before == 'reverse' and sk_before and not sure_before, (t, p_before, sk_before, r1.phase)
+E               AssertionError: (128.34999999999843, 'reverse', False, 'gap')
+E               assert ('reverse' == 'reverse'
+E                 
+E                   reverse and False)
+
+tests/test_rec_fix7_safety_r2.py:391: AssertionError
+________________ test_s4b_unit_seen_backing_in_reverse_no_retry ________________
+
+    def test_s4b_unit_seen_backing_in_reverse_no_retry():
+        """'reverse' の 2 フレーム目より後で後ろへ動いたサンプルがあれば、今までと同じくやり直さない(直す前の写しと全部同じ)"""
+        amod, _ = load_before()
+        seq = [0.0] * 8 + [0.0] * 5 + [0.0, 0.0, 400.0] + [0.0] * 40
+        rows = {}
+        for nm, mod in (('now', A), ('bef', amod)):
+            r, t = _brake(mod)
+            rows[nm], _ = _feed(r, seq, t)
+>       assert _thr(rows['now']) == _thr(rows['bef']) and RETRY not in _thr(rows['now'])
+E       assert ([1796.0, 1796..., 1796.0, ...] == [1796.0, 1796..., 1796.0, ...]
+E         
+E         At index 23 diff: 1506.0 != 1796.0
+E         Use -v to get more diff)
+
+tests/test_rec_fix7_safety.py:395: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_rec_fix7_safety_r2.py::test_r1_copy_defaults_and_changed_parts
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[313.0-0]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[313.0-2]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[313.0-5]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[313.0-8]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[1322.0-0]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[1322.0-2]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[1322.0-5]
+FAILED tests/test_rec_fix7_safety_r2.py::test_s4c_unit_normal_reverse_unchanged[1322.0-8]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[0]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[1]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[2]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[3]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[4]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[5]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[6]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[7]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[8]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[10]
+FAILED tests/test_rec_fix7_safety_r2.py::test_recovery_on_diverges_only_by_s4c[11]
+FAILED tests/test_rec_fix7_safety.py::test_s4b_unit_seen_backing_in_reverse_no_retry
+21 failed, 1245 passed, 1 skipped in 862.96s (0:14:22)
+exit 1

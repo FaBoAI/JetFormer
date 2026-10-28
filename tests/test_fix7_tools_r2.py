@@ -712,7 +712,9 @@ def test_real_marks_20261010_20261024():
         _, Df = le.cumulative_distance(vt, ve)
         new = s3n.abort_resumes(t, ai, z['assist'], z['hold'], z['ai_cmd_select'], vt, Df, ve)
         old = s3o.abort_resumes(t, ai, z['assist'], z['hold'], z['ai_cmd_select'], vt, Df)
-        marks = {round(float(t[i]), 3): v for i, v in new.items()}
+        # 2026-10-28 fix8 tools-decided: リカバリーの途中で人側にした区間のあと(kind 'recovery')の印も付くようになった(20261010-181504 の
+        # 69.21・85.67・88.99 秒。どれも走りながら AI 側にした区間で発進でない。tests/test_fix8_tools_decided.py が見る)。ここは fix7 r2 の印だけ
+        marks = {round(float(t[i]), 3): v for i, v in new.items() if v.get('kind') != 'recovery'}
         if lg == '20261010-160306':
             assert list(marks) == [want] and old == {}
             m = marks[want]

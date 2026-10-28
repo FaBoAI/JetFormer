@@ -1,0 +1,44 @@
+........................................................................ [  8%]
+........................................................................ [ 16%]
+........................................................................ [ 24%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+........................................................................ [ 48%]
+........................................................................ [ 56%]
+........................................................................ [ 64%]
+.....................................................F.................. [ 72%]
+........................................................................ [ 80%]
+........................................................................ [ 88%]
+........................................................................ [ 96%]
+................................                                         [100%]
+=================================== FAILURES ===================================
+__________________________ test_words_match_the_code ___________________________
+
+    def test_words_match_the_code():
+        """文書が引く画面・道具の言葉と値は、今のコードの文字列・定数"""
+        web = JF / 'jetformer' / 'web'
+        js = (web / 'static' / 'app.js').read_text(encoding='utf-8')
+        css = (web / 'static' / 'style.css').read_text(encoding='utf-8')
+        srv = (web / 'server.py').read_text(encoding='utf-8')
+        assert ": '%s', true);" % REFUSE in js
+        assert 'if (drIdle()) { state.drive.paramsLoaded = false; state.drive.drTabGen = (state.drive.drTabGen || 0) + 1; }' in js
+        assert "error ? 6000 : 3000" in js                                         # 断りのトーストは 6 秒
+        assert 'el.textContent = `画面の版 ${DRIVE_CLIENT}`' in js and "const DRIVE_CLIENT = 9" in js
+        t = datetime.fromtimestamp((web / 'static' / 'app.js').stat().st_mtime)
+        if hashlib.sha256((web / 'static' / 'app.js').read_bytes()).hexdigest() == LATER_FIX8_UI_R2['jetformer/web/static/app.js']:
+            # fix8 ui r2 の版: 04:54 の版は直す前の写し・今のファイルは 8-2 回目の時刻(このあと誰かが app.js を直せばまた落ちて知らせる)
+            assert hashlib.sha256((FIX8_UI_R2_BEFORE / 'app.js').read_bytes()).hexdigest().startswith('aa275bb5da0b')
+            assert (t.month, t.day, t.hour, t.minute) == LATER_FIX8_UI_R2_APP_HM, t
+        else:
+>           assert (t.month, t.day, t.hour, t.minute) == (10, 28, 4, 54), t      # 「画面の版 9(app.js 10/28 04:54)」
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: datetime.datetime(2026, 10, 28, 11, 2, 29, 415344)
+E           assert (10, 28, 11, 2) == (10, 28, 4, 54)
+E             
+E             At index 2 diff: 11 != 4
+E             Use -v to get more diff
+
+tests/test_fix8_docs_sync1.py:548: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_fix8_docs_sync1.py::test_words_match_the_code - AssertionEr...
+1 failed, 895 passed in 725.78s (0:12:05)

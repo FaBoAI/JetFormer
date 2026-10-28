@@ -1,0 +1,335 @@
+"""fix7 係 docs の仕上げ(2026-10-27 23:5x): 反証 7 回目の 2 巡の直しの報告(~/jetformer_reports/fix_20261026/fix7/fix_*_r1.md・
+fix_*_r2.md)の「手順書に足す文」「main session へ」のうち、文書 7-2 回目までに入っていなかったものを足した文書を読む試験(文書だけ。
+コードは変えていない)。台本 experiments/20261026_fix/fix7/docs_final/docs_fix7_final.py(19 個の足し)、直す前の写し
+tests/fixtures/fix7_docs_final_before/、まとめ ~/jetformer_reports/fix_20261026/fix7/README.md。
+
+- h1 手順書: 3 章の最初のリカバリーの「おかしな動き」の今(7-2 回目の形も直った・見張り OFF でも同じ形になるまれな道が残る)・
+  3.1 の jetformer-web だけを再起動した日の journal・4 章 6 の「新しい本でも HS に置いてから ▶」
+- h2 todo: 1 章の 11/2 まで・2 章の 16・3 章の 2 つ
+- h3 README: 6 章の頭・6.2 の 29・30・6.3 の 31・7 章の fix7/README.md
+- h4 approvals: 0 章の 14・14 章(4 行)・8 の「fix7 で残した読み方」・2 の「誰が」(もう一度の再起動の了承)
+- h5 fix7/README.md: 19 件の指摘・数え合わせ・再起動が要るか・残すこと・了承
+- 文書の数がコード(assist.py の定数)と安全・夜の道具の報告にあるか。前の係(文書 7-1・7-2 回目)の直しと試験の確かめが崩れていないか。
+- わざと壊す: 直す前の写しでは h1〜h4 が落ちる。台本の足しを 1 つずつ元に戻すと、その確かめが落ちる(頭の記録の 4 つは「済」の試験が見る)。
+- 2026-10-28 fix8 docs-decided(experiments/20261026_fix/fix8/docs_decided/docs_fix8_decided.py): 10/28 00:53:23 のもう一度の再起動の
+  記録・approvals 2「誰が」の main session の判断・approvals 8「fix7 で残した読み方」①②③ の決めなどを、この組と前の組(7-1・7-2 回目)の
+  文の中に足した・書き換えた(SUPERSEDE。h1〜h4 が引く言葉は消していない)。台本の直しが「済」かは書き換えを戻した文書(fix8.revert)で、
+  前の組の試験の確かめ(f1〜f5・g1〜g6)は今の文書で、わざと壊すは書き換えたあとの new(fix8.effective)で照らす。
+- 2026-10-28 fix8 docs r1(experiments/20261026_fix/fix8/fix_docs_r1/docs_fix8_r1.py): 反証 8-1 回目の指摘(f8r1-docs-residual2-reversed)で、
+  この組の approvals 14 の 2 行目の中身とおすすめを意図して書き換えた(SUPERSEDE 2 か所。h4 が引く言葉・行の数・「**このまま**」は
+  消していない)。台本の直しが「済」かは fix8 docs r1 → fix8 docs-decided の順に書き換えを戻した文書で、わざと壊すは両方の書き換えの
+  あとの形の new(fix8.effective → r81.effective)で照らす(弱めていない: 同じ 19・45・44 個と f1〜f5・g1〜g6)。
+"""
+import hashlib
+import importlib.util
+import re
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import pytest
+
+JF = Path('/home/jetson/jetformer')
+REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
+FIX7 = REPORTS / 'fix7'
+BEFORE = JF / 'tests' / 'fixtures' / 'fix7_docs_final_before'
+SCRIPT = JF / 'experiments' / '20261026_fix' / 'fix7' / 'docs_final' / 'docs_fix7_final.py'
+FIX8 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_decided' / 'docs_fix8_decided.py'     # 2026-10-28 fix8 docs-decided
+R81 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r1' / 'docs_fix8_r1.py'               # 2026-10-28 fix8 docs r1
+RB, TODO, RD, AP = 'runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md'
+FILES = (RB, TODO, RD, AP)
+IDS_R1 = ('w1-safety-rv7-safety-r1-1', 'w1-ui-r7-ui-1', 'w1-ui-r7-ui-2', 'w1-tools-r7-1-tools-1', 'w1-docs-r71-docs-1',
+          'w1-docs-r71-docs-2', 'w1-docs-r71-docs-3', 'w1-docs-r71-docs-4', 'w1-docs-r71-docs-5')
+IDS_R2 = ('w2-safety-rv7-safety-r2-1', 'w2-ui-w2-ui-r72-ui-1', 'w2-ui-w2-ui-r72-ui-2', 'w2-tools-w2-tools-r7-2-tools-1',
+          'w2-tools-w2-tools-r7-2-tools-2', 'w2-docs-w2-docs-r72-docs-1', 'w2-docs-w2-docs-r72-docs-2', 'w2-docs-w2-docs-r72-docs-3',
+          'w2-docs-w2-docs-r72-docs-4', 'w2-docs-w2-docs-r72-docs-5')
+
+
+def _load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    m = importlib.util.module_from_spec(spec)
+    sys.modules[name] = m
+    spec.loader.exec_module(m)
+    return m
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def read(root):
+    return {f: (Path(root) / f).read_text(encoding='utf-8') for f in FILES}
+
+
+@pytest.fixture(scope='module')
+def live():
+    if not all((REPORTS / f).exists() for f in FILES):
+        pytest.skip('~/jetformer_reports の文書がありません')
+    return read(REPORTS)
+
+
+@pytest.fixture(scope='module')
+def before():
+    sums = dict(reversed(x.split(None, 1)) for x in (BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
+    assert set(sums) == set(FILES)
+    for f, h in sums.items():
+        assert _sha(BEFORE / f) == h, f
+    return read(BEFORE)
+
+
+@pytest.fixture(scope='module')
+def script():
+    return _load('docs_fix7_final_t', SCRIPT)
+
+
+@pytest.fixture(scope='module')
+def fix8():
+    """fix8 docs-decided が意図して書き換えた所(SUPERSEDE)・revert・effective"""
+    return _load('docs_fix8_decided_from_t3', FIX8)
+
+
+@pytest.fixture(scope='module')
+def r81():
+    """fix8 docs r1 が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r1_from_t3', R81)
+
+
+def chapter(t, head, nxt):
+    i = t.index(head)
+    return t[i:t.index(nxt, i + len(head))]
+
+
+def rows(text, prefix, need=''):
+    return [x for x in text.splitlines() if x.startswith(prefix) and need in x]
+
+
+def one(text, prefix, need=''):
+    r = rows(text, prefix, need)
+    return r[0] if len(r) == 1 else ''
+
+
+def _miss(probs, where, text, *words):
+    for w in words:
+        if w not in text:
+            probs.append('%s: 「%s」が無い' % (where, w[:50]))
+
+
+# ================================================================== 確かめ(どれも問題の一覧。空なら OK)
+def h1_problems(d):
+    p = []
+    rb = d[RB]
+    ch3 = chapter(rb, '## 3. 朝の準備', '### 3.1')
+    now = one(ch3, '  - **最初のリカバリーの「おかしな動き」の今**')
+    _miss(p, '3 章 おかしな動きの今', now, '7-2 回目の形(ブレーキの途中にカメラが一瞬止まって中立止めが入った直後)',
+          'fix7 安全の 7-2 回目の直しが入ったサーバー(3.1)では起きないはず', '**見張りが OFF でも同じ形になる道が残る**',
+          'リカバリーの約 0.3% の見込み', '`fix3/approvals.md` 14', 'すぐ人側 → 止めて OFF → 紙に')
+    lines = ch3.splitlines()
+    i = next((k for k, x in enumerate(lines) if x.startswith('  - **最初のリカバリーの「おかしな動き」の今**')), None)
+    if i is None or i + 1 >= len(lines) or not lines[i + 1].startswith('  - 見張り・残すが ON の日(11/3)は、**その日の最初のリカバリーを人が見る**'):
+        p.append('3 章: 「おかしな動き」の今の行が、最初のリカバリーの行のすぐ上に無い')
+    j31 = [x for x in chapter(rb, '### 3.1', '## 4. ').splitlines() if '**jetformer-web だけを再起動した日**' in x]
+    _miss(p, '3.1 jetformer-web だけ', j31[0] if len(j31) == 1 else '', '`todo_user_1026.md` 4 章の 3(起動の時刻 ActiveEnterTimestamp から)',
+          '`-b` は Jetson を入れてからの全部 = 前のサーバーの行も出す')
+    _miss(p, '4 章 6', one(chapter(rb, '## 4. 1 本の手順', '## 5. '), '6. 車を HS のいつもの場所に止めて'),
+          '■ で止めて新しい本にするときも同じ', '置いていないことは記録から分からない')
+    return p
+
+
+def h2_problems(d):
+    p = []
+    td = d[TODO]
+    _miss(p, 'todo 11/2 まで', one(td, '| **11/2 まで** |'), '14(10/27 fix7 で残した安全の形の知らせ)', '返事が無ければこのまま')
+    _miss(p, 'todo 2 章 16', one(td, '| 16 |'), '`fix3/approvals.md` 14・8', '見張り OFF でも同じ')
+    t3 = chapter(td, '## 3. 11/3 の当日', '## 4. ')
+    _miss(p, 'todo 3 章 おかしな動き', one(t3, '- (10/27 fix7 docs の仕上げ)最初のリカバリーの「おかしな動き」'),
+          '見張りが OFF でもまれに出る道が残る', '`fix3/approvals.md` 14')
+    _miss(p, 'todo 3 章 新しい本', t3, '■ で止めて新しい本にするときも、HS に置いてから ▶')
+    return p
+
+
+def h3_problems(d):
+    p = []
+    rd = d[RD]
+    _miss(p, 'README 6 章の頭', one(chapter(rd, '## 6. 残っていること', '### 6.1'), '- 反証 7 回目(2 巡・指摘 19 件'),
+          '**2 巡目にも新しい指摘が 10 件出た = まだ出切っていない**', '17:16 の起動に入っていない', '`fix3/approvals.md` 14・8')
+    c62 = chapter(rd, '### 6.2', '### 6.3')
+    _miss(p, 'README 6.2 の 29', one(c62, '| 29 |'), '10 件出た(出切っていない)', 'もう 1 巡するか決める', 'main session')
+    _miss(p, 'README 6.2 の 30', one(c62, '| 30 |'), '`fix3/approvals.md` 14・8', 'ユーザー')
+    _miss(p, 'README 6.3 の 31', one(chapter(rd, '### 6.3', '### 6.4'), '| 31 |'), '`fix7/README.md` 3 章')
+    _miss(p, 'README 7 章', one(rd[rd.index('## 7. 報告の一覧'):], '| **`fix7/README.md`** |'), '反証 7 回目(2 巡・19 件)の直しのまとめ',
+          '残すこと・了承・再起動が要るか')
+    return p
+
+
+def h4_problems(d):
+    p = []
+    ap = d[AP]
+    _miss(p, 'approvals 0 章の 14', one(chapter(ap, '## 0. 一覧', '## 1. '), '| 14 |'), '**このまま**', '返事が無ければこのまま')
+    _miss(p, 'approvals 答えがまだ', ap, '**答えがまだなのは 4・7〜11 と、新しい 13**')      # 14 は知らせ(答えがまだに数えない)
+    if '4・7〜11・13・14' in ap:
+        p.append('approvals: 14 を答えがまだに数えている')
+    if '## 14. ' not in ap:
+        return p + ['approvals 14 章が無い']
+    c14 = ap[ap.index('## 14. '):]
+    body = [x for x in c14.splitlines() if x.startswith('| ') and not x.startswith('| こと |')]
+    if len(body) != 4:
+        p.append('approvals 14: 表の行が 4 でない(%d)' % len(body))
+    for w in ('41 組のうち 22 組', '**見張り ON・見張り OFF・fix7 の前のどれも同じ 22 組**', 'リカバリーの約 0.3% の見込み',
+              '本物の記録 235 本では起きていない', '**本物の ESC では確かめていない**', '最大 1.83 m/s', '**どれも 11/3 は今のコードのまま**',
+              '答え方: 「14 はこのまま」'):
+        _miss(p, 'approvals 14', c14, w)
+    if not body or sum('**このまま**' in x for x in body) != 3 or '10 のおすすめ (a)' not in body[-1]:
+        p.append('approvals 14: おすすめが「このまま」3 つ・10 の (a) 1 つでない')
+    ap8 = chapter(ap, '## 8. 回 3 の判定の読み方', '## 9. ')
+    _miss(p, 'approvals 8 fix7 で残した読み方', one(ap8, '- (', '**fix7 で残した読み方**'), '① リカバリーの途中', '② 試しの本・途中で変えた本',
+          '③ 0.5 秒より短い中立止め', '`--skip 記録名@AI側にした秒`', '今の道具の形のまま =「このまま」に入る')
+    _miss(p, 'approvals 2 誰が', one(chapter(ap, '## 2. jetformer-web の再起動の日', '## 3. '), '| 誰が |'),
+          '10/27 15:4x の了承(「jetformer-web を再起動してもいいですよ」)が当たるかは main session が決める', '`fix7/README.md` 5 章')
+    return p
+
+
+def h5_problems(t):
+    p = []
+    for i in IDS_R1 + IDS_R2:
+        if t.count('**%s**' % i) != 1:
+            p.append('fix7/README: 指摘 %s が 0 章の表にちょうど 1 回無い' % i)
+    for h in ('## 0. ひと目で', '## 1. 1 巡目の中身', '## 2. 2 巡目の中身', '## 3. 残すこと', '## 4. 了承が要ること', '## 5. 再起動が要るか',
+              '## 6. 試験と、そのあと', '## 7. 次に', '## 8. 文書に入れたもの'):
+        if h not in t:
+            p.append('fix7/README: 「%s」が無い' % h)
+    _miss(p, 'fix7/README', t, '**直した 19 件・直さなかった 0 件**', '**2 巡目にも新しい指摘が 10 件出た = 出切っていない**',
+          '**jetformer-web の再起動が要る**', 'approvals.md` 14', '「途中で OFF にした日」')
+    if '## 5. 再起動が要るか' in t:
+        c5 = chapter(t, '## 5. 再起動が要るか', '## 6. ')
+        _miss(p, 'fix7/README 5 章', c5, '`jetformer/assist.py`・`drive.py`・`web/server.py`・`web/bench.py` を変えたら要る', '→ **要る**',
+              '**`drive.py`(19:36:17。安全 7-1)・`assist.py`(22:02:15。安全 7-2)**', '**10/27 17:16:28**')
+    return p
+
+
+CHECKS = {'h1': h1_problems, 'h2': h2_problems, 'h3': h3_problems, 'h4': h4_problems}
+
+
+# ================================================================== 文書
+@pytest.mark.parametrize('name', sorted(CHECKS))
+def test_live_documents(live, name):
+    assert CHECKS[name](live) == []
+
+
+@pytest.mark.parametrize('name', sorted(CHECKS))
+def test_before_copies_fail(before, name):
+    """直す前の写し(文書 7-2 回目のあと)では、4 つとも落ちる"""
+    assert CHECKS[name](before) != []
+
+
+def test_fix7_readme():
+    t = (FIX7 / 'README.md').read_text(encoding='utf-8')
+    assert h5_problems(t) == []
+    for k, w in (('id', IDS_R2[0]), ('count', '**直した 19 件・直さなかった 0 件**'), ('restart', '→ **要る**')):
+        assert h5_problems(t.replace(w, w[:-2] + 'X' + w[-1], 1)) != [], k
+
+
+def test_script_edits_all_done_and_earlier_intact(live, script, fix8, r81, tmp_path):
+    """台本の 19 個の足しは今の文書でどれも「済」で new はちょうど 1 回。文書 7-1・7-2 回目の直し(new がちょうど 1 回)・画面の版 9 と、
+    その 2 つの試験の確かめ(f1〜f5・g1〜g6)も崩れていない。
+    2026-10-28 fix8 docs-decided: 台本の直しが「済」かは fix8 の書き換え(SUPERSEDE)を戻した文書で、試験の確かめは今の文書で照らす
+    (script.earlier_intact は同じ文書で両方を見るので、中身を分けて同じことをする。fix6/README.md も戻した文書で)。書き換えた文は
+    今の文書にちょうど 1 回(消した文は 0 回)。
+    2026-10-28 fix8 docs r1: 戻すのは fix8 docs r1 の書き換え → fix8 docs-decided の書き換えの順(r81 の書き換えも今の文書にちょうど 1 回)"""
+    full = dict(live, **{'fix6/README.md': (REPORTS / 'fix6' / 'README.md').read_text(encoding='utf-8'),
+                         'fix7/README.md': (FIX7 / 'README.md').read_text(encoding='utf-8')})
+    assert fix8.superseded_present(full) == [] and r81.superseded_present(full) == []
+    old = fix8.revert(r81.revert(full))
+    _, rep = script.apply_text(old)
+    assert len(rep) == 19 and [s for _, _, s in rep] == ['done'] * 19, [(f, o[:30], s) for f, o, s in rep if s != 'done']
+    for f, edits in script.ALL:
+        for _, new in edits:
+            assert old[f].count(new) == 1, (f, new[:40])
+    # script.earlier_intact の中身: 7-2 回目の 45 個が「済」で new がちょうど 1 回・7-1 回目の 44 個と画面の版 9(r1_intact)
+    r2 = _load('docs_fix7_r2_from_final_t', script.R2)
+    _, rep2 = r2.apply_text(old)
+    assert [(f, o[:30], s) for f, o, s in rep2 if s != 'done'] == []
+    for f, edits in r2.ALL:
+        for _, new in edits:
+            assert old[f].count(new) == 1, (f, new[:40])
+    assert r2.r1_intact(old) == []
+    # 前の組の試験の確かめ(7-1 回目の f1〜f5・7-2 回目の g1〜g6)は今の文書で空
+    sys.path.insert(0, str(JF))
+    sys.path.insert(0, str(JF / 'tools'))
+    sys.path.insert(0, str(JF / 'tests'))
+    t1 = _load('t_fix7_docs_r1_from_final_t', script.T1)
+    t2 = _load('t_fix7_docs_r2_from_final_t', script.T2)
+    for k, fn in sorted(t1.CHECKS.items()):
+        assert fn(full) == [], k
+    for k, fn in sorted(t2.CHECKS.items()):
+        assert fn(full, tmp_path / k) == [], k
+
+
+# 台本の (文書, 何番目) → それを元に戻すと落ちる確かめ。0 番目(頭の記録の行)は「済」の試験が見る
+CATCH = {(RB, 1): 'h1', (RB, 2): 'h1', (RB, 3): 'h1',
+         (TODO, 1): 'h2', (TODO, 2): 'h2', (TODO, 3): 'h2', (TODO, 4): 'h2',
+         (RD, 1): 'h3', (RD, 2): 'h3', (RD, 3): 'h3', (RD, 4): 'h3',
+         (AP, 1): 'h4', (AP, 2): 'h4', (AP, 3): 'h4', (AP, 4): 'h4'}
+
+
+def test_reverting_each_edit_is_caught(live, script, fix8, r81):
+    """2026-10-28 fix8 docs-decided: fix8 が書き換えた足しは、書き換えたあとの形の new(fix8.effective)を元の文に戻す。
+    2026-10-28 fix8 docs r1: fix8 docs r1 が書き換えた足し(approvals 14)は、その書き換えのあとの形(r81.effective)"""
+    n = 0
+    for f, edits in script.ALL:
+        for i, (old, new) in enumerate(edits):
+            if (f, i) not in CATCH:
+                assert i == 0, (f, i)
+                continue
+            new = r81.effective('final', f, i, fix8.effective('final', f, i, new))
+            assert live[f].count(new) == 1, (f, i)
+            broken = dict(live, **{f: live[f].replace(new, old, 1)})
+            assert broken[f] != live[f] and CHECKS[CATCH[(f, i)]](broken) != [], (f, i)
+            n += 1
+    assert n == len(CATCH) == 15
+
+
+def test_more_breakages_are_caught(live):
+    """台本の足しと別の形の壊し: 14 を答えがまだに数える・14 の行を 1 つ消す・おかしな動きの今の行を下に動かす・3.1 の -b を勧める"""
+    ap, rb = live[AP], live[RB]
+    c14 = ap[ap.index('## 14. '):]
+    row = [x for x in c14.splitlines() if x.startswith("| 'gap' を飛ばした後退")][0]
+    ch3 = chapter(rb, '## 3. 朝の準備', '### 3.1')
+    now = one(ch3, '  - **最初のリカバリーの「おかしな動き」の今**')
+    cases = [('h4', AP, ap.replace('**答えがまだなのは 4・7〜11 と、新しい 13**', '**答えがまだなのは 4・7〜11・13・14**')),
+             ('h4', AP, ap.replace(row + '\n', '')),
+             ('h1', RB, rb.replace(now + '\n', '').replace('\n\n### 3.1 ', '\n' + now + '\n\n### 3.1 ', 1)),
+             ('h1', RB, rb.replace('`-b` でなく `todo_user_1026.md` 4 章の 3', '`-b` で', 1)),
+             ('h2', TODO, live[TODO].replace('■ で止めて新しい本にするときも、HS に置いてから ▶', '■ で止めて新しい本にする'))]
+    for k, (name, f, t) in enumerate(cases):
+        assert t != live[f], k
+        assert CHECKS[name](dict(live, **{f: t})) != [], k
+
+
+# ================================================================== 文書の数とコード・報告
+def test_numbers_are_in_the_code_and_reports():
+    """approvals 14・手順書の数(中立 0.15 秒・0.35 秒・0.2 秒・300・中立止め 0.5 秒)は assist.py の今の定数。割合・組の数は報告の数"""
+    sys.path.insert(0, str(JF))
+    from jetformer import assist as A
+    R = A.Recovery
+    assert (R.GAP_S, A.CHECK_S, A.SURE_BACK_S, A.BACKING_ERPM, R.HOLD_KEEP_MAX_S) == (0.15, 0.35, 0.2, 300, 0.5)
+    assert issubclass(A.EscMayReverse, A.EscTrack) and A.EscMayReverse.READY_NEUTRAL_S == 0.0
+    src = Path(A.__file__).read_text(encoding='utf-8')
+    assert "'back_no_esc'" in src and "'early_none'" in src
+    s1 = (FIX7 / 'fix_safety_r1.md').read_text(encoding='utf-8')
+    s2 = (FIX7 / 'fix_safety_r2.md').read_text(encoding='utf-8')
+    t1 = (FIX7 / 'fix_tools_r1.md').read_text(encoding='utf-8')
+    t2 = (FIX7 / 'fix_tools_r2.md').read_text(encoding='utf-8')
+    for w in ('41 組のうち **22 組。', 'リカバリーの 0.3% ほど', '最初の \'gap\' では下がれないのは 11%', '人の 29 回すべて後退しなかった'):
+        assert w in s1, w
+    for w in ('本物の記録 235 本では起きていない', '最大 1.83 m/s', 'SURE_BACK_S(0.2 秒)', '後ろ 1.2・1.35 m'):
+        assert w in s2, w
+    assert '本物で 7 区間' in t1 and '0.33 秒' in t2
+    st = (JF / 'tools' / 'standing_3lap.py').read_text(encoding='utf-8')
+    assert 'HOLD_KEEP_MAX_S' in st                                       # 「0.5 秒より短い中立止め」は assist.Recovery の値を読む
+
+
+def test_restart_claim_matches_the_files():
+    """fix7/README 5 章の「要る」: assist.py・drive.py は、そこに書いた起動の時刻(10/27 17:16:28)より新しい"""
+    t0 = datetime(2026, 10, 27, 17, 16, 28).timestamp()
+    for f in ('assist.py', 'drive.py'):
+        assert (JF / 'jetformer' / f).stat().st_mtime > t0, f

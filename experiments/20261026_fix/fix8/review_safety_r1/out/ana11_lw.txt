@@ -1,0 +1,56 @@
+kind=lw 組 1680
+OFF が f7b の OFF とビット単位で同じ: 1680 / 1680
+ON と OFF がビット単位で同じ: 1240 / 1680
+ON が悪い印(のべ): {'giveup_only_on:': 158, 'rear_faster': 24, 'front_push_more': 8, 'front_faster': 3, 'rear_more': 5}
+ON が悪い印のある組: 35
+(参考)OFF が悪い印: {'off_rear_faster': 123, 'off_rear_more': 80, 'off_front_faster': 25}
+くみごと(ON が悪い印のある くみ):
+  ('kai3_lb_ceil', 'brakewall', 'human') {'rear_faster': 6, 'rear_more': 1}
+  ('kai4_lb', 'brakewall', 'human') {'rear_faster': 6, 'rear_more': 1}
+  ('kai1', 'brakewall', 'human') {'front_faster': 1, 'rear_faster': 4, 'rear_more': 1}
+  ('kai1_ceil', 'brakewall', 'human') {'front_faster': 1, 'rear_faster': 4, 'rear_more': 1}
+  ('kai2_auto42', 'brakewall', 'human') {'front_faster': 1, 'rear_faster': 4, 'rear_more': 1}
+  ('kai3_lb_ceil', 'const', 'n020') {'front_push_more': 1}
+  ('kai3_lb_ceil', 'react', 'n030') {'front_push_more': 1}
+  ('kai4_lb', 'const', 'n020') {'front_push_more': 1}
+  ('kai4_lb', 'react', 'n030') {'front_push_more': 1}
+  ('kai3_lb_ceil', 'react', 'n020') {'front_push_more': 1}
+  ('kai4_lb', 'react', 'n020') {'front_push_more': 1}
+  ('kai3_lb_ceil', 'const', 'n030') {'front_push_more': 1}
+  ('kai4_lb', 'const', 'n030') {'front_push_more': 1}
+例(ON が悪い印。最大 60):
+  ['rear_faster'] | on rear [(3.41, -1.76), (6.54, -1.82)] fp 0.00 zp 0 gu 8.883 | off rear [(3.63, -1.65), (7.04, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 1.1, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(6.86, -1.88)] fp 0.00 zp 0 gu None | off rear [(4.05, -1.16), (7.51, -0.23)] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 2.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 2.37 zp 0 gu None | off rear [(5.12, -2.34)] fp 2.04 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "const", "m": 200.0}, "esc": "n020", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 1.54 zp 0 gu None | off rear [(5.12, -2.34)] fp 1.21 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "react", "m": 200.0}, "esc": "n030", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.41, -1.76), (6.54, -1.82)] fp 0.00 zp 0 gu 8.883 | off rear [(3.63, -1.65), (7.04, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 1.1, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(6.86, -1.88)] fp 0.00 zp 0 gu None | off rear [(4.05, -1.16), (7.51, -0.23)] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 2.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 2.37 zp 0 gu None | off rear [(5.12, -2.34)] fp 2.04 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "const", "m": 200.0}, "esc": "n020", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 1.54 zp 0 gu None | off rear [(5.12, -2.34)] fp 1.21 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "react", "m": 200.0}, "esc": "n030", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_faster'] | on rear [] fp 0.00 zp 0 gu 8.95 | off rear [] fp 0.00 zp 0 gu None | {"form": "kai1", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": null, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.14, -1.82), (7.27, -1.97)] fp 0.00 zp 0 gu None | off rear [(4.39, -1.54), (7.76, -1.84)] fp 0.00 zp 0 gu None | {"form": "kai1", "xf": 2.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_more', 'rear_faster'] | on rear [(4.18, -1.41), (7.3, -1.86)] fp 0.00 zp 0 gu None | off rear [(7.81, -0.77)] fp 0.00 zp 0 gu None | {"form": "kai1", "xf": 3.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_faster'] | on rear [] fp 0.00 zp 0 gu 8.95 | off rear [] fp 0.00 zp 0 gu None | {"form": "kai1_ceil", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": null, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.14, -1.82), (7.27, -1.97)] fp 0.00 zp 0 gu None | off rear [(4.39, -1.54), (7.76, -1.84)] fp 0.00 zp 0 gu None | {"form": "kai1_ceil", "xf": 2.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_more', 'rear_faster'] | on rear [(4.18, -1.41), (7.3, -1.86)] fp 0.00 zp 0 gu None | off rear [(7.81, -0.77)] fp 0.00 zp 0 gu None | {"form": "kai1_ceil", "xf": 3.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_faster'] | on rear [] fp 0.00 zp 0 gu 8.95 | off rear [] fp 0.00 zp 0 gu None | {"form": "kai2_auto42", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": null, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.14, -1.82), (7.27, -1.97)] fp 0.00 zp 0 gu None | off rear [(4.39, -1.54), (7.76, -1.84)] fp 0.00 zp 0 gu None | {"form": "kai2_auto42", "xf": 2.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_more', 'rear_faster'] | on rear [(4.18, -1.41), (7.3, -1.86)] fp 0.00 zp 0 gu None | off rear [(7.81, -0.77)] fp 0.00 zp 0 gu None | {"form": "kai2_auto42", "xf": 3.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.9, -1.67), (7.04, -1.59)] fp 0.00 zp 0 gu None | off rear [(4.15, -1.51), (7.54, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 2.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_more', 'rear_faster'] | on rear [(3.83, -1.62)] fp 0.00 zp 0 gu None | off rear [] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 1.54 zp 0 gu None | off rear [(5.12, -2.34)] fp 1.21 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "react", "m": 200.0}, "esc": "n020", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.9, -1.67), (7.04, -1.59)] fp 0.00 zp 0 gu None | off rear [(4.15, -1.51), (7.54, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 2.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_more', 'rear_faster'] | on rear [(3.83, -1.62)] fp 0.00 zp 0 gu None | off rear [] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 1.54 zp 0 gu None | off rear [(5.12, -2.34)] fp 1.21 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "react", "m": 200.0}, "esc": "n020", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.49, -1.94), (6.65, -1.65)] fp 0.00 zp 0 gu 8.95 | off rear [(3.8, -0.85), (7.12, -1.75)] fp 0.00 zp 0 gu None | {"form": "kai1", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.78, -1.95), (7.91, -1.76)] fp 0.00 zp 0 gu None | off rear [(5.06, -1.43), (8.4, -1.78)] fp 0.00 zp 0 gu None | {"form": "kai1", "xf": 3.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.49, -1.94), (6.65, -1.65)] fp 0.00 zp 0 gu 8.95 | off rear [(3.8, -0.85), (7.12, -1.75)] fp 0.00 zp 0 gu None | {"form": "kai1_ceil", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.78, -1.95), (7.91, -1.76)] fp 0.00 zp 0 gu None | off rear [(5.06, -1.43), (8.4, -1.78)] fp 0.00 zp 0 gu None | {"form": "kai1_ceil", "xf": 3.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.49, -1.94), (6.65, -1.65)] fp 0.00 zp 0 gu 8.95 | off rear [(3.8, -0.85), (7.12, -1.75)] fp 0.00 zp 0 gu None | {"form": "kai2_auto42", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.78, -1.95), (7.91, -1.76)] fp 0.00 zp 0 gu None | off rear [(5.06, -1.43), (8.4, -1.78)] fp 0.00 zp 0 gu None | {"form": "kai2_auto42", "xf": 3.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.51, -1.78), (6.63, -1.81)] fp 0.00 zp 0 gu 8.95 | off rear [(3.86, -0.37), (7.17, -1.55)] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 2.37 zp 0 gu None | off rear [(5.12, -2.34)] fp 2.04 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "const", "m": 200.0}, "esc": "n030", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.41, -1.76), (7.54, -1.82)] fp 0.00 zp 0 gu None | off rear [(4.63, -1.65), (8.04, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai3_lb_ceil", "xf": 3.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(3.51, -1.78), (6.63, -1.81)] fp 0.00 zp 0 gu 8.95 | off rear [(3.86, -0.37), (7.17, -1.55)] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 1.1, "model": {"kind": "brakewall", "m": 200.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['front_push_more'] | on rear [(5.12, -2.34)] fp 2.37 zp 0 gu None | off rear [(5.12, -2.34)] fp 2.04 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "const", "m": 200.0}, "esc": "n030", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}
+  ['rear_faster'] | on rear [(4.41, -1.76), (7.54, -1.82)] fp 0.00 zp 0 gu None | off rear [(4.63, -1.65), (8.04, -1.52)] fp 0.00 zp 0 gu None | {"form": "kai4_lb", "xf": 3.0, "model": {"kind": "brakewall", "m": 120.0}, "esc": "human", "rear": 1.2, "veh_dt": 0.01, "dur": 9.0}

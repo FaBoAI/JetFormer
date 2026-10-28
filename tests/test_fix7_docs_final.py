@@ -11,6 +11,30 @@ tests/fixtures/fix7_docs_final_before/、まとめ ~/jetformer_reports/fix_20261
 - h5 fix7/README.md: 19 件の指摘・数え合わせ・再起動が要るか・残すこと・了承
 - 文書の数がコード(assist.py の定数)と安全・夜の道具の報告にあるか。前の係(文書 7-1・7-2 回目)の直しと試験の確かめが崩れていないか。
 - わざと壊す: 直す前の写しでは h1〜h4 が落ちる。台本の足しを 1 つずつ元に戻すと、その確かめが落ちる(頭の記録の 4 つは「済」の試験が見る)。
+- 2026-10-28 fix8 docs-decided(experiments/20261026_fix/fix8/docs_decided/docs_fix8_decided.py): 10/28 00:53:23 のもう一度の再起動の
+  記録・approvals 2「誰が」の main session の判断・approvals 8「fix7 で残した読み方」①②③ の決めなどを、この組と前の組(7-1・7-2 回目)の
+  文の中に足した・書き換えた(SUPERSEDE。h1〜h4 が引く言葉は消していない)。台本の直しが「済」かは書き換えを戻した文書(fix8.revert)で、
+  前の組の試験の確かめ(f1〜f5・g1〜g6)は今の文書で、わざと壊すは書き換えたあとの new(fix8.effective)で照らす。
+- 2026-10-28 fix8 docs r1(experiments/20261026_fix/fix8/fix_docs_r1/docs_fix8_r1.py): 反証 8-1 回目の指摘(f8r1-docs-residual2-reversed)で、
+  この組の approvals 14 の 2 行目の中身とおすすめを意図して書き換えた(SUPERSEDE 2 か所。h4 が引く言葉・行の数・「**このまま**」は
+  消していない)。台本の直しが「済」かは fix8 docs r1 → fix8 docs-decided の順に書き換えを戻した文書で、わざと壊すは両方の書き換えの
+  あとの形の new(fix8.effective → r81.effective)で照らす(弱めていない: 同じ 19・45・44 個と f1〜f5・g1〜g6)。
+- 2026-10-28 fix8 docs 同期 1(experiments/20261026_fix/fix8/docs_sync1/docs_fix8_sync1.py): 反証 8-1 回目の安全の直しの文
+  (fix8/fix_safety_r1.md 3 章 I・J)で、この組の approvals 14 の 2 行目の「本物の記録 235 本では起きていない」を「本物の記録(235 の
+  場面を場面ごとに、と 1 本の記録の場面をつないだ 59 本。235 は記録の本数ではない)では起きていない」に、3 行目に本物の記録の 1 回を
+  意図して書き換えた(SUPERSEDE 2 か所)。h4 が引いていた「本物の記録 235 本では起きていない」は 235 が場面の数なので、2 行目に残る
+  「では起きていない(出す値が直す前と全部同じ」を引く(書き換えを戻した文書でも今の文書でも同じ確かめ。今の文が「235 の場面」・
+  「つないだ 59 本」を言うのは tests/test_fix8_docs_sync1.py が見る)。台本の直しが「済」かは 同期 1 → fix8 docs r1 → fix8 docs-decided
+  の順に戻した文書で、わざと壊すは 3 つの書き換えのあとの形の new で照らす(弱めていない: 同じ 19・45・44 個と f1〜f5・g1〜g6)。
+- 2026-10-28 fix8 docs 直す 8-2 回目(experiments/20261026_fix/fix8/fix_docs_r2/docs_fix8_r2.py): この組の todo 3 章の「戻したら紙に
+  「走り直し: 本・時刻」。」(7-2 回目の文と重なる所)に「その本が当たった・空転した・記録が欠けたら main session は --skip しない」を
+  足した(SUPERSEDE 1 か所。h1〜h4 が引く言葉は消していない)。「済」は fix8 docs r2 → 同期 1 → fix8 docs r1 → fix8 docs-decided の順に
+  戻した文書で、わざと壊すは 4 つの書き換えのあとの形の new(r82.effective)で照らす(弱めていない: 同じ 19・45・44 個と f1〜f5・g1〜g6)。
+- 2026-10-28 fix8 docs 仕上げ(experiments/20261026_fix/fix8/docs_final/docs_fix8_final.py): 反証 8 回目の終わりに、この組の文のうち 3 つ
+  (todo 2 章 16・approvals 0 章の 14・approvals 14 の「後ろ 1.2・1.35 m の物」の行)に足した(SUPERSEDE。h1〜h4 が引く言葉は消していない。
+  approvals 14 の表は fix7 で残した 4 行のまま = 反証 8-2 回目の安全の知らせは表の下の行)。「済」は仕上げ → fix8 docs r2 → 同期 1 →
+  fix8 docs r1 → fix8 docs-decided の順に戻した文書で、わざと壊すは 5 つの書き換えのあとの形の new(fin.effective)で照らす(弱めていない:
+  同じ 19・45・44 個と f1〜f5・g1〜g6)。
 """
 import hashlib
 import importlib.util
@@ -26,7 +50,12 @@ REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
 FIX7 = REPORTS / 'fix7'
 BEFORE = JF / 'tests' / 'fixtures' / 'fix7_docs_final_before'
 SCRIPT = JF / 'experiments' / '20261026_fix' / 'fix7' / 'docs_final' / 'docs_fix7_final.py'
-RB, TODO, RD, AP = 'runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md'
+FIX8 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_decided' / 'docs_fix8_decided.py'     # 2026-10-28 fix8 docs-decided
+R81 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r1' / 'docs_fix8_r1.py'               # 2026-10-28 fix8 docs r1
+S1 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_sync1' / 'docs_fix8_sync1.py'          # 2026-10-28 fix8 docs 同期 1
+R82 = JF / 'experiments' / '20261026_fix' / 'fix8' / 'fix_docs_r2' / 'docs_fix8_r2.py'           # 2026-10-28 fix8 docs 直す 8-2 回目
+FIN = JF / 'experiments' / '20261026_fix' / 'fix8' / 'docs_final' / 'docs_fix8_final.py'         # 2026-10-28 fix8 docs 仕上げ
+RB, TODO, RD, AP ='runbook_20261103.md', 'todo_user_1026.md', 'README.md', 'fix3/approvals.md'
 FILES = (RB, TODO, RD, AP)
 IDS_R1 = ('w1-safety-rv7-safety-r1-1', 'w1-ui-r7-ui-1', 'w1-ui-r7-ui-2', 'w1-tools-r7-1-tools-1', 'w1-docs-r71-docs-1',
           'w1-docs-r71-docs-2', 'w1-docs-r71-docs-3', 'w1-docs-r71-docs-4', 'w1-docs-r71-docs-5')
@@ -70,6 +99,36 @@ def before():
 @pytest.fixture(scope='module')
 def script():
     return _load('docs_fix7_final_t', SCRIPT)
+
+
+@pytest.fixture(scope='module')
+def fix8():
+    """fix8 docs-decided が意図して書き換えた所(SUPERSEDE)・revert・effective"""
+    return _load('docs_fix8_decided_from_t3', FIX8)
+
+
+@pytest.fixture(scope='module')
+def r81():
+    """fix8 docs r1 が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r1_from_t3', R81)
+
+
+@pytest.fixture(scope='module')
+def s1():
+    """fix8 docs 同期 1 が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_sync1_from_t3', S1)
+
+
+@pytest.fixture(scope='module')
+def r82():
+    """fix8 docs 直す 8-2 回目が意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_r2_from_t3', R82)
+
+
+@pytest.fixture(scope='module')
+def fin():
+    """fix8 docs 仕上げが意図して書き換えた所(SUPERSEDE)・revert・effective(2026-10-28)"""
+    return _load('docs_fix8_final_from_t3', FIN)
 
 
 def chapter(t, head, nxt):
@@ -153,7 +212,7 @@ def h4_problems(d):
     if len(body) != 4:
         p.append('approvals 14: 表の行が 4 でない(%d)' % len(body))
     for w in ('41 組のうち 22 組', '**見張り ON・見張り OFF・fix7 の前のどれも同じ 22 組**', 'リカバリーの約 0.3% の見込み',
-              '本物の記録 235 本では起きていない', '**本物の ESC では確かめていない**', '最大 1.83 m/s', '**どれも 11/3 は今のコードのまま**',
+              'では起きていない(出す値が直す前と全部同じ', '**本物の ESC では確かめていない**', '最大 1.83 m/s', '**どれも 11/3 は今のコードのまま**',
               '答え方: 「14 はこのまま」'):
         _miss(p, 'approvals 14', c14, w)
     if not body or sum('**このまま**' in x for x in body) != 3 or '10 のおすすめ (a)' not in body[-1]:
@@ -206,15 +265,50 @@ def test_fix7_readme():
         assert h5_problems(t.replace(w, w[:-2] + 'X' + w[-1], 1)) != [], k
 
 
-def test_script_edits_all_done_and_earlier_intact(live, script):
+def test_script_edits_all_done_and_earlier_intact(live, script, fix8, r81, s1, r82, fin, tmp_path):
     """台本の 19 個の足しは今の文書でどれも「済」で new はちょうど 1 回。文書 7-1・7-2 回目の直し(new がちょうど 1 回)・画面の版 9 と、
-    その 2 つの試験の確かめ(f1〜f5・g1〜g6)も崩れていない"""
-    _, rep = script.apply_text(live)
+    その 2 つの試験の確かめ(f1〜f5・g1〜g6)も崩れていない。
+    2026-10-28 fix8 docs-decided: 台本の直しが「済」かは fix8 の書き換え(SUPERSEDE)を戻した文書で、試験の確かめは今の文書で照らす
+    (script.earlier_intact は同じ文書で両方を見るので、中身を分けて同じことをする。fix6/README.md も戻した文書で)。書き換えた文は
+    今の文書にちょうど 1 回(消した文は 0 回)。
+    2026-10-28 fix8 docs r1: 戻すのは fix8 docs r1 の書き換え → fix8 docs-decided の書き換えの順(r81 の書き換えも今の文書にちょうど 1 回)。
+    2026-10-28 fix8 docs 同期 1: その前に 同期 1 の書き換えを戻す(同期 1 の書き換えも今の文書にちょうど 1 回)。
+    2026-10-28 fix8 docs r2: さらにその前に fix8 docs r2 の書き換えを戻す(fix8 docs r2 の書き換えは今の文書にちょうど 1 回。前の 3 つの
+    書き換えは fix8 docs r2 を戻した文書で照らす = fix8 docs r2 が同期 1 の書き換え(todo の題)と fix8 docs-decided の書き換え(approvals
+    0 章の 2)の中を書き換えたため)。
+    2026-10-28 fix8 docs 仕上げ: 最初に仕上げの書き換えを戻す(仕上げの書き換えは今の文書にちょうど 1 回。fix8 docs r2 の書き換えは仕上げを
+    戻した文書で照らす)。f1〜f5・g1〜g6 は今の文書のまま"""
+    full = dict(live, **{'fix6/README.md': (REPORTS / 'fix6' / 'README.md').read_text(encoding='utf-8'),
+                         'fix7/README.md': (FIX7 / 'README.md').read_text(encoding='utf-8')})
+    assert fin.superseded_present(full) == []
+    fullf = fin.revert(full)
+    assert r82.superseded_present(fullf) == []
+    base = r82.revert(fullf)
+    assert fix8.superseded_present(base) == [] and r81.superseded_present(base) == [] and s1.superseded_present(base) == []
+    old = fix8.revert(r81.revert(s1.revert(base)))
+    _, rep = script.apply_text(old)
     assert len(rep) == 19 and [s for _, _, s in rep] == ['done'] * 19, [(f, o[:30], s) for f, o, s in rep if s != 'done']
     for f, edits in script.ALL:
         for _, new in edits:
-            assert live[f].count(new) == 1, (f, new[:40])
-    assert script.earlier_intact(live) == []
+            assert old[f].count(new) == 1, (f, new[:40])
+    # script.earlier_intact の中身: 7-2 回目の 45 個が「済」で new がちょうど 1 回・7-1 回目の 44 個と画面の版 9(r1_intact)
+    r2 = _load('docs_fix7_r2_from_final_t', script.R2)
+    _, rep2 = r2.apply_text(old)
+    assert [(f, o[:30], s) for f, o, s in rep2 if s != 'done'] == []
+    for f, edits in r2.ALL:
+        for _, new in edits:
+            assert old[f].count(new) == 1, (f, new[:40])
+    assert r2.r1_intact(old) == []
+    # 前の組の試験の確かめ(7-1 回目の f1〜f5・7-2 回目の g1〜g6)は今の文書で空
+    sys.path.insert(0, str(JF))
+    sys.path.insert(0, str(JF / 'tools'))
+    sys.path.insert(0, str(JF / 'tests'))
+    t1 = _load('t_fix7_docs_r1_from_final_t', script.T1)
+    t2 = _load('t_fix7_docs_r2_from_final_t', script.T2)
+    for k, fn in sorted(t1.CHECKS.items()):
+        assert fn(full) == [], k
+    for k, fn in sorted(t2.CHECKS.items()):
+        assert fn(full, tmp_path / k) == [], k
 
 
 # 台本の (文書, 何番目) → それを元に戻すと落ちる確かめ。0 番目(頭の記録の行)は「済」の試験が見る
@@ -224,13 +318,22 @@ CATCH = {(RB, 1): 'h1', (RB, 2): 'h1', (RB, 3): 'h1',
          (AP, 1): 'h4', (AP, 2): 'h4', (AP, 3): 'h4', (AP, 4): 'h4'}
 
 
-def test_reverting_each_edit_is_caught(live, script):
+def test_reverting_each_edit_is_caught(live, script, fix8, r81, s1, r82, fin):
+    """2026-10-28 fix8 docs-decided: fix8 が書き換えた足しは、書き換えたあとの形の new(fix8.effective)を元の文に戻す。
+    2026-10-28 fix8 docs r1: fix8 docs r1 が書き換えた足し(approvals 14)は、その書き換えのあとの形(r81.effective)。
+    2026-10-28 fix8 docs 同期 1: 同期 1 が書き換えた足し(approvals 14)は、その書き換えのあとの形(s1.effective)。
+    2026-10-28 fix8 docs r2: fix8 docs r2 が書き換えた足し(todo 3 章)は、その書き換えのあとの形(r82.effective)。
+    2026-10-28 fix8 docs 仕上げ: 仕上げが書き換えた足し(todo 2 章 16・approvals 0 章の 14・14 の表の最後の行)は、その書き換えのあとの形
+    (fin.effective)"""
     n = 0
     for f, edits in script.ALL:
         for i, (old, new) in enumerate(edits):
             if (f, i) not in CATCH:
                 assert i == 0, (f, i)
                 continue
+            new = r82.effective('final', f, i, s1.effective('final', f, i, r81.effective('final', f, i, fix8.effective('final', f, i, new))))
+            new = fin.effective('final', f, i, new)         # 2026-10-28 fix8 docs 仕上げ
+            assert live[f].count(new) == 1, (f, i)
             broken = dict(live, **{f: live[f].replace(new, old, 1)})
             assert broken[f] != live[f] and CHECKS[CATCH[(f, i)]](broken) != [], (f, i)
             n += 1

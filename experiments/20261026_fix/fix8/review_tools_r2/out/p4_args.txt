@@ -1,0 +1,45 @@
+# S1 3-5 OFF のカメラの止まり
+  --day                        直す前: g0.9 使ってよい -0.245 False[]  |  今: g0.9 満たさない -0.14 False['to_r1']
+  --ignore-gain                直す前: g* 使ってよい -0.245 False[]  |  今: g* 満たさない -0.14 False['to_r1']
+  --first-only                 直す前: g0.9 使ってよい -0.245 False[]  |  今: g0.9 満たさない -0.14 False['to_r1']
+  --ignore-gain --first-only   直す前: g* 使ってよい -0.245 False[]  |  今: g* 満たさない -0.14 False['to_r1']
+# S2 3-5 ON のカメラの止まり
+  --day                        直す前: g0.9 満たさない -0.1 False['to_r1']  |  今: g0.9 満たさない -0.14 False['on_no_stall', 'to_r1']
+  --ignore-gain                直す前: g* 満たさない -0.1 False['to_r1']  |  今: g* 満たさない -0.14 False['on_no_stall', 'to_r1']
+  --first-only                 直す前: g0.9 満たさない -0.1 False['to_r1']  |  今: g0.9 満たさない -0.14 False['on_no_stall', 'to_r1']
+  --ignore-gain --first-only   直す前: g* 満たさない -0.1 False['to_r1']  |  今: g* 満たさない -0.14 False['on_no_stall', 'to_r1']
+# S3 天井 ON の試しの 6G
+  --day                        直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 満たさない -0.165 False['first_lap_collisions_0']
+  --ignore-gain                直す前: g* 使ってよい -0.165 False[]  |  今: g* 満たさない -0.165 False['first_lap_collisions_0']
+  --first-only                 直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 満たさない -0.165 False['first_lap_collisions_0']
+  --ignore-gain --first-only   直す前: g* 使ってよい -0.165 False[]  |  今: g* 満たさない -0.165 False['first_lap_collisions_0']
+# S4 ゲイン 0.92 の試しの空転
+  --day                        直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 満たさない -0.165 False['slip']
+  --ignore-gain                直す前: g* 満たさない -0.165 False['slip']  |  今: g* 満たさない -0.165 False['slip']
+  --first-only                 直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 満たさない -0.165 False['slip']
+  --ignore-gain --first-only   直す前: g* 満たさない -0.165 False['slip']  |  今: g* 満たさない -0.165 False['slip']
+# S5 OFF 2 本の 2 m/s のあとの止まり
+  --day                        直す前: g0.9 満たさない -0.105 False['to_r1']  |  今: g0.9 使ってよい -0.205 False[]
+  --ignore-gain                直す前: g* 満たさない -0.105 False['to_r1']  |  今: g* 使ってよい -0.205 False[]
+  --first-only                 直す前: g0.9 満たさない -0.105 False['to_r1']  |  今: g0.9 使ってよい -0.205 False[]
+  --ignore-gain --first-only   直す前: g* 満たさない -0.105 False['to_r1']  |  今: g* 使ってよい -0.205 False[]
+# S6 ON 4 本が全部止まり
+  --day                        直す前: g0.9 満たさない -0.135 False['to_r1']  |  今: g0.9 満たさない None False['lh_speed', 'on_no_stall', 'slip', 'to_r1']
+  --ignore-gain                直す前: g* 満たさない -0.135 False['to_r1']  |  今: g* 満たさない None False['lh_speed', 'on_no_stall', 'slip', 'to_r1']
+  --first-only                 直す前: g0.9 満たさない -0.135 False['to_r1']  |  今: g0.9 満たさない None False['lh_speed', 'on_no_stall', 'slip', 'to_r1']
+  --ignore-gain --first-only   直す前: g* 満たさない -0.135 False['to_r1']  |  今: g* 満たさない None False['lh_speed', 'on_no_stall', 'slip', 'to_r1']
+# S7 ゲイン 0.92 の走り直しの 6G
+  --day                        直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 満たさない -0.165 False['first_lap_collisions_0']
+  --ignore-gain                直す前: g* 満たさない -0.125 False['first_lap_collisions_0', 'to_r1']  |  今: g* 満たさない -0.125 False['first_lap_collisions_0', 'to_r1']
+  --first-only                 直す前: g0.9 使ってよい -0.165 False[]  |  今: g0.9 使ってよい -0.165 False[]
+  --ignore-gain --first-only   直す前: g* 満たさない -0.125 False['to_r1']  |  今: g* 満たさない -0.125 False['to_r1']
+# S8 OFF 2 本に 0.200 秒 × 4
+  --day                        直す前: g0.9 使ってよい -0.275 False[]  |  今: g0.9 使ってよい -0.275 False[]
+  --ignore-gain                直す前: g* 使ってよい -0.275 False[]  |  今: g* 使ってよい -0.275 False[]
+  --first-only                 直す前: g0.9 使ってよい -0.275 False[]  |  今: g0.9 使ってよい -0.275 False[]
+  --ignore-gain --first-only   直す前: g* 使ってよい -0.275 False[]  |  今: g* 使ってよい -0.275 False[]
+# S9 OFF の 2 回目の発進のカメラの止まり
+  --day                        直す前: g0.9 満たさない -0.14 False['to_r1']  |  今: g0.9 満たさない -0.135 False['to_r1']
+  --ignore-gain                直す前: g* 満たさない -0.14 False['to_r1']  |  今: g* 満たさない -0.135 False['to_r1']
+  --first-only                 直す前: g0.9 満たさない -0.135 False['to_r1']  |  今: g0.9 満たさない -0.135 False['to_r1']
+  --ignore-gain --first-only   直す前: g* 満たさない -0.135 False['to_r1']  |  今: g* 満たさない -0.135 False['to_r1']

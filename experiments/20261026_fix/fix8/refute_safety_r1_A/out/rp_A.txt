@@ -1,0 +1,26 @@
+scene_cam {'logs': 60, 'units': 235, 'frames': 122767, 'rec_starts': 16, 'diff_frames': 0, 'backing_in_bwg_now': 1} diff units [] backing units {'20261023-205458-0002': 1} skipped 3
+concat_cam {'logs': 60, 'units': 58, 'frames': 118586, 'rec_starts': 15, 'diff_frames': 10, 'backing_in_bwg_now': 11} diff units [('20261024-160847', 10)] backing units {'20261023-205458': 1, '20261024-160847': 10} skipped 2
+scene_proc {'logs': 60, 'units': 235, 'frames': 122767, 'rec_starts': 16, 'diff_frames': 0, 'backing_in_bwg_now': 1} diff units [] backing units {'20261023-205458-0002': 1} skipped 3
+concat_proc {'logs': 60, 'units': 58, 'frames': 118586, 'rec_starts': 15, 'diff_frames': 10, 'backing_in_bwg_now': 11} diff units [('20261024-160847', 10)] backing units {'20261023-205458': 1, '20261024-160847': 10} skipped 2
+== concat_cam 20261024-160847 10 frames
+   40.070 erpm   582 esc_rev False bef ['brake', 'reverse'] [1291.0, 1796.0] ev back_early | now ['brake', 'brake'] [1441.0, 1796.0] ev back_no_esc
+   40.103 erpm   211 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.136 erpm   503 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.170 erpm   520 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.203 erpm   475 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.236 erpm   753 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'gap'] [1291.0, 1506.0] ev None
+   40.270 erpm   522 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.303 erpm   791 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.336 erpm   690 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.369 erpm   721 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+== concat_proc 20261024-160847 10 frames
+   40.036 erpm   582 esc_rev False bef ['brake', 'reverse'] [1291.0, 1796.0] ev back_early | now ['brake', 'brake'] [1441.0, 1796.0] ev back_no_esc
+   40.070 erpm   211 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.103 erpm   503 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.136 erpm   520 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.170 erpm   475 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'brake'] [1441.0, 1796.0] ev None
+   40.203 erpm   780 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['brake', 'gap'] [1291.0, 1506.0] ev None
+   40.236 erpm   522 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.270 erpm   791 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.303 erpm   690 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None
+   40.336 erpm   721 esc_rev False bef ['reverse', 'reverse'] [1291.0, 1796.0] ev None | now ['gap', 'gap'] [1291.0, 1506.0] ev None

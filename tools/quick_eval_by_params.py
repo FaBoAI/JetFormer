@@ -69,6 +69,10 @@
            after_abort が、中立止め(0.5 秒以上)・カメラの途切れのまま止まって終わった区間のあとの発進にも付く(kind 'hold'・'stall')。
            扱いは上と同じ(1 章の印「数えない発進 N(リカバリー中止のあとの走り直し)」・止まってから 3 周・動く → A1。名前は fix7 r1 の
            まま = 手順書が引く言葉)。2 章の下の行に、そういう発進があるときだけ「中立で停止中 … のあとの発進も同じ」の 1 文
+  リカバリーの途中で人側にしたあとの走り直し(2026-10-28 fix8 係 tools-decided。main session の決め = fix3/approvals.md 8 の「fix7 で
+           残した読み方」①) standing_3lap の after_abort が、リカバリーの途中(assist 2)で人が CH3 を人側にした区間のあとの発進にも付く
+           (kind 'recovery')。扱いは上と同じ(1 章の印・止まってから 3 周・動く → A1)。2 章の下の行に、そういう発進があるときだけ
+           「リカバリー(…)の途中で人が CH3 を人側にした区間のあとの発進も同じ(③ の表の「リカバリーの途中 X 秒から Y 秒」)。」の 1 文
 """
 
 import argparse
@@ -433,13 +437,18 @@ def to_markdown(results, day, since, ignore=()):
                 % '・'.join('%s(%d)' % (g['text'], g['collisions_after_ai']) for g in groups if g.get('collisions_after_ai'))]
     if any(g.get('launch_to_r1_abort_excluded') for g in groups):     # 2026-10-27 fix7(あるときだけ)
         out += ['', '- リカバリー中止のあとの走り直し(一つ前の AI の区間がリカバリー中止で終わり、CH3 を人側 → AI 側にした発進。中止で止まった'
-                '所から出たかもしれない)は、止まってから 3 周(2 章の「数えない」に入る)と「動く → A1 中央値」に入れていない: %s。%s'
+                '所から出たかもしれない)は、止まってから 3 周(2 章の「数えない」に入る)と「動く → A1 中央値」に入れていない: %s。%s%s'
                 % ('・'.join('%s(%s)' % (g['text'], '・'.join(g['launch_to_r1_abort_excluded'])) for g in groups
                             if g.get('launch_to_r1_abort_excluded')),
                    # 2026-10-27 fix7 r2(中立止め・カメラの途切れのあとの走り直しがあるときだけ)
                    '中立で停止中(中立止め 0.5 秒以上・カメラの途切れ)のまま人側にして止まって終わった区間のあとの発進も同じ(③ の表の'
                    '「中立止め X 秒から Y 秒」「カメラの途切れ X 秒から Y 秒」)。'
                    if any((s.get('after_abort') or {}).get('kind') in ('hold', 'stall')
+                          for r in results for s in r.get('standing') or []) else '',
+                   # 2026-10-28 fix8 tools-decided(リカバリーの途中で人側にしたあとの走り直しがあるときだけ)
+                   'リカバリー(当たった・止まったあとのブレーキ・後退・前進など)の途中で人が CH3 を人側にした区間のあとの発進も同じ'
+                   '(③ の表の「リカバリーの途中 X 秒から Y 秒」)。'
+                   if any((s.get('after_abort') or {}).get('kind') == 'recovery'
                           for r in results for s in r.get('standing') or []) else '')]
     if any(g.get('starts_from_other_runs') for g in groups):
         out += ['', '- ほかの本の発進 N = 発進の前進が「出た」発進と「出ず」の発進が混ざった本の、その組の状態の発進'

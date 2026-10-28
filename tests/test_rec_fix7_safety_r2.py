@@ -43,6 +43,10 @@ ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / 'tests' / 'fixtures' / 'fix7_safety_r2_before'
 SHA_R1 = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66ea717e3f',     # 10/27 fix7 safety 7-1 回目のあと
           'drive.py': '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'}
+# この組のあと 10/28 fix8 safety が drive.py の説明の文だけを変えた(AST は同じ)。そのときは、その直す前の写し
+# tests/fixtures/fix8_safety_doc_before/(= この組の drive.py。sha256 を照らす)で照らす(tests/test_fix3_r3_2_tools.py の
+# LATER_FIX8_SAFETY_DOC と同じ値)
+LATER_FIX8_SAFETY_DOC = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
 FDT = F7.FDT
 MODEL = F7.MODEL
 REV, GAP, RETRY, ESCAPE = F7.REV, F7.GAP, F7.RETRY, F7.ESCAPE
@@ -85,7 +89,10 @@ def test_r1_copy_defaults_and_changed_parts():
     EscReverse・StartKick の定数・モジュールの定数は同じ。変えたのは assist.py の Recovery.reset・_start・step だけ、足したのは
     モジュールの定数 SURE_BACK_S だけ(消した関数や文は無い。AST を名前で照らす。モジュールの説明は別)"""
     amod, r1d = load_r1()
-    assert sha(ROOT / 'jetformer' / 'drive.py') == SHA_R1['drive.py']
+    pd = ROOT / 'jetformer' / 'drive.py'
+    if sha(pd) == LATER_FIX8_SAFETY_DOC['drive.py']:         # 10/28 fix8 safety の説明の文だけの版 → 直す前の写し
+        pd = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / 'drive.py'
+    assert sha(pd) == SHA_R1['drive.py']
     assert drive.DEFAULT_PARAMS == r1d.DEFAULT_PARAMS and drive.PARAM_LIMITS == r1d.PARAM_LIMITS
     assert drive.RESET_ON_BOOT == r1d.RESET_ON_BOOT
     for k in ('rec_back_guard', 'rec_hold_keep', 'launch_boost', 'launch_no_kick'):

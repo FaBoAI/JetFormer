@@ -1,0 +1,10672 @@
+{
+ "summary": {
+  "plain": {
+   "scenes": 96,
+   "runs_pairs": 192,
+   "by_class": {
+    "A": [
+     192,
+     192
+    ]
+   }
+  },
+  "drop": {
+   "scenes": 1024,
+   "runs_pairs": 2048,
+   "by_class": {
+    "A": [
+     8,
+     8
+    ],
+    "B": [
+     1959,
+     1959
+    ],
+    "C": [
+     0,
+     81
+    ]
+   }
+  },
+  "vskip": {
+   "scenes": 256,
+   "runs_pairs": 512,
+   "by_class": {
+    "A": [
+     152,
+     152
+    ],
+    "B": [
+     360,
+     360
+    ]
+   }
+  },
+  "glitch": {
+   "scenes": 268,
+   "runs_pairs": 536,
+   "by_class": {
+    "A": [
+     536,
+     536
+    ]
+   }
+  },
+  "burst": {
+   "scenes": 136,
+   "runs_pairs": 272,
+   "by_class": {
+    "A": [
+     272,
+     272
+    ]
+   }
+  },
+  "tof": {
+   "scenes": 170,
+   "runs_pairs": 340,
+   "by_class": {
+    "A": [
+     208,
+     208
+    ],
+    "B": [
+     132,
+     132
+    ]
+   }
+  },
+  "fuzz8101": {
+   "scenes": 150,
+   "runs_pairs": 300,
+   "by_class": {
+    "A": [
+     30,
+     30
+    ],
+    "B": [
+     263,
+     263
+    ],
+    "C": [
+     0,
+     7
+    ]
+   }
+  },
+  "fuzz8102": {
+   "scenes": 150,
+   "runs_pairs": 300,
+   "by_class": {
+    "A": [
+     40,
+     40
+    ],
+    "B": [
+     256,
+     256
+    ],
+    "C": [
+     0,
+     4
+    ]
+   }
+  }
+ },
+ "total": {
+  "A": [
+   1438,
+   1438
+  ],
+  "B": [
+   2970,
+   2970
+  ],
+  "C": [
+   0,
+   92
+  ]
+ },
+ "guard_events_no_hit": {
+  "drop|C|hold_long": 81,
+  "fuzz8101|C|hold_long": 7,
+  "fuzz8102|C|hold_long": 4
+ },
+ "diffs": [
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.30 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698569351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 46,
+    "t": 2.32,
+    "on": [
+     2.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.91
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     261,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 47.85,
+    "giveup_frames": 261,
+    "rec_frames": 0,
+    "x_end": 0.542
+   },
+   "off": {
+    "to_r1": 3.91,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 47.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.895
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.40 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698669351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 49,
+    "t": 2.42,
+    "on": [
+     2.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.89
+    ],
+    "v_lh": [
+     null,
+     2.463
+    ],
+    "giveup_frames": [
+     258,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 74.29,
+    "giveup_frames": 258,
+    "rec_frames": 0,
+    "x_end": 0.985
+   },
+   "off": {
+    "to_r1": 3.89,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.463,
+    "f_slipwin": 74.29,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.967
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.4,
+      2.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.20 L=1.00",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698469351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 43,
+    "t": 2.22,
+    "on": [
+     2.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.22,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.98
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     264,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 264,
+    "rec_frames": 0,
+    "x_end": 0.818
+   },
+   "off": {
+    "to_r1": 3.98,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.244,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.131
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.2,
+      2.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.30 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698569351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 46,
+    "t": 2.32,
+    "on": [
+     2.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.19
+    ],
+    "v_lh": [
+     null,
+     2.246
+    ],
+    "giveup_frames": [
+     261,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 47.65,
+    "giveup_frames": 261,
+    "rec_frames": 0,
+    "x_end": 0.43
+   },
+   "off": {
+    "to_r1": 4.19,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 47.65,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.503
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.40 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698669351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 49,
+    "t": 2.42,
+    "on": [
+     2.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.19
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     258,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 74.09,
+    "giveup_frames": 258,
+    "rec_frames": 0,
+    "x_end": 0.767
+   },
+   "off": {
+    "to_r1": 4.19,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.244,
+    "f_slipwin": 74.09,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.503
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.20 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698469351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 43,
+    "t": 2.22,
+    "on": [
+     2.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.22,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.85
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     264,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 35.91,
+    "giveup_frames": 264,
+    "rec_frames": 0,
+    "x_end": 0.391
+   },
+   "off": {
+    "to_r1": 3.85,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 35.91,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 24.051
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.2,
+      2.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.30 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698569351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 46,
+    "t": 2.32,
+    "on": [
+     2.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.84
+    ],
+    "v_lh": [
+     null,
+     2.463
+    ],
+    "giveup_frames": [
+     261,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 60.85,
+    "giveup_frames": 261,
+    "rec_frames": 0,
+    "x_end": 0.787
+   },
+   "off": {
+    "to_r1": 3.84,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.463,
+    "f_slipwin": 60.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 24.053
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.20 L=1.00",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698469351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 43,
+    "t": 2.22,
+    "on": [
+     2.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.22,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.98
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     264,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 264,
+    "rec_frames": 0,
+    "x_end": 0.818
+   },
+   "off": {
+    "to_r1": 3.98,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.244,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.131
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.2,
+      2.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.30 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698569351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 46,
+    "t": 2.32,
+    "on": [
+     2.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.14
+    ],
+    "v_lh": [
+     null,
+     2.245
+    ],
+    "giveup_frames": [
+     261,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 59.54,
+    "giveup_frames": 261,
+    "rec_frames": 0,
+    "x_end": 0.599
+   },
+   "off": {
+    "to_r1": 4.14,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.245,
+    "f_slipwin": 59.54,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.614
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.40 L=1.00",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698669351,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 49,
+    "t": 2.42,
+    "on": [
+     2.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.12
+    ],
+    "v_lh": [
+     null,
+     2.243
+    ],
+    "giveup_frames": [
+     258,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 89.45,
+    "giveup_frames": 258,
+    "rec_frames": 0,
+    "x_end": 1.021
+   },
+   "off": {
+    "to_r1": 4.12,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.243,
+    "f_slipwin": 89.45,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.722
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 48,
+    "t": 2.72,
+    "on": [
+     2.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "v_lh": [
+     null,
+     2.462
+    ],
+    "giveup_frames": [
+     249,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 249,
+    "rec_frames": 0,
+    "x_end": 1.094
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": 2.462,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.238
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.2,
+      2.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.30 L=0.70",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698269351,
+       "hold_s": 0.73
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 43,
+    "t": 2.02,
+    "on": [
+     2.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.6
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     270,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 47.85,
+    "giveup_frames": 270,
+    "rec_frames": 0,
+    "x_end": 0.542
+   },
+   "off": {
+    "to_r1": 3.6,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 47.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 24.669
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.41
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 47.85,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 0.542
+   },
+   "off": {
+    "to_r1": 4.41,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 47.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.515
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.95
+    ],
+    "v_lh": [
+     null,
+     2.451
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": null,
+    "f_slipwin": 139.34,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 2.03
+   },
+   "off": {
+    "to_r1": 3.95,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": 2.451,
+    "f_slipwin": 139.34,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.802
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.39
+    ],
+    "v_lh": [
+     null,
+     2.463
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 74.29,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 0.985
+   },
+   "off": {
+    "to_r1": 4.39,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.463,
+    "f_slipwin": 74.29,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.606
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=1 d0=+0.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 57,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.3
+    ],
+    "v_lh": [
+     null,
+     2.458
+    ],
+    "giveup_frames": [
+     240,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 106.63,
+    "giveup_frames": 240,
+    "rec_frames": 0,
+    "x_end": 1.623
+   },
+   "off": {
+    "to_r1": 4.3,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.458,
+    "f_slipwin": 106.63,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.866
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.5,
+      3.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 48,
+    "t": 2.72,
+    "on": [
+     2.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.48
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     249,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 249,
+    "rec_frames": 0,
+    "x_end": 0.818
+   },
+   "off": {
+    "to_r1": 4.48,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.244,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.767
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.2,
+      2.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.30 L=0.70",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698269351,
+       "hold_s": 0.73
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 43,
+    "t": 2.02,
+    "on": [
+     2.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.89
+    ],
+    "v_lh": [
+     null,
+     2.246
+    ],
+    "giveup_frames": [
+     270,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 47.65,
+    "giveup_frames": 270,
+    "rec_frames": 0,
+    "x_end": 0.43
+   },
+   "off": {
+    "to_r1": 3.89,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 47.65,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.428
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.69
+    ],
+    "v_lh": [
+     null,
+     2.246
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 47.65,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 0.43
+   },
+   "off": {
+    "to_r1": 4.69,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 47.65,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.311
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.36
+    ],
+    "v_lh": [
+     null,
+     2.24
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 139.34,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 1.519
+   },
+   "off": {
+    "to_r1": 4.36,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.24,
+    "f_slipwin": 139.34,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.056
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.69
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 74.09,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 0.767
+   },
+   "off": {
+    "to_r1": 4.69,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.244,
+    "f_slipwin": 74.09,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.31
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.40 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.16
+    ],
+    "v_lh": [
+     null,
+     2.23
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 180.33,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 2.246
+   },
+   "off": {
+    "to_r1": 4.16,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.23,
+    "f_slipwin": 180.33,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.598
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 57,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.64
+    ],
+    "v_lh": [
+     null,
+     2.242
+    ],
+    "giveup_frames": [
+     240,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 106.43,
+    "giveup_frames": 240,
+    "rec_frames": 0,
+    "x_end": 1.249
+   },
+   "off": {
+    "to_r1": 4.64,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.242,
+    "f_slipwin": 106.43,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.399
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.5,
+      3.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+0.60 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 60,
+    "t": 3.12,
+    "on": [
+     3.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.12,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69,
+    2.79
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.52
+    ],
+    "v_lh": [
+     null,
+     2.236
+    ],
+    "giveup_frames": [
+     237,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": null,
+    "f_slipwin": 144.68,
+    "giveup_frames": 237,
+    "rec_frames": 0,
+    "x_end": 1.894
+   },
+   "off": {
+    "to_r1": 4.52,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.236,
+    "f_slipwin": 144.68,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.693
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.6,
+      3.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.50 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 87,
+    "t": 4.02,
+    "on": [
+     4.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.02,
+     1141.0,
+     1206.40302734375
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.59,
+    2.69,
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.97
+    ],
+    "giveup_frames": [
+     210,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.821,
+    "f_slipwin": 242.14,
+    "giveup_frames": 210,
+    "rec_frames": 0,
+    "x_end": 5.114
+   },
+   "off": {
+    "to_r1": 3.97,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.821,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.21
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.5,
+      4.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.60 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 90,
+    "t": 4.12,
+    "on": [
+     4.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.12,
+     1141.0,
+     1205.6053100585937
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.69,
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.99
+    ],
+    "giveup_frames": [
+     207,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.986,
+    "f_slipwin": 242.14,
+    "giveup_frames": 207,
+    "rec_frames": 0,
+    "x_end": 5.318
+   },
+   "off": {
+    "to_r1": 3.99,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.986,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.122
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.6,
+      4.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.70 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700469351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 93,
+    "t": 4.22,
+    "on": [
+     4.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.22,
+     1141.0,
+     1206.1359497070312
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.14
+    ],
+    "giveup_frames": [
+     204,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 1.891,
+    "f_slipwin": 146.62,
+    "giveup_frames": 204,
+    "rec_frames": 0,
+    "x_end": 5.193
+   },
+   "off": {
+    "to_r1": 4.14,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 1.891,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.637
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.7,
+      4.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.70 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700469351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 93,
+    "t": 4.22,
+    "on": [
+     4.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.22,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.02
+    ],
+    "giveup_frames": [
+     204,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.143,
+    "f_slipwin": 242.14,
+    "giveup_frames": 204,
+    "rec_frames": 0,
+    "x_end": 5.532
+   },
+   "off": {
+    "to_r1": 4.02,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.143,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.024
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.7,
+      4.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.80 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700569351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 96,
+    "t": 4.32,
+    "on": [
+     4.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.32,
+     1141.0,
+     1205.4583129882812
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "giveup_frames": [
+     201,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.043,
+    "f_slipwin": 146.62,
+    "giveup_frames": 201,
+    "rec_frames": 0,
+    "x_end": 5.4
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.043,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.588
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.8,
+      4.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.80 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700569351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 96,
+    "t": 4.32,
+    "on": [
+     4.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.05
+    ],
+    "giveup_frames": [
+     201,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 201,
+    "rec_frames": 0,
+    "x_end": 5.75
+   },
+   "off": {
+    "to_r1": 4.05,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.905
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.8,
+      4.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.90 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700669351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 99,
+    "t": 4.42,
+    "on": [
+     4.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.2
+    ],
+    "giveup_frames": [
+     198,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.202,
+    "f_slipwin": 146.62,
+    "giveup_frames": 198,
+    "rec_frames": 0,
+    "x_end": 5.615
+   },
+   "off": {
+    "to_r1": 4.2,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.202,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.449
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.9,
+      4.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+1.90 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700669351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 99,
+    "t": 4.42,
+    "on": [
+     4.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.07
+    ],
+    "giveup_frames": [
+     198,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 198,
+    "rec_frames": 0,
+    "x_end": 5.97
+   },
+   "off": {
+    "to_r1": 4.07,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.815
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.9,
+      4.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.00 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.517,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700769351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 102,
+    "t": 4.52,
+    "on": [
+     4.52,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.52,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.22
+    ],
+    "giveup_frames": [
+     195,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 195,
+    "rec_frames": 0,
+    "x_end": 5.834
+   },
+   "off": {
+    "to_r1": 4.22,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.352
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.0,
+      4.5
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.00 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.517,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700769351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 102,
+    "t": 4.52,
+    "on": [
+     4.52,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.52,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.09
+    ],
+    "giveup_frames": [
+     195,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 195,
+    "rec_frames": 0,
+    "x_end": 6.192
+   },
+   "off": {
+    "to_r1": 4.09,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.744
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.0,
+      4.5
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.10 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.617,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700869351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 105,
+    "t": 4.62,
+    "on": [
+     4.62,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.62,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.24
+    ],
+    "giveup_frames": [
+     192,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 192,
+    "rec_frames": 0,
+    "x_end": 6.055
+   },
+   "off": {
+    "to_r1": 4.24,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.308
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.1,
+      4.6
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.10 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.617,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700869351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 105,
+    "t": 4.62,
+    "on": [
+     4.62,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.62,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.09
+    ],
+    "giveup_frames": [
+     192,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 192,
+    "rec_frames": 0,
+    "x_end": 6.415
+   },
+   "off": {
+    "to_r1": 4.09,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.713
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.1,
+      4.6
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.20 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 108,
+    "t": 4.72,
+    "on": [
+     4.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.25
+    ],
+    "giveup_frames": [
+     189,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 189,
+    "rec_frames": 0,
+    "x_end": 6.277
+   },
+   "off": {
+    "to_r1": 4.25,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.252
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.2,
+      4.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 108,
+    "t": 4.72,
+    "on": [
+     4.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.08
+    ],
+    "giveup_frames": [
+     189,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 189,
+    "rec_frames": 0,
+    "x_end": 6.638
+   },
+   "off": {
+    "to_r1": 4.08,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.637
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.2,
+      4.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 111,
+    "t": 4.82,
+    "on": [
+     4.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.25
+    ],
+    "giveup_frames": [
+     186,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 186,
+    "rec_frames": 0,
+    "x_end": 6.5
+   },
+   "off": {
+    "to_r1": 4.25,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.222
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.3,
+      4.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 111,
+    "t": 4.82,
+    "on": [
+     4.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.04
+    ],
+    "giveup_frames": [
+     186,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 186,
+    "rec_frames": 0,
+    "x_end": 6.862
+   },
+   "off": {
+    "to_r1": 4.04,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.613
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.3,
+      4.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 114,
+    "t": 4.92,
+    "on": [
+     4.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.23
+    ],
+    "giveup_frames": [
+     183,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 183,
+    "rec_frames": 0,
+    "x_end": 6.723
+   },
+   "off": {
+    "to_r1": 4.23,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.215
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.4,
+      4.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.40 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 114,
+    "t": 4.92,
+    "on": [
+     4.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.92,
+     1441.0,
+     1204.637744140625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59
+   ],
+   "delta": {
+    "giveup_frames": [
+     183,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.64,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 183,
+    "rec_frames": 0,
+    "x_end": 7.085
+   },
+   "off": {
+    "to_r1": 3.64,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.613
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.4,
+      4.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 4.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 117,
+    "t": 5.02,
+    "on": [
+     5.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.15
+    ],
+    "giveup_frames": [
+     180,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 180,
+    "rec_frames": 0,
+    "x_end": 6.947
+   },
+   "off": {
+    "to_r1": 4.15,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.18
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.5,
+      5.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.50 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 4.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 117,
+    "t": 5.02,
+    "on": [
+     5.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.02,
+     1441.0,
+     1204.6341186523437
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69
+   ],
+   "delta": {
+    "giveup_frames": [
+     180,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.44,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 180,
+    "rec_frames": 0,
+    "x_end": 7.309
+   },
+   "off": {
+    "to_r1": 3.44,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 242.14,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.613
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.5,
+      5.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=10 volt=0.85 d0=+2.60 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 4.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 120,
+    "t": 5.12,
+    "on": [
+     5.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.12,
+     1441.0,
+     1204.6365356445312
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69,
+    4.79
+   ],
+   "delta": {
+    "giveup_frames": [
+     177,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.71,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 177,
+    "rec_frames": 0,
+    "x_end": 7.171
+   },
+   "off": {
+    "to_r1": 3.71,
+    "move_0p2": 0.09,
+    "move_0p4": 0.17,
+    "v_lh": 2.246,
+    "f_slipwin": 146.62,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.18
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 10.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.6,
+      5.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.20 L=0.70",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 0.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698169351,
+       "hold_s": 0.73
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 40,
+    "t": 1.92,
+    "on": [
+     1.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     1.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.55
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     273,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 35.91,
+    "giveup_frames": 273,
+    "rec_frames": 0,
+    "x_end": 0.391
+   },
+   "off": {
+    "to_r1": 3.55,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 35.91,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 24.792
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.2,
+      1.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.20 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 48,
+    "t": 2.72,
+    "on": [
+     2.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.35
+    ],
+    "v_lh": [
+     null,
+     2.465
+    ],
+    "giveup_frames": [
+     249,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 35.91,
+    "giveup_frames": 249,
+    "rec_frames": 0,
+    "x_end": 0.391
+   },
+   "off": {
+    "to_r1": 4.35,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.465,
+    "f_slipwin": 35.91,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.713
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.2,
+      2.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 48,
+    "t": 2.72,
+    "on": [
+     2.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "v_lh": [
+     null,
+     2.462
+    ],
+    "giveup_frames": [
+     249,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 249,
+    "rec_frames": 0,
+    "x_end": 1.094
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": 2.462,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.238
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.2,
+      2.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.34
+    ],
+    "v_lh": [
+     null,
+     2.463
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 60.85,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 0.787
+   },
+   "off": {
+    "to_r1": 4.34,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.463,
+    "f_slipwin": 60.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.716
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.95
+    ],
+    "v_lh": [
+     null,
+     2.451
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": null,
+    "f_slipwin": 139.34,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 2.03
+   },
+   "off": {
+    "to_r1": 3.95,
+    "move_0p2": 0.06,
+    "move_0p4": 0.09,
+    "v_lh": 2.451,
+    "f_slipwin": 139.34,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.802
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.28
+    ],
+    "v_lh": [
+     null,
+     2.46
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 90.77,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 1.344
+   },
+   "off": {
+    "to_r1": 4.28,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.46,
+    "f_slipwin": 90.77,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.914
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=1 d0=+0.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 57,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.14
+    ],
+    "v_lh": [
+     null,
+     2.45
+    ],
+    "giveup_frames": [
+     240,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 125.66,
+    "giveup_frames": 240,
+    "rec_frames": 0,
+    "x_end": 2.074
+   },
+   "off": {
+    "to_r1": 4.14,
+    "move_0p2": 0.08,
+    "move_0p4": 0.14,
+    "v_lh": 2.45,
+    "f_slipwin": 125.66,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.29
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 1.0,
+    "drops": [
+     [
+      1.5,
+      3.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 48,
+    "t": 2.72,
+    "on": [
+     2.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.29,
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.48
+    ],
+    "v_lh": [
+     null,
+     2.244
+    ],
+    "giveup_frames": [
+     249,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 98.36,
+    "giveup_frames": 249,
+    "rec_frames": 0,
+    "x_end": 0.818
+   },
+   "off": {
+    "to_r1": 4.48,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.244,
+    "f_slipwin": 98.36,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.767
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.2,
+      2.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.64
+    ],
+    "v_lh": [
+     null,
+     2.245
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 59.54,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 0.599
+   },
+   "off": {
+    "to_r1": 4.64,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.245,
+    "f_slipwin": 59.54,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.399
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 51,
+    "t": 2.82,
+    "on": [
+     2.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.39,
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.36
+    ],
+    "v_lh": [
+     null,
+     2.24
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 139.34,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 1.519
+   },
+   "off": {
+    "to_r1": 4.36,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.24,
+    "f_slipwin": 139.34,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.056
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.3,
+      2.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.62
+    ],
+    "v_lh": [
+     null,
+     2.243
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 89.45,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 1.021
+   },
+   "off": {
+    "to_r1": 4.62,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.243,
+    "f_slipwin": 89.45,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.469
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.40 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 54,
+    "t": 2.92,
+    "on": [
+     2.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.49,
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.16
+    ],
+    "v_lh": [
+     null,
+     2.23
+    ],
+    "giveup_frames": [
+     243,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": null,
+    "f_slipwin": 180.33,
+    "giveup_frames": 243,
+    "rec_frames": 0,
+    "x_end": 2.246
+   },
+   "off": {
+    "to_r1": 4.16,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.23,
+    "f_slipwin": 180.33,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.598
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.4,
+      2.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 57,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.59,
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.53
+    ],
+    "v_lh": [
+     null,
+     2.24
+    ],
+    "giveup_frames": [
+     240,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 124.35,
+    "giveup_frames": 240,
+    "rec_frames": 0,
+    "x_end": 1.573
+   },
+   "off": {
+    "to_r1": 4.53,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.24,
+    "f_slipwin": 124.35,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.65
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.5,
+      3.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+0.60 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 60,
+    "t": 3.12,
+    "on": [
+     3.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.12,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.69,
+    1.79,
+    1.89,
+    1.99,
+    2.09,
+    2.19,
+    2.29,
+    2.39,
+    2.49,
+    2.59,
+    2.69,
+    2.79
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.36
+    ],
+    "v_lh": [
+     null,
+     2.229
+    ],
+    "giveup_frames": [
+     237,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": null,
+    "f_slipwin": 164.22,
+    "giveup_frames": 237,
+    "rec_frames": 0,
+    "x_end": 2.259
+   },
+   "off": {
+    "to_r1": 4.36,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.229,
+    "f_slipwin": 164.22,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.049
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      1.6,
+      3.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.50 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 87,
+    "t": 4.02,
+    "on": [
+     4.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.02,
+     1141.0,
+     1206.3519409179687
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.59,
+    2.69,
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.96
+    ],
+    "giveup_frames": [
+     210,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.835,
+    "f_slipwin": 245.05,
+    "giveup_frames": 210,
+    "rec_frames": 0,
+    "x_end": 5.129
+   },
+   "off": {
+    "to_r1": 3.96,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 1.835,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.213
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.5,
+      4.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.60 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 90,
+    "t": 4.12,
+    "on": [
+     4.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.12,
+     1141.0,
+     1206.7403076171875
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.69,
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.09
+    ],
+    "giveup_frames": [
+     207,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 1.797,
+    "f_slipwin": 165.87,
+    "giveup_frames": 207,
+    "rec_frames": 0,
+    "x_end": 5.077
+   },
+   "off": {
+    "to_r1": 4.09,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 1.797,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.815
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.6,
+      4.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.60 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 90,
+    "t": 4.12,
+    "on": [
+     4.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.12,
+     1141.0,
+     1205.5771850585938
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.69,
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.99
+    ],
+    "giveup_frames": [
+     207,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.001,
+    "f_slipwin": 245.05,
+    "giveup_frames": 207,
+    "rec_frames": 0,
+    "x_end": 5.334
+   },
+   "off": {
+    "to_r1": 3.99,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.001,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.126
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.6,
+      4.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.70 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700469351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 93,
+    "t": 4.22,
+    "on": [
+     4.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.22,
+     1141.0,
+     1205.790869140625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.11
+    ],
+    "giveup_frames": [
+     204,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 1.96,
+    "f_slipwin": 165.87,
+    "giveup_frames": 204,
+    "rec_frames": 0,
+    "x_end": 5.278
+   },
+   "off": {
+    "to_r1": 4.11,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 1.96,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.745
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.7,
+      4.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.70 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.217,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700469351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 93,
+    "t": 4.22,
+    "on": [
+     4.22,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.22,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.79,
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.02
+    ],
+    "giveup_frames": [
+     204,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.158,
+    "f_slipwin": 245.05,
+    "giveup_frames": 204,
+    "rec_frames": 0,
+    "x_end": 5.547
+   },
+   "off": {
+    "to_r1": 4.02,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.158,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.028
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.7,
+      4.2
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.80 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700569351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 96,
+    "t": 4.32,
+    "on": [
+     4.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.32,
+     1141.0,
+     1205.2684692382813
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.14
+    ],
+    "giveup_frames": [
+     201,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.115,
+    "f_slipwin": 165.87,
+    "giveup_frames": 201,
+    "rec_frames": 0,
+    "x_end": 5.489
+   },
+   "off": {
+    "to_r1": 4.14,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.115,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.612
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.8,
+      4.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.80 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.317,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700569351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 96,
+    "t": 4.32,
+    "on": [
+     4.32,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.32,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.89,
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.05
+    ],
+    "giveup_frames": [
+     201,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 201,
+    "rec_frames": 0,
+    "x_end": 5.765
+   },
+   "off": {
+    "to_r1": 4.05,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.91
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.8,
+      4.3
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.90 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700669351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 99,
+    "t": 4.42,
+    "on": [
+     4.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "giveup_frames": [
+     198,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.245,
+    "f_slipwin": 165.87,
+    "giveup_frames": 198,
+    "rec_frames": 0,
+    "x_end": 5.705
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.245,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.536
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.9,
+      4.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+1.90 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.417,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700669351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 99,
+    "t": 4.42,
+    "on": [
+     4.42,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.42,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    2.99,
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.07
+    ],
+    "giveup_frames": [
+     198,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 198,
+    "rec_frames": 0,
+    "x_end": 5.986
+   },
+   "off": {
+    "to_r1": 4.07,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.82
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      2.9,
+      4.4
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.00 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.517,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700769351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 102,
+    "t": 4.52,
+    "on": [
+     4.52,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.52,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.19
+    ],
+    "giveup_frames": [
+     195,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 195,
+    "rec_frames": 0,
+    "x_end": 5.925
+   },
+   "off": {
+    "to_r1": 4.19,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.495
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.0,
+      4.5
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.00 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.517,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700769351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 102,
+    "t": 4.52,
+    "on": [
+     4.52,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.52,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.09,
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.08
+    ],
+    "giveup_frames": [
+     195,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 195,
+    "rec_frames": 0,
+    "x_end": 6.208
+   },
+   "off": {
+    "to_r1": 4.08,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.75
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.0,
+      4.5
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.10 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.617,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700869351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 105,
+    "t": 4.62,
+    "on": [
+     4.62,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.62,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.2
+    ],
+    "giveup_frames": [
+     192,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 192,
+    "rec_frames": 0,
+    "x_end": 6.147
+   },
+   "off": {
+    "to_r1": 4.2,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.414
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.1,
+      4.6
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.10 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.617,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700869351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 105,
+    "t": 4.62,
+    "on": [
+     4.62,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.62,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.19,
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.08
+    ],
+    "giveup_frames": [
+     192,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 192,
+    "rec_frames": 0,
+    "x_end": 6.431
+   },
+   "off": {
+    "to_r1": 4.08,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.719
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.1,
+      4.6
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.20 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 108,
+    "t": 4.72,
+    "on": [
+     4.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.21
+    ],
+    "giveup_frames": [
+     189,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 189,
+    "rec_frames": 0,
+    "x_end": 6.37
+   },
+   "off": {
+    "to_r1": 4.21,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.321
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.2,
+      4.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.20 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.717,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971700969351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 108,
+    "t": 4.72,
+    "on": [
+     4.72,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.72,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.29,
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.07
+    ],
+    "giveup_frames": [
+     189,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 189,
+    "rec_frames": 0,
+    "x_end": 6.654
+   },
+   "off": {
+    "to_r1": 4.07,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.709
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.2,
+      4.7
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.30 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 111,
+    "t": 4.82,
+    "on": [
+     4.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.21
+    ],
+    "giveup_frames": [
+     186,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 186,
+    "rec_frames": 0,
+    "x_end": 6.593
+   },
+   "off": {
+    "to_r1": 4.21,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.31
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.3,
+      4.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.30 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.817,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701069351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 111,
+    "t": 4.82,
+    "on": [
+     4.82,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.82,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.39,
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.02
+    ],
+    "giveup_frames": [
+     186,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 186,
+    "rec_frames": 0,
+    "x_end": 6.878
+   },
+   "off": {
+    "to_r1": 4.02,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.64
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.3,
+      4.8
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.40 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 3.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 114,
+    "t": 4.92,
+    "on": [
+     4.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.92,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "giveup_frames": [
+     183,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 183,
+    "rec_frames": 0,
+    "x_end": 6.816
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.305
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.4,
+      4.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.40 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 3.917,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701169351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 114,
+    "t": 4.92,
+    "on": [
+     4.92,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     4.92,
+     1441.0,
+     1204.6375244140625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.49,
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59
+   ],
+   "delta": {
+    "giveup_frames": [
+     183,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.61,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 183,
+    "rec_frames": 0,
+    "x_end": 7.102
+   },
+   "off": {
+    "to_r1": 3.61,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.64
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.4,
+      4.9
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.50 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 4.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 117,
+    "t": 5.02,
+    "on": [
+     5.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.02,
+     1441.0,
+     1204.6392822265625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69
+   ],
+   "delta": {
+    "giveup_frames": [
+     180,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.85,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 180,
+    "rec_frames": 0,
+    "x_end": 7.04
+   },
+   "off": {
+    "to_r1": 3.85,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.305
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.5,
+      5.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.50 L=1.50",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 4.017,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701269351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 117,
+    "t": 5.02,
+    "on": [
+     5.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.02,
+     1441.0,
+     1204.6340087890626
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.59,
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69
+   ],
+   "delta": {
+    "giveup_frames": [
+     180,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.42,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 180,
+    "rec_frames": 0,
+    "x_end": 7.325
+   },
+   "off": {
+    "to_r1": 3.42,
+    "move_0p2": 0.06,
+    "move_0p4": 0.1,
+    "v_lh": 2.245,
+    "f_slipwin": 245.05,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.64
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.5,
+      5.0
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "drop",
+   "key": "m0=60 volt=0.85 d0=+2.60 L=1.50",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 4.117,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971701369351,
+       "hold_s": 1.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 120,
+    "t": 5.12,
+    "on": [
+     5.12,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     5.12,
+     1441.0,
+     1204.6348876953125
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    3.69,
+    3.79,
+    3.89,
+    3.99,
+    4.09,
+    4.19,
+    4.29,
+    4.39,
+    4.49,
+    4.59,
+    4.69,
+    4.79
+   ],
+   "delta": {
+    "giveup_frames": [
+     177,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": 3.59,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 177,
+    "rec_frames": 0,
+    "x_end": 7.264
+   },
+   "off": {
+    "to_r1": 3.59,
+    "move_0p2": 0.09,
+    "move_0p4": 0.16,
+    "v_lh": 2.246,
+    "f_slipwin": 165.87,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.305
+   },
+   "scene": {
+    "ai_from": 1.0,
+    "vmax": 4.0,
+    "vcorner": 2.6,
+    "m0": 60.0,
+    "volt": 0.85,
+    "drops": [
+     [
+      3.6,
+      5.1
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz46",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.892,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698788884,
+       "hold_s": 1.37
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 46,
+    "t": 2.54,
+    "on": [
+     2.54,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.54,
+     1141.0,
+     1233.33447265625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.27,
+    1.37,
+    1.47,
+    1.57,
+    1.67,
+    1.77,
+    1.87,
+    1.97,
+    2.07,
+    2.17,
+    2.27,
+    2.37
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.726
+    ],
+    "v_lh": [
+     null,
+     3.421
+    ],
+    "giveup_frames": [
+     235,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.086,
+    "move_0p4": 0.146,
+    "v_lh": null,
+    "f_slipwin": 146.91,
+    "giveup_frames": 235,
+    "rec_frames": 0,
+    "x_end": 2.022
+   },
+   "off": {
+    "to_r1": 3.726,
+    "move_0p2": 0.086,
+    "move_0p4": 0.146,
+    "v_lh": 3.421,
+    "f_slipwin": 146.91,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 22.182
+   },
+   "scene": {
+    "ai_from": 0.644,
+    "vmax": 3.73,
+    "vcorner": 2.27,
+    "m0": 49.3,
+    "volt": 0.927,
+    "drops": [
+     [
+      1.179,
+      1.617
+     ],
+     [
+      1.565,
+      2.534
+     ],
+     [
+      9.137,
+      9.469
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [],
+    "glitch": [
+     [
+      0.97,
+      301
+     ],
+     [
+      2.69,
+      1322
+     ],
+     [
+      3.42,
+      1322
+     ],
+     [
+      5.43,
+      -2156
+     ]
+    ],
+    "spikes": []
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz51",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.447,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699197384,
+       "hold_s": 1.3
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 60,
+    "t": 2.95,
+    "on": [
+     2.95,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.95,
+     1222.0,
+     1203.044287109375
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.75,
+    1.85,
+    1.95,
+    2.05,
+    2.15,
+    2.25,
+    2.35,
+    2.45,
+    2.55,
+    2.65,
+    2.75,
+    2.85
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.652
+    ],
+    "v_lh": [
+     null,
+     3.595
+    ],
+    "giveup_frames": [
+     257,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.052,
+    "move_0p4": 0.082,
+    "v_lh": null,
+    "f_slipwin": 86.07,
+    "giveup_frames": 257,
+    "rec_frames": 0,
+    "x_end": 0.95
+   },
+   "off": {
+    "to_r1": 3.652,
+    "move_0p2": 0.052,
+    "move_0p4": 0.082,
+    "v_lh": 3.595,
+    "f_slipwin": 86.07,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 24.766
+   },
+   "scene": {
+    "ai_from": 1.498,
+    "vmax": 3.76,
+    "vcorner": 2.45,
+    "m0": 52.5,
+    "volt": 1.054,
+    "drops": [
+     [
+      1.671,
+      2.545
+     ],
+     [
+      2.091,
+      2.912
+     ],
+     [
+      2.177,
+      2.571
+     ]
+    ],
+    "tof_skip": [
+     [
+      3.295,
+      3.421
+     ],
+     [
+      4.125,
+      4.239
+     ],
+     [
+      9.806,
+      9.927
+     ]
+    ],
+    "veh_skip": [
+     [
+      11.367,
+      11.661
+     ]
+    ],
+    "glitch": [
+     [
+      2.27,
+      313
+     ],
+     [
+      2.47,
+      1053
+     ],
+     [
+      3.15,
+      -3500
+     ],
+     [
+      3.31,
+      1115
+     ],
+     [
+      4.47,
+      -1270
+     ],
+     [
+      5.79,
+      1115
+     ],
+     [
+      6.46,
+      1115
+     ],
+     [
+      10.1,
+      1322
+     ]
+    ],
+    "spikes": [
+     [
+      5.15,
+      4.04
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz116",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 2.104,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699265151,
+       "hold_s": 1.57
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 56,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.55,
+    1.65,
+    1.75,
+    1.85,
+    1.95,
+    2.05,
+    2.15,
+    2.25,
+    2.35,
+    2.45,
+    2.55,
+    2.65
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.542
+    ],
+    "v_lh": [
+     null,
+     3.052
+    ],
+    "giveup_frames": [
+     237,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.122,
+    "move_0p4": 0.202,
+    "v_lh": null,
+    "f_slipwin": 101.18,
+    "giveup_frames": 237,
+    "rec_frames": 0,
+    "x_end": 1.264
+   },
+   "off": {
+    "to_r1": 4.542,
+    "move_0p2": 0.122,
+    "move_0p4": 0.202,
+    "v_lh": 3.052,
+    "f_slipwin": 101.18,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.455
+   },
+   "scene": {
+    "ai_from": 0.908,
+    "vmax": 4.18,
+    "vcorner": 2.34,
+    "m0": 16.2,
+    "volt": 0.925,
+    "drops": [
+     [
+      1.461,
+      2.322
+     ],
+     [
+      2.054,
+      2.998
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [
+     [
+      0.884,
+      0.959
+     ],
+     [
+      1.571,
+      1.829
+     ]
+    ],
+    "glitch": [],
+    "spikes": [
+     [
+      4.12,
+      3.63
+     ],
+     [
+      10.67,
+      2.64
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz116",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 2.104,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971699265151,
+       "hold_s": 1.57
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 56,
+    "t": 3.02,
+    "on": [
+     3.02,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     3.02,
+     1441.0,
+     1199.0
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.55,
+    1.65,
+    1.75,
+    1.85,
+    1.95,
+    2.05,
+    2.15,
+    2.25,
+    2.35,
+    2.45,
+    2.55,
+    2.65
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.452
+    ],
+    "v_lh": [
+     null,
+     3.006
+    ],
+    "giveup_frames": [
+     237,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.102,
+    "move_0p4": 0.142,
+    "v_lh": null,
+    "f_slipwin": 156.85,
+    "giveup_frames": 237,
+    "rec_frames": 0,
+    "x_end": 1.625
+   },
+   "off": {
+    "to_r1": 4.452,
+    "move_0p2": 0.102,
+    "move_0p4": 0.142,
+    "v_lh": 3.006,
+    "f_slipwin": 156.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 20.664
+   },
+   "scene": {
+    "ai_from": 0.908,
+    "vmax": 4.18,
+    "vcorner": 2.34,
+    "m0": 16.2,
+    "volt": 0.925,
+    "drops": [
+     [
+      1.461,
+      2.322
+     ],
+     [
+      2.054,
+      2.998
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [
+     [
+      0.884,
+      0.959
+     ],
+     [
+      1.571,
+      1.829
+     ]
+    ],
+    "glitch": [],
+    "spikes": [
+     [
+      4.12,
+      3.63
+     ],
+     [
+      10.67,
+      2.64
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz122",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.342,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_left",
+    "ceil_cap",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698884951,
+       "hold_s": 1.04
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 55,
+    "t": 2.64,
+    "on": [
+     2.64,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.64,
+     1798.0,
+     1205.2631958007812
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.7,
+    1.8,
+    1.9,
+    2.0,
+    2.1,
+    2.2,
+    2.3,
+    2.4,
+    2.5,
+    2.6,
+    5.57,
+    5.67
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.9
+    ],
+    "v_lh": [
+     null,
+     2.99
+    ],
+    "giveup_frames": [
+     221,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.11,
+    "v_lh": null,
+    "f_slipwin": 72.75,
+    "giveup_frames": 221,
+    "rec_frames": 0,
+    "x_end": 0.852
+   },
+   "off": {
+    "to_r1": 3.9,
+    "move_0p2": 0.06,
+    "move_0p4": 0.11,
+    "v_lh": 2.99,
+    "f_slipwin": 72.75,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.083
+   },
+   "scene": {
+    "ai_from": 1.29,
+    "vmax": 3.55,
+    "vcorner": 2.66,
+    "m0": 109.0,
+    "volt": 0.931,
+    "drops": [
+     [
+      1.624,
+      2.623
+     ],
+     [
+      5.488,
+      5.99
+     ],
+     [
+      6.149,
+      6.937
+     ]
+    ],
+    "tof_skip": [
+     [
+      2.274,
+      2.414
+     ]
+    ],
+    "veh_skip": [],
+    "glitch": [
+     [
+      4.16,
+      1687
+     ],
+     [
+      4.18,
+      1411
+     ],
+     [
+      4.2,
+      -1270
+     ],
+     [
+      4.22,
+      1408
+     ],
+     [
+      4.24,
+      -2156
+     ],
+     [
+      4.26,
+      1356
+     ],
+     [
+      4.28,
+      1528
+     ],
+     [
+      4.3,
+      1358
+     ],
+     [
+      5.1,
+      1322
+     ]
+    ],
+    "spikes": []
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz122",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.342,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_left",
+    "ceil_cap",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698884951,
+       "hold_s": 1.04
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 55,
+    "t": 2.64,
+    "on": [
+     2.64,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.64,
+     1798.0,
+     1207.1966796875
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.7,
+    1.8,
+    1.9,
+    2.0,
+    2.1,
+    2.2,
+    2.3,
+    2.4,
+    2.5,
+    2.6,
+    5.57,
+    5.67
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.8
+    ],
+    "v_lh": [
+     null,
+     2.976
+    ],
+    "giveup_frames": [
+     221,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.05,
+    "move_0p4": 0.09,
+    "v_lh": null,
+    "f_slipwin": 111.38,
+    "giveup_frames": 221,
+    "rec_frames": 0,
+    "x_end": 1.067
+   },
+   "off": {
+    "to_r1": 3.8,
+    "move_0p2": 0.05,
+    "move_0p4": 0.09,
+    "v_lh": 2.976,
+    "f_slipwin": 111.38,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 21.26
+   },
+   "scene": {
+    "ai_from": 1.29,
+    "vmax": 3.55,
+    "vcorner": 2.66,
+    "m0": 109.0,
+    "volt": 0.931,
+    "drops": [
+     [
+      1.624,
+      2.623
+     ],
+     [
+      5.488,
+      5.99
+     ],
+     [
+      6.149,
+      6.937
+     ]
+    ],
+    "tof_skip": [
+     [
+      2.274,
+      2.414
+     ]
+    ],
+    "veh_skip": [],
+    "glitch": [
+     [
+      4.16,
+      1687
+     ],
+     [
+      4.18,
+      1411
+     ],
+     [
+      4.2,
+      -1270
+     ],
+     [
+      4.22,
+      1408
+     ],
+     [
+      4.24,
+      -2156
+     ],
+     [
+      4.26,
+      1356
+     ],
+     [
+      4.28,
+      1528
+     ],
+     [
+      4.3,
+      1358
+     ],
+     [
+      5.1,
+      1322
+     ]
+    ],
+    "spikes": []
+   }
+  },
+  {
+   "grid": "fuzz8101",
+   "key": "fz125",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.212,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698589051,
+       "hold_s": 0.9
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 49,
+    "t": 2.34,
+    "on": [
+     2.34,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.34,
+     1441.0,
+     1226.3456298828125
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.54,
+    1.64,
+    1.74,
+    1.84,
+    1.94,
+    2.04,
+    2.14,
+    2.24,
+    2.34,
+    3.87,
+    3.97,
+    4.07
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.186
+    ],
+    "v_lh": [
+     null,
+     4.637
+    ],
+    "giveup_frames": [
+     246,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.066,
+    "move_0p4": 0.126,
+    "v_lh": null,
+    "f_slipwin": 56.28,
+    "giveup_frames": 246,
+    "rec_frames": 0,
+    "x_end": 0.719
+   },
+   "off": {
+    "to_r1": 3.186,
+    "move_0p2": 0.066,
+    "move_0p4": 0.126,
+    "v_lh": 4.637,
+    "f_slipwin": 56.28,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 27.573
+   },
+   "scene": {
+    "ai_from": 1.124,
+    "vmax": 4.69,
+    "vcorner": 2.49,
+    "m0": 59.7,
+    "volt": 1.09,
+    "drops": [
+     [
+      1.441,
+      2.318
+     ],
+     [
+      3.77,
+      4.375
+     ]
+    ],
+    "tof_skip": [
+     [
+      4.017,
+      4.092
+     ]
+    ],
+    "veh_skip": [],
+    "glitch": [
+     [
+      1.08,
+      301
+     ],
+     [
+      1.46,
+      -2156
+     ],
+     [
+      2.38,
+      313
+     ],
+     [
+      2.7,
+      -1270
+     ],
+     [
+      3.4,
+      1687
+     ],
+     [
+      3.42,
+      1411
+     ],
+     [
+      3.44,
+      -1270
+     ],
+     [
+      3.46,
+      1408
+     ],
+     [
+      3.48,
+      -2156
+     ],
+     [
+      3.5,
+      1356
+     ],
+     [
+      3.52,
+      1528
+     ],
+     [
+      3.54,
+      1358
+     ],
+     [
+      4.09,
+      -1270
+     ],
+     [
+      4.81,
+      1115
+     ],
+     [
+      9.41,
+      301
+     ]
+    ],
+    "spikes": []
+   }
+  },
+  {
+   "grid": "fuzz8102",
+   "key": "fz52",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.0,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698122818,
+       "hold_s": 0.66
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 40,
+    "t": 1.87,
+    "on": [
+     1.87,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     1.87,
+     1441.0,
+     1256.571435546875
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.31,
+    1.41,
+    1.51,
+    1.61,
+    1.71,
+    1.81,
+    2.137,
+    2.17,
+    9.803,
+    9.837,
+    9.87,
+    9.903
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.42
+    ],
+    "v_lh": [
+     null,
+     3.554
+    ],
+    "giveup_frames": [
+     263,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.06,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 51.35,
+    "giveup_frames": 263,
+    "rec_frames": 0,
+    "x_end": 0.47
+   },
+   "off": {
+    "to_r1": 3.42,
+    "move_0p2": 0.06,
+    "move_0p4": 0.14,
+    "v_lh": 3.554,
+    "f_slipwin": 51.35,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 25.706
+   },
+   "scene": {
+    "ai_from": 0.87,
+    "vmax": 3.98,
+    "vcorner": 2.81,
+    "m0": 20.0,
+    "volt": 0.912,
+    "drops": [
+     [
+      1.226,
+      1.862
+     ]
+    ],
+    "tof_skip": [
+     [
+      1.616,
+      1.775
+     ],
+     [
+      5.553,
+      5.632
+     ],
+     [
+      9.644,
+      9.938
+     ]
+    ],
+    "veh_skip": [
+     [
+      1.969,
+      2.184
+     ]
+    ],
+    "glitch": [],
+    "spikes": [
+     [
+      7.57,
+      4.37
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8102",
+   "key": "fz88",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 1.41,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698302284,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 38,
+    "t": 2.05,
+    "on": [
+     2.05,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.05,
+     1441.0,
+     1278.738330078125
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.12,
+    1.22,
+    1.32,
+    1.42,
+    1.52,
+    1.62,
+    1.72,
+    1.82,
+    1.92,
+    2.02,
+    3.19,
+    3.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.26
+    ],
+    "v_lh": [
+     null,
+     3.461
+    ],
+    "giveup_frames": [
+     244,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.07,
+    "move_0p4": 0.13,
+    "v_lh": null,
+    "f_slipwin": 48.85,
+    "giveup_frames": 244,
+    "rec_frames": 0,
+    "x_end": 0.532
+   },
+   "off": {
+    "to_r1": 4.26,
+    "move_0p2": 0.07,
+    "move_0p4": 0.13,
+    "v_lh": 3.461,
+    "f_slipwin": 48.85,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 19.765
+   },
+   "scene": {
+    "ai_from": 0.64,
+    "vmax": 3.92,
+    "vcorner": 1.95,
+    "m0": 38.2,
+    "volt": 1.057,
+    "drops": [
+     [
+      1.035,
+      2.024
+     ],
+     [
+      3.115,
+      3.426
+     ],
+     [
+      3.144,
+      3.581
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [
+     [
+      4.103,
+      4.219
+     ]
+    ],
+    "glitch": [
+     [
+      2.43,
+      -3500
+     ],
+     [
+      6.17,
+      1322
+     ]
+    ],
+    "spikes": [
+     [
+      5.84,
+      2.77
+     ],
+     [
+      9.61,
+      3.16
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8102",
+   "key": "fz88",
+   "lb": "lb1",
+   "class": "C",
+   "t_from_ai": 1.41,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_mode",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_steer",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 2,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698302284,
+       "hold_s": 1.03
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 38,
+    "t": 2.05,
+    "on": [
+     2.05,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     2.05,
+     1141.0,
+     1278.738330078125
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.12,
+    1.22,
+    1.32,
+    1.42,
+    1.52,
+    1.62,
+    1.72,
+    1.82,
+    1.92,
+    2.02,
+    3.19,
+    3.29
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     4.17
+    ],
+    "v_lh": [
+     null,
+     3.207
+    ],
+    "giveup_frames": [
+     244,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.05,
+    "move_0p4": 0.08,
+    "v_lh": null,
+    "f_slipwin": 99.51,
+    "giveup_frames": 244,
+    "rec_frames": 0,
+    "x_end": 0.865
+   },
+   "off": {
+    "to_r1": 4.17,
+    "move_0p2": 0.05,
+    "move_0p4": 0.08,
+    "v_lh": 3.207,
+    "f_slipwin": 99.51,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 19.946
+   },
+   "scene": {
+    "ai_from": 0.64,
+    "vmax": 3.92,
+    "vcorner": 1.95,
+    "m0": 38.2,
+    "volt": 1.057,
+    "drops": [
+     [
+      1.035,
+      2.024
+     ],
+     [
+      3.115,
+      3.426
+     ],
+     [
+      3.144,
+      3.581
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [
+     [
+      4.103,
+      4.219
+     ]
+    ],
+    "glitch": [
+     [
+      2.43,
+      -3500
+     ],
+     [
+      6.17,
+      1322
+     ]
+    ],
+    "spikes": [
+     [
+      5.84,
+      2.77
+     ],
+     [
+      9.61,
+      3.16
+     ]
+    ]
+   }
+  },
+  {
+   "grid": "fuzz8102",
+   "key": "fz117",
+   "lb": "lb0",
+   "class": "C",
+   "t_from_ai": 0.87,
+   "row_cols": [
+    "out",
+    "assist",
+    "cap_in_us",
+    "cap_thr_us",
+    "ceil_in_us",
+    "ceil_thr_us"
+   ],
+   "ev_first": {
+    "i": 0,
+    "on": [
+     [
+      "recovery_guard",
+      {
+       "what": "hold_long",
+       "phase": null,
+       "backed_s": 0.0,
+       "run": null,
+       "cam_epoch_us": 3592971698064251,
+       "hold_s": 0.53
+      }
+     ]
+    ],
+    "off": []
+   },
+   "pca_first": {
+    "i": 41,
+    "t": 1.81,
+    "on": [
+     1.81,
+     1441.0,
+     1496.0
+    ],
+    "off": [
+     1.81,
+     1441.0,
+     1322.8082275390625
+    ]
+   },
+   "guards_on": [
+    "hold_long"
+   ],
+   "guards_off": [],
+   "ai_holds_on": [
+    1.38,
+    1.48,
+    1.58,
+    1.68,
+    1.78,
+    7.512
+   ],
+   "delta": {
+    "to_r1": [
+     null,
+     3.63
+    ],
+    "v_lh": [
+     null,
+     2.231
+    ],
+    "giveup_frames": [
+     273,
+     0
+    ]
+   },
+   "on": {
+    "to_r1": null,
+    "move_0p2": 0.07,
+    "move_0p4": 0.14,
+    "v_lh": null,
+    "f_slipwin": 42.42,
+    "giveup_frames": 273,
+    "rec_frames": 0,
+    "x_end": 0.403
+   },
+   "off": {
+    "to_r1": 3.63,
+    "move_0p2": 0.07,
+    "move_0p4": 0.14,
+    "v_lh": 2.231,
+    "f_slipwin": 42.42,
+    "giveup_frames": 0,
+    "rec_frames": 0,
+    "x_end": 23.698
+   },
+   "scene": {
+    "ai_from": 0.94,
+    "vmax": 4.63,
+    "vcorner": 2.5,
+    "m0": 11.1,
+    "volt": 0.981,
+    "drops": [
+     [
+      1.283,
+      1.783
+     ]
+    ],
+    "tof_skip": [],
+    "veh_skip": [
+     [
+      7.346,
+      7.521
+     ]
+    ],
+    "glitch": [
+     [
+      1.52,
+      -2156
+     ],
+     [
+      3.91,
+      -2156
+     ]
+    ],
+    "spikes": [
+     [
+      6.65,
+      4.39
+     ],
+     [
+      7.15,
+      3.21
+     ]
+    ]
+   }
+  }
+ ]
+}

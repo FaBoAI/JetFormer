@@ -1,0 +1,13 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0 -- /home/jetson/miniconda/envs/jetracer/bin/python
+rootdir: /home/jetson/jetformer
+configfile: pytest.ini
+plugins: anyio-4.14.2
+collecting ... collected 56 items / 53 deselected / 3 selected
+
+tests/test_ui_fix8_r2.py::test_firefox_float_stop_and_driving_toast_on_phone PASSED [ 33%]
+tests/test_ui_fix8_r1.py::test_firefox_toast_width_on_phone PASSED       [ 66%]
+tests/test_vbat_ui.py::test_firefox_drive_tab_vbat_and_switches PASSED   [100%]
+
+================= 3 passed, 53 deselected in 123.85s (0:02:03) =================
+exit 0
