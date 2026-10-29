@@ -52,6 +52,12 @@ FIXT = ROOT / 'tests' / 'fixtures'
 BEFORE = FIXT / 'fix8_ui_r2_before'                     # 直す前の style.css・test_vbat_ui.py・app.js(SHA256SUMS)
 CSS = Path(os.environ.get('JF_UI82_CSS') or STATIC / 'style.css')
 APP = Path(os.environ.get('JF_UI82_APP') or STATIC / 'app.js')
+# 2026-10-29 fix9(優先のモデル。main session)のあとの app.js・drive.py の sha256。その版なら、この組のあとの版は直す前の写し
+# tests/fixtures/fix9_priority_before/(app.js = この組のあとの e61dfac9…・drive.py = 3f2e31a2…。SHA256SUMS)で見る(変えたのが優先のモデルの
+# 所だけかは tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY と同じ値)
+FIX9_PRIORITY_BEFORE = FIXT / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233',
+                       'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
 VBAT = ROOT / 'tests' / 'test_vbat_ui.py'
 NODE = shutil.which('node')
 FIREFOX = os.environ.get('JF_UI_FIREFOX') == '1'
@@ -562,12 +568,19 @@ def test_start_and_switch_confirm_texts_say_what_the_server_uses(desc):
 def test_app_js_only_vbat_source_text_changed():
     """app.js で変えたのは vbatSourceText の中だけ: 消した行は前の 1 行(V_before= のあとが数字で始まるか)、足した行は全部この関数の中。
     出す文は前と同じ 3 つ。足した行に送る物・問い合わせ・タイマー・トースト・確認の文の呼び出しは無い。版は 9 のまま。
-    index.html・server.py・bench.py・speed_auto.py・drive.py は変えていない"""
+    index.html・server.py・bench.py・speed_auto.py・drive.py は変えていない。
+    2026-10-29 fix9(優先のモデル)が app.js(fillDriveModels・renderDriveModel)と drive.py を直したあとは、この組のあとの版 = fix9 の
+    直す前の写し(app.js e61dfac9…・drive.py 3f2e31a2…。sha256 を照らす)で見る。今の app.js の vbatSourceText はその写しと同じ・版は 9 のまま
+    (今のファイルとの違いの全部は tests/test_fix9_priority_before.py)。JF_UI82_APP を付けたとき(わざと壊す台本)はその写しをそのまま見る"""
     old = (BEFORE / 'app.js').read_text(encoding='utf-8')
-    removed, added, ops = _diff(BEFORE / 'app.js', APP)
+    app = APP
+    if not os.environ.get('JF_UI82_APP') and _sha(APP) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
+        app = FIX9_PRIORITY_BEFORE / 'app.js'
+        assert _sums(FIX9_PRIORITY_BEFORE)['app.js'] == _sha(app) and _sha(app).startswith('e61dfac905cb')
+    removed, added, ops = _diff(BEFORE / 'app.js', app)
     assert removed == ["  return /(^|\\s)V_before=\\d/.test($('#dr-desc').value || '') ? '説明欄の V_before(走行のあいだ一定)' : "
                        "'なし(1.00 倍。周ごとの直しだけ)';"]
-    js = APP.read_text(encoding='utf-8')
+    js = app.read_text(encoding='utf-8')
     fn = re.search(r'function vbatSourceText\(st\) \{.*?\n\}', js, re.S).group(0)
     assert all(x in fn.split('\n') for x in added) and len(ops) == 1
     code = [x.split('//')[0] for x in added]
@@ -576,6 +589,12 @@ def test_app_js_only_vbat_source_text_changed():
     assert texts == [VSRC['基板'], VSRC['説明欄'], VSRC['なし']]
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert js.replace(fn, '') == old.replace(re.search(r'function vbatSourceText\(st\) \{.*?\n\}', old, re.S).group(0), '')
+    cur = APP.read_text(encoding='utf-8')                      # 今の app.js(fix9 の版でも): vbatSourceText は同じ・版は 9 のまま
+    assert re.search(r'function vbatSourceText\(st\) \{.*?\n\}', cur, re.S).group(0) == fn
+    assert re.findall(r'^const DRIVE_CLIENT = (\d+);', cur, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', cur) == ['9']
     for rel, h in (('jetformer/web/server.py', 'ad7a7d05f7a9'), ('jetformer/web/static/index.html', 'ef81bb6017d6'),
                    ('jetformer/web/bench.py', 'a633bec341a3'), ('jetformer/drive.py', '3f2e31a22ecb')):
-        assert _sha(ROOT / rel).startswith(h), rel
+        p = ROOT / rel
+        if rel in LATER_FIX9_PRIORITY and _sha(p) == LATER_FIX9_PRIORITY[rel]:
+            p = FIX9_PRIORITY_BEFORE / Path(rel).name           # fix9 の版 → 直す前の写し(この組のときの版)
+        assert _sha(p).startswith(h), rel

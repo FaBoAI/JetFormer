@@ -197,6 +197,11 @@ ENGINE_CHECK_FILE = 'engine_check.json'          # エンジンの確認(精度�
 # 走行タブで最初に選ぶ「推奨のモデル」(方策の比較などの評価で決めたもの。tools/policy_zoo.py recommend で書く)。
 # 無ければ今まで通り(前回のモデル → 一番新しいモデル)
 RECOMMENDED_PATH = config.DATA_DIR / 'drive_recommended.json'
+# 走行タブの一覧の上に並べる「優先のモデル」(2026-10-29 ユーザーの指示「セレクトボックスの上から 5 つ目までは優先モデルを並べる」。
+# その日の試験で確かめるモデル)。推奨のモデルと同じ場所の drive_priority.json(_priority_path)。無ければ今まで通り
+PRIORITY_NAME = 'drive_priority.json'
+PRIORITY_MAX = 5
+PRIORITY_MARKS = '①②③④⑤'
 GUARD_NAMES = {0: '', 1: '減速', 2: 'ブレーキ'}
 FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床の基準(自由走行から作る)
 DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0, 'lookahead': 1, 'osc_percent': 0.0,
@@ -337,9 +342,61 @@ def save_recommended(run, reason='', source='', decided_at=None):
     return rec
 
 
+def _priority_path():
+    """優先のモデルのファイル。推奨のモデル(RECOMMENDED_PATH)と同じフォルダ(試験が RECOMMENDED_PATH を一時の場所に
+    差し替えると、こちらも一緒に一時の場所になる)"""
+    return Path(RECOMMENDED_PATH).with_name(PRIORITY_NAME)
+
+
+def priority():
+    """優先のモデル(data/drive_priority.json)→ {'title', 'reason', 'decided_at', 'models': [{'run', 'label', 'reason'}, ...]}。
+    models は書いた順で、同じ名前の 2 つ目と PRIORITY_MAX より後ろは捨てる。無い・壊れている・1 つも無ければ None"""
+    p = _read_json(_priority_path())
+    if not isinstance(p, dict) or not isinstance(p.get('models'), list):
+        return None
+    out, seen = [], set()
+    for x in p['models']:
+        run = x.get('run') if isinstance(x, dict) else None
+        if not isinstance(run, str) or not run or run in seen:
+            continue
+        seen.add(run)
+        out.append({'run': run, 'label': str(x.get('label') or ''), 'reason': str(x.get('reason') or '')})
+        if len(out) >= PRIORITY_MAX:
+            break
+    if not out:
+        return None
+    return {'title': str(p.get('title') or ''), 'reason': str(p.get('reason') or ''),
+            'decided_at': p.get('decided_at'), 'models': out}
+
+
+def save_priority(models, title='', reason='', decided_at=None):
+    """優先のモデルを書く(走行タブの一覧の上から順に並ぶ)。models = [{'run', 'label', 'reason'}, ...](PRIORITY_MAX まで)。
+    run が走行に使えなくても書く(画面では選べないまま、順だけ上に出る)"""
+    if not isinstance(models, (list, tuple)) or not models or len(models) > PRIORITY_MAX:
+        raise ValueError('優先のモデルは 1〜%d 個です' % PRIORITY_MAX)
+    rows = []
+    for x in models:
+        run = x.get('run') if isinstance(x, dict) else None
+        if not isinstance(run, str) or not run or '/' in run or '..' in run:
+            raise ValueError('学習結果の名前が正しくありません: %r' % (run,))
+        if run in [r['run'] for r in rows]:
+            raise ValueError('同じモデルが 2 回あります: %s' % run)
+        rows.append({'run': run, 'label': str(x.get('label') or ''), 'reason': str(x.get('reason') or '')})
+    pri = {'title': title or '', 'reason': reason or '', 'decided_at': decided_at or time.strftime('%Y-%m-%dT%H:%M:%S'),
+           'models': rows}
+    path = _priority_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = str(path) + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
+        json.dump(pri, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)
+    return pri
+
+
 def list_models():
-    """推奨のモデル(recommended())を先頭に、残りは新しい順(作成日時、無ければ名前)。
-    推奨のモデルには recommended True と推奨の理由(recommended_reason)を付ける"""
+    """優先のモデル(priority()。書いた順)を先頭に、次に推奨のモデル(recommended())、残りは新しい順(作成日時、無ければ名前)。
+    推奨のモデルには recommended True と推奨の理由(recommended_reason)を付ける。優先のモデルには priority(1 から)・
+    priority_mark(①〜⑤)・priority_label・priority_reason・priority_title を付ける。優先のモデルのファイルが無ければ前と同じ"""
     if not RUNS_DIR.exists():
         return []
     models = [m for m in (model_info(d.name) for d in RUNS_DIR.iterdir()) if m]
@@ -349,7 +406,15 @@ def list_models():
         m['recommended'] = bool(rec) and m['name'] == rec['run']
         if m['recommended']:
             m['recommended_reason'] = rec.get('reason') or ''
-    return [m for m in models if m['recommended']] + [m for m in models if not m['recommended']]
+    pri = priority()
+    rank = {x['run']: i for i, x in enumerate(pri['models'])} if pri else {}
+    top = sorted((m for m in models if m['name'] in rank), key=lambda m: rank[m['name']])
+    for n, m in enumerate(top, 1):                     # 番号は一覧に出た順(消えた学習結果は飛ばして詰める)
+        x = pri['models'][rank[m['name']]]
+        m.update(priority=n, priority_mark=PRIORITY_MARKS[n - 1], priority_label=x['label'],
+                 priority_reason=x['reason'], priority_title=pri['title'])
+    rest = [m for m in models if m['name'] not in rank]
+    return top + [m for m in rest if m['recommended']] + [m for m in rest if not m['recommended']]
 
 
 def _reference_from_dataset(dataset):

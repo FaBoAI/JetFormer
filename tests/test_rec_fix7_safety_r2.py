@@ -47,6 +47,10 @@ SHA_R1 = {'assist.py': '6a8950d9963bb4a663dd540cb4b819f13f22f9da956a56a657c98a66
 # tests/fixtures/fix8_safety_doc_before/(= この組の drive.py。sha256 を照らす)で照らす(tests/test_fix3_r3_2_tools.py の
 # LATER_FIX8_SAFETY_DOC と同じ値)
 LATER_FIX8_SAFETY_DOC = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
+# さらに 10/29 fix9 の優先のモデル(main session。走行タブの一覧の並べ方だけ)が drive.py を変えた。そのときは、その直す前の写し
+# tests/fixtures/fix9_priority_before/(= LATER_FIX8_SAFETY_DOC の版。sha256 を照らす)からたどる(変えたのが優先のモデルの所だけかは
+# tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY と同じ値)
+LATER_FIX9_PRIORITY = {'drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
 FDT = F7.FDT
 MODEL = F7.MODEL
 REV, GAP, RETRY, ESCAPE = F7.REV, F7.GAP, F7.RETRY, F7.ESCAPE
@@ -90,6 +94,8 @@ def test_r1_copy_defaults_and_changed_parts():
     モジュールの定数 SURE_BACK_S だけ(消した関数や文は無い。AST を名前で照らす。モジュールの説明は別)"""
     amod, r1d = load_r1()
     pd = ROOT / 'jetformer' / 'drive.py'
+    if sha(pd) == LATER_FIX9_PRIORITY['drive.py']:           # 10/29 fix9 優先のモデルの版 → 直す前の写し(= fix8 safety の説明の文だけの版)
+        pd = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / 'drive.py'
     if sha(pd) == LATER_FIX8_SAFETY_DOC['drive.py']:         # 10/28 fix8 safety の説明の文だけの版 → 直す前の写し
         pd = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / 'drive.py'
     assert sha(pd) == SHA_R1['drive.py']

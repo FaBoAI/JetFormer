@@ -59,6 +59,10 @@ LATER_FIX7_SAFETY_R2 = {'assist.py': 'ad6db15b4b7cabb9e4d8caf6c78a437f0123ab858e
 # さらに 10/28 fix8 safety が drive.py の説明の文だけを変えた(AST は同じ)。その直す前の写し tests/fixtures/fix8_safety_doc_before/
 # (= 7-1 回目のあとの drive.py)から同じようにたどる(tests/test_fix3_r3_2_tools.py の LATER_FIX8_SAFETY_DOC)
 LATER_FIX8_SAFETY_DOC = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
+# さらに 10/29 fix9 の優先のモデル(main session。走行タブの一覧の並べ方だけ)が drive.py を変えた。その直す前の写し
+# tests/fixtures/fix9_priority_before/(= LATER_FIX8_SAFETY_DOC の版)から同じようにたどる(変えたのが優先のモデルの所だけかは
+# tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY)
+LATER_FIX9_PRIORITY = {'drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
 DT = R2.DT
 FDT = 1 / 30.0
 XF = R2.XF                  # 場面 rev の前の壁 2.0 m
@@ -100,6 +104,8 @@ def load_before():
 def _fix6_version(name):
     """この組のあとの版(jetformer/ の今の版。fix6 safety の 6-2 回目が変えたあとは、その直す前の写し = この組のあとの版)"""
     p = ROOT / 'jetformer' / name
+    if name in LATER_FIX9_PRIORITY and sha(p) == LATER_FIX9_PRIORITY[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / name
     if name in LATER_FIX8_SAFETY_DOC and sha(p) == LATER_FIX8_SAFETY_DOC[name]:
         p = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / name
     if name in LATER_FIX7_SAFETY_R2 and sha(p) == LATER_FIX7_SAFETY_R2[name]:

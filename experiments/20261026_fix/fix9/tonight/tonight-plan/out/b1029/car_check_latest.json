@@ -1,0 +1,203 @@
+{
+ "schema": "jf-car-check/v1",
+ "log": "20261029-192700",
+ "created_at": "2026-10-29T08:46:50",
+ "labels": "computed",
+ "description": "ai_no=9 bench=real_bench_20261023 day=2026-11-03 block=20 cand=EXP model=clean_driving_20261011-nocmd-s3-20261011-024626 battery=#A V_before=8.30 V_after=__ check=__ memo=",
+ "no": "9",
+ "run": "clean_driving_20261011-nocmd-s3-20261011-024626",
+ "params": {
+  "throttle_gain": 0.9,
+  "steer_gain": 1.0,
+  "speed_ceiling": 0,
+  "ceil_all_mps": 4.5,
+  "ceil_left_mps": 4.1,
+  "speed_auto": 0,
+  "auto_target_mps": 4.27,
+  "launch_boost": 0,
+  "launch_us": 250.0,
+  "launch_mps": 2.5,
+  "launch_max_s": 1.2,
+  "zone_caps": 0,
+  "start_kick": 1,
+  "rec_back_guard": 1,
+  "rec_hold_keep": 1,
+  "launch_no_kick": 0
+ },
+ "ai_s": 37.0,
+ "duration_s": 39.97,
+ "steer_center_us": 1441.0,
+ "turn": {
+  "left": 40.0,
+  "right": 40.0,
+  "n_left": 572,
+  "n_right": 108,
+  "ratio": 1.0,
+  "gyro_bias_dps": 0.0
+ },
+ "s0": {
+  "s0_us": -4.5,
+  "slope_per_100us": 0.3801,
+  "n": 1089
+ },
+ "top_speed": {
+  "erpm_p90": 4000.0,
+  "erpm_p90_HS": 4000.0,
+  "mps_p90": 2.0,
+  "mps_p90_HS": 2.0
+ },
+ "laps": {
+  "n": 3,
+  "lap_median_s": 9.0,
+  "lap_best_s": 9.0,
+  "p90_median_mps": 2.0,
+  "sw_max_median_mps": 2.0,
+  "rows": [
+   {
+    "t_start": 4.033,
+    "lap_s": 9.0,
+    "clean": true,
+    "p90_mps": 2.0,
+    "sw_max_mps": 2.0,
+    "dpsi_deg": 360.0,
+    "dist_m": 18.0
+   },
+   {
+    "t_start": 13.033,
+    "lap_s": 9.0,
+    "clean": true,
+    "p90_mps": 2.0,
+    "sw_max_mps": 2.0,
+    "dpsi_deg": 360.0,
+    "dist_m": 18.0
+   },
+   {
+    "t_start": 22.033,
+    "lap_s": 9.0,
+    "clean": true,
+    "p90_mps": 2.0,
+    "sw_max_mps": 2.0,
+    "dpsi_deg": 360.0,
+    "dist_m": 18.0
+   }
+  ]
+ },
+ "r1_bump": {
+  "passes": 4,
+  "a3_median": 0.0,
+  "a3_max": 0.0,
+  "n_ge_2p5": 0,
+  "rows": [
+   {
+    "ta_s": 4.03,
+    "entry_erpm": 4000.0,
+    "a3_max": 0.0,
+    "t_peak_after": 0.0
+   },
+   {
+    "ta_s": 13.03,
+    "entry_erpm": 4000.0,
+    "a3_max": 0.0,
+    "t_peak_after": 0.0
+   },
+   {
+    "ta_s": 22.03,
+    "entry_erpm": 4000.0,
+    "a3_max": 0.0,
+    "t_peak_after": 0.0
+   },
+   {
+    "ta_s": 31.03,
+    "entry_erpm": 4000.0,
+    "a3_max": 0.0,
+    "t_peak_after": 0.0
+   }
+  ]
+ },
+ "vbat": {
+  "source": "description",
+  "start_v": 8.3,
+  "end_v": null,
+  "min_v": null,
+  "median_v": null,
+  "n": 0,
+  "V_before": 8.3,
+  "V_after": null,
+  "Vb_before": null,
+  "Vb_after": null,
+  "Vb_min": null
+ },
+ "reference": {
+  "r1_passes_ai": 4,
+  "de_collisions": 0,
+  "de_passes": 4,
+  "collisions_ai": 0,
+  "strong_collisions_ai": 0,
+  "r1_anchors_rejected": []
+ },
+ "collisions": {
+  "n": 0,
+  "max_g": null,
+  "n_ge8": 0,
+  "strong": 0,
+  "by_place": {
+   "R1": 0,
+   "GM": 0,
+   "DE": 0,
+   "SW": 0,
+   "HS": 0,
+   "LH": 0,
+   "?": 0
+  },
+  "by_class": {},
+  "list": []
+ },
+ "speed_ctrl": {
+  "speed_ceiling": 0,
+  "speed_auto": 0,
+  "ceil_recorded": false,
+  "auto_recorded": false,
+  "flags": []
+ },
+ "judge": {
+  "code": 0,
+  "label": "合格",
+  "headline": "本番の設定へ進めます",
+  "speed_advice": {
+   "p90": 2.0,
+   "sw_max": 2.0,
+   "p1": "+0.05",
+   "p2": "+0.05",
+   "note": "遅い回",
+   "text": "周の速さ p90 の中央値 2.00 m/s → ゲイン +0.05(遅い回)"
+  },
+  "items": [
+   {
+    "item": "turn",
+    "status": "ok",
+    "text": "左右の旋回の効きの比 1.000(≥ 0.90)"
+   },
+   {
+    "item": "s0",
+    "status": "ok",
+    "text": "まっすぐ進む舵 s0 -4.5 µs(-10〜+10)"
+   },
+   {
+    "item": "r1_bump",
+    "status": "ok",
+    "text": "R1 の板の衝撃 中央 0.00G・最大 0.00G(4 通過)"
+   },
+   {
+    "item": "vbat",
+    "status": "ok",
+    "text": "走り始めの電圧 8.30 V(description)"
+   },
+   {
+    "item": "speed",
+    "status": "info",
+    "text": "周の速さ p90 の中央値 2.00 m/s → ゲイン +0.05(遅い回)"
+   }
+  ]
+ },
+ "seconds": 0.05
+}

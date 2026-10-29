@@ -208,8 +208,13 @@ def _drive_fix4():
     """fix4 のあとの drive.py。10/27 fix5 safety(反証 4 回目 s1〜s3)がコードを変えたあとは、その直す前の写し
     tests/fixtures/fix5_safety_before/drive.py(= fix4 の版。sha256 を照らす。fix5 の違いは tests/test_rec_fix5_safety.py が見る)。
     10/27 fix6 safety(反証 6-1 回目)が変えたあとは、その直す前の写し tests/fixtures/fix6_safety_before/drive.py(= fix5 の版)から
-    同じようにたどる(fix6 の違いは tests/test_rec_fix6_safety.py が見る)"""
+    同じようにたどる(fix6 の違いは tests/test_rec_fix6_safety.py が見る)。10/29 fix9 の優先のモデルが変えたあとは、その直す前の写し
+    tests/fixtures/fix9_priority_before/drive.py(= fix8 safety の説明の文だけの版)からたどる(違いは tests/test_fix9_priority_before.py)"""
     cur = _sha(DRIVE_PY)
+    if cur == FIX9_PRIORITY_DRIVE:          # 10/29 fix9 優先のモデルの直す前の写し(= fix8 safety の説明の文だけの版)
+        p9 = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / 'drive.py'
+        assert _sha(p9) == FIX8_DOC_DRIVE
+        cur = FIX8_DOC_DRIVE
     if cur == FIX8_DOC_DRIVE:               # 10/28 fix8 safety の説明の文だけの直す前の写し(= fix7 7-1 回目の版。AST は同じ)
         p8 = ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / 'drive.py'
         assert _sha(p8) == FIX7_DRIVE
@@ -234,6 +239,7 @@ FIX5_DRIVE = '041a66de7590d9915f3a3008b03aa08cec01b81fbc2a292f90f65875ee0be39c' 
 FIX6_DRIVE = '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec'                                                         # 同じ LATER_FIX6
 FIX7_DRIVE = '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'                                                         # 同じ LATER_FIX7_SAFETY
 FIX8_DOC_DRIVE = '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'                                                     # 同じ LATER_FIX8_SAFETY_DOC
+FIX9_PRIORITY_DRIVE = 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'                                                # 同じ LATER_FIX9_PRIORITY
 
 
 def test_drive_only_docstring_changed():

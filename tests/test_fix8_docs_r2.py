@@ -26,6 +26,12 @@ experiments/20261026_fix/fix8/fix_docs_r2/docs_fix8_r2.py(40 個の直し。う�
   README 6.2 の 36 のあとに 37。m0〜m5 が引く言葉は消していない)。「済」・new の数・SUPERSEDE・earlier_problems は仕上げの書き換えを
   戻した文書(fin.revert)で、わざと壊すは書き換えたあとの形の new(fin.effective)で照らす(弱めていない: 同じ 40 個・23 か所・同じ確かめ)。
   m0 の todo の題は、この組の時刻か、そのあと仕上げが今に合わせた時刻(TITLE_STAMPS)。
+- 2026-10-29 fix9(この文書のあと): main session の優先のモデル(走行タブの一覧の上から 5 つ)が drive.py を直し、Jetson の起動し直しの
+  あと jetformer-web は 10/29 08:51:40 にそのコードで起きた。文書(approvals の 08:40 の印)は 10/28 の記録として正しいので変えず、
+  test_numbers_are_in_the_outputs(閉じたループを回した drive.py の版)・test_restart_marks_match_the_system(起動の時刻と新しい .py)に
+  「今の drive.py が fix9 の版(sha256)なら、文書のときの版は直す前の写し tests/fixtures/fix9_priority_before/ で照らし、今は fix9 の起動
+  (10/29 08:51:40)と fix9 の drive.py 1 本だけを照らす」を足した(弱めていない。fix9 が走行のループを変えていないことは
+  tests/test_fix9_priority_before.py の AST の照らしを同じ試験の中で呼んで見る。今の状態は fix9 の文書に書く)。
 
     cd ~/jetformer && PYTHONDONTWRITEBYTECODE=1 /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \\
         /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q -p no:cacheprovider -o tmp_path_retention_policy=failed \\
@@ -64,6 +70,12 @@ SCREEN = 'rehearsal-r2-vbefore-screen-vs-server'     # 同じ反証の rehearsal
 SKIP_NO = '当たった・空転した・記録が欠けた ON の本は `--skip` しない'
 OFF_ONLY = '① 止まってから 3 秒たっても下がらない ② 1 回で 2.5 m より長く下がる'
 RULE_WORDS = ('`--skip` しない', '外さない', 'には使わない')
+# 2026-10-29 fix9(この文書のあと)の優先のモデルの drive.py の版の sha256 と、その直す前の写し(= この文書のときの drive.py 3f2e31a2…)。
+# jetformer-web はそのあと 10/29 08:51:40 に起きた(Jetson の起動し直しのあと。fix9 のコード)。tests/test_fix3_r3_2_tools.py の
+# LATER_FIX9_PRIORITY と同じ値
+FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
+LATER_FIX9_BOOT = datetime(2026, 10, 29, 8, 51, 40)
 
 
 def _load(name, path):
@@ -438,13 +450,21 @@ def test_more_breakages_are_caught(live):
 # ================================================================== 文書の言葉・数とコード・記録
 def test_numbers_are_in_the_outputs():
     """① ② の数と文書の数は、台本の出力(out/ana_first_rec_r2.json = 閉じたループ・本物の記録)と同じ。閉じたループは今の drive.py・
-    assist.py で回した(sha256)"""
+    assist.py で回した(sha256)。10/29 fix9(優先のモデル)が drive.py を直したあとは、回したときの drive.py は fix9 の直す前の写し
+    (sha256 を照らす)で、fix9 が変えたのは走行タブの一覧の list_models と足した定数・関数だけ(走行のループ Driver は同じ。
+    tests/test_fix9_priority_before.py の AST の照らしをここで呼ぶ)"""
     A = json.loads((D2 / 'out' / 'ana_first_rec_r2.json').read_text(encoding='utf-8'))
     assert A['NOBACK_S'] == 3.0 and A['BACK_M'] == 2.5
     S = A['sets']
+    dpy = JF / 'jetformer' / 'drive.py'
+    if _sha(dpy) == LATER_FIX9_PRIORITY['jetformer/drive.py']:
+        import test_fix9_priority_before as P9
+        P9.assert_drive_changed_only_priority(dpy)
+        dpy = FIX9_PRIORITY_BEFORE / 'drive.py'
+        assert _sha(dpy) == P9.sums()['drive.py']
     for name, n_esc in (('normal18', 18), ('gapslow', 6), ('k1_noback', 6), ('k2_runaway', 3), ('k3_limits', 3)):
         assert S[name]['n_esc'] == n_esc, name
-        assert S[name]['sha'] == {'drive.py': _sha(JF / 'jetformer' / 'drive.py'), 'assist.py': _sha(JF / 'jetformer' / 'assist.py')}, name
+        assert S[name]['sha'] == {'drive.py': _sha(dpy), 'assist.py': _sha(JF / 'jetformer' / 'assist.py')}, name
     nor = [S['normal18']['all_on'], S['gapslow']['all_on']]
     assert sum(x['runs'] for x in nor) == 576 and all(x['no_rec'] == 0 for x in nor)
     assert round(min(x['back_m']['min'] for x in nor), 2) == 1.02 and round(max(x['back_m']['max'] for x in nor), 2) == 1.97
@@ -551,11 +571,18 @@ def test_words_match_the_code():
 
 def test_restart_marks_match_the_system():
     """approvals の 08:40 の印: jetformer-web の起動は 10/28 08:40:33 のままで、jetformer/ の .py にそれより新しいものが無い(読むだけ)。
-    このあと assist.py・drive.py・server.py・bench.py が直されて再起動したら落ちて知らせる → 印の文を今に合わせる"""
+    このあと assist.py・drive.py・server.py・bench.py が直されて再起動したら落ちて知らせる → 印の文を今に合わせる。
+    10/29 fix9(この印のあと): 今の drive.py が fix9 の版(sha256)なら、起動は 10/29 08:51:40・08:40:33 より新しい .py は drive.py だけ
+    (その直す前の写しが印のときの版 3f2e31a2…)・10/29 08:51:40 より新しい .py は無い(印は 10/28 の記録として正しい)"""
     out = subprocess.run(['systemctl', 'show', 'jetformer-web', '-p', 'ActiveEnterTimestamp'], capture_output=True, text=True).stdout
     if not out.strip():
         pytest.skip('systemctl show が読めない')
-    assert '2026-10-28 08:40:33' in out, out
+    fix9 = _sha(JF / 'jetformer' / 'drive.py') == LATER_FIX9_PRIORITY['jetformer/drive.py']
+    assert ('2026-10-29 08:51:40' if fix9 else '2026-10-28 08:40:33') in out, out
     boot = datetime(2026, 10, 28, 8, 40, 33).timestamp()
     newer = [p.name for p in (JF / 'jetformer').rglob('*.py') if p.stat().st_mtime > boot]
-    assert newer == [], newer
+    assert newer == (['drive.py'] if fix9 else []), newer
+    if fix9:
+        assert _sha(FIX9_PRIORITY_BEFORE / 'drive.py').startswith('3f2e31a22ecb')
+        newer9 = [p.name for p in (JF / 'jetformer').rglob('*.py') if p.stat().st_mtime > LATER_FIX9_BOOT.timestamp()]
+        assert newer9 == [], newer9

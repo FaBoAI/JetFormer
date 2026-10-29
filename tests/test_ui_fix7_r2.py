@@ -64,6 +64,11 @@ LATER_FIX8_UI_R1 = {'experiments/20261026_fix/plan/runs_1103.py': 'c2d616c2f72b0
 # その版なら直す前の写し tests/fixtures/fix8_ui_r2_before/(= 上の LATER_FIX8_UI_R1 の版)へたどる(中身の違いは tests/test_ui_fix8_r2.py)
 FIX8_UI_R2_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix8_ui_r2_before'
 LATER_FIX8_UI_R2 = {'jetformer/web/static/style.css': 'b1e900656e2463c3c2292fba885bb415298a286aa131db25f481f5ecbce1924a'}
+# 2026-10-29 fix9(優先のモデル。main session)のあとの app.js の sha256。その版なら、fillDriveModels の「まったく同じ」はこの組のあとの版 =
+# 直す前の写し tests/fixtures/fix9_priority_before/app.js(= 8-2 回目のあとの e61dfac9…。SHA256SUMS)で見る(変えたのが優先のモデルの所だけかは
+# tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY と同じ値)
+FIX9_PRIORITY_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233'}
 NODE = shutil.which('node')
 needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
 RESET = {k: drive.DEFAULT_PARAMS[k] for k in drive.RESET_ON_BOOT}
@@ -158,12 +163,24 @@ def test_before_copy_and_only_these_places_changed():
 
 def test_fill_is_the_old_loaddrive_body_and_texts_match():
     """fillDriveModels の中身は、直す前の loadDrive の「選ぶ欄に入れる」行とまったく同じ(関数に分けただけ)。loadDrive は前と同じ順に
-    fillDriveModels → pollDrive → loadBench。試験の文(MISS・選ぶ欄の短い文)は app.js の文と同じ"""
+    fillDriveModels → pollDrive → loadBench。試験の文(MISS・選ぶ欄の短い文)は app.js の文と同じ。
+    2026-10-29 fix9(優先のモデル)が fillDriveModels の option の 1 行を 3 行(注の 1 行と、①〜⑤ と名前を先に出す 2 行)に替えたあとは、
+    「まったく同じ」はこの組のあとの版 = fix9 の直す前の写し(e61dfac9…。sha256 を照らす)で見て、今の fillDriveModels はその写しの
+    option の 1 行をその 3 行に替えただけかを見る(app.js の違いの全部は tests/test_fix9_priority_before.py)。JF_UI72_APP を付けたとき
+    (わざと壊す台本)はその写しをそのまま見る"""
     a = (BEFORE / 'app.js').read_text(encoding='utf-8')
     js = APP.read_text(encoding='utf-8')
     old = re.search(r"\n(  const sel = \$\('#dr-model'\), cur = sel\.value;\n.*?\n  state\.drive\.restored = true;\n)  pollDrive\(\);\n  loadBench\(\);\n\}",
                     a, re.S).group(1)
-    new = re.search(r'\nfunction fillDriveModels\(\) \{\n(.*?)\}\n', js, re.S).group(1)
+    fill_re = r'\nfunction fillDriveModels\(\) \{\n(.*?)\}\n'
+    new = re.search(fill_re, js, re.S).group(1)
+    if not os.environ.get('JF_UI72_APP') and _sha(APP) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
+        import test_fix9_priority_before as P9
+        p9 = FIX9_PRIORITY_BEFORE / 'app.js'
+        assert _sums(FIX9_PRIORITY_BEFORE)['app.js'] == _sha(p9) and _sha(p9).startswith('e61dfac905cb')
+        now, new = new, re.search(fill_re, p9.read_text(encoding='utf-8'), re.S).group(1)
+        assert new.count(P9.APP_REMOVED[0] + '\n') == 1
+        assert now == new.replace(P9.APP_REMOVED[0] + '\n', '\n'.join(P9.APP_ADDED[:3]) + '\n')
     assert new == old
     assert "  fillDriveModels();\n  pollDrive();\n  loadBench();\n}\n" in js
     body = re.search(r"const DR_MODELS_MISS = ('.*?')\n  \+ ('.*?');", js, re.S)

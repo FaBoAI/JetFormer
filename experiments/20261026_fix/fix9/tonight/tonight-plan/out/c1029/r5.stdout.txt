@@ -1,0 +1,17 @@
+logs 9 launches 9 with R1 9 laps 19 flying accel windows 0
+20261029-190300 No.1   B          g0.90 kick=0(  0fr) mv0.32   m80=0.0    toR1=3.013  d=5.03  loss=0.513  parts={'dead_s': 0.26, 'straight_s': 0.253, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-190600 No.2   B          g0.90 kick=0(  0fr) mv0.21   m80=0.0    toR1=2.813  d=5.03  loss=0.313  parts={'dead_s': 0.19, 'straight_s': 0.123, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-190900 No.3   B          g0.90 kick=0(  0fr) mv0.33   m80=0.0    toR1=3.023  d=5.03  loss=0.523  parts={'dead_s': 0.27, 'straight_s': 0.253, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-191200 No.4   B          g0.90 kick=0(  0fr) mv0.26   m80=0.0    toR1=2.863  d=5.03  loss=0.363  parts={'dead_s': 0.24, 'straight_s': 0.123, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-191500 No.5   B          g0.90 kick=0(  0fr) mv0.34   m80=0.0    toR1=3.033  d=5.03  loss=0.533  parts={'dead_s': 0.28, 'straight_s': 0.253, 'lh_to_r1_s': -0.0} fly=2/same_log HS
+20261029-191800 No.6   B          g0.90 kick=0(  0fr) mv0.34   m80=0.0    toR1=2.943  d=5.03  loss=0.443  parts={'dead_s': 0.32, 'straight_s': 0.123, 'lh_to_r1_s': -0.0} fly=2/same_log HS
+20261029-192100 No.7   B          g0.90 kick=0(  0fr) mv0.35   m80=0.0    toR1=3.043  d=5.03  loss=0.543  parts={'dead_s': 0.29, 'straight_s': 0.253, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-192400 No.8   B          g0.90 kick=0(  0fr) mv0.37   m80=0.0    toR1=2.973  d=5.03  loss=0.473  parts={'dead_s': 0.35, 'straight_s': 0.123, 'lh_to_r1_s': 0.0} fly=2/same_log HS
+20261029-192700 No.9   B          g0.90 kick=0(  0fr) mv0.34   m80=0.0    toR1=3.033  d=5.03  loss=0.533  parts={'dead_s': 0.28, 'straight_s': 0.253, 'lh_to_r1_s': 0.0} fly=3/same_log HS
+
+発進の前進の比べ(設定ごと。ON = 出た・ON_not_started = launch_boost 1 なのに出ない → ON として数えない)
+10/29 ? B g0.90(ゲインをまとめた --ignore-gain) 天井0 自動0
+  off             n=5(2 回目以降の発進 0) 起点まで 3.033 失う 0.533 動く 0.280 空転max 1.009 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した — 
+  on              n=4(2 回目以降の発進 0) 起点まで 2.903 失う 0.403 動く 0.270 空転max 1.019 LH 2.000 m/s 衝突(起点まで 0・最初の周 0) 出した 0.500 速さに届いた
+  ON − OFF: 起点まで -0.130 秒(≤ −0.15)・失う -0.130 秒・LH 0.000 m/s(≤ +0.3)・空転 ≤ 1.3・最初の周の衝突 0 → 満たさない {'to_r1': False, 'first_lap_collisions_0': True, 'slip': True, 'lh_speed': True}
+出力 /home/jetson/jetformer/experiments/20261026_fix/fix9/tonight/tonight-plan/out/c1029/launches_ig.json

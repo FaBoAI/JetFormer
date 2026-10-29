@@ -61,6 +61,13 @@ DK, F7, F6 = 'fix3/disk.md', 'fix7/README.md', 'fix6/README.md'
 FILES = (RB, TODO, RD, AP, DK, F7, F6)
 RESTART = '10/28 00:53:23'
 NEWER = '「起動より新しい: /home/jetson/jetformer/jetformer/drive.py」'
+# 2026-10-29 fix9(この文書のあと): main session の優先のモデル(走行タブの一覧の並べ方。tests/test_drive_priority.py)が drive.py を直した。
+# 今の drive.py がその版(sha256)なら、この組のときの版(fix8 safety の説明の文のあとの 3f2e31a2…)は直す前の写し
+# tests/fixtures/fix9_priority_before/drive.py(SHA256SUMS)で照らす(変えたのが優先のモデルの所だけかは tests/test_fix9_priority_before.py。
+# tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY・LATER_FIX8_SAFETY_DOC と同じ値)
+FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
+LATER_FIX8_SAFETY_DOC = {'jetformer/drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
 
 
 def _load(name, path):
@@ -432,19 +439,25 @@ def test_restart_record_matches_user_decisions():
 
 def test_drive_doc_change_is_comment_only_and_after_the_restart():
     """drive.py は 00:53:23 の起動のあとに直した(3.1 の確かめが名前を出す)が、説明の文(docstring)のほかは直す前の写しと AST で同じ
-    (= 動きは同じ。fix8 safety-decided の写し tests/fixtures/fix8_safety_doc_before/ の sha256 を照らす)"""
+    (= 動きは同じ。fix8 safety-decided の写し tests/fixtures/fix8_safety_doc_before/ の sha256 を照らす)。10/29 fix9(優先のモデル)が
+    drive.py を直したあとは、この組のあとの版 = fix9 の直す前の写し(3f2e31a2…。sha256 を照らす)で「説明の文だけ」を見る"""
     drive = JF / 'jetformer' / 'drive.py'
     assert drive.stat().st_mtime > datetime(2026, 10, 28, 0, 53, 23).timestamp()
     fx = JF / 'tests' / 'fixtures' / 'fix8_safety_doc_before'
     sums = dict(reversed(x.split(None, 1)) for x in (fx / 'SHA256SUMS').read_text().splitlines() if x.strip())
     assert _sha(fx / 'drive.py') == sums['drive.py']
+    after = drive                               # この組のあとの drive.py(説明の文だけ直した版)
+    if _sha(drive) == LATER_FIX9_PRIORITY['jetformer/drive.py']:
+        after = FIX9_PRIORITY_BEFORE / 'drive.py'
+        s9 = dict(reversed(x.split(None, 1)) for x in (FIX9_PRIORITY_BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
+        assert _sha(after) == s9['drive.py'] == LATER_FIX8_SAFETY_DOC['jetformer/drive.py']
 
     def body(src):
         tree = ast.parse(src)
         if tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(getattr(tree.body[0], 'value', None), ast.Constant):
             tree.body = tree.body[1:]
         return ast.dump(tree)
-    now, old = drive.read_text(encoding='utf-8'), (fx / 'drive.py').read_text(encoding='utf-8')
+    now, old = after.read_text(encoding='utf-8'), (fx / 'drive.py').read_text(encoding='utf-8')
     assert body(now) == body(old) and now != old
     # assist.py は fix7(22:02)のまま = 00:53:23 の起動より前
     assert (JF / 'jetformer' / 'assist.py').stat().st_mtime < datetime(2026, 10, 28, 0, 53, 23).timestamp()

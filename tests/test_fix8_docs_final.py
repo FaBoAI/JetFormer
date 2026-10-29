@@ -23,6 +23,13 @@ fix3/approvals.md に入れたかを見る:
 - わざと壊す: 直す前の写しでは n0〜n6 が全部落ちる。台本の 35 個の直しを 1 つずつ元に戻すと、その確かめが落ちる。ほかの壊しも落ちる。
 - 前の係の直しと試験の確かめが崩れていないか(台本の earlier_problems: この組の書き換えを戻した文書で fix8 docs r2 → 同期 1 → fix8
   docs r1 → docs-decided → fix7 docs の仕上げ・r2・r1 の直しと試験の確かめ。今の文書で前の 7 組の確かめ)。
+- 2026-10-29 fix9(この文書のあと): main session が優先のモデル(走行タブの一覧の上から 5 つ)を drive.py・app.js に入れ、Jetson の
+  起動し直しのあと jetformer-web は 10/29 08:51:40 にそのコードで起きた。文書は fix8 の時点(10/28)の記録として正しいので文書は変えず、
+  3 つの確かめ(test_words_match_the_code・test_restart_not_needed・test_fix8_readme)に「今のファイルが fix9 の版(sha256)なら、文書の版は
+  直す前の写し tests/fixtures/fix9_priority_before/ で照らし、今は fix9 の版・時刻・起動で照らす」を足した(弱めていない: 文書の版・時刻・
+  「要らない」は前と同じに照らし、今の状態も決まった値で照らす。今の状態は fix9 の文書に書く)。fix9 で変えたのが優先のモデルの所だけかは
+  tests/test_fix9_priority_before.py が見る。この試験も文書 10 章の表にあるので、表のこの行は写し test_fix8_docs_final.py.orig
+  (= 表の a0030643…)で照らし、変えたのが説明の文・足した定数と 1 つの関数・この 3 つの確かめだけかを同じ test_fix8_readme が見る。
 
     cd ~/jetformer && PYTHONDONTWRITEBYTECODE=1 /home/jetson/bin/jf-heavy --lock none --mem 1500M -- \\
         /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q -p no:cacheprovider -o tmp_path_retention_policy=failed \\
@@ -59,6 +66,22 @@ SAFE_REV = 'モデルによっては逆に OFF のほうが多く下がる'
 APP_NOW, CSS_NOW = (10, 28, 11, 2), (10, 28, 10, 15)       # 今の app.js・style.css の更新時刻(文書の「10/28 11:02」「10/28 10:15」)
 APP_SHA, CSS_SHA = 'e61dfac905cb', 'b1e900656e24'           # fix8 ui r2 のあとの版(fix_ui_r2.md 9 章)
 BOOT = datetime(2026, 10, 28, 8, 40, 33)                    # jetformer-web の起動(10/28 08:40 の Jetson の起動し直し)
+# 2026-10-29 fix9(この文書 = 10/28 の記録のあと): main session が優先のモデル(tests/test_drive_priority.py)を jetformer/drive.py(10/29 08:46)・
+# web/static/app.js(10/29 08:47)に入れ、Jetson の起動し直し(last reboot: 10/28 20:33・10/29 08:26・08:50)のあと jetformer-web は
+# 10/29 08:51:40 にそのコードで起きた。今のファイルがその版(sha256)なら、文書の版(app.js e61dfac9…・drive.py 3f2e31a2…)は直す前の写し
+# tests/fixtures/fix9_priority_before/(SHA256SUMS)で照らし、今のファイルは fix9 の版・その時刻・その起動で照らす(tests/test_fix3_r3_2_tools.py
+# の LATER_FIX9_PRIORITY と同じ値)
+FIX9_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
+                       'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233'}
+LATER_FIX9_HM = {'jetformer/drive.py': (10, 29, 8, 46), 'jetformer/web/static/app.js': (10, 29, 8, 47)}   # fix9 の版の更新時刻
+LATER_FIX9_BOOT = datetime(2026, 10, 29, 8, 51, 40)         # jetformer-web の起動(10/29 08:50 の起動し直しのあと。fix9 のコード)
+SELF = 'tests/test_fix8_docs_final.py'                      # この試験(文書 10 章の表にある。10/29 fix9 で 3 つの確かめを直した)
+
+
+def _fix9_sums():
+    """fix9 の直す前の写しの SHA256SUMS(drive.py・app.js・test_fix8_docs_final.py.orig)"""
+    return dict(reversed(x.split(None, 1)) for x in (FIX9_BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
 
 
 def _load(name, path):
@@ -511,6 +534,14 @@ def test_words_match_the_code():
         assert w in co, w
     web = JF / 'jetformer' / 'web' / 'static'
     for name, sha, hm in (('app.js', APP_SHA, APP_NOW), ('style.css', CSS_SHA, CSS_NOW)):
+        rel = 'jetformer/web/static/' + name
+        if rel in LATER_FIX9_PRIORITY and _sha(web / name) == LATER_FIX9_PRIORITY[rel]:
+            # 10/29 fix9(優先のモデル。この文書のあと)の版: 文書の版(e61dfac9…・10/28 11:02)は直す前の写し。今のファイルは fix9 の時刻
+            # (このあと誰かが直せばまた落ちて知らせる)
+            assert _sha(FIX9_BEFORE / name) == _fix9_sums()[name] and _fix9_sums()[name].startswith(sha), name
+            t = datetime.fromtimestamp((web / name).stat().st_mtime)
+            assert (t.month, t.day, t.hour, t.minute) == LATER_FIX9_HM[rel], (name, t)
+            continue
         assert _sha(web / name).startswith(sha), name           # このあと誰かが直せば落ちて知らせる(文書の時刻を合わせる)
         t = datetime.fromtimestamp((web / name).stat().st_mtime)
         assert (t.month, t.day, t.hour, t.minute) == hm, (name, t)
@@ -532,23 +563,36 @@ def test_words_match_the_code():
 
 def test_restart_not_needed():
     """再起動は要らない: assist.py・drive.py・web/server.py・web/bench.py は jetformer-web の起動(10/28 08:40:33)より前の更新のまま(読むだけ)。
-    jetformer/ の .py にそれより新しいものが無い。systemd の起動の時刻が読めれば 08:40:33。このあと誰かが直すか再起動したら落ちて知らせる"""
+    jetformer/ の .py にそれより新しいものが無い。systemd の起動の時刻が読めれば 08:40:33。このあと誰かが直すか再起動したら落ちて知らせる。
+    10/29 fix9(この文書のあと): drive.py が fix9 の版(sha256)なら、それは 10/28 08:40:33 のあと・10/29 08:51:40 の起動の前の更新
+    (10/29 08:46)で、その直す前の写しが文書の版(3f2e31a2…)。08:40:33 より新しい .py はその 1 本だけ・10/29 08:51:40 より新しい .py は
+    無く、systemd の起動の時刻は 10/29 08:51:40(= 今のサーバーは fix9 のコードで動いている。今も再起動は要らない)"""
+    fix9 = _sha(JF / 'jetformer' / 'drive.py') == LATER_FIX9_PRIORITY['jetformer/drive.py']
     for rel in ('assist.py', 'drive.py', 'web/server.py', 'web/bench.py'):
         t = datetime.fromtimestamp((JF / 'jetformer' / rel).stat().st_mtime)
+        if fix9 and rel == 'drive.py':
+            assert BOOT < t < LATER_FIX9_BOOT and (t.month, t.day, t.hour, t.minute) == LATER_FIX9_HM['jetformer/drive.py'], (rel, t)
+            assert _sha(FIX9_BEFORE / 'drive.py') == _fix9_sums()['drive.py'] and _fix9_sums()['drive.py'].startswith('3f2e31a22ecb')
+            continue
         assert t < BOOT, (rel, t)
     newer = [str(q) for q in sorted((JF / 'jetformer').rglob('*.py')) if q.stat().st_mtime > BOOT.timestamp()]
-    assert newer == [], newer
+    assert newer == ([str(JF / 'jetformer' / 'drive.py')] if fix9 else []), newer
+    newer9 = [str(q) for q in sorted((JF / 'jetformer').rglob('*.py')) if q.stat().st_mtime > LATER_FIX9_BOOT.timestamp()]
+    assert newer9 == [], newer9
     try:
         r = subprocess.run(['systemctl', 'show', '-p', 'ActiveEnterTimestamp', '--value', 'jetformer-web'], capture_output=True,
                            text=True, timeout=20)
     except (OSError, subprocess.SubprocessError):
         return
     if r.returncode == 0 and r.stdout.strip():
-        assert r.stdout.strip() == 'Wed 2026-10-28 08:40:33 JST', r.stdout
+        assert r.stdout.strip() == ('Thu 2026-10-29 08:51:40 JST' if fix9 else 'Wed 2026-10-28 08:40:33 JST'), r.stdout
 
 
 def test_fix8_readme():
-    """fix8/README.md(反証 8 回目のまとめ 1 枚): 章・巡ごとの数・出切っていない・再起動・おすすめ 3 行。sha256 の表の値は今のファイル"""
+    """fix8/README.md(反証 8 回目のまとめ 1 枚): 章・巡ごとの数・出切っていない・再起動・おすすめ 3 行。sha256 の表の値は今のファイル。
+    10/29 fix9(この文書のあと)が直したファイル: drive.py・app.js が fix9 の版(sha256)なら直す前の写し(= 表の版)で照らす。この試験は
+    fix9 で直した(自分の sha256 は自分に書けない)ので、変えたのが説明の文・足した定数と 1 つの関数・3 つの確かめだけかを見てから、
+    写し test_fix8_docs_final.py.orig(= 表の版)で照らす"""
     t = (REPORTS / 'fix8' / 'README.md').read_text(encoding='utf-8')
     for h in ('## 0. ひと目で', '## 1. main session の決めの実装', '## 2. 8-1 の中身', '## 3. 8-2 の中身', '## 4. 残すこと',
               '## 5. 了承が要ること・知らせ', '## 6. ユーザーに伝えること', '## 7. 11/3 のあとに向けた安全の案', '## 8. 再起動が要るか',
@@ -566,4 +610,12 @@ def test_fix8_readme():
     assert len(rowsx) >= 15, rowsx
     for rel, h in rowsx:
         base = REPORTS if not rel.startswith(('jetformer/', 'tools/', 'experiments/', 'data/', 'tests/')) else JF
-        assert _sha(base / rel).startswith(h), rel
+        p = base / rel
+        if rel in LATER_FIX9_PRIORITY and _sha(p) == LATER_FIX9_PRIORITY[rel]:
+            p = FIX9_BEFORE / Path(rel).name                    # fix9(優先のモデル)の版 → 直す前の写し(SHA256SUMS)
+            assert _sha(p) == _fix9_sums()[p.name], rel
+        elif rel == SELF and not _sha(p).startswith(h):
+            import test_fix9_priority_before as P9              # この試験(fix9 で直した)→ 変えた所を見てから写しで照らす
+            P9.assert_docs_final_changed_only_fix9(p)
+            p = FIX9_BEFORE / 'test_fix8_docs_final.py.orig'
+        assert _sha(p).startswith(h), rel

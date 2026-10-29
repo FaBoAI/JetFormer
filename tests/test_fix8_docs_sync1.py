@@ -38,6 +38,12 @@ fix8/fix_docs_r1.md の「残したこと」を、手順書・todo・README・fi
   04:54 か、そのあと仕上げが今に合わせた 11:02(APP_STAMPS。どちらか 1 つで 3.1 の行の 2 か所がそろう。今の文書の時刻 = app.js の更新
   時刻は tests/test_fix8_docs_final.py が照らす)。k0 の todo の題は TITLE_STAMPS に仕上げの時刻を足した。ほかの壊しの k4 は今の時刻で
   同じ壊しをする。
+- 2026-10-29 fix9(この文書のあと): main session の優先のモデル(走行タブの一覧の上から 5 つ)が drive.py・app.js を直し、Jetson の起動し
+  直しのあと jetformer-web は 10/29 08:51:40 にそのコードで起きた。文書(k4 の画面の版・k6 の 10/28 08:40 の記録)は 10/28 の記録として
+  正しいので変えず、test_words_match_the_code(app.js の時刻)・test_restart_record_matches_the_system(新しい .py)に「今のファイルが
+  fix9 の版(sha256)なら、文書のときの版は直す前の写し tests/fixtures/fix9_priority_before/ で照らし、今は fix9 の時刻・fix9 の drive.py
+  1 本だけ・10/29 08:51:40 の起動より前」を足した(弱めていない。fix9 で変えたのが優先のモデルの所だけかは tests/test_fix9_priority_before.py。
+  今の状態は fix9 の文書に書く)。
 """
 import hashlib
 import importlib.util
@@ -81,6 +87,14 @@ LATER_FIX8_UI_R2 = {'jetformer/web/static/style.css': 'b1e900656e2463c3c2292fba8
                     'jetformer/web/static/app.js': 'e61dfac905cb8bc86ac76e07ff104c85df1c9433d5a5b889ac80a0af1190ce73'}
 LATER_FIX8_UI_R2_CSS_HM = (10, 28, 10, 15)
 LATER_FIX8_UI_R2_APP_HM = (10, 28, 11, 2)
+# 2026-10-29 fix9(この文書のあと)の優先のモデルが drive.py・app.js を直した。その版(sha256 が下の値)なら、文書のときの版(drive.py 3f2e31a2…・
+# app.js = 上の LATER_FIX8_UI_R2 の版 e61dfac9…)は直す前の写し tests/fixtures/fix9_priority_before/ で、今のファイルの更新時刻は fix9 の時刻。
+# jetformer-web はそのあと 10/29 08:51:40 に起きた(Jetson の起動し直しのあと。fix9 のコード)。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY
+FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
+                       'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233'}
+LATER_FIX9_PRIORITY_APP_HM = (10, 29, 8, 47)
+LATER_FIX9_BOOT = datetime(2026, 10, 29, 8, 51, 40)
 
 # 文書が引く言葉(コードの文字列と同じ。test_words_match_the_code が照らす)
 REFUSE = 'サーバーの設定を読み込んでいます。少し待ってから押してください'
@@ -598,7 +612,13 @@ def test_words_match_the_code():
     assert "error ? 6000 : 3000" in js                                         # 断りのトーストは 6 秒
     assert 'el.textContent = `画面の版 ${DRIVE_CLIENT}`' in js and "const DRIVE_CLIENT = 9" in js
     t = datetime.fromtimestamp((web / 'static' / 'app.js').stat().st_mtime)
-    if hashlib.sha256((web / 'static' / 'app.js').read_bytes()).hexdigest() == LATER_FIX8_UI_R2['jetformer/web/static/app.js']:
+    if hashlib.sha256((web / 'static' / 'app.js').read_bytes()).hexdigest() == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
+        # fix9 優先のモデルの版: 11:02 の版(fix8 ui r2 のあと)は fix9 の直す前の写し・04:54 の版は fix8 ui r2 の直す前の写し・今のファイルは
+        # fix9 の時刻(このあと誰かが app.js を直せばまた落ちて知らせる)
+        assert hashlib.sha256((FIX9_PRIORITY_BEFORE / 'app.js').read_bytes()).hexdigest() == LATER_FIX8_UI_R2['jetformer/web/static/app.js']
+        assert hashlib.sha256((FIX8_UI_R2_BEFORE / 'app.js').read_bytes()).hexdigest().startswith('aa275bb5da0b')
+        assert (t.month, t.day, t.hour, t.minute) == LATER_FIX9_PRIORITY_APP_HM, t
+    elif hashlib.sha256((web / 'static' / 'app.js').read_bytes()).hexdigest() == LATER_FIX8_UI_R2['jetformer/web/static/app.js']:
         # fix8 ui r2 の版: 04:54 の版は直す前の写し・今のファイルは 8-2 回目の時刻(このあと誰かが app.js を直せばまた落ちて知らせる)
         assert hashlib.sha256((FIX8_UI_R2_BEFORE / 'app.js').read_bytes()).hexdigest().startswith('aa275bb5da0b')
         assert (t.month, t.day, t.hour, t.minute) == LATER_FIX8_UI_R2_APP_HM, t
@@ -695,7 +715,10 @@ def test_restart_record_matches_the_system():
     """k6 の記録(10/28 08:40 の起動し直し・jetformer-web 08:40:33・「起動より新しいコードなし」・GET の既定と boot_at 08:40:54)=
     読むだけの確かめの出力(out/restart_check_0840.txt。手順書 3.1・todo 4 章の 3〜5 と同じコマンド)。jetformer/ の .py は今も
     08:40:33 より古い(新しい .py があれば、その名前が「起動より新しい」に出る = 文書を直す)。systemd の起動の時刻が 08:40:33 のままなら
-    それも照らす(このあと誰かが再起動したら照らさない)"""
+    それも照らす(このあと誰かが再起動したら照らさない)。10/29 fix9(この記録のあと): 今の drive.py が fix9 の版(sha256)なら、08:40:33 より
+    新しい .py はその drive.py だけで、その直す前の写しが記録のときの版(3f2e31a2…)。drive.py の更新は 08:40:33 と 10/29 08:51:40(Jetson の
+    起動し直しのあとの jetformer-web の起動)の間で、その起動より新しい .py は無い(= 今のサーバーは fix9 のコード)。systemd の起動の時刻が
+    10/29 08:51:40 のままならそれも照らす"""
     import subprocess
     out = (HERE8 / 'docs_sync1' / 'out' / 'restart_check_0840.txt').read_text(encoding='utf-8')
     for w in ('reboot   system boot  6.8.12-1021-tegr Wed Oct 28 08:40', '\nactive\n0\nWed 2026-10-28 08:40:33 JST\nエラーの行なし\n',
@@ -705,13 +728,21 @@ def test_restart_record_matches_the_system():
         assert w in out, w
     t0 = datetime(2026, 10, 28, 8, 40, 33).timestamp()
     newer = [str(q) for q in sorted((JF / 'jetformer').rglob('*.py')) if q.stat().st_mtime > t0]
-    assert newer == [], newer
-    assert datetime.fromtimestamp((JF / 'jetformer' / 'drive.py').stat().st_mtime) < datetime(2026, 10, 28, 8, 40, 33)
+    dpy = JF / 'jetformer' / 'drive.py'
+    fix9 = hashlib.sha256(dpy.read_bytes()).hexdigest() == LATER_FIX9_PRIORITY['jetformer/drive.py']
+    if fix9:
+        assert newer == [str(dpy)], newer
+        assert hashlib.sha256((FIX9_PRIORITY_BEFORE / 'drive.py').read_bytes()).hexdigest().startswith('3f2e31a22ecb')
+        assert datetime(2026, 10, 28, 8, 40, 33) < datetime.fromtimestamp(dpy.stat().st_mtime) < LATER_FIX9_BOOT
+        assert [str(q) for q in sorted((JF / 'jetformer').rglob('*.py')) if q.stat().st_mtime > LATER_FIX9_BOOT.timestamp()] == []
+    else:
+        assert newer == [], newer
+        assert datetime.fromtimestamp(dpy.stat().st_mtime) < datetime(2026, 10, 28, 8, 40, 33)
     try:
         r = subprocess.run(['systemctl', 'show', '-p', 'ActiveEnterTimestamp', '--value', 'jetformer-web'], capture_output=True,
                            text=True, timeout=20)
     except (OSError, subprocess.SubprocessError):
         return
-    if r.returncode == 0 and r.stdout.strip() == 'Wed 2026-10-28 08:40:33 JST':
+    if r.returncode == 0 and r.stdout.strip() == ('Thu 2026-10-29 08:51:40 JST' if fix9 else 'Wed 2026-10-28 08:40:33 JST'):
         r2 = subprocess.run(['systemctl', 'show', '-p', 'NRestarts', '--value', 'jetformer-web'], capture_output=True, text=True, timeout=20)
         assert r2.stdout.strip() == '0'

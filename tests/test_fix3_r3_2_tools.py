@@ -152,6 +152,16 @@ FIX8_UI_R2_BEFORE = JF / 'tests' / 'fixtures' / 'fix8_ui_r2_before'
 LATER_FIX8_UI_R2 = {
     'jetformer/web/static/app.js': 'e61dfac905cb8bc86ac76e07ff104c85df1c9433d5a5b889ac80a0af1190ce73',
 }
+# そのあと 10/29 fix9 の優先のモデル(main session。ユーザーの指示「セレクトボックスの上から 5 つ目までは優先モデルを並べる」。走行タブの
+# モデルの一覧の並べ方と、選ぶ欄・情報の欄の表示だけ。data/drive_priority.json が無ければ一覧も選ぶ欄の HTML も前と同じ)が drive.py・
+# web/static/app.js を変えた。直す前の写しは tests/fixtures/fix9_priority_before/(drive.py = 上の LATER_FIX8_SAFETY_DOC の版・app.js =
+# LATER_FIX8_UI_R2 の版。SHA256SUMS)。変えたのが優先のモデルの所だけかは tests/test_fix9_priority_before.py、動きは tests/test_drive_priority.py
+# が見る。fix9 のあとの版の sha256 はここ
+FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
+LATER_FIX9_PRIORITY = {
+    'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
+    'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233',
+}
 
 
 def _sha(p):
@@ -172,9 +182,13 @@ def test_untouched_files():
     assist.py は 10/27 fix7 安全の係の直す 7-2 回目の版でもよい(7-2 回目の直す前の写し = 7-1 回目の版へたどる)。
     drive.py は 10/28 fix8 安全の係の説明の文だけの版でもよい(その直す前の写し = 7-1 回目の版へたどる)。
     app.js は 10/28 fix8 画面の係の直す 8-1 回目の版でもよい(8-1 回目の直す前の写し = 7-2 回目の版へたどる)。
-    app.js は 10/28 fix8 画面の係の直す 8-2 回目の版でもよい(8-2 回目の直す前の写し = 8-1 回目の版へたどる)"""
+    app.js は 10/28 fix8 画面の係の直す 8-2 回目の版でもよい(8-2 回目の直す前の写し = 8-1 回目の版へたどる)。
+    drive.py・app.js は 10/29 fix9 の優先のモデルの版でもよい(その直す前の写し = drive.py は fix8 安全の係の説明の文の版・app.js は 8-2 回目の
+    版へたどる)"""
     for rel, h in UNTOUCHED.items():
         cur = _sha(JF / rel)
+        if rel in LATER_FIX9_PRIORITY and cur == LATER_FIX9_PRIORITY[rel]:
+            cur = _sha(FIX9_PRIORITY_BEFORE / Path(rel).name)    # fix9 優先のモデルの直す前の写し(LATER_FIX8_SAFETY_DOC・LATER_FIX8_UI_R2 の版)
         if rel in LATER_FIX8_SAFETY_DOC and cur == LATER_FIX8_SAFETY_DOC[rel]:
             cur = _sha(FIX8_SAFETY_DOC_BEFORE / Path(rel).name)  # fix8 安全の係の説明の文の直す前の写し(LATER_FIX7_SAFETY の版)
         if rel in LATER_FIX7_SAFETY_R2 and cur == LATER_FIX7_SAFETY_R2[rel]:

@@ -1220,7 +1220,9 @@ async function loadDrive() {
 function fillDriveModels() {
   const sel = $('#dr-model'), cur = sel.value;
   sel.innerHTML = state.drive.models.map((m) =>
-    `<option value="${esc(m.name)}" ${m.drivable === false ? 'disabled' : ''}>${m.recommended ? '★推奨 ' : ''}「${esc(m.policy_title || 'JetFormer v0')}」${esc(m.name)}`
+    // 優先のモデル(サーバーの data/drive_priority.json。一覧の上から 5 つまで)は ①〜⑤ と名前を先に出す(2026-10-29)
+    `<option value="${esc(m.name)}" ${m.drivable === false ? 'disabled' : ''}>${m.priority ? `${esc(m.priority_mark || '')}${esc(m.priority_label || '優先')} ` : ''}`
+    + `${m.recommended ? '★推奨 ' : ''}「${esc(m.policy_title || 'JetFormer v0')}」${esc(m.name)}`
     + `${m.best_val_us != null ? `(検証誤差 ${m.best_val_us}µs)` : ''}${m.drivable === false ? ` — 走れません: ${esc(m.why_not || '')}` : ''}</option>`).join('')
     || '<option value="">走行できるモデルがありません(学習タブで「TensorRTエンジンを作る」)</option>';
   const st = state.drive.st;
@@ -1273,7 +1275,9 @@ function renderDriveModel() {
   const names = Object.fromEntries((m.modes || []).map((x) => [x.id, x.name]));
   const pp = m.postprocess && m.postprocess.kind ? (m.postprocess.kind === 'tcp_controller' ? 'TCP の制御器' : m.postprocess.kind) : 'なし';
   const ec = m.engine_check;
-  $('#dr-model-info').innerHTML = (m.recommended ? `<div><span class="badge ok">★推奨のモデル</span>${m.recommended_reason ? ` ${esc(m.recommended_reason)}` : ''}`
+  $('#dr-model-info').innerHTML = (m.priority ? `<div><span class="badge ok">${esc(m.priority_mark || '')} ${esc(m.priority_title || '優先のモデル')}</span>`
+      + ` <b>${esc(m.priority_label || '')}</b>${m.priority_reason ? ` ${esc(m.priority_reason)}` : ''}</div>` : '')
+    + (m.recommended ? `<div><span class="badge ok">★推奨のモデル</span>${m.recommended_reason ? ` ${esc(m.recommended_reason)}` : ''}`
       + `${state.drive.restoreNote ? `<div class="muted">${esc(state.drive.restoreNote)}</div>` : ''}</div>` : '')
     + `モデルの種類 <b>${esc(m.policy_title || 'JetFormer v0')}</b> ・ 出力 ${esc((m.outputs || ['actions']).join(', '))} ・ 後処理: ${esc(pp)}`
     + ` ・ エンジン ${esc(m.engine_precision || 'fp16')}`
