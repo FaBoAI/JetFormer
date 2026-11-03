@@ -13,6 +13,9 @@ WEB_HOST = os.environ.get('JETFORMER_HOST', '0.0.0.0')
 WEB_PORT = int(os.environ.get('JETFORMER_PORT', '8080'))
 
 SCENE_SECONDS = float(os.environ.get('JETFORMER_SCENE_SECONDS', '20'))
+# 収集している間、書いたファイル(カメラの絵・保存したシーン・log.json・events.jsonl)をこの秒ごとにディスクへ書き切る
+# (os.sync。recorder の rec-sync のスレッドだけが呼ぶ。2026-10-31、電源断で記録が消えないように。0 なら止める)
+RECORD_SYNC_S = float(os.environ.get('JETFORMER_RECORD_SYNC_S', '2.0'))
 VEHICLE_NAME = os.environ.get('JETFORMER_VEHICLE', 'jetformer-01')
 
 # ---- センサー ----
@@ -78,7 +81,13 @@ DRIVE = {
     'min_us': 1000, 'max_us': 2000,   # 出力の上下限
     'max_sensor_age_ms': 150,         # カメラ・ToF・車両の値がこれより古ければ止める(中立を出す)
     'imu_max_age_ms': 100,
-    'heartbeat_s': 5.0,               # 走行を始めた画面からの問い合わせがこれだけ途絶えたら走行を止める(Wi-Fiの揺らぎを見込む)
+    'heartbeat_s': 5.0,               # 走行を始めた画面からの問い合わせがこれだけ途絶えたら走行を止める(Wi-Fiの揺らぎを見込む)。下の tether_free が False のときだけ使う
+    # USB を外して走る = 画面との通信が切れても止めない(2026-10-31 予選の会場向け)。ユーザーの決め(10/31)「基本常にOn・選択ボタンも
+    # 入りません」(画面にスイッチは無い)。False にすると前の決まり = 上の heartbeat_s で止める に戻る(サーバーの再起動のあと)。
+    # 走行を始めるときに読み、その走行の途中では変わらない
+    'tether_free': True,
+    # 念のための上限(tether_free が True のとき): 最後の生存確認(一度も来ていなければ走行開始)から、これだけ途絶えたら止める(30 分)
+    'tether_free_max_s': 1800.0,
 }
 
 # 取り付け位置(車体座標: x前方, y左, z上 [m])。カメラとToFは5cm以内に近接設置。

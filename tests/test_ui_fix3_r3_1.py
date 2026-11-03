@@ -29,6 +29,7 @@ import pytest
 
 from jetformer import drive
 from jetformer.web import bench
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: そのファイルがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 from test_ui_fix3 import _flows
 
@@ -36,6 +37,10 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / 'jetformer' / 'web' / 'static'
 BEFORE = ROOT / 'tests' / 'fixtures' / 'fix3_r3_1_before'
 SIM = ROOT / 'tests' / 'fixtures' / 'app_sim_fix3_r3_1.js'
+# 2026-10-31 USB を外して走る(tether_free。いつも ON)が index.html などを変えた(画面の版 9 → 10)。その版なら、直す前の写し
+# tests/fixtures/tether_1031_before/(= 10/29 fix9 のあとの版。SHA256SUMS)で前の版につなぐ(違いは tests/test_tether_free.py)
+TETHER_1031_BEFORE = ROOT / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/web/static/index.html': 'cca3d8f8ddfcd2b0b1de78c8c5dcb95649d83b770e1f6701f3696f3e97678ba1'}
 NODE = shutil.which('node')
 pytestmark = pytest.mark.skipif(NODE is None, reason='node がありません')
 
@@ -46,7 +51,10 @@ def test_before_copies():
         assert hashlib.sha256((BEFORE / name).read_bytes()).hexdigest() == sums[name], name
     old = (BEFORE / 'app.js').read_text(encoding='utf-8')
     assert 'if (di < 0) di = days.findIndex((x) => x.blocks.length);' in old          # 直す前(ほかの日に落ちる)
-    assert (STATIC / 'index.html').read_bytes() == (BEFORE / 'index.html').read_bytes()   # この組は index.html を変えていない
+    idx = FB.back(STATIC / 'index.html')                                               # 2026-11-01 電圧の前送りの版 → その直す前の写し
+    if hashlib.sha256(idx.read_bytes()).hexdigest() == LATER_TETHER_1031['jetformer/web/static/index.html']:
+        idx = TETHER_1031_BEFORE / 'index.html'                                         # USB を外して走る の版 → その直す前の写し
+    assert idx.read_bytes() == (BEFORE / 'index.html').read_bytes()                     # この組は index.html を変えていない
 
 
 @pytest.fixture(scope='module')
@@ -109,8 +117,8 @@ def same_starts(a, b):
     for x, y in zip(sa, sb):
         for k in ('sent', 'confirm', 'confirms', 'refused', 'desc', 'record', 'dry', 'build', 'run'):
             assert x[k] == y[k], (k, x[k], y[k])
-        # 画面の版: 今の画面は 9(2026-10-27 fix5 t1・t2・t3。直す前の写しは 8)。送らなかった(キャンセル)ならどちらも None
-        assert (x['client'], y['client']) in ((9, 8), (None, None)), (x['client'], y['client'])
+        # 画面の版: 今の画面は 10(2026-10-31 USB を外して走る。10/27 fix5 t1・t2・t3 で 9。直す前の写しは 8)。送らなかった(キャンセル)ならどちらも None
+        assert (x['client'], y['client']) in ((11, 8), (None, None)), (x['client'], y['client'])      # 11/1 電圧の前送り で 11
 
 
 def opts(html):

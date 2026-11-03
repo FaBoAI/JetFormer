@@ -1,0 +1,22 @@
+# AS5601(サーボの回転角度の磁気センサー)を読むだけの記録係。2026-10-30 ユーザーの決め「起動で自動に始める」(user_decisions.md)。
+# I2C の 7 番(40 ピンの 3・5 番)の 0x36 を読むだけ(PCA9685 0x40・表示板には何もしない)。走りのプログラム jetformer-web は変えない。
+# 入れ方: sudo cp tools/systemd/jetformer-as5601.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#         && sudo systemctl enable --now jetformer-as5601     止める: sudo systemctl disable --now jetformer-as5601
+[Unit]
+Description=JetFormer AS5601 steering-angle logger (read-only I2C 7 / 0x36)
+After=multi-user.target
+
+[Service]
+Type=simple
+User=jetson
+Group=jetson
+WorkingDirectory=/home/jetson/jetformer
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/home/jetson/miniconda/envs/jetracer/bin/python -I -u /home/jetson/jetformer/tools/as5601_logger.py --hz 50 --fsync-s 1 --rotate-s 1800 --wait
+Nice=10
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

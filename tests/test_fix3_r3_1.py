@@ -33,6 +33,7 @@ import pytest
 
 from jetformer import assist as A
 from jetformer import clock, config, drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 import test_fix3_r2_1 as R2
 from test_drive_caps import FakeRecorder, assert_rows_equal_before, fake_normalize
@@ -49,7 +50,9 @@ LATER_DRIVE = {'fix4_small': 'c575af1262836c3e10bfe32b2ee34293117a2144b3e568acb3
                'fix8_safety_doc': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e',   # 10/28 fix8 safety 説明の文だけ(LATER_FIX8_SAFETY_DOC)
                # 10/29 fix9 優先のモデル(走行タブの一覧の並べ方だけ。直す前の写し tests/fixtures/fix9_priority_before/ = 上の fix8_safety_doc の版。
                # 変えたのが優先のモデルの所だけかは tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY)
-               'fix9_priority': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
+               'fix9_priority': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
+               # 2026-10-31 USB を外して走る(直す前の写し tests/fixtures/tether_1031_before/ = 上の fix9_priority の版。違いは tests/test_tether_free.py)
+               'tether_1031': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3'}
 DT = 0.01
 FDT = 1 / 30.0
 MODEL = (C, N - 120.0)
@@ -95,8 +98,9 @@ def test_before_copies_and_defaults_unchanged():
     # s2・s3・10/27 fix6 safety = 反証 6-1 回目の s3-a・10/27 fix7 safety = 反証 7-1 回目の s4-a・10/28 fix8 safety = 説明の文だけ・
     # 10/29 fix9 = 優先のモデル)。そのときは、その組の直す前の写しの sha256 をたどってこの組の版
     # (SHA256SUMS)につながるか見る
-    cur = sha(ROOT / 'jetformer' / 'drive.py')
-    chain = {LATER_DRIVE['fix9_priority']: ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / 'drive.py',
+    cur = sha(FB.back(ROOT / 'jetformer' / 'drive.py'))     # 2026-11-01 電圧の前送りの版なら直す前の写し(= USB の版)
+    chain = {LATER_DRIVE['tether_1031']: ROOT / 'tests' / 'fixtures' / 'tether_1031_before' / 'drive.py',
+             LATER_DRIVE['fix9_priority']: ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / 'drive.py',
              LATER_DRIVE['fix8_safety_doc']: ROOT / 'tests' / 'fixtures' / 'fix8_safety_doc_before' / 'drive.py',
              LATER_DRIVE['fix7_safety']: ROOT / 'tests' / 'fixtures' / 'fix7_safety_before' / 'drive.py',
              LATER_DRIVE['fix6_safety']: ROOT / 'tests' / 'fixtures' / 'fix6_safety_before' / 'drive.py',
@@ -106,8 +110,9 @@ def test_before_copies_and_defaults_unchanged():
         assert cur in chain, cur
         cur = sha(chain.pop(cur))
     amod, before = load_before()
-    assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS and drive.PARAM_LIMITS == before.PARAM_LIMITS
-    assert drive.RESET_ON_BOOT == before.RESET_ON_BOOT and drive.DEFAULT_PARAMS['rec_hold_keep'] == 0
+    dm = FB.back_module(drive)                                  # 2026-11-01 電圧の前送りの版なら直す前の写し(既定値の表)
+    assert dm.DEFAULT_PARAMS == before.DEFAULT_PARAMS and dm.PARAM_LIMITS == before.PARAM_LIMITS
+    assert dm.RESET_ON_BOOT == before.RESET_ON_BOOT and drive.DEFAULT_PARAMS['rec_hold_keep'] == 0
     for k, v in vars(amod.Recovery).items():                                  # 前からの定数は全部同じ
         if k.isupper():
             assert getattr(A.Recovery, k) == v, k

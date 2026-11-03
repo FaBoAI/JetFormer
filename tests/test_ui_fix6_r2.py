@@ -102,8 +102,8 @@ def test_before_copy_and_only_the_loop_places_changed():
     js = after.read_text(encoding='utf-8')
     assert re.findall(r'^const DR_IDLE_WAIT_MS = (\d+);', js, re.M) == [str(WAIT)]
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
+    assert _sha(F6.tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')      # 2026-10-31 USB を外して走る の版なら直す前の写し
+    assert _sha(F6.tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')
     # 2026-10-28 fix8 tools-decided が runs_1103.py を変えた(試験の選択肢の印の後ろの文と説明だけ)。その版なら直す前の写し
     # (tests/fixtures/fix8_tools_decided_before/runs_1103.py.orig)がこの組の版と同じかを見る(中身の違いは tests/test_fix8_tools_decided.py)
     rp = ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py'
@@ -148,7 +148,8 @@ def ops(res, op):
 
 
 def vals(res, op):
-    return [x.get('value') for x in res if x['op'] == op]
+    out = [x.get('value') for x in res if x['op'] == op]
+    return [F6.v9_posts(v) for v in out] if op == 'posts' else out      # 2026-10-31: 走行開始の client 10 を 9 として(F6.v9_posts)
 
 
 def tagged(res):
@@ -411,7 +412,7 @@ def test_fix6_r1_scenes_and_flows_exactly_as_before(tmp_path, cands):
     flows = {('scene', k): (F6.setup_steps(c, di) + v[0] + F6.TAIL, v[1], F6.MORNING) for k, v in F6.SCENES.items()}
     for k, (st, sp) in dict(_flows(c, di)).items():
         flows[('flow', k)] = ([['poll']] + st + [['el', '#toast', 'text'], ['el', '#dr-message', 'html'], ['posts']], {}, server_params(**sp))
-    flows[('flow', '版で断られる')] = ([['poll'], ['start'], ['start'], ['el', '#toast', 'text'], ['posts']], {'server_client_version': 10},
+    flows[('flow', '版で断られる')] = ([['poll'], ['start'], ['start'], ['el', '#toast', 'text'], ['posts']], {'server_client_version': 12},
                                   server_params())
     for i, (key, (st, extra, sp)) in enumerate(flows.items()):
         kw = dict({'server_client_version': 8}, **extra)

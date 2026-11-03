@@ -312,5 +312,5 @@ def test_sent_values_same_as_before_other_flows(tmp_path, cands):
         for a, b in zip(sn, so):
             assert a['sent'] == b['sent'], (name, {k: (a['sent'].get(k), b['sent'].get(k)) for k in set(a['sent']) | set(b['sent'])
                                                    if a['sent'].get(k) != b['sent'].get(k)})
-            assert a['confirm'] == b['confirm'] and (a['client'], b['client']) == (9, 7), name    # 2026-10-27 fix5 で今の画面は版 9
+            assert a['confirm'] == b['confirm'] and (a['client'], b['client']) == (11, 7), name   # fix5 で版 9、10/31 USB を外して走る で今の画面は版 10、11/1 電圧の前送り で 11
         assert posts_no_ver(new) == posts_no_ver(old), name               # 版のほか(r2-r2-state-3)

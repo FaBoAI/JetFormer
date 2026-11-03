@@ -51,7 +51,7 @@ def test_static_has_vbat_and_speed_controls():
         assert words in html, words
     assert html.index('id="dr-vbat"') < html.index('class="ds-grid"', html.index('id="tab-drive"'))   # 走行タブの上
     js = _src('app.js')
-    assert re.search(r'client: 9\b', js) and js.count("'/api/drive/start'") == 1     # 画面の版 9(2026-10-27 fix5。前は 8)
+    assert re.search(r'client: 11\b', js) and js.count("'/api/drive/start'") == 1    # 画面の版 11(2026-11-01 電圧の前送り。前は 10・9・8)
     assert "p.speed_ceiling = $('#dr-speed-ceiling').checked ? 1 : 0" in js
     assert "'/api/vbat/calib'" in js
     fn = re.search(r'^function benchApply\(.*?^}\n', js, re.S | re.M).group(0)

@@ -44,6 +44,7 @@ from pathlib import Path
 import pytest
 
 from jetformer import drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 import test_drive_priority as DP
 
@@ -63,6 +64,12 @@ BEFORE_SHA = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc
 # この直しのあとの版の sha256(前の直しの試験の LATER_FIX9_PRIORITY と同じ値。このあと誰かが直せば、その試験と下の確かめが落ちて知らせる)
 LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
                        'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233'}
+# そのあと 2026-10-31 USB を外して走る(tether_free。いつも ON)が drive.py・app.js などを変えた(Driver の start・_run・_loop・status と
+# 足した関数 1 つ・説明の文、画面の文・版 9 → 10)。その版なら、直す前の写し tests/fixtures/tether_1031_before/(= この直しのあとの版。
+# SHA256SUMS)で照らす(_tether_back。違いの全部は tests/test_tether_free.py)
+TETHER_1031_BEFORE = ROOT / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3',
+                     'jetformer/web/static/app.js': '6cbdc98db2ea56aa3a1355cca6b9b57f118609cda1b554a9606f1edacd8b569b'}
 
 # drive.py: 足した文(この順で。定数 3 つは RECOMMENDED_PATH のすぐあと・関数 3 つは list_models のすぐ前)と変えた文
 DRIVE_ADDED = ['set:PRIORITY_NAME', 'set:PRIORITY_MAX', 'set:PRIORITY_MARKS', 'def:_priority_path', 'def:priority', 'def:save_priority']
@@ -104,6 +111,14 @@ OPT = re.compile(r'<option value="([^"]*)"([^>]*)>(.*?)</option>')
 
 def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def _tether_back(p):
+    """今のファイル p(ROOT の中)が USB を外して走る(2026-10-31)の版なら、その直す前の写し(= この直しのあとの版)。ほかはそのまま。
+    2026-11-01 電圧の前送りの版なら、先にその直す前の写し(= USB を外して走るの版。FB.back)にしてから同じように照らす"""
+    rel = Path(p).relative_to(ROOT).as_posix()
+    q = FB.back(p)
+    return TETHER_1031_BEFORE / Path(p).name if rel in LATER_TETHER_1031 and sha(q) == LATER_TETHER_1031[rel] else Path(q)
 
 
 def sums():
@@ -235,17 +250,18 @@ def test_before_copies_are_the_versions_before_this_fix():
 def test_now_is_the_priority_version():
     """今の drive.py・app.js はこの直しの版(このあと誰かが直せば落ちて知らせる = 前の直しの試験の LATER_FIX9_PRIORITY も合わせる)"""
     for rel, h in LATER_FIX9_PRIORITY.items():
-        assert sha(ROOT / rel) == h, rel
+        assert sha(_tether_back(ROOT / rel)) == h, rel          # 10/31 USB を外して走る の版なら直す前の写し
 
 
 # ================================================================== drive.py
 def test_drive_only_priority_parts_changed():
     """drive.py で足したのは定数 3 つと関数 3 つ、変えたのは list_models だけ(上の段の文を名前で照らす。説明の文・既定値・Driver・ほかの
     関数は同じ)。足した定数の値・優先のモデルのファイルの場所(推奨のモデルと同じ data/)"""
-    assert_drive_changed_only_priority()
+    assert_drive_changed_only_priority(_tether_back(DRIVE_PY))     # 10/31 USB を外して走る の版なら直す前の写しで
     d0 = before_drive()
-    assert drive.DEFAULT_PARAMS == d0.DEFAULT_PARAMS and drive.PARAM_LIMITS == d0.PARAM_LIMITS
-    assert drive.RESET_ON_BOOT == d0.RESET_ON_BOOT
+    dm = FB.back_module(drive)                                  # 2026-11-01 電圧の前送りの版なら直す前の写し(既定値の表)
+    assert dm.DEFAULT_PARAMS == d0.DEFAULT_PARAMS and dm.PARAM_LIMITS == d0.PARAM_LIMITS
+    assert dm.RESET_ON_BOOT == d0.RESET_ON_BOOT
     assert (drive.PRIORITY_NAME, drive.PRIORITY_MAX, drive.PRIORITY_MARKS) == ('drive_priority.json', 5, '①②③④⑤')
     assert drive._priority_path() == drive.RECOMMENDED_PATH.with_name('drive_priority.json')
     assert drive.RECOMMENDED_PATH == d0.RECOMMENDED_PATH
@@ -282,9 +298,10 @@ def test_app_js_only_priority_lines_changed():
     """app.js で消した行は 2 行・足した行は 6 行で、fillDriveModels と renderDriveModel の中だけ。前の行の先頭に優先の印を足しただけ
     (優先のモデルでなければ字は同じ)。足した行に送る物・問い合わせ・タイマー・トースト・確認の文は無い。版は 9 のまま。2 つの関数のほかは
     写しと同じ"""
-    removed, added, ops = app_diff(FIX9 / 'app.js', APP)
+    app = _tether_back(APP)                                         # 10/31 USB を外して走る(版 10)の版なら直す前の写しで
+    removed, added, ops = app_diff(FIX9 / 'app.js', app)
     assert (removed, added) == (APP_REMOVED, APP_ADDED) and [o[0] for o in ops] == ['replace', 'replace'], (removed, added)
-    js, old = APP.read_text(encoding='utf-8'), (FIX9 / 'app.js').read_text(encoding='utf-8')
+    js, old = app.read_text(encoding='utf-8'), (FIX9 / 'app.js').read_text(encoding='utf-8')
     fill, render = js_func(js, 'fillDriveModels'), js_func(js, 'renderDriveModel')
     assert all(x in fill.split('\n') for x in added[:3]) and all(x in render.split('\n') for x in added[3:])
     # option: 前の 1 行 = 足した 2 行目から終わりの「`」と印を除き、3 行目の「    + `」のあとをつないだもの

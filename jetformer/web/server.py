@@ -968,7 +968,9 @@ def api_drive_models():
 @app.get('/api/drive/status')
 def api_drive_status(token: str = Query(default='')):
     """走行画面が0.25秒ごとに呼ぶ。走行を始めたページの token 付きの問い合わせが途絶えると走行を止める
-    (画面を閉じた・スマホがスリープした・通信断)。token なしの問い合わせは表示用で、生存確認にならない"""
+    (画面を閉じた・スマホがスリープした・通信断)。token なしの問い合わせは表示用で、生存確認にならない。
+    ただし「USB を外して走る」(config.DRIVE['tether_free']。既定 True。2026-10-31)の走行は、途絶えても止めない(上限
+    config.DRIVE['tether_free_max_s'] だけ)。status の tether_free・tether_free_max_s で画面が確認の文を決める"""
     alive = driver.heartbeat(token)
     st = driver.status()
     st['controller'] = alive
@@ -985,7 +987,27 @@ def api_drive_status(token: str = Query(default='')):
 # 7 のあと app.js を 2 回直したのに版を上げていなかった(反証 2 回目 r2-r2-state-3: 20:25〜23:11 に開いたままの画面も断られなかった)
 # 9 = 2026-10-27 fix5(反証 4 回目 t1・t2・t3 の画面の直し): 走行開始の body に、画面が最後に読んだ status の boot_at を入れる(下の
 # _boot_refusal。サーバーが起き直したあとの古い表示のままの走行開始を断る)
-DRIVE_CLIENT_VERSION = 9
+# 10 = 2026-10-31 USB を外して走る(予選の会場向け。ユーザーの決め「基本常にOn・選択ボタンも入りません」= config.DRIVE['tether_free']。
+# 画面にスイッチは無く、走行開始の body も版のほかは前と同じ): 画面との通信が切れても止めない。版 10 の画面は ▶ の確認の文の最後の行を
+# status の tether_free で決める。版 9 の画面は「通信断が5秒続くと止まります」と出すので、そこからは始めない
+# 11 = 2026-11-01 電圧の前送り(drive の speed_ff。ユーザーの決め D-1「自動の補正を作る」): 版 11 の画面は走行タブにスイッチと基準の電圧の
+# 欄があり、▶ の確認の文に「電圧の前送り: ON(電圧・基準・倍率 → ゲイン)」の行を出す。版 10 の画面はスイッチも行も無く、サーバーに残った
+# ON を知らずに走らせるので、そこからは始めない(走行開始の body は版のほかは前と同じ。スイッチ・欄は押したときにすぐ送る)
+DRIVE_CLIENT_VERSION = 11
+
+
+def _ff_requested(body):
+    """この走行開始で電圧の前送り(drive の speed_ff)が ON になるか: body の params にあればその値、無ければ今の設定(drive の
+    _clean_params と同じ読み方 = 0.5 以上で ON)。ON のときだけ driver.start に走る前の電圧を渡す(OFF は前と同じ引数)。読めない値は
+    driver.start が断る(400)ので、ここでは OFF とみる(電圧を渡さなくても、driver.start は ON なら V0 が無いとして断る)"""
+    p = body.get('params') if isinstance(body.get('params'), dict) else {}
+    v = p.get('speed_ff')
+    if v is None:
+        v = (getattr(driver, 'params', None) or {}).get('speed_ff', 0)
+    try:
+        return float(v) >= 0.5
+    except (TypeError, ValueError):
+        return False
 
 
 def _client_version(body):
@@ -1072,6 +1094,9 @@ def api_drive_start(body: dict = Body(...)):
         description, vrun = vbat_start_description(description)
     except Exception as e:                        # 電圧の失敗で走行を止めない
         vrun = {'v_before': None, 'v_before_note': '電圧を読めませんでした: %s' % e, 'state': 'starting'}
+    # 電圧の前送り(2026-11-01)が ON の走行には、上で決めた走る前の電圧 V0(説明欄の V_before と同じ値・0.01 V に丸めた 2 秒の中央値)と
+    # 無い理由を渡す。ON なのに V0 が無ければ driver.start が断る(409。黙って 1.00 にしない)。OFF の走行は前と同じ引数
+    ff_kw = {'ff_v0': vrun.get('v_before'), 'ff_v0_note': vrun.get('v_before_note') or ''} if _ff_requested(body) else {}
     with bench_web.AI_NO_LOCK:
         ai_no = None if dry else bench_web.next_ai_no()          # モーターに出力する AI 走行だけに番号を付ける
         if ai_no is not None:
@@ -1079,7 +1104,7 @@ def api_drive_start(body: dict = Body(...)):
         try:
             run, token = driver.start(body.get('run', ''), body.get('mode_id', -1), record=bool(body.get('record')),
                                       description=description, tags=body.get('tags') or [],
-                                      dry_run=dry, params=body.get('params') or {})
+                                      dry_run=dry, params=body.get('params') or {}, **ff_kw)
         except (ValueError, TypeError) as e:
             raise HTTPException(400, str(e))
         except RuntimeError as e:

@@ -34,6 +34,7 @@ import pytest
 
 from jetformer import assist as A
 from jetformer import drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 import test_fix3_r2_1 as R2
 import test_rec_fix5_safety as F5
@@ -63,6 +64,10 @@ LATER_FIX8_SAFETY_DOC = {'drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5
 # tests/fixtures/fix9_priority_before/(= LATER_FIX8_SAFETY_DOC の版)から同じようにたどる(変えたのが優先のモデルの所だけかは
 # tests/test_fix9_priority_before.py。tests/test_fix3_r3_2_tools.py の LATER_FIX9_PRIORITY)
 LATER_FIX9_PRIORITY = {'drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
+# さらに 2026-10-31 USB を外して走る(tether_free。いつも ON。Driver の start・_run・_loop・status と足した関数 1 つ・説明の文)が
+# drive.py を変えた。その直す前の写し tests/fixtures/tether_1031_before/(= LATER_FIX9_PRIORITY の版)から同じようにたどる(違いと、config の
+# tether_free が False ならビット単位で同じことは tests/test_tether_free.py)
+LATER_TETHER_1031 = {'drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3'}
 DT = R2.DT
 FDT = 1 / 30.0
 XF = R2.XF                  # 場面 rev の前の壁 2.0 m
@@ -103,7 +108,9 @@ def load_before():
 # ================================================================ 0. 写し・既定値・変えた所
 def _fix6_version(name):
     """この組のあとの版(jetformer/ の今の版。fix6 safety の 6-2 回目が変えたあとは、その直す前の写し = この組のあとの版)"""
-    p = ROOT / 'jetformer' / name
+    p = FB.back(ROOT / 'jetformer' / name)                 # 2026-11-01 電圧の前送りの版なら直す前の写し(= USB の版)
+    if name in LATER_TETHER_1031 and sha(p) == LATER_TETHER_1031[name]:
+        p = ROOT / 'tests' / 'fixtures' / 'tether_1031_before' / name
     if name in LATER_FIX9_PRIORITY and sha(p) == LATER_FIX9_PRIORITY[name]:
         p = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / name
     if name in LATER_FIX8_SAFETY_DOC and sha(p) == LATER_FIX8_SAFETY_DOC[name]:
@@ -151,8 +158,9 @@ def test_before_copy_defaults_and_changed_parts():
     足したのは assist.py の EscTrack と HOLD_EST_MIN_LEFT_S、drive.py の HOLD_VEH_FAST_ERPM、変えたのは drive.py の
     Driver._loop だけ(AST)。10/27 fix6 r2(6-2 回目)が assist.py を変えたあとは、その直す前の写し(= この組のあとの版)で照らす"""
     amod, before = load_before()
-    assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS and drive.PARAM_LIMITS == before.PARAM_LIMITS
-    assert drive.RESET_ON_BOOT == before.RESET_ON_BOOT and drive.HOLD_VEH_GAP_S == before.HOLD_VEH_GAP_S
+    dm = FB.back_module(drive)                                  # 2026-11-01 電圧の前送りの版なら直す前の写し(既定値の表)
+    assert dm.DEFAULT_PARAMS == before.DEFAULT_PARAMS and dm.PARAM_LIMITS == before.PARAM_LIMITS
+    assert dm.RESET_ON_BOOT == before.RESET_ON_BOOT and drive.HOLD_VEH_GAP_S == before.HOLD_VEH_GAP_S
     for k in ('rec_back_guard', 'rec_hold_keep', 'launch_boost', 'launch_no_kick'):
         assert drive.DEFAULT_PARAMS[k] == 0 and k in drive.RESET_ON_BOOT
     assert {k: v for k, v in vars(A.Recovery).items() if k.isupper()} == \

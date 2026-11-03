@@ -18,6 +18,10 @@
                          thumb.jpg
 
 サンプルは計測時刻で「どのシーンに属するか」を決めるので、センサー間でシーン境界がずれない。
+
+収集している間は、書いたファイルを config.RECORD_SYNC_S 秒(2 秒)ごとに os.sync() でディスクへ書き切る(rec-sync のスレッド。
+2026-10-31。電源断で、書き終わったカメラの絵・保存したシーンが消えないように。書いている途中のシーンのセンサー・AI の記録は
+保存するまでメモリの中なので、これでは守れない)。
 """
 
 import datetime
@@ -78,6 +82,9 @@ SA_FIELDS = (('sa_on', bool, False), ('sa_m', np.float32, np.nan), ('sa_m_ff', n
 # (0 = 無し 1 速さ 2 最大の時間 3 ヨー 4 舵 5 衝撃 6 前が近い・ガード 7 CH3 を人側 8 中立で止めた・停止 9 車両の値・後ろへ
 # 10 OFF にした。assist.LAUNCH_END_NAMES)。OFF の走行・古い行は False・0
 LAUNCH_FIELDS = (('launch_on', bool, False), ('launch_end', np.int8, 0))
+# 電圧の前送り(2026-11-01、drive の speed_ff): ON の走行か・この走行の倍率 m(走行開始の V0 で決めた定数)・このフレームで速度ゲインに
+# 掛けたか(AI 側で dry run でないフレーム)。OFF の走行(drive は欄を入れない)・古い行は False・NaN・False
+FF_FIELDS = (('ff_on', bool, False), ('ff_m', np.float32, np.nan), ('ff_applied', bool, False))
 
 
 def _ai_column(rows, key, dtype, default):
@@ -163,6 +170,12 @@ class Recorder(object):
         self.run_count = 0
         self.active_run = None
         self.listeners = []        # 出来事の通知先 cb(event, **info)(音声案内など)
+        # 収集中の定期的な書き込み(2026-10-31。下の _sync_loop)。止める印とスレッドは収集ごとに作る
+        self._sync_stop = None
+        self._sync_thread = None
+        self.sync_count = 0        # os.sync() を呼んだ回数(起動してから)
+        self.sync_errors = 0       # 失敗した回数(数えて続ける。収集・走行は止めない)
+        self.sync_last_error = ''
 
     def _vbat_scale(self):
         """VEHICLE.npz に残す電圧の較正の係数(車両のセンサーが持つ値。無ければ 1.0)"""
@@ -231,6 +244,7 @@ class Recorder(object):
                 self.hub[name].subscribe(self._on_sample)
             self._finalizer = threading.Thread(target=self._finalize_loop, name='rec-final', daemon=True)
             self._finalizer.start()
+            self._sync_begin()
             name = self.log['name']
         self._emit('record_start', log=name, mode_id=mode_id, mode_name=modes.name_of(mode_id), runs=self.runs_mode)
         return name
@@ -275,6 +289,7 @@ class Recorder(object):
             self.recording = False
             for name in self.channels:
                 self.hub[name].unsubscribe(self._on_sample)
+            sync_th = self._sync_end()             # 定期的な書き込みを止める(印だけ。待つのは保存のあと)
         self._io.join()
         with self.lock:
             pending = sorted(self.scenes)
@@ -283,6 +298,8 @@ class Recorder(object):
         self.log = None
         n = self.runs_complete if self.runs_mode else len(self.saved)     # 走行ごと: 最後まで走った回数
         self._emit('record_stop', scenes=n, runs=self.runs_mode)
+        if sync_th is not None:
+            sync_th.join(self.SYNC_JOIN_S)         # 書き切っている途中なら終わるのを待つ(長くても SYNC_JOIN_S。待ちすぎない)
         return True
 
     WARMUP_SAMPLES = {'CAM_FRONT': 45, 'TOF_FRONT': 15, 'IMU': 15, 'VEHICLE': 15, 'AUDIO': 10}   # カメラは自動露出の収束も待つ(1.5秒)
@@ -347,6 +364,45 @@ class Recorder(object):
                 'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
                 'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
             }
+
+    # ------------------------------------------------------------ 定期的な書き込み(2026-10-31)
+    SYNC_JOIN_S = 1.0          # stop が rec-sync を待つのは長くてもこれだけ(os.sync の途中なら、終わるのを待たずに戻る)
+
+    def _sync_begin(self):
+        """収集を始めたとき: config.RECORD_SYNC_S 秒ごとに書き切る rec-sync のスレッドを動かす(0 以下なら動かさない)"""
+        interval = float(getattr(config, 'RECORD_SYNC_S', 0.0) or 0.0)
+        self._sync_stop = self._sync_thread = None
+        if not interval > 0:
+            return
+        ev = threading.Event()
+        self._sync_stop = ev
+        self._sync_thread = threading.Thread(target=self._sync_loop, args=(ev, interval), name='rec-sync', daemon=True)
+        self._sync_thread.start()
+
+    def _sync_loop(self, ev, interval):
+        """interval 秒ごとに os.sync() で、書いたファイル(rec-io が書いたカメラの絵・rec-final が保存したシーン・log.json・
+        events.jsonl)をディスクへ書き切る(書いただけでは 30 秒ほどメモリ(ページキャッシュ)に残る。10/30 は電源断で最後の
+        約 39 秒の記録が消えた)。os.sync はこのスレッドだけで呼ぶ(lock も持たない = 走行のループ・rec-io・rec-final を待たせない)。
+        失敗は数えて続ける。止める印 ev が立った・収集が止まったら、次は呼ばずに抜ける"""
+        while not ev.wait(interval):
+            if ev.is_set() or not self.recording:
+                return
+            try:
+                os.sync()
+                self.sync_count += 1
+            except Exception as e:      # noqa: BLE001  書き切れなくても収集・走行は止めない(次の回にまた書き切る)
+                self.sync_errors += 1
+                self.sync_last_error = '%s: %s' % (type(e).__name__, e)
+                if self.sync_errors == 1:
+                    traceback.print_exc()
+
+    def _sync_end(self):
+        """止める印を立てる(rec-sync は今の os.sync のあとで抜ける)。戻り値: 待つスレッド(動かしていなければ None)"""
+        ev, th = getattr(self, '_sync_stop', None), getattr(self, '_sync_thread', None)
+        self._sync_stop = self._sync_thread = None
+        if ev is not None:
+            ev.set()
+        return th
 
     # ------------------------------------------------------------------ 受信
     def add_event(self, kind, data):
@@ -589,8 +645,8 @@ class Recorder(object):
                      # ceil_mode: -2 失敗 -1 動かしていない 0 そのまま 1 弱めた 2 中立にした。sa_src: -1 計算していない 0 なし
                      # 1 基板 2 説明欄。sa_event: -1 計算していない 0 なし 1 直した 2 周を使わない 3 上げない(天井)
                      # 4 上げない(板の衝撃) 5 上げない(衝突の次) 6 不感帯 7 偽の起点 8 閉じられない周(衝突。fix.md)。
-                     # 実際に掛けた速さのゲインはいつも gains[:,1]
-                     **{k: _ai_column(a, k, t, d) for k, t, d in CEIL_FIELDS + SA_FIELDS + LAUNCH_FIELDS})
+                     # 実際に掛けた速さのゲインはいつも gains[:,1]。電圧の前送り(ff_*。2026-11-01)は FF_FIELDS
+                     **{k: _ai_column(a, k, t, d) for k, t, d in CEIL_FIELDS + SA_FIELDS + LAUNCH_FIELDS + FF_FIELDS})
         if buf.thumb is not None:
             thumb = buf.thumb
             if buf.last_depth is not None:

@@ -9,9 +9,24 @@
   手順書 3 章(86 行の 2 か所)・3.1 の表(125)・3.1 の下(133)・4 章 6(145)・7 章の古い画面の行(240)・付録の表(333 の 3 か所)、
   todo_user_1026.md(54・70・87)、README.md(22・203・230・245)、fix3/approvals.md(44)。
   手順書の頭の「直しの記録」の行(- **10/2… で始まる行)は前の直しの記録なので変えない(--check も見ない)。
+
+2026-10-31 USB を外して走る(tether_1031。~/jetformer_reports/bench_20261030/tether_fix/)が app.js・server.py を変えて画面の版を
+9 → 10 にした。この台本が見る 4 つの文書(~/jetformer_reports/fix_20261026/)は 10/26〜10/28 の出来事の記録と、封をした 11/3 の
+手順書なので書き換えない(「画面の版 9」はその時代の正しい記録。版 10 の説明は bench_20261030/plan_to_1108.md と tether_fix/README.md)。
+そこで versions() は、今の app.js と server.py が両方ともその直しの版(sha256 が LATER_TETHER_1031)のときだけ、直す前の写し
+tests/fixtures/tether_1031_before/(= git の 29aa281 = 版 9。SHA256SUMS と TETHER_1031_BEFORE_SHA で中身を確かめてから。違えば
+RuntimeError)から版を読む(= 9)。どちらか 1 つでも違えば今まで通り本物から読む(版が変われば今まで通り落ちて知らせる)。
+照らす中身(古い版の数・直しの「済」)は前と同じ。試験は tests/test_docs_version_after_tether.py。
+
+2026-11-01 電圧の前送り(speed_ff。~/jetformer_reports/bench_20261030/speed_ff/)が app.js・server.py を変えて画面の版を 10 → 11 にした。
+同じ理由で、version_files() は先に、今の app.js と server.py が両方ともその直しの版(sha256 が LATER_SPEED_FF_1101)のときだけ、その
+直す前の写し tests/fixtures/speed_ff_1101_before/(= 10/31 USB を外して走るの版 = 版 10。SHA256SUMS と SPEED_FF_1101_BEFORE_SHA で
+中身を確かめてから。違えば RuntimeError)を「今の 2 つ」として、上の 10/31 の段をたどる(= 版 9 の写しから読む)。どちらか 1 つでも
+違えば今まで通り(版が変われば落ちて知らせる)。試験は tests/test_speed_ff.py(と test_docs_version_after_tether.py の段)。
 """
 import argparse
 import difflib
+import hashlib
 import re
 import shutil
 import sys
@@ -22,6 +37,18 @@ JF = Path('/home/jetson/jetformer')
 APP = JF / 'jetformer' / 'web' / 'static' / 'app.js'
 SERVER = JF / 'jetformer' / 'web' / 'server.py'
 BAK = '.bak-20261027-fix6-ui'
+# 2026-10-31 USB を外して走る(画面の版 10)の app.js・server.py の sha256(tests/test_ui_fix6.py の LATER_TETHER_1031 と同じ値)と、
+# その直す前の写し(git の 29aa281 = 画面の版 9。tests/test_tether_free.py の BEFORE_SHA と同じ値)。上の説明の 2026-10-31 の段
+TETHER_1031_BEFORE = JF / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'app.js': '6cbdc98db2ea56aa3a1355cca6b9b57f118609cda1b554a9606f1edacd8b569b',
+                     'server.py': '0c73072ae6df3b1e8c16b2e15859130003b595222237605ee2203597bf320605'}
+TETHER_1031_BEFORE_SHA = {'app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233',
+                          'server.py': 'ad7a7d05f7a9167c2992d78d77e39f05f49153cc3b13d8651b166efb4a073b94'}
+# 2026-11-01 電圧の前送り(画面の版 11)の app.js・server.py の sha256(tests/speed_ff_1101_back.py の LATER_SPEED_FF_1101 と同じ値)と、
+# その直す前の写し(= 上の LATER_TETHER_1031 の版 = 画面の版 10)。上の説明の 2026-11-01 の段
+SPEED_FF_1101_BEFORE = JF / 'tests' / 'fixtures' / 'speed_ff_1101_before'
+LATER_SPEED_FF_1101 = {'app.js': '1d13b5c9fc85cdee8f97ac351af51ab79976af2d4dd50f584df59a6d90112b26', 'server.py': '1841a87da1e8be8a7171ebd80b548585f849b20ebd55928e091d52601f0fa091'}
+SPEED_FF_1101_BEFORE_SHA = dict(LATER_TETHER_1031)
 
 EDITS = [
     # 手順書 3 章: スマホの画面を読み直す(86 行)
@@ -68,10 +95,54 @@ HISTORY = ('直した(画面の版 8。10/27 fix5 で版 9)', '版 8 と app.js 
            'state-5 で 7、10/27 r2-r2-state-3 で 8')
 
 
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def _before_pair(d, want):
+    """直す前の写し d の (app.js, server.py)。SHA256SUMS の値と want(決めた値)と中身の sha256 がそろわなければ RuntimeError"""
+    try:
+        lines = (d / 'SHA256SUMS').read_text(encoding='utf-8').splitlines()
+        sums = dict(reversed(x.split(None, 1)) for x in lines if x.strip())
+        got = {f: _sha(d / f) for f in want}
+    except (OSError, ValueError) as e:
+        raise RuntimeError('直す前の写し %s が読めません(%s)' % (d, e))
+    for f, h in want.items():
+        if not (sums.get(f) == h == got[f]):
+            raise RuntimeError('直す前の写し %s の中身が違います(SHA256SUMS %s・中身 %s・決めた値 %s)' % (d / f, sums.get(f), got[f], h))
+    return d / 'app.js', d / 'server.py'
+
+
+def version_files():
+    """版を読む (app.js, server.py)。今の 2 つが両方とも 10/31 USB を外して走るの版(LATER_TETHER_1031)なら、直す前の写し
+    TETHER_1031_BEFORE の 2 つ(SHA256SUMS の値と TETHER_1031_BEFORE_SHA と中身の sha256 がそろわなければ RuntimeError)。
+    どちらか 1 つでも違えば、今まで通り本物 (APP, SERVER)。
+    2026-11-01: 今の 2 つが両方とも電圧の前送りの版(LATER_SPEED_FF_1101)なら、先にその直す前の写し SPEED_FF_1101_BEFORE の 2 つ
+    (_before_pair で中身を確かめる = 10/31 の版)を「今の 2 つ」にしてから、上の 10/31 の段をたどる"""
+    app, server = APP, SERVER
+    if _sha(app) == LATER_SPEED_FF_1101['app.js'] and _sha(server) == LATER_SPEED_FF_1101['server.py']:
+        app, server = _before_pair(SPEED_FF_1101_BEFORE, SPEED_FF_1101_BEFORE_SHA)
+    if _sha(app) != LATER_TETHER_1031['app.js'] or _sha(server) != LATER_TETHER_1031['server.py']:
+        return app, server
+    try:
+        lines = (TETHER_1031_BEFORE / 'SHA256SUMS').read_text(encoding='utf-8').splitlines()
+        sums = dict(reversed(x.split(None, 1)) for x in lines if x.strip())
+        got = {f: _sha(TETHER_1031_BEFORE / f) for f in TETHER_1031_BEFORE_SHA}
+    except (OSError, ValueError) as e:
+        raise RuntimeError('直す前の写し %s が読めません(%s)' % (TETHER_1031_BEFORE, e))
+    for f, h in TETHER_1031_BEFORE_SHA.items():
+        if not (sums.get(f) == h == got[f]):
+            raise RuntimeError('直す前の写し %s の中身が違います(SHA256SUMS %s・中身 %s・決めた値 %s)'
+                               % (TETHER_1031_BEFORE / f, sums.get(f), got[f], h))
+    return TETHER_1031_BEFORE / 'app.js', TETHER_1031_BEFORE / 'server.py'
+
+
 def versions():
-    """(app.js の DRIVE_CLIENT, app.js の走行開始の body の client, server.py の DRIVE_CLIENT_VERSION)"""
-    js = APP.read_text(encoding='utf-8')
-    py = SERVER.read_text(encoding='utf-8')
+    """(app.js の DRIVE_CLIENT, app.js の走行開始の body の client, server.py の DRIVE_CLIENT_VERSION)。
+    今の app.js・server.py が両方とも 10/31 USB を外して走るの版(版 10)なら、直す前の写し(版 9)から読む(version_files。上の説明)"""
+    app, server = version_files()
+    js = app.read_text(encoding='utf-8')
+    py = server.read_text(encoding='utf-8')
     a = int(re.search(r'^const DRIVE_CLIENT = (\d+);', js, re.M).group(1))
     b = int(re.search(r'const body = \{ client: (\d+),', js).group(1))
     c = int(re.search(r'^DRIVE_CLIENT_VERSION = (\d+)', py, re.M).group(1))
@@ -126,6 +197,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     v = versions()
     print('画面の版: app.js DRIVE_CLIENT %d・走行開始の client %d・server.py DRIVE_CLIENT_VERSION %d' % v)
+    if version_files() != (APP, SERVER):
+        print('(今の app.js・server.py は 10/31 USB を外して走るの版(画面の版 10)。この 4 つの文書は 10/26〜10/28 の記録なので、'
+              '直す前の写し %s の版で照らす)' % TETHER_1031_BEFORE)
     if len(set(v)) != 1:
         print('版の数がそろっていません(先に app.js・server.py を見る)')
         return 1

@@ -35,6 +35,7 @@ from test_standing_3lap import write_standing_log  # noqa: E402
 import car_check as cc  # noqa: E402
 import quick_eval_by_params as qp  # noqa: E402
 import standing_3lap as s3  # noqa: E402
+import speed_ff_1101_back as FB  # noqa: E402  2026-11-01 電圧の前送り(speed_ff)の段: その直しの版なら直す前の写し(= USB の版)で照らす
 from jetformer.web import bench as wb  # noqa: E402
 
 FIX = JF / 'tests' / 'fixtures' / 'fix3_r3_2_before'
@@ -162,6 +163,16 @@ LATER_FIX9_PRIORITY = {
     'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315',
     'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233',
 }
+# そのあと 2026-10-31 USB を外して走る(tether_free。いつも ON = ユーザーの決め「基本常にOn・選択ボタンも入りません」。Driver の start・_run・_loop・status と
+# 足した関数 1 つ・説明の文、画面の文・版 9 → 10)が drive.py・web/server.py・web/static/app.js・index.html・config.py を変えた。直す前の写しは
+# tests/fixtures/tether_1031_before/(= 上の LATER_FIX9_PRIORITY の版など。SHA256SUMS)。違いは tests/test_tether_free.py
+TETHER_1031_BEFORE = JF / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {
+    'jetformer/drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3',
+    'jetformer/web/server.py': '0c73072ae6df3b1e8c16b2e15859130003b595222237605ee2203597bf320605',
+    'jetformer/web/static/app.js': '6cbdc98db2ea56aa3a1355cca6b9b57f118609cda1b554a9606f1edacd8b569b',
+    'jetformer/web/static/index.html': 'cca3d8f8ddfcd2b0b1de78c8c5dcb95649d83b770e1f6701f3696f3e97678ba1',
+}
 
 
 def _sha(p):
@@ -186,7 +197,9 @@ def test_untouched_files():
     drive.py・app.js は 10/29 fix9 の優先のモデルの版でもよい(その直す前の写し = drive.py は fix8 安全の係の説明の文の版・app.js は 8-2 回目の
     版へたどる)"""
     for rel, h in UNTOUCHED.items():
-        cur = _sha(JF / rel)
+        cur = _sha(FB.back(JF / rel))               # 2026-11-01 電圧の前送りの版なら直す前の写し(= USB を外して走るの版)
+        if rel in LATER_TETHER_1031 and cur == LATER_TETHER_1031[rel]:
+            cur = _sha(TETHER_1031_BEFORE / Path(rel).name)      # 10/31 USB を外して走る の直す前の写し(LATER_FIX9_PRIORITY などの版)
         if rel in LATER_FIX9_PRIORITY and cur == LATER_FIX9_PRIORITY[rel]:
             cur = _sha(FIX9_PRIORITY_BEFORE / Path(rel).name)    # fix9 優先のモデルの直す前の写し(LATER_FIX8_SAFETY_DOC・LATER_FIX8_UI_R2 の版)
         if rel in LATER_FIX8_SAFETY_DOC and cur == LATER_FIX8_SAFETY_DOC[rel]:

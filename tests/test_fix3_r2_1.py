@@ -32,6 +32,7 @@ import pytest
 
 from jetformer import assist as A
 from jetformer import clock, config, drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 from jetformer import safety_caps as sc
 from jetformer.sensors.base import Sample
 
@@ -335,8 +336,9 @@ def test_before_copies_and_defaults_unchanged():
     for name in ('app.js', 'index.html', 'server.py', 'collect.py'):
         assert sha(FIX / name) == s[name], name
     amod, before = load_before()
-    assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS                 # 既定値は 1 つも変えていない(新しい項目も無い)
-    assert drive.PARAM_LIMITS == before.PARAM_LIMITS and drive.RESET_ON_BOOT == before.RESET_ON_BOOT
+    dm = FB.back_module(drive)                                  # 2026-11-01 電圧の前送りの版なら直す前の写し(既定値の表)
+    assert dm.DEFAULT_PARAMS == before.DEFAULT_PARAMS                    # 既定値は 1 つも変えていない(新しい項目も無い)
+    assert dm.PARAM_LIMITS == before.PARAM_LIMITS and dm.RESET_ON_BOOT == before.RESET_ON_BOOT
     assert drive.DEFAULT_PARAMS['rec_hold_keep'] == 0 and 'rec_hold_keep' in drive.RESET_ON_BOOT
     assert drive.START_KICK_TTC_S == before.START_KICK_TTC_S
     for k, v in vars(amod.Recovery).items():                              # Recovery の定数は全部同じ(足したのは 1 つだけ)

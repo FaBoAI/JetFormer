@@ -354,6 +354,18 @@
               <span class="muted small">0.01 刻み(0.92・0.97 などはボタンで合わせる)</span></div>
           </div>
           <div class="muted small">ゲインは走行中に動かしても、すぐ反映されます。</div>
+          <div class="zone-panel ff-panel" id="dr-ff-panel">
+            <label class="inline check-line"><input type="checkbox" id="dr-speed-ff" autocomplete="off"> 電圧で最高速をそろえる(電圧の前送り)
+              <span id="dr-ff-spec" class="muted small">(倍率 = 基準の電圧 ÷ 走る前の電圧)</span></label>
+            <label class="inline check-line">基準の電圧 <input type="number" id="dr-ff-vref" min="7.6" max="8.8" step="0.05" value="8.10" class="num wide" autocomplete="off"> V
+              <span class="muted small">(この電圧ならゲインそのまま。一日同じ値のまま使います。7.60〜8.80 V・0.05 V 刻み。起動しても残ります)</span></label>
+            <div id="dr-ff-preview" class="small"></div>
+            <div class="warn-text small">走行開始(▶)のとき、止まっている基板の電圧(説明欄の V_before と同じ値)で 1 回だけ倍率を決め、走行の間は変えません。
+              掛けるのは AI の前進の指令だけです(人の操縦・後退・リカバリー・発進の前進はそのまま)。走る前の電圧が無いときは走行を始めません。
+              既定は OFF で、管理画面を起動するたびに OFF に戻ります。走行中は ON にも OFF にもできません。速さの天井・自動合わせとは一緒に使えません。
+              ON の日は紙の表でゲインを引かず、基準の電圧は一日同じ値のまま、列は速度ゲインの ± 0.01 で動かします(当日の 1 枚のとおり)。</div>
+            <div id="dr-ff-note" class="small"></div>
+          </div>
 
           <div id="dr-nopost-note" class="warn-text small hidden"><span id="dr-nopost-text"></span>
             <button id="btn-dr-nopost-reset" class="small">上限なし・操作の枝だけに戻す</button></div>
@@ -502,6 +514,7 @@
             <div id="dr-ref" class="muted small"></div>
           </details>
 
+          <div id="dr-tether-note" class="muted small">この画面は開いたままにしてください(閉じる・スリープ・通信断が5秒続くと止まります)。</div>
           <div class="row buttons"><button id="btn-dr-start" class="primary">▶ 走行開始</button> <span id="dr-client-ver" class="muted small"></span></div>
           <button id="btn-dr-stop" class="stop-big" disabled>■ 停止(スペースキー)</button>
           <div id="dr-after" class="hidden">

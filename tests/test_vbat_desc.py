@@ -191,17 +191,17 @@ def test_drive_start_does_not_write_when_moving_or_no_voltage(tracker, fake_star
 
 def test_drive_start_refuses_old_page(tracker, fake_start):
     """画面の版(2026-10-26 fix3 state-5): 版 6 以下・版の無い・数でない body は 409 で走行を始めない(driver.start を呼ばない)。
-    版 9 は始まる(2026-10-27 fix3 r2-r2-state-3 で 7 → 8、2026-10-27 fix5 で 9。版 8・7 も断る)"""
+    版 10 は始まる(2026-10-27 fix3 r2-r2-state-3 で 7 → 8、2026-10-27 fix5 で 9、2026-10-31 USB を外して走る で 10。版 9・8・7 も断る)"""
     feed(tracker, 97.0, 100.0, 8.3)
-    for client in (8, 7, 6, 0, None, 'x', '6'):               # 2026-10-27 fix5 で版 9 から(8 も断る)
+    for client in (10, 9, 8, 7, 6, 0, None, 'x', '6'):        # 2026-10-31 USB を外して走る で版 10 から(9 も断る)。11/1 電圧の前送り で 11 から(10 も断る)
         body = {'run': B, 'mode_id': 5, 'description': DESC, 'dry_run': False, 'record': True, 'params': {}}
         if client is not None:
             body['client'] = client
         with pytest.raises(HTTPException) as e:
             srv.api_drive_start(body)
-        assert e.value.status_code == 409 and '管理画面が古いまま' in e.value.detail and '版 9 から' in e.value.detail, client
+        assert e.value.status_code == 409 and '管理画面が古いまま' in e.value.detail and '版 11 から' in e.value.detail, client
     assert fake_start == []
-    r = srv.api_drive_start({'client': 9, 'boot_at': srv.driver.boot_at, 'run': B, 'mode_id': 5, 'description': DESC, 'dry_run': False, 'record': True,
+    r = srv.api_drive_start({'client': 11, 'boot_at': srv.driver.boot_at, 'run': B, 'mode_id': 5, 'description': DESC, 'dry_run': False, 'record': True,
                              'params': {}})
     assert r['ok'] is True and len(fake_start) == 1
 
@@ -339,5 +339,5 @@ def test_calibration_endpoint(tracker, monkeypatch, tmp_path):
 def test_server_wiring_is_light():
     src = open(os.path.join(os.path.dirname(srv.__file__), 'server.py'), encoding='utf-8').read()
     assert "hub['VEHICLE'].subscribe(vbat.on_sample)" in src and 'driver.listeners.append(_vbat_on_drive)' in src
-    assert 'DRIVE_CLIENT_VERSION = 9' in src                                          # 電圧では変えない(2026-10-27 fix5 で 8 → 9)
+    assert 'DRIVE_CLIENT_VERSION = 11' in src                                         # 電圧では変えない(2026-10-27 fix5 で 8 → 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11)
     assert time.monotonic() > 0

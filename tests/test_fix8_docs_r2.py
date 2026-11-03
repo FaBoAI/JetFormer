@@ -48,6 +48,8 @@ from pathlib import Path
 
 import pytest
 
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: その直しの版なら直す前の写し(= 10/31 USB を外して走るの版)で照らす
+
 JF = Path('/home/jetson/jetformer')
 REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
 BEFORE = JF / 'tests' / 'fixtures' / 'fix8_docs_r2_before'
@@ -75,6 +77,11 @@ RULE_WORDS = ('`--skip` しない', '外さない', 'には使わない')
 # LATER_FIX9_PRIORITY と同じ値
 FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
 LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
+# そのあと 2026-10-31 USB を外して走る(tether_free。いつも ON = ユーザーの決め「基本常にOn・選択ボタンも入りません」。Driver の start・_run・_loop・status と
+# 足した関数 1 つ・説明の文、画面の文・版 9 → 10)が drive.py・web/server.py・web/static/app.js・index.html・config.py を変えた。直す前の写しは
+# tests/fixtures/tether_1031_before/(= 上の LATER_FIX9_PRIORITY の版。SHA256SUMS)。違いは tests/test_tether_free.py
+TETHER_1031_BEFORE = JF / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3'}
 LATER_FIX9_BOOT = datetime(2026, 10, 29, 8, 51, 40)
 
 
@@ -456,7 +463,9 @@ def test_numbers_are_in_the_outputs():
     A = json.loads((D2 / 'out' / 'ana_first_rec_r2.json').read_text(encoding='utf-8'))
     assert A['NOBACK_S'] == 3.0 and A['BACK_M'] == 2.5
     S = A['sets']
-    dpy = JF / 'jetformer' / 'drive.py'
+    dpy = FB.back(JF / 'jetformer' / 'drive.py')       # 2026-11-01 電圧の前送りの版なら直す前の写し(= USB の版)
+    if _sha(dpy) == LATER_TETHER_1031['jetformer/drive.py']:       # 10/31 USB を外して走る の版 → 直す前の写し(= fix9 の版)
+        dpy = TETHER_1031_BEFORE / 'drive.py'
     if _sha(dpy) == LATER_FIX9_PRIORITY['jetformer/drive.py']:
         import test_fix9_priority_before as P9
         P9.assert_drive_changed_only_priority(dpy)

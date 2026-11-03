@@ -115,7 +115,7 @@ def same_start(a, b, desc=True):
     if a['client'] is None:             # 確認でキャンセル(送らない)
         assert b['client'] is None
         return
-    assert (a['client'], b['client']) == (9, 7) and a.get('build') == 0 and b.get('build') is None    # 2026-10-27 fix5 で版 9
+    assert (a['client'], b['client']) == (11, 7) and a.get('build') == 0 and b.get('build') is None   # 2026-10-27 fix5 で版 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11
 
 
 def same_posts(new, o):
@@ -265,13 +265,13 @@ def test_state3_versions_match():
     src = (ROOT / 'jetformer' / 'web' / 'server.py').read_text(encoding='utf-8')
     js = (STATIC / 'app.js').read_text(encoding='utf-8')
     ver = int(re.search(r'^DRIVE_CLIENT_VERSION = (\d+)', src, re.M).group(1))
-    assert ver == 9 and re.findall(r'const body = \{ client: (\d+),', js) == ['9']      # 2026-10-27 fix5(t1・t2・t3)で 8 → 9
-    assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9']             # ▶ の横に出す版も同じ数
+    assert ver == 11 and re.findall(r'const body = \{ client: (\d+),', js) == ['11']    # 2026-10-27 fix5(t1・t2・t3)で 8 → 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11
+    assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['11']            # ▶ の横に出す版も同じ数
     assert 'build: PAGE_BUILD' in js and 'id="dr-client-ver"' in (STATIC / 'index.html').read_text(encoding='utf-8')
 
 
 def _body(**kw):
-    b = {'client': 9, 'boot_at': srv.driver.boot_at,           # 2026-10-27 fix5: 版 9・画面が読んだ起動の時刻(t1)
+    b = {'client': 11, 'boot_at': srv.driver.boot_at,          # 2026-10-27 fix5: 版 9・画面が読んだ起動の時刻(t1)。10/31 USB を外して走る で版 10。11/1 電圧の前送り で 11
          'run': bench.B_RUN, 'mode_id': 5, 'description': 'AI走行 B', 'dry_run': True, 'record': False, 'params': {}}
     b.update(kw)
     return b
@@ -283,7 +283,7 @@ def test_state3_server_refuses_old_pages(tracker, fake_start, monkeypatch, tmp_p
     feed(tracker, 97.0, 100.0, 8.3)
     with pytest.raises(HTTPException) as e:
         srv.api_drive_start(_body(client=7))
-    assert e.value.status_code == 409 and '版 7・走行を始められるのは版 9 から' in e.value.detail     # 2026-10-27 fix5 で版 9
+    assert e.value.status_code == 409 and '版 7・走行を始められるのは版 11 から' in e.value.detail    # 2026-10-27 fix5 で版 9、10/31 で 10、11/1 電圧の前送り で 11
     js = tmp_path / 'app.js'
     js.write_text('x')
     os.utime(js, (1793667600, 1793667600))                     # 2026-11-03 10:00(JST)に直した app.js
@@ -312,10 +312,10 @@ def test_state3_page_reads_build_and_shows_version(tmp_path, cands):
     c, di = cands
     steps = [['read', 'client_ver'], ['pick', di, blk(c, di, 1)], ['start']]
     res, _ = run_sim(tmp_path, c, steps, script_src='/static/app.js?v=1793667600', name='a.json')
-    assert reads(res, 'client_ver') == ['画面の版 9(app.js 11/03 10:00)']                # 2026-10-27 fix5 で版 9
-    assert starts(res)[0]['build'] == 1793667600 and starts(res)[0]['client'] == 9
+    assert reads(res, 'client_ver') == ['画面の版 11(app.js 11/03 10:00)']               # 2026-10-27 fix5 で版 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11
+    assert starts(res)[0]['build'] == 1793667600 and starts(res)[0]['client'] == 11
     res2, _ = run_sim(tmp_path, c, steps, name='b.json')                                  # script の src が読めない
-    assert reads(res2, 'client_ver') == ['画面の版 9'] and starts(res2)[0]['build'] == 0
+    assert reads(res2, 'client_ver') == ['画面の版 11'] and starts(res2)[0]['build'] == 0
     o, _ = old(tmp_path, c, steps, script_src='/static/app.js?v=1793667600', name='c.json')
     assert reads(o, 'client_ver') == [''] and starts(o)[0].get('build') is None            # 直す前の画面には版の文が無い
 
@@ -332,4 +332,4 @@ def test_state3_old_page_from_2025_is_refused(tmp_path, cands):
     assert s0['client'] == 7 and s0['refused'] is True and any('管理画面が古いまま' in t for t in reads(o, 'toasts')[0])
     n, _ = run_sim(tmp_path, c, steps, server_client_version=8, defer_posts=True, name='n.json')
     s1 = starts(n)[0]
-    assert s1['client'] == 9 and s1['refused'] is False and s1['sent']['throttle_gain'] == 0.92     # 2026-10-27 fix5 で版 9
+    assert s1['client'] == 11 and s1['refused'] is False and s1['sent']['throttle_gain'] == 0.92    # 2026-10-27 fix5 で版 9、10/31 で 10、11/1 電圧の前送り で 11

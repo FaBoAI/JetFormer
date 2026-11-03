@@ -14,7 +14,20 @@
 
 安全のための動作(どれも中立を出す): センサーの値が途切れた・古い / 推論結果が異常 / AI側なのにプロポのCH3が
 届いていない(送信機の電源断・圏外では基板のSELECTがAI側のまま残るため)/ PCA9685への書き込み失敗。
-走行を始めたページからの問い合わせが3秒途絶えたら走行を止める。
+走行を始めたページからの問い合わせが config.DRIVE['heartbeat_s'](5 秒)途絶えたら走行を止める(下の「USB を外して走る」を
+config.DRIVE['tether_free'] = False にしたときだけ)。
+
+USB を外して走る(tether_free。2026-10-31、予選の会場で無線が使えないとき。USB でつないで ▶、USB を抜いて走り、走り終わったら
+USB をつなぎ直して止める。ユーザーの決め(10/31)「基本常にOn・選択ボタンも入りません」): config.DRIVE['tether_free'](既定 True)。
+走行を始めるとき(start)に読んで st['tether_free'] に入れ、その走行の途中では変えない(画面にスイッチは無い・走行開始の body でも
+変えない)。True の走行は、画面との通信が切れても止めない。念のための上限 config.DRIVE['tether_free_max_s'](30 分): 最後の生存確認
+(一度も来ていなければ走行開始)からそれだけ途絶えたら止める。False にすると前の決まり(heartbeat_s で止める。直す前と同じ)。
+CH3・センサーの見張り・プロポの電波切れ(AI 側のまま CH3 が届かない)の中立・ほかの止め方(停止ボタン = POST /api/drive/stop は
+token が要らない)はそのまま。status の tether_free(画面の確認の文はこれで決まる)と、収集した記録の log.json の drive.tether_free に残す。
+止めたときの保存(2026-10-31): 収集した走行の後始末で、recorder.stop のあとに os.sync() を 1 回(書いたシーンをすぐディスクへ。
+10/30 は走り終えて約 41 秒後の電源断で最後の約 39 秒の記録が消えた)。失敗しても後始末は続ける。収集しない走行では呼ばない。
+収集している間は recorder の rec-sync が config.RECORD_SYNC_S(2 秒)ごとに書き切る(最後のシーンは止めるときに保存するので、
+ここの 1 回で書き切る)。
 
 モデルの種類(方策、jetformer/policies)はどれも出力 actions [1,10,2] を持つので、先読み・ゲイン・ToFガード・補助・ラップ・
 CH3 の交代・センサーの途切れで中立はそのまま効く。推論の直後・先読みの前に、方策の後処理(model_config.json の
@@ -112,6 +125,25 @@ rec_back_guard が ON のときだけ使える(set_params も走行開始 start 
 
 AI の時間(stats['ai_s']、2026-10-21): CH3 が AI 側で dry run でない時間の和。道具(label_events の dt_s)と同じ決め方で、
 ベンチマークの「AI の時間が数える時間 + 1 分を過ぎたら止める」を画面で見るため。数えるだけで出力は変えない。
+
+電圧の前送り(speed_ff。2026-11-01、ユーザーの決め D-1「自動の補正を作る」。jetformer_reports/bench_20261030/speed_ff/README.md):
+パラメータ speed_ff(0/1・既定 0・起動のたびに 0 = RESET_ON_BOOT)と基準の電圧 ff_vref_v(既定 8.10 V・7.60〜8.80 V の外は断る・
+起動しても残す。この電圧ならゲインそのまま。当日の 1 枚 = bench_20261030/prep_1103/run_1103_v2.md の形 B では、一日 8.10 V のまま
+触らず、列は速度ゲインの ± 0.01 で動かす)。走行開始(start)のとき、server.py が決めた止まった基板の
+電圧 V0(説明欄の V_before と同じ値 = 直近 2 秒・止まっている・20 個以上の中央値。6.0〜9.0 V)で 1 回だけ
+m = clip(ff_vref_v ÷ V0, 0.85, 1.06) を決めて st['ff'] に入れ、走行の間は変えない(負荷で下がった電圧を使うと m が上がり、LH の当たりの
+帯に寄るため)。切りは速くする向き(上の 1.06)を止め、遅くする向き(下)は 0.85 まで通す(下の切りに当たると、倍率が基準の電圧 ÷ V0 より
+大きいまま止まり、ねらいより速く走る。0.85 なら、受け付ける基準の電圧(7.60 V 以上)と 8.94 V までの電圧の、どの組でも当たらない。2026-11-01
+粗探しの指摘 S2。前は 0.94 = 基準の電圧 8.10 V なら V0 が 8.62 V より上で当たった)。ON なのに V0 が無ければ走行を始めない(RuntimeError。サーバーは 409。黙って 1.00 にしない)。掛けるのは AI のフレーム
+(CH3 が AI 側で dry run でない)の速度ゲインだけ = apply_gains の前進側(モデルの前進の指令)。人の操縦(CH3 が人側)・モデルの
+ブレーキと後退・リカバリーと後退の受け付けと発進の補助が出す値・発進の前進の下限(launch_us)・中立止め・dry run の中立は今のまま。
+周ごとの直しは無い。走行中は ON にも OFF にもできない・基準の電圧も変えられない(1 走行 = 1 設定)。速さの天井・自動合わせと一緒には
+ON にできない(どちらの順でも断る)。OFF のとき、PCA9685 に書く値・記録の行・出来事は手を入れる前とビット単位で同じ(AI_CMD の行に
+ff_* の欄も足さない)。記録: log.json の drive の speed_ff・ff_vref_v・ff_v0・ff_m・ff_gain(走行開始の throttle_gain × m)、ON の
+AI_CMD の ff_on・ff_m(この走行の m)・ff_applied(そのフレームで掛けたか)。実際に掛けたゲインはいつも gains[:,1]。ON の走行の
+AI 側の中立止めの行も gains[:,1] は throttle_gain × m(中立なので掛けてはいない = ff_applied False。夜の道具 standing_3lap が AI 側の
+行のゲインの違いを「走行中に速度ゲインを変えた」と読まないように、AI 側の行はそろえる。2026-11-01 粗探しの指摘 S1)。TCP の速度の
+上限(speed_cap)と一緒に使うと、上限の割り戻しは throttle_gain のままなので、上限も × m になる(11/3 は TCP の上限を使わない)。
 """
 
 import collections
@@ -176,6 +208,9 @@ PARAM_LIMITS = {
     'launch_mps': (2.0, 3.0),      # 0.1 秒先の速さの見込みがこれに届いたら終わり [m/s]
     'launch_max_s': (0.5, 2.0),    # これより長く出さない [秒]
     'launch_no_kick': (0, 1),      # 1 = 発進の前進が「出さない」と決めた区間では発進の補助(StartKick)も出さない(既定 0・起動で 0。fix3)
+    # 電圧の前送り(2026-11-01)。既定 OFF・起動のたびに OFF・走行中は ON にも OFF にもできない・天井・自動合わせと一緒には使えない
+    'speed_ff': (0, 1),            # 1 = 電圧の前送り(走行開始の V0 で決めた m = ff_vref_v ÷ V0 を AI のフレームの速度ゲインに掛ける)
+    'ff_vref_v': (7.6, 8.8),       # 基準の電圧 [V](この電圧ならゲインそのまま。1 枚の形 B では一日 8.10 V のまま。外の値は断る。起動しても残す)
 }
 START_KICK_TTC_S = 1.0             # 発進の補助を出さない ToF の衝突までの時間 [秒](これより近い)
 HOLD_VEH_FAST_ERPM = 1000.0       # 残した中立止めの間に車両の値が来なかったとき、前に見た値がこれより速く後ろへ動いていたら、その間は全部
@@ -186,7 +221,8 @@ RESET_ON_BOOT = ('tcp_mode', 'speed_scale', 'zone_caps',
                  'speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto', 'auto_target_mps',
                  'launch_boost', 'launch_us', 'launch_mps', 'launch_max_s',
                  'rec_back_guard',      # 走行の制御に足すものは既定 OFF・起動で OFF(protocol_v3 の決まり。2026-10-26 fix2)
-                 'rec_hold_keep', 'launch_no_kick')     # 2026-10-26 fix3 safety1-1・1-2
+                 'rec_hold_keep', 'launch_no_kick',     # 2026-10-26 fix3 safety1-1・1-2
+                 'speed_ff')            # 電圧の前送り(2026-11-01)。基準の電圧 ff_vref_v は残す
 SPEED_CTRL_SWITCHES = ('speed_ceiling', 'speed_auto')                               # 走行中は 0 → 1 にできない
 SPEED_CTRL_VALUES = ('ceil_all_mps', 'ceil_left_mps', 'auto_target_mps', 'auto_vref_v')   # 走行中は変えられない
 LAUNCH_VALUES = ('launch_us', 'launch_mps', 'launch_max_s')                         # 発進の前進の値(走行中は変えられない)
@@ -211,7 +247,15 @@ DEFAULT_PARAMS = {'steer_gain': 1.0, 'throttle_gain': 0.5, 'steer_trim_us': 0.0,
                   'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0, 'auto_target_mps': 4.27,
                   'auto_vref_v': 8.35,
                   'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2,
-                  'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0}
+                  'rec_back_guard': 0, 'rec_hold_keep': 0, 'launch_no_kick': 0,
+                  'speed_ff': 0, 'ff_vref_v': 8.10}
+# 電圧の前送り(2026-11-01)の決まり。m = clip(ff_vref_v ÷ V0, FF_M_RANGE)。V0 は FF_V0_RANGE の中だけ使う(= sensors.vehicle.VBAT_RANGE_V)。
+# FF_M_RANGE の下(遅くする向き)は 0.85(粗探しの指摘 S2。前の 0.94 では、下の切りに当たると倍率が基準の電圧 ÷ V0 より大きいまま
+# 止まり、ねらいより速かった。基準の電圧 8.10 V なら V0 が 8.62 V より上)
+SPEED_FF_VERSION = '2026-11-01'
+FF_M_RANGE = (0.85, 1.06)
+FF_V0_RANGE = (6.0, 9.0)
+FF_VREF_STEP = 0.05                 # 画面の基準の電圧の欄の刻み(サーバーは範囲の中なら刻みを問わない)
 
 
 def params_changed(prev, new):
@@ -1200,6 +1244,53 @@ class _SpeedAuto(object):
         return out
 
 
+def tether_free_stop_text(max_s):
+    """「USB を外して走る」の上限で止めた理由の文(2026-10-31。max_s = config.DRIVE['tether_free_max_s']。1800 → 「30 分」)"""
+    s = float(max_s)
+    dur = '%d 分' % round(s / 60.0) if s >= 60.0 and abs(s / 60.0 - round(s / 60.0)) < 1e-9 else '%.0f 秒' % s
+    return '「USB を外して走る」の上限: 走行を始めた画面との通信が %s途絶えたため' % dur
+
+
+def ff_multiplier(vref_v, v0):
+    """電圧の前送りの倍率 m = clip(vref_v ÷ v0, FF_M_RANGE)(2026-11-01)。v0 = 走行開始の止まった基板の電圧 [V](FF_V0_RANGE の中)、
+    vref_v = 基準の電圧(PARAM_LIMITS['ff_vref_v'] の中)。どちらかが数でない・範囲の外なら ValueError(黙って 1.00 にしない)"""
+    try:
+        v, r = float(v0), float(vref_v)
+    except (TypeError, ValueError):
+        raise ValueError('電圧が数ではありません(走る前の電圧 %r・基準の電圧 %r)' % (v0, vref_v))
+    lo, hi = FF_V0_RANGE
+    if not (math.isfinite(v) and lo <= v <= hi):
+        raise ValueError('走る前の電圧 %r V は %.1f〜%.1f V の外です' % (v0, lo, hi))
+    rlo, rhi = PARAM_LIMITS['ff_vref_v']
+    if not (math.isfinite(r) and rlo - 1e-9 <= r <= rhi + 1e-9):
+        raise ValueError('基準の電圧 %r V は %.2f〜%.2f V の外です' % (vref_v, rlo, rhi))
+    return min(max(r / v, FF_M_RANGE[0]), FF_M_RANGE[1])
+
+
+def ff_spec(params=None):
+    """電圧の前送りの画面の表示用(st['ff_spec'])。値は走行開始・走行ループが使うものから作る(文と値をずらさない)"""
+    p = dict(DEFAULT_PARAMS, **(params or {}))
+    lo, hi = PARAM_LIMITS['ff_vref_v']
+    return {'version': SPEED_FF_VERSION, 'vref_v': float(p['ff_vref_v']), 'vref_range': [lo, hi], 'vref_step': FF_VREF_STEP,
+            'm_range': list(FF_M_RANGE), 'v0_range': list(FF_V0_RANGE),
+            'title': '電圧の前送り(倍率 = 基準の電圧 ÷ 走る前の電圧・%.2f〜%.2f 倍)' % FF_M_RANGE,
+            'note': ('走行開始(▶)のとき、止まっている基板の電圧(説明欄の V_before と同じ値)で 1 回だけ倍率を決め、走行の間は変えません。'
+                     '掛けるのは AI の前進の指令だけ(人の操縦・後退・リカバリー・発進の前進はそのまま)。走る前の電圧が無いときは'
+                     '走行を始めません。既定は OFF・管理画面を起動するたびに OFF。走行中は ON にも OFF にもできません。'
+                     '速さの天井・自動合わせとは一緒に使えません')}
+
+
+def ff_log(ff, params):
+    """log.json の drive に足す電圧の前送りの欄(2026-11-01)。ff = st['ff'](start が決めた値。OFF・無いときは speed_ff 0 で、
+    V0・倍率・実のゲインは None)"""
+    ff = ff or {}
+    if not ff.get('on'):
+        return {'speed_ff': 0, 'ff_vref_v': float((params or {}).get('ff_vref_v', DEFAULT_PARAMS['ff_vref_v'])), 'ff_v0': None,
+                'ff_m': None, 'ff_gain': None}
+    return {'speed_ff': 1, 'ff_vref_v': float(ff['vref_v']), 'ff_v0': float(ff['v0']), 'ff_m': float(ff['m']),
+            'ff_gain': float(ff['gain'])}
+
+
 class Driver(object):
     def __init__(self, hub, recorder):
         self.hub = hub
@@ -1259,14 +1350,60 @@ class Driver(object):
                 p[k] = min(max(v, lo), hi)
         p['lookahead'] = int(round(p['lookahead']))
         for k in ('esc_reverse', 'recovery', 'zone_caps', 'start_kick', 'speed_ceiling', 'speed_auto',
-                  'launch_boost', 'rec_back_guard', 'rec_hold_keep', 'launch_no_kick'):     # 古い設定ファイル・古い画面には無い項目
+                  'launch_boost', 'rec_back_guard', 'rec_hold_keep', 'launch_no_kick', 'speed_ff'):     # 古い設定ファイル・古い画面には無い項目
             p[k] = 1 if float(p.get(k, DEFAULT_PARAMS[k])) >= 0.5 else 0
         p['tof_guard'] = int(round(float(p.get('tof_guard', DEFAULT_PARAMS['tof_guard']))))
         for k in ('tcp_mode', 'ensemble_j'):           # 整数の項目(古い設定ファイルには無い)
             p[k] = int(round(float(p.get(k, DEFAULT_PARAMS[k]))))
-        for k in SPEED_CTRL_VALUES + LAUNCH_VALUES:    # 古い設定ファイルには無い
+        for k in SPEED_CTRL_VALUES + LAUNCH_VALUES + ('ff_vref_v',):    # 古い設定ファイルには無い
             p[k] = float(p.get(k, DEFAULT_PARAMS[k]))
         return p
+
+    FF_NAME = '電圧の前送り'
+
+    def _ff_rules(self, p, running, values=None):
+        """電圧の前送りの決まり(2026-11-01)。p は _clean_params と天井・自動合わせの決まりのあと、values = 送られた値(範囲を見る)。
+        ・基準の電圧は PARAM_LIMITS['ff_vref_v'](7.60〜8.80 V)の中だけ受け付ける(外は断る。_clean_params は範囲の中に切るので、
+          送られた値で見る。打ち間違いを黙って端の値にしない)
+        ・走行中は ON にも OFF にもできない・基準の電圧も変えられない(1 走行 = 1 設定。倍率は走行開始で決めたまま)
+        ・速さの天井・速さのゲインの自動合わせと一緒には ON にできない(どちらの順でも)。断るときは ValueError(サーバーは 400)"""
+        prev = self.params
+        lo, hi = PARAM_LIMITS['ff_vref_v']
+        raw = (values or {}).get('ff_vref_v')
+        if raw is not None:
+            x = float(raw)
+            if not (lo - 1e-9 <= x <= hi + 1e-9):
+                raise ValueError('電圧の前送りの基準の電圧 %.2f V は受け付けません(%.2f〜%.2f V)' % (x, lo, hi))
+        if running:
+            if p['speed_ff'] != (1 if float(prev.get('speed_ff', 0) or 0) >= 0.5 else 0):
+                raise ValueError('走行中は電圧の前送りを ON にも OFF にもできません。止めてから変えてください(1 走行 = 1 設定。'
+                                 'この走行は始めたときの倍率のまま)')
+            if abs(p['ff_vref_v'] - float(prev.get('ff_vref_v', DEFAULT_PARAMS['ff_vref_v']))) > 1e-9:
+                raise ValueError('走行中は電圧の前送りの基準の電圧を変えられません。止めてから変えてください(1 走行 = 1 設定)')
+        if p['speed_ff'] == 1 and (p['speed_ceiling'] == 1 or p['speed_auto'] == 1):
+            if float(prev.get('speed_ff', 0) or 0) >= 0.5:
+                raise ValueError('電圧の前送りが ON のあいだは、速さの天井・速さのゲインの自動合わせを ON にできません'
+                                 '(先に電圧の前送りを OFF にしてください)')
+            raise ValueError('速さの天井・速さのゲインの自動合わせが ON のあいだは、電圧の前送りを ON にできません'
+                             '(先に天井と自動合わせを OFF にしてください)')
+        return p
+
+    def _ff_start(self, p, ff_v0, ff_v0_note=''):
+        """走行開始の電圧の前送り(2026-11-01)→ st['ff']。OFF は {'on': False}。ON で走る前の電圧 V0 が無い・使えなければ RuntimeError
+        (走行を始めない。サーバーは 409。黙って 1.00 にしない)。ff_v0_note = V0 が無い理由(server.py の still_check の文)"""
+        if int(p.get('speed_ff', 0) or 0) != 1:
+            return {'on': False}
+        if ff_v0 is None:
+            raise RuntimeError('電圧の前送りが ON ですが、止まっているときの基板の電圧(走る前の電圧 V0)がありません%s。走行は始めていません。'
+                               '車を止めたまま 2 秒以上待ち、画面に電池の電圧が出ているのを見てから ▶ を押すか、電圧の前送りを OFF に'
+                               'してください' % ('(%s)' % ff_v0_note if ff_v0_note else ''))
+        try:
+            m = ff_multiplier(p['ff_vref_v'], ff_v0)
+        except ValueError as e:
+            raise RuntimeError('電圧の前送りの倍率を決められません: %s。走行は始めていません(電圧の前送りを OFF にすると走れます)' % e)
+        tg = float(p['throttle_gain'])
+        return {'on': True, 'version': SPEED_FF_VERSION, 'vref_v': float(p['ff_vref_v']), 'v0': float(ff_v0), 'm': m,
+                'throttle_gain': tg, 'gain': tg * m}
 
     def _launch_rules(self, p, running):
         """発進の前進の決まり(protocol_v3 14 章)。走行中は 0 → 1 にできない(1 → 0 はできる)・値は変えられない
@@ -1347,6 +1484,7 @@ class Driver(object):
                 raise ValueError('走行中は発進の補助(AI側にしたら走り出す)を ON にできません。止めてから ON にしてください'
                                  '(1 走行 = 1 設定)')
             p = self._speed_ctrl_rules(p, self.running)
+            p = self._ff_rules(p, self.running, values)
             p = self._launch_rules(p, self.running)
             p = self._opt_rules(p, self.running)
             if values.get('mode_id') is not None:
@@ -1389,8 +1527,9 @@ class Driver(object):
         except Exception:       # noqa: BLE001  記録できなくても走行は続ける
             traceback.print_exc()
 
-    def start(self, run, mode_id, record=False, description='', tags=None, dry_run=False, params=None):
-        """走行を始める。戻り値 (run, token)。token は生存確認(heartbeat)に使う"""
+    def start(self, run, mode_id, record=False, description='', tags=None, dry_run=False, params=None, ff_v0=None, ff_v0_note=''):
+        """走行を始める。戻り値 (run, token)。token は生存確認(heartbeat)に使う。
+        ff_v0 = 走る前の止まった基板の電圧 [V](電圧の前送りが ON の走行だけ使う。server.py の V_before と同じ値)・ff_v0_note = 無い理由"""
         with self.lock:
             if self.running:
                 raise RuntimeError('すでに走行中です')
@@ -1404,6 +1543,8 @@ class Driver(object):
                 raise ValueError('このモデルはジャンル %d(%s)を学習していません' % (mode_id, modes.name_of(mode_id)))
             new_params = self._opt_rules(self._launch_rules(self._speed_ctrl_rules(self._clean_params(params or {}), False), False),
                                          False)
+            new_params = self._ff_rules(new_params, False, params or {})
+            ff = self._ff_start(new_params, ff_v0, ff_v0_note)      # 電圧の前送り: ON で V0 が無ければ始めない(2026-11-01)
             if info.get('postprocess') and uses_post(new_params):
                 ref0 = (float(info.get('steer_center_us') or PWM_CENTER), float(info.get('throttle_neutral_us') or PWM_CENTER))
                 obj, note = post_mod.make(info, ref0)
@@ -1423,7 +1564,12 @@ class Driver(object):
             self.st = {'phase': 'starting', 'message': 'モデルとセンサーを準備中…', 'error': None, 'run': run,
                        'model': info, 'mode_id': mode_id, 'dry_run': bool(dry_run), 'record': bool(record),
                        'recording_note': '', 'ref': None, 'started': time.time(), 'stop_reason': '',
-                       'stats': {}, 'now': None, 'description': description or ''}
+                       'stats': {}, 'now': None, 'description': description or '',
+                       # 「USB を外して走る」(2026-10-31): 走行を始めるときに config から読む(この走行の途中では変えない。_loop・status・
+                       # 記録が使う)。config に無ければ False = 前の決まり(heartbeat_s で止める)
+                       'tether_free': bool(config.DRIVE.get('tether_free', False)),
+                       # 電圧の前送り(2026-11-01): 走行開始で決めた倍率(この走行の途中では変えない。_loop・status・記録が使う)
+                       'ff': ff}
             self.thread = threading.Thread(target=self._run, args=(info, bool(record), description or '',
                                                                    list(tags or []), bool(dry_run)),
                                            name='drive', daemon=True)
@@ -1532,7 +1678,9 @@ class Driver(object):
                               'params': dict(self.params), 'steer_center_us': ref[0], 'throttle_neutral_us': ref[1],
                               'policy': info.get('policy', policies.DEFAULT), 'policy_cfg': info.get('policy_cfg'),
                               'postprocess': ({'kind': pp.get('kind'), 'version': pp.get('version')}
-                                              if isinstance(pp, dict) else None)}
+                                              if isinstance(pp, dict) else None),
+                              'tether_free': bool(st.get('tether_free')),    # 「USB を外して走る」の ON/OFF(2026-10-31)
+                              **ff_log(st.get('ff'), self.params)}           # 電圧の前送り(2026-11-01。OFF は speed_ff 0)
                 try:
                     started_log = self.recorder.start(description=description, tags=tags, mode_id=st['mode_id'],
                                                       drive=drive_info)
@@ -1571,6 +1719,13 @@ class Driver(object):
                     stopped = self.recorder.stop(only_log=started_log)     # 途中で人が始め直した収集は止めない
                     st['message'] = st['message'].replace('・収集したシーンを保存中…',
                                                           '・収集したシーンを保存しました' if stopped else '')
+                except Exception:
+                    traceback.print_exc()
+                # 書いたシーンをすぐディスクへ(2026-10-31。書いただけでは 30 秒ほどメモリ(ページキャッシュ)に残ることがあり、10/30 は
+                # 走り終えて約 41 秒後の電源断で最後の約 39 秒の記録が消えた)。収集した走行だけ 1 回。失敗しても後始末は続ける(中立は
+                # いちばん先のまま)
+                try:
+                    os.sync()
                 except Exception:
                     traceback.print_exc()
             if st.get('announced'):
@@ -1632,6 +1787,11 @@ class Driver(object):
         st['auto_end'] = None
         stats.update(ceil_applied=0, ceil_neutral=0, ceil_ms=0.0, ceil_ms_max=0.0, auto_ms=0.0, auto_ms_max=0.0,
                      auto_laps=0)
+        # 電圧の前送り(speed_ff。2026-11-01): 走行開始(start)が走る前の電圧 V0 から決めた倍率 m(st['ff'])。この走行のあいだ変えない。
+        # OFF(st に無いときも)は何もしない(書く値・記録の行・出来事は手を入れる前と同じ。AI_CMD の行にも欄を足さない)
+        ffs = st.get('ff') or {}
+        ff_on = bool(ffs.get('on'))
+        ff_m = float(ffs['m']) if ff_on else 1.0
         # AI の時間(画面の「AI の時間」。ベンチマークの「数える 240 秒 + 1 分」で止める目安。2026-10-21 Fix-all)
         stats['ai_s'] = 0.0
         ai_sum, ai_t_prev, ai_was = 0.0, None, False
@@ -1842,7 +2002,10 @@ class Driver(object):
             if cam is not None:
                 self.recorder.add_ai(cam.t_ns, {
                     'pred': np.full((10, 2), np.nan, np.float32), 'raw': (np.nan, np.nan), 'out': (n_s, n_t),
-                    'gains': (p['steer_gain'], p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
+                    # 電圧の前送り ON の走行の AI 側(dry run でない)の中立止めの行も、ゲインは throttle_gain × m(AI 側の行のゲインを
+                    # そろえる。夜の道具が「走行中に変えた」と読まないように。2026-11-01 粗探しの指摘 S1)。OFF は前と同じ値
+                    'gains': (p['steer_gain'], p['throttle_gain'] * ff_m if (ff_on and veh_select and not dry_run)
+                              else p['throttle_gain']), 'trim': p['steer_trim_us'], 'lookahead': p['lookahead'],
                     'mode_id': st['mode_id'], 'hold': True, 'select': veh_select, 'latency_ms': np.nan,
                     'infer_ms': infer_ms, 'dry_run': dry_run, 'assist': assist_mod.ASSIST_NONE,
                     'model_out': (np.nan, np.nan), 'ttc': np.nan, 'guard': 0, 'guard_applied': False,
@@ -1851,7 +2014,8 @@ class Driver(object):
                     **zcaps.record(None, int(p.get('zone_caps', 0) or 0) == 1, False, n_t),
                     **sceil.record(None, int(p.get('speed_ceiling', 0) or 0) == 1, False, n_t),
                     **sauto.record_hold(int(p.get('speed_auto', 0) or 0) == 1),
-                    'launch_on': False, 'launch_end': int(lb_end)})
+                    'launch_on': False, 'launch_end': int(lb_end),
+                    **({'ff_on': True, 'ff_m': ff_m, 'ff_applied': False} if ff_on else {})})    # 電圧の前送り(ON の走行だけ)
             if (int(p.get('rec_hold_keep', 0) or 0) == 1 and int(p.get('rec_back_guard', 0) or 0) == 1
                     and veh_select and not dry_run):
                 helper.reset(keep_recovery=True)    # AI 側のままの中立止め: リカバリーは残す(rec_hold_keep。見張りが ON のときだけ)
@@ -1867,9 +2031,18 @@ class Driver(object):
                 hold_veh[2] = hold_veh[4] = 0.0
             stage.reset()                   # 後処理・重ね合わせも最初から(止めていた間の予測を混ぜない)
 
+        # 「USB を外して走る」(2026-10-31): この走行の st['tether_free'](start が config.DRIVE['tether_free'] から入れる。走行の途中では
+        # 変わらない)。True(既定)なら生存確認が heartbeat_s 途絶えても止めず、念のための上限 tether_free_max_s(最後の生存確認から。
+        # 一度も来ていなければ走行開始から = start が heartbeat_t を始めた時刻にする)だけで止める。False(st に無いときも)は今まで通り
+        tether_free = bool(st.get('tether_free'))
+        tf_max = float(dcfg['tether_free_max_s']) if tether_free else None
         while not self._stop.is_set():
             p = self.params
-            if time.monotonic() - self.heartbeat_t > dcfg['heartbeat_s']:
+            if tether_free:
+                if time.monotonic() - self.heartbeat_t > tf_max:
+                    st['stop_reason'] = tether_free_stop_text(tf_max)
+                    break
+            elif time.monotonic() - self.heartbeat_t > dcfg['heartbeat_s']:
                 st['stop_reason'] = ('走行を始めた画面からの応答が一度もありませんでした。画面を再読み込みしてから開始してください'
                                      if self.hb_count == 0 else
                                      '走行を始めた画面との通信が %.0f 秒途絶えたため' % dcfg['heartbeat_s'])
@@ -1966,6 +2139,11 @@ class Driver(object):
             g_used = p['throttle_gain']
             if auto_on and ai_frame and g_auto is not None and not sceil.failed:
                 g_used = g_auto
+            # 電圧の前送り(2026-11-01): ON の走行の AI のフレームだけ、速度ゲインに走行開始で決めた m を掛ける(掛かるのが前進側だけなのは
+            # apply_gains のまま。天井・自動合わせとは一緒に ON にならない = _ff_rules)。人側・dry run・中立止めのフレームは throttle_gain のまま
+            ff_applied = ff_on and ai_frame and not auto_on
+            if ff_applied:
+                g_used = p['throttle_gain'] * ff_m
             model_us = apply_gains(raw, ref, p if g_used == p['throttle_gain'] else dict(p, throttle_gain=g_used), lo, hi)
             # ToFガード: 衝突までの時間(TTC)が短ければ減速(・近い側から離すハンドル)。1 = 記録だけ
             g_mode, g_code, g_ttc, g_applied, base_us = int(p.get('tof_guard', 1)), 0, np.nan, False, model_us
@@ -2140,6 +2318,9 @@ class Driver(object):
                          'ceil': sceil.view(cout, ceil_on, ceil_applied),
                          # OFF のときは「ON なら掛けたはず」のゲイン(影)。ON は実際に掛けたゲイン(fix.md)
                          'auto': sauto.view(auto_on, g_used if auto_on else sauto.last_gain)}
+            if ff_on:                       # 電圧の前送り(ON の走行だけ): 倍率・今のゲインに掛けた実のゲイン・このフレームで掛けたか
+                st['now']['ff'] = {'on': True, 'm': _num(ff_m, 4), 'v0': _num(ffs.get('v0')), 'vref_v': _num(ffs.get('vref_v')),
+                                   'gain': _num(p['throttle_gain'] * ff_m, 4), 'applied': bool(ff_applied)}
             self.history.append((now_m, raw[0], raw[1], out_us[0], out_us[1], bool(veh['select'])))
             self.recorder.add_ai(cam.t_ns, {
                 'pred': pred.astype(np.float32), 'raw': raw, 'out': out_us,
@@ -2152,8 +2333,10 @@ class Driver(object):
                 'v_cmd': float(pinfo.get('v_cmd', np.nan)) if pinfo else np.nan,
                 'ens_j': int(p.get('ensemble_j', 0)), **zcaps.record(zout, zone_on, zone_applied, cap_in),
                 **sceil.record(cout, ceil_on, ceil_applied, ceil_in),
-                **sauto.record(int(p.get('speed_auto', 0) or 0) == 1, g_used, p['throttle_gain']),
-                'launch_on': bool(launch_on), 'launch_end': int(launch_end)})
+                # 電圧の前送りのゲインは、自動合わせの「掛けた」(sa_applied)に数えない(2026-11-01。自動合わせの欄は自動合わせのことだけ)
+                **sauto.record(int(p.get('speed_auto', 0) or 0) == 1, p['throttle_gain'] if ff_applied else g_used, p['throttle_gain']),
+                'launch_on': bool(launch_on), 'launch_end': int(launch_end),
+                **({'ff_on': True, 'ff_m': ff_m, 'ff_applied': bool(ff_applied)} if ff_on else {})})    # 電圧の前送り(ON の走行だけ)
         # 発進の前進の途中で走行を止めた(⑧)
         helper.boost.stop()
         launch_note()
@@ -2175,6 +2358,11 @@ class Driver(object):
         st['recording'] = self.recorder.recording
         st['elapsed_s'] = int((st.get('finished') or time.time()) - st['started']) if st.get('started') else 0
         st['heartbeat_age_s'] = round(time.monotonic() - self.heartbeat_t, 1) if self.running else None
+        # 「USB を外して走る」(2026-10-31): この走行(止まっていれば最後の走行。起動のあとまだ走っていなければ config の値 = 次の走行)と、
+        # 上限(画面の確認の文の「30 分」)。画面(版 10)は、tether_free が true で上限があるときだけ「USB を外しても止まりません」の文にする
+        st['tether_free'] = (bool(st['tether_free']) if 'tether_free' in st
+                             else bool(config.DRIVE.get('tether_free', False)))
+        st['tether_free_max_s'] = config.DRIVE.get('tether_free_max_s')
         now = time.monotonic()
         h = list(self.history)[::3]
         st['history'] = {'t': [round(r[0] - now, 2) for r in h], 'raw_steer': [round(r[1]) for r in h],
@@ -2184,6 +2372,7 @@ class Driver(object):
         st['zone_caps_spec'] = ZONE_CAPS_SPEC
         st['speed_ctrl_spec'] = speed_ctrl_spec(self.params)
         st['launch_spec'] = launch_spec(self.params)
+        st['ff_spec'] = ff_spec(self.params)                # 電圧の前送り(2026-11-01。この走行の倍率は st['ff'])
         st['pca9685'] = {'address': config.PCA9685['address'], 'freq_hz': config.PCA9685['freq_hz'],
                          'steering_ch': config.PCA9685['steering_ch'], 'throttle_ch': config.PCA9685['throttle_ch']}
         return st

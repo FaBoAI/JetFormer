@@ -47,6 +47,8 @@ from pathlib import Path
 
 import pytest
 
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: その直しの版なら直す前の写し(= 10/31 USB を外して走るの版)で照らす
+
 JF = Path('/home/jetson/jetformer')
 REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
 BEFORE = JF / 'tests' / 'fixtures' / 'fix8_docs_decided_before'
@@ -68,6 +70,11 @@ NEWER = '「起動より新しい: /home/jetson/jetformer/jetformer/drive.py」'
 FIX9_PRIORITY_BEFORE = JF / 'tests' / 'fixtures' / 'fix9_priority_before'
 LATER_FIX9_PRIORITY = {'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
 LATER_FIX8_SAFETY_DOC = {'jetformer/drive.py': '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'}
+# そのあと 2026-10-31 USB を外して走る(tether_free。いつも ON = ユーザーの決め「基本常にOn・選択ボタンも入りません」。Driver の start・_run・_loop・status と
+# 足した関数 1 つ・説明の文、画面の文・版 9 → 10)が drive.py・web/server.py・web/static/app.js・index.html・config.py を変えた。直す前の写しは
+# tests/fixtures/tether_1031_before/(= 上の LATER_FIX9_PRIORITY の版。SHA256SUMS)。違いは tests/test_tether_free.py
+TETHER_1031_BEFORE = JF / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3'}
 
 
 def _load(name, path):
@@ -446,8 +453,10 @@ def test_drive_doc_change_is_comment_only_and_after_the_restart():
     fx = JF / 'tests' / 'fixtures' / 'fix8_safety_doc_before'
     sums = dict(reversed(x.split(None, 1)) for x in (fx / 'SHA256SUMS').read_text().splitlines() if x.strip())
     assert _sha(fx / 'drive.py') == sums['drive.py']
-    after = drive                               # この組のあとの drive.py(説明の文だけ直した版)
-    if _sha(drive) == LATER_FIX9_PRIORITY['jetformer/drive.py']:
+    after = FB.back(drive)                      # この組のあとの drive.py(説明の文だけ直した版)。2026-11-01 電圧の前送りの版なら直す前の写し
+    if _sha(after) == LATER_TETHER_1031['jetformer/drive.py']:     # 10/31 USB を外して走る の版 → 直す前の写し(= fix9 の版)
+        after = TETHER_1031_BEFORE / 'drive.py'
+    if _sha(after) == LATER_FIX9_PRIORITY['jetformer/drive.py']:
         after = FIX9_PRIORITY_BEFORE / 'drive.py'
         s9 = dict(reversed(x.split(None, 1)) for x in (FIX9_PRIORITY_BEFORE / 'SHA256SUMS').read_text().splitlines() if x.strip())
         assert _sha(after) == s9['drive.py'] == LATER_FIX8_SAFETY_DOC['jetformer/drive.py']

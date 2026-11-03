@@ -267,6 +267,7 @@ def test_t2_limits_defaults_and_clipping(monkeypatch, tmp_path):
     before = load_before()
     later = drive.LAUNCH_KEYS + ('rec_back_guard',)      # 後ろの見張りは 2026-10-26 fix2(tests/test_recovery_back_guard.py)
     later += ('rec_hold_keep', 'launch_no_kick')          # 2026-10-26 fix3(tests/test_rec_hold_keep.py)
+    later += ('speed_ff', 'ff_vref_v')                   # 2026-11-01 電圧の前送り(tests/test_speed_ff.py)
     assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in later} == before.DEFAULT_PARAMS
     assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in later} == before.PARAM_LIMITS
     assert drive.DEFAULT_PARAMS['start_kick'] == 0 and drive.DEFAULT_PARAMS['throttle_gain'] == 0.5   # 既定値は変えていない
