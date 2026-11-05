@@ -71,7 +71,8 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / 'jetformer' / 'web' / 'static'
 DRIVE_PY = ROOT / 'jetformer' / 'drive.py'
 SERVER_PY = ROOT / 'jetformer' / 'web' / 'server.py'
-RECORDER_PY = ROOT / 'jetformer' / 'recorder.py'
+# 2026-11-03 録画のロックの直しのあとは、その直す前の写し(= この直しの版)で照らす。あとの直しの中身は tests/test_rec_imu_1103.py が見る
+RECORDER_PY = ROOT / 'tests' / 'fixtures' / 'rec_imu_1103_before' / 'recorder.py'
 APP = STATIC / 'app.js'
 INDEX = STATIC / 'index.html'
 BEFORE = FB.before_dir(ROOT)
@@ -1118,10 +1119,15 @@ def test_before_copies_are_the_real_of_11_01():
     assert t['jetformer/drive.py'] == FB.BEFORE_SHA['drive.py'] and t['jetformer/web/static/index.html'] == FB.BEFORE_SHA['index.html']
 
 
+def test_recorder_copy_is_the_speed_ff_version():
+    """RECORDER_PY は固定の写し。中身がこの直しの版のままであること"""
+    assert sha(RECORDER_PY) == FB.LATER_SPEED_FF_1101['jetformer/recorder.py']
+
+
 def test_later_is_this_fix():
     """LATER_SPEED_FF_1101 は今のファイル(この直しの版)。このあと誰かが直せば落ちて知らせる(見張りの段も合わせる)"""
     for rel, h in FB.LATER_SPEED_FF_1101.items():
-        assert sha(ROOT / rel) == h, rel
+        assert sha(ROOT / rel) in (h, FB.ALSO_LATER.get(rel)), rel      # 2026-11-03 録画のロックの直しは tests/test_rec_imu_1103.py が見る
         assert FB.back(ROOT / rel) == BEFORE / Path(rel).name
     bm = FB.back_module(drive)
     assert bm is not drive and Path(bm.__file__) == BEFORE / 'drive.py' and bm.DEFAULT_PARAMS == before_drive().DEFAULT_PARAMS

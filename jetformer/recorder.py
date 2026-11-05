@@ -24,6 +24,7 @@
 保存するまでメモリの中なので、これでは守れない)。
 """
 
+import collections
 import datetime
 import json
 import os
@@ -144,10 +145,14 @@ class _SceneBuffer(object):
         self.run = None          # 走行ごとに区切る収集: 何回目の走行か
         self.planned_s = None
         self.run_complete = False
-        (path / 'CAM_FRONT').mkdir(parents=True, exist_ok=True)
+        # フォルダはここで作らない(self.lock の中で呼ばれる。ディスクが止まると全部のセンサーと走行のループが待つ。
+        # 2026-11-03 本 24 の 4.36・10.69 秒の穴)。作るのは rec-io(_io_worker)と保存(_save_scene)
 
 
 class Recorder(object):
+    AI_PENDING_MAX = 1800      # 30 Hz で 60 秒ぶん。これより長くロックが空かなければ古い方から捨てる
+    EVENT_WAIT_S = 0.02        # add_event が書き終わりを待つのは長くてもこれだけ(ふつうは数 ms で終わり、すぐ読める)
+
     def __init__(self, hub, on_scene_saved=None):
         self.hub = hub
         self.on_scene_saved = on_scene_saved
@@ -176,6 +181,11 @@ class Recorder(object):
         self.sync_count = 0        # os.sync() を呼んだ回数(起動してから)
         self.sync_errors = 0       # 失敗した回数(数えて続ける。収集・走行は止めない)
         self.sync_last_error = ''
+        # 走行のループはディスクも self.lock も待たない(2026-11-03)。AI の指令はここに置き、ロックが空いたときに移す
+        self._ai_pending = collections.deque(maxlen=self.AI_PENDING_MAX)
+        self.ai_deferred = 0       # ロックが空いていなくて、あとで移した回数
+        self._events = queue.Queue()
+        threading.Thread(target=self._event_worker, name='rec-event', daemon=True).start()
 
     def _vbat_scale(self):
         """VEHICLE.npz に残す電圧の較正の係数(車両のセンサーが持つ値。無ければ 1.0)"""
@@ -234,6 +244,7 @@ class Recorder(object):
             self.scenes = {}
             self.saved = []
             self._closed = set()
+            self._ai_pending.clear()
             self.runs_mode = bool(runs_mode)
             self.runs_complete = 0
             self.run_count = 0
@@ -286,11 +297,13 @@ class Recorder(object):
         with self.lock:
             if not self.recording or (only_log is not None and self.log['name'] != only_log):
                 return False
+            self._drain_ai()
             self.recording = False
             for name in self.channels:
                 self.hub[name].unsubscribe(self._on_sample)
             sync_th = self._sync_end()             # 定期的な書き込みを止める(印だけ。待つのは保存のあと)
         self._io.join()
+        self._events.join()
         with self.lock:
             pending = sorted(self.scenes)
         for idx in pending:
@@ -342,28 +355,31 @@ class Recorder(object):
             buf = self.scenes.get(cur)
             if self.runs_mode:
                 buf = self.scenes.get(self.active_run) if self.active_run is not None else None
-                return {
+                st = {
                     'recording': True, 'runs_mode': True, 'log': self.log['name'], 'elapsed_s': round(elapsed, 1),
                     'run_index': buf.run if buf else None, 'runs_started': self.run_count,
                     'run_elapsed_s': round((clock.now_ns() - buf.start_ns) / 1e9, 1) if buf else None,
                     'run_planned_s': buf.planned_s if buf else None,
                     'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof), 'IMU': len(buf.imu),
                                        'VEHICLE': len(buf.veh)} if buf else {},
-                    'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
+                    'mode_id': self.log['mode_events'][-1][1],
                     'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
                     'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
                 }
-            return {
-                'recording': True, 'log': self.log['name'], 'elapsed_s': round(elapsed, 1),
-                'scene_index': cur + 1, 'scene_elapsed_s': round(elapsed - cur * config.SCENE_SECONDS, 1),
-                'scene_seconds': config.SCENE_SECONDS, 'max_scenes': self.max_scenes,
-                'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof),
-                                   'IMU': len(buf.imu), 'VEHICLE': len(buf.veh), 'AI_CMD': len(buf.ai),
-                                   'AUDIO': len(buf.audio)} if buf else {},
-                'mode_id': self.log['mode_events'][-1][1], 'mode_name': modes.name_of(self.log['mode_events'][-1][1]),
-                'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
-                'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
-            }
+            else:
+                st = {
+                    'recording': True, 'log': self.log['name'], 'elapsed_s': round(elapsed, 1),
+                    'scene_index': cur + 1, 'scene_elapsed_s': round(elapsed - cur * config.SCENE_SECONDS, 1),
+                    'scene_seconds': config.SCENE_SECONDS, 'max_scenes': self.max_scenes,
+                    'current_counts': {'CAM_FRONT': len(buf.cam), 'TOF_FRONT': len(buf.tof),
+                                       'IMU': len(buf.imu), 'VEHICLE': len(buf.veh), 'AI_CMD': len(buf.ai),
+                                       'AUDIO': len(buf.audio)} if buf else {},
+                    'mode_id': self.log['mode_events'][-1][1],
+                    'saved_scenes': list(self.saved), 'io_queue': self._io.qsize(),
+                    'dropped_writes': self.dropped_writes, 'last_error': self.last_error,
+                }
+        st['mode_name'] = modes.name_of(st['mode_id'])     # ジャンルの名前はファイルから読むので、ロックの外で(2026-11-03)
+        return st
 
     # ------------------------------------------------------------ 定期的な書き込み(2026-10-31)
     SYNC_JOIN_S = 1.0          # stop が rec-sync を待つのは長くてもこれだけ(os.sync の途中なら、終わるのを待たずに戻る)
@@ -406,15 +422,28 @@ class Recorder(object):
 
     # ------------------------------------------------------------------ 受信
     def add_event(self, kind, data):
-        """出来事を記録のフォルダの events.jsonl に1行ずつ足す(交代の理由など。途中で電源が落ちても、そこまでは残る)"""
-        with self.lock:
-            if not self.recording:
-                return False
-            path = self.log['path'] / 'events.jsonl'
+        """出来事を記録のフォルダの events.jsonl に1行ずつ足す(交代の理由など。途中で電源が落ちても、それまでの行は残る)。
+        走行のループからも呼ばれるので、書くのは rec-event に任せ、待つのは EVENT_WAIT_S まで(2026-11-03)。戻り値: 受け付けたか"""
+        log = self.log
+        if not self.recording or log is None:
+            return False
         line = json.dumps(dict(data, kind=kind, t_us=int(clock.now_ns() // 1000)), ensure_ascii=False)
-        with open(path, 'a', encoding='utf-8') as f:
-            f.write(line + '\n')
+        done = threading.Event()
+        self._events.put((log['path'] / 'events.jsonl', line, done))
+        done.wait(self.EVENT_WAIT_S)
         return True
+
+    def _event_worker(self):
+        while True:
+            path, line, done = self._events.get()
+            try:
+                with open(path, 'a', encoding='utf-8') as f:
+                    f.write(line + '\n')
+            except Exception as e:      # noqa: BLE001  書けなくても収集・走行は止めない
+                self.last_error = '出来事の保存失敗: %s' % e
+            finally:
+                done.set()
+                self._events.task_done()
 
     def update_drive(self, only_log, **fields):
         """走り終わりに log.json の drive へ欄を足す(走行中に変えた設定の params_end・params_changes。2026-10-26 fix2)。
@@ -428,21 +457,35 @@ class Recorder(object):
                 return False
             drv.update(fields)
             path = self.log['path'] / 'log.json'
-            try:
-                with open(path, encoding='utf-8') as f:
-                    j = json.load(f)
-            except (OSError, ValueError):
-                return False
-            j['drive'] = dict(j.get('drive') or {}, **fields)
-            write_json(path, j)
+        try:                           # ファイルはロックの外で(ディスクが止まってもセンサーを待たせない。2026-11-03)
+            with open(path, encoding='utf-8') as f:
+                j = json.load(f)
+        except (OSError, ValueError):
+            return False
+        j['drive'] = dict(j.get('drive') or {}, **fields)
+        write_json(path, j)
         return True
 
     def add_ai(self, t_ns, data):
         """AI走行の指令を記録する(収集中でなければ何もしない)。t_ns は推論に使ったカメラ画像の時刻"""
-        with self.lock:
-            if not self.recording:
-                return
-            buf = self._scene_for(t_ns)
+        if not self.recording:
+            return
+        self._ai_pending.append((t_ns, data))
+        # 走行のループを待たせない(2026-11-03): ロックが空いていなければ、次に空いた人(_on_sample・rec-final)に任せる
+        if self.lock.acquire(blocking=False):
+            try:
+                self._drain_ai()
+            finally:
+                self.lock.release()
+        else:
+            self.ai_deferred += 1
+
+    def _drain_ai(self):
+        """置いてある AI の指令をシーンへ移す(self.lock を持って呼ぶ)"""
+        q = self._ai_pending
+        while q:
+            t_ns, data = q.popleft()
+            buf = self._scene_for(t_ns) if self.recording else None
             if buf is not None:
                 buf.ai.append((t_ns, data))
 
@@ -473,6 +516,7 @@ class Recorder(object):
         with self.lock:
             if not self.recording:
                 return
+            self._drain_ai()
             buf = self._scene_for(sample.t_ns)
             if buf is None:
                 return
@@ -480,13 +524,14 @@ class Recorder(object):
             if channel == 'CAM_FRONT':
                 ts_us = clock.to_epoch_us(sample.t_ns)
                 fname = 'CAM_FRONT/%d.jpg' % ts_us
+                try:
+                    self._io.put_nowait((buf.path / fname, d['image']))
+                except queue.Full:             # 絵の無い行を残さない(dataset の写しが止まる。2026-11-03)
+                    self.dropped_writes += 1
+                    return
                 buf.cam.append((sample.t_ns, d['seq'], fname))
                 if buf.thumb is None and len(buf.cam) >= 30:
                     buf.thumb = d['image']
-                try:
-                    self._io.put_nowait((buf.path / fname, d['image']))
-                except queue.Full:
-                    self.dropped_writes += 1
             elif channel == 'TOF_FRONT':
                 buf.tof.append((sample.t_ns, d['seq'], d['depth']))
                 buf.last_depth = d['depth']
@@ -499,9 +544,13 @@ class Recorder(object):
 
     def _io_worker(self):
         params = [cv2.IMWRITE_JPEG_QUALITY, config.CAMERA['jpeg_quality']]
+        made = None                    # 作ったシーンのフォルダ(シーンの最初の絵のときだけ作る)
         while True:
             path, image = self._io.get()
             try:
+                if path.parent != made:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    made = path.parent
                 cv2.imwrite(str(path), image, params)
             except Exception as e:
                 self.last_error = 'JPEG保存失敗: %s' % e
@@ -516,6 +565,7 @@ class Recorder(object):
             with self.lock:
                 if not self.recording:
                     return
+                self._drain_ai()
                 now = clock.now_ns()
                 done = [i for i, b in self.scenes.items()
                         if now > b.end_ns + 1_000_000_000 and i != self.active_run]   # 走行中のシーンは終わるまで保存しない
@@ -530,6 +580,7 @@ class Recorder(object):
 
     def _finalize(self, idx, partial):
         with self.lock:
+            self._drain_ai()
             buf = self.scenes.pop(idx, None)
             self._closed.add(idx)
             log = dict(self.log, mode_events=list(self.log['mode_events'])) if self.log else None
@@ -552,6 +603,7 @@ class Recorder(object):
 
     def _save_scene(self, buf, log, partial):
         ts = lambda arr: np.array([clock.to_epoch_us(t) for t in arr], dtype=np.int64)
+        (buf.path / 'CAM_FRONT').mkdir(parents=True, exist_ok=True)       # 絵を全部落としたシーンでも保存できるように
         np.savez(buf.path / 'CAM_FRONT.npz',
                  timestamps_us=ts([c[0] for c in buf.cam]),
                  seq=np.array([c[1] for c in buf.cam], dtype=np.int64),

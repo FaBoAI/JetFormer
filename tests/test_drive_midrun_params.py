@@ -76,6 +76,7 @@ def test_midrun_off_is_recorded(rig):
     assert d.params['speed_ceiling'] == 0 and d.params['speed_auto'] == 0
     with pytest.raises(ValueError):
         d.set_params({'speed_ceiling': 1})                             # ON に戻すのは前と同じく断る(記録も増えない)
+    rec._events.join()                                                # 書くのは rec-event(2026-11-03)
     ev = [e for e in events(log_dir) if e['kind'] == 'params']
     assert len(ev) == 1 and ev[0]['changed'] == {'speed_ceiling': [1, 0], 'speed_auto': [1, 0]}
     assert ev[0]['epoch_us'] >= t0 and ev[0]['run'] == d.st['run']
@@ -92,6 +93,7 @@ def test_slider_change_midrun_is_recorded(rig):
     d.set_params({'throttle_gain': 1.0})
     d.set_params({'throttle_gain': 1.0})                               # 同じ値をもう一度: 記録しない
     d.set_params({'steer_trim_us': 15})
+    rec._events.join()                                                 # 書くのは rec-event(2026-11-03)
     ev = [e['changed'] for e in events(log_dir) if e['kind'] == 'params']
     assert ev == [{'throttle_gain': [0.95, 1.0]}, {'steer_trim_us': [0.0, 15.0]}]
 

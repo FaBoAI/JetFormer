@@ -417,7 +417,7 @@ def test_first_open_models_fail_reloads_on_the_next_loop_sync(tmp_path, cands):
     (new, tn), (old, to) = both(tmp_path, c, steps, no_init=True)
     n0, n1, n2 = look2(new, 0), look2(new, 1), look2(new, 2)
     assert n0[:5] == [MFAIL, '', 0, True, 'null'] and n0[5] == PLACEHOLDER                  # 失敗のすぐあと: 選ぶ欄に短い文
-    assert n1[2] == n2[2] == 6 and n1[4] == '"2026-11-03"' and n1[3] is True                # 1 秒後: 読み直した
+    assert n1[2] == n2[2] == len(c['candidates']) and n1[4] == '"2026-11-03"' and n1[3] is True                # 1 秒後: 読み直した
     assert n1[1] == c['baseline']['run'] and PLACEHOLDER not in n1[5]                       # 推奨のモデル(基準 = B)
     o2 = look2(old, 2)
     assert o2[:5] == [MFAIL, '', 0, True, 'null']
@@ -499,7 +499,7 @@ def test_no_reload_off_the_drive_tab_or_while_running(tmp_path, cands):
          ['start'], ['el', '#toast', 'text'], ['running', False], ['tick'], ['calls'], ['tick'], ['calls'], ['eval', 'state.drive.models.length']]
     res, _ = run_sim(tmp_path, c, b, no_init=True, name='b.json')
     cs = vals(res, 'calls')
-    assert [len(gets([x], MD)) for x in cs] == [1, 0, 1] and tagged(res)[-1] == 6
+    assert [len(gets([x], MD)) for x in cs] == [1, 0, 1] and tagged(res)[-1] == len(c['candidates'])
     assert tagged(res)[0] == 'モデルを選んでください'                                         # 走行中は前と同じ文(drIdle のときだけ変える)
     old, _ = run_sim(tmp_path, c, b, no_init=True, name='bo.json', app=BEFORE / 'app.js')
     assert tagged(old)[0] == 'モデルを選んでください' and [len(gets([x], MD)) for x in vals(old, 'calls')] == [1, 0, 0]

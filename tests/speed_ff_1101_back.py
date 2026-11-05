@@ -30,6 +30,9 @@ LATER_SPEED_FF_1101 = {
     'experiments/20261026_fix/fix6/ui/docs_ban9.py': '725c38a8c561a2a7709db9bbf423bd17dee197eba9d664ddf52e50b2a1eb2a32',      # 文書の版の台本(版 11 → 写しの版を読む段)
     'tests/test_vbat_ui.py': '62552914263f8243189ba2c59f870ff0f9b8b313f3f7a61e52a83f130f16e143',                          # 版の 1 行(client: 10 → 11。tests/test_ui_fix8_r2.py が照らす)
 }
+# 2026-11-03 録画のロックの直しの版の recorder.py(tests/test_rec_imu_1103.py)。AI_CMD の欄は変えていないので、この段は同じ写しで照らす。
+# 直したら tests/test_rec_imu_1103.py の test_later_is_this_fix が落ちて知らせる
+ALSO_LATER = {'jetformer/recorder.py': 'b5d77cea4c363b6f9302977b4591402ae7502c42c30435d90ef42fe4c15a4783'}
 # 直す前の写しの sha256(= 10/31 USB を外して走る のあとの版。drive.py・server.py・app.js・index.html は tests/test_ui_fix6.py・
 # tests/test_fix3_r3_2_tools.py などの LATER_TETHER_1031 と同じ値。recorder.py は tether_fix/README.md 4.2 の b968d694…)
 BEFORE_SHA = {
@@ -68,7 +71,7 @@ def later_rel(path):
     p = Path(path)
     s = p.as_posix()
     for rel, h in LATER_SPEED_FF_1101.items():
-        if (s == rel or s.endswith('/' + rel)) and p.is_file() and sha(p) == h:
+        if (s == rel or s.endswith('/' + rel)) and p.is_file() and sha(p) in (h, ALSO_LATER.get(rel)):
             return rel
     return None
 

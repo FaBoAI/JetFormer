@@ -174,8 +174,9 @@ def test_bench_day_1103_procedure_text():
     """bench_candidates.json の 11/3: API で発進の前進を入れない・ON の本はスイッチ・回 3/4 は zone_caps 0"""
     d = json.loads((JF / 'data' / 'bench_candidates.json').read_text(encoding='utf-8'))
     day = next(x for x in d['days'] if x['date'] == '2026-11-03')
-    assert len(day['blocks']) == 23 and '発進の前進は押したあとに画面のスイッチ' in day['note']
-    for b in day['blocks']:
+    blocks = [b for b in day['blocks'] if b['id'] == 'B']                              # 11/3 の会場で V2 のブロック 24〜39 を足した
+    assert len(blocks) == 23 and '発進の前進は押したあとに画面のスイッチ' in day['note']
+    for b in blocks:
         ap, ex = b.get('after_press', ''), b.get('expect', {})
         assert 'launch_boost' not in ap and 'API で launch' not in ap, b['block']
         assert b['params'] == {'throttle_gain': 0.9}, b['block']                       # 上書きは変えていない
@@ -183,7 +184,7 @@ def test_bench_day_1103_procedure_text():
             assert 'スイッチ ON' in ap and '1.5 m' in ap and '発進の前進: ON' in ap, b['block']
         if b['block'] >= 12:
             assert ex.get('zone_caps') == 0, b['block']
-    assert d['changes'][-1]['at'].startswith('2026-10-26 13:')
+    assert any(c['at'].startswith('2026-10-26 13:') for c in d['changes'])            # 11/3 の会場の変更があとに続く
 
 
 def test_runbook_has_no_api_launch_and_has_checks():

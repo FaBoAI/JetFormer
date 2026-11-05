@@ -15,7 +15,7 @@ import pytest
 HERE = Path(__file__).resolve().parent
 JF = Path('/home/jetson/jetformer')
 sys.path.insert(0, str(JF))
-REAL_BENCH = JF / 'data' / 'bench_candidates.json'
+REAL_BENCH = JF / 'data' / 'bench_candidates.json.bak-20261103-v2'     # 11/3 に V2 のブロックを足す前の写し(この道具は 11/3 が 1〜23 の形だけを受ける)
 RUN = 'v3_20261026-v3d-aug2-e60-s0'
 
 

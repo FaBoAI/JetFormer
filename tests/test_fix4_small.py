@@ -162,7 +162,8 @@ def test_plan_check_is_the_same(old_bench):
     cases.append(('ai_no=1 AI走行 x', bench.B_RUN, 5, dict(base, rec_back_guard=1)))
     for desc, run, mode, params in cases:
         assert bench.plan_check(desc, run, mode, params, data) == old_bench.plan_check(desc, run, mode, params, data)
-    d1, diffs1 = bench.plan_check(day['blocks'][0]['description'], day['blocks'][0]['run'], 5,
+    first_b = next(b for b in day['blocks'] if b['id'] == 'B')                  # 11/3 に V2 のブロックを一覧の先に足した
+    d1, diffs1 = bench.plan_check(first_b['description'], first_b['run'], 5,
                                   dict(base, throttle_gain=1.0, rec_back_guard=1, launch_no_kick=1), data)
     assert diffs1 == [] and 'cand=B' in d1                                      # 選択肢だけ ON は計画どおり
 

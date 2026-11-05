@@ -261,7 +261,7 @@ def benign(th):
     """試験の外に残ってよいスレッド: 収集の Recorder が作るたびに 1 つできる JPEG の書き手(Recorder._io_worker。列を待つだけで I2C に
     触れない・止める道が無い。test_collected_scene_keeps_the_board_voltage が作る)。名前ではなく、動かしている関数で見る"""
     f = getattr(getattr(th, '_target', None), '__func__', None)
-    return f is not None and f is Recorder._io_worker
+    return f is not None and f in (Recorder._io_worker, Recorder._event_worker)     # _event_worker = 2026-11-03 の出来事の書き手(同じ形)
 
 
 def leftover_threads(before, wait_s=LEFTOVER_WAIT_S):
