@@ -38,6 +38,7 @@ from fastapi import HTTPException
 from jetformer import drive
 from jetformer.web import bench
 from jetformer.web import server as srv
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: そのファイルがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 from test_ui_fix3 import _flows
 from test_vbat_desc import fake_start, tracker, feed      # noqa: F401  (fixture)
@@ -46,6 +47,10 @@ ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / 'jetformer' / 'web' / 'static'
 BEFORE = ROOT / 'tests' / 'fixtures' / 'fix5_ui_before'
 SIM = ROOT / 'tests' / 'fixtures' / 'app_sim_fix5.js'
+# 2026-10-31 USB を外して走る(tether_free。いつも ON)が index.html などを変えた(画面の版 9 → 10)。その版なら、直す前の写し
+# tests/fixtures/tether_1031_before/(= 10/29 fix9 のあとの版。SHA256SUMS)で前の版につなぐ(違いは tests/test_tether_free.py)
+TETHER_1031_BEFORE = ROOT / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/web/static/index.html': 'cca3d8f8ddfcd2b0b1de78c8c5dcb95649d83b770e1f6701f3696f3e97678ba1'}
 RUNS = ROOT / 'experiments' / '20261026_fix' / 'plan' / 'runs_1103.py'
 NODE = shutil.which('node')
 needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
@@ -66,7 +71,10 @@ def test_before_copies():
     old = (BEFORE / 'app.js').read_text(encoding='utf-8')
     assert 'drPostN' not in old and 'boot_at:' not in old and 'const body = { client: 8,' in old
     assert '_boot_refusal' not in (BEFORE / 'server.py').read_text(encoding='utf-8')
-    assert (STATIC / 'index.html').read_bytes() == (BEFORE / 'index.html').read_bytes()      # index.html は変えていない
+    idx = FB.back(STATIC / 'index.html')                                                  # 2026-11-01 電圧の前送りの版 → その直す前の写し
+    if _sha(idx) == LATER_TETHER_1031['jetformer/web/static/index.html']:
+        idx = TETHER_1031_BEFORE / 'index.html'                                            # USB を外して走る の版 → その直す前の写し
+    assert idx.read_bytes() == (BEFORE / 'index.html').read_bytes()                        # index.html は変えていない
 
 
 @pytest.fixture(scope='module')
@@ -274,7 +282,7 @@ def test_t1_old_server_without_boot_at_still_starts(tmp_path, cands):
              ['down', False], ['realpoll'], ['start']]
     res, _ = run_sim(tmp_path, c, steps, boot_at=None, server_boot_check=True)
     s0, s1, s2 = starts(res)
-    assert s0['status'] == 200 and s0['boot_at'] is None and s0['client'] == 9
+    assert s0['status'] == 200 and s0['boot_at'] is None and s0['client'] == 11               # 2026-10-31 USB を外して走る で版 10、11/1 電圧の前送り で 11
     assert s1['sent'] is None and s2['status'] == 200
 
 
@@ -295,7 +303,7 @@ def test_t1b_boot_refusal_rules():
 def test_t1b_api_drive_start_checks_boot_after_version(tracker, fake_start):
     """本物の api_drive_start(driver.start は偽物): boot_at が違う・無い → 409(driver.start を呼ばない)。版の照らしが先"""
     feed(tracker, 97.0, 100.0, 8.3)
-    body = {'client': 9, 'boot_at': srv.driver.boot_at, 'run': bench.B_RUN, 'mode_id': 5, 'description': 'AI走行 B', 'dry_run': True,
+    body = {'client': 11, 'boot_at': srv.driver.boot_at, 'run': bench.B_RUN, 'mode_id': 5, 'description': 'AI走行 B', 'dry_run': True,
             'record': False, 'params': {}}
     for bad in ({'boot_at': srv.driver.boot_at - 30.0}, {'boot_at': None}, {'boot_at': 'x'}):
         with pytest.raises(HTTPException) as e:
@@ -308,7 +316,7 @@ def test_t1b_api_drive_start_checks_boot_after_version(tracker, fake_start):
     assert 'まだ読んでいません' in e.value.detail
     with pytest.raises(HTTPException) as e:
         srv.api_drive_start(dict(body, client=8))
-    assert '版 8・走行を始められるのは版 9 から' in e.value.detail
+    assert '版 8・走行を始められるのは版 11 から' in e.value.detail                          # 2026-10-31 USB を外して走る で版 10 から、11/1 電圧の前送り で 11
     assert fake_start == []
     assert srv.api_drive_start(body)['ok'] is True and len(fake_start) == 1
 
@@ -316,8 +324,8 @@ def test_t1b_api_drive_start_checks_boot_after_version(tracker, fake_start):
 def test_versions_match_and_page_sends_boot_at():
     src = (ROOT / 'jetformer' / 'web' / 'server.py').read_text(encoding='utf-8')
     js = (STATIC / 'app.js').read_text(encoding='utf-8')
-    assert int(re.search(r'^DRIVE_CLIENT_VERSION = (\d+)', src, re.M).group(1)) == 9 == srv.DRIVE_CLIENT_VERSION
-    assert re.findall(r'const body = \{ client: (\d+),', js) == ['9'] and re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9']
+    assert int(re.search(r'^DRIVE_CLIENT_VERSION = (\d+)', src, re.M).group(1)) == 11 == srv.DRIVE_CLIENT_VERSION     # 10/31 で 10、11/1 電圧の前送り で 11
+    assert re.findall(r'const body = \{ client: (\d+),', js) == ['11'] and re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['11']
     assert 'boot_at: state.drive.bootAt ?? null' in js and js.count("'/api/drive/start'") == 1
     fn = src[src.index('def api_drive_start'):src.index('if trainer.running:', src.index('def api_drive_start'))]
     assert fn.index('_client_version(body) < DRIVE_CLIENT_VERSION') < fn.index('_page_build(body)') < fn.index('_boot_refusal(body')
@@ -535,7 +543,7 @@ def test_other_flows_send_the_same(tmp_path, cands, boot_check):
         for a, b in zip(sn, so):
             for k in ('sent', 'confirm', 'confirms', 'refused', 'desc', 'record', 'dry', 'build', 'run', 'status'):
                 assert a[k] == b[k], (name, k, a[k], b[k])
-            assert (a['client'], b['client']) in ((9, 8), (None, None)) and (a['boot_at'], b['boot_at']) in ((1000.0, None), (None, None))
+            assert (a['client'], b['client']) in ((11, 8), (None, None)) and (a['boot_at'], b['boot_at']) in ((1000.0, None), (None, None))   # 11/1 電圧の前送り で 11
         norm = lambda r: [[[p, no_ver(bd) if p == '/api/drive/start' else bd, s] for p, bd, s in x] for x in posts(r)]   # noqa: E731
         assert norm(new) == norm(old), name
         assert tn == to, name
@@ -583,7 +591,7 @@ def test_day_flow_1103_all_24_starts_as_planned(tmp_path, cands, real_driver):
     steps, plan = _day_steps(c, di)
     res, toasts = run_sim(tmp_path, c, steps, boot_at=d.boot_at, server_boot_check=True)
     sts = starts(res)
-    assert len(sts) == 24 and all(s['status'] == 200 and s['boot_at'] == d.boot_at and s['client'] == 9 for s in sts)
+    assert len(sts) == 24 and all(s['status'] == 200 and s['boot_at'] == d.boot_at and s['client'] == 11 for s in sts)   # 10/31 で版 10、11/1 電圧の前送り で 11
     k = 0
     for path, body, status in posts(res)[0]:
         if path == '/api/drive/params':

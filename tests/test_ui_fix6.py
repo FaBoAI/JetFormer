@@ -37,6 +37,7 @@ from fastapi import HTTPException
 from jetformer import drive
 from jetformer.web import bench
 from jetformer.web import server as srv
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: そのファイルがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 from test_ui_fix3 import _flows
 from test_vbat_desc import fake_start, tracker, feed      # noqa: F401  (fixture)
@@ -51,6 +52,14 @@ R1_AFTER = ROOT / 'tests' / 'fixtures' / 'fix6_ui_r2_before'
 DOCS_BEFORE = ROOT / 'tests' / 'fixtures' / 'fix6_ui_docs_before'
 SIM = ROOT / 'tests' / 'fixtures' / 'app_sim_fix6.js'
 DOCS_TOOL = ROOT / 'experiments' / '20261026_fix' / 'fix6' / 'ui' / 'docs_ban9.py'
+# 2026-10-31 USB を外して走る(tether_free。いつも ON)が server.py・index.html・app.js などを変えた(画面の版 9 → 10 = 走行開始の
+# body の client。body はほかは前と同じ)。その版なら、直す前の写し tests/fixtures/tether_1031_before/(= 10/29 fix9 のあとの版。
+# SHA256SUMS)で前の版につなぐ(tether_back)。node の画面の比べでは、今の画面の走行開始の client 10 を直す前の写しと同じ 9 として読む
+# (v9_posts。違いの全部は tests/test_tether_free.py)。あとの組の試験(test_ui_fix6_r2・fix7・fix7_r2・fix8_r1)もこれを使う
+TETHER_1031_BEFORE = ROOT / 'tests' / 'fixtures' / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/web/server.py': '0c73072ae6df3b1e8c16b2e15859130003b595222237605ee2203597bf320605',
+                     'jetformer/web/static/index.html': 'cca3d8f8ddfcd2b0b1de78c8c5dcb95649d83b770e1f6701f3696f3e97678ba1',
+                     'jetformer/web/static/app.js': '6cbdc98db2ea56aa3a1355cca6b9b57f118609cda1b554a9606f1edacd8b569b'}
 NODE = shutil.which('node')
 needs_node = pytest.mark.skipif(NODE is None, reason='node がありません')
 RESET = {k: drive.DEFAULT_PARAMS[k] for k in drive.RESET_ON_BOOT}
@@ -63,6 +72,22 @@ OLD_TOAST = ("  toast(`管理画面のサーバーが ${hm} に起動し直し�
 
 def _sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def tether_back(rel):
+    """ROOT / rel が USB を外して走る(2026-10-31)の版なら、その直す前の写し(= 10/29 fix9 のあとの版)。ほかはそのまま。
+    2026-11-01 電圧の前送りの版なら、先にその直す前の写し(= USB を外して走るの版。FB.back)にしてから同じように照らす"""
+    p = ROOT / rel
+    q = FB.back(p)
+    return TETHER_1031_BEFORE / p.name if rel in LATER_TETHER_1031 and _sha(q) == LATER_TETHER_1031[rel] else q
+
+
+def v9_posts(v):
+    """送った POST の列(['posts'] の 1 つ)で、今の画面の走行開始の body の client 10 を 9 として読む(2026-10-31。上の注)。
+    2026-11-01 電圧の前送り: 今の画面がその直しの版(版 11。走行開始の body は版のほか前と同じ = tests/test_speed_ff.py)なら client 11 も"""
+    cur = (10, 11) if FB.later_rel(STATIC / 'app.js') else (10,)
+    return [[p, dict(b, client=9) if p == '/api/drive/start' and isinstance(b, dict) and b.get('client') in cur else b] + list(r)
+            for p, b, *r in v]
 
 
 def test_before_copy_and_only_three_places_changed():
@@ -88,8 +113,8 @@ def test_before_copy_and_only_three_places_changed():
     assert not any(re.search(r'\bapi\(|body\.|fetch\(', x) for x in added)     # 送る物は足していない
     js = after.read_text(encoding='utf-8')
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')          # fix5 のあとの版のまま
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
+    assert _sha(tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')           # fix5 のあとの版のまま
+    assert _sha(tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')
 
 
 # ------------------------------------------------------------------ 画面を node で流す
@@ -136,7 +161,7 @@ def els(res):
 
 
 def posts(res):
-    return [x['value'] for x in res if x['op'] == 'posts']
+    return [v9_posts(x['value']) for x in res if x['op'] == 'posts']     # 2026-10-31: 走行開始の client 10 を 9 として(v9_posts)
 
 
 HOLD = ("globalThis.__held = []; globalThis.__f0 = fetch; globalThis.__holdN = 1; fetch = function (u, o) { if (o && o.method === 'POST' "
@@ -169,7 +194,7 @@ SCENES = {
                        {}, R1000, BOOT_TOAST),
     'F_net_fail_then_up': ([['reboot_on_confirm', 2000.0, RESET], ['start_fail'], ['start']], {},
                            PREFIX + 'Failed to fetch (sim6: 走行開始が届かない)。' + BOOT_TOAST, BOOT_TOAST),
-    'G_old_page_and_reboot': ([['reboot_on_confirm', 2000.0, RESET], ['start']], {'server_client_version': 10},
+    'G_old_page_and_reboot': ([['reboot_on_confirm', 2000.0, RESET], ['start']], {'server_client_version': 12},     # 今の画面(版 11。2026-11-01。10/31 は版 10)より新しいサーバー
                               PREFIX + '管理画面が古いままです。' + BOOT_TOAST, BOOT_TOAST),
     'I_never_read_boot': ([['reboot', 2000.0, RESET], ['start']], {'boot_at': None}, PREFIX + REAL['null'], REAL['null']),
 }
@@ -232,7 +257,7 @@ def test_other_refusals_and_flows_same_as_before(tmp_path, cands):
     flows['版で断られる'] = ([['start'], ['start']], {})
     for i, (name, (steps, sp)) in enumerate(flows.items()):
         st = [['poll']] + steps + [['el', '#toast', 'text'], ['el', '#dr-message', 'html'], ['posts']]
-        kw = {'server_client_version': 10} if name == '版で断られる' else {}
+        kw = {'server_client_version': 12} if name == '版で断られる' else {}            # 今の画面(版 11。2026-11-01。10/31 は版 10)より新しいサーバー
         new, tn = run_sim(tmp_path, c, st, name='n%d.json' % i, server=server_params(**sp), **kw)
         old, to = run_sim(tmp_path, c, st, app=BEFORE / 'app.js', name='o%d.json' % i, server=server_params(**sp), **kw)
         assert tn == to and els(new) == els(old) and posts(new) == posts(old), name
@@ -252,7 +277,7 @@ def test_refusal_pattern_matches_only_the_boot_refusal(monkeypatch, tracker, fak
     assert pat.search(srv._boot_refusal({'boot_at': 1000.0}, srv.driver.boot_at))
     assert not pat.search(BOOT_TOAST) and not pat.search(PREFIX + REAL['1000'])
     feed(tracker, 97.0, 100.0, 8.3)
-    body = {'client': 9, 'boot_at': srv.driver.boot_at, 'run': bench.B_RUN, 'mode_id': 5, 'description': 'AI走行 B', 'dry_run': True,
+    body = {'client': 11, 'boot_at': srv.driver.boot_at, 'run': bench.B_RUN, 'mode_id': 5, 'description': 'AI走行 B', 'dry_run': True,
             'record': False, 'params': {}}
     others = []
     for bad in ({'client': 8}, {'build': 1}):

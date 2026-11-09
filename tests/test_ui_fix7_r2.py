@@ -139,11 +139,12 @@ def test_before_copy_and_only_these_places_changed():
     assert [x.strip() for x in code if re.search(r'\bpollDrive\(\)', x)] == [         # どれも前からの 3 か所(形だけ変えた)
         'const lost = () => { state.drive.modelsMiss = true; state.drive.modelsRetry = 2; if (drIdle()) { drLost(); pollDrive(); } };',
         'pollDrive();', 'try { synced = await pollDrive(); } finally {']
-    js = APP.read_text(encoding='utf-8')
+    # 版は 9 のまま。2026-10-31 USB を外して走る が版を 10 にした版なら、その直す前の写し(= 10/29 fix9 のあとの版)で見る
+    js = (APP if os.environ.get('JF_UI72_APP') else F6.tether_back('jetformer/web/static/app.js')).read_text(encoding='utf-8')
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert js.count('toast(msg, true);') == 1 and js.count('bootRefusal = /^管理画面のサーバーが .*に起動し直しました\\(/.test(m)') == 1
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
+    assert _sha(F6.tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')      # 2026-10-31 USB を外して走る の版なら直す前の写し
+    assert _sha(F6.tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')
     css = STATIC / 'style.css'                    # fix8 ui r1(.toast の幅)の版なら、その直す前の写しを見る
     if _sha(css) == LATER_FIX8_UI_R2['jetformer/web/static/style.css']:     # fix8 ui r2(■ の幅)の版 → その直す前の写し(dbc8b79a…)
         css = FIX8_UI_R2_BEFORE / 'style.css'
@@ -169,12 +170,13 @@ def test_fill_is_the_old_loaddrive_body_and_texts_match():
     option の 1 行をその 3 行に替えただけかを見る(app.js の違いの全部は tests/test_fix9_priority_before.py)。JF_UI72_APP を付けたとき
     (わざと壊す台本)はその写しをそのまま見る"""
     a = (BEFORE / 'app.js').read_text(encoding='utf-8')
-    js = APP.read_text(encoding='utf-8')
+    app = APP if os.environ.get('JF_UI72_APP') else F6.tether_back('jetformer/web/static/app.js')     # USB を外して走る(10/31)の版 → 直す前の写し
+    js = app.read_text(encoding='utf-8')
     old = re.search(r"\n(  const sel = \$\('#dr-model'\), cur = sel\.value;\n.*?\n  state\.drive\.restored = true;\n)  pollDrive\(\);\n  loadBench\(\);\n\}",
                     a, re.S).group(1)
     fill_re = r'\nfunction fillDriveModels\(\) \{\n(.*?)\}\n'
     new = re.search(fill_re, js, re.S).group(1)
-    if not os.environ.get('JF_UI72_APP') and _sha(APP) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
+    if not os.environ.get('JF_UI72_APP') and _sha(app) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
         import test_fix9_priority_before as P9
         p9 = FIX9_PRIORITY_BEFORE / 'app.js'
         assert _sums(FIX9_PRIORITY_BEFORE)['app.js'] == _sha(p9) and _sha(p9).startswith('e61dfac905cb')
@@ -222,7 +224,8 @@ def both(tmp_path, c, steps, **kw):
 
 
 def vals(res, op):
-    return [x.get('value') for x in res if x['op'] == op]
+    out = [x.get('value') for x in res if x['op'] == op]
+    return [F6.v9_posts(v) for v in out] if op == 'posts' else out      # 2026-10-31: 走行開始の client 10 を 9 として(F6.v9_posts)
 
 
 def tagged(res):
@@ -347,7 +350,7 @@ def test_no_reshow_without_a_restart_exactly_as_before(tmp_path, cands, name):
     """起き直していない(Wi-Fi の途切れだけ)・途切れのあと知らせの無い同期が通った・走行開始の返事だけ届かなかった・同期が通った:
     トースト・見え方・通信の全部・タイマー・送った物が直す前とまったく同じ"""
     c, di = cands
-    extra = {'server_client_version': 10} if name == 'old_page_synced' else {}
+    extra = {'server_client_version': 12} if name == 'old_page_synced' else {}      # 今の画面(版 11。2026-11-01。10/31 は版 10)より新しいサーバー
     steps = [['tab', 'drive'], ['tick']] + SAME1[name] + LOOK1 + [['posts'], ['calls'], ['ntimers']]
     (new, tn), (old, to) = both(tmp_path, c, steps, **extra)
     assert tn == to and tagged(new) == tagged(old)
@@ -414,7 +417,7 @@ def test_first_open_models_fail_reloads_on_the_next_loop_sync(tmp_path, cands):
     (new, tn), (old, to) = both(tmp_path, c, steps, no_init=True)
     n0, n1, n2 = look2(new, 0), look2(new, 1), look2(new, 2)
     assert n0[:5] == [MFAIL, '', 0, True, 'null'] and n0[5] == PLACEHOLDER                  # 失敗のすぐあと: 選ぶ欄に短い文
-    assert n1[2] == n2[2] == 6 and n1[4] == '"2026-11-03"' and n1[3] is True                # 1 秒後: 読み直した
+    assert n1[2] == n2[2] == len(c['candidates']) and n1[4] == '"2026-11-03"' and n1[3] is True                # 1 秒後: 読み直した
     assert n1[1] == c['baseline']['run'] and PLACEHOLDER not in n1[5]                       # 推奨のモデル(基準 = B)
     o2 = look2(old, 2)
     assert o2[:5] == [MFAIL, '', 0, True, 'null']
@@ -496,7 +499,7 @@ def test_no_reload_off_the_drive_tab_or_while_running(tmp_path, cands):
          ['start'], ['el', '#toast', 'text'], ['running', False], ['tick'], ['calls'], ['tick'], ['calls'], ['eval', 'state.drive.models.length']]
     res, _ = run_sim(tmp_path, c, b, no_init=True, name='b.json')
     cs = vals(res, 'calls')
-    assert [len(gets([x], MD)) for x in cs] == [1, 0, 1] and tagged(res)[-1] == 6
+    assert [len(gets([x], MD)) for x in cs] == [1, 0, 1] and tagged(res)[-1] == len(c['candidates'])
     assert tagged(res)[0] == 'モデルを選んでください'                                         # 走行中は前と同じ文(drIdle のときだけ変える)
     old, _ = run_sim(tmp_path, c, b, no_init=True, name='bo.json', app=BEFORE / 'app.js')
     assert tagged(old)[0] == 'モデルを選んでください' and [len(gets([x], MD)) for x in vals(old, 'calls')] == [1, 0, 0]

@@ -51,6 +51,8 @@ from pathlib import Path
 
 import pytest
 
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: その直しの版なら直す前の写し(= 10/31 USB を外して走るの版)で照らす
+
 JF = Path('/home/jetson/jetformer')
 REPORTS = Path('/home/jetson/jetformer_reports/fix_20261026')
 BEFORE = JF / 'tests' / 'fixtures' / 'fix7_docs_r2_before'
@@ -774,7 +776,7 @@ def test_defaults_unchanged():
     sums = dict(reversed(x.split(None, 1)) for x in (fx / 'SHA256SUMS').read_text().splitlines() if x.strip())
     assert _sha(fx / 'drive.py') == sums['drive.py']
     names = ('DEFAULT_PARAMS', 'PARAM_LIMITS', 'RESET_ON_BOOT')
-    now = _assigns((JF / 'jetformer' / 'drive.py').read_text(encoding='utf-8'), names)
+    now = _assigns(FB.back(JF / 'jetformer' / 'drive.py').read_text(encoding='utf-8'), names)   # 2026-11-01 電圧の前送りの版なら直す前の写し
     old = _assigns((fx / 'drive.py').read_text(encoding='utf-8'), names)
     assert set(now) == set(names) and now == old
     from jetformer import drive

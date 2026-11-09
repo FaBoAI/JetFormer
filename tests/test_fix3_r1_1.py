@@ -29,6 +29,7 @@ import pytest
 
 from jetformer import assist as A
 from jetformer import clock, config, drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 from jetformer.sensors.base import Sample
 
 from test_drive_caps import FakeRecorder, SeqRunner, assert_rows_equal_before, fake_normalize
@@ -197,8 +198,9 @@ def test_before_copies_and_defaults_unchanged():
     for name in ('app.js', 'index.html'):
         assert sha(FIX / name) == s[name], name
     amod, before = load_before()
-    assert drive.DEFAULT_PARAMS == before.DEFAULT_PARAMS                 # 既定値は 1 つも変えていない(新しい項目も無い)
-    assert drive.PARAM_LIMITS == before.PARAM_LIMITS and drive.RESET_ON_BOOT == before.RESET_ON_BOOT
+    dm = FB.back_module(drive)                                  # 2026-11-01 電圧の前送りの版なら直す前の写し(既定値の表)
+    assert dm.DEFAULT_PARAMS == before.DEFAULT_PARAMS                    # 既定値は 1 つも変えていない(新しい項目も無い)
+    assert dm.PARAM_LIMITS == before.PARAM_LIMITS and dm.RESET_ON_BOOT == before.RESET_ON_BOOT
     assert drive.START_KICK_TTC_S == before.START_KICK_TTC_S
     for k in ('IMPACT_G', 'BACK_RECENT_S', 'MAX_REV_TOTAL_S', 'ESCAPE_US', 'ESCAPE_S'):
         assert getattr(A.Recovery, k) == getattr(amod.Recovery, k)

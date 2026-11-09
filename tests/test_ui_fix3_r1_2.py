@@ -165,7 +165,7 @@ def test_reboot_does_not_change_sent_values(tmp_path, cands):
         sn, so = starts(new), starts(old)
         assert len(sn) == len(so) > 0, name
         for a, b in zip(sn, so):
-            assert a['sent'] == b['sent'] and a['confirm'] == b['confirm'] and (a['client'], b['client']) == (9, 7), name   # fix5 で版 9
+            assert a['sent'] == b['sent'] and a['confirm'] == b['confirm'] and (a['client'], b['client']) == (11, 7), name  # fix5 で版 9、10/31 で 10、11/1 電圧の前送り で 11
         from test_ui_fix3_r1 import posts_no_ver                    # 走行開始の版 client・build のほか(2026-10-27 r2-r2-state-3)
         assert posts_no_ver(new) == posts_no_ver(old), name
         assert [t for t in tn if t not in boot_toasts(tn)] == to and len(boot_toasts(tn)) >= 1, name

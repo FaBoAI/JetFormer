@@ -191,7 +191,7 @@ def test_custom_template_and_missing_baseline(env):
 def test_server_includes_bench_router_and_client_version_unchanged():
     src = open(os.path.join(ROOT, 'jetformer', 'web', 'server.py'), encoding='utf-8').read()
     assert 'from . import bench as bench_web' in src and 'app.include_router(bench_web.router)' in src
-    assert 'DRIVE_CLIENT_VERSION = 9' in src                               # 2026-10-26 fix3 state-5 で 6 → 7、10/27 r2-r2-state-3 で 8、10/27 fix5 で 9(画面の直し)
+    assert 'DRIVE_CLIENT_VERSION = 11' in src                              # 2026-10-26 fix3 state-5 で 6 → 7、10/27 r2-r2-state-3 で 8、10/27 fix5 で 9(画面の直し)、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11
     assert "@app.post('/api/bench" not in src                              # 読むだけ(書く API は無い)
     bsrc = open(os.path.join(ROOT, 'jetformer', 'web', 'bench.py'), encoding='utf-8').read()
     # 書く API は走り終わりのメモ(シーンの説明だけ。2026-10-24)の 1 つ。候補の表は書かない・走行は始めない
@@ -215,7 +215,7 @@ def test_static_ui_has_prep_bench_and_zone_controls():
     assert re.search(r'<div class="card hidden" id="bench-card">', html)     # ファイルが無ければ出さない
     js = open(APP_JS, encoding='utf-8').read()
     assert "'/api/bench/candidates'" in js
-    assert re.search(r'client: 9\b', js)                                    # DRIVE_CLIENT_VERSION と同じ(2026-10-27 fix5 で 9)
+    assert re.search(r'client: 11\b', js)                                   # DRIVE_CLIENT_VERSION と同じ(2026-10-27 fix5 で 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11)
     assert 'randomUUID' not in js and 'crypto.' not in js                    # http(安全でない接続)でも動く
     assert "p.zone_caps = $('#dr-zone-caps').checked ? 1 : 0" in js
     # 基準の設定・候補のボタンは走行を始めない(/api/drive/start を呼ぶのは走行開始のボタンだけ)

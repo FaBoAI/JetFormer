@@ -30,6 +30,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'tests'))
 import jetformer.web  # noqa: E402,F401
 from jetformer import assist, drive  # noqa: E402
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: drive.py などがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 from jetformer.web import bench  # noqa: E402
 
 BEFORE = ROOT / 'tests' / 'fixtures' / 'fix4_small_before'
@@ -161,7 +162,8 @@ def test_plan_check_is_the_same(old_bench):
     cases.append(('ai_no=1 AI走行 x', bench.B_RUN, 5, dict(base, rec_back_guard=1)))
     for desc, run, mode, params in cases:
         assert bench.plan_check(desc, run, mode, params, data) == old_bench.plan_check(desc, run, mode, params, data)
-    d1, diffs1 = bench.plan_check(day['blocks'][0]['description'], day['blocks'][0]['run'], 5,
+    first_b = next(b for b in day['blocks'] if b['id'] == 'B')                  # 11/3 に V2 のブロックを一覧の先に足した
+    d1, diffs1 = bench.plan_check(first_b['description'], first_b['run'], 5,
                                   dict(base, throttle_gain=1.0, rec_back_guard=1, launch_no_kick=1), data)
     assert diffs1 == [] and 'cand=B' in d1                                      # 選択肢だけ ON は計画どおり
 
@@ -209,8 +211,14 @@ def _drive_fix4():
     tests/fixtures/fix5_safety_before/drive.py(= fix4 の版。sha256 を照らす。fix5 の違いは tests/test_rec_fix5_safety.py が見る)。
     10/27 fix6 safety(反証 6-1 回目)が変えたあとは、その直す前の写し tests/fixtures/fix6_safety_before/drive.py(= fix5 の版)から
     同じようにたどる(fix6 の違いは tests/test_rec_fix6_safety.py が見る)。10/29 fix9 の優先のモデルが変えたあとは、その直す前の写し
-    tests/fixtures/fix9_priority_before/drive.py(= fix8 safety の説明の文だけの版)からたどる(違いは tests/test_fix9_priority_before.py)"""
-    cur = _sha(DRIVE_PY)
+    tests/fixtures/fix9_priority_before/drive.py(= fix8 safety の説明の文だけの版)からたどる(違いは tests/test_fix9_priority_before.py)。
+    2026-10-31 USB を外して走る が変えたあとは、その直す前の写し tests/fixtures/tether_1031_before/drive.py(= fix9 の版)からたどる
+    (違いは tests/test_tether_free.py)"""
+    cur = _sha(FB.back(DRIVE_PY))         # 2026-11-01 電圧の前送りの版なら直す前の写し(= USB を外して走るの版)
+    if cur == TETHER_1031_DRIVE:            # 10/31 USB を外して走る の直す前の写し(= fix9 優先のモデルの版)
+        pt = ROOT / 'tests' / 'fixtures' / 'tether_1031_before' / 'drive.py'
+        assert _sha(pt) == FIX9_PRIORITY_DRIVE
+        cur = FIX9_PRIORITY_DRIVE
     if cur == FIX9_PRIORITY_DRIVE:          # 10/29 fix9 優先のモデルの直す前の写し(= fix8 safety の説明の文だけの版)
         p9 = ROOT / 'tests' / 'fixtures' / 'fix9_priority_before' / 'drive.py'
         assert _sha(p9) == FIX8_DOC_DRIVE
@@ -240,6 +248,7 @@ FIX6_DRIVE = '696ec9e8e4b853ebd221428768a23e1a48ddf566d11d81df7c5279f82ea15fec' 
 FIX7_DRIVE = '6f3c437f5e9729cf5260904dbc31986c80b7dd5c7565510bef0b4c2a9b091e0f'                                                         # 同じ LATER_FIX7_SAFETY
 FIX8_DOC_DRIVE = '3f2e31a22ecb9abdd9c8f84b3f787d075ef636b6d5679bad5c0fc28aee18388e'                                                     # 同じ LATER_FIX8_SAFETY_DOC
 FIX9_PRIORITY_DRIVE = 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'                                                # 同じ LATER_FIX9_PRIORITY
+TETHER_1031_DRIVE = '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3'                                                  # 10/31 USB を外して走る(tests/test_tether_free.py)
 
 
 def test_drive_only_docstring_changed():

@@ -202,6 +202,28 @@ def test_ui_picks_recommended_before_last_and_newest():
                                   'first_trial', '', '']
 
 
+@pytest.mark.skipif(not shutil.which('node'), reason='node がありません')
+def test_ui_picks_priority_1_on_first_load():
+    """2026-11-08 のユーザーの依頼「UI ではモデル(1)を Default で選択するように」: 推奨のモデルが無いとき、画面を開いた最初は
+    優先のモデルの ①(list_models の priority 1)を前回のモデルより先に選ぶ。走行中のモデル・推奨のモデルは ① より先。
+    2 回目からは人の選択を残す(前と同じ)"""
+    p1 = {'name': 'ft1106-la-g5s', 'priority': 1, 'drivable': True}
+    p2 = {'name': 'ft1106-v2-g4s', 'priority': 2, 'drivable': True}
+    p5 = {'name': 'v2bgx_20261105-la', 'priority': 5, 'drivable': True}
+    pri = [p1, p2, p5]                                              # list_models の順(only: true = 優先のモデルだけ)
+    cases = [
+        [pri, {'first': True, 'last': 'v2bgx_20261105-la'}],         # 前回が ⑤ → ①
+        [pri, {'first': True}],                                      # 前回なし → ①
+        [pri, {'first': True, 'last': 'v2bgx_20261105-la', 'running': 'ft1106-v2-g4s'}],   # 走行中のモデルが最優先
+        [[dict(p1, drivable=False), p2, p5], {'first': True, 'last': 'v2bgx_20261105-la'}],  # ① が走れない → 前回
+        [[p1, p2, dict(p5, recommended=True)], {'first': True, 'last': 'ft1106-v2-g4s'}],   # 推奨のモデルがあれば推奨が先
+        [pri, {'first': False, 'cur': 'ft1106-v2-g4s'}],             # 2 回目からは人の選択を残す
+        [pri, {'first': False, 'cur': 'deleted_run'}],               # 2 回目・選んでいたものが消えた → 一覧の最初の走れるもの
+    ]
+    assert _pick_cases(cases) == ['ft1106-la-g5s', 'ft1106-la-g5s', 'ft1106-v2-g4s', 'v2bgx_20261105-la',
+                                  'v2bgx_20261105-la', 'ft1106-v2-g4s', 'ft1106-la-g5s']
+
+
 def test_ui_uses_pick_and_shows_recommended_and_gate_reason():
     js = open(APP_JS, encoding='utf-8').read()
     assert 'pickDriveModel(state.drive.models,' in js                # loadDrive が同じ関数で選ぶ

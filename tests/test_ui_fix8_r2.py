@@ -43,6 +43,7 @@ from pathlib import Path
 import pytest
 
 from jetformer import drive
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: そのファイルがその直しの版なら直す前の写し(tests/fixtures/speed_ff_1101_before/ = 10/31 USB を外して走るの版)で照らす
 
 import test_vbat_ui as V
 
@@ -59,6 +60,20 @@ FIX9_PRIORITY_BEFORE = FIXT / 'fix9_priority_before'
 LATER_FIX9_PRIORITY = {'jetformer/web/static/app.js': '6b9e160c43c870dc1f4c2a5e2c23e2ad7513fe7e925d76a12cb69d5854966233',
                        'jetformer/drive.py': 'ecfb6656cae624950d5de221dfa71a5ac31b84ba82dacfbea2136832eae92315'}
 VBAT = ROOT / 'tests' / 'test_vbat_ui.py'
+# 2026-10-31 USB を外して走る(tether_free。いつも ON)が app.js・index.html・server.py・drive.py などを変えた(画面の版 9 → 10)。
+# その版なら、直す前の写し tests/fixtures/tether_1031_before/(= 上の LATER_FIX9_PRIORITY の版など。SHA256SUMS)で前の版につなぐ
+# (_tether_back。違いの全部は tests/test_tether_free.py)
+TETHER_1031_BEFORE = FIXT / 'tether_1031_before'
+LATER_TETHER_1031 = {'jetformer/web/static/app.js': '6cbdc98db2ea56aa3a1355cca6b9b57f118609cda1b554a9606f1edacd8b569b',
+                     'jetformer/web/static/index.html': 'cca3d8f8ddfcd2b0b1de78c8c5dcb95649d83b770e1f6701f3696f3e97678ba1',
+                     'jetformer/web/server.py': '0c73072ae6df3b1e8c16b2e15859130003b595222237605ee2203597bf320605',
+                     'jetformer/drive.py': '5431ea8ac653dabdaaa64f78075894f32ad771e3ed0c65b5c3384f203c448aa3',
+                     'tests/test_vbat_ui.py': 'd44eabe77f78155c111fe0cd06e5007cee635a4c0797b0179a0d42a2f79da39b'}
+# USB を外して走る が tests/test_vbat_ui.py で変えた 1 行(画面の版 9 → 10)
+TETHER_1031_VBAT = (['    assert re.search(r\'client: 9\\b\', js) and js.count("\'/api/drive/start\'") == 1     # 画面の版 9(2026-10-27 fix5。前は 8)'], ['    assert re.search(r\'client: 10\\b\', js) and js.count("\'/api/drive/start\'") == 1    # 画面の版 10(2026-10-31 USB を外して走る。前は 9・8)'])
+# 2026-11-01 電圧の前送り(画面の版 10 → 11)が tests/test_vbat_ui.py で変えた 1 行。その版なら、それだけかを見てから、その直す前の写し
+# (tests/fixtures/speed_ff_1101_before/test_vbat_ui.py = 上の LATER_TETHER_1031 の版)で照らす(FB)
+SPEED_FF_1101_VBAT = (TETHER_1031_VBAT[1], ['    assert re.search(r\'client: 11\\b\', js) and js.count("\'/api/drive/start\'") == 1    # 画面の版 11(2026-11-01 電圧の前送り。前は 10・9・8)'])
 NODE = shutil.which('node')
 FIREFOX = os.environ.get('JF_UI_FIREFOX') == '1'
 GECKO = V.GECKO
@@ -76,6 +91,14 @@ MID = [(600, 800), (700, 800)]                          # 前は 2 行(使える
 
 def _sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def _tether_back(rel):
+    """ROOT / rel が USB を外して走る(2026-10-31)の版なら、その直す前の写し。ほかはそのまま。2026-11-01 電圧の前送りの版なら、先に
+    その直す前の写し(= USB を外して走るの版。FB.back)にしてから同じように照らす"""
+    p = ROOT / rel
+    q = FB.back(p)
+    return TETHER_1031_BEFORE / p.name if rel in LATER_TETHER_1031 and _sha(q) == LATER_TETHER_1031[rel] else q
 
 
 def _sums(d):
@@ -141,8 +164,8 @@ def test_style_css_only_the_float_stop_rule_and_one_media_rule():
         assert keep in lines
     old_toast = [x for x in (BEFORE / 'style.css').read_text(encoding='utf-8').splitlines() if x.startswith('.toast {')]
     assert old_toast == [x for x in lines if x.startswith('.toast {')] and len(old_toast) == 1
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
+    assert _sha(_tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')     # 10/31 の版なら直す前の写し
+    assert _sha(_tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')
     assert _sha(ROOT / 'jetformer' / 'web' / 'bench.py').startswith('a633bec341a3')
 
 
@@ -173,8 +196,19 @@ def test_float_stop_takes_its_text_width_and_driving_toast_goes_above_it_on_phon
 
 def test_vbat_ui_only_the_ceiling_expectation_changed():
     """test_vbat_ui.py で変えたのは天井の確認の文の 1 行(固定の「全体 4.5・左旋回中 4.0 m/s」)を、偽のサーバーの state['params']
-    (= drive.DEFAULT_PARAMS の写し)から作る形にしたことと、JavaScript の toFixed(1) と同じ字を作る関数 _to_fixed1 を足したことだけ"""
-    removed, added, ops = _diff(BEFORE / 'test_vbat_ui.py', VBAT)
+    (= drive.DEFAULT_PARAMS の写し)から作る形にしたことと、JavaScript の toFixed(1) と同じ字を作る関数 _to_fixed1 を足したことだけ。
+    2026-10-31 USB を外して走る が版の 1 行(client: 9 → 10)を変えたあとは、それだけかを見てから、その直す前の写し
+    (tests/fixtures/tether_1031_before/test_vbat_ui.py = この組のあとの版)で照らす"""
+    vbat = VBAT
+    if FB.later_rel(VBAT):              # 2026-11-01 電圧の前送りの版: 版の 1 行(client: 10 → 11)だけかを見てから、その直す前の写しで
+        r11, a11, _ = _diff(FB.back(VBAT), VBAT)
+        assert (r11, a11) == SPEED_FF_1101_VBAT, (r11, a11)
+        vbat = FB.back(VBAT)
+    if _sha(vbat) == LATER_TETHER_1031['tests/test_vbat_ui.py']:
+        r10, a10, _ = _diff(TETHER_1031_BEFORE / 'test_vbat_ui.py', vbat)
+        assert (r10, a10) == TETHER_1031_VBAT, (r10, a10)
+        vbat = TETHER_1031_BEFORE / 'test_vbat_ui.py'
+    removed, added, ops = _diff(BEFORE / 'test_vbat_ui.py', vbat)
     assert removed == ["        assert spec['ceiling']['rule_text'] in msg and spec['ceiling']['note'] in msg and '全体 4.5・左旋回中 4.0 m/s' in msg"]
     code = [x.split('#')[0].rstrip() for x in added if x.split('#')[0].strip()]
     assert code == [
@@ -573,8 +607,8 @@ def test_app_js_only_vbat_source_text_changed():
     直す前の写し(app.js e61dfac9…・drive.py 3f2e31a2…。sha256 を照らす)で見る。今の app.js の vbatSourceText はその写しと同じ・版は 9 のまま
     (今のファイルとの違いの全部は tests/test_fix9_priority_before.py)。JF_UI82_APP を付けたとき(わざと壊す台本)はその写しをそのまま見る"""
     old = (BEFORE / 'app.js').read_text(encoding='utf-8')
-    app = APP
-    if not os.environ.get('JF_UI82_APP') and _sha(APP) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
+    app = APP if os.environ.get('JF_UI82_APP') else _tether_back('jetformer/web/static/app.js')    # 10/31 の版 → 直す前の写し
+    if not os.environ.get('JF_UI82_APP') and _sha(app) == LATER_FIX9_PRIORITY['jetformer/web/static/app.js']:
         app = FIX9_PRIORITY_BEFORE / 'app.js'
         assert _sums(FIX9_PRIORITY_BEFORE)['app.js'] == _sha(app) and _sha(app).startswith('e61dfac905cb')
     removed, added, ops = _diff(BEFORE / 'app.js', app)
@@ -589,12 +623,13 @@ def test_app_js_only_vbat_source_text_changed():
     assert texts == [VSRC['基板'], VSRC['説明欄'], VSRC['なし']]
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert js.replace(fn, '') == old.replace(re.search(r'function vbatSourceText\(st\) \{.*?\n\}', old, re.S).group(0), '')
-    cur = APP.read_text(encoding='utf-8')                      # 今の app.js(fix9 の版でも): vbatSourceText は同じ・版は 9 のまま
+    # 今の app.js(fix9 の版でも): vbatSourceText は同じ・版は 9 のまま(2026-10-31 USB を外して走る が版を 10 にした版は直す前の写しで)
+    cur = (APP if os.environ.get('JF_UI82_APP') else _tether_back('jetformer/web/static/app.js')).read_text(encoding='utf-8')
     assert re.search(r'function vbatSourceText\(st\) \{.*?\n\}', cur, re.S).group(0) == fn
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', cur, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', cur) == ['9']
     for rel, h in (('jetformer/web/server.py', 'ad7a7d05f7a9'), ('jetformer/web/static/index.html', 'ef81bb6017d6'),
                    ('jetformer/web/bench.py', 'a633bec341a3'), ('jetformer/drive.py', '3f2e31a22ecb')):
-        p = ROOT / rel
+        p = _tether_back(rel)                                    # 10/31 USB を外して走る の版 → 直す前の写し(= fix9 の版)
         if rel in LATER_FIX9_PRIORITY and _sha(p) == LATER_FIX9_PRIORITY[rel]:
             p = FIX9_PRIORITY_BEFORE / Path(rel).name           # fix9 の版 → 直す前の写し(この組のときの版)
         assert _sha(p).startswith(h), rel

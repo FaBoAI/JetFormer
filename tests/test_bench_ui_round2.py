@@ -33,7 +33,9 @@ def cands():
     days = [i for i, d in enumerate(c.get('days') or []) if d.get('date') == '2026-11-03' and d.get('blocks')]
     if not days:
         pytest.skip('data/bench_candidates.json に 2026-11-03 のブロックがありません')
-    c = dict(c, today='2026-11-03')            # 11/3 の画面(選ぶ欄は今日のブロックを並べる)
+    c = copy.deepcopy(dict(c, today='2026-11-03'))     # 11/3 の画面(選ぶ欄は今日のブロックを並べる)
+    # 11/3 の会場で V2 のブロック(24〜39)を一覧の先に足した。この試験は B のブロックの並び(1-1 = 1 つ目)で見る
+    c['days'][days[0]]['blocks'] = [b for b in c['days'][days[0]]['blocks'] if b['id'] == 'B']
     return c, days[0]
 
 

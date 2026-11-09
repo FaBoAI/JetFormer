@@ -40,6 +40,8 @@ import pytest
 from jetformer import drive
 from jetformer.web import server as srv
 
+import speed_ff_1101_back as FB      # 2026-11-01 電圧の前送り(speed_ff)の段: その直しの版なら直す前の写し(= 10/31 USB を外して走るの版)で照らす
+
 from test_ui_fix3 import _flows
 import test_ui_fix6 as F6
 import test_ui_fix6_r2 as F62
@@ -131,8 +133,8 @@ def test_before_copy_and_only_the_boot_note_changed():
     js = after.read_text(encoding='utf-8')
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
     assert js.count('toast(msg, true);') == 1 and js.count('state.drive.bootToast = msg;') == 1
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
+    assert _sha(F6.tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')      # 2026-10-31 USB を外して走る の版なら直す前の写し
+    assert _sha(F6.tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')
     css = STATIC / 'style.css'                    # fix8 ui r1(.toast の幅)の版なら、その直す前の写しを見る
     if _sha(css) == LATER_FIX8_UI_R2['jetformer/web/static/style.css']:     # fix8 ui r2(■ の幅)の版 → その直す前の写し(dbc8b79a…)
         css = FIX8_UI_R2_BEFORE / 'style.css'
@@ -165,10 +167,11 @@ def test_boot_defaults_are_drive_defaults():
     assert set(re.findall(r"'(\w+)'", flags)) == {k for k in drive.RESET_ON_BOOT if tuple(drive.PARAM_LIMITS[k]) == (0, 1)}
     units = re.search(r"^const BOOT_UNITS = \{(.*?)\};", js, re.M).group(1)
     assert set(re.findall(r'(\w+): ', units)) == {'ceil_left_mps', 'launch_us', 'ceil_all_mps', 'auto_target_mps', 'launch_mps', 'launch_max_s'}
-    assert drive.RESET_ON_BOOT == ('tcp_mode', 'speed_scale', 'zone_caps', 'speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto',
+    dm = FB.back_module(drive)                     # 2026-11-01 電圧の前送り(speed_ff を RESET_ON_BOOT に足した)の版なら直す前の写し
+    assert dm.RESET_ON_BOOT == ('tcp_mode', 'speed_scale', 'zone_caps', 'speed_ceiling', 'ceil_all_mps', 'ceil_left_mps', 'speed_auto',
                                    'auto_target_mps', 'launch_boost', 'launch_us', 'launch_mps', 'launch_max_s', 'rec_back_guard',
                                    'rec_hold_keep', 'launch_no_kick')
-    assert {k: drive.DEFAULT_PARAMS[k] for k in drive.RESET_ON_BOOT} == {
+    assert {k: dm.DEFAULT_PARAMS[k] for k in dm.RESET_ON_BOOT} == {
         'tcp_mode': 0, 'speed_scale': 1.0, 'zone_caps': 0, 'speed_ceiling': 0, 'ceil_all_mps': 4.5, 'ceil_left_mps': 4.1, 'speed_auto': 0,
         'auto_target_mps': 4.27, 'launch_boost': 0, 'launch_us': 250.0, 'launch_mps': 2.5, 'launch_max_s': 1.2, 'rec_back_guard': 0,
         'rec_hold_keep': 0, 'launch_no_kick': 0}
@@ -200,7 +203,8 @@ def both(tmp_path, c, steps, **kw):
 
 
 def vals(res, op):
-    return [x.get('value') for x in res if x['op'] == op]
+    out = [x.get('value') for x in res if x['op'] == op]
+    return [F6.v9_posts(v) for v in out] if op == 'posts' else out      # 2026-10-31: 走行開始の client 10 を 9 として(F6.v9_posts)
 
 
 def tagged(res):
@@ -333,7 +337,7 @@ def test_refused_start_appends_the_same_text_as_the_toast(tmp_path, cands, kind)
     if kind == 'net_fail':
         pre.append(['start_fail'])
     if kind == 'old_page':
-        extra = {'server_client_version': 10}
+        extra = {'server_client_version': 12}               # 今の画面(版 11。2026-11-01 電圧の前送り。10/31 は版 10)より新しいサーバー
     steps = pre + [['start'], ['el', '#toast', 'text'], ['el', '#dr-message', 'html'], ['posts']]
     (new, tn), (old, to) = both(tmp_path, c, steps, **extra)
     fn, fo = tagged(new)[0], tagged(old)[0]

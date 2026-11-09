@@ -40,6 +40,7 @@ class ImuSensor(SensorThread):
         self._mag = [float('nan')] * 3
         self._mag_div = 0
         self.bus_errors = 0
+        self.bad_reads = 0       # 読みの途中から全部 1 になって捨てた行(下の _poll)
         self.fail_streak = 0
         self._discard = 0
 
@@ -117,9 +118,19 @@ class ImuSensor(SensorThread):
             if self.fail_streak >= self.MAX_FAIL_STREAK:
                 raise RuntimeError('IMUを約%.1f秒続けて読めません: %s' % (self.fail_streak * self.period, e))
             return []
-        self.fail_streak = 0
         t_ns = clock.now_ns()
         ax, ay, az, gx, gy, gz, temp = struct.unpack('>hhhhhhh', bytes(msg_r))
+        if temp == -1:
+            # 読みの途中から最後まで全部 1 の行(走行中の I2C の乱れ)。終わりの温度が 0xFFFF になるので、これで見分ける。
+            # 2026-11-03 の調べ: 10/30 と 11/3 の 32.6 万行に 561 行(動いている間に約 0.2 回/秒)。accel・gyro も壊れていて、
+            # モデルの入力と当たりの数(No.25 の R1 8.02G = 本当は 2.64G)に入っていた。gyro が 3 軸とも -1 で温度が
+            # 正しい行は、止まっている車の本物の値なので捨てない。本物の温度がここに当たるのは 20.93 ℃ ちょうどのときだけ
+            self.bad_reads += 1
+            self.fail_streak += 1
+            if self.fail_streak >= self.MAX_FAIL_STREAK:
+                raise RuntimeError('IMUの読みが約%.1f秒続けて壊れています' % (self.fail_streak * self.period))
+            return []
+        self.fail_streak = 0
         if self._discard > 0:
             self._discard -= 1
             return []
@@ -142,4 +153,5 @@ class ImuSensor(SensorThread):
         st = super(ImuSensor, self).status()
         st['mag'] = self.mag_ok
         st['bus_errors'] = self.bus_errors
+        st['bad_reads'] = self.bad_reads
         return st

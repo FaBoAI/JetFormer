@@ -125,10 +125,11 @@ def test_app_js_only_added_lines_and_no_sending():
         'const gen = state.drive.drTabGen;',
         'if (st && gen !== state.drive.drTabGen && drIdle()) state.drive.paramsLoaded = false;']
     assert not any(re.search(r"'POST'|body|client|fetch\(|api\(|setTimeout|confirm\(|toast\(", x) for x in code)
-    js = APP.read_text(encoding='utf-8')
+    # 版は 9 のまま。2026-10-31 USB を外して走る が版を 10 にした版なら、その直す前の写し(= 10/29 fix9 のあとの版)で見る
+    js = (APP if os.environ.get('JF_UI81_APP') else F6.tether_back('jetformer/web/static/app.js')).read_text(encoding='utf-8')
     assert re.findall(r'^const DRIVE_CLIENT = (\d+);', js, re.M) == ['9'] and re.findall(r'const body = \{ client: (\d+),', js) == ['9']
-    assert _sha(ROOT / 'jetformer' / 'web' / 'server.py').startswith('ad7a7d05f7a9')
-    assert _sha(STATIC / 'index.html').startswith('ef81bb6017d6')
+    assert _sha(F6.tether_back('jetformer/web/server.py')).startswith('ad7a7d05f7a9')      # 2026-10-31 USB を外して走る の版なら直す前の写し
+    assert _sha(F6.tether_back('jetformer/web/static/index.html')).startswith('ef81bb6017d6')
     assert _sha(ROOT / 'jetformer' / 'web' / 'bench.py').startswith('a633bec341a3')
 
 
@@ -383,7 +384,8 @@ def starts(res):
 
 
 def vals(res, op):
-    return [x.get('value') for x in res if x['op'] == op]
+    out = [x.get('value') for x in res if x['op'] == op]
+    return [F6.v9_posts(v) for v in out] if op == 'posts' else out      # 2026-10-31: 走行開始の client 10 を 9 として(F6.v9_posts)
 
 
 PRE = [['tab', 'drive'], ['tick']]                     # 走行タブで同期した

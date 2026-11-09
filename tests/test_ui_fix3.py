@@ -274,7 +274,7 @@ def test_state5_versions():
     ver = int(re.search(r'^DRIVE_CLIENT_VERSION = (\d+)', src, re.M).group(1))
     js = APP_JS.read_text(encoding='utf-8')
     cl = [int(x) for x in re.findall(r'const body = \{ client: (\d+),', js)]
-    assert ver == 9 and cl == [9]                  # 2026-10-27 fix5(t1・t2・t3)で 8 → 9(r2-r2-state-3 で 7 → 8、2026-10-26 state-5 で 6 → 7)
+    assert ver == 11 and cl == [11]                # 2026-11-01 電圧の前送り で 10 → 11、2026-10-31 USB を外して走る で 9 → 10(10/27 fix5(t1・t2・t3)で 8 → 9、r2-r2-state-3 で 7 → 8、2026-10-26 state-5 で 6 → 7)
     assert re.findall(r'const body = \{ client: (\d+),', APP_OLD.read_text(encoding='utf-8')) == ['6']
     assert 'if _client_version(body) < DRIVE_CLIENT_VERSION:' in src and 'raise HTTPException(409' in src
     # 版を見るのは走行の開始だけ(止める・設定・表示は古い画面からも断らない)
@@ -292,7 +292,7 @@ def test_state5_old_page_refused_new_page_starts(tmp_path, cands):
     assert s0['client'] == 6 and s0['refused'] is True
     assert any('管理画面が古いまま' in t for t in reads(res0, 'toasts')[0])
     res, _ = run_sim(tmp_path, c, steps, client_version=7)
-    assert starts(res)[0]['client'] == 9 and starts(res)[0]['refused'] is False     # 2026-10-27 fix5 で版 9
+    assert starts(res)[0]['client'] == 11 and starts(res)[0]['refused'] is False    # 2026-10-27 fix5 で版 9、10/31 USB を外して走る で 10、11/1 電圧の前送り で 11
     res6, _ = run_sim(tmp_path, c, steps, client_version=6, name='v6.json')
     assert starts(res6)[0]['refused'] is False
 
@@ -454,7 +454,7 @@ def test_sent_values_same_as_before_except_listed(tmp_path, cands):
             assert a['sent'] == b['sent'], (name, {k: (a['sent'].get(k), b['sent'].get(k)) for k in set(a['sent']) | set(b['sent'])
                                                    if a['sent'].get(k) != b['sent'].get(k)})
             assert a['confirm'] == b['confirm'], name
-            assert (a['client'], b['client']) == (9, 6)             # 2026-10-27 fix5 で今の画面は版 9
+            assert (a['client'], b['client']) == (11, 6)            # 2026-10-27 fix5 で版 9、10/31 USB を外して走る で今の画面は版 10、11/1 電圧の前送り で 11
 
 
 # ---------------------------------------------------------------- 画面を開いた直後(サーバーの設定をまだ読んでいない)

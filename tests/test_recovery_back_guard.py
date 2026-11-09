@@ -337,9 +337,10 @@ def test_param_default_off_and_off_on_boot(monkeypatch, tmp_path):
     assert 'rec_back_guard' in drive.RESET_ON_BOOT                   # 走行の制御に足すものは起動で OFF(protocol_v3)
     _, before = load_before()
     later = ('rec_back_guard', 'rec_hold_keep', 'launch_no_kick')   # あとの 2 つは 2026-10-26 fix3(tests/test_rec_hold_keep.py)
-    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in later} == before.DEFAULT_PARAMS
-    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in later} == before.PARAM_LIMITS
-    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) == set(later)
+    ff = ('speed_ff', 'ff_vref_v')                    # 2026-11-01 電圧の前送りが足した項目(起動で戻すのは speed_ff だけ。tests/test_speed_ff.py)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in later + ff} == before.DEFAULT_PARAMS
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in later + ff} == before.PARAM_LIMITS
+    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) == set(later) | {'speed_ff'}
     path = tmp_path / 'drive_settings.json'
     path.write_text(json.dumps({'params': {'rec_back_guard': 1, 'steer_trim_us': 15}}), encoding='utf-8')
     monkeypatch.setattr(drive, 'SETTINGS_PATH', path)

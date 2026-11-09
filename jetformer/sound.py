@@ -39,6 +39,7 @@ EVENTS = {      # キー: (画面の表示名, 既定でON)
     'lap': ('AI走行の1周のタイム', True),
     'warning': ('警告(信号断・異常停止)', True),
     'train': ('学習の終了', True),
+    'loading': ('起動して最初のモデルの読み込みの案内', True),
 }
 DEFAULTS = {'enabled': True, 'volume': 60, 'events': {k: v[1] for k, v in EVENTS.items()}}
 
@@ -352,6 +353,101 @@ COMMON_TEXTS += ['AIが操縦します', '人の操縦に戻りました', 'AI�
                 'AI走行を終了しました', '推論の確認を開始します', 'プロポの信号が届きません。停止します',
                 '画面との通信が途絶えたため、AI走行を止めました', 'エラーのため、AI走行を止めました',
                 '学習が完了しました', 'JetFormer を起動しました']
+
+# 起動して最初のモデルの読み込み(約 60 秒。2 回目からは数秒)の音声の案内(2026-11-05 ユーザーの依頼)
+LOAD_TOTAL_S = 60
+LOAD_STEP_S = 10
+LOAD_FIRST_TEXT = '初回の実行には30秒ほどかかります'     # 2026-11-06 ユーザー「…だけにしてください」(前は「初回の起動は60秒程度時間がかかります」)
+LOAD_COUNT = False      # 残りの秒(「あと50秒」…)と「準備ができました」も言うか(2026-11-06 から言わない = 最初の一言だけ)
+LOAD_READY_TEXT = '準備ができました'
+FF_NO_V0_TEXT = '電池の電圧を読めないので、走行を始めません'
+FF_MOVING_TEXT = '車が止まっていないので、走行を始めません'      # 走る前の電圧を測れない理由が「止まっていない」(2026-11-06)
+
+
+def load_left_text(left_s):
+    return 'あと%d秒' % left_s
+
+
+def ff_refusal_text(note):
+    """電圧の前送りが ON なのに走る前の電圧が無くて走行を断るときの音声の文。理由(vbat.still_check の文)が「車が止まっていません…」なら
+    そう言う(2026-11-06。前は止まっていないときも「電池の電圧を読めないので…」と言っていた)"""
+    return FF_MOVING_TEXT if '止まっていません' in str(note or '') else FF_NO_V0_TEXT
+
+
+COMMON_TEXTS += [LOAD_FIRST_TEXT, LOAD_READY_TEXT, FF_NO_V0_TEXT, FF_MOVING_TEXT] + [load_left_text(s) for s in range(LOAD_TOTAL_S - LOAD_STEP_S, 0, -LOAD_STEP_S)]
+
+
+class LoadCountdown(object):
+    """起動して最初のモデルの読み込みの間、残りの秒を音声で知らせる(別スレッド。走行の準備を待たせない)。
+    begin() で「初回の起動は…」→ 10 秒ごとに「あと50秒」…「あと10秒」。ready() で数えるのをやめて「準備ができました」。
+    秒は見込みなので、早く終われば残りは言わず、長くかかれば「あと10秒」のあと黙って待つ。
+    alive() が False になったら(読み込みの失敗・準備中の停止)何も言わずに終わる。▶ のすぐあと(poll_s 秒のうち)に終わった走行では
+    最初の一言も言わない(2026-11-06)。設定の 'loading' が OFF なら鳴らさない。
+    2026-11-06 から既定(LOAD_COUNT = False)は最初の一言「初回の実行には30秒ほどかかります」だけ(残りの秒と「準備ができました」は言わない)"""
+
+    def __init__(self, player, alive, total_s=LOAD_TOTAL_S, step_s=LOAD_STEP_S, poll_s=0.2, now=time.monotonic, count=None):
+        self.player, self.alive = player, alive
+        self.count = LOAD_COUNT if count is None else bool(count)     # False: 最初の一言だけ(2026-11-06)
+        self.total_s, self.step_s, self.poll_s, self.now = total_s, step_s, poll_s, now
+        self._lock = threading.Lock()
+        self._done = None           # 数えている間だけ threading.Event
+
+    def begin(self):
+        done = threading.Event()
+        with self._lock:
+            self._done = done
+        threading.Thread(target=self._count, args=(done,), name='sound-load', daemon=True).start()
+
+    def ready(self):
+        """読み込みが終わった。数えていれば「準備ができました」と言って True(初回でない走行は何もしない)"""
+        with self._lock:
+            done, self._done = self._done, None
+            if done is None:
+                return False
+            done.set()
+            if self.count:
+                self.player.notify('loading', LOAD_READY_TEXT, 'info')
+        return True
+
+    def _say(self, done, text, chime):
+        with self._lock:            # ready() のあとに残りの秒を言わない
+            if done.is_set():
+                return False
+            self.player.notify('loading', text, chime)
+        return True
+
+    def _waiting(self, done):
+        """数え続けるなら True。走行が終わっていたら数えるのをやめて False"""
+        if done.wait(self.poll_s):
+            return False
+        if self.alive():
+            return True
+        with self._lock:
+            if self._done is done:
+                self._done = None
+        done.set()
+        return False
+
+    def _count(self, done):
+        t0 = self.now()
+        if not self._waiting(done):         # すぐに失敗・停止した走行(または、すぐに読み込みが終わった)では言わない
+            return
+        if not self._say(done, LOAD_FIRST_TEXT, 'info'):
+            return
+        if not self.count:              # 最初の一言だけ(2026-11-06 ユーザー): 数えずに終わる。ready() も何も言わない
+            with self._lock:
+                if self._done is done:
+                    self._done = None
+            done.set()
+            return
+        for left in range(self.total_s - self.step_s, 0, -self.step_s):
+            while self.now() - t0 < self.total_s - left:
+                if not self._waiting(done):
+                    return
+            if not self._say(done, load_left_text(left), None):
+                return
+        while self._waiting(done):      # 見込みより長くかかっている: ready() を待つ
+            pass
 
 
 def announce(player, event, **kw):

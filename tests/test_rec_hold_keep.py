@@ -131,9 +131,10 @@ def test_params_default_off_and_off_on_boot(monkeypatch, tmp_path):
     _, before = load_before()
     for k in NEW:
         assert drive.DEFAULT_PARAMS[k] == 0 and drive.PARAM_LIMITS[k] == (0, 1) and k in drive.RESET_ON_BOOT
-    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in NEW} == before.DEFAULT_PARAMS   # ほかの既定値は同じ
-    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in NEW} == before.PARAM_LIMITS
-    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) == set(NEW)
+    ff = ('speed_ff', 'ff_vref_v')                    # 2026-11-01 電圧の前送りが足した項目(起動で戻すのは speed_ff だけ。tests/test_speed_ff.py)
+    assert {k: v for k, v in drive.DEFAULT_PARAMS.items() if k not in NEW + ff} == before.DEFAULT_PARAMS   # ほかの既定値は同じ
+    assert {k: v for k, v in drive.PARAM_LIMITS.items() if k not in NEW + ff} == before.PARAM_LIMITS
+    assert set(drive.RESET_ON_BOOT) - set(before.RESET_ON_BOOT) == set(NEW) | {'speed_ff'}
     assert drive.LAUNCH_KEYS == before.LAUNCH_KEYS                      # 発進の前進の 4 つは変えていない
     path = tmp_path / 'drive_settings.json'
     path.write_text(json.dumps({'params': {'rec_hold_keep': 1, 'launch_no_kick': 1, 'steer_trim_us': 15, 'start_kick': 1}}),

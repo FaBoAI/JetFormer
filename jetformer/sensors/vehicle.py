@@ -18,6 +18,11 @@ snapshot (ファーム leracer_ctrl v2、既定)
     NaN(走行ループは .get('vbat_v', nan) で数として読む)・vbat_ok False。画面・JSON に出す status() では None。
     **6.0〜9.0 V(2S)の外の値は「おかしい」とみて使わない**(vbat_ok False・vbat_v NaN。分圧の外れ・ADC の張り付きで
     走行のゲインを上げない。2026-10-25 fix.md)。そのときは vbat_bad True・vbat_raw_v に値(画面の「電圧の値がおかしい」)。
+    電池の電圧の基板 BatteryTapADC(ADS1115・I2C 7・0x48。2026-10-31。ads1115_vbat.py): 別のスレッドが約 50 Hz で読み、
+    data/vbat/ に CSV を残す(センサーが動いている間だけ = この VehicleSensor の start〜stop。起動しただけでは読まない)。
+    その値が VBAT_ADS_FRESH_S 秒より新しければ、ESP32 の値より先に vbat_* に入れる(× 較正の係数・
+    6.0〜9.0 V の扱いは上と同じ)。新しくなければ ESP32 の値(送っていれば)・どちらも無ければ無し。サンプルの vbat_src に源
+    ('ads1115'・'esp32'・None)。JETFORMER_VBAT_ADS1115=0 で使わない(前と同じ)
 
 legacy (量産ファーム v1)
     レジスタ毎に write→read。v1は古い値がFIFOに残りチャネルが混ざるため、学習には使えない。
@@ -34,6 +39,7 @@ import time
 from smbus2 import SMBus, i2c_msg
 
 from .. import clock, config
+from . import ads1115_vbat
 from .base import Sample, SensorThread
 
 SNAP_REG = 0x20
@@ -49,6 +55,10 @@ VBAT_LSB_V = 0.05                # vbat_code 1 あたりの電圧 [V]
 VBAT_CALIB_PATH = config.DATA_DIR / 'vbat_calib.json'      # 任意: {"scale": 1.0}(電圧計の値 ÷ 基板の値)
 VBAT_SCALE_RANGE = (0.85, 1.15)  # 較正の係数として受け付ける範囲(分圧の抵抗 1% が 2 本で最大 約 ±2%。外れたら配線か入力の誤り)
 VBAT_RANGE_V = (6.0, 9.0)        # 電圧として使う範囲 [V](2S。外れた値 = 分圧の外れ・張り付き。説明欄の V_before と同じ範囲)
+# 電池の電圧の基板(ADS1115。2026-10-31): 読み手の最新の値がこれより新しいときだけ使う [秒](50 Hz の読みの約 12 回ぶん。
+# 失敗 1 回のあとの間 0.1 秒は越えない・2 回続いたら使わない)。記録の場所(30 分ごとの CSV)
+VBAT_ADS_FRESH_S = 0.25
+VBAT_ADS_DIR = config.DATA_DIR / 'vbat'
 NAN = float('nan')
 
 PLAUSIBLE = {
@@ -332,6 +342,64 @@ class VehicleSensor(SensorThread):
         self.vbat_last_t = None    # その時刻(time.monotonic)
         self.vbat_bad_last = None  # 最後に来た 6.0〜9.0 V の外の値 [V](使わない。画面に出すだけ)
         self.vbat_bad_last_t = None
+        # 電池の電圧の基板(ADS1115・0x48。2026-10-31): 作るだけ(バスを開くのは start のあとの読み手のスレッド)。
+        # cfg の vbat_ads1115: 無い = 環境変数 JETFORMER_VBAT_ADS1115 で決める(既定は入)・False = 使わない・読み手 = それを使う(試験)
+        self.vbat_src = None       # 最新のサンプルの電圧の源('ads1115'・'esp32'・None)
+        self.vbat_ads_errors = 0   # 読み手の値を入れるところの思わぬ失敗(走りの値は止めない)
+        self.vbat_ads_error = ''
+        ads = cfg.get('vbat_ads1115', 'env')
+        if isinstance(ads, str) and ads == 'env':
+            try:
+                ads = ads1115_vbat.make_reader(VBAT_ADS_DIR, scale_fn=lambda: self.vbat_scale, range_v=VBAT_RANGE_V)
+            except Exception as e:
+                ads, self.vbat_ads_error = None, '%s: %s' % (type(e).__name__, e)
+        self.ads = ads or None
+
+    def start(self):
+        # 電池の電圧の読み手と記録も、車両のセンサーと一緒に始め・止める(= SensorHub が動いている間だけ。2026-10-31 の決め:
+        # server.py を変えない・「センサー停止」で 0x48 を放せる。起動からずっと記録するには server.py の直しが要る = README 0 章)
+        super(VehicleSensor, self).start()
+        if self.ads is not None:
+            try:
+                self.ads.start()
+            except Exception as e:             # 電圧の読み手の失敗で車両の値を止めない
+                self.vbat_ads_errors += 1
+                self.vbat_ads_error = '%s: %s' % (type(e).__name__, e)
+
+    def stop(self, timeout=3.0):
+        if self.ads is not None:
+            try:
+                self.ads.request_stop()        # 先に合図(待つのは車両のスレッドのあと。待つ時間を足さない)
+            except Exception:
+                pass
+        super(VehicleSensor, self).stop(timeout)
+        if self.ads is not None:
+            try:
+                self.ads.stop(timeout)
+            except Exception as e:
+                self.vbat_ads_errors += 1
+                self.vbat_ads_error = '%s: %s' % (type(e).__name__, e)
+
+    def _fill_vbat(self, values):
+        """電池の電圧の源を決めて values の vbat_* を埋める(2026-10-31)。
+        1) ADS1115(電池の電圧の基板)の値が VBAT_ADS_FRESH_S 秒より新しい → その値(× 4.3)× 較正の係数(ESP32 より先。分解能 0.5 mV)
+        2) ESP32 が送っている(flags bit5。decode_snapshot の vbat_raw_v が数)→ そのまま
+        3) どちらも無い → 無し(NaN・vbat_ok False。前と同じ)
+        範囲 6.0〜9.0 V・張り付きの扱いは ESP32 と同じ意味: 外なら vbat_ok False・vbat_v NaN・vbat_bad True・vbat_raw_v に値"""
+        src = 'esp32' if math.isfinite(values.get('vbat_raw_v', NAN)) else None
+        if self.ads is not None:
+            try:
+                a = self.ads.fresh(VBAT_ADS_FRESH_S)
+                if a is not None:
+                    v = float(a['board_v']) * float(self.vbat_scale)
+                    ok = bool(not a.get('sat') and vbat_in_range(v))
+                    values.update(vbat_v=v if ok else NAN, vbat_ok=ok, vbat_raw_v=v, vbat_bad=bool(math.isfinite(v) and not ok))
+                    src = 'ads1115'
+            except Exception as e:             # 読み手の思わぬ失敗: ESP32 の値のまま(車両の値は止めない)
+                self.vbat_ads_errors += 1
+                self.vbat_ads_error = '%s: %s' % (type(e).__name__, e)
+        values['vbat_src'] = src
+        self.vbat_src = src
 
     def _open(self):
         self.bus = SMBus(self.cfg['bus'])
@@ -381,6 +449,7 @@ class VehicleSensor(SensorThread):
             self.stale += 1
             return []
         self._last_seq = values['seq']
+        self._fill_vbat(values)                  # 電池の電圧の基板(ADS1115)の値を先に(2026-10-31)
         if values['vbat_ok']:
             self.vbat_seen = True
             self.vbat_last, self.vbat_last_t = values['vbat_v'], time.monotonic()
@@ -434,6 +503,20 @@ class VehicleSensor(SensorThread):
         bad_age = time.monotonic() - self.vbat_bad_last_t if self.vbat_bad_last_t is not None else None
         st.update(vbat_bad_v=round(self.vbat_bad_last, 3) if bad_age is not None and bad_age <= 2.0 else None,
                   vbat_range_v=list(VBAT_RANGE_V))
+        # 電池の電圧の基板(ADS1115。2026-10-31): 最新のサンプルの源と、読み手の様子(GET /api/status の sensors.VEHICLE)
+        st.update(vbat_src=self.vbat_src, vbat_ads_fresh_s=VBAT_ADS_FRESH_S, vbat_ads_errors=self.vbat_ads_errors,
+                  vbat_ads_error=self.vbat_ads_error)
+        try:
+            if self.ads is not None:
+                st['ads1115'] = self.ads.status()
+            elif self.vbat_ads_error:              # 環境変数は入なのに読み手を作れなかった(make_reader の例外)。理由を出す
+                st['ads1115'] = {'enabled': False, 'why': '読み手を作れません: %s' % self.vbat_ads_error}
+            elif not ads1115_vbat.enabled_by_env():
+                st['ads1115'] = {'enabled': False, 'why': '%s=0(使わない)' % ads1115_vbat.ENV}
+            else:
+                st['ads1115'] = {'enabled': False, 'why': '使わない(設定)'}
+        except Exception as e:
+            st['ads1115'] = {'enabled': True, 'error': '%s: %s' % (type(e).__name__, e)}
         if self.latest is not None:
             d = self.latest.data
             st.update(pwm=d['pwm'], erpm=d['erpm'], select=d['select'], valid=d['valid'])
