@@ -6,11 +6,9 @@ RCカー(Jetson Orin Nano 8GB / Super mode)で、カメラ・ToF(VL53L9)・IMU�
 
 ## 11/8の予選走行ダイジェスト
 
-[![11/8の予選走行ダイジェスト(1分の動画。画像をクリックすると動画のページを開きます)](docs/videos/JetFormer_20261108_qualifying_digest.jpg)](docs/videos/JetFormer_20261108_qualifying_digest.mp4)
+https://github.com/user-attachments/assets/5d1389c7-c64e-464f-a93f-08728610435c
 
 1本目の走りを外から撮った映像に、同じ瞬間の走行ログ(舵・アクセル・速さ・コース上の位置)を重ねた1分の動画です。公式タイムは3周24.43秒で、予選3位でした。映像に写る人の顔にはモザイクをかけています。
-
-画像をクリックすると動画のページが開きます(「View raw」で保存して再生できます)。
 
 ## 管理画面
 
