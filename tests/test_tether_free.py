@@ -1133,7 +1133,7 @@ def test_repo_readme_matches_the_rules():
     既定として書かない。既定 ON(config の tether_free)・上限 30 分(tether_free_max_s)・False なら 5 秒(heartbeat_s)・USB を抜いて
     いる間は CH3 を人側 → USB をつなぎ直して停止・プロポの信号が届かないときの中立は一時的(走行は終わらない。音声の表も)・収集中の
     2 秒ごとの書き込み(RECORD_SYNC_S)。数は config の値から作る(2026-10-31 粗探しの指摘: 画面の文は直したが README が前のままだった)"""
-    text = (ROOT / 'README.md').read_text(encoding='utf-8')
+    text = (ROOT / 'docs' / 'guide.md').read_text(encoding='utf-8')          # 2026-11-09 に README の本文を docs/guide.md へ移した
     a = text.index('## AI走行(管理画面の「走行」タブ)')
     ch = text[a:text.index('\n## ', a + 1)]
     assert '走行を始めた画面は開いたままにする' not in ch and '走行を始めた画面が5秒途絶えた' not in ch

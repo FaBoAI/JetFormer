@@ -1,449 +1,321 @@
 # JetFormer
 
-RCカー(Jetson Orin Nano 8GB / Super mode)で、カメラ・ToF(VL53L9)・IMU・操作値を
-同期収集し、nuScenes形式のデータセットとしてクラウド学習へ渡すための基盤です。
-推論は30fpsで、TransFuserのようにTransformerでセンサーフュージョンします。
+JetFormer は、1/10 サイズのラジコンカーに小型コンピューター Jetson Orin Nano を載せ、人の運転をまねて自分で走る車を作るプロジェクトです。大会に向けて開発していて、2026 年 11 月 8 日の予選(3 周のタイムを競います)は 3 位でした。決勝は 12 月 13 日です。
 
-## 11/8の予選走行ダイジェスト
+車のカメラ・ToF(前方の距離を面で測るセンサー)・IMU(加速度と回転の速さを測るセンサー)と、人が送信機で入れた操作を同時に記録し、Transformer(たくさんの情報の関係をまとめて見て判断する AI の仕組み)のモデルに学習させます。学習したモデルは車の上で 1 秒に 30 回動き、ステアリング(前輪の向き)とアクセルを決めます。
+
+収集・学習・AI 走行は、ブラウザの管理画面からひととおり操作できます。集めたデータは nuScenes(自動運転の研究で広く使われるデータの形)にならったデータセットにして、Hugging Face(AI のモデルやデータを共有するサイト)へ上げたり、そこから取り込んだりできます。
+
+**目次**: [予選ダイジェスト](#予選ダイジェスト) / [アップデートの流れ](#ここまでのアップデートの流れ) / [インストール](#パッケージのインストール方法) / [車体とセンサー](#現在の車体の構成とセンサー) / [収集・学習・走行の流れ](#データ収集と学習走行の流れの図) / [データセット](#データセットのフォーマットとアップロードダウンロード) / [Hugging Face](#hugging-face-へのアップとダウンロード) / [モデル設計](#モデル設計) / [その他](#その他)
+
+## 予選ダイジェスト
 
 https://github.com/user-attachments/assets/5d1389c7-c64e-464f-a93f-08728610435c
 
-1本目の走りを外から撮った映像に、同じ瞬間の走行ログ(舵・アクセル・速さ・コース上の位置)を重ねた1分の動画です。公式タイムは3周24.43秒で、予選3位でした。映像に写る人の顔にはモザイクをかけています。
+2026 年 11 月 8 日の予選を 1 分にまとめた動画です。1 回目の走りを外から撮った映像に同じ瞬間の走行ログ(ステアリング・アクセル・速さ・コース上の位置)を重ねたものと、4 回目の 2 周目を車のカメラから見た映像が入っています。
 
-## 管理画面
+予選は同じモデルで 8 回走り、アクセルとステアリングのゲイン(AI の出力にかける倍率)だけを変えて調整しました。公式タイムは **3 周 24.43 秒**で、**予選 3 位**でした。このタイムが出たのはゲインを上げていった途中の走りで、外から撮った 1 回目はこれより遅い走りです(車のカメラの記録で 3 周 約 27.8 秒)。
 
-```bash
-sudo systemctl status jetformer-web     # 起動時に自動で立ち上がる(scripts/jetformer-web.service)
-sudo systemctl restart jetformer-web    # コードを更新したとき
-~/jetformer/scripts/run_web.sh          # サービスを使わずに手動で起動する場合 → http://<jetsonのIP>:8080/
-```
+## ここまでのアップデートの流れ
 
-- **ライブ・収集**:カメラ|ToFのライブ映像、センサー状態、操作値・IMUのグラフ、収集の開始/停止
-- **シーン**:20秒単位のシーンを一覧・絞り込み・選択、詳細(スクラブ再生・時系列・説明/タグ編集・削除)
-- **ジャンル**:走行ジャンル表の確認・追加・名前変更
-- **データセット**:選んだシーンからnuScenes形式を作成 → tarでエクスポート(SHA256付き)→ ダウンロード / Hugging Face へアップロード(下記)
-- **学習**:データセットと間引き率を選んで、このJetsonのGPUで学習(下記)
-- **走行**:学習結果のモデルで車を走らせる。ステアリング・速度のゲインを走行中に調整、走行中の収集(評価用)も選べる(下記)
-- **シミュレーター**:コースのシミュレーター(CourseLab)の導入・ブリッジの起動・コースの選択とアップロード・モデルを読み込んで開く・集めたデータの取り込み・
-  強化学習モード(いろいろな走りのデータセットを作る。状態の表示と収集プラン)(下記)
+開発の様子は、YouTube の再生リスト「JetFormer開発記」に動画でまとめています(リンクを開くと「[JetFormer開発記] 予選ダイジェスト」から再生が始まります)。
 
-JupyterLab(8888番)とは別ポートです。カメラは同時に1つのプロセスしか使えないので、
-JetRacerのノートブックでカメラを使っている間は収集できません。
+https://www.youtube.com/watch?v=JuqWEVjruw8&list=PLFgozuuippLQ
 
-## 評価
-
-```bash
-python tools/evaluate.py --dataset <データセット> --run <学習結果>   # → data/reports/<データセット>/
-```
-
-データの品質(フレームの欠け・時刻のずれ・操作の分布・ステアリングとヨーレートの向き・衝撃)と、検証シーンでの
-予測の誤差(1〜10フレーム先、教師あり/AI走行と同じ自己入力)を、「今の操作を続ける」「学習データの平均」と比べる。
-
-## データセットを PC にダウンロード(データセットタブ)
-
-データセットごとの「⬇ PCにダウンロード」で、ブラウザにそのまま `<名前>.tar` を保存します(Hugging Face は使わない)。
-Jetson がその場で tar にしながら送るので、Jetson にファイルは作らず、空き容量も使いません(`GET /api/datasets/<名前>/download`)。
-tar の中身は「エクスポート」と同じ nuScenes 形式で、別の Jetson の `data/datasets/` に展開すればそのまま学習に使えます。
-「エクスポート(tar作成)」は、`data/exports/` に tar と sha256 を残したいときに使います。
-
-## Hugging Face へのアップロード(データセットタブ)
-
-データセットごとの「Hugging Face へ」から、Hub のデータセットリポジトリに上げます。ブラウザの **Dataset Viewer** で
-1フレームずつ(カメラ画像・ToFの色画像・操作値・ジャンル)見られる Parquet と、学習用の nuScenes 形式(tar)、
-データセットカード(README)を上げます(`jetformer/hf_export.py`)。目安: 走行1分あたり約72MB、作成に約50秒。
-
-- 最初に1回、Jetsonでログイン(Write権限のトークン): `/home/jetson/miniconda/envs/jetracer/bin/hf auth login`
-- 既定は**非公開**。非公開のデータセットは Hugging Face の PRO / Enterprise でないと Dataset Viewer が表示されない
-- 読み込み: `load_dataset("ユーザー名/jetformer-xxx", split="train")`
-
-## 別の環境(シミュレーターなど)で作ったデータセットを取り込む(データセットタブ)
-
-データセットタブの「📥 PC から取り込む」に、別の環境で作ったデータセットのファイルをドロップします(複数可、1つずつ順に送る)。
-1ファイル = 1データセットの `.tar`・`.tar.gz`・`.tgz`・`.zip` で、中身はエクスポートと同じ形です(先頭のフォルダ = データセット名、
-中に `dataset_card.json`・`splits.json`・`aligned/<シーン>.npz`・`samples/` の画像)。先頭のフォルダが無く `dataset_card.json` が
-いちばん上にあるものは、カードの `name` で取り込みます。Mac の Finder や tar が入れる `__MACOSX/`・`.DS_Store`・`._*` は無視します。
-
-- 既定では「🎮 シミュレーターのデータ」として取り込み、`simulator` のタグを付けます(外すと実機のデータとして)
-- 取り込む前に、学習が読むものがそろっているかを確かめます: `splits.json` の各シーンの `aligned/*.npz` に
-  `timestamps_us`・`cam_files`・`tof [N,42,54]`・`imu [N,10,6]`・`vehicle [N,4]`・`vehicle_valid`・`future_actions [N,10,2]`・
-  `future_valid`・`mode`(0 = 未設定は学習に使われない)があり、画像があること。足りなければ取り込みません(半端なデータセットは残らない)
-- 同じ名前のデータセットがあるときは取り込みません。取り込んだ記録は `import_source.json`
-- 取り込んだデータセットのシーンは、**シーンタブで1フレームずつ見られる**よう、収集したシーンと同じ形にも展開します
-  (`data/raw/ds-<データセット名>/ds-<データセット名>-0001` から。画像はハードリンクなので容量はほとんど増えない)。
-  カメラ・ToF・操作値・IMU のグラフ、ジャンルやタグの変更、ほかのシーンと混ぜた新しいデータセットの作成もできます。
-  Hugging Face から取り込んだものも同じ(元のシーンがこの Jetson にあるものは作らない)。前からあるデータセットは、
-  一覧の「🎞 シーンに展開」で展開できます(`POST /api/datasets/<名前>/scenes`)
-- シミュレーターの PC からコマンドでまとめて送る(Python 3 の標準ライブラリだけ。フォルダはその場で tar にして送る):
-  `tools/upload_datasets.py`(管理画面の `/api/tools/upload_datasets.py` からも取れる)
-
-```bash
-python3 upload_datasets.py --host http://192.168.55.1:8080 sim_run_01/ sim_run_02/ more.tar
-```
-
-- API: `PUT /api/datasets/import?filename=<名前>.tar&simulator=1`(本文はファイルそのもの。`curl -T x.tar ...` でも送れる)・
-  `POST /api/datasets/<名前>/tags`
-
-## Hugging Face からのダウンロード(データセットタブ)
-
-データセットタブの「🤗 Hugging Face からダウンロード」で、Hub に上げた JetFormer のデータセットをこの Jetson に取り込みます。
-「探す」で `jetformer` タグの付いたデータセットを一覧し(ユーザー名・組織で絞り込める)、「確認」で学習用の tar と大きさを見て、
-「ダウンロード」で `data/datasets/<名前>/` に展開します。取り込んだデータセットは一覧(取り込み元つき)と学習タブに出ます。
-
-- 取り込むのは、アップロードで上げた学習用の nuScenes 形式 `nuscenes/<名前>.tar`。Dataset Viewer 用の Parquet だけのリポジトリは取り込めない
-- 公開リポジトリはログインなしで取れる。非公開は、上と同じ `hf auth login` が必要
-- Hub のハッシュ(SHA-256)で確かめてから、途中のフォルダに展開して置き換える(止まっても半端なデータセットは残らない)。
-  同じ名前のデータセットがあるときは取り込まない(先に削除する)
-- API: `GET /api/hf/hub_datasets?author=` ・ `GET /api/hf/hub_files?repo_id=` ・ `POST /api/hf/download {"repo_id": ...}`
-
-## 学習(管理画面の「学習」タブ)
-
-1. 学習するデータセットを選ぶ(ジャンルごとのフレーム数が出る)
-2. 間引き率を選ぶ。30fpsの連続フレームはよく似ているので **1/3(10fps相当)がおすすめ**。1/1は全フレーム
-3. エポック数(既定30)・バッチ・学習率を確認し「学習を開始」。所要時間の見積もりが下に出る
-4. 進捗バー・残り時間・学習/検証誤差のグラフ・ジャンル別の検証誤差が更新される。「停止」でも、そこまでの最良モデルは保存される
-5. 終了後、走行用のTensorRTエンジン(FP16)を自動で作る(約1分)。結果は `data/runs/<データセット>-s<間引き>-<日時>/` に残り、画面からダウンロードできる
-   (`best.pth` / `jetformer.onnx` / `jetformer_fp16.engine` / `model_config.json` / `result.json` / `train.log`)
-
-学習中は収集・走行できません(逆も同じ)。目安:Orin Nanoで学習 約200枚/秒、
-100シーン(6万フレーム)を1/3間引き・30エポックで約40分、間引きなしで約2時間。
-クラウドで学習する場合は、データセットをエクスポートして `tools/train.py` を使う(docs/model_design.md)。
-
-**メモリに注意**:Orin Nano 8GBにはスワップが無く、学習は約3GB使います。メモリが尽きると本体ごと止まって
-再起動します(2026-10-10に1回発生)。そのため学習は空きが3.5GB未満なら始めず、TensorRTエンジンは別プロセスで作ります。
-ほかに大きなプログラム(JupyterのJetRacerのカーネルなど)が動いているときは止めてから学習してください。
-
-### モデルの種類(方策)
-
-学習タブの「モデルの種類」で、構造の違うモデルを選べます(`jetformer/policies/` の登録簿。一覧は `GET /api/policies`)。
-既定は **JetFormer v0(今の標準)** で、選ばなければ今までとまったく同じ学習・同じファイルになります。
-
-| 名前 | 中身 |
-|---|---|
-| `jetformer_v0` | **TransFuser軽量型**: 今までのモデル(下の「モデル」)。TransFuser を参考に、融合を最後に1回だけにした軽量版 |
-| `act` | **ACT型**: v0 と同じトークン → Encoder → 10 個の行動クエリの Decoder |
-| `tcp` | **TCP型**(TCP・TransFuser++ を参考): 通過点 + 目標速度 + 操作の枝。走行タブで目標速度 → 制御器・速度の上限を選べる(既定は操作の枝のまま。出し方 1〜3 は試験的で、起動のたび・モデルを替えたときに操作の枝に戻る。速度の上限は速度ゲインに関係なく効く) |
-| `msfusion` | **TransFuser多段型**: 本家 TransFuser と同じ多段融合(ResNet-18 と ToF の CNN を4段で融合) |
-| `dinov2` | **DINOv2型**: DINOv2 ViT-S/14(凍結)の画像特徴。重み `data/pretrained/dinov2_vits14_pretrain.pth` が要る(自動では取らない) |
-
-どの種類も出力 `actions`(10 フレーム先までの [ステア, スロットル])を持つので、走行の安全の仕組み(ゲイン・トリム・先読み・ToF ガード・
-リカバリー・ラップ・CH3 の交代・センサーの途切れで中立)はそのまま効きます。まだ作っていない種類は「使えません」と出て選べません。
-「詳細」の「衝突とみなす加速度」(2.5G = モデル B と同じ)・「乱数の種」は、モデルどうしを比べるときに条件をそろえるためのものです。
-CLI では `tools/train.py --policy act [--policy-cfg '{"dec_layers": 3}']`。`model_config.json` に `policy`・`policy_cfg`・
-`inputs`(書き出した ONNX から読み直した名前)などが入り、`policy` の無い古い学習結果は `jetformer_v0` として読みます。
-エンジンの精度は `model_config.json` の `engine.precision`(既定 fp16)で、`tools/build_engine.py` は作った後に入出力を確かめます。
-学習結果のフォルダーに `engine_check.json`(実フレームで TensorRT と PyTorch FP32 の差・速さを確かめた結果)があれば、走行タブに出します。今のエンジンが精度の確認(差 最大 2.5 µs 以内)に落ちていれば、走行タブで選べなくし、理由を出します(走行も始めません。エンジンを作り直せば、古い確認は当てません)。速さだけ落ちたときは警告だけです。
-
-走行タブは、評価で決めた**推奨のモデル**(`data/drive_recommended.json`)を一覧の先頭に「★推奨」と出し、ページを開いたときに選びます(前回使ったモデルより先。無ければ今まで通り前回のモデル → 一番新しいモデル)。方策の比較の評価の推奨は `python tools/policy_zoo.py recommend` で書きます(手で決めるときは `--run <学習結果> --reason <理由>`)。
-
-**DINOv2 の重みの取得**(`dinov2` を使うときだけ・1回だけ。ネットから自動では取りません)。電源断で半端なファイルを残さないよう、
-`.part` に書いて sha256 を確かめてから名前を変えます:
-
-```bash
-cd ~/jetformer && mkdir -p data/pretrained
-curl -fL -o data/pretrained/dinov2_vits14_pretrain.pth.part \
-    https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth
-sha256sum data/pretrained/dinov2_vits14_pretrain.pth.part
-# → b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9 と同じなら
-mv data/pretrained/dinov2_vits14_pretrain.pth.part data/pretrained/dinov2_vits14_pretrain.pth
-```
-
-(公式の通常版 ViT-S/14、約 88 MB。`data/` は git に入りません。DINOv2 のコードと重みは Apache-2.0)
-
-## 学習済みモデルを Jetson の外で使う(エミュレーター用の書き出し)
-
-学習タブの各モデルの「⬇ エミュレーター用(zip)」で、Mac などのエミュレーターで動かすための一式を zip で取れます
-(「＋重み(.pth)」は PyTorch の重みも入れる)。TensorRT のエンジンは Jetson 専用なので入れません。
-
-| zip の中身 | 内容 |
-|---|---|
-| `jetformer.onnx` | 推論用(バッチ 1 固定)。onnxruntime(CPU / CoreML)で動く |
-| `model_config.json` / `result.json` | 学習の設定・正規化の定数 / 学習の結果 |
-| `io_spec.json` | 入力の作り方(カメラ・ToF・IMU・操作値・ジャンル → 入力)と出力の読み方(µs・左右と前後の向き) |
-| `README.md` | 使い方 |
-| `run_onnx_example.py` | onnxruntime で動かす例(`tools/emulator_run_onnx.py`)。`JetFormerOnnx(フォルダ).predict(...)` をエミュレーターから呼べる |
-
-- 入力の作り方は Jetson の学習・走行(`jetformer/train_data.py` の `normalize_inputs`)と同じ。記録した実フレームで、入力は 2e-7 以内、
-  出力(onnxruntime と PyTorch)は 0.001µs 未満で一致することを確かめた
-- API: `GET /api/models`(一覧)・`GET /api/models/<名前>/io_spec`・`GET /api/models/<名前>/bundle.zip[?pth=true]`
-
-## シミュレーター(管理画面の「シミュレーター」タブ)
-
-ユーザーのコースのシミュレーター(CourseLab。`course-simulator-complete.zip`)を、管理画面から使えるようにしたもの。
-描画(WebGL)は Mac などのブラウザ、学習済みモデルの推論(onnxruntime の CPU 版)とデータの保存は Jetson の「ブリッジ」が行う。
-GPU は使わない。シミュレーターのファイルは変えない(JetFormer が写しを持ち、その写しも変えない)。
-
-**使い方**
-
-1. シミュレーターの ZIP を Jetson の `~/sim/` に置く(`JETFORMER_SIM_INBOX` で変えられる)→ タブの「導入」。
-   全ファイルを ZIP の `COMPLETE-MANIFEST.json` の sha256 と照合して `data/sim/releases/<版>/` に入れる
-   (取り込み済みの大きなデータ `dataset-downloads/` と `runtime/` は入れない)。新しい版も同じ手順で並べて入れ、「この版を使う」で切り替える。
-2. 「準備する」:ブリッジ用の Python 環境 `data/sim/venv` を作る(JetFormer の Python 3.13 から。numpy・opencv-python-headless・onnxruntime を
-   `jetformer/sim/requirements-bridge.txt` の版とハッシュで入れる。`data/sim/wheels/` に wheel があればオフラインで入る)。jetracer env には何も入れない。
-3. 「起動」:ブリッジを子プロセスとして起動する(127.0.0.1 の空きポートだけで待ち受け、nice 10・ONNX は 4 スレッド)。
-   異常終了したら 10 分間に 3 回まで起動し直す。管理画面を再起動するとブリッジも止まる(自動では起動しない)。
-4. 「シミュレーターを開く」でコースとモデルを選び、新しいタブで開く(`http://<jetson>:8080/sim/c/<コースID>/`、モデルは `?model=<学習結果>`)。
-   ページ上の帯でコースを切り替えられる。モデルは JetFormer の `bundle.zip` をシミュレーターの「ZIPからモデルを読み込む」に自動で渡す
-   (対応は TransFuser軽量型 `jetformer_v0` だけ)。
-5. シミュレーターの「データセット収集」で作ったデータは、タブの「JetFormer に取り込む」でそのまま取り込める(シーンタブにも展開される)。
-   シミュレーター内の「JetFormerへ送る」も使える(送り先は自動でこの Jetson の JetFormer になる)。
-
-**コース**
-
-| 種類 | 内容 |
-|---|---|
-| Default(標準) | 導入した版の `dist/` のコース(今は v3 `indoor-course-eval-3-turf-board-removed`、world hash `0a464384`) |
-| 同梱 | 版に入っている `qa/course-snapshots/`(旧 v2 `indoor-course-eval-2-shortcut`、`547d7e80`)。sha256 が合うものだけ |
-| アップロード | タブからコースの ZIP を登録したもの(下記)。既定のコースにも、削除もできる |
-
-- コースの ZIP は 2 つの形式を受け付ける:JetFormer 形式(`course.json` {"format":"jetformer-sim-course/v1", "name", "world_version", ["id"], ["visual"]} +
-  `physics-world.json` + 任意の `assets/*.jpg|png`)と、シミュレーターのスナップショット形式(`manifest.json` + `physics-world.json` [+ JS])。
-  `physics-world.json` は sim-core の `makeWorld(buildCourse().physics)` と同じ形(segments・disks・surfaces・bounds・route・requiredCrossings・spawn)。
-  値は丸めずに厳しく確かめ(範囲外・NaN・路面にない必須横断・壁に重なる開始位置などはエラー)、world hash(sim-core と同じ FNV-1a。
-  `jetformer/sim/worldhash.py`)を計算して記録する。world_version はコースごとに一意にする(データセットや学習の記録がこれでコースを見分ける)。
-- 作り方:コースの「書き出し(雛形)」で ZIP を取り、`physics-world.json` を編集し、`course.json` の world_version と id を変え、world_hash の行を消してアップロード。
-- **アップロードした JS は実行しない。** シミュレーターのページは JetFormer と同じオリジンで動くので、JS は JetFormer の API(実車の走行も)を呼べてしまうため。
-  アップロードしたコースは JetFormer の汎用描画(`jetformer/sim/static/course-scene.js`)で、衝突物をその高さのまま描く(ToF にも写る)。
-  見た目は本来のコースと違う(部屋・LED 矢印・テープなどがない)ので、カメラを使う AI の評価は Default と直接は比べられない。
-  JS は、導入済みの版のファイルと sha256 が一致するときだけ使う。
-- RC 加速教師・軌跡最適化教師・高速改善教師・「20分・60シーンの収集条件」は Default 専用(ほかのコースでは隠す)。
-
-**制限・注意**
-
-- ブリッジは全体で 1 つ、読み込めるモデルも 1 つ。2 つのページで同時に AI 評価をすると、モデルの「前の出力」の記憶が互いに消し合い、
-  結果が正しくない(別のページでモデルを読み込み直すと、もう一方は「モデルが変わった」エラーになる)。AI 評価は 1 ページずつ。収集も同時に 1 つだけ(ブリッジが断る)。
-- ブリッジが異常終了して起動し直したとき・管理画面を再起動したときは、モデルを読み込み直す(ブリッジは自動では起動しない)。収集中だったシーンは失われる。
-- コースを削除すると、そのコースを開いているページは次の読み込みから動かない。
-- 電源断・強制終了のあと: 作業途中のファイルは次の起動(とコースの登録)のときに片付く。置き換えの途中だったコースは前のものに戻る。
-  導入・準備・コースの登録は、中身をディスクに書き切ってから「済み」の記録を書く。
-
-**しくみ**
-
-- `/sim/c/<cid>/` は `dist/index.html` に JetFormer の設定(`_jf/config.js`)と差し込みスクリプト(`jetformer/sim/static/sim-shim.js`)を足して返す。
-  `scene.js`・`world.js`・`assets/` だけをコースごとに差し替え、ほかは `dist/` から返す。
-- shim はシミュレーターのブリッジ宛ての通信(`http://127.0.0.1:8766/api/...`)を同じオリジンの `/sim/bridge/api/...` に書き換え、
-  JetFormer がブリッジに中継する(決まった API だけ・Host を書き換え・Origin などを捨てる・本文はためずに流す・`/api/jetformer/*` の送り先は
-  この Jetson の JetFormer に固定)。JetFormer の管理 API は `/api/sim/*`。どちらも既存の `/api/datasets/*`・`/api/models/*` とは重ならない。
-- データ:`data/sim/`(releases/・active.json・venv/・venv.json・wheels/・runtime/(ブリッジの作業場所)・logs/bridge.log)、`data/sim_courses/`(アップロードしたコースと settings.json)。
-- コード:`jetformer/sim/`(install・env・bridge_runner・bridge_proc・proxy・courses・worldhash・datasets・web)、テストは `tests/test_sim_*.py`。
-
-### 強化学習モード(データセットのばらつき)
-
-シミュレーターの教師の走り方を、強化学習(PPO)で学習した方策に変えて、いろいろな走りのデータセットを作る(2026-10-14)。
-これまでのシミュレーターの 60 シーンは「ほぼ同じ 20 秒の走り」の繰り返しだったため。学習と試験は `experiments/20261013_sim_rl_modes/`、
-報告は `~/jetformer_reports/sim_rl_modes_20261013/`(まとめは `README.md`、くわしくは `design.md`・`integrate.md`・`record.md`・`review.md`)。
-
-| モード | 状態 | 中身 |
+| 日付(2026 年) | 動画 | できごと |
 |---|---|---|
-| 強化学習モード(最速) | 合格 | ベストラップの方策そのまま(停止から 1 周 8.09 秒)。開始の位置・向きを広げてばらつきを出す |
-| 強化学習モード(絶対壁にぶつからない) | 合格(第 4 回) | 壁・柱から離れて遅めに走る + 走行中の安全シールド v5(8.1 cm を守る・止まれる操縦を残す・柱の前で動けないときは少し下がって抜ける)。試験 3,038 回・確認の新しい組 5,749 回で衝突 0 |
-| 強化学習モード(離脱復活) | 合格(第 4 回) | 走行中にわざと舵・アクセル・線を乱し(立て直せる組だけ)、そこから戻る。乱した操作は学習から外す。乱しつき 100 回で 99 回走り切り・立て直しの成功 99% |
-| 強化学習モード(速さいろいろ) | 合格 | 最速の 50〜100%(5 段)の速さで走る |
-| 強化学習モード(経路いろいろ) | 合格(第 4 回) | 左寄り・右寄り・中央・イン・アウト・レイト/アーリーエイペックス・ランダムな線(シーンの種から)。走行中は壁・柱から 4 cm を守るシールド v5b。試験 542 回で衝突 0 |
-| 障害物よけ | 出していない | 試験で不合格(優先 3 のモードは出さない決まり)。タブには数字と理由だけ出る |
+| 10/10 | [Day1](https://www.youtube.com/watch?v=7RWuXv4PR0A&list=PLFgozuuippLQ) | 試作機が完成。センサーの同時記録、管理画面、モデル、学習、AI 走行を作り、その日のうちに実車で AI が走りました(ぶつからなかった周のベストは 1 周 9.68 秒) |
+| 10/11〜12 | [Day2](https://www.youtube.com/watch?v=nSEM7uXz-vs&list=PLFgozuuippLQ)・[3](https://www.youtube.com/watch?v=L24v1x3QB8A&list=PLFgozuuippLQ) | 学び方の比較。オフライン強化学習(集めた記録だけで試行錯誤して学ぶ方法)と形の違う 4 種類のモデルを試しましたが、机の上の評価では、最初の軽い形(自動運転の研究 TransFuser を参考にした形)を超えるものはありませんでした |
+| 10/13〜15 | [Day4](https://www.youtube.com/watch?v=fFJYCx2tlTc&list=PLFgozuuippLQ)・[5](https://www.youtube.com/watch?v=A8FN_mXttqo&list=PLFgozuuippLQ)・[6](https://www.youtube.com/watch?v=_83c_EB7Jxs&list=PLFgozuuippLQ) | シミュレーター(コースを再現して車を走らせる別のプログラム)を管理画面から使えるようにして、実車のデータと混ぜた学習を試しました。いろいろな走りのデータを強化学習で作るモードも 5 種類足しましたが、実車のデータでの精度はあまり上がりませんでした |
+| 10/16〜22 | [Day7](https://www.youtube.com/watch?v=GJ3_yoXS-qE&list=PLFgozuuippLQ)・[8](https://www.youtube.com/watch?v=U2h7PSTsXRE&list=PLFgozuuippLQ)・[9](https://www.youtube.com/watch?v=svIVeQgghnw&list=PLFgozuuippLQ)・[10](https://www.youtube.com/watch?v=IdbAieqeHD4&list=PLFgozuuippLQ)・[11](https://www.youtube.com/watch?v=Cs4XBvQWock&list=PLFgozuuippLQ) | 実車を走らせずに、データの選び直し、シミュレーターを実車に近づける調整、区間ごとの速度の上限を進め、実車で比べる候補のモデルと成績表の道具を用意しました(車体の解説は Day8) |
+| 10/23〜24 | [Day12](https://www.youtube.com/watch?v=Yxb5nqfPVlQ&list=PLFgozuuippLQ)・[13](https://www.youtube.com/watch?v=cUnFv2Bi5Vo&list=PLFgozuuippLQ) | 実車のベンチマーク(候補のモデルを実際に走らせて比べるテスト)を 2 日間行いました。いちばん良い 1 周は 8.25 秒、続けて走った 3 周は 25.29 秒でした |
+| 10/25〜28 | [Day14](https://www.youtube.com/watch?v=HG3MYDe9SG0&list=PLFgozuuippLQ)・[15](https://www.youtube.com/watch?v=i_M75alLYPc&list=PLFgozuuippLQ) | データを増やしてモデルを 22 個学習し、発進の補助、速さの上限、ぶつかったあとの自動の立て直し(リカバリー)の安全を見直しました |
+| 10/29〜30 | [Day16](https://www.youtube.com/watch?v=2_sBIs8DQic&list=PLFgozuuippLQ)・[17](https://www.youtube.com/watch?v=ZN3Hc-_f8VI&list=PLFgozuuippLQ) | 増やしたデータで学び直したモデルが 1 周 7.81 秒を記録。翌日は止まった状態から 3 周 23.62 秒を出し、24 秒を切りました(途中で 1 回、軽くぶつかっています) |
+| 10/31〜11/2 | [Day18](https://www.youtube.com/watch?v=1BdzUNMSfuY&list=PLFgozuuippLQ) | USB を外しても走り続けられるようにしました。電池の電圧とステアリングの角度のセンサーも足して、全部つないだ状態を確かめました |
+| 11/3 | [Day19](https://www.youtube.com/watch?v=fEupKwtfUBI&list=PLFgozuuippLQ) | 練習コースでの最後の試験走行で 23 回走りました。止まった状態からの 3 周の最速は 25.27 秒、走りながら測った 3 周の最速は 23.80 秒で、続けて 7 周を強くぶつからずに 56.52 秒で走った回もありました |
+| 11/4〜5 | [Day20](https://www.youtube.com/watch?v=yjJ0sWlHeHY&list=PLFgozuuippLQ) | 予選は別の会場なので、背景が変わっても走りがくずれにくいように学び直したモデルを作りました(コースの板の奥の背景だけを入れ替えて学習) |
+| 11/6〜7 | [Day21](https://www.youtube.com/watch?v=V54WQOEg2ZU&list=PLFgozuuippLQ) | 予選と同じコースで試走して人の運転のデータを集め、そのデータで追加学習して、予選で使うモデルを机の上の評価で選びました |
+| 11/8 | [Day22](https://www.youtube.com/watch?v=CVgQ-j-1zC4&list=PLFgozuuippLQ) | 予選。8 回走り、公式タイムは 3 周 24.43 秒で 3 位でした。次は **12 月 13 日の決勝**です |
 
-第 4 回(2026-10-14〜15、`~/jetformer_reports/sim_rl_modes_20261013/r3/`)で、確認の段で崩れた 3 つ(絶対壁にぶつからない・離脱復活・経路いろいろ)を学び直し、
-結果を見る前に固めた試験と、学習のコードを使わない確認の両方で合格したので差し替えた(昇格の報告 `r3/promote.md`)。
-前の版で記録したデータセット(`sim-rl-no_wall_20261014-*`・`sim-rl-recover_20261014-*`)のカードには `rl_superseded`(置き換えたこと・離脱復活のゲートの外し)を書き足した。
+## パッケージのインストール方法
 
-**使い方**
+新しい Jetson に JetFormer を入れて、ブラウザで管理画面を開くまでの手順です。車が無くても、この手順で管理画面までは開けます。データ収集と AI 走行には、[次の章](#現在の車体の構成とセンサー)の車体一式が要ります。
 
-- タブのカード「強化学習モード」で、モードごとの状態・停止から 1 周・試験の衝突・最小すき間・主な数字(立て直しの成功・速さの段など)を見られる。
-  数字は RL の側が元の `sim-core.js` で試験した値(`eval.json`)で、シミュレーターの中の結果(実車の保証ではない)。
-- 「このモードで開く」→ `/sim/c/default/?rl=<モード>`。ページの「反復試験・教師データ収集」の「教師の走行」の下の「強化学習モード」で選び直せる。
-  選ぶと、コントローラー = 経路追従デモ・教師 = RC加速教師の差し込み口・物理とセンサーを記録の条件にそろえる。「▶ 評価を開始」で走る。
-  速さいろいろは速さの倍率、離脱復活は乱しの強さを選べる(既定はシーンの種から)。走行中のすき間・シールド・乱しの様子も出る。
-- **収集プラン**: カードでモードごとの分(1 分 = 20 秒のシーン 3 つ、1 モード 20 分まで)・val の割合・種を決めて「プランを作って開く」→
-  新しいタブ(`?rlplan=<ID>`)で「開始」。1 シーンずつアプリ自身の「連続試験」で記録し、モードが終わるたびにそのモードのシーンを
-  1 つのデータセット `sim-rl-<モード>_<日時>` に取り込む(ブリッジの「1つのZIPにまとめる」は空き 20 GiB が要るので使わない)。
-  記録中はタブを表に出しておく(裏では止まる)。Jetson の Firefox では 1 シーン約 2 分(5 分 × 4 モード = 60 シーンで約 2 時間)。
-- シーンの開始・種・条件は、前もって Node(元の sim-core.js・ブラウザと同じ方策のファイル)で走らせて「20 秒・衝突 0・1 周以上・止まらない・
-  ゲートの外し 0・すき間(壁にぶつからない 8 cm 以上・経路いろいろ と 速さいろいろ 3 cm 以上)」を確かめた組(`scenes.json`)から選ぶ。記録で外れたら(衝突など)同じモードの替えのシーンを足す。
-  第 4 回の 3 モードの組は、止まり(1 秒以上 0.2 m/s 未満)・シールドの作動の割合(壁 25%・経路 10% まで)・後ろへ動いたフレーム 0・(離脱復活)20 秒で 1 周以上進む、も見る
-  (`experiments/20261013_sim_rl_modes/r3/promote/make_scene_pool_r4.mjs`)。
-  ブラウザ(Firefox)と Node は数学関数の最後の桁が違うので、閉ループの走りは途中から Node の予想と分かれる(予想で走り切るシーンが記録で外れることがある)。
-  取り込んだら `node experiments/20261013_sim_rl_modes/r3/promote/replay_check_r4.mjs --dataset data/datasets/<名前>` で、モードの決まり(すき間・止まり・周・シールド・ゲートの外し)を
-  記録そのもので確かめられる(第 4 回の前の `integrate/replay_check.mjs` は経路いろいろのシールドを入れないので使わない)。
-- ブリッジにモデルを読み込んでいるときは、換算(操舵の中心 1442・スロットルの中立 1498 ±5 µs)が違えば記録を止める(PWM のラベルがずれるため)。
+専用のインストーラーはなく、[FaBoAI/JetsonSkills](https://github.com/FaBoAI/JetsonSkills) の `jetracer-installer`(PyTorch・OpenCV などをまとめて入れるスクリプト)で土台を作り、足りない分を足します。
 
-**データセット**
+| 必要なもの | 内容 |
+|---|---|
+| 本体 | Jetson Orin Nano 8GB Developer Kit(Super モード)。`ls -l /etc/nvpmodel.conf` のリンク先が `..._super.conf` なら Super モードの構成です。そうでないと手順 3 の電力モードを選べません |
+| OS | **JetPack 7.2**(NVIDIA の Jetson 用 OS)。`cat /etc/nv_tegra_release` の 1 行目が `# R39 (release), REVISION: 2.0, ...` なら 7.2 です。ほかの版ではインストーラーが止まります |
+| ユーザー名 | **`jetson`** にします(起動スクリプトが `/home/jetson/...` を直接指しています) |
+| ネットワークと空き容量 | インターネットへの接続が要ります。空き容量は、Python の環境で約 10 GB に加えて、ビルド中の一時ファイルの分が要ります(余裕を持たせてください) |
+| 基板のファームウェア | ファームウェアは基板の上のプログラムです。ToF の基板(ESP32-P4)は `csi_ranging`、コントローラ基板(XIAO ESP32-S3)は `leracer_ctrl` v2 が前提です。ソースも書き込みの手順も**このリポジトリには入っていません**。Jetson との通信の中身は [docs/firmware_protocol.md](docs/firmware_protocol.md) にあります |
 
-- ジャンルは全部 8(シミュレーター)のまま(新しいジャンルは作らない)。モードはタグ `sim-rl`・`sim-rl-<モード>`(+ `sim-safe`・`sim-recover`・`sim-speed`)と
-  データセット名で分かれる。カードの `rl` にモード・方策・プラン、`simulation/collection.json` にシーンごとの開始・種・条件。
-- 離脱復活の乱した操作は記録の `frames.jsonl` の `action_info.jf.l = 0` で印が付く。取り込み(`dataset_import.import_archive` と
-  まとめての取り込み。「JetFormerへ送る」も同じ)で、その操作を正解(k+1〜k+10)に含む観測と、その操作のフレーム自身(k ∈ [j − 10, j])を
-  `future_valid = False`・`mode = 0`(未設定)にする(`jetformer/sim/label_mask.py`、カードの `label_mask`)。jf の無い行は外す(安全側)。
-  シーンタブでジャンルを付け直しても、外した区間は「未設定」のまま残る(scene.json の `label_mask`)。
+作者の車で動いている版は、Python 3.13(conda 環境 `jetracer`。conda = Python と部品をほかと混ざらないようにまとめる道具)・CUDA Toolkit 13.2(NVIDIA の GPU を使うための部品)・PyTorch 2.10.0+cu130・OpenCV 4.13.0(専用ビルド)・TensorRT 10.16.1.11(NVIDIA の道具。推論 = 学習したモデルで答えを出す処理を GPU で速くします)です。
 
-**しくみ**
+### 1. 土台の環境を入れる
 
-- ページの import map(JSON として書き足す)で、アプリが読む `./rc-speed-controller.js` を `_jf/rl/teacher.js` に差し替える(`_jf/` の中からは元のファイル)。
-  モードを選んでいなければ元の RC加速教師そのもの。選んでいれば、Node の試験と同じファイル `_jf/rl/mode_runtime.mjs`(観測・方策・安全シールド・乱し)で走る。
-  teacher.js は登録簿の `mode.json` の `runtime` を渡す(経路いろいろのシールド v5b の切り替え)。離脱復活のシールドは試験と同じ `shield_v4p.mjs`(jf-shield/v4-proto)で固定。
-  ページの欄には `mode.json` の `ui_note_ja`(手で走らせるときの注意。記録の範囲の外の開始で止まることがある など)も出る。
-  `jetformer/sim/static/rl/` の runtime は `experiments/20261013_sim_rl_modes/web/rl/` の写し(`manifest.json` に sha256)。ページの欄・実行係は `static/sim-rl.js`。
-- 登録簿 `data/sim_rl/modes/<モード>/{mode.json, status.json, policy.json, eval.json, card.json, scenes.json}`(RL の側の
-  `experiments/20261013_sim_rl_modes/integrate/publish_registry.py` が置く)、プラン `data/sim_rl/plans/<ID>.json`。
-  方策は `policy.json` の sha256 が `mode.json` と同じときだけ配る。
-- API: `GET /api/sim/rl/modes`・`GET /api/sim/rl/modes/<モード>/policy.json`・`GET|POST /api/sim/rl/plans`・`GET /api/sim/rl/plans/<ID>`・
-  `POST /api/sim/rl/plans/<ID>/progress`・`POST /api/sim/rl/import`(ジョブ import)。コードは `jetformer/sim/{rl_modes,rl_import,label_mask}.py`。
-- 環境変数 `JETFORMER_SIM_RL=0` で、ページへの差し込みと API を止められる(シミュレーターの版が変わって差し込みが合わなくなったときなど)。
-- 強化学習モードは Default コースだけ(RL の観測が Default の参照ループ専用)。アプリの「低摩擦」の場面(μ × 0.4)は使えない(学習・試験した物理の範囲の外)。
-- テスト: `tests/test_sim_modes.py`(登録簿・方策・プラン・まとめての取り込み・学習除外・ジャンルの付け直し)・`tests/test_sim_modes_js.py`(teacher.js・sim-rl.js)・
-  `tests/test_sim_modes_r4.py`(第 4 回: mode.json の runtime を渡す・モードごとのシールド・配るファイル)・`tests/test_sim_label_frame_index.py`・`tests/test_sim_label_mask_e2e.py`
-  (展開したシーンの正解をフレームの番号で引く・取り込み → 展開 → 作り直し → ジャンルの付け直し → 作り直しで乱した操作が正解に入らない)。
-- 展開したシーン(シーンタブ)からデータセットを作り直すとき、操作がカメラのフレームと 1 対 1 のシーン(データセットから展開したもの)は、正解(未来の操作)を
-  フレームの番号で引く(`dataset._frame_indexed`。それまでは時刻で引き、33,333/33,334 µs おきのフレームで観測の約 3〜7 割(数え方による)の正解が 1 フレーム前にずれていた)。
-  実機のシーン(VEHICLE 100 Hz)は今までどおり時刻で引く。
-
-## AI走行(管理画面の「走行」タブ)
-
-```
-カメラ・ToF・IMU・車両 → 推論(TensorRT, 30fps) → ゲイン → PCA9685(I2C 0x40) ─┐
-プロポ受信機 ───────────────────────────────────────────────┤ コントローラ基板のセレクタ → サーボ・ESC
-                                    プロポのCH3(1500〜2500µs=AI側、LED紫)で切り替え ┘
-```
-
-モデルはプロポと同じ「パルス幅µs」で操作値を出すので、PCA9685でも同じµsを作ります
-(JetRacerのような左右・前後の向きの設定は不要)。CH0=ステアリング、CH1=スロットル、60Hz(`config.PCA9685`)。
-
-1. 学習タブで「学習後にTensorRTエンジンを作る」にして学習する(エンジンのある学習結果だけが選べる)
-2. モデルと走行ジャンルを選ぶ(そのモデルが学習したジャンルだけ選べる)
-3. はじめは「モーターに出力しない」で開始し、予測が妥当か(ゲージ・グラフ)を確認する。この間PCA9685は中立を出し続ける
-4. 速度ゲインを小さめ(既定0.5。最初は0.3〜0.5)にして「走行開始」→ プロポのCH3をAI側にすると車がAIで動く
-5. 止めるとき:**プロポのCH3を戻す(常に最優先)**/停止ボタン/画面下の赤いボタン(どのタブでも出る)/スペースキー・Escキー
-
-**画面との通信が切れてもAIは止まりません(USBを外して走れる)**:既定(`config.DRIVE['tether_free'] = True`。2026-10-31、
-予選の会場でUSBを外して走るため)では、走行を始めた画面を閉じた・スマホがスリープした・通信が切れた(USBを抜いた)ときも
-走行を続けます(Wi-Fiのスマホから走らせるときも同じ)。念のため、その画面からの問い合わせが30分(`tether_free_max_s`)
-途絶えたときだけ止めます。止めるときは上の5のとおり(**CH3を人側が最優先**)。USBを抜いている間は画面から止められないので、
-先にCH3を人側にしてから、USBをつなぎ直して停止ボタンを押します。`tether_free` を `False` にしてサーバーを再起動すると、
-前の決まり(その画面からの問い合わせが5秒途絶えたら止める)に戻ります。
-画面のファイルが古いまま(ブラウザのキャッシュ)だと走行を始められないので、ページを再読み込みしてください。ほかの端末で同じ管理画面を開いていても、
-走行を始めた画面の代わりにはなりません(表示と停止はできます)。
-
-- **ゲイン**:ステアリング・速度とも、学習データで車が止まっているときの操作値(中心・中立)を基準に、そこからの量を何倍にするか。
-  走行中に動かしてもすぐ反映。0で直進・停止、1で学習どおり
-- **詳細設定**:ステアリングのトリム、先読み(何フレーム先の予測を使うか。遅れて曲がるときは大きく)、PCA9685の時計補正
-  (PCA9685は個体差でパルス幅が数%ずれる。停止中にCH3をAI側にして、モーターが回り出す・ハンドルが動くなら合わせる)
-- **走行中に収集する(評価用)**:20秒シーンとして保存し、各フレームのAIの予測・出力・ゲインを `AI_CMD.npz` に残す。
-  シーンの詳細で映像と一緒に見返せる。CH3を人側にして介入した区間は人の操作として、そのまま学習データにも使える。
-  収集している間は2秒ごとに、書いたファイルをディスクへ書き切る(`config.RECORD_SYNC_S`。0で止める。AI走行の収集は止めたときにも書き切る)。
-  電源が切れても書き終わったファイル(カメラの絵は約2秒前まで・保存したシーン)は残るが、書いている途中のシーンのセンサーとAIの記録(最大20秒)は消える
-- 安全のための動作(中立を出す):センサーの値が途切れた・古い(150ms以上)/推論が異常/
-  **CH3がAI側のままプロポの信号が届かない**(送信機の電源断・圏外。基板はSELECTを最後の値のまま保つので、
-  人が取り戻せない)/PCA9685への書き込み失敗(続けて5回失敗したら走行を止める)。
-  プロポの信号が届かないときの中立は一時的で、**走行は終わりません**(信号が戻ると、CH3がAI側ならAIがまた走らせる。そのとき案内の声は無い)。
-  送信機の電源を入れる前にCH3を人側にし、走行は停止ボタンで終える
-- 走行を止める:停止操作/走行を始めた画面との通信が30分途絶えた(`tether_free` が `False` なら5秒)/サーバーの終了(`systemctl stop`・`restart` でもすぐ止めて中立を出す)。
-  サーバー起動時は、前のプロセスが残したPCA9685の出力をパルスなしにする
-- **受信機のフェイルセーフ**:送信機の電源断・圏外のとき、CH3が人側(1500µs未満)になるか、パルスが止まる設定にしておく。
-  CH3の最後の値を保つ設定だと、基板もJetsonも信号断に気づけない
-- サーバーが強制終了(停電・SIGKILL)した場合はPCA9685が最後の出力を出し続けるので、CH3を人側に戻す
-- 実測(Orin Nano Super):30fps、撮像から出力まで平均約28ms(最大約35ms)、推論(TensorRT FP16、転送込み)約5.7ms
-
-テスト(実機不要。センサー・PCA9685・TensorRTは偽物で、走行ループの安全動作・収集・学習の見積もりなどを確認):
+先にスワップ(メモリが足りないときにストレージを代わりに使う場所)を 4 GB 作ります。Orin Nano 8GB はメモリが尽きると本体ごと止まることがあるためです(`swapon --show` に何か出るなら 1〜2 行目は不要です)。インストーラーは `tmux`(SSH の接続が切れてもプログラムを動かし続ける道具)の中で動かします。`<自分で決めたパスワード>` は書き換えてください。
 
 ```bash
-cd ~/jetformer && /home/jetson/miniconda/envs/jetracer/bin/python -m pytest -q tests
+sudo fallocate -l 4G /var/swap-jrbuild && sudo chmod 600 /var/swap-jrbuild && sudo mkswap /var/swap-jrbuild && sudo swapon /var/swap-jrbuild
+echo '/var/swap-jrbuild none swap sw 0 0' | sudo tee -a /etc/fstab
+sudo apt-get update && sudo apt-get install -y git tmux
+git clone https://github.com/FaBoAI/JetsonSkills.git ~/JetsonSkills
+tmux new -s jetracer-install "cd ~/JetsonSkills/jetracer-installer && python3 script/install_jetracer.py --jobs 1 --camera-overlay tegra234-p3767-camera-p3768-imx219-A.dtbo --jupyter-password '<自分で決めたパスワード>'; bash"
 ```
 
-## 走行ジャンル(モデルの走り方の切り替え)
+- **指定の意味**: `--jobs 1` はビルドを 1 つずつ進める指定(Orin Nano の推奨)です。`--camera-overlay` は CSI カメラ(Jetson のカメラ用コネクタにつなぐカメラ)を 1 台、ポート A につなぐ設定で、もう一方のポートなら末尾を `imx219-C.dtbo` にします。省略すると 2 台用になります。`--jupyter-password` は JupyterLab のパスワードです。指定しないと、公開のスクリプトに書かれた既定のパスワードになります
+- **待ち時間と再起動**: 最初に `sudo` のパスワードを聞かれます。OpenCV をソースからビルドするので時間がかかります。SSH が切れたときは `tmux attach -t jetracer-install` で戻れます。終わったら `sudo reboot` で再起動します
+- **一緒に入る物**: Python の環境、カメラの起動設定、40 ピンヘッダ(Jetson の拡張用のピン列)の I2C(少ない本数の線で複数の機器をつなぐ通信)を 100 kHz にする設定のほかに、FaBo JetRacer 一式(`~/jetracer`。同じ Jetson に入る別のプロジェクト)、JupyterLab(ブラウザで Python を動かす開発環境。8888 番)、Node.js、Claude Code も入ります
 
-駐車(1)〜(3)・高速走行・低速走行などの**走行ジャンルID**をデータに付け、モデルは入力されたIDで
-走り方を切り替えます(条件付き模倣学習)。
+### 2. JetFormer を入れて、自動で起動するようにする
 
-- ジャンル表は `data/modes.json`(画面の「ジャンル」タブで追加・名前変更)。**IDはモデルの出力ヘッド番号なので変えない**。0=未設定は学習に使わない
-- 収集時にジャンルと「走行の説明」を選ぶ。**収集中に切り替えるとその瞬間から**新しいジャンルとして記録(シーン内の区間として保存)
-- シーン一覧ではジャンルで絞り込み・まとめて設定ができる。データセットには、フレームごとのジャンル(`aligned/*.npz` の `mode`)とジャンル表のスナップショットが入る
-- 旧ファームv1で収集したシーン(「PWM:v1(学習不可)」)は、選んでもデータセットに入らない(`dataset_card.json` の `skipped_legacy_scenes`)
-
-## センサー
-
-| チャネル | デバイス | 接続 | レート | 備考 |
-|---|---|---|---|---|
-| CAM_FRONT | IMX219 | CSI(V4L2直接、Argus不使用) | 30Hz | 224x224、撮像時刻はV4L2のハードウェア時刻 |
-| TOF_FRONT | VL53L9(54x42ゾーン) | ESP32-P4基板 USB CDC `/dev/ttyACM0`(`L9FR`/`L9FE`) | 30Hz | 生の値を保存。下位13bit=距離mm、上位3bit=信頼度 |
-| IMU | ICM-20948 | I2C bus7 0x68 | 100Hz | ±8g / ±1000dps。地磁気は現在無効 |
-| VEHICLE | コントローラ基板(XIAO ESP32-S3、ファームv2) | I2C bus7 0x28 スナップショット | 100Hz | CH1=ステアリング、CH2=スロットル、CH3=モード切替、eRPM、受信中フラグ、SELECT |
-| AUDIO | I2S MEMSマイク(既定は無効) | 40ピンのI2S2(pin12/35/38) | 50Hz(20ms) | 16kHz・モノラル・24bit精度。下記参照 |
-
-全センサーの時刻はCLOCK_MONOTONICに揃え、保存時にUNIXエポックのµs(nuScenesと同じ)に変換します。
-通信の詳細は docs/firmware_protocol.md。学習の教師には、**CH1・CH2を受信中で、かつ人が操縦している
-(SELECT=人側)**フレームだけを使います(AI走行中・プロポ途絶のフレームは除外)。
-
-## スピーカー(音声で知らせる)とマイク:40ピンのI2S
-
-JetFormer基板のI2Sスピーカーアンプ(とマイク)は、40ピンヘッダのI2S2につながっています。
-pin12=BCLK、pin35=LRCLK(Jetsonがクロックを出す)、pin40=DOUT(スピーカーへ)、pin38=DIN(マイクから)。
-
-**最初に1回、40ピンのI2Sを有効にする**(標準ではGPIOのままで、音が出ません):
+足りない Python の部品(管理画面のサーバー、ToF との USB 通信、モデルの書き出し、Hugging Face、テスト)、音声案内の読み上げ(Open JTalk)、機器を使う権限、スピーカーの有効化(40 ピンヘッダの I2S = 音のデータを送る信号。標準では音が出ません)、サービス(OS が自動で動かすプログラム)の登録をまとめて行います。`--constraint` のファイルは手順 1 のスクリプトが作ったもので、PyTorch や OpenCV の版が変わるのを防ぎます。
 
 ```bash
-sudo ~/jetformer/scripts/i2s_mic/enable.sh     # 起動設定に「I2S2有効」のエントリを追加(追加済みならデバイスツリーを更新)
+git clone https://github.com/FaBoAI/JetFormer.git ~/jetformer
+~/miniconda/envs/jetracer/bin/python -m pip install \
+  --constraint ~/wheels/opencv-jp72-py313-v2/constraints-jetson-cu130.txt \
+  "fastapi==0.143.0" "starlette==1.7.0" "uvicorn==0.54.0" "pyserial==3.5" \
+  "onnx==1.23.2" "datasets==5.1.0" "huggingface_hub==2.2.0" "pytest==9.1.1"
+sudo apt-get install -y open-jtalk open-jtalk-mecab-naist-jdic hts-voice-nitech-jp-atr503-m001 alsa-utils
+sudo usermod -aG i2c,gpio,video,dialout,audio jetson
+sudo ~/jetformer/scripts/i2s_mic/enable.sh   # スピーカーを使わないなら不要。元に戻すのは disable.sh
+sudo cp ~/jetformer/scripts/jetformer-web.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable jetformer-web
 sudo reboot
 ```
 
-今の起動エントリはそのまま残り、`/boot/extlinux/extlinux.conf` はバックアップされます。元に戻すときは
-`sudo ~/jetformer/scripts/i2s_mic/disable.sh` → 再起動。(デバイスツリーのオーバーレイは
-`scripts/i2s_mic/jetformer-i2s2-mic.dts`。NVIDIA純正のI2Sオーディオ用オーバーレイと同じピン設定です。)
+ステアリングの角度と Jetson の電源の記録は、管理画面とは別のサービスです。起動のたびに記録したいときは、`tools/systemd/` の `jetformer-as5601.service` と `jetformer-power.service` を同じように登録します(読むだけの記録係なので、無くても収集・学習・走行はできます)。
 
-### 音声案内(ライブ・収集タブの「サウンド」)
+### 3. 開いて確かめる
 
-車のスピーカーから、チャイムと音声(Open JTalk)で知らせます。出来事ごとにON/OFF、音量、テスト、任意の文を話させることもできます。
+ブラウザで `http://<Jetson の IP アドレス>:8080/` を開きます(IP アドレスは `hostname -I` で分かります。USB ケーブルでつないだ PC からは `http://192.168.55.1:8080/`)。画面が出たら、次のコマンドで確かめます。
 
-| 出来事 | 例 |
+```bash
+~/miniconda/envs/jetracer/bin/python -c "import cv2, torch, tensorrt, onnx, fastapi, uvicorn, serial, smbus2, datasets, huggingface_hub, jetcam; print(torch.__version__, torch.cuda.is_available())"
+cd ~/jetformer && ~/miniconda/envs/jetracer/bin/python -m pytest -q tests/test_drive.py tests/test_session.py tests/test_sound.py tests/test_hf.py tests/test_model_export.py
+```
+
+- 1 つ目は `2.10.0+cu130 True` と出れば大丈夫です
+- 2 つ目は車もセンサーも使わないテスト(1 分ほど)で、`failed` が出なければ大丈夫です(データが無いので `skipped` は正常です)
+- **車がつながっているとき**: 「ライブ・収集」タブの「センサー」の「開始」で、各センサーの Hz(1 秒あたりの回数)が出ます
+- **AI で走らせる前に**: 電力モードを最大の `MAXN_SUPER` にします(`sudo nvpmodel -m 2`。今のモードは `sudo nvpmodel -q` で確かめられます)
+- **コードの更新とログ**: コードを更新したときは `sudo systemctl restart jetformer-web`、ログは `journalctl -u jetformer-web -f` で見ます
+
+うまくいかないときは、次を確かめます。
+
+| 症状 | 見る所 |
 |---|---|
-| 起動 | 「JetFormer を起動しました」 |
-| 収集の開始・終了 | 「データ収集を開始します。高速走行」/「データ収集を終了しました。3 シーンを保存しました」 |
-| ジャンルの切り替え | 「ジャンル、低速走行」 |
-| シーン保存の合図(既定OFF) | 20秒ごとに短い「ピッ」 |
-| AI走行の開始・終了 | 「AI走行を開始します」/「AI走行を終了しました」/「画面との通信が途絶えたため、AI走行を止めました」 |
-| 操縦の切り替え(CH3) | 「AIが操縦します」/「人の操縦に戻りました」(走行中、CH3を切り替えた瞬間) |
-| 警告 | 「プロポの信号が届きません。停止します」(AI側のまま送信機の信号が途絶えたとき。中立にするだけで、走行は終わっていない) |
-| 学習の終了 | 「学習が完了しました」 |
+| カメラが映らない | 再起動、ケーブル、`--camera-overlay` のポート(A / C)。JupyterLab などほかのプログラムがカメラを使っていないか(同時に使えるのは 1 つだけです) |
+| ToF が動かない | `/dev/ttyACM0` があるか。`id` の出力に `dialout` があるか |
+| IMU やコントローラ基板の値が出ない | `/dev/i2c-7` があるか。`id` の出力に `i2c` があるか |
+| 音が出ない | `enable.sh` のあとに再起動したか |
 
-音声は `data/sounds` にキャッシュし(初回のみ合成)、再生は ADMAIF2 → I2S2(48kHz・32bit・2ch)。
-設定は `data/sound_settings.json`。走行ループなどは再生を待たない(キューに入れて別スレッドで鳴らす)。
+> **注意**: 管理画面にパスワードはありません。JupyterLab(8888 番)も含めて、知らない人が入れるネットワークにはつながないでください。
 
-### マイク(既定は無効)
+入ったら、[データ収集と学習、走行の流れ](#データ収集と学習走行の流れの図)に進みます。
 
-2026-10-10の確認では pin38 にマイクの信号が来ていない(全て0)ため、既定では使いません。マイクをつないだら
-`JETFORMER_MIC=1` で有効にすると、ライブ画面の「マイク」(音量メーター・🔊 聞く)とシーンへの録音(`AUDIO.npz`、
-16kHz)が使えます。チャネルを固定したいときは `JETFORMER_MIC_CHANNEL=left` / `right`。
+## 現在の車体の構成とセンサー
 
-## データ
+<img src="https://github.com/user-attachments/assets/3a8c6fe2-7258-4326-b27f-90d3af2cae71" alt="JetFormer の車体。オレンジのボディの後ろの支柱にカメラと ToF を載せている" width="640">
 
+市販の 1/10 ラジコンカーに、Jetson とセンサーを載せた車です。ここに書いたのは、2026 年 11 月 8 日の予選を走ったときの構成です。
+
+プロポ(ラジコンの送信機)の信号は受信機で受け、CH1(ステアリング)、CH2(スロットル = アクセル)、CH3(人と AI の切り替え)の 3 本で基板に届きます。どれもパルスの長さ(単位は µs = マイクロ秒)で値を伝えます。このステアリングとスロットルの値を**操作値**と呼びます。
+
+図の点線は、電波と、モデルの入力に使わないセンサーです。I2C の機器は、すべて Jetson の 40 ピンヘッダの 3・5 番ピン(I2C バス 7)を共有しています。
+
+```mermaid
+flowchart TB
+    CAM["カメラ<br/>IMX219"] -->|"CSI"| JET["Jetson Orin Nano<br/>1 秒に 30 回 推論"]
+    TOF["ToF(距離)<br/>VL53L9"] -->|"USB"| JET
+    IMU["IMU(動き)<br/>ICM-20948"] -->|"I2C"| JET
+    LOG["電池の電圧 ADS1115<br/>ステアリングの角度 AS5601"] -.->|"I2C(モデルには入れない)"| JET
+    TX(["プロポ(送信機)"]) -.->|"電波"| RX["受信機"]
+    subgraph BOARD["コントローラ基板"]
+        XIAO["XIAO ESP32-S3<br/>信号の長さと回転数を測る"]
+        SEL{"セレクタ<br/>人か AI かを選ぶ"}
+    end
+    RX -->|"CH1〜CH3"| XIAO
+    RX -->|"人の信号"| SEL
+    XIAO -->|"I2C:操作値・回転数"| JET
+    JET -->|"I2C"| PCA["PCA9685<br/>AI の信号を作る"]
+    PCA -->|"AI の信号"| SEL
+    XIAO -->|"CH3 で切り替え"| SEL
+    SEL --> SERVO["サーボ(前輪の向きを変える)"]
+    SEL --> ESC["ESC(モーターの速さを決める)"]
+    ESC --> MOTOR["ブラシレスモーター"]
+    MOTOR -->|"ホールセンサー"| XIAO
 ```
-data/raw/<log>/log.json                       収集セッション(車両・センサー設定・取付位置)
-data/raw/<log>/<scene>/scene.json             20秒シーン(統計・品質情報)
-                       CAM_FRONT/<ts>.jpg     カメラ
-                       TOF_FRONT.npz / IMU.npz / VEHICLE.npz
-data/datasets/<name>/v1.0-<name>/*.json       nuScenes互換の表
-                     samples/  can_bus/  aligned/<scene>.npz  splits.json  dataset_card.json
-data/exports/<name>.tar(.sha256)              クラウド学習用
+
+| 部品 | 使っている物 | 役目 |
+|---|---|---|
+| 車体 | タミヤ TT-02 SRX(1/10 ツーリングカー、4WD) | 土台のラジコンカーです。カーボンの柱(マスト)の上にカメラ、その下に ToF を付けています |
+| 頭脳 | Jetson Orin Nano 8GB Developer Kit(Super モード。JetPack 7.2、電力モード MAXN_SUPER) | データ収集、学習、AI 走行を、この 1 台で行います |
+| コントローラ基板 | FaBo JetFormer Controller(マイコン XIAO ESP32-S3) | 受信機の信号とモーターの回転数を読んで Jetson に渡します。人と AI の切り替えもこの基板で行います |
+| AI の信号を作る IC | PCA9685(I2C アドレス 0x40) | Jetson の指令から、サーボと ESC が受け取る PWM 信号(パルスの幅で値を伝える信号)を 60 Hz で作ります |
+| 電池 | 走行用は LiPo(リチウムポリマー電池)2 セル(満充電で約 8.5 V)、Jetson 用は別の電池 | 走行用は 1 本で約 20 分、Jetson 用は約 3 時間もちます。走行用を替えても Jetson は止まりません |
+| スピーカー | コントローラ基板の I2S アンプとスピーカー | 収集や走行の開始、CH3 の切り替えなどを声で知らせます |
+
+| 何を測るか | 機器 | つなぎ方 | 毎秒 | 使い道 |
+|---|---|---|---|---|
+| 前方の映像 | カメラ Sony IMX219 | CSI(V4L2 = Linux の標準の方法で直接読む) | 30 回 | モデルの入力(224×224 のカラー画像) |
+| 前方の距離 | ToF ST VL53L9(評価基板 STEVAL-VL53L9 を ESP32-P4 の基板で受ける) | USB(`/dev/ttyACM0`) | 30 回 | モデルの入力(54×42 マスの距離と信頼度) |
+| 車の動き | IMU TDK ICM-20948 | I2C(0x68) | 100 回 | モデルの入力(直前 0.1 秒の加速度と回転の速さ) |
+| モーターの回転数・プロポの操作値 | コントローラ基板。回転数はホールセンサー(モーターの回転を測るセンサー)から計算(eRPM = モーターの電気角の回転数)、操作値は受信機の信号の長さを測る | I2C(0x28) | 100 回 | 回転数はモデルの入力、操作値は学習の正解(人が運転している間だけ) |
+| 走行用の電池の電圧 | TI ADS1115(電圧の基板 BatteryTapADC v1.0) | I2C(0x48) | 50 回 | 記録と画面の表示(モデルには入れません) |
+| ステアリングの角度 | AS5601(磁石の向きで角度を測るセンサー) | I2C(0x36) | 約 50 回 | 記録だけ(`tools/as5601_logger.py`) |
+| Jetson の電源と温度 | Jetson に付いている INA3221 と温度センサー | Linux の `/sys` | 10 回(温度は 1 回) | 記録だけ(`tools/power_logger.py`) |
+
+センサーのほかに、走り方を表す**ジャンル**の番号もモデルに入れます。11 月 8 日の予選のモデルには、今の操作値は入れていません(モーターの回転数は入れています)。マイク、IMU の地磁気センサー、OLED の小さな表示器は載っていますが、今の JetFormer では使っていません。
+
+**人と AI の切り替え**: CH3 の信号の長さをコントローラ基板が測り、1500〜2499 µs のとき(AI 側。基板の LED が紫)だけ AI の信号を、それ以外(人側。LED が緑か青)は人の信号をサーボと ESC に届けます。切り替えは基板の上で行うので、Jetson のプログラムが止まっても、CH3 を人側にすれば人の操縦に戻せます。
+
+> **注意**
+>
+> - Jetson のプログラムが強制終了すると(停電のときも同じ)、PCA9685 は最後の信号を出し続けるので、車は動いたままになることがあります。すぐに CH3 を人側にしてください
+> - 受信機の信号が止まると、基板は最後に測った CH3 の値を保つので、AI 側のままになります。このとき Jetson は CH3 が届いていないことを見つけて中立(アクセルを離してステアリングをまっすぐにした信号)を出します。**この中立は一時的で、走行は終わっていません。** 信号が戻ると、CH3 が AI 側なら声の案内なしに AI がまた走らせます。送信機の電源を入れる前に CH3 を人側にし、走行は停止ボタンで終えてください
+> - 受信機のフェイルセーフ(電波が切れたときの動作)は、CH3 が 1500 µs 未満になるか、パルスが止まるように設定してください。CH3 の最後の値を保つ設定では、基板も Jetson も電波が切れたことに気づけません
+
+## データ収集と学習、走行の流れの図
+
+人がラジコンを運転した記録から「運転をまねる AI」を作り、その AI で車を走らせます。次の 4 つの段階を、管理画面(`http://<Jetson の IP アドレス>:8080/`)のタブで順に進めます。
+
+```mermaid
+flowchart TD
+    A["段階 1: 集める(ライブ・収集タブ)<br/>人がプロポで運転する"] --> B[("シーン<br/>カメラ・ToF・IMU・操作値の記録")]
+    B --> C["段階 2: まとめる(シーンタブ・データセットタブ)<br/>見返す・ジャンルを付ける・いらない範囲を消す"]
+    C -->|"シーンを選んで作成"| D[("データセット<br/>nuScenes 形式 + 学習用の配列")]
+    D --> E["段階 3: 学ぶ(学習タブ)<br/>Jetson の GPU で人の運転をまねる学習"]
+    E --> F[("学習結果<br/>best.pth・jetformer.onnx")]
+    F -->|"TensorRT で変換"| G[("走行用エンジン<br/>jetformer_fp16.engine")]
+    G --> H["段階 4: 走る(走行タブ)<br/>AI が 1 秒に 30 回 推論してステアリングとアクセルを出す"]
+    H -->|"走行中の収集を ON"| I[("走行の記録<br/>AI の予測と出力つきのシーン")]
+    I -->|"人が代わった区間は次の学習に使える"| C
+    PC["PC・シミュレーター"] <-->|"tar / zip"| D
+    HF["Hugging Face Hub"] <-->|"アップロード / ダウンロード"| D
 ```
 
-`aligned/<scene>.npz` は学習用に、カメラ各フレームへToF・IMU履歴(100ms)・現在の操作値・
-1〜10フレーム先の操作値を揃えた配列です(内容は dataset_card.json に記載)。
+図の「シミュレーター」の本体は、このリポジトリには入っていません。
 
-## モデル(TransFuser風センサーフュージョン)
+| 段階 | タブ | すること | できるもの |
+|---|---|---|---|
+| 1 集める | ライブ・収集 | **ジャンル**(走り方の種類)を選んで「収集開始」を押し、プロポで運転します。センサーと操作値を同じ時計で記録します | **シーン**(1 回の走行、または 20 秒ごとの記録。`data/raw/`) |
+| 2 まとめる | シーン・データセット | 記録を映像とグラフで見返し、ジャンルを付け、いらない範囲を消して、学習に使うシーンから作成します。カメラのフレーム(1 枚の画像)ごとに、その時刻のセンサーの値と、そのあと約 0.33 秒の人の操作(学習の正解)を並べます。CH3 が AI 側のときの記録は正解に使いません | **データセット**(既定は学習用 8:検証用 2。`data/datasets/`) |
+| 3 学ぶ | 学習 | データセットとモデルの種類を選び、Jetson の GPU で学習します。既定は 30 エポック(データを 30 周学ぶ)で、よく似た連続のフレームは 3 つに 1 つに間引きます。ぶつかった前後(水平の加速度 4 G 以上の 1 秒前〜2 秒後)のフレームは、既定では学習のときに外します(学習タブのチェックで切り替えます)。学習のあと自動で **エンジン**(Jetson の GPU 向けに変換した、速く動く形)を作ります。学習中は収集も AI 走行もできません(逆も同じ)。始めるには空きメモリが 3.5 GB 以上要ります。足りないと学習は始まらないので、JupyterLab のノートブックなど大きなプログラムを止めるか、管理画面のサービスを再起動してください | `best.pth`(学んだ重み)・`jetformer.onnx`(ONNX = 別の道具でもモデルを動かせる共通の形式)・`jetformer_fp16.engine`(`data/runs/`) |
+| 4 走る | 走行 | モデルとジャンルを選びます。最初は「モーターに出力しない」を入れて「走行開始」を押し、予測を確かめます(車は動きません)。予測がおかしくなければ一度停止し、「モーターに出力しない」を外して、速度ゲイン(AI のアクセルを何倍にして出すか。1 で学習どおり)を小さめ(新しく入れたときの既定は 0.5。最初は 0.3〜0.5)にします。周りに人や物がないことを確かめてから「走行開始」を押し、プロポの CH3 を AI 側にすると車が動きます。「走行中のデータを収集する」を入れると、AI の予測と出力の付いたシーンも残ります | AI の走り・シーン |
 
-`jetformer/model.py`:カメラ49+ToF 42+IMU+操作値+走行ジャンルのトークンをTransformerで融合し、
-ジャンル別の出力ヘッドで約0.33秒先までの操作値を予測。**Orin Nano(MAXN_SUPER)のTensorRT FP16で約1.9ms**。
-学習(管理画面の「学習」タブ、またはクラウドで `tools/train.py`)→ ONNX → TensorRTエンジン。詳細は docs/model_design.md。
+**ジャンル**は、モデルにも入れて走り方を切り替える番号です。新しく入れたときの表は 0 未設定・1〜3 駐車・4 高速走行・5 低速走行で、0 のフレームは学習に使いません。「ジャンル」タブで追加や名前の変更ができます。「ジャンル」タブの説明文にある番号は作者の車で振り直したあとの番号で、その環境の実際の番号はタブの表のとおりです。走行タブでは、4 高速走行は「予選コース AI」、5 低速走行は「練習コース AI」の名前で出ます。
 
-## 設定
+### AI 走行を止めるとき
 
-`jetformer/config.py`(環境変数で上書き可):`JETFORMER_PORT`、`JETFORMER_DATA`、`JETFORMER_SCENE_SECONDS`、
-`JETFORMER_TOF_PORT`、`JETFORMER_VEHICLE_PROTOCOL`(`snapshot`=ファームv2〔既定〕/ `legacy`=v1)など。
+はじめて AI で走らせる前に、ここと [AI走行](docs/guide.md#ai走行管理画面の走行タブ) の説明を読んでください。
 
-## 検証中のトライアル
+- **まずプロポの CH3 を人側に戻します。** これがいちばん優先です。操縦は人に戻りますが、AI の走行は続いていて、CH3 を AI 側にするとまた動きます
+- **走行を終えるボタンとキー**: 走行タブの停止ボタン、どのタブでも画面下に出る赤いボタン、Esc キー、スペースキー(文字の入力中は効きません)
+- **画面を閉じても、スマホがスリープしても、USB を抜いても AI は止まりません**(走行を始めた画面からの通信が 30 分途絶えたときだけ止まります)。USB を抜いている間は画面から止められないので、先に CH3 を人側にしてから、USB をつなぎ直して停止ボタンを押します
 
-実車走行・学習・解析の検証の記録(レポート・解析スクリプト・図)は [`experiments/`](experiments/README.md) にある。
-10/10 の AI走行の解析、衝突のないデータでの学習と精度比較、「ぶつからずに速く走る車への道筋」、オフライン強化学習のチャレンジ(10/11)など。
+## データセットのフォーマットとアップロード、ダウンロード
 
-## 未解決・要確認
+記録は、収集したままの **シーン** と、学習用にまとめた **データセット** の 2 段階で保存します。データセットの形は nuScenes にならっています。どちらも Jetson の `data/` の下にあり、`data/` は git に入りません。時刻はどれも UNIX 時間のマイクロ秒です。
 
-- 実車でのAI走行の確認(PCA9685の時計補正、ゲインの目安、先読みの最適値)
-- カメラ・ToF・IMUの取付位置(config.CALIBRATION)の実測
-- ICM-20948の地磁気(AK09916)がバス上に現れない
+```text
+data/raw/<ログ>/<ログ>-0001/              シーン(<ログ> は 1 回の収集につく名前。シーンは 0001 から順に番号が付く)
+    scene.json                            長さ・ジャンル・説明・タグ・統計
+    CAM_FRONT/<時刻>.jpg  CAM_FRONT.npz   カメラの画像(224×224、30 Hz)と、時刻の一覧
+    TOF_FRONT.npz  IMU.npz  VEHICLE.npz   ToF(30 Hz)・IMU(100 Hz)・操作値と回転数と電圧(100 Hz)
+    AI_CMD.npz                            AI 走行のときだけ。予測・出力・ゲインなど
+data/datasets/<名前>/                     データセット(例: 3 シーン・1,788 フレーム・約 1 分で、ファイルの合計 約 32 MB)
+    v1.0-<名前>/*.json  samples/  can_bus/  nuScenes 形式の表(13 個)と、画像・ToF・操作値・IMU の元データ
+    aligned/<シーン>.npz                  学習用の配列(下の表)
+    splits.json  dataset_card.json        学習用と検証用のシーン名 / 説明・配列の説明(aligned_npz)・作ったときのジャンルの表(modes)
+```
+
+**学習で読むのは `aligned/<シーン>.npz` とカメラの画像です。** npz は NumPy の配列をまとめたファイルで、N はそのシーンのカメラのフレーム数(20 秒で約 600)です。配列の µs はプロポの信号の長さそのままです。モデルの出力は (µs − 1500) ÷ 500 に正規化した値で、走行のときに µs へ戻します。
+
+| 主な配列 | 形 | 内容 |
+|---|---|---|
+| `timestamps_us` ・ `cam_files` | `[N]` | カメラの撮像時刻と画像の相対パス |
+| `tof` | `[N,42,54]` | 直前の ToF の生の値(uint16)。下位 13 bit が距離 mm(`0x1FFF` は無効)、上位 3 bit が信頼度 0〜7 |
+| `imu` | `[N,10,6]` | 直前 10 サンプル(100 ms)の加速度 xyz [m/s²] と角速度 xyz [rad/s] |
+| `vehicle` | `[N,4]` | その時刻の `[ステアリング µs, スロットル µs, CH3 µs, eRPM]` |
+| `future_actions` | `[N,10,2]` | 1〜10 フレーム先(約 0.33 秒先まで)の `[ステアリング µs, スロットル µs]`。**学習の正解** |
+| `vehicle_valid` ・ `future_valid` | `[N]` | 人が操作した有効な操作値があるか・未来の操作値がすべて有効か |
+| `mode` | `[N]` | フレームごとのジャンルの番号(0 = 未設定)。`future_valid` と `vehicle_valid` が真で `mode` が 0 でないフレームが学習に使えます |
+
+### PC へダウンロード、PC からアップロード
+
+データセットタブの各データセットのボタンから、tar(ファイルを 1 つにまとめた形式。圧縮はしていません)で取れます。tar の先頭のフォルダはデータセットの名前で、別の Jetson の `data/datasets/` に展開すれば、そのまま学習に使えます。
+
+| 操作 | 動き | API |
+|---|---|---|
+| 「PCにダウンロード」 | ブラウザに `<名前>.tar` を保存します。Jetson がその場で tar にしながら送るので、空き容量を使いません | `GET /api/datasets/<名前>/download` |
+| 「エクスポート(tar作成)」 | `data/exports/` に tar と `.sha256`(中身が壊れていないか確かめるハッシュ値)を作ります | `POST /api/datasets/<名前>/export` → `GET /api/exports/<名前>.tar` |
+| 「PC から取り込む」にドロップ | `.tar`・`.tar.gz`・`.tgz`・`.zip`(1 ファイルが 1 データセット)を取り込みます。**既定ではシミュレーターのデータ**として扱うので、実機のデータは「シミュレーターのデータとして取り込む」のチェックを外します | `PUT /api/datasets/import?filename=<名前>.tar&simulator=0` |
+
+別の PC からコマンドで送るときは `python3 upload_datasets.py --host http://<Jetson の IP アドレス>:8080 <フォルダか tar>` です。スクリプトはリポジトリの `tools/upload_datasets.py` で、`http://<Jetson の IP アドレス>:8080/api/tools/upload_datasets.py` からも取れます(Python の標準ライブラリだけで動きます。`--real` で実機のデータとして、`--check` で送らずに中身だけ確かめます)。取り込む前に、学習用の配列と画像がそろっているか、学習に使えるフレームが 1 つ以上あるかを確かめ、足りないときと同じ名前のデータセットがあるときは取り込みません。取り込んだシーンは `data/raw/ds-<名前>/` にも展開され、シーンタブで見たり、ほかのシーンと混ぜたりできます。
+
+## Hugging Face へのアップとダウンロード
+
+JetFormer のデータセットは、管理画面のデータセットタブから [Hugging Face Hub](https://huggingface.co/) へ上げたり、そこから下ろしたりできます。
+
+上げるときは、最初に 1 回だけ準備をします。Hugging Face のアカウントを作り、https://huggingface.co/settings/tokens で書き込み(Write)権限のアクセストークンを作って、Jetson でログインします(公開のデータセットをダウンロードするだけなら不要です)。
+
+```bash
+~/miniconda/envs/jetracer/bin/hf auth login
+```
+
+| したいこと | 操作 |
+|---|---|
+| アップロード | 上げるデータセットの「Hugging Face へ」を押し、リポジトリ名(既定は `<ユーザー名>/jetformer-<データセット名>`)、「公開する」、「学習用のnuScenes形式(tar)も上げる」、「ライセンス」(既定は `other`)を選んで「アップロード」を押します。進み具合は「処理状況」に出ます |
+| Jetson に取り込む | 「Hugging Face からダウンロード」の「探す」で `jetformer` タグの付いたデータセットを一覧し、「選ぶ」か `ユーザー名/名前` を入れて「確認」で tar の名前と大きさを見て、「ダウンロード」で `data/datasets/<名前>/` に展開します(学習タブとシーンタブでも使えます) |
+| Jetson の外で読む | `datasets` のパッケージで `load_dataset("<ユーザー名>/jetformer-<データセット名>", split="train")`(分割は `train` と `validation`)。学習用の tar は `hf download <ユーザー名>/jetformer-<データセット名> --repo-type dataset --include "nuscenes/*" --local-dir .` |
+
+- **上がる物**: ブラウザの Dataset Viewer で見られる Parquet(表のデータのファイル形式。1 行がカメラの 1 フレーム)の `data/*.parquet`、学習用の tar の `nuscenes/<名前>.tar`(省略もできます)、データセットカードの `README.md` です。大きさの例は 2,114 フレーム(約 70 秒)で Parquet が 33 MB、tar が 43 MB です
+- **既定は非公開**です。公開すると誰でも見られます。カメラの画像が入っているので、公開する前に写っているものを確かめてください。非公開のデータセットは Hugging Face の PRO / Enterprise でないと Dataset Viewer に出ません
+- **上げ直すとき**: 同じリポジトリに上げ直すと、前の Parquet は置き換わります
+- **Jetson に取り込むとき**: 取り込めるのは `nuscenes/<名前>.tar` が入っているリポジトリだけです(非公開のリポジトリは `hf auth login` が必要です)。同じ名前のデータセットがあるときは取り込みません。ハッシュ(SHA-256)を確かめてから置き換えるので、止まっても半端なデータセットは残りません。空き容量は tar の 2.2 倍が要ります
+
+## モデル設計
+
+JetFormer のモデルは、自動運転の研究 [TransFuser](https://arxiv.org/abs/2104.09224)(2021 年。カメラと LiDAR を Transformer で混ぜて運転を学ぶモデル)をもとに、ラジコンカーの Jetson Orin Nano で毎秒 30 回動くように作り変えたものです。
+
+「センサーごとに読む → Transformer で混ぜる → 運転を出す」という考え方は同じで、主に次の 4 点を変えています。
+
+![TransFuser と JetFormer v0 の比較図。JetFormer は ToF を使い、最後に 1 回だけ混ぜて、ステアリングとアクセルを直接出す](docs/images/model_overview.png)
+
+| | TransFuser(2021 年) | JetFormer v0 | 理由 |
+|---|---|---|---|
+| 距離のセンサー | LiDAR を真上から見た図 | ToF の距離の画像(前向き) | この車の距離センサーが ToF だから |
+| 混ぜる場所 | 4 つの段ごと | 最後に 1 回だけ | Orin Nano で確実に 30fps で動かすため |
+| 出力 | 通過点 4 つ → PID 制御で操作に直す | 約 0.33 秒先(10 フレーム)までのステアリングとアクセルを直接 | 車の自己位置が無いため(設計の時点の判断) |
+| 条件の入力 | 目標の点(GPS) | 走行ジャンル(走り方の番号) | ジャンルで走り方を選ぶため(同じ場面でも求める走り方が違う。条件付き模倣学習) |
+
+モデルの中身は次のとおりです。カメラと ToF はマス目ごとに、IMU・速さ・ジャンルは 1 つずつ、Transformer に入れる情報の単位(トークン)に変えます。これに答えを集める出力用のトークンを 1 つ足した全部で 95 個を Transformer で混ぜて、選んだジャンルの出口からステアリングとアクセルを出します。図の「舵」はステアリング、「こま」はカメラのフレームのことです。推論の約 6 ms は走行中の時間です(TensorRT のエンジンだけなら約 2 ms)。
+
+図の数は 11 月 8 日の予選のモデルのものです。「3 こま先」は作者の車の設定で、新しく入れたときの既定は 1 こま先です。ジャンルの数はデータセットのジャンルの表で決まり、学習タブで「今の操作値を入力に使わない」を入れないと、速さの入口には今のステアリングとアクセルも入ります。
+
+![JetFormer v0 の中身の図。入力ごとの入口の部分、トークンの数、Transformer、ジャンル別の出口を示す](docs/images/model_jetformer.png)
+
+設計の詳しい記録は [docs/model_design.md](docs/model_design.md)(開発の初期に書いたもの。ToF の信頼度や回転数の正規化など、今のコードと違う所があります)にあります。
+
+## その他
+
+このページを作り直す前の説明を [docs/guide.md](docs/guide.md) に残しています。開発の途中の記録なので、今のコードと違う所もあります(たとえば、スワップは今は手順 1 で 4 GB 作ります)。主な違いはそのページの冒頭に書いています。食い違うときは、このページとコードを優先してください。docs/guide.md や docs/firmware_protocol.md に出てくる報告やファームウェアのソースの場所の一部は作者の Jetson の中の物で、このリポジトリには入っていません。
+
+| 知りたいこと | 読む場所 |
+|---|---|
+| 管理画面の各タブでできること | [管理画面](docs/guide.md#管理画面) |
+| 学習のやり方、かかる時間、メモリの注意、別の PC での学習、学習したモデルを Jetson の外(Mac など)で動かす | [学習](docs/guide.md#学習管理画面の学習タブ)・[学習済みモデルを Jetson の外で使う](docs/guide.md#学習済みモデルを-jetson-の外で使うエミュレーター用の書き出し) |
+| 選べるモデルの種類(DINOv2 の重みの取り方も)、モデルの中身、予測の誤差の確かめ方 | [モデルの種類(方策)](docs/guide.md#モデルの種類方策)・[モデル](docs/guide.md#モデルtransfuser風センサーフュージョン)・[docs/model_design.md](docs/model_design.md)・[評価](docs/guide.md#評価) |
+| データの形とやり取りのくわしい説明 | [データ](docs/guide.md#データ)・[PC にダウンロード](docs/guide.md#データセットを-pc-にダウンロードデータセットタブ)・[別の環境で作ったデータセットを取り込む](docs/guide.md#別の環境シミュレーターなどで作ったデータセットを取り込むデータセットタブ)・[Hugging Face へ](docs/guide.md#hugging-face-へのアップロードデータセットタブ)・[Hugging Face から](docs/guide.md#hugging-face-からのダウンロードデータセットタブ) |
+| AI 走行の手順と安全の仕組み(止め方、通信や電波が切れたとき)、走り方の切り替え、タイムを縮める調整 | [AI走行](docs/guide.md#ai走行管理画面の走行タブ)・[走行ジャンル](docs/guide.md#走行ジャンルモデルの走り方の切り替え)・[docs/ai_drive_best_practices.md](docs/ai_drive_best_practices.md) |
+| センサーの時刻のそろえ方、基板との通信の決まり | [センサー](docs/guide.md#センサー)・[docs/firmware_protocol.md](docs/firmware_protocol.md) |
+| スピーカーの音声案内とマイク、環境変数での設定 | [スピーカーとマイク](docs/guide.md#スピーカー音声で知らせるとマイク40ピンのi2s)・[設定](docs/guide.md#設定) |
+| シミュレーターの使い方、強化学習でいろいろな走りのデータを作る(シミュレーター本体はこのリポジトリには入っていません) | [シミュレーター](docs/guide.md#シミュレーター管理画面のシミュレータータブ)・[強化学習モード](docs/guide.md#強化学習モードデータセットのばらつき) |
+| 検証の記録、当時の未解決の一覧 | [検証中のトライアル](docs/guide.md#検証中のトライアル)・[experiments/](experiments/README.md)・[未解決・要確認](docs/guide.md#未解決要確認) |
+| 自動テスト(センサー・PCA9685・TensorRT を偽物に置き換えて確かめます) | 入れたばかりの環境で動く分は、インストールの手順 3 のコマンドです。`tests/` 全体(約 4,000 件。Jetson で約 1 時間)には作者の車のデータや環境を前提にした試験も入っていて、入れたばかりの環境では読み込みの途中で止まります |
+
+**ライセンス**: [Apache License 2.0](LICENSE)
