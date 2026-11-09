@@ -150,6 +150,7 @@ import collections
 import json
 import math
 import os
+import sys
 import threading
 import time
 import traceback
@@ -237,6 +238,13 @@ RECOMMENDED_PATH = config.DATA_DIR / 'drive_recommended.json'
 # その日の試験で確かめるモデル)。推奨のモデルと同じ場所の drive_priority.json(_priority_path)。無ければ今まで通り
 PRIORITY_NAME = 'drive_priority.json'
 PRIORITY_MAX = 5
+# 起動したときの値の上書き(2026-11-05 ユーザーの決め: 発進の前進は既定で ON・リカバリーの欄は隠すので見張りと残すも ON・
+# ステア 1.00・ゲイン 0.90・電圧の前送り ON も既定に)。DEFAULT_PARAMS・RESET_ON_BOOT は変えず、設定と同じ場所の
+# drive_boot_params.json に書いた項目だけ、起動のたびにその値にする。無ければ今まで通り。書ける項目は下だけ(スイッチは 0 か 1、値は PARAM_LIMITS の中)
+BOOT_PARAMS_NAME = 'drive_boot_params.json'
+BOOT_PARAMS_FLAGS = ('launch_boost', 'rec_back_guard', 'rec_hold_keep', 'speed_ff')
+BOOT_PARAMS_VALUES = ('steer_gain', 'throttle_gain', 'ff_vref_v')
+BOOT_PARAMS_IN_TESTS = False    # 試験の中では読まない(server.py を読み込む試験の driver が本物のファイルの設定で動いて、本物のセンサーを開始しないように)
 PRIORITY_MARKS = '①②③④⑤'
 GUARD_NAMES = {0: '', 1: '減速', 2: 'ブレーキ'}
 FLOOR_REF_PATH = config.DATA_DIR / 'tof_floor_ref.npy'      # ToFガードの床の基準(自由走行から作る)
@@ -437,10 +445,29 @@ def save_priority(models, title='', reason='', decided_at=None):
     return pri
 
 
+def boot_params():
+    """起動したときの値の上書き(drive_boot_params.json。SETTINGS_PATH と同じ場所)。決まりに合う項目だけ返す。無い・壊れていれば空"""
+    if 'pytest' in sys.modules and not BOOT_PARAMS_IN_TESTS:
+        return {}
+    doc = _read_json(Path(SETTINGS_PATH).with_name(BOOT_PARAMS_NAME))
+    if not isinstance(doc, dict):
+        return {}
+    out = {k: int(doc[k]) for k in BOOT_PARAMS_FLAGS if doc.get(k) in (0, 1) and not isinstance(doc.get(k), bool)}
+    for k in BOOT_PARAMS_VALUES:
+        v = doc.get(k)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and PARAM_LIMITS[k][0] <= v <= PARAM_LIMITS[k][1]:
+            out[k] = float(v)
+    if out.get('rec_hold_keep') == 1 and out.get('rec_back_guard') != 1:     # 残すは見張りが ON のときだけ(_opt_rules と同じ決まり)
+        del out['rec_hold_keep']
+    return out
+
+
 def list_models():
     """優先のモデル(priority()。書いた順)を先頭に、次に推奨のモデル(recommended())、残りは新しい順(作成日時、無ければ名前)。
     推奨のモデルには recommended True と推奨の理由(recommended_reason)を付ける。優先のモデルには priority(1 から)・
-    priority_mark(①〜⑤)・priority_label・priority_reason・priority_title を付ける。優先のモデルのファイルが無ければ前と同じ"""
+    priority_mark(①〜⑤)・priority_label・priority_reason・priority_title を付ける。優先のモデルのファイルが無ければ前と同じ。
+    優先のモデルのファイルに "only": true があれば、一覧は優先のモデルだけ(2026-11-05 ユーザーの依頼。走行の開始の決まりは変えない。
+    優先のモデルが 1 つも無いときは全部)"""
     if not RUNS_DIR.exists():
         return []
     models = [m for m in (model_info(d.name) for d in RUNS_DIR.iterdir()) if m]
@@ -458,6 +485,9 @@ def list_models():
         m.update(priority=n, priority_mark=PRIORITY_MARKS[n - 1], priority_label=x['label'],
                  priority_reason=x['reason'], priority_title=pri['title'])
     rest = [m for m in models if m['name'] not in rank]
+    raw = _read_json(_priority_path())
+    if top and isinstance(raw, dict) and raw.get('only') is True:
+        return top
     return top + [m for m in rest if m['recommended']] + [m for m in rest if not m['recommended']]
 
 
@@ -1305,6 +1335,8 @@ class Driver(object):
         # そのまま使われないように。速度の上限は前進を弱めるだけなので残す)。レビュー 2026-10-12
         for k in RESET_ON_BOOT:
             self.params[k] = DEFAULT_PARAMS[k]
+        self.params.update(boot_params())       # 起動したときの値の上書き(無ければ今まで通り)
+        self.engine_loaded = False              # この起動でエンジンを読んだ(最初の 1 回だけ約 60 秒かかる。音声の案内に使う)
         self.last = {'run': saved.get('run'), 'mode_id': saved.get('mode_id')}
         self.heartbeat_t = time.monotonic()
         self.hb_token = None
@@ -1650,6 +1682,7 @@ class Driver(object):
             zeros = {n: np.zeros(runner.shapes[n], np.float32) for n in runner.inputs}     # エンジンの形から作る
             for _ in range(3):              # 初回の推論は遅いので先に済ませる
                 runner.run_numpy(**zeros)
+            self.engine_loaded = True
 
             tof_buf = collections.deque(maxlen=10)
             imu_buf = collections.deque(maxlen=60)

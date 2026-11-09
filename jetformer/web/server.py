@@ -11,6 +11,7 @@ import math
 import os
 import queue
 import shutil
+import sys
 import threading
 import time
 import uuid
@@ -22,6 +23,7 @@ from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .. import actuator, clock, config, dataset, dataset_import, drive, hf_export, model_export, modes, policies, session, sound, tof_format
+from .. import scene_edit
 from ..recorder import Recorder, depth_colormap
 from ..sensors import SensorHub
 from ..sensors import vehicle as vehicle_mod
@@ -37,10 +39,17 @@ recorder = Recorder(hub)
 trainer = TrainingManager()
 driver = drive.Driver(hub, recorder)
 SHUTDOWN = threading.Event()        # 終了の合図(映像配信などの終わらない応答を閉じる)
-player = sound.SoundPlayer()        # 車のスピーカー(収集・走行・学習の開始と終了などを音声で知らせる)
+# 車のスピーカー(収集・走行・学習の開始と終了などを音声で知らせる)。試験(pytest)の中では鳴らさない(2026-11-06: 試験が本物の
+# api_drive_start を通ると、車のスピーカーから「初回の起動は…」が鳴った)
+player = sound.SoundPlayer(play=(lambda path: None) if 'pytest' in sys.modules else None)
+
+
+load_voice = sound.LoadCountdown(player, lambda: driver.running)     # 起動して最初のモデルの読み込みの音声(2026-11-05。11-06 から一言だけ)
 
 
 def _announce(event, **info):
+    if event == 'drive_start':
+        load_voice.ready()              # 「準備ができました」を「AI走行を開始します」の前に(初回でなければ何もしない)
     sound.announce(player, event, **info)
 
 
@@ -74,6 +83,11 @@ def _on_exit():
 @contextlib.asynccontextmanager
 async def lifespan(_app):
     _release_outputs()
+    try:                                                     # シーンの分割・削除が途中で止まっていたら直す(scene_edit.recover_pending)
+        for line in scene_edit.recover_pending():
+            print('シーンの編集の続き:', line, flush=True)
+    except Exception as e:                                   # 起動は止めない
+        print('シーンの編集の続きを直せませんでした:', e, flush=True)
     names = [m['name'] for m in modes.load() if m['id'] != modes.UNSET]
     player.prepare(sound.COMMON_TEXTS + ['データ収集を開始します。%s' % n for n in names] + ['ジャンル、%s' % n for n in names])
     _announce('startup')
@@ -178,6 +192,35 @@ def vbat_view():
 def _vbat_run_view():
     with VBAT_LOCK:
         return dict(VBAT_RUN) if VBAT_RUN else None
+
+
+FF_V0_WAIT_S = 8.0      # 電圧の前送りが ON の ▶ で、走る前の電圧がそろうのを待つ長さ [秒]
+# ▶ の返事を待つ間(電圧を待つ数秒など)に押した ■ で、走行を始めない(2026-11-06)。■ は走行していなくても START_CANCEL を立て、
+# 準備中の ▶ は走行を始めずに断る(409)。START_PENDING = 返事を待っている ▶ の数(0 でなければ ■ は 409 でなく「取り消しました」を返す)
+START_CANCEL = threading.Event()
+START_LOCK = threading.Lock()
+START_PENDING = [0]
+START_CANCEL_TEXT = '■ が押されたので、走行を始めませんでした'
+
+
+def ff_wait_v0(wait_s=None, poll_s=0.1, sleep=time.sleep):
+    """電圧の前送りが ON の ▶ で、走る前の電圧がまだ無いとき(センサーを開始していない・開始の直後)、センサーを開始して 2 秒ぶんそろうのを
+    待つ(2026-11-05 ユーザー「初回起動時の ▶ が動きません。もっとわかりやすく」)。センサーの開始は走行の準備(driver._run)でも行う物で、
+    車は動かさない。車が止まっていないなど、センサーの値はあるのに読めないときは待たない(今まで通りすぐ断る)。戻り値 待ったら True"""
+    wait_s = FF_V0_WAIT_S if wait_s is None else wait_s
+    def check():
+        return vbat.still_check(_now_s(), VBAT_START['span_s'], VBAT_START['min_n'])
+    v, why = check()
+    sensors = driver.hub
+    if v is not None or sensors is None or (getattr(sensors, 'running', True) and not str(why).startswith('車両の値が')):
+        return False
+    sensors.start()
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < wait_s:
+        if check()[0] is not None or START_CANCEL.is_set():      # ■ が押されたら待たない
+            break
+        sleep(poll_s)
+    return True
 
 
 def vbat_start_description(description):
@@ -595,6 +638,52 @@ def api_scene_update(name: str, body: dict = Body(...)):
     except KeyError:
         raise HTTPException(404)
     except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+def _scene_edit_expect(body):
+    """画面が見ているシーンの版(token・枚数)。無ければ照らさない(古い画面・道具からの呼び出し)"""
+    out = {}
+    if body.get('expect_token') is not None:
+        out['expect_token'] = str(body['expect_token'])
+    if body.get('expect_frames') is not None:
+        out['expect_frames'] = int(body['expect_frames'])
+    return out
+
+
+def _scene_edit_busy():
+    """シーンの分割・範囲の削除をしてよいか(収集中・走行中はファイルを書き換えない)"""
+    if recorder.recording or collect.active or driver.running:
+        raise HTTPException(409, '収集中か走行中です。止めてから分割・削除してください')
+
+
+@app.post('/api/scenes/{name}/split')
+def api_scene_split(name: str, body: dict = Body(...)):
+    """シーンをフレーム index(0 から数える)で 2 つに分ける。絵は消さない(jetformer/scene_edit.py)"""
+    _scene_edit_busy()
+    try:
+        return scene_edit.split_scene(name, int(body.get('index')), **_scene_edit_expect(body))
+    except KeyError:
+        raise HTTPException(404, 'シーンがありません')
+    except scene_edit.StaleError as e:
+        raise HTTPException(409, str(e))
+    except (ValueError, TypeError) as e:
+        raise HTTPException(400, str(e))
+
+
+@app.post('/api/scenes/{name}/delete_range')
+def api_scene_delete_range(name: str, body: dict = Body(...)):
+    """フレーム start〜end(両端を含む)を消す。戻せない。途中の範囲なら前と後ろの 2 つのシーンに分ける(jetformer/scene_edit.py)"""
+    _scene_edit_busy()
+    if body.get('confirm') != 'delete':
+        raise HTTPException(400, '確認がありません(confirm: delete)')
+    try:
+        return scene_edit.delete_range(name, int(body.get('start')), int(body.get('end')), **_scene_edit_expect(body))
+    except KeyError:
+        raise HTTPException(404, 'シーンがありません')
+    except scene_edit.StaleError as e:
+        raise HTTPException(409, str(e))
+    except (ValueError, TypeError) as e:
         raise HTTPException(400, str(e))
 
 
@@ -1067,6 +1156,17 @@ def _boot_refusal(body, boot):
 
 @app.post('/api/drive/start')
 def api_drive_start(body: dict = Body(...)):
+    with START_LOCK:                              # この ▶ の準備中に押された ■ だけを数える(前の走行の ■ の印は消す)
+        START_CANCEL.clear()
+        START_PENDING[0] += 1
+    try:
+        return _drive_start(body)
+    finally:
+        with START_LOCK:
+            START_PENDING[0] -= 1
+
+
+def _drive_start(body):
     if _client_version(body) < DRIVE_CLIENT_VERSION:
         raise HTTPException(409, '管理画面が古いままです(画面の版 %d・走行を始められるのは版 %d から)。'
                                  'ページを再読み込み(更新)してから走行を開始してください' % (_client_version(body), DRIVE_CLIENT_VERSION))
@@ -1090,6 +1190,10 @@ def api_drive_start(body: dict = Body(...)):
                                                            body.get('params') or {})
         except Exception:                         # 照らし合わせの失敗で走行を止めない(夜の集計でも照らし合わせる)
             plan_diffs = []
+    if _ff_requested(body):
+        ff_wait_v0()
+    if START_CANCEL.is_set():                     # 準備中に ■ が押された(2026-11-06)
+        raise HTTPException(409, START_CANCEL_TEXT)
     try:                                          # 止まっているときの基板の電圧を V_before へ(無ければ今まで通り手で書く)
         description, vrun = vbat_start_description(description)
     except Exception as e:                        # 電圧の失敗で走行を止めない
@@ -1097,10 +1201,15 @@ def api_drive_start(body: dict = Body(...)):
     # 電圧の前送り(2026-11-01)が ON の走行には、上で決めた走る前の電圧 V0(説明欄の V_before と同じ値・0.01 V に丸めた 2 秒の中央値)と
     # 無い理由を渡す。ON なのに V0 が無ければ driver.start が断る(409。黙って 1.00 にしない)。OFF の走行は前と同じ引数
     ff_kw = {'ff_v0': vrun.get('v_before'), 'ff_v0_note': vrun.get('v_before_note') or ''} if _ff_requested(body) else {}
+    if ff_kw and ff_kw['ff_v0'] is None and not driver.running:      # 走行を断ることを音声でも知らせる(車のそばで画面を見ていないときのため)
+        player.notify('warning', sound.ff_refusal_text(ff_kw['ff_v0_note']), 'warn')     # 止まっていない・電圧を読めない(2026-11-06)
     with bench_web.AI_NO_LOCK:
         ai_no = None if dry else bench_web.next_ai_no()          # モーターに出力する AI 走行だけに番号を付ける
         if ai_no is not None:
             description = bench_web.with_ai_no(description, ai_no)
+        first_load = not getattr(driver, 'engine_loaded', True)
+        if START_CANCEL.is_set():
+            raise HTTPException(409, START_CANCEL_TEXT)
         try:
             run, token = driver.start(body.get('run', ''), body.get('mode_id', -1), record=bool(body.get('record')),
                                       description=description, tags=body.get('tags') or [],
@@ -1109,6 +1218,11 @@ def api_drive_start(body: dict = Body(...)):
             raise HTTPException(400, str(e))
         except RuntimeError as e:
             raise HTTPException(409, str(e))
+        if START_CANCEL.is_set():                 # ■ が driver.start の直前に届いた(■ には「取り消しました」と返した): すぐ止める
+            with contextlib.suppress(RuntimeError):
+                driver.stop('停止ボタン')
+        elif first_load:
+            load_voice.begin()
         if ai_no is not None:
             bench_web.commit_ai_no(ai_no)
             driver.st['ai_no'] = ai_no
@@ -1156,9 +1270,14 @@ def api_vbat_calib(body: dict = Body(...)):
 
 @app.post('/api/drive/stop')
 def api_drive_stop(body: dict = Body(default={})):
+    with START_LOCK:                              # 返事を待っている ▶(電圧を待つ間など)も止める(2026-11-06)
+        START_CANCEL.set()
+        pending = START_PENDING[0]
     try:
         driver.stop(body.get('reason') or '停止ボタン')
     except RuntimeError as e:
+        if pending:                               # まだ走行していない ▶ を取り消した
+            return {'ok': True, 'cancelled': True}
         raise HTTPException(409, str(e))
     return {'ok': True}
 

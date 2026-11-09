@@ -35,21 +35,27 @@ const modeColor = (id) => MODE_COLORS[id % MODE_COLORS.length];
 const modeName = (id) => (state.modes.find((m) => m.id === id) || { name: `ID ${id}` }).name;
 const modeBadge = (id, mixed) =>
   `<span class="badge mode" style="background:${modeColor(id)}">${id}: ${esc(modeName(id))}${mixed ? ' ほか' : ''}</span>`;
+// data/modes.json の retired(使わなくなったジャンル)は、収集と一括の選ぶ欄に出さない(今選んでいる物だけは残す)。
+// 2026-11-07 にジャンルを 0〜8 に振り直した(4 練習コース 人間・5 練習コース AI・6 予選コース 人間・7 予選コース AI)ので、今は retired は無い。
+// 走行タブのジャンル(#dr-mode)はモデルが学んだ表から作るので、ここは関係しない(L-A は自分の表の 4 = 高速走行で走る)
+const modeRetired = (m) => !!(m && m.retired);
+const modeOptionLabel = (m) => `${m.id}: ${esc(m.name)}${modeRetired(m) ? '(旧)' : ''}`;
 
-function fillModeSelect(sel, firstOption) {
+function fillModeSelect(sel, firstOption, opt = {}) {
   const cur = sel.value;
+  const list = state.modes.filter((m) => !(opt.hideRetired && modeRetired(m)) || String(m.id) === cur);
   sel.innerHTML = (firstOption ? `<option value="">${firstOption}</option>` : '') +
-    state.modes.map((m) => `<option value="${m.id}">${m.id}: ${esc(m.name)}</option>`).join('');
+    list.map((m) => `<option value="${m.id}">${modeOptionLabel(m)}</option>`).join('');
   if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
 }
 async function loadModes() {
   try { state.modes = await api('GET', '/api/modes'); } catch (e) { toast(e.message, true); return; }
   const rec = $('#rec-mode');
   const recDefault = !rec.value;
-  fillModeSelect(rec);
+  fillModeSelect(rec, null, { hideRetired: true });
   if (recDefault && state.modes.length > 1) rec.value = String(state.modes[1].id);
   fillModeSelect($('#scene-mode-filter'), 'すべてのジャンル');
-  fillModeSelect($('#bulk-mode'));
+  fillModeSelect($('#bulk-mode'), null, { hideRetired: true });
   fillModeSelect($('#m-mode'));
   if (state.tab === 'modes') renderModes();
   if (state.tab === 'scenes') renderScenes();
@@ -58,7 +64,7 @@ function renderModes() {
   $('#mode-table').innerHTML = '<tr><th>ID</th><th>名前</th><th>説明</th><th>シーン</th><th>時間</th><th></th></tr>' +
     state.modes.map((m) => `
       <tr data-id="${m.id}">
-        <td><span class="mode-id" style="background:${modeColor(m.id)}">${m.id}</span></td>
+        <td><span class="mode-id" style="background:${modeColor(m.id)}">${m.id}</span>${modeRetired(m) ? ' <span class="muted small">旧</span>' : ''}</td>
         <td>${m.id === 0 ? esc(m.name) : `<input class="mode-name" value="${esc(m.name)}">`}</td>
         <td>${m.id === 0 ? `<span class="muted">${esc(m.description)}</span>` : `<input class="mode-desc" value="${esc(m.description)}">`}</td>
         <td>${m.scenes}</td><td>${m.minutes} 分</td>
@@ -515,13 +521,15 @@ function filteredScenes() {
 }
 function sceneBadges(s) {
   const b = [modeBadge(s.mode_id, s.mode_mixed)];
-  if (s.run_index) b.push(`<span class="badge ${s.complete ? 'ok' : 'warn'}">${s.run_index}回目 ${Math.round(s.duration_s)}秒${s.complete ? '' : '(途中で停止)'}</span>`);
+  const edited = !!s.edit;               // 分けた・範囲を消したシーン(scene_edit.py。stats は編集前の値なので札に出さない)
+  if (s.run_index) b.push(`<span class="badge ${s.complete ? 'ok' : 'warn'}">${s.run_index}回目 ${Math.round(s.duration_s)}秒${s.complete ? '' : (edited ? '' : '(途中で停止)')}</span>`);
   else b.push(s.complete ? '<span class="badge ok">20秒</span>' : `<span class="badge warn">${s.duration_s}秒</span>`);
+  if (edited) b.push('<span class="badge">編集済み</span>');
   if (s.vehicle_quality === 'legacy') b.push('<span class="badge warn">PWM:v1(学習不可)</span>');
   else if (s.vehicle_quality) b.push('<span class="badge ok">PWM:v2</span>');
   if (s.drive) b.push(`<span class="badge ai">AIモデル${s.drive.dry_run ? '(出力なし)' : ''}</span>`);
-  if (s.stats && s.stats.ai_driving_ratio > 0) b.push(`<span class="badge warn">AI走行 ${Math.round(s.stats.ai_driving_ratio * 100)}%</span>`);
-  if (s.stats && s.stats.camera_max_gap_ms > 70) b.push(`<span class="badge warn">映像途切れ ${s.stats.camera_max_gap_ms}ms</span>`);
+  if (!edited && s.stats && s.stats.ai_driving_ratio > 0) b.push(`<span class="badge warn">AI走行 ${Math.round(s.stats.ai_driving_ratio * 100)}%</span>`);
+  if (!edited && s.stats && s.stats.camera_max_gap_ms > 70) b.push(`<span class="badge warn">映像途切れ ${s.stats.camera_max_gap_ms}ms</span>`);
   for (const t of s.tags || []) b.push(isSimTag(t) ? '<span class="badge sim">🎮 シミュレーター</span>' : `<span class="badge tag">${esc(t)}</span>`);
   return b.join('');
 }
@@ -531,7 +539,7 @@ function renderScenes() {
   $('#scene-grid').innerHTML = list.map((s) => `
     <div class="scene ${sel.has(s.name) ? 'selected' : ''}" data-name="${esc(s.name)}">
       <div class="check" data-check="1">${sel.has(s.name) ? '✓' : ''}</div>
-      <img loading="lazy" src="/api/scenes/${encodeURIComponent(s.name)}/thumb.jpg" alt="">
+      <img loading="lazy" src="/api/scenes/${encodeURIComponent(s.name)}/thumb.jpg?v=${encodeURIComponent(s.token || '')}" alt="">
       <div class="body">
         <div class="name">${esc(s.name)}</div>
         <div class="muted">${fmtTime(s.start_us)} ・ カメラ ${s.counts.CAM_FRONT} / ToF ${s.counts.TOF_FRONT} / IMU ${s.counts.IMU} / 車両 ${s.counts.VEHICLE}${s.counts.AUDIO ? ' / 音声あり' : ''}</div>
@@ -586,6 +594,7 @@ async function openScene(name) {
   let s;
   try { s = await api('GET', `/api/scenes/${encodeURIComponent(name)}`); } catch (e) { toast(e.message, true); return; }
   state.modal = s; state.playing = false;
+  state.edit = { start: null, end: null };      // 分ける・範囲を消す(シーンを開き直すたびに決め直す)
   $('#m-name').textContent = s.name;
   $('#m-badges').innerHTML = sceneBadges(s);
   const st = s.stats || {};
@@ -605,6 +614,8 @@ async function openScene(name) {
                    ['走行設定', `ステアリング×${(s.drive.params || {}).steer_gain} / 速度×${(s.drive.params || {}).throttle_gain}(開始時)`]] : []),
     ...(st.ai ? [['AIの遅延', `平均 ${st.ai.latency_ms_mean} ms / 最大 ${st.ai.latency_ms_max} ms(推論 ${st.ai.infer_ms_mean} ms)`],
                  ['AIが車を操作', `${Math.round(st.ai.applied_ratio * 100)} % / 中立で停止 ${Math.round(st.ai.hold_ratio * 100)} %`]] : []),
+    ...(s.edit ? [['編集', `${s.edit.op === 'split' ? '分割' : '範囲の削除'}(元 ${s.edit.from} の ${(s.edit.frames_in_source || [0, 0])[0] + 1}〜${(s.edit.frames_in_source || [0, 0])[1] + 1} 枚目)。`
+      + 'ステアリング〜映像の最大間隔は、編集前のシーン全体の値']] : []),
   ].map(([k, v]) => `<div><span class="muted">${k}:</span> ${esc(v)}</div>`).join('');
   $('#m-mode').value = String(s.mode_id);
   $('#m-segments').innerHTML = s.mode_mixed
@@ -654,8 +665,9 @@ function showFrame(i) {
   i = Math.max(0, Math.min(i, s.series.frames - 1));
   $('#m-slider').value = i;
   $('#m-pos').textContent = `${i + 1} / ${s.series.frames} (${frameTime(i).toFixed(2)} 秒)`;
-  $('#m-frame').src = `/api/scenes/${encodeURIComponent(s.name)}/frame/${i}.jpg`;
+  $('#m-frame').src = `/api/scenes/${encodeURIComponent(s.name)}/frame/${i}.jpg?v=${encodeURIComponent(s.token || '')}`;   // 版つき(分けた・削ったあとに前の絵を出さない)
   drawSceneCharts(frameTime(i));
+  renderRange();
 }
 $('#m-slider').addEventListener('input', (e) => { state.playing = false; $('#m-play').textContent = '▶ 再生'; showFrame(+e.target.value); });
 $('#m-play').addEventListener('click', () => {
@@ -675,6 +687,11 @@ $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') clos
 document.addEventListener('keydown', (e) => {
   if (!state.modal) return;
   if (e.key === 'Escape') closeModal();
+  const tag = e.target && e.target.tagName;
+  if (e.target && (e.target.id === 'm-slider' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')) {
+    if (e.target.id === 'm-slider' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) setTimeout(() => showFrame(+$('#m-slider').value), 0);
+    return;                                  // つまみは自分で 1 枚動く(ここで足すと 2 枚になる)・字の欄はカーソルを動かす
+  }
   if (e.key === 'ArrowRight') showFrame(+$('#m-slider').value + 1);
   if (e.key === 'ArrowLeft') showFrame(+$('#m-slider').value - 1);
 });
@@ -682,7 +699,8 @@ function closeModal() { state.playing = false; state.modal = null; $('#m-audio')
 $('#m-save').addEventListener('click', async () => {
   try {
     const body = { description: $('#m-desc').value, tags: parseTags($('#m-tags').value) };
-    if (+$('#m-mode').value !== state.modal.mode_id || state.modal.mode_mixed) {
+    // 選ぶ欄が空(古い画面で、シーンのジャンルが表に無い)ときはジャンルを送らない(黙って 0 = 未設定にしない。2026-11-07)
+    if ($('#m-mode').value !== '' && (+$('#m-mode').value !== state.modal.mode_id || state.modal.mode_mixed)) {
       if (+$('#m-mode').value !== state.modal.mode_id || confirm('シーン全体を1つのジャンルにまとめますか?')) body.mode_id = +$('#m-mode').value;
     }
     const updated = await api('PATCH', `/api/scenes/${encodeURIComponent(state.modal.name)}`, body);
@@ -696,6 +714,105 @@ $('#m-delete').addEventListener('click', async () => {
   if (!confirm(`${name} を削除します。元に戻せません。よろしいですか?`)) return;
   try { await api('DELETE', `/api/scenes/${encodeURIComponent(name)}`); closeModal(); toast('削除しました'); loadScenes(); }
   catch (e) { toast(e.message, true); }
+});
+
+// ------------------------------------------------------------ シーンの分割・範囲の削除(2026-11-07。jetformer/scene_edit.py)
+// 範囲はフレームの番号(0 から・両端を含む)。分割は今の場所のフレームから後ろを新しいシーンにする(絵は消さない)。
+// 範囲の削除は戻せない。途中の範囲なら、サーバーが前と後ろの 2 つのシーンに分ける(シーンの中に時刻の穴を作らない)
+const SHORT_SCENE_S = 5;             // これより短いシーンは学習・データセットに入らない(dataset.build_dataset の min_duration)
+const MIN_PART_FRAMES = 30;          // サーバー(scene_edit.MIN_PART_FRAMES)は、これより短いシーンを作らない
+function rangeEditPlan(n, start, end) {
+  if (start == null && end == null) return { ok: false, text: '範囲はまだ決めていません(つまみか ← → で場所を合わせて「始め」「終わり」)' };
+  if (start == null || end == null) return { ok: false, text: '始めと終わりの両方を決めてください' };
+  const a = Math.min(start, end), b = Math.max(start, end);
+  if (a === 0 && b === n - 1) return { ok: false, a, b, kind: 'all', text: 'シーンの全部は消せません(「このシーンを削除」を使ってください)' };
+  const short = [a > 0 ? a : null, b < n - 1 ? n - 1 - b : null].filter((x) => x !== null && x < MIN_PART_FRAMES);
+  if (short.length) return { ok: false, a, b, kind: 'short',
+    text: `消したあとに残るシーンが ${MIN_PART_FRAMES} 枚(約 1 秒)より短くなります(${short.join('・')} 枚)。短い所も範囲に入れるか、シーンごと削除してください` };
+  return { ok: true, a, b, frames: b - a + 1, kind: a === 0 ? 'head' : (b === n - 1 ? 'tail' : 'middle') };
+}
+function partLine(label, i0, i1) {
+  const secs = frameTime(i1) - frameTime(i0);
+  return `${label}: ${i0 + 1}〜${i1 + 1} 枚目(${i1 - i0 + 1} 枚・約 ${secs.toFixed(1)} 秒)` + (secs < SHORT_SCENE_S ? `。${SHORT_SCENE_S} 秒より短いので学習に使われません` : '');
+}
+function rangeEditText(n, p) {
+  if (!p.ok) return p.text;
+  const secs = frameTime(p.b) - frameTime(p.a) + 1 / 30;
+  const head = `消す範囲: ${p.a + 1}〜${p.b + 1} 枚目(${p.frames} 枚・${frameTime(p.a).toFixed(2)}〜${frameTime(p.b).toFixed(2)} 秒・約 ${secs.toFixed(1)} 秒)`;
+  if (p.kind === 'head') return [head, partLine('残る(元の名前)', p.b + 1, n - 1)].join('\n');
+  if (p.kind === 'tail') return [head, partLine('残る(元の名前)', 0, p.a - 1)].join('\n');
+  return [head, '途中の範囲なので、前と後ろの 2 つのシーンに分かれます', partLine('前(元の名前)', 0, p.a - 1),
+    partLine('後ろ(新しい名前)', p.b + 1, n - 1)].join('\n');
+}
+function editRequestBody(s) {            // 画面が見ているシーンの版(サーバーが今のシーンと照らす。古い画面・2 度押しで別の所を消さない)
+  return { expect_token: s.token, expect_frames: s.series.frames };
+}
+function afterSceneEdit(oldName, r) {
+  if (state.selected.has(oldName)) for (const nm of r.scenes) state.selected.add(nm);   // 分けた後ろの部分も選びに入れる
+  loadScenes(); openScene(r.scenes[0]);
+}
+function setEditBusy(on) {
+  state.editBusy = on;
+  $('#m-split').disabled = on;
+  if (on) $('#m-delete-range').disabled = true; else renderRange();
+}
+function renderRange() {
+  const s = state.modal;
+  if (!s || !state.edit) return;
+  const n = s.series.frames, span = Math.max(1, n - 1);
+  const p = rangeEditPlan(n, state.edit.start, state.edit.end);
+  const fill = $('#m-range-fill');
+  const a = state.edit.start != null ? state.edit.start : state.edit.end;
+  const b = state.edit.end != null ? state.edit.end : state.edit.start;
+  if (a != null) {
+    const lo = Math.min(a, b), hi = Math.max(a, b);
+    fill.style.left = `${(lo / span) * 100}%`; fill.style.width = `calc(${((hi - lo) / span) * 100}% + 3px)`;
+    fill.classList.remove('hidden');
+  } else fill.classList.add('hidden');
+  $('#m-range-cursor').style.left = `calc(${((+$('#m-slider').value) / span) * 100}% - 1px)`;
+  const info = $('#m-range-info');
+  info.textContent = rangeEditText(n, p);
+  info.style.whiteSpace = 'pre-line';
+  info.classList.toggle('warn-text', p.kind === 'all' || p.kind === 'short');
+  $('#m-delete-range').disabled = !p.ok || !!state.editBusy;
+  $('#m-split').disabled = !!state.editBusy;
+}
+$('#m-mark-start').addEventListener('click', () => { if (state.modal) { state.edit.start = +$('#m-slider').value; renderRange(); } });
+$('#m-mark-end').addEventListener('click', () => { if (state.modal) { state.edit.end = +$('#m-slider').value; renderRange(); } });
+$('#m-mark-clear').addEventListener('click', () => { if (state.modal) { state.edit = { start: null, end: null }; renderRange(); } });
+$('#m-split').addEventListener('click', async () => {
+  const s = state.modal;
+  if (!s) return;
+  const n = s.series.frames, i = +$('#m-slider').value;
+  if (i < MIN_PART_FRAMES || n - i < MIN_PART_FRAMES) {
+    toast(`分けたあとのシーンが ${MIN_PART_FRAMES} 枚(約 1 秒)より短くなります。分ける場所を ${MIN_PART_FRAMES + 1}〜${n - MIN_PART_FRAMES + 1} 枚目にしてください`, true); return;
+  }
+  if (!confirm(`シーン ${s.name} を、今の場所(${i + 1} 枚目・${frameTime(i).toFixed(2)} 秒)で 2 つに分けます。絵は消しません。\n`
+    + `${partLine('前(元の名前)', 0, i - 1)}\n${partLine('後ろ(新しい名前)', i, n - 1)}`)) return;
+  if (state.editBusy) return;
+  setEditBusy(true);
+  try {
+    const r = await api('POST', `/api/scenes/${encodeURIComponent(s.name)}/split`, Object.assign({ index: i }, editRequestBody(s)));
+    toast(`分けました: ${r.scenes.join(' と ')}`); afterSceneEdit(s.name, r);
+  } catch (e) { toast(e.message, true); }
+  finally { setEditBusy(false); }
+});
+$('#m-delete-range').addEventListener('click', async () => {
+  const s = state.modal;
+  if (!s) return;
+  const n = s.series.frames, p = rangeEditPlan(n, state.edit.start, state.edit.end);
+  if (!p.ok) { toast(p.text, true); return; }
+  if (!confirm(`シーン ${s.name} の範囲を消します。戻せません。\n\n${rangeEditText(n, p)}`)) return;
+  if (state.editBusy) return;
+  setEditBusy(true);
+  try {
+    const r = await api('POST', `/api/scenes/${encodeURIComponent(s.name)}/delete_range`,
+      Object.assign({ start: p.a, end: p.b, confirm: 'delete' }, editRequestBody(s)));
+    toast(`${r.deleted_frames} 枚を消しました。残ったシーン: ${r.scenes.join(' と ')}`
+      + (r.labels_stale && r.labels_stale.length ? '(このログのラベルは古くなったので外しました)' : ''));
+    afterSceneEdit(s.name, r);
+  } catch (e) { toast(e.message, true); }
+  finally { setEditBusy(false); }
 });
 
 // ------------------------------------------------------------ データセット
@@ -1105,7 +1222,7 @@ function renderTrain(st) {
   const last = h[h.length - 1];
   $('#tr-modes').innerHTML = last ? '<div class="muted">ジャンル別の検証誤差(最新エポック)</div><div class="mode-loss">' +
     Object.entries(last.val_per_mode_us || {}).map(([id, v]) =>
-      `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('') + '</div>' : '';
+      `<span><span class="badge mode" style="background:${modeColor(+id)}">${esc(driveGenreName(names[id] || modeName(+id), id))}</span> ${v} µs</span>`).join('') + '</div>' : '';
   $('#tr-log').textContent = (st.log || []).join('\n');
 }
 async function loadRuns() {
@@ -1136,7 +1253,7 @@ async function loadRuns() {
         ${r.params.seed != null ? `<span class="badge tag">種 ${esc(String(r.params.seed))}</span>` : ''}
       </div>
       <div class="mode-loss">${Object.entries(r.best_val_per_mode_us || {}).map(([id, v]) =>
-        `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>
+        `<span><span class="badge mode" style="background:${modeColor(+id)}">${esc(driveGenreName(names[id] || modeName(+id), id))}</span> ${v} µs</span>`).join('')}</div>
       <div class="row">${files}<span class="spacer"></span>
         ${r.state === 'running' ? '' : `<button class="small danger" data-del-run="${esc(r.name)}">削除</button>`}</div>
     </div>`;
@@ -1168,13 +1285,17 @@ const DR_PARAMS = [
 ];
 const drModel = () => state.drive.models.find((m) => m.name === $('#dr-model').value);
 // 走行タブで選ぶモデル(DOM を使わない。tests/test_drive_model_select.py が node で確かめる)。
-// 走行中のモデル → 初回は「推奨のモデル」(評価で決めたもの。一覧の先頭)→ 前回のモデル → 今の選択 → 一覧の最初の走れるもの。
+// 走行中のモデル → 初回は「推奨のモデル」(評価で決めたもの。一覧の先頭)→ 優先のモデルの ①(data/drive_priority.json の 1 つ目)
+// → 前回のモデル → 今の選択 → 一覧の最初の走れるもの。
 // 前は「前回 → 一番新しい学習結果」で、評価の前に使った古いモデルや、比較の実験で作った新しいモデルが選ばれていた。
+// ① は 2026-11-08 のユーザーの依頼「UI ではモデル(1)を Default で選択するように」。★推奨の印は 11/7 に「いらない」と言われたので、
+// 推奨のモデルのファイルは使わず、画面を開いた最初だけ ① を前回のモデルより先に選ぶ(2 回目からは人の選択を残すのは前と同じ)。
 // 走れないもの(drivable false: エンジンが精度の確認に落ちた・入力が作れないなど)は選ばない。
 function pickDriveModel(models, { running = '', last = '', cur = '', first = false } = {}) {
   const ok = (name) => !!name && models.some((m) => m.name === name && m.drivable !== false);
   const rec = models.find((m) => m.recommended && m.drivable !== false);
-  const order = first ? [running, rec && rec.name, last, cur] : [running, cur, rec && rec.name, last];
+  const pri1 = models.find((m) => m.priority === 1 && m.drivable !== false);
+  const order = first ? [running, rec && rec.name, pri1 && pri1.name, last, cur] : [running, cur, rec && rec.name, last];
   for (const want of order) if (ok(want)) return want;
   const any = models.find((m) => m.drivable !== false);
   return any ? any.name : '';
@@ -1266,6 +1387,20 @@ async function reloadDriveModels() {
   fillDriveModels();
   loadBench();
 }
+// 走行タブ・学習タブで見せるジャンルの名前(2026-11-07 のユーザーの決め「4 か 5 の言い回しは 練習コース AI・練習コース 人間・
+// 予選コース AI・予選コース 人間 に合わせる」)。前の表で学んだモデル(V2・L-A・B・追加学習の 8 通りなど)の 4「高速走行」は
+// 「予選コース AI」、5「低速走行」は「練習コース AI」と呼ぶ(11/6 の予選コースの AI の走りは全部 4、練習コースの AI の走りは
+// ほぼ全部 5)。走る番号(モデルの番号)は変えない。番号は見せない(データのジャンルの表の 4〜7 と取り違えないため)。
+// 新しい表で学んだモデルは、その表の名前のまま
+const DRIVE_GENRE_ALIAS = { '高速走行': '予選コース AI', '低速走行': '練習コース AI' };
+function driveGenreName(name, id) { return DRIVE_GENRE_ALIAS[name] || name || `ジャンル ${id}`; }
+// 走行タブのジャンルの名前は、選ぶ欄の字(モデルが学んだ表を driveGenreName で言い換えた物)から出す。data/modes.json の名前は
+// データのジャンル(4 練習コース 人間 など)なので、モデルの番号を modes.json で読むと別の物になる
+function drModeText() {
+  const sel = $('#dr-mode');
+  const o = sel.options && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex] : null;
+  return o && o.textContent ? o.textContent : modeName(+sel.value);
+}
 function renderDriveModel() {
   const m = drModel();
   const modeSel = $('#dr-mode'), cur = modeSel.value;
@@ -1288,11 +1423,9 @@ function renderDriveModel() {
     + (ec && ec.note ? `<div class="muted small">${esc(ec.note)}</div>` : '')
     + `<div>データセット ${esc(m.dataset)} ・ 間引き 1/${m.stride ?? '-'} ・ ${esc(m.created_at || '')}</div>`
     + `<div class="mode-loss">${Object.entries(m.best_val_per_mode_us || {}).map(([id, v]) =>
-      `<span><span class="badge mode" style="background:${modeColor(+id)}">${id}: ${esc(names[id] || modeName(+id))}</span> ${v} µs</span>`).join('')}</div>`;
-  modeSel.innerHTML = (m.modes || []).filter((x) => x.id !== 0).map((x) => {
-    const ok = m.trained_modes.includes(x.id);
-    return `<option value="${x.id}" ${ok ? '' : 'disabled'}>${x.id}: ${esc(x.name)}${ok ? '' : '(学習データなし)'}</option>`;
-  }).join('');
+      `<span><span class="badge mode" style="background:${modeColor(+id)}">${esc(driveGenreName(names[id] || modeName(+id), id))}</span> ${v} µs</span>`).join('')}</div>`;
+  modeSel.innerHTML = (m.modes || []).filter((x) => x.id !== 0 && m.trained_modes.includes(x.id))   // 学んでいないジャンルは出さない
+    .map((x) => `<option value="${x.id}">${esc(driveGenreName(x.name, x.id))}</option>`).join('');
   const st = state.drive.st;
   const running = st && st.running ? String(st.mode_id) : '';
   const last = !state.drive.restored && st && st.last && st.last.mode_id != null ? String(st.last.mode_id) : '';
@@ -1475,7 +1608,7 @@ function setDriveParams(p, since) {
 $('#dr-mode').addEventListener('change', async () => {
   const st = state.drive.st;
   if (!(st && st.running)) return;
-  try { await api('POST', '/api/drive/params', { mode_id: +$('#dr-mode').value }); toast(`ジャンルを「${modeName(+$('#dr-mode').value)}」に切り替えました`); }
+  try { await api('POST', '/api/drive/params', { mode_id: +$('#dr-mode').value }); toast(`ジャンルを「${drModeText()}」に切り替えました`); }
   catch (e) { toast(e.message, true); }
 });
 // 画面の版と、この画面が読み込んだ app.js の更新時刻(2026-10-27 fix3 r2-r2-state-3)。版は走行開始の body の client と同じ数
@@ -1552,7 +1685,7 @@ $('#btn-dr-start').addEventListener('click', async () => {
   const prepLine = prepStartLines();
   const speedLine = speedStartLines(state.drive.st) + launchStartLine(state.drive.st) + ffStartLine(state.drive.st);   // 電圧の前送り(ON だけ)
   const trimLine = trimGuardStartLines(state.drive.st) + revStartLine();
-  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${modeName(+$('#dr-mode').value)} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${trimLine}${capLine}${zoneLine}${speedLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\n${startLastLine(state.drive.st)}`)) return;
+  if (!dry && !confirm(`AI走行を開始します。\nモデル: ${m.name}\nジャンル: ${drModeText()} / 速度ゲイン ${(+$('#dr-throttle-gain').value).toFixed(2)}${trimLine}${capLine}${zoneLine}${speedLine}${tcpLine}${prepLine}\n\nプロポのCH3をAI側(LED紫)にすると車が動きます。周りに人や物がないことを確認してください。\n${startLastLine(state.drive.st)}`)) return;
   // client: 画面の版(server.py の DRIVE_CLIENT_VERSION。7 = 2026-10-26 の画面の直し。fix3 state-5。8 = 2026-10-26 夜〜10/27 の直し
   // (r1-state3-1・3-2・rs1-2・state3-4・r2-r2-state-1・2・3)。9 = 2026-10-27 fix5(t1・t2・t3)。10 = 2026-10-31 USB を外して走る(確認の
   // 文の最後の行を status の tether_free で決める。送る物は同じ)。11 = 2026-11-01 電圧の前送り(確認の文の行。送る物は同じ)。
@@ -1565,13 +1698,20 @@ $('#btn-dr-start').addEventListener('click', async () => {
                  record: $('#dr-record').checked, description: $('#dr-desc').value || `AI走行 ${m.name}`, tags: parseTags($('#dr-tags').value),
                  params: readDriveParams() };
   const seq = state.drive.startSeq = (state.drive.startSeq || 0) + 1;     // この ▶ の番号(下の断りの文の出し直しで使う。fix6)
+  // 電圧の前送りが ON で電圧がまだ無い: サーバーがセンサーを開始して読むので数秒かかる(2026-11-05。server.py の ff_wait_v0)
+  if (ffSupported(state.drive.st) && ffPreview(state.drive.st).on && ffPreview(state.drive.st).m === null) toast('センサーを開始して、電池の電圧を読んでいます(数秒)');
+  // 返事を待つ間(電圧を待つ数秒など)も ■ で取り消せるように、■ を押せるようにして ▶ は押せなくする(2026-11-06。server.py の START_CANCEL)
+  state.drive.starting = seq;
+  $('#btn-dr-stop').disabled = false; $('#btn-dr-start').disabled = true;
   try {
     const r = await api('POST', '/api/drive/start', body);
+    if (state.drive.starting === seq) state.drive.starting = 0;
     setDriveToken(r.token);
     benchSent();                                    // 基準の設定で入れた値は、走行開始で送って保存された
     toast(dry ? '推論の確認を開始しました(出力は中立)' : (r.ai_no ? `AI走行 No.${r.ai_no} を開始しました` : '走行を開始しました')); pollDrive();
     if (r.plan_diffs && r.plan_diffs.length) toast(`ブロックの計画と違うので「試し」(cand=EXP)として記録します: ${r.plan_diffs.join('、')}`, true);
   } catch (e) {
+    if (state.drive.starting === seq) state.drive.starting = 0;
     toast(e.message, true);
     // 断られた・届かなかった: すぐ同期して、表示と確認の文を今のサーバーに(t1)。同期の返事で起動し直しの知らせ(noteServerBoot の
     // トースト)が出ると、断った文(「…始めません」)が数十 ms で消え、見える文に走行を始めていないことが出なかった(2026-10-27 fix6
@@ -1606,7 +1746,7 @@ function drNotSynced() {
   return true;
 }
 async function stopDrive(reason) {
-  try { await api('POST', '/api/drive/stop', { reason }); toast('停止しました'); } catch (e) { toast(e.message, true); }
+  try { const r = await api('POST', '/api/drive/stop', { reason }); toast(r && r.cancelled ? '走行を始めるのを取り消しました' : '停止しました'); } catch (e) { toast(e.message, true); }
   pollDrive();
 }
 $('#btn-dr-stop').addEventListener('click', () => stopDrive('停止ボタン'));
@@ -1615,7 +1755,7 @@ $('#btn-float-stop').addEventListener('click', () => stopDrive('停止ボタン'
 // シーン詳細を開いているときの Escape は詳細を閉じるだけ(捕捉フェーズで先に判定する)
 document.addEventListener('keydown', (e) => {
   const st = state.drive.st;
-  if (!(st && st.running) || e.repeat) return;
+  if ((!(st && st.running) && !state.drive.starting) || e.repeat) return;      // ▶ の返事を待つ間も止める(2026-11-06)
   if (e.key === 'Escape' && state.modal) return;
   if (e.key !== 'Escape' && e.target.matches('textarea, input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button])')) return;
   if (e.code === 'Space' || e.key === 'Escape') { e.preventDefault(); stopDrive('キー操作'); }
@@ -1833,9 +1973,9 @@ function renderDrive(st, since) {
   ], { xMin: -10, xMax: 0, minSpan: 100 });
   const training = state.status && state.status.training;
   const dm = drModel();
-  $('#btn-dr-start').disabled = st.running || !dm || dm.drivable === false || !!training;
+  $('#btn-dr-start').disabled = st.running || !!state.drive.starting || !dm || dm.drivable === false || !!training;
   $('#btn-dr-start').title = training ? '学習中は走行できません' : (dm && dm.drivable === false ? `このモデルでは走行できません: ${dm.why_not || ''}` : '');
-  $('#btn-dr-stop').disabled = !st.running;
+  $('#btn-dr-stop').disabled = !st.running && !state.drive.starting;      // ▶ の返事を待つ間も押せる(2026-11-06)
   $('#btn-float-stop').classList.toggle('hidden', !st.running);
   document.body.classList.toggle('driving', !!st.running);
   $('#dr-model').disabled = st.running;
@@ -2662,7 +2802,7 @@ function ffStartLine(st) {                             // ▶ の確認の文の
   const x = ffPreview(st);
   if (!x.on) return '';
   if (x.m === null) return `\n電圧の前送り: ON(基準 ${x.vref === null ? '-' : x.vref.toFixed(2)} V。今は電池の電圧が出ていません。`
-    + '止まっているときの基板の電圧が無いと走行を始めません)';
+    + 'OK のあとセンサーを開始して読みます。読めなければ走行を始めません)';
   const clip = ffClipNote(x.vref, x.v, ffSpec(st));
   return `\n電圧の前送り: ON(${ffText(x)})` + (clip ? `\n  ${clip}` : '');
 }

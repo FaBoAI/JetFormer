@@ -747,7 +747,9 @@ def label_log(log, raw_dir=None, impact_g=IMPACT_G, gamma=GAMMA, signed_progress
     ref = (float(drive.get('steer_center_us') or 1500.0), float(drive.get('throttle_neutral_us') or 1500.0))
     A, V, I, C = L['AI_CMD'], L['VEHICLE'], L['IMU'], L['CAM_FRONT']
     info = {'log': log, 'version': VERSION, 'description': meta.get('description', ''), 'tags': meta.get('tags', []),
-            'mode_id': meta.get('mode_id'), 'ai_log': A is not None, 'run': drive.get('run'),
+            # AI の記録はモデルが走った番号(2026-11-07 にジャンルを付け替えた記録は mode_id_before に残る)
+            'mode_id': meta.get('mode_id_before', meta.get('mode_id')) if meta.get('drive') else meta.get('mode_id'),
+            'ai_log': A is not None, 'run': drive.get('run'),
             'params_at_start': drive.get('params'), 'ref_us': {'steer_center': ref[0], 'throttle_neutral': ref[1]},
             'scenes': len(L['scenes']), 'problems': L['problems']}
     if A is not None:

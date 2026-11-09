@@ -210,6 +210,12 @@ def _r(x, n=3):
 
 
 # ------------------------------------------------------------------ 記録の読み込み
+def run_genre(meta):
+    """AI の記録で、モデルが走った番号(2026-11-07 にジャンルを付け替えた記録は mode_id_before に残る。人の記録は mode_id)"""
+    m = meta or {}
+    return m.get('mode_id_before', m.get('mode_id')) if m.get('drive') else m.get('mode_id')
+
+
 def read_meta(log, raw_dir=None):
     """log.json(0 バイト・壊れていれば None)"""
     p = Path(raw_dir or config.RAW_DIR) / log / 'log.json'
@@ -296,7 +302,7 @@ def settings_of(meta, gains_frames=None, names=None):
     run = dr.get('run')
     s = {k: p.get(k) for k in SETTING_KEYS}
     s.update({k: p[k] for k in OPT_KEYS if k in p})          # 欄があるときだけ(r1-rec3-5)
-    s.update(run=run, model=(names or {}).get(run) or run, mode_id=(meta or {}).get('mode_id'),
+    s.update(run=run, model=(names or {}).get(run) or run, mode_id=run_genre(meta),
              throttle_gain_frames=_r(gains_frames, 3) if gains_frames is not None else None)
     return s
 

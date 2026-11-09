@@ -176,6 +176,9 @@
         <div class="card-title">ジャンルを追加</div>
         <p class="muted small">走行ジャンルは、モデルが走り方を切り替えるための指示(ID)です。
           IDはモデルの出力の番号に直結するため、一度付けたIDは変わりません(名前と説明は後から変えられます)。</p>
+        <p class="muted small">記録の分け方は 1〜3 駐車・4 練習コース 人間・5 練習コース AI・6 予選コース 人間・7 予選コース AI・8 シミュレーターです
+          (2026-11-07 に番号を振り直した)。前のモデル(V2・L-A など)は学んだときの表で走るので、走行タブには 4 高速走行・5 低速走行と出ます。
+          AI 走行の記録にはモデルが走った番号(L-A は 4)が付くので、あとで tools/retag_genres.py apply で「〜 AI」へ付け替えます。</p>
         <label>名前<input id="mode-new-name" placeholder="例: 駐車(4)"></label>
         <label>説明<input id="mode-new-desc" placeholder="例: 縦列駐車"></label>
         <div class="row buttons"><button id="btn-mode-add" class="primary">追加</button></div>
@@ -685,6 +688,22 @@
           <button id="m-play" class="small">▶ 再生</button>
           <input id="m-slider" type="range" min="0" value="0">
           <span id="m-pos" class="muted small"></span>
+        </div>
+        <div class="card m-edit" id="m-edit">
+          <div class="card-title">分ける・範囲を消す</div>
+          <div class="m-range-bar" id="m-range-bar"><div id="m-range-fill" class="hidden"></div><div id="m-range-cursor"></div></div>
+          <div class="row buttons">
+            <button id="m-mark-start" class="small">始めをここに</button>
+            <button id="m-mark-end" class="small">終わりをここに</button>
+            <button id="m-mark-clear" class="small">範囲を決め直す</button>
+          </div>
+          <div id="m-range-info" class="small">範囲はまだ決めていません(つまみか ← → で場所を合わせて「始め」「終わり」)</div>
+          <div class="row buttons">
+            <button id="m-split" class="small">今の場所で分割</button>
+            <button id="m-delete-range" class="danger small" disabled>範囲を消す(戻せません)</button>
+          </div>
+          <div class="muted small">分割は絵を消しません。途中の範囲を消すと、前と後ろの 2 つのシーンに分かれます(シーンの中に時刻の穴を作らない)。
+            5 秒より短いシーンは学習に使われません。前の部分は元の名前のまま、後ろの部分は「元の名前.ミリ秒」になります。</div>
         </div>
         <audio id="m-audio" class="m-audio hidden" controls preload="none"></audio>
         <div class="card"><div class="card-title">操作値 PWM [µs](人の操縦中のみ)</div><canvas id="m-chart-veh" height="150"></canvas></div>
