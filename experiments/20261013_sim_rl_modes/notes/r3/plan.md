@@ -213,7 +213,7 @@ r3 の学習・試験が終わり、合否が出たものだけを昇格する(�
    - pytest 一式は `jf-heavy --mem 2500M --lock big`。
    - 記録の前の確かめ: 統合の段のシーンの組(`integrate/make_scene_pool.mjs`、有効な周 ≥ 1・止まり 1 秒まで・ゲートの外し 0・すき間)を、r3 の走行中の仕組み(シールド v4・乱し v2・line のシールド)で作り直す。
      r3 の判定の valid_episode_r3 と同じ止まりの決まり(1.0 秒以上は不可)にそろえる。
-5. **jetformer-web の再起動**: 学習・記録・走行・セッション・ジョブが無いときだけ(`/api/train/status`・`/api/drive/status`・`/api/status`・`/api/jobs`)、`echo jetson | sudo -S -p '' systemctl restart jetformer-web`。
+5. **jetformer-web の再起動**: 学習・記録・走行・セッション・ジョブが無いときだけ(`/api/train/status`・`/api/drive/status`・`/api/status`・`/api/jobs`)、`echo <SUDO_PASSWORD> | sudo -S -p '' systemctl restart jetformer-web`。
 6. **ブラウザ(8080、非ループバック http://192.168.55.1:8080)**: `jf-heavy --mem 2500M --lock big`、snap Firefox を DISPLAY=:0、プロファイルは `jetformer_reports/sim_rl_modes_20261013/r3/` の下、geckodriver 4448。
    U1(選択・読み込み・1 シーン記録・コンソール)・U3(カードの数字と「不合格(参考)」)・U5(F-ID: no_wall の fid_std・fid_slow・摩擦円の隅の fid_corner、recover の乱し v2、line のシールド)。
    シールド v4 の 1 フレームの時間を Firefox で測る(Node で混んだ CPU のとき約 8 ms)。ユーザーのブリッジ・読み込んだモデルはそのまま。
